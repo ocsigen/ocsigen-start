@@ -1,0 +1,32 @@
+= Compiling and installing Myproject
+
+
+(Create a postgresql role):
+{{{
+sudo -u postgres createuser <ROLE>
+}}}
+
+(Destroy and) recreate the OL db (OL and Myproject parts):
+{{{
+make db
+}}}
+
+Compile:
+{{{
+make
+}}}
+
+Run:
+{{{
+ocsigenserver -c myproject.conf
+}}}
+After adapting myproject.conf to your local repositories.
+
+Clean:
+{{{
+make clean
+}}}
+or (more agressive):
+{{{
+make distclean
+}}}
