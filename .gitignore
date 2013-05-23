@@ -16,4 +16,4 @@ _deps/
 _server/
 local/
 
-*.css
+static/css/*.css
