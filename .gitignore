@@ -7,3 +7,11 @@
 *.cmx
 *.cmxs
 *.cmxa
+
+
+# ocsigen data
+.depend
+_client/
+_deps/
+_server/
+local/
