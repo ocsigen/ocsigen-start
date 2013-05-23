@@ -71,12 +71,11 @@ end) = struct
     try_lwt
       lwt userid = Ol_db.check_pwd login pwd in
       CW.connect userid
-    with Not_found -> Eliom_reference.set Ol_sessions.wrong_password true
+    with Not_found -> Ol_sessions.set_flash_msg Ol_sessions.Wrong_password
 
   let login_page ?(invalid_actkey = false) _ _ =
-    lwt wrong_pwd = Eliom_reference.get Ol_sessions.wrong_password in
-    let cb = Ol_base_widgets.login_signin_box ~wrong_pwd ~invalid_actkey
-      login_service ask_activation_service in
+    let cb = Ol_base_widgets.login_signin_box ~invalid_actkey
+               login_service ask_activation_service in
     Lwt.return
       (page_container
          [div

@@ -95,8 +95,8 @@ type restr_show_hide_focus =
 }}
 
 {server{
-let login_signin_box ~wrong_pwd ~invalid_actkey
-    connection_service activation_email_service =
+let login_signin_box ~invalid_actkey
+      connection_service activation_email_service =
   let id = "ol_login_signup_box" in
   if Eliom_reference.Volatile.get Ol_sessions.activationkey_created
   then D.div ~a:[a_id id]
@@ -104,46 +104,61 @@ let login_signin_box ~wrong_pwd ~invalid_actkey
         br();
         pcdata "Click on the link it contains to log in."]]
   else
+    let set = {Ew_buh.radio_set{ Ew_buh.new_radio_set () }} in
     let button1 = D.h2 [pcdata "Login"] in
     let form1, i1 = connection_box connection_service in
-    let button2 = D.h2 [pcdata "Sign up / Lost password"] in
-    let form2, i2 = email_form activation_email_service in
-    let set = {Ew_buh.radio_set{Ew_buh.new_radio_set ()}} in
-    let o2 = {restr_show_hide_focus{
-      let set = %set in
-      ignore
-        (new show_hide_focus
-           ~pressed:true
-           ~set ~button:(To_dom.of_h2 %button1)
-           ~button_closeable:false
-           ~focused:(To_dom.of_input %i1) (To_dom.of_form %form1));
-      (To_dom.of_input %i1)##focus();
+    let o1 = {restr_show_hide_focus{
       new show_hide_focus
-        ~set ~button:(To_dom.of_h2 %button2)
-        ~button_closeable:false
-        ~focused:(To_dom.of_input %i2) (To_dom.of_form %form2);
+           ~pressed:true
+           ~set:%set ~button:(To_dom.of_h2 %button1)
+           ~button_closeable:false
+           ~focused:(To_dom.of_input %i1) (To_dom.of_form %form1)
     }}
     in
-    let d = D.div ~a:[a_id id] [button1; button2; form1; form2] in
-    if wrong_pwd || invalid_actkey
-    then begin
-      let msg = if wrong_pwd then "Wrong password"
-        else "Invalid activation key. Ask for a new one."
+    let button2 = D.h2 [pcdata "Sign up / Lost password"] in
+    let form2, i2 = email_form activation_email_service in
+    let o2 = {restr_show_hide_focus{
+      new show_hide_focus
+        ~set:%set ~button:(To_dom.of_h2 %button2)
+        ~button_closeable:false
+        ~focused:(To_dom.of_input %i2) (To_dom.of_form %form2)
+    }}
+    in
+      ignore {unit{ ignore ((%o1)#press) }};
+      let d = D.div ~a:[a_id id]
+                [button1; button2; form1; form2]
       in
-      ignore
-        {unit{ let d = To_dom.of_div %d in
-               let msg = To_dom.of_p
-                 (p ~a:[a_class ["ol_error"]] [pcdata %msg])
-               in
-               Dom.appendChild d msg;
-               ignore (lwt () = Lwt_js.sleep 2. in
-                       Dom.removeChild d msg;
-                       if %invalid_actkey
-                       then (%o2)#press
-                       else Lwt.return ())
-        }}
-    end;
-    d
+        ignore
+        (lwt flash = Ol_sessions.has_flash_msg () in
+          if invalid_actkey || flash
+          then begin
+            let press o msg =
+              ignore
+                {unit{
+                  let d = To_dom.of_div %d in
+                  let msg = To_dom.of_p
+                              (p ~a:[a_class ["ol_error"]] [pcdata %msg])
+                  in
+                    (%o)#press;
+                    Dom.appendChild d msg;
+                    ignore
+                      (lwt () = Lwt_js.sleep 2. in
+                         Dom.removeChild d msg;
+                         Lwt.return ())
+                }}
+            in
+              if invalid_actkey
+              then Lwt.return (press o2 "Invalid activation key, ask for a new one.")
+              else
+                let open Ol_sessions in
+                  (* no need to try .. with here because we that
+                     there is flash message at this point *)
+                  match_lwt Ol_sessions.get_flash_msg_or_fail () with
+                    | Wrong_password -> Lwt.return (press o1 "Wrong password")
+                    | _ -> Lwt.return ()
+          end
+          else Lwt.return ());
+        d
 
 let personal_info_form ((fn, ln), (p1, p2)) =
   post_form
