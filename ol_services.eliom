@@ -36,3 +36,8 @@ let get_userlist_for_completion_service =
 
 let pic_service =
   post_coservice' ~name:"upload_pic" ~post_params:(file "f") ()
+
+let preregister_service =
+  post_coservice'
+    ~name:"preregister"
+    ~post_params:(string "email") ()

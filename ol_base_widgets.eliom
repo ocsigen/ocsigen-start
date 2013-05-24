@@ -22,6 +22,25 @@ let (>|=) = Lwt.(>|=)
 (** Login box *)
 
 
+let preregister_box service =
+  let r = ref None in
+  let f = D.post_form
+    ~service
+    (fun (m) ->
+      let i = D.string_input
+        ~a:[a_placeholder "e-mail address";
+            a_required `Required]
+        ~input_type:`Email ~name:m ()
+      in
+      r := Some i;
+      [i;
+       string_input
+         ~input_type:`Submit ~value:"register" ();
+      ])
+    ()
+  in
+  f, match !r with Some i -> i | None -> failwith "connection_box"
+
 let connection_box service =
   let r = ref None in
   let f = D.post_form

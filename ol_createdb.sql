@@ -28,3 +28,8 @@ CREATE TABLE contacts (
        contactid bigint NOT NULL references users(userid),
        primary key (userid, contactid) --- ???VVV Why?
 );
+
+-- A
+CREATE TABLE preregister (
+       email text primary key
+);

@@ -64,8 +64,30 @@ let contacts_table = <:table< contacts (
        contactid bigint NOT NULL
 ) >>
 
+let preregister_table = <:table< preregister (
+       email text NOT NULL
+) >>
 
 (********* Queries *********)
+let new_preregister_email m =
+  full_transaction_block
+    (fun dbh ->
+       Lwt_Query.query dbh
+         <:insert<
+            $preregister_table$ := { email = $string:m$; }
+         >>)
+
+let already_preregistered m =
+  full_transaction_block
+    (fun dbh ->
+       try_lwt
+         lwt e = Lwt_Query.view_one dbh
+                   <:view< p | p in $preregister_table$;
+                               p.email = $string:m$ >>
+         in
+          Lwt.return true
+       with _ -> Lwt.return false)
+
 let password_view =
   <:view< {email = e.email; pwd = u.pwd; userid=u.userid} |
       u in $users_table$;
