@@ -39,7 +39,7 @@ let preregister_box service =
       ])
     ()
   in
-  f, match !r with Some i -> i | None -> failwith "connection_box"
+  f, match !r with Some i -> i | None -> failwith "preregister_box"
 
 let connection_box service =
   let r = ref None in
@@ -115,7 +115,10 @@ type restr_show_hide_focus =
 
 {server{
 let login_signin_box ~invalid_actkey
-      connection_service activation_email_service =
+      connection_service
+      activation_email_service
+      preregister_service
+      =
   let id = "ol_login_signup_box" in
   if Eliom_reference.Volatile.get Ol_sessions.activationkey_created
   then D.div ~a:[a_id id]
@@ -143,9 +146,18 @@ let login_signin_box ~invalid_actkey
         ~focused:(To_dom.of_input %i2) (To_dom.of_form %form2)
     }}
     in
+    let button3 = D.h2 [pcdata "Preregister"] in
+    let form3, i3 = preregister_box preregister_service in
+    let o3 = {restr_show_hide_focus{
+      new show_hide_focus
+        ~set:%set ~button:(To_dom.of_h2 %button3)
+        ~button_closeable:false
+        ~focused:(To_dom.of_input %i3) (To_dom.of_form %form3)
+    }}
+    in
       ignore {unit{ ignore ((%o1)#press) }};
       let d = D.div ~a:[a_id id]
-                [button1; button2; form1; form2]
+                [button1; button2; button3; form1; form2; form3]
       in
         ignore
         (lwt flash = Ol_sessions.has_flash_msg () in
@@ -173,8 +185,11 @@ let login_signin_box ~invalid_actkey
                   (* no need to try .. with here because we that
                      there is flash message at this point *)
                   match_lwt Ol_sessions.get_flash_msg_or_fail () with
-                    | Wrong_password -> Lwt.return (press o1 "Wrong password")
-                    | _ -> Lwt.return ()
+                    | Wrong_password ->
+                        Lwt.return (press o1 "Wrong password")
+                    | Already_preregistered m ->
+                        Lwt.return (press o1
+                                      (m ^ " is already preregistered"))
           end
           else Lwt.return ());
         d

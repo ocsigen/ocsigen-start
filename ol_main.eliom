@@ -75,7 +75,10 @@ end) = struct
 
   let login_page ?(invalid_actkey = false) _ _ =
     let cb = Ol_base_widgets.login_signin_box ~invalid_actkey
-               login_service ask_activation_service in
+               login_service
+               ask_activation_service
+               preregister_service
+    in
     Lwt.return
       (page_container
          [div
