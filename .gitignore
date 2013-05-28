@@ -17,3 +17,5 @@ _server/
 local/
 
 static/css/*.css
+
+.*.sw*
