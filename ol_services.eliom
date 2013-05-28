@@ -13,12 +13,17 @@ let login_service =
 let logout_service =
   post_coservice' ~name:"logout" ~post_params:unit ()
 
-let ask_activation_service =
-  (* Ask to receive an activation email
-     (and possibly create the account, if not created) *)
+let lost_password_service =
+  (* Ask to receive an activation key if the user exists *)
   post_coservice'
     ~keep_get_na_params:false
-    ~name:"activation" ~post_params:(string "email") ()
+    ~name:"lost_password" ~post_params:(string "email") ()
+
+let sign_up_service =
+  (* Ask to receive an activation key if the user does not exist *)
+  post_coservice'
+    ~keep_get_na_params:false
+    ~name:"sign_up" ~post_params:(string "email") ()
 
 let activation_service =
   coservice' ~name:"activation" ~get_params:(string "activationkey") ()

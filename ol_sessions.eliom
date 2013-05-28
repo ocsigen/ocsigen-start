@@ -30,6 +30,7 @@ type flash_msg_t =
   | Wrong_password
   | Already_preregistered of string
   | User_does_not_exist of string
+  | User_already_exists of string
 
 let flash_msg : flash_msg_t option Eliom_reference.eref =
   Eliom_reference.eref ~scope:Eliom_common.request_scope None

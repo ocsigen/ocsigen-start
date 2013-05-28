@@ -116,7 +116,8 @@ type restr_show_hide_focus =
 {server{
 let login_signin_box ~invalid_actkey
       connection_service
-      activation_email_service
+      lost_password_service
+      sign_up_service
       preregister_service
       =
   let id = "ol_login_signup_box" in
@@ -138,7 +139,7 @@ let login_signin_box ~invalid_actkey
     }}
     in
     let button2 = D.h2 [pcdata "Lost password"] in
-    let form2, i2 = email_form activation_email_service in
+    let form2, i2 = email_form lost_password_service in
     let o2 = {restr_show_hide_focus{
       new show_hide_focus
         ~set:%set ~button:(To_dom.of_h2 %button2)
@@ -155,9 +156,19 @@ let login_signin_box ~invalid_actkey
         ~focused:(To_dom.of_input %i3) (To_dom.of_form %form3)
     }}
     in
+    let button4 = D.h2 [pcdata "Register"] in
+    let form4, i4 = email_form sign_up_service in
+    let o4 = {restr_show_hide_focus{
+      new show_hide_focus
+        ~set:%set ~button:(To_dom.of_h2 %button4)
+        ~button_closeable:false
+        ~focused:(To_dom.of_input %i4) (To_dom.of_form %form4)
+    }}
+    in
       ignore {unit{ ignore ((%o1)#press) }};
       let d = D.div ~a:[a_id id]
-                [button1; button2; button3; form1; form2; form3]
+                [button1; button2; button3; button4;
+                 form1; form2; form3; form4]
       in
         ignore
         (lwt flash = Ol_sessions.has_flash_msg () in
@@ -185,6 +196,8 @@ let login_signin_box ~invalid_actkey
                   (* no need to try .. with here because we that
                      there is flash message at this point *)
                   match_lwt Ol_sessions.get_flash_msg_or_fail () with
+                    | User_already_exists _ ->
+                        Lwt.return (press o4 "This user already exists")
                     | User_does_not_exist _ ->
                         Lwt.return (press o2 "This user does not exist")
                     | Wrong_password ->

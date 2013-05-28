@@ -76,7 +76,8 @@ end) = struct
   let login_page ?(invalid_actkey = false) _ _ =
     let cb = Ol_base_widgets.login_signin_box ~invalid_actkey
                login_service
-               ask_activation_service
+               lost_password_service
+               sign_up_service
                preregister_service
     in
     Lwt.return
@@ -99,26 +100,37 @@ let send_activation_email ~email ~uri () =
        ^ "Please do not reply.\n")
   with _ -> (Eliom_lib.debug "SENDING INVITATION FAILED" ; Lwt.return false)
 
+  (** will generate an activation key which can be used to login
+      directly. This key will be send to the [email] address *)
+  let generate_new_key email =
+    let activationkey = Ocsigen_lib.make_cryptographic_safe_string () in
+    lwt () = Ol_db.new_activation_key email activationkey in
+    let uri = Eliom_content.Html5.F.make_string_uri
+                ~absolute:true
+                ~service:Ol_services.activation_service
+                activationkey
+    in
+    (*VVV REMOOOOOOOOOOOOOOOOOOOVE! *)
+    Ol_misc.log ("REMOVE ME activation link: "^uri);
+    lwt _ = send_activation_email ~email ~uri () in
+    Eliom_reference.Volatile.set Ol_sessions.activationkey_created true;
+    Lwt.return ()
 
-  let ask_activation_action () email =
+  let sign_up_action () email =
+    match_lwt Ol_db.user_exists email with
+      | false -> generate_new_key email
+      | true ->
+          let open Ol_sessions in
+          Ol_sessions.set_flash_msg (User_already_exists email)
+
+
+  let lost_password_action () email =
     (* SECURITY: no check here. *)
     match_lwt Ol_db.user_exists email with
       | false ->
           let open Ol_sessions in
           Ol_sessions.set_flash_msg (User_does_not_exist email)
-      | true ->
-            let activationkey = Ocsigen_lib.make_cryptographic_safe_string () in
-            lwt () = Ol_db.new_activation_key email activationkey in
-            let uri = Eliom_content.Html5.F.make_string_uri
-                      ~absolute:true
-                      ~service:Ol_services.activation_service
-                      activationkey
-            in
-        (*VVV REMOOOOOOOOOOOOOOOOOOOVE! *)
-            Ol_misc.log ("REMOVE ME activation link: "^uri);
-            lwt _ = send_activation_email ~email ~uri () in
-            Eliom_reference.Volatile.set Ol_sessions.activationkey_created true;
-            Lwt.return ()
+      | true -> generate_new_key email
 
 
   let connect_wrapper_page f gp pp =
@@ -210,7 +222,9 @@ let send_activation_email ~email ~uri () =
     Eliom_registration.Action.register logout_service logout_action;
     Eliom_registration.Action.register preregister_service preregister_action;
     Eliom_registration.Action.register
-      ask_activation_service ask_activation_action;
+      lost_password_service lost_password_action;
+    Eliom_registration.Action.register
+      sign_up_service sign_up_action;
     Eliom_registration.Any.register activation_service activation_handler;
     Eliom_registration.Action.register
       set_personal_data_service
