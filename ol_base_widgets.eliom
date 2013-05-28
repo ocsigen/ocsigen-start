@@ -137,7 +137,7 @@ let login_signin_box ~invalid_actkey
            ~focused:(To_dom.of_input %i1) (To_dom.of_form %form1)
     }}
     in
-    let button2 = D.h2 [pcdata "Sign up / Lost password"] in
+    let button2 = D.h2 [pcdata "Lost password"] in
     let form2, i2 = email_form activation_email_service in
     let o2 = {restr_show_hide_focus{
       new show_hide_focus
@@ -185,6 +185,8 @@ let login_signin_box ~invalid_actkey
                   (* no need to try .. with here because we that
                      there is flash message at this point *)
                   match_lwt Ol_sessions.get_flash_msg_or_fail () with
+                    | User_does_not_exist _ ->
+                        Lwt.return (press o2 "This user does not exist")
                     | Wrong_password ->
                         Lwt.return (press o1 "Wrong password")
                     | Already_preregistered m ->

@@ -165,6 +165,13 @@ let existing_user0 dbh email =
     Lwt.return (Some e#!userid)
   with _ -> Lwt.return None
 
+let user_exists m =
+  full_transaction_block
+    (fun dbh ->
+      match_lwt existing_user0 dbh m with
+        | Some _ -> Lwt.return true
+        | None -> Lwt.return false
+    )
 
 
 let add_activation_key0 dbh email key =

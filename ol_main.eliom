@@ -102,18 +102,23 @@ let send_activation_email ~email ~uri () =
 
   let ask_activation_action () email =
     (* SECURITY: no check here. *)
-    let activationkey = Ocsigen_lib.make_cryptographic_safe_string () in
-    lwt () = Ol_db.new_activation_key email activationkey in
-    let uri = Eliom_content.Html5.F.make_string_uri
-              ~absolute:true
-              ~service:Ol_services.activation_service
-              activationkey
-    in
-(*VVV REMOOOOOOOOOOOOOOOOOOOVE! *)
-    Ol_misc.log ("REMOVE ME activation link: "^uri);
-    lwt _ = send_activation_email ~email ~uri () in
-    Eliom_reference.Volatile.set Ol_sessions.activationkey_created true;
-    Lwt.return ()
+    match_lwt Ol_db.user_exists email with
+      | false ->
+          let open Ol_sessions in
+          Ol_sessions.set_flash_msg (User_does_not_exist email)
+      | true ->
+            let activationkey = Ocsigen_lib.make_cryptographic_safe_string () in
+            lwt () = Ol_db.new_activation_key email activationkey in
+            let uri = Eliom_content.Html5.F.make_string_uri
+                      ~absolute:true
+                      ~service:Ol_services.activation_service
+                      activationkey
+            in
+        (*VVV REMOOOOOOOOOOOOOOOOOOOVE! *)
+            Ol_misc.log ("REMOVE ME activation link: "^uri);
+            lwt _ = send_activation_email ~email ~uri () in
+            Eliom_reference.Volatile.set Ol_sessions.activationkey_created true;
+            Lwt.return ()
 
 
   let connect_wrapper_page f gp pp =
