@@ -188,7 +188,7 @@ let login_signin_box ~invalid_actkey
                     | Wrong_password ->
                         Lwt.return (press o1 "Wrong password")
                     | Already_preregistered m ->
-                        Lwt.return (press o1
+                        Lwt.return (press o3
                                       (m ^ " is already preregistered"))
           end
           else Lwt.return ());
