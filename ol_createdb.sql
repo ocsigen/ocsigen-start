@@ -7,6 +7,7 @@ CREATE TABLE users (
        pwd text,
        firstname text NOT NULL,
        lastname text NOT NULL,
+       rights smallint NOT NULL,
        pic text
 );
 

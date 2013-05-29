@@ -45,6 +45,9 @@ let users_table = <:table< users (
        pwd text,
        firstname text NOT NULL,
        lastname text NOT NULL,
+       (* 0 = user, 1 = beta testeur, 2 = admin *)
+       (* there is not default value because it doesn't work with macaque *)
+       rights smallint NOT NULL,
        pic text
 ) >>
 
@@ -194,6 +197,7 @@ let add_user0 dbh ?avatar email key =
                                      lastname = $string:email$;
                                      pwd = $Sql.Op.null$;
                                      pic = $string:avatar$;
+                                     rights = $int16:0$; (* default value = user *)
                                    } >>
       | None ->
         (* Do not put a default pic otherwise it will be cancelled
@@ -204,6 +208,7 @@ let add_user0 dbh ?avatar email key =
                                      lastname = $string:email$;
                                      pwd = $Sql.Op.null$;
                                      pic = $Sql.Op.null$;
+                                     rights = $int16:0$; (* default value = user *)
                                    } >>
   in
   (*VVV When user name is not set, I put the email in lastname
