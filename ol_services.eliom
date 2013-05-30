@@ -46,3 +46,9 @@ let preregister_service =
   post_coservice'
     ~name:"preregister"
     ~post_params:(string "email") ()
+
+let admin_service =
+  service
+    ~path:["admin"]
+    ~get_params:unit ()
+
