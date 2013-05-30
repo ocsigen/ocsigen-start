@@ -27,8 +27,13 @@ let main_service_handler userid () () =
 
 (********* Registration *********)
 let _ =
+  Myproject_sessions.My_appl.register Ol_admin.admin_service
+    (Myproject_sessions.connect_wrapper_page
+       (Ol_admin.admin_service_handler
+          ~container:Myproject_sessions.page_container));
+  (* you can also let the default value of ~container *)
   Myproject_sessions.My_appl.register Ol_services.main_service
-    (Myproject_sessions.connect_wrapper_page main_service_handler);
+    (Myproject_sessions.connect_wrapper_page main_service_handler)
 
 
 {client{

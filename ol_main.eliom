@@ -234,4 +234,7 @@ let send_activation_email ~email ~uri () =
     Eliom_registration.Ocaml.register pic_service
       (CW.connect_wrapper_function set_pic)
 
+(* Admin service can't be registered here because it belongs
+ * to the user application, so the use have to register it by himself. *)
+
 end
