@@ -34,3 +34,7 @@ CREATE TABLE contacts (
 CREATE TABLE preregister (
        email text primary key
 );
+
+CREATE TABLE global_informations (
+       state smallint NOT NULL -- 0 = WIP, 1 = on production
+);
