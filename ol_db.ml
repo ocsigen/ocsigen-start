@@ -72,6 +72,20 @@ let preregister_table = <:table< preregister (
 ) >>
 
 (********* Queries *********)
+(** could be used when you want the rights of a user using only the
+    uid *)
+let get_user_rights uid =
+  full_transaction_block
+    (fun dbh ->
+       try_lwt
+         lwt u = Lwt_Query.view_one dbh
+                   <:view< u | u in $users_table$;
+                               u.userid = $int64:uid$ >>
+         in
+          Lwt.return (Ol_common0.rights_value_to_user_rights u#!rights)
+       with _ ->
+         Lwt.fail Ol_common0.No_such_user)
+
 let new_preregister_email m =
   full_transaction_block
     (fun dbh ->

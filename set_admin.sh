@@ -21,7 +21,7 @@ QUERY=$(
 cat << EOF
 
 update users
-    set rights=1
+    set rights=2
     from emails
     where emails.userid = users.userid;
 
