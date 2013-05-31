@@ -76,32 +76,6 @@ let global_informations = <:table< global_informations (
 ) >>
 
 (********* Queries *********)
-(* this will create the default table if it doesn't exist
- * any other better suggestions ? FIXME *)
-(* possible value for state: 0 = WIP, 1 = on production *)
-type state_t =
-  | WIP
-  | Production
-  | Unknown
-
-let int_to_state = function
-  | 0 -> WIP
-  | 1 -> Production
-  | _ -> Unknown
-
-let get_state_of_site () =
-  full_transaction_block
-    (fun dbh ->
-       try_lwt
-         lwt i = Lwt_Query.view_one dbh
-                   <:view< i | i in $global_informations$; >>
-         in
-          Lwt.return (int_to_state i#!state)
-       with _ ->
-         lwt () = Lwt_Query.query dbh
-           <:insert< $global_informations$ := { state = $int16:0$; } >>
-         in Lwt.return WIP)
-
 let new_preregister_email m =
   full_transaction_block
     (fun dbh ->
