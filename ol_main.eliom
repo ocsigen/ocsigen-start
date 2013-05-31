@@ -74,7 +74,8 @@ end) = struct
     with Not_found -> Ol_sessions.set_flash_msg Ol_sessions.Wrong_password
 
   let login_page ?(invalid_actkey = false) _ _ =
-    let cb = Ol_base_widgets.login_signin_box ~invalid_actkey
+    lwt state = Ol_site.get_state () in
+    let cb = Ol_base_widgets.login_signin_box ~invalid_actkey ~state
                login_service
                lost_password_service
                sign_up_service
@@ -227,17 +228,15 @@ let send_activation_email ~email ~uri () =
     Ol_site.set_state Ol_site.WIP
 
   let admin_page_content () =
-    let open Ol_db in
     let open Ol_base_widgets in
     let state_to_string = function
-      | WIP -> "work in progress"
-      | Production -> "on production"
-      | Unknown -> "??"
+      | Ol_site.WIP -> "work in progress"
+      | Ol_site.Production -> "on production"
     in
     lwt state = Ol_site.get_state () in
     let d = Ol_base_widgets.admin_state_choices
-              ((state = WIP), close_service)
-              ((state = Production), open_service)
+              ((state = Ol_site.WIP), close_service)
+              ((state = Ol_site.Production), open_service)
     in
       Lwt.return
         ([p [pcdata "welcome admin"];

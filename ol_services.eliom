@@ -52,11 +52,13 @@ let admin_service =
     ~path:["admin"]
     ~get_params:unit ()
 
+(** this service is used to set to "close/wip" the website state *)
 let close_service =
   post_coservice'
     ~name:"close"
     ~post_params:unit ()
 
+(** this service is used to set to "open/production" the website state *)
 let open_service =
   post_coservice'
     ~name:"open"

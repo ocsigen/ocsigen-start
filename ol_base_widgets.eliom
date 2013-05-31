@@ -168,7 +168,7 @@ let admin_state_choices (p1, close_service) (p2, open_service) =
         f1; f2
       ]
 
-let login_signin_box ~invalid_actkey
+let login_signin_box ~invalid_actkey ~state
       connection_service
       lost_password_service
       sign_up_service
@@ -186,10 +186,10 @@ let login_signin_box ~invalid_actkey
     let form1, i1 = connection_box connection_service in
     let o1 = {restr_show_hide_focus{
       new show_hide_focus
-           ~pressed:true
-           ~set:%set ~button:(To_dom.of_h2 %button1)
-           ~button_closeable:false
-           ~focused:(To_dom.of_input %i1) (To_dom.of_form %form1)
+        ~pressed:true
+        ~set:%set ~button:(To_dom.of_h2 %button1)
+        ~button_closeable:false
+        ~focused:(To_dom.of_input %i1) (To_dom.of_form %form1)
     }}
     in
     let button2 = D.h2 [pcdata "Lost password"] in
@@ -219,49 +219,78 @@ let login_signin_box ~invalid_actkey
         ~focused:(To_dom.of_input %i4) (To_dom.of_form %form4)
     }}
     in
-      ignore {unit{ ignore ((%o1)#press) }};
-      let d = D.div ~a:[a_id id]
-                [button1; button2; button3; button4;
-                 form1; form2; form3; form4]
-      in
-        ignore
-        (lwt flash = Ol_sessions.has_flash_msg () in
-          if invalid_actkey || flash
-          then begin
-            let press o msg =
-              ignore
-                {unit{
-                  let d = To_dom.of_div %d in
-                  let msg = To_dom.of_p
-                              (p ~a:[a_class ["ol_error"]] [pcdata %msg])
-                  in
-                    (%o)#press;
-                    Dom.appendChild d msg;
-                    ignore
-                      (lwt () = Lwt_js.sleep 2. in
-                         Dom.removeChild d msg;
-                         Lwt.return ())
-                }}
-            in
-              if invalid_actkey
-              then Lwt.return (press o2 "Invalid activation key, ask for a new one.")
-              else
-                let open Ol_sessions in
-                  (* no need to try .. with here because we that
-                     there is flash message at this point *)
-                  match_lwt Ol_sessions.get_flash_msg_or_fail () with
-                    | User_already_exists _ ->
-                        Lwt.return (press o4 "This user already exists")
-                    | User_does_not_exist _ ->
-                        Lwt.return (press o2 "This user does not exist")
-                    | Wrong_password ->
-                        Lwt.return (press o1 "Wrong password")
-                    | Already_preregistered m ->
-                        Lwt.return (press o3
-                                      (m ^ " is already preregistered"))
-          end
-          else Lwt.return ());
-        d
+    (* function to press the corresponding button and display
+     * the flash message error.
+     * [d] is currently an server value, so we need to use % *)
+    let press o d msg =
+      ignore {unit{
+        let d = To_dom.of_div %d in
+        let msg = To_dom.of_p
+                    (p ~a:[a_class ["ol_error"]] [pcdata %msg])
+        in
+          ignore ((%o)#press);
+          Dom.appendChild d msg;
+          ignore
+            (lwt () = Lwt_js.sleep 2. in
+      Dom.removeChild d msg;
+      Lwt.return ())
+      }}
+    in
+    (* here we will return the div correponding to the current
+     * website state, and also a function to handle specific
+     * flash messages *)
+    let d, handle_flash =
+      match state with
+        | WIP ->
+           (D.div ~a:[a_id id]
+                          [button1; button3; form1; form3]),
+           (* this function will handle only flash message error associated
+            * to this website mode *)
+           (fun flash d ->
+              match flash with
+                (* Login error *)
+                | Ol_sessions.Wrong_password ->
+                    (press o1 d "Wrong password")
+                (* Preregister error *)
+                | Ol_sessions.Already_preregistered _ ->
+                    (press o3 d "This user is already preregistered")
+                | _ ->
+                    (* default case: SHOULD NEVER HAPPEN !*)
+                    (press o1 d "Something went wrong"))
+        | Production ->
+           (D.div ~a:[a_id id]
+                          [button1; button2; button4; form1; form2; form4]),
+           (* this function will handle only flash message error associated
+            * to this website mode *)
+           (fun flash d ->
+              match flash with
+                (* Login error *)
+                | Ol_sessions.Wrong_password ->
+                    (press o1 d "Wrong password")
+                (* Register error *)
+                | Ol_sessions.User_already_exists _ ->
+                    (press o4 d "This user already exists")
+                (* Lost password error *)
+                | Ol_sessions.User_does_not_exist _ ->
+                    (press o2 d "This user does not exist")
+                | _ ->
+                    (* default case: SHOULD NEVER HAPPEN !*)
+                    (press o1 d "Something went wrong"))
+    in
+      ignore
+      (lwt has_flash = Ol_sessions.has_flash_msg () in
+        if invalid_actkey || has_flash
+        then begin
+            if invalid_actkey
+            then Lwt.return (press o2 d "Invalid activation key, ask for a new one.")
+            else
+              lwt flash = (Ol_sessions.get_flash_msg ()) in
+              (* this function will Lwt.return unit *)
+              ignore (handle_flash flash d);
+              Lwt.return ()
+        end
+        else Lwt.return ());
+      d
 
 let personal_info_form ((fn, ln), (p1, p2)) =
   post_form
