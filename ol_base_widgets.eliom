@@ -253,7 +253,7 @@ let login_signin_box ~invalid_actkey ~state
                     (press o1 d "Wrong password")
                 (* Preregister error *)
                 | Ol_sessions.Already_preregistered _ ->
-                    (press o3 d "This user is already preregistered")
+                    (press o3 d "This email is not available")
                 | _ ->
                     (* default case: SHOULD NEVER HAPPEN !*)
                     (press o1 d "Something went wrong"))

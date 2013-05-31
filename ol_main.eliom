@@ -207,14 +207,16 @@ let send_activation_email ~email ~uri () =
     Lwt.return newname
 
   let preregister_action () (m) =
-    match_lwt Ol_db.already_preregistered m with
+    Ol_misc.log ("OMG:"^m);
+    lwt b = Ol_db.is_registered_or_preregistered m in
+    Ol_misc.log (string_of_bool b);
+    match b with
       | false ->
-          Ol_misc.log "NON REGISTERED";
+          Ol_misc.log "NON PREREGISTERED";
           Ol_db.new_preregister_email m
       | true ->
-          Ol_misc.log "ALREADY REGISTERED";
-          let open Ol_sessions in
-          Ol_sessions.set_flash_msg (Already_preregistered m)
+          Ol_misc.log "ALREADY PREREGISTERED";
+          Ol_sessions.set_flash_msg (Ol_sessions.Already_preregistered m)
 
   (* Admin section *)
   exception Not_admin

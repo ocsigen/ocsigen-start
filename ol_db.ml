@@ -84,16 +84,42 @@ let new_preregister_email m =
             $preregister_table$ := { email = $string:m$; }
          >>)
 
-let already_preregistered m =
+let q_is_registered dbh m =
+  try_lwt
+    lwt _ = Lwt_Query.view_one dbh
+    <:view< e | e in $emails_table$;
+                e.email = $string:m$ >>;
+    in
+    Lwt.return true
+  with _ -> Lwt.return false
+
+let q_is_preregistered dbh m =
+  try_lwt
+    lwt _ = Lwt_Query.view_one dbh
+    <:view< p | p in $preregister_table$;
+                p.email = $string:m$ >>;
+    in
+    Lwt.return true
+  with _ -> Lwt.return false
+
+let is_registered m =
   full_transaction_block
     (fun dbh ->
-       try_lwt
-         lwt e = Lwt_Query.view_one dbh
-                   <:view< p | p in $preregister_table$;
-                               p.email = $string:m$ >>
-         in
-          Lwt.return true
-       with _ -> Lwt.return false)
+       (* this will return a Lwt.t *)
+       q_is_registered dbh m)
+
+let is_preregistered m =
+  full_transaction_block
+    (fun dbh ->
+       (* this will return a Lwt.t *)
+       q_is_preregistered dbh m)
+
+let is_registered_or_preregistered m =
+  full_transaction_block
+    (fun dbh ->
+       lwt b1 = q_is_preregistered dbh m in
+       lwt b2 = q_is_registered dbh m in
+       Lwt.return (b1 || b2))
 
 let password_view =
   <:view< {email = e.email; pwd = u.pwd; userid=u.userid} |
