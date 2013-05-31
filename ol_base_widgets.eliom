@@ -114,6 +114,57 @@ type restr_show_hide_focus =
 }}
 
 {server{
+
+let confirm_box service value pvalue =
+  let r = ref None in
+  let f = D.post_form ~service
+            (fun () ->
+               let i = string_input
+                         ~input_type:`Submit
+                         ~value () in
+                 r := Some i;
+                 [p [pcdata pvalue];
+                   i])
+            ()
+  in
+    f, match !r with Some i -> i | None -> failwith "confirm_box"
+
+let admin_state_choices (p1, close_service) (p2, open_service) =
+    let set = {Ew_buh.radio_set{ Ew_buh.new_radio_set () }} in
+    let button1 = D.h2 [pcdata "switch to CLOSE state"] in
+    let f1, i1 = confirm_box close_service
+                   "confirm close state"
+                   "would you like to close the website ?"
+    in
+    let b1 = {restr_show_hide_focus{
+      new show_hide_focus
+           ~pressed:%p1
+           ~set:%set ~button:(To_dom.of_h2 %button1)
+           ~button_closeable:false
+           ~focused:(To_dom.of_input %i1) (To_dom.of_form %f1)
+    }}
+    in
+    let button2 = D.h2 [pcdata "switch to OPEN state"] in
+    let f2, i2 = confirm_box open_service
+                   "confirm open state"
+                   "would you like to open the website ?"
+    in
+    let b2 = {restr_show_hide_focus{
+      new show_hide_focus
+           ~pressed:%p2
+           ~set:%set ~button:(To_dom.of_h2 %button2)
+           ~button_closeable:false
+           ~focused:(To_dom.of_input %i2) (To_dom.of_form %f2)
+    }}
+    in
+      {unit{
+        ignore (lwt () = ((%b1)#press) in Lwt.return ())
+      }};
+      div [
+        button1; button2;
+        f1; f2
+      ]
+
 let login_signin_box ~invalid_actkey
       connection_service
       lost_password_service

@@ -218,17 +218,33 @@ let send_activation_email ~email ~uri () =
   (* Admin section *)
   exception Not_admin
 
+  let open_service_handler () () =
+    Ol_misc.log "open";
+    Ol_site.set_state Ol_db.Production;
+    Lwt.return ()
+
+  let close_service_handler () () =
+    Ol_misc.log "close";
+    Ol_site.set_state Ol_db.WIP;
+    Lwt.return ()
+
   let admin_page_content () =
     let open Ol_db in
+    let open Ol_base_widgets in
     let state_to_string = function
       | WIP -> "work in progress"
       | Production -> "on production"
       | Unknown -> "??"
     in
-    lwt state = Ol_db.get_state_of_site () in
+    lwt state = Ol_site.get_state () in
+    let d = Ol_base_widgets.admin_state_choices
+              ((state = WIP), close_service)
+              ((state = Production), open_service)
+    in
       Lwt.return
         ([p [pcdata "welcome admin"];
-             p [pcdata (state_to_string state)]])
+             p [pcdata (state_to_string state)];
+             d])
 
   let admin_service_handler uid () () =
     lwt user = Ol_db.get_user uid in
@@ -249,6 +265,10 @@ let send_activation_email ~email ~uri () =
     Eliom_registration.Action.register preregister_service preregister_action;
     Eliom_registration.Action.register
       lost_password_service lost_password_action;
+    Eliom_registration.Action.register
+      open_service open_service_handler;
+    Eliom_registration.Action.register
+      close_service close_service_handler;
     Eliom_registration.Action.register
       sign_up_service sign_up_action;
     Eliom_registration.Any.register activation_service activation_handler;

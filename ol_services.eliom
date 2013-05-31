@@ -52,3 +52,12 @@ let admin_service =
     ~path:["admin"]
     ~get_params:unit ()
 
+let close_service =
+  post_coservice'
+    ~name:"close"
+    ~post_params:unit ()
+
+let open_service =
+  post_coservice'
+    ~name:"open"
+    ~post_params:unit ()
