@@ -7,7 +7,6 @@ exception Not_connected
 }}
 
 exception Permission_denied
-exception No_flash_msg
 
 (** Flash messages are used when you want to handle potentials errors/warnings
     after a request.
@@ -27,6 +26,7 @@ exception No_flash_msg
  *)
 
 type flash_msg_t =
+  | No_flash_msg
   | Wrong_password
   | Already_preregistered of string
   | User_does_not_exist of string
@@ -38,9 +38,9 @@ let flash_msg : flash_msg_t option Eliom_reference.eref =
 let set_flash_msg (e : flash_msg_t)  =
   Eliom_reference.set flash_msg (Some e)
 
-let get_flash_msg_or_fail ()  =
+let get_flash_msg ()  =
   match_lwt Eliom_reference.get flash_msg with
-    | None -> Lwt.fail No_flash_msg
+    | None -> Lwt.return No_flash_msg
     | Some e -> Lwt.return e
 
 let get_ref_flash_msg () =
