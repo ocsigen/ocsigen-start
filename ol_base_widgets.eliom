@@ -54,16 +54,16 @@ let connection_box service =
       r := Some i;
       [i;
        string_input
-         ~a:[a_placeholder "Password"]
+         ~a:[a_placeholder "password"]
          ~input_type:`Password ~name:pwdname ();
        string_input
-         ~input_type:`Submit ~value:"Connect" ();
+         ~input_type:`Submit ~value:"connect" ();
       ])
     ()
   in
   f, match !r with Some i -> i | None -> failwith "connection_box"
 
-let email_form service =
+let email_box service =
   let r = ref None in
   let f = D.post_form
     ~a:[a_id "ol_activationemail";
@@ -76,10 +76,13 @@ let email_form service =
       in
       r := Some i;
       [label [pcdata "Enter your e-mail address to receive an activation link"];
-       i])
+       i;
+       string_input
+         ~input_type:`Submit ~value:"confirm" ();
+      ])
     ()
   in
-  f, match !r with Some i -> i | None -> failwith "connection_box"
+  f, match !r with Some i -> i | None -> failwith "email_box"
 
  }}
 
@@ -190,7 +193,7 @@ let login_signin_box ~invalid_actkey
     }}
     in
     let button2 = D.h2 [pcdata "Lost password"] in
-    let form2, i2 = email_form lost_password_service in
+    let form2, i2 = email_box lost_password_service in
     let o2 = {restr_show_hide_focus{
       new show_hide_focus
         ~set:%set ~button:(To_dom.of_h2 %button2)
@@ -208,7 +211,7 @@ let login_signin_box ~invalid_actkey
     }}
     in
     let button4 = D.h2 [pcdata "Register"] in
-    let form4, i4 = email_form sign_up_service in
+    let form4, i4 = email_box sign_up_service in
     let o4 = {restr_show_hide_focus{
       new show_hide_focus
         ~set:%set ~button:(To_dom.of_h2 %button4)
