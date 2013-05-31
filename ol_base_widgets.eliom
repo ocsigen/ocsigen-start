@@ -241,7 +241,7 @@ let login_signin_box ~invalid_actkey ~state
      * flash messages *)
     let d, handle_flash =
       match state with
-        | WIP ->
+        | Ol_site.WIP ->
            (D.div ~a:[a_id id]
                           [button1; button3; form1; form3]),
            (* this function will handle only flash message error associated
@@ -257,7 +257,7 @@ let login_signin_box ~invalid_actkey ~state
                 | _ ->
                     (* default case: SHOULD NEVER HAPPEN !*)
                     (press o1 d "Something went wrong"))
-        | Production ->
+        | Ol_site.Production ->
            (D.div ~a:[a_id id]
                           [button1; button2; button4; form1; form2; form4]),
            (* this function will handle only flash message error associated
