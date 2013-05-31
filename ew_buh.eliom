@@ -132,8 +132,9 @@ object (me)
     elt##style##display <- Js.string "none";
     Lwt.return ()
   initializer
-    if not pressed
-    then elt##style##display <- Js.string "none" (*VVV will blink ... *)
+    if pressed
+    then elt##style##display <- Js.string "block" (*VVV will blink ... *)
+    else elt##style##display <- Js.string "none" (*VVV will blink ... *)
 end
 
 }}
