@@ -160,7 +160,7 @@ let admin_state_choices (p1, close_service) (p2, open_service) =
            ~focused:(To_dom.of_input %i2) (To_dom.of_form %f2)
     }}
     in
-      {unit{
+      ignore {unit{
         ignore (lwt () = ((%b1)#press) in Lwt.return ())
       }};
       div [

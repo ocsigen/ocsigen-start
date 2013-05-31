@@ -220,13 +220,11 @@ let send_activation_email ~email ~uri () =
 
   let open_service_handler () () =
     Ol_misc.log "open";
-    Ol_site.set_state Ol_db.Production;
-    Lwt.return ()
+    Ol_site.set_state Ol_site.Production
 
   let close_service_handler () () =
     Ol_misc.log "close";
-    Ol_site.set_state Ol_db.WIP;
-    Lwt.return ()
+    Ol_site.set_state Ol_site.WIP
 
   let admin_page_content () =
     let open Ol_db in
