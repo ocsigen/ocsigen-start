@@ -1,0 +1,45 @@
+DB_NAME := ol
+
+run: test.byte
+
+.PHONY: locals
+
+locals: $(LOCAL_STATIC)/css \
+        $(LOCAL_STATIC)/avatars \
+        $(LOCAL_STATIC)/css/myproject_colors.css \
+        $(LOCAL_STATIC)/avatars/__myproject_default_mail_image \
+        $(LOCAL_STATIC)/avatars/__ol_default_user_avatar \
+        $(TEST_PREFIX)tmp
+
+db:
+	-dropdb $(DB_NAME)
+	createdb --encoding UNICODE ol
+	psql $(DB_NAME) < ol_createdb.sql
+	psql $(DB_NAME) < myproject_createdb.sql
+	psql $(DB_NAME) < myproject_disc_createdb.sql
+
+dbusers:
+	psql $(DB_NAME) < myproject_createdb_users.sql
+
+$(LOCAL_STATIC)/css:
+	mkdir -p $@
+
+$(LOCAL_STATIC)/avatars:
+	mkdir -p $@
+
+$(TEST_PREFIX)tmp:
+	mkdir -p $@
+
+$(LOCAL_STATIC)/css/myproject_colors.css: t3
+
+t3:
+	ln -sf white_red_colors.css $(LOCAL_STATIC)/css/myproject_colors.css
+	ln -sf myproject-theme3-v.css $(LOCAL_STATIC)/css/myproject.css
+
+
+
+$(LOCAL_STATIC)/avatars/__myproject_default_mail_image:
+	ln -sf ../images/mail.gif $@
+
+$(LOCAL_STATIC)/avatars/__ol_default_user_avatar:
+	ln -sf ../images/unknown-user-photo_rights-tbv.png $@

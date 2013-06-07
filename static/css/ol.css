@@ -1,0 +1,399 @@
+
+/* */
+@font-face {
+    font-family: 'HeydingsControlsRegular';
+    src: url('../fonts/heydings_controls-webfont.eot');
+    src: url('../fonts/heydings_controls-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/heydings_controls-webfont.woff') format('woff'),
+         url('../fonts/heydings_controls-webfont.ttf') format('truetype'),
+         url('../fonts/heydings_controls-webfont.svg#HeydingsControlsRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+/* default */
+h1 a {
+  text-decoration: none;
+  color: black;
+}
+
+fieldset {
+  border: none;
+}
+
+textarea, textarea:focus {
+  outline: none;
+  border: none;
+  margin: 0;
+}
+
+input {
+  border: none;
+}
+input:focus {
+  outline: none;
+}
+input[type="submit"]:hover {
+  cursor: pointer;
+}
+input[type="submit"]:focus {
+  outline: 2px solid #ddd;
+}
+
+/*structure*/
+body {
+  font-family: sans-serif;
+}
+
+
+div.ol_main_infobox {
+  position: fixed;
+  right: 30px;
+  top: 80px;
+  width: 280px;
+  max-height: 450px;
+  padding: 0;
+  margin: 0;
+}
+
+div.ol_main_infobox p {
+  padding: 4px 15px;
+}
+
+p.el_infobox_even {
+}
+
+p.el_infobox_odd {
+}
+
+p.el_infobox_important {
+}
+
+div.ol_mainpart {
+  position: absolute;
+  left: 310px;
+  top: 0;
+  padding: 0 20px 0 30px;
+}
+
+
+div.ol_identity {
+  position: relative;
+}
+div.ol_identity .ol_username {
+  display: inline-block;
+  width: 280px;
+  vertical-align: middle;
+}
+div.ol_identity img {
+  width: 50px;
+  height: 50px;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+div.ol_identity div.ol_upload_pic {
+  display: none;
+}
+div.ol_identity:hover div.ol_upload_pic {
+  display: block;
+  position:absolute;
+  top: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  width: 50px;
+  height: 50px;
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+  cursor: pointer;
+}
+
+
+div.ol_logout_button {
+}
+
+div.ol_logout_button:hover {
+  cursor: pointer;
+}
+
+
+/* users */
+.ol_users {
+  margin: 0;
+  width: 500px;
+}
+div.ol_user_selector input {
+  padding: 0;
+  height: 23px;
+}
+span.ol_user_box {
+  display: inline-block;
+  height: 25px;
+  vertical-align:text-top;
+}
+span.ol_user_box img.ol_avatar {
+  width: 25px;
+  height: 25px;
+  vertical-align: middle;
+}
+
+section img.ol_avatar {
+  width: 40px;
+  height: 40px;
+  float: left;
+  vertical-align:text-top;
+  margin: 0 8px 0 0;
+}
+
+
+span.ol_user_box span.ol_avatar {
+  width: 25px;
+  height: 25px;
+  margin-left: 0px;
+  padding: 0px 3px 2px;
+}
+
+section span.ol_avatar {
+  width: 40px;
+  height: 40px;
+  float: left;
+  vertical-align:text-top;
+  margin: 0 8px 0 0;
+}
+
+/* Redefine box menu style */
+div.el_expmenu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0;
+}
+div.el_expmenu_button {
+  padding: 0 8px;
+  font-weight: bold;
+  border: none;
+  width: 9px;
+  height: 25px;
+}
+div.el_expmenu_button:hover {
+  cursor: pointer;
+  outline: none;
+}
+div.el_expmenu_button.el_expandable_button_opened {
+  outline: none;
+}
+div.el_expmenu_content {
+  top: 25px;
+  right: 0;
+  border: none;
+}
+
+/* Welcome page */
+div.ol_welcomepage {
+  position: relative;
+  margin: auto;
+  margin-top: 100px;
+  width: 580px;
+}
+
+div.ol_welcomepage h1,
+div#ol_login_signup_box {
+  display: inline-block;
+  margin: 0 8px;
+}
+
+div.ol_welcomepage h1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 202px;
+  text-align: center;
+  padding: 4px 15px;
+  margin: 0;
+  font-size: 150px;
+}
+
+div.ol_welcomepage h2 {
+  padding: 8px 0;
+  margin: 0;
+  font-size: 18px;
+  text-align: center;
+  cursor: pointer;
+}
+
+div#ol_login_signup_box {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 280px;
+  height: 202px;
+}
+
+div#ol_login_signup_box form {
+  height: 126px;
+  text-align: center;
+}
+
+div#ol_login_signup_box label {
+  font-size: 16px;
+}
+
+div#ol_login_signup_box p {
+  height: 150px;
+  padding-top: 60px;
+  text-align: center;
+}
+
+div.ol_activation {
+  margin-top: 8px;
+}
+
+div.ol_welcomepage input {
+  width: 230px;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 4px 8px;
+  margin: 4px 6px 8px 6px;
+  text-align: center;
+}
+
+div.ol_welcomepage input[type="submit"] {
+  width: 246px;
+}
+
+div#ol_login_signup_box p.ol_error {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 150px;
+  font-weight: bold;
+  font-size: 24px;
+  text-align: center;
+  padding-top: 60px;
+}
+
+/* Personal info box */
+div#ol_welcome_box {
+  width: 480px;
+  padding: 10px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+div#ol_welcome_box h2 {
+  margin-top: 0;
+}
+div#ol_welcome_box table {
+  display: inline-block;
+  padding: 20px;
+}
+div#ol_welcome_box input[type="submit"] {
+  width: 246px;
+  padding: 8px;
+  font-weight: bold;
+}
+
+div.el_completion {
+  border: 1px solid black;
+  position: absolute;
+}
+
+div.el_completion ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+div.ol_bubble {
+  border-radius: 25px;
+  box-shadow: 0px 0px 5px 1px #ccc;
+  /* box-shadow-color ?? */
+}
+
+
+.ol_del_att_button {
+  position: relative;
+  font-family: 'HeydingsControlsRegular';
+  font-size: 18px;
+}
+
+.ol_del_att_button {
+  color: white;
+}
+
+.ol_del_att_button:hover {
+  color: #ff605d;
+  cursor: pointer;
+}
+
+div.ol_addrecip_widget input {
+  margin: 0 5px;
+}
+
+div.ol_addrecip_widget {
+    cursor: default;
+    border-bottom: 3px;
+    border-color: grey;
+}
+
+span.ol_removerecipbutton {
+    color: white;
+    padding: 3px;
+    font-size: 12px;
+}
+
+span:hover>span.ol_removerecipbutton {
+    color: #585858;
+}
+
+
+span.ol_openingwidgetbutton {
+    float: right;
+    color: grey;
+    padding: 5px;
+}
+
+div.ol_addrecip_widget_buttons {
+    display: block;
+    text-align: right;
+    color: grey;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 18px;
+}
+
+span.ol_closingwidgetbutton {
+    padding-right: 10px;
+}
+
+span.ol_sendrecipbutton {
+    padding-left: 10px;
+}
+
+/* Closed process */
+div.ol_process_closed {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0);
+  top: 0;
+  left: 0;
+  z-index: 10000000;
+  transition: background-color 2s;
+  -moz-transition: background-color 2s;
+  -webkit-transition: background-color 2s;
+  -o-transition: background-color 2s;
+}
+
+div.ol_process_closed img {
+  position: fixed;
+  right: 33%;
+  top: 55%;
+}
+div.ol_process_closed p {
+  position: fixed;
+  left: 66%;
+  top: 55%;
+  padding: 80px 0 0 15px;
+}
