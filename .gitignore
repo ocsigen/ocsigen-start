@@ -21,4 +21,4 @@ static/css/*.css
 .*.sw*
 
 META
-installation/Makefile.depend
+Makefile.depend
