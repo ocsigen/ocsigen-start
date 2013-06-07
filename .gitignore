@@ -19,3 +19,6 @@ local/
 static/css/*.css
 
 .*.sw*
+
+META
+installation/Makefile.depend
