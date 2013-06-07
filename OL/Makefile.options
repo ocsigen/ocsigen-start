@@ -15,10 +15,10 @@ CLIENT_FILES := $(wildcard *.eliomi *.eliom)
 
 # OCamlfind packages for the server
 
-SERVER_PACKAGES := pgocaml pgocaml.syntax text macaque.syntax calendar safepass
+SERVER_PACKAGES := OL.server
 
 # OCamlfind packages for the client
-CLIENT_PACKAGES := oquery_custom text calendar
+CLIENT_PACKAGES := OL.client
 
 # Directory with files to be statically served
 LOCAL_STATIC = static
