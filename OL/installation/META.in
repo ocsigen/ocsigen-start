@@ -1,0 +1,13 @@
+names = "OL"
+version = "BETA"
+description = "."
+package "server" (
+  requires = "@@SERVER_PA@@"
+  directory = "server"
+  archive(byte) = "@@SERVER_FILES@@"
+)
+package "client" (
+ requires = "@@CLIENT_PA@@"
+ directory = "client"
+ archive(byte) = "@@CLIENT_FILES@@"
+)
