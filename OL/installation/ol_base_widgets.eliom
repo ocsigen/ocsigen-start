@@ -19,6 +19,9 @@ let (>|=) = Lwt.(>|=)
 
 
 {server{
+
+module Ol_fm = Ol_flash_message
+
 (** Login box *)
 
 
@@ -249,10 +252,10 @@ let login_signin_box ~invalid_actkey ~state
            (fun flash d ->
               match flash with
                 (* Login error *)
-                | Ol_sessions.Wrong_password ->
+                | Ol_fm.Wrong_password ->
                     (press o1 d "Wrong password")
                 (* Preregister error *)
-                | Ol_sessions.Already_preregistered _ ->
+                | Ol_fm.Already_preregistered _ ->
                     (press o3 d "This email is not available")
                 | _ ->
                     (* default case: SHOULD NEVER HAPPEN !*)
@@ -265,26 +268,27 @@ let login_signin_box ~invalid_actkey ~state
            (fun flash d ->
               match flash with
                 (* Login error *)
-                | Ol_sessions.Wrong_password ->
+                | Ol_fm.Wrong_password ->
                     (press o1 d "Wrong password")
                 (* Register error *)
-                | Ol_sessions.User_already_exists _ ->
+                | Ol_fm.User_already_exists _ ->
                     (press o4 d "This user already exists")
                 (* Lost password error *)
-                | Ol_sessions.User_does_not_exist _ ->
+                | Ol_fm.User_does_not_exist _ ->
                     (press o2 d "This user does not exist")
                 | _ ->
                     (* default case: SHOULD NEVER HAPPEN !*)
                     (press o1 d "Something went wrong"))
     in
       ignore
-      (lwt has_flash = Ol_sessions.has_flash_msg () in
+      (lwt has_flash = Ol_fm.has_flash_msg () in
         if invalid_actkey || has_flash
         then begin
             if invalid_actkey
-            then Lwt.return (press o2 d "Invalid activation key, ask for a new one.")
+            then Lwt.return
+                   (press o2 d "Invalid activation key, ask for a new one.")
             else
-              lwt flash = (Ol_sessions.get_flash_msg ()) in
+              lwt flash = (Ol_fm.get_flash_msg ()) in
               (* this function will Lwt.return unit *)
               ignore (handle_flash flash d);
               Lwt.return ()

@@ -9,6 +9,8 @@ open Eliom_content.Html5.F
 }}
 open Ol_services
 
+module Ol_fm = Ol_flash_message
+
 module Make(A : sig
   val app_name : string (** short app name to be used as file name *)
   val capitalized_app_name : string
@@ -71,7 +73,7 @@ end) = struct
     try_lwt
       lwt userid = Ol_db.check_pwd login pwd in
       CW.connect userid
-    with Not_found -> Ol_sessions.set_flash_msg Ol_sessions.Wrong_password
+    with Not_found -> Ol_fm.set_flash_msg Ol_fm.Wrong_password
 
   let login_page ?(invalid_actkey = false) _ _ =
     lwt state = Ol_site.get_state () in
@@ -120,17 +122,13 @@ let send_activation_email ~email ~uri () =
   let sign_up_action () email =
     match_lwt Ol_db.user_exists email with
       | false -> generate_new_key email
-      | true ->
-          let open Ol_sessions in
-          Ol_sessions.set_flash_msg (User_already_exists email)
+      | true -> Ol_fm.set_flash_msg (Ol_fm.User_already_exists email)
 
 
   let lost_password_action () email =
     (* SECURITY: no check here. *)
     match_lwt Ol_db.user_exists email with
-      | false ->
-          let open Ol_sessions in
-          Ol_sessions.set_flash_msg (User_does_not_exist email)
+      | false -> Ol_fm.set_flash_msg (Ol_fm.User_does_not_exist email)
       | true -> generate_new_key email
 
 
@@ -216,7 +214,7 @@ let send_activation_email ~email ~uri () =
           Ol_db.new_preregister_email m
       | true ->
           Ol_misc.log "ALREADY PREREGISTERED";
-          Ol_sessions.set_flash_msg (Ol_sessions.Already_preregistered m)
+          Ol_fm.set_flash_msg (Ol_fm.Already_preregistered m)
 
   (* Admin section *)
   exception Not_admin
