@@ -178,7 +178,18 @@ let admin_service_handler page_container uid () () =
    (* should be handle with an exception caught in the Connection_Wrapper ?
     * or just return some html5 stuffs to tell that the user can't reach this
     * page ? (404 ?) *)
-  then Lwt.fail Not_admin
+  then
+    let content =
+      div ~a:[a_class ["ol_error"]] [
+        h1 [pcdata "You're not allowed to access to this page."];
+        a ~a:[a_class ["ol_link_error"]]
+          ~service:Ol_services.main_service
+          [pcdata "back"]
+          ()
+      ]
+    in
+    Lwt.return
+      (page_container [content])
   else
     lwt content = admin_page_content user () in
     Lwt.return
