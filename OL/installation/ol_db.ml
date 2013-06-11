@@ -76,6 +76,15 @@ let global_informations = <:table< global_informations (
 ) >>
 
 (********* Queries *********)
+let update_user_rights uid r =
+  let rr = Ol_common0.type_to_rights r in
+  full_transaction_block
+    (fun dbh ->
+       lwt () = Lwt_Query.query dbh
+                  <:update< u in $users_table$ := { rights = $int16:rr$ }
+                          | u.userid = $int64:uid$ >>
+       in Lwt.return ())
+
 let new_preregister_email m =
   full_transaction_block
     (fun dbh ->

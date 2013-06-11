@@ -68,6 +68,8 @@ let print_users ?(cls=cls_users) l =
 }}
 
 (*************************** USER RIGHTS ******************************)
+{shared{
+
 type user_rights_t =
   | User
   | Beta
@@ -79,27 +81,39 @@ let rights_value_to_user_rights = function
   | 2 -> Admin
   | _ -> failwith "invalid rights value"
 
+let type_to_rights = function
+  | User -> 0
+  | Beta -> 1
+  | Admin -> 2
+  | _ -> failwith "invalid rights value"
+
+let rights_to_type = function
+  | 0 -> User
+  | 1 -> Beta
+  | 2 -> Admin
+  | _ -> failwith "invalid rights value"
+
 let is_admin u =
   try
-    match (rights_value_to_user_rights u.rights) with
+    match (rights_to_type u.rights) with
       | Admin -> true
       | _ -> false
   with _ -> false
 
 let is_beta u =
   try
-    match (rights_value_to_user_rights u.rights) with
+    match (rights_to_type u.rights) with
       | Beta -> true
       | _ -> false
   with _ -> false
 
 let is_user u =
   try
-    match (rights_value_to_user_rights u.rights) with
+    match (rights_to_type u.rights) with
       | User -> true
       | _ -> false
   with _ -> false
-
+}}
 
 (********************************* MISC ***************************************)
 {server{

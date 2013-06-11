@@ -216,45 +216,6 @@ let send_activation_email ~email ~uri () =
           Ol_misc.log "ALREADY PREREGISTERED";
           Ol_fm.set_flash_msg (Ol_fm.Already_preregistered m)
 
-  (* Admin section *)
-  exception Not_admin
-
-  let open_service_handler () () =
-    Ol_misc.log "open";
-    Ol_site.set_state Ol_site.Production
-
-  let close_service_handler () () =
-    Ol_misc.log "close";
-    Ol_site.set_state Ol_site.WIP
-
-  let admin_page_content () =
-    let open Ol_base_widgets in
-    let state_to_string = function
-      | Ol_site.WIP -> "work in progress"
-      | Ol_site.Production -> "on production"
-    in
-    lwt state = Ol_site.get_state () in
-    let d = Ol_base_widgets.admin_state_choices
-              ((state = Ol_site.WIP), close_service)
-              ((state = Ol_site.Production), open_service)
-    in
-      Lwt.return
-        ([p [pcdata "welcome admin"];
-             p [pcdata (state_to_string state)];
-             d])
-
-  let admin_service_handler uid () () =
-    lwt user = Ol_db.get_user uid in
-    if not (Ol_common0.is_admin user)
-     (* should be handle with an exception caught in the Connection_Wrapper ?
-      * or just return some html5 stuffs to tell that the user can't reach this
-      * page ? (404 ?) *)
-    then Lwt.fail Not_admin
-    else
-      lwt content = admin_page_content () in
-      Lwt.return
-        (page_container content)
-
   (********* Registration *********)
   let _ =
     Eliom_registration.Action.register login_service login_action;
@@ -262,10 +223,6 @@ let send_activation_email ~email ~uri () =
     Eliom_registration.Action.register preregister_service preregister_action;
     Eliom_registration.Action.register
       lost_password_service lost_password_action;
-    Eliom_registration.Action.register
-      open_service open_service_handler;
-    Eliom_registration.Action.register
-      close_service close_service_handler;
     Eliom_registration.Action.register
       sign_up_service sign_up_action;
     Eliom_registration.Any.register activation_service activation_handler;
@@ -276,8 +233,13 @@ let send_activation_email ~email ~uri () =
       (CW.connect_wrapper_function get_userlist_for_completion_handler);
     Eliom_registration.Ocaml.register pic_service
       (CW.connect_wrapper_function set_pic);
+    Eliom_registration.Action.register
+      open_service Ol_admin.open_service_handler;
+    Eliom_registration.Action.register
+      close_service Ol_admin.close_service_handler;
     My_appl.register admin_service
-      (connect_wrapper_page admin_service_handler)
+      (connect_wrapper_page
+         (Ol_admin.admin_service_handler page_container))
 
 (* Admin service can't be registered here because it belongs
  * to the user application, so the use have to register it by himself. *)

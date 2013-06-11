@@ -365,9 +365,10 @@ class ['a] completion_on
 
 
     Lwt.async (fun () ->
+      (* HACK HACK HACK CA DEFONCE MES BOUTTONS ! *)
       Lwt_js_events.clicks Dom_html.document
         (fun ev _ ->
-          Lwt_js_events.preventDefault ev;
+          (*Lwt_js_events.preventDefault ev;*)
           Dom_html.stopPropagation ev;
           set_input_value "";
           display_off ();
