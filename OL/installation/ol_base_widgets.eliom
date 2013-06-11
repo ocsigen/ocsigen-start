@@ -24,26 +24,6 @@ module Ol_fm = Ol_flash_message
 
 (** Login box *)
 
-
-let preregister_box service =
-  let r = ref None in
-  let f = D.post_form
-    ~service
-    (fun (m) ->
-      let i = D.string_input
-        ~a:[a_placeholder "e-mail address";
-            a_required `Required]
-        ~input_type:`Email ~name:m ()
-      in
-      r := Some i;
-      [i;
-       string_input
-         ~input_type:`Submit ~value:"register" ();
-      ])
-    ()
-  in
-  f, match !r with Some i -> i | None -> failwith "preregister_box"
-
 let connection_box service =
   let r = ref None in
   let f = D.post_form
@@ -155,7 +135,7 @@ let login_signin_box ~invalid_actkey ~state
     }}
     in
     let button3 = D.h2 [pcdata "Preregister"] in
-    let form3, i3 = preregister_box preregister_service in
+    let form3, i3 = Ol_preregister.preregister_box preregister_service in
     let o3 = {restr_show_hide_focus{
       new show_hide_focus
         ~set:%set ~button:(To_dom.of_h2 %button3)
@@ -205,7 +185,7 @@ let login_signin_box ~invalid_actkey ~state
                 | Ol_fm.Wrong_password ->
                     (press o1 d "Wrong password")
                 (* Preregister error *)
-                | Ol_fm.Already_preregistered _ ->
+                | Ol_fm.User_already_preregistered _ ->
                     (press o3 d "This email is not available")
                 | _ ->
                     (* default case: SHOULD NEVER HAPPEN !*)

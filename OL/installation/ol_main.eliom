@@ -204,23 +204,12 @@ let send_activation_email ~email ~uri () =
     lwt () = Ol_db.set_pic userid newname in
     Lwt.return newname
 
-  let preregister_action () (m) =
-    Ol_misc.log ("OMG:"^m);
-    lwt b = Ol_db.is_registered_or_preregistered m in
-    Ol_misc.log (string_of_bool b);
-    match b with
-      | false ->
-          Ol_misc.log "NON PREREGISTERED";
-          Ol_db.new_preregister_email m
-      | true ->
-          Ol_misc.log "ALREADY PREREGISTERED";
-          Ol_fm.set_flash_msg (Ol_fm.Already_preregistered m)
-
   (********* Registration *********)
   let _ =
     Eliom_registration.Action.register login_service login_action;
     Eliom_registration.Action.register logout_service logout_action;
-    Eliom_registration.Action.register preregister_service preregister_action;
+    Eliom_registration.Action.register preregister_service
+      Ol_preregister.preregister_action;
     Eliom_registration.Action.register
       lost_password_service lost_password_action;
     Eliom_registration.Action.register

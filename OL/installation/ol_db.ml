@@ -130,6 +130,16 @@ let is_registered_or_preregistered m =
        lwt b2 = q_is_registered dbh m in
        Lwt.return (b1 || b2))
 
+let all_preregistered () =
+  full_transaction_block
+    (fun dbh ->
+       lwt l = (Lwt_Query.query dbh
+                  <:select< p | p in $preregister_table$; >>)
+       in
+       Lwt.return (List.map (fun r -> r#!email) l))
+
+
+
 let password_view =
   <:view< {email = e.email; pwd = u.pwd; userid=u.userid} |
       u in $users_table$;
