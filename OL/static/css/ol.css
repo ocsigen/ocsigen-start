@@ -12,6 +12,9 @@
 
 }
 
+body {
+}
+
 /* default */
 h1 a {
   text-decoration: none;
@@ -190,7 +193,6 @@ div.el_expmenu_content {
 
 /* Welcome page */
 div.ol_welcomepage {
-  position: relative;
   margin: auto;
   margin-top: 100px;
   width: 580px;
@@ -198,12 +200,10 @@ div.ol_welcomepage {
 
 div.ol_welcomepage h1,
 div#ol_login_signup_box {
-  display: inline-block;
   margin: 0 8px;
 }
 
 div.ol_welcomepage h1 {
-  position: absolute;
   top: 0;
   left: 0;
   width: 250px;
@@ -223,11 +223,9 @@ div.ol_welcomepage h2 {
 }
 
 div#ol_login_signup_box {
-  position: absolute;
   top: 0;
   right: 0;
   width: 280px;
-  height: 202px;
 }
 
 div#ol_login_signup_box form {
@@ -396,4 +394,83 @@ div.ol_process_closed p {
   left: 66%;
   top: 55%;
   padding: 80px 0 0 15px;
+}
+
+/*
+Disable the display of application name
+div.ol_welcomepage h1.caml_process_node a.caml_link {
+    display: none;
+}
+*/
+
+#ol_login_signup_box {
+    background-color: white;
+    border-radius: 4px;
+}
+
+#ol_login_signup_box input {
+    border-radius: 4px;
+    border: #aaa solid 1px;
+}
+
+#ol_admin_site_state {
+}
+
+#ol_open_state input {
+    background-color: #01cc22;
+    font-size: 15px;
+    padding: 5px;
+}
+
+.ol_sw_sendbutton {
+    width: 20px;
+    height: 20px;
+    background-color: green;
+}
+
+.ol_sw_cancelbutton {
+    width: 20px;
+    height: 20px;
+    background-color: red;
+}
+
+.ol_sw_removebutton {
+    width: 20px;
+    height: 20px;
+    background-color: red;
+}
+
+.ol_admin_button {
+    display: inline-block;
+    margin: 2px;
+    padding: 5px;
+    background-color: red;
+}
+
+.ol_enabled {
+    background-color: green;
+}
+
+.ol_admin_user_box {
+}
+
+.ol_avatar {
+  width: 20px;
+  height: 20px;
+}
+
+.ol_sw_selected {
+}
+
+.ol_user_box {
+  border: 1px red solid;
+}
+
+.ol_sw_removebutton {
+}
+
+.ol_logout_button {
+  width: 20px;
+  height: 20px;
+  background-color: red;
 }
