@@ -49,19 +49,19 @@ let admin_page_content user () =
               pcdata "your site is currently in state of: ";
               pcdata "WIP"
             ];
-            confirm_box Ol_services.open_service
+            (confirm_box Ol_services.open_service
               "OPEN the website"
               "In OPEN mode, any user will be able to sign up for an account.
               This mode allow a user to retrieve his password by giving his
-              email-address."
+              email-address.")
         | Ol_site.Production ->
             p [
               pcdata "your site is currently in state of: ";
               pcdata "ON PROD"
             ];
-            confirm_box Ol_services.close_service
+            (confirm_box Ol_services.close_service
               "CLOSE the website"
-              "In CLOSE mode, people will be able to pre-register an account."
+              "In CLOSE mode, people will be able to pre-register an account.")
     ]
   in
   let users_box = D.div [] in
@@ -161,7 +161,7 @@ let admin_page_content user () =
   }} in
     Lwt.return
       [
-        div ~a:[a_id ["ol_admin_welcome"]] [
+        div ~a:[a_id "ol_admin_welcome"] [
           h1 [pcdata ("welcome " ^ (Ol_common0.name_of_user user))];
         ];
         states_div;
