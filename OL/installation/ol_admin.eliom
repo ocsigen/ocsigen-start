@@ -145,7 +145,10 @@ let admin_page_content user () =
                   (%users_box)
                   (member_handler u);
             | MBW.Invited m ->
-                Eliom_lib.alert "%s" m
+                (* This should never happen. We don't want that an admin
+                 * try to modify user right on an email which is not
+                 * registered *)
+                Eliom_lib.alert "This account does not exist: %s" m
       in
         List.iter f l;
         Lwt.return ()
