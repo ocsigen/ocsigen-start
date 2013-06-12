@@ -134,14 +134,10 @@ let has_class elt cl =
   Js.to_bool (elt##classList##contains(Js.string cl))
 
 (** Adding a class to an element *)
-let add_class str elt =
-  if not (has_class elt str)
-  then elt##className <- elt##className##concat (Js.string (" "^str))
+let add_class str elt = elt##classList##add(Js.string str)
 
 (** Removing a class to an element *)
-let remove_class str elt =
-  let re = jsnew Js.regExp (Js.string (" ?"^str)) in
-  elt##className <- elt##className##replace(re, (Js.string ""))
+let remove_class str elt = elt##classList##remove(Js.string str)
 
 let get_element_by_id id_ =
   Js.Opt.case
@@ -202,124 +198,3 @@ let send_invitation ?name ~email ~sponsor ~disctitle ~uri () =
        ^ "This is an auto-generated message. "
        ^ "Please do not reply.\n")
   with _ -> (Eliom_lib.debug "SENDING INVITATION FAILED" ; Lwt.return false)
-
-
-
-{server{
-module Scrollbar = struct
-  type scrollbar
-end
-}}
-{client{
-
-(** This is a very basic and incomplete binding for scrollbars.
-    Warning update the scrollbar after changing the size of the content.
-    See http://manos.malihu.gr/jquery-custom-content-scroller/
- *)
-module Scrollbar = struct
-
-  class type scrollbar = object
-  end
-
-  class type callbacks_options = object
-    method onScroll : (unit -> unit) Js.callback Js.writeonly_prop
-  end
-
-  class type options = object
-    method scrollInertia : int Js.writeonly_prop
-    method mouseWheelPixels : int Js.writeonly_prop
-    method set_height : int Js.writeonly_prop
-    method callbacks : callbacks_options Js.t Js.prop
-  end
-
-  let empty_options () : options Js.t =
-    let o = Js.Unsafe.obj [||] in
-    o##callbacks <- Js.Unsafe.obj [||];
-    o
-
-  let scroll_to ?scroll elt =
-    try
-      let a = (Js.Unsafe.coerce elt)##scrollbar in
-(*VVV inertia disabled
-  let lwt_onscroll = fst !((Js.Unsafe.coerce elt)##lwt_onscroll) in *)
-      (match scroll with
-        | None -> ()
-        | Some (`Int (i : int)) ->
-          a##mCustomScrollbar_i(Js.string "scrollTo", i)
-        | Some (`Bottom as v)
-        | Some (`Top    as v)
-        | Some (`Left   as v)
-        | Some (`Right  as v)
-        | Some (`First  as v)
-        | Some (`Last   as v) ->
-          let s = match v with
-            | `Bottom -> "bottom"
-            | `Top    -> "top"
-            | `Left   -> "left"
-            | `Right  -> "right"
-            | `First  -> "first"
-            | `Last   -> "last"
-          in
-          a##mCustomScrollbar_s(Js.string "scrollTo", Js.string s));
-(*VVV inertia disabled      lwt_onscroll *)
-      Lwt.return ()
-    with _ -> Lwt.return ()
-
-  let update ?height ?scroll elt =
-    try
-      let a = (Js.Unsafe.coerce elt)##scrollbar in
-      apply_option (fun f -> (Js.Unsafe.coerce elt)##style##height <-
-        Js.string (string_of_int (f elt)^"px")) height;
-      a##mCustomScrollbar(Js.string "update");
-      scroll_to ?scroll elt
-    with e -> log ("scroll update error: "^Printexc.to_string e); Lwt.return ()
-
-  let add =
-    let t = ref [] in
-    ignore
-      (React.S.map
-         (fun _ ->
-           Lwt.async (fun () ->
-             Lwt_list.iter_p (fun (scroll, height, elt) ->
-               lwt () = Lwt_js_events.request_animation_frame () in
-               update ?height ?scroll elt) !t))
-         Size.width_height);
-    fun ?height ?scroll elt ->
-      match scroll, height with
-        | None, None -> ()
-        | _ -> t := (scroll, height, elt)::!t
-
-  let add_scrollbar ?height ?scroll elt =
-    let elt = To_dom.of_element elt in
-    let scrollbar = Js.Unsafe.coerce (JQuery.jQelt elt) in
-    let onscroll = ref (Lwt.wait ()) in
-    (Js.Unsafe.coerce elt)##scrollbar <- scrollbar;
-    (Js.Unsafe.coerce elt)##lwt_onscroll <- onscroll;
-    lwt () = Lwt_js_events.request_animation_frame () in
-    let options = empty_options () in
-    options##scrollInertia <- 0;
-    options##mouseWheelPixels <- 150;
-    (match height with
-      | None -> ()
-      | Some f ->
-        (Js.Unsafe.coerce elt)##style##height <-
-          Js.string (string_of_int (f elt)^"px");
-        options##set_height <- f elt);
-(*VVV inertia disabled (broken)
-    options##callbacks##onScroll <- Js.wrap_callback (fun () ->
-      Lwt.wakeup (snd !onscroll) ();
-      onscroll := Lwt.wait ());
-*)
-    scrollbar##mCustomScrollbar(options);
-    let scroll =(scroll :> [ `Bottom | `First | `Int of int | `Last
-                           | `Left | `Right | `Top ] option) in
-    if scroll <> None || height <> None
-    then begin
-      add ?scroll ?height elt;
-      scroll_to ?scroll elt
-    end
-    else Lwt.return ()
-
-end
-
-}}

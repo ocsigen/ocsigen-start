@@ -48,8 +48,7 @@ end) = struct
     let css = List.map (fun cssname -> ("css"::cssname))
       (["eliom_ui.css"]::["ol.css"]::A.css_list)
     in
-    let js = List.map (fun jsname -> ("js"::jsname)) (["jquery.js"]::A.js_list)
-    in
+    let js = List.map (fun jsname -> ("js"::jsname)) A.js_list in
     (html
        (Eliom_tools.F.head ~title:A.capitalized_app_name ~css ~js ())
        (body content))

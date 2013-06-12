@@ -17,7 +17,7 @@ export ELIOM_CLIENT_DIR = _client
 include Makefile.depend
 
 SERVER_PA := pgocaml,pgocaml.syntax,text,macaque.syntax,calendar,safepass
-CLIENT_PA := oquery_custom,text,calendar
+CLIENT_PA := text,calendar
 COMMON_OPTS :=
 SERVER_OPTS := -package $(SERVER_PA)
 CLIENT_OPTS := -package $(CLIENT_PA)

@@ -58,7 +58,8 @@ let selector_widget ?(cls_widget=cls_widget) ?(cls_send=cls_send)
 
 
 {client{
-  let launch_selection_by_completion ?(cls_removebutton=cls_removebutton) ?(cls_tbox=cls_tbox)
+  let launch_selection_by_completion
+      ?(cls_removebutton=cls_removebutton) ?(cls_tbox=cls_tbox)
       ?(cls_selected=cls_selected) ?(cls_completion_input=cls_completion_input)
       ~print ~remove ~contains ~get_string
       ~get_from_server ~build_licontent ~t_of_data ~t_of_string ~msg
@@ -119,19 +120,17 @@ let selector_widget ?(cls_widget=cls_widget) ?(cls_send=cls_send)
   Manip.appendChild selector selected;
   Manip.appendChild selector i;
 
-  Lwt_js_events.async (fun () ->
-    let continue = continue i selected selected_list in
-    let _ = new Ew_completion.completion_on
-      ~input:(To_dom.of_input i)
-      ~switch_to_restrictive:switch_to_restrictive
-      ~handle_unrestricted_wrong_entry:(fun _ _ -> ())
-      ~get_from_server:get_from_server
-      ~get_string:get_string
-      ~build_licontent:(build_licontent get_string)
-      ~build_data:build_data
-      ~continue:continue
-    in
-    Lwt.return ());
+  let continue = continue i selected selected_list in
+  let _ = new Ew_completion.completion_on
+    ~input:(To_dom.of_input i)
+    ~switch_to_restrictive:switch_to_restrictive
+    ~handle_unrestricted_wrong_entry:(fun _ _ -> ())
+    ~get_from_server:get_from_server
+    ~get_string:get_string
+    ~build_licontent:(build_licontent get_string)
+    ~build_data:build_data
+    ~continue:continue
+  in
 
   selected, i, selected_list
 }}

@@ -97,6 +97,9 @@
 
 
 {client{
+
+let opened_completion = ref None
+
 class ['a] completion_on
   ~input:i
   ?(switch_to_restrictive=(fun _ -> true))
@@ -107,11 +110,22 @@ class ['a] completion_on
   ~build_data
   ~(continue: ?t:'a -> unit -> unit)
   =
+  (* the container of all possible choices *)
+  let container = D.div ~a:[a_class [cls_completion]] [] in
+  let container = To_dom.of_div container in
   object (me)
 
+    val mutable on = false (* true if choices are shown *)
     val mutable restrictive = true (* choice limited to the completion list? *)
     method set_restrictive b = restrictive <- b
     method prefix = Js.to_string i##value
+
+    method set_input_value s = i##value <- (Js.string s)
+    method display_off =
+      if on
+      then (Dom.removeChild Dom_html.document##body container;
+            opened_completion := None;
+            on <- false)
 
     initializer
 
@@ -122,14 +136,7 @@ class ['a] completion_on
     let selected_word = ref (-1) in (*write the word selected by the user*)
     let choices = ref [] in (*restrict search*)
     let lol = ref [] in (*selection of a word by the user*)
-    let on = ref false in (*know if choices are shown*)
     let old_val = ref (Js.string "") in (*record the text entered by the user*)
-
-
-     (* the container of all possible choices *)
-    let container = D.div ~a:[a_class [cls_completion]] [] in
-    let container = To_dom.of_div container in
-
 
     (*** functions to highlight a li-line depending on
        events: arrow up et arrow down and update input##value ***)
@@ -182,19 +189,13 @@ class ['a] completion_on
           end
     in
 
-
-    let set_input_value s =
-      i##value <- (Js.string s)
-    in
-
-
     let highlight_and_set_input_value n =
       if n = (List.length !lol)
       then
         (if not restrictive
          then (highlight_off () ; i##value <- !old_val)
          (* else: not supposed to happens *))
-      else set_input_value (highlight_line n) (*highlight returns a string*)
+      else me#set_input_value (highlight_line n) (*highlight returns a string*)
     in
 
 
@@ -217,11 +218,13 @@ class ['a] completion_on
       container##style##width <- width;
       container##style##top <- containerTop;
       container##style##left <- containerLeft;
-      if !on then ()
-      else
+      if not on
+      then
         (Dom.appendChild container !old_child;
          Dom.appendChild Dom_html.document##body container;
-         on := true)
+         opened_completion := Some (me#set_input_value,
+                                    fun () -> me#display_off);
+         on <- true)
     in
 
     let display () =
@@ -231,14 +234,6 @@ class ['a] completion_on
       if restrictive then ignore (highlight_line 0);
       old_child := new_child
     in
-
-
-    let display_off () =
-      if !on then
-        (Dom.removeChild Dom_html.document##body container;
-         on := false)
-    in
-
 
     (*** Build the ul-content from the choices list ***)
     (* the list l is supposed to contain only completions of i##value *)
@@ -252,7 +247,7 @@ class ['a] completion_on
               | None ->  aux ll acc
               | Some (i,_) ->
                 let select _ =
-                  display_off ();
+                  me#display_off;
                   continue ~t:(build_data (Data data)) ();
                   true
                 in
@@ -287,7 +282,7 @@ class ['a] completion_on
     Lwt.async (fun () ->
       Lwt_js_events.inputs i
         (fun ev _ ->
-          display_off ();
+          me#display_off;
           if i##value = Js.string ""
           then (choices := [];
                 lol := [];
@@ -311,14 +306,14 @@ class ['a] completion_on
               let i_wa = Ew_accents.removeDiacritics i_js16 in
               let i_wa_caml8 = Js.to_string i_wa in
               (match !choices with
-                | [] -> display_off ()
+                | [] -> me#display_off
                 | l ->
                   begin
                     lol := (list_of_li i_js16 i_wa_caml8);
                     old_val := i_js16;
                     initialize_selector ();
                     match !lol with
-                      | [] -> display_off ()
+                      | [] -> me#display_off
                       | _ ->  display_on (); display ()
                   end);
               Lwt.return ();
@@ -333,18 +328,18 @@ class ['a] completion_on
           (match ev##keyCode with
             | 13  ->  (*enter*)
               (if not (i##value = Js.string "")
-               then Lwt_js_events.preventDefault ev;
-               display_off (); go ())
+               then Dom.preventDefault ev;
+               me#display_off; go ())
 
             | 9 ->   (*tab*)
               (if not (i##value = Js.string "")
-               then Lwt_js_events.preventDefault ev;
-               display_off (); go ())
+               then Dom.preventDefault ev;
+               me#display_off; go ())
 
             | 27  ->  (*escape*)
-              (Lwt_js_events.preventDefault ev;
-               set_input_value "" ;
-               display_off ())
+              (Dom.preventDefault ev;
+               me#set_input_value "" ;
+               me#display_off)
 
             (* selecting a word in the list with arrows *)
             | 38 ->  (*arrow up*)
@@ -364,15 +359,19 @@ class ['a] completion_on
     );
 
 
-    Lwt.async (fun () ->
-      (* HACK HACK HACK CA DEFONCE MES BOUTTONS ! *)
-      Lwt_js_events.clicks Dom_html.document
-        (fun ev _ ->
-          (*Lwt_js_events.preventDefault ev;*)
+
+  end
+
+
+let _ =
+  Lwt.async (fun () ->
+    Lwt_js_events.clicks ~use_capture:true Dom_html.document (fun ev _ ->
+      (match !opened_completion with
+        | None -> ()
+        | Some (set_input_value, display_off) ->
+          Dom.preventDefault ev;
           Dom_html.stopPropagation ev;
           set_input_value "";
-          display_off ();
-          Lwt.return ())
-    )
-  end
+          display_off ());
+      Lwt.return ()))
 }}

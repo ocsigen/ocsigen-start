@@ -38,7 +38,7 @@ let main_title capitalized_app_name =
         let t = To_dom.of_h1 %title in
         Lwt_js_events.async (fun () ->
           Lwt_js_events.clicks t (fun ev _ ->
-            Lwt_js_events.preventDefault ev;
+            Dom.preventDefault ev;
             info "Ocsigen Labs";
             Lwt.return ())))
   }};
