@@ -152,19 +152,6 @@ let send_activation_email ~email ~uri () =
          Ol_db.set_personal_data userid firstname lastname (Bcrypt.string_of_hash pwd)
 
 
-  (* make a request to the DB to get the list of all users,
-     then make a first filter to get the list of possible
-     completions of post_parameter *)
-  let get_userlist_for_completion_handler _uid g p =
-(*VVV!!! SECURITY: do we want to search in all users? *)
-    lwt userlist = Ol_db.get_userslist () in
-    let userlist = List.map Ol_common0.create_user_from_db_info userlist in
-    let f u =
-      let s =  Ew_accents.without (Ol_common0.name_of_user u) in
-      Ew_completion.is_completed_by (Ew_accents.without p) s
-    in
-    Lwt.return (List.filter f userlist)
-
   let avatar_dir =
     let r = ref "" in
     Eliom_config.parse_config
@@ -229,8 +216,6 @@ let send_activation_email ~email ~uri () =
     Eliom_registration.Action.register
       set_personal_data_service
       (CW.connect_wrapper_function set_personal_data_action);
-    Eliom_registration.Ocaml.register get_userlist_for_completion_service
-      (CW.connect_wrapper_function get_userlist_for_completion_handler);
     Eliom_registration.Ocaml.register pic_service
       (CW.connect_wrapper_function set_pic);
     Eliom_registration.Action.register
