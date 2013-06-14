@@ -104,12 +104,16 @@ let send_activation_email ~email ~uri () =
 
   (** will generate an activation key which can be used to login
       directly. This key will be send to the [email] address *)
-  let generate_new_key email =
+  let generate_new_key email service gp =
     let activationkey = Ocsigen_lib.make_cryptographic_safe_string () in
     lwt () = Ol_db.new_activation_key email activationkey in
+    let service = Eliom_service.attach_coservice'
+                       ~fallback:service
+                       ~service:activation_service
+    in
     let uri = Eliom_content.Html5.F.make_string_uri
                 ~absolute:true
-                ~service:Ol_services.activation_service
+                ~service
                 activationkey
     in
     (*VVV REMOOOOOOOOOOOOOOOOOOOVE! *)
@@ -120,7 +124,7 @@ let send_activation_email ~email ~uri () =
 
   let sign_up_action () email =
     match_lwt Ol_db.user_exists email with
-      | false -> generate_new_key email
+      | false -> generate_new_key email Ol_services.main_service ()
       | true -> Ol_fm.set_flash_msg (Ol_fm.User_already_exists email)
 
 
@@ -128,7 +132,7 @@ let send_activation_email ~email ~uri () =
     (* SECURITY: no check here. *)
     match_lwt Ol_db.user_exists email with
       | false -> Ol_fm.set_flash_msg (Ol_fm.User_does_not_exist email)
-      | true -> generate_new_key email
+      | true -> generate_new_key email Ol_services.main_service ()
 
 
   let connect_wrapper_page f gp pp =
@@ -136,19 +140,6 @@ let send_activation_email ~email ~uri () =
 
   let new_user user = user.Ol_common0.new_user
 
-
-  let activation_handler activationkey () =
-    (* SECURITY: no check here. We logout before doing anything. *)
-    lwt () = logout_action () () in
-    try_lwt
-      (* If the activationkey is valid, we connect the user *)
-      lwt userid = Ol_db.get_userid_from_activationkey activationkey in
-      lwt () = CW.connect userid in
-      (* Then reload the page without the activation parameter *)
-      Eliom_registration.Redirection.send Eliom_service.void_coservice'
-    with Not_found -> (* outdated activation key *)
-      lwt page = login_page ~invalid_actkey:true () () in
-      My_appl.send page
 
   let set_personal_data_action userid ()
       (((firstname, lastname), (pwd, pwd2)) as v) =
@@ -202,6 +193,27 @@ let send_activation_email ~email ~uri () =
     );
     lwt () = Ol_db.set_pic userid newname in
     Lwt.return newname
+
+  (** service which will be attach to the current service to handle
+    * the activation key (the attach_coservice' will be done on
+    * connect_wrapper_function *)
+  let activation_handler akey () =
+    (* SECURITY: we disconnect the user before doing anything
+     * moreover in this case, if the user is already disconnect
+     * we're going to disconnect him even if the actionvation key
+     * is outdated. *)
+    lwt () = CW.logout () in
+    try_lwt
+      Ol_misc.log "activation hdnaler";
+      (* If the activationkey is valid, we connect the user *)
+      lwt userid = Ol_db.get_userid_from_activationkey akey in
+      lwt () = CW.connect userid in
+      Eliom_registration.Redirection.send Eliom_service.void_coservice'
+    with Not_found -> (* outdated activation key *)
+      (*CHARLY: not connected (using flash
+       * message to display an error ?) *)
+      lwt page = login_page ~invalid_actkey:true () () in
+      My_appl.send page
 
   (********* Registration *********)
   let _ =
