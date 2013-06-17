@@ -41,15 +41,25 @@ let confirm_box service value content =
       >
 }}
 
-let s str = str ^ "\n"
-
 let close_state_desc =
-  (s "In CLOSE mode, people will be able to pre-register an account.")
+  div [
+    p [pcdata "In CLOSE mode, a user can:"];
+    ul [
+      li [pcdata "- pre-register an account"];
+      li [pcdata "- log in"]
+    ]
+  ]
 
+(* CHARLY: use html tags instead of caml strings for better presentation ? *)
 let open_state_desc =
-  (s "In OPEN mode, any user will be able to sign up for an account.")
-  ^ (s "This mode allow a user to retrieve his password by giving his")
-  ^ (s "email-address.")
+  div [
+    p [pcdata "In OPEN mode, a user can:"];
+    ul [
+      li [pcdata "- open/create an account"];
+      li [pcdata "- retrieve his password"];
+      li [pcdata "- log in"]
+    ]
+  ]
 
 let admin_page_content user set_as_rpc =
   let open Ol_base_widgets in
@@ -63,7 +73,7 @@ let admin_page_content user set_as_rpc =
     D.h2 ~a:[a_class [enable_if (state = Ol_site.Close)]] [pcdata "CLOSE"],
     confirm_box Ol_services.open_service
       "switch to open mode"
-      (p [pcdata open_state_desc])
+      open_state_desc
   in
   let close_state_div =
     D.div ~a:[
@@ -84,7 +94,7 @@ let admin_page_content user set_as_rpc =
     D.h2 ~a:[a_class [enable_if (state = Ol_site.Open)]] [pcdata "OPEN"],
     confirm_box Ol_services.close_service
        "switch to close mode"
-       (p [pcdata close_state_desc])
+       close_state_desc
   in
   let open_state_div =
     D.div ~a:[
