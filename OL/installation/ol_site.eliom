@@ -1,15 +1,12 @@
-(* this will create the default table if it doesn't exist
- * any other better suggestions ? FIXME *)
-(* possible value for state: 0 = WIP, 1 = on production *)
 type state_t =
-  | WIP
-  | Production
+  | Close
+  | Open
 
-(** default state for the website is close (wip) *)
+(** default state for the website is open  *)
 let state = Eliom_reference.eref
               ~scope:Eliom_common.site_scope
               ~persistent:"website_state"
-              WIP
+              Open
 
 let set_state (s : state_t) =
   Eliom_reference.set state s

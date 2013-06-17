@@ -7,11 +7,11 @@ exception Not_admin
 
 let open_service_handler () () =
   Ol_misc.log "open";
-  Ol_site.set_state Ol_site.Production
+  Ol_site.set_state Ol_site.Open
 
 let close_service_handler () () =
   Ol_misc.log "close";
-  Ol_site.set_state Ol_site.WIP
+  Ol_site.set_state Ol_site.Close
 
 let confirm_box service value pvalue =
     post_form ~service
@@ -44,7 +44,7 @@ let admin_page_content user set_as_rpc =
   let states_div =
     div ~a:[a_id "ol_admin_site_state"] [
       match state with
-        | Ol_site.WIP ->
+        | Ol_site.Close ->
             p [
               pcdata "your site is currently in state of: ";
               pcdata "WIP"
@@ -54,7 +54,7 @@ let admin_page_content user set_as_rpc =
               "In OPEN mode, any user will be able to sign up for an account.
               This mode allow a user to retrieve his password by giving his
               email-address.")
-        | Ol_site.Production ->
+        | Ol_site.Open ->
             p [
               pcdata "your site is currently in state of: ";
               pcdata "ON PROD"
