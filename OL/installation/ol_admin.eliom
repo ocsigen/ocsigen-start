@@ -13,14 +13,17 @@ let close_service_handler () () =
   Ol_misc.log "close";
   Ol_site.set_state Ol_site.Close
 
-let confirm_box service value pvalue =
+let confirm_box service value content =
     post_form ~service
       (fun () ->
          [fieldset
-            [p [pcdata pvalue];
-             string_input
-               ~input_type:`Submit
-               ~value ()]
+            [
+              content;
+              string_input
+                ~input_type:`Submit
+                ~value
+                ()
+            ]
          ]) ()
 
 {shared{
@@ -38,32 +41,69 @@ let confirm_box service value pvalue =
       >
 }}
 
+let s str = str ^ "\n"
+
+let close_state_desc =
+  (s "In CLOSE mode, people will be able to pre-register an account.")
+
+let open_state_desc =
+  (s "In OPEN mode, any user will be able to sign up for an account.")
+  ^ (s "This mode allow a user to retrieve his password by giving his")
+  ^ (s "email-address.")
+
 let admin_page_content user set_as_rpc =
   let open Ol_base_widgets in
   lwt state = Ol_site.get_state () in
-  let states_div =
-    div ~a:[a_id "ol_admin_site_state"] [
-      match state with
-        | Ol_site.Close ->
-            p [
-              pcdata "your site is currently in state of: ";
-              pcdata "WIP"
-            ];
-            (confirm_box Ol_services.open_service
-              "OPEN the website"
-              "In OPEN mode, any user will be able to sign up for an account.
-              This mode allow a user to retrieve his password by giving his
-              email-address.")
-        | Ol_site.Open ->
-            p [
-              pcdata "your site is currently in state of: ";
-              pcdata "ON PROD"
-            ];
-            (confirm_box Ol_services.close_service
-              "CLOSE the website"
-              "In CLOSE mode, people will be able to pre-register an account.")
-    ]
+  let enable_if b =
+    if b then "ol_current_state"
+    else ""
   in
+  let set = {Ew_buh.radio_set{ Ew_buh.new_radio_set () }} in
+  let button1, form1 =
+    D.h2 ~a:[a_class [enable_if (state = Ol_site.Close)]] [pcdata "CLOSE"],
+    confirm_box Ol_services.open_service
+      "switch to open mode"
+      (p [pcdata open_state_desc])
+  in
+  let close_state_div =
+    D.div ~a:[
+      a_id "ol_close_state";
+      a_class [enable_if (state = Ol_site.Close)]] [
+        form1
+      ]
+  in
+  let radio1 = {buh_t{
+    new Ew_buh.show_hide
+      ~pressed:(%state = Ol_site.Close)
+      ~set:%set ~button:(To_dom.of_h2 %button1)
+      ~button_closeable:false
+      (To_dom.of_div %close_state_div)
+  }}
+  in
+  let button2, form2 =
+    D.h2 ~a:[a_class [enable_if (state = Ol_site.Open)]] [pcdata "OPEN"],
+    confirm_box Ol_services.close_service
+       "switch to close mode"
+       (p [pcdata close_state_desc])
+  in
+  let open_state_div =
+    D.div ~a:[
+      a_id "ol_open_state";
+      a_class [enable_if (state = Ol_site.Open)]] [
+        form2
+      ]
+  in
+  let radio2 = {buh_t{
+    new Ew_buh.show_hide
+      ~pressed:(%state = Ol_site.Open)
+      ~set:%set ~button:(To_dom.of_h2 %button2)
+      ~button_closeable:false
+      (To_dom.of_div %open_state_div)
+  }}
+  in
+  ignore {unit{
+    ignore ((%radio2)#press)
+  }};
   let users_box = D.div [] in
   let widget = D.div [] in
   (* I create a dummy button because the completion widget need it,
@@ -149,7 +189,8 @@ let admin_page_content user set_as_rpc =
         div ~a:[a_id "ol_admin_welcome"] [
           h1 [pcdata ("welcome " ^ (Ol_common0.name_of_user user))];
         ];
-        states_div;
+        button1; button2;
+        close_state_div; open_state_div;
         widget;
         users_box
       ]

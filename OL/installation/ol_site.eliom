@@ -1,6 +1,9 @@
-type state_t =
-  | Close
-  | Open
+{shared{
+  type state_t =
+    | Close
+    | Open
+        deriving (Json)
+}}
 
 (** default state for the website is open  *)
 let state = Eliom_reference.eref
