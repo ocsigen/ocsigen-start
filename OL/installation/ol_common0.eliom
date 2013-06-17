@@ -74,6 +74,7 @@ type user_rights_t =
   | User
   | Beta
   | Admin
+      deriving (Json)
 
 let rights_value_to_user_rights = function
   | 0 -> User

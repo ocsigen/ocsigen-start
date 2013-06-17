@@ -202,6 +202,23 @@ let send_activation_email ~email ~uri () =
       lwt page = login_page ~invalid_actkey:true () () in
       My_appl.send page
 
+  (** this rpc function is used to change the rights of a user
+    * in the admin page *)
+  let set_right_of_user_rpc =
+    server_function
+      Json.t<int64 * Ol_common0.user_rights_t>
+      (CW.connect_wrapper_rpc
+         (fun uid (uid_of_selected, r) ->
+            lwt user = Ol_db.get_user uid in
+            try_lwt
+              if Ol_common0.is_admin user then
+                Ol_db.update_user_rights uid_of_selected r
+              else
+                Lwt.return ()
+            with
+              _ -> Lwt.return ())) (* FAIL: display message ? *)
+
+
   (********* Registration *********)
   let _ =
     Eliom_registration.Action.register login_service login_action;
@@ -224,7 +241,9 @@ let send_activation_email ~email ~uri () =
       close_service Ol_admin.close_service_handler;
     My_appl.register admin_service
       (connect_wrapper_page
-         (Ol_admin.admin_service_handler page_container))
+         (Ol_admin.admin_service_handler
+            page_container
+            set_right_of_user_rpc))
 
 (* Admin service can't be registered here because it belongs
  * to the user application, so the use have to register it by himself. *)

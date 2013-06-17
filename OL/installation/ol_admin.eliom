@@ -38,7 +38,7 @@ let confirm_box service value pvalue =
       >
 }}
 
-let admin_page_content user () =
+let admin_page_content user set_as_rpc =
   let open Ol_base_widgets in
   lwt state = Ol_site.get_state () in
   let states_div =
@@ -74,24 +74,6 @@ let admin_page_content user () =
       ~button:(To_dom.of_h2 %dummy_data)
       ()
   }} in
-  (* this function is used to generate dynamic server_function to
-   * set the new rights of a user. *)
-  let set_as r =
-    (* SECURITY: The [uid_of_member] is passed as parameter, but
-     * we check before any update that the current user is an admin
-     * to be sure that he's able to update the database. *)
-    if Ol_common0.is_admin user then
-      server_function
-        Json.t<int64>
-        (fun uid_of_member -> Ol_db.update_user_rights uid_of_member r)
-    else
-      server_function
-        Json.t<int64>
-        (fun _ -> Lwt.return ())
-  in
-  let set_admin = set_as Ol_common0.Admin in
-  let set_beta = set_as Ol_common0.Beta in
-  let set_user = set_as Ol_common0.User in
   let _ = {unit{
     let module MBW =
       Ol_users_base_widgets.MakeBaseWidgets(Ol_admin_completion) in
@@ -122,17 +104,17 @@ let admin_page_content user () =
                          (clicks (to_dom b1)
                             (fun _ _ ->
                                enable_with_rights Ol_common0.Admin;
-                               %set_admin uid_member)));
+                               %set_as_rpc (uid_member, Ol_common0.Admin))));
             Lwt.async (fun () ->
                          (clicks (to_dom b2)
                             (fun _ _ ->
                                enable_with_rights Ol_common0.Beta;
-                               %set_beta uid_member)));
+                               %set_as_rpc (uid_member, Ol_common0.Beta))));
             Lwt.async (fun () ->
                          (clicks (to_dom b3)
                             (fun _ _ ->
                                enable_with_rights Ol_common0.User;
-                               %set_user uid_member)));
+                               %set_as_rpc (uid_member, Ol_common0.User))));
             enable_with_rights r;
             D.div ~a:[a_class ["ol_admin_user_box"]] [
               p [pcdata (MBW.name_of_member u)];
@@ -172,7 +154,10 @@ let admin_page_content user () =
         users_box
       ]
 
-let admin_service_handler page_container uid () () =
+let admin_service_handler
+      page_container
+      set_as_rpc
+      uid () () =
   lwt user = Ol_db.get_user uid in
   if not (Ol_common0.is_admin user)
    (* should be handle with an exception caught in the Connection_Wrapper ?
@@ -191,6 +176,6 @@ let admin_service_handler page_container uid () () =
     Lwt.return
       (page_container [content])
   else
-    lwt content = admin_page_content user () in
+    lwt content = admin_page_content user set_as_rpc in
     Lwt.return
       (page_container content)
