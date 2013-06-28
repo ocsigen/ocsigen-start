@@ -33,3 +33,14 @@ CREATE TABLE contacts (
 CREATE TABLE preregister (
        email text primary key
 );
+
+CREATE TABLE groups (
+       groupid bigserial primary key,
+       name text NOT NULL,
+       description text
+);
+
+CREATE TABLE user_groups (
+       userid bigint NOT NULL references users(userid),
+       groupid bigint NOT NULL references groups(groupid)
+);
