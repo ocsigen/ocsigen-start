@@ -70,7 +70,62 @@ let preregister_table = <:table< preregister (
        email text NOT NULL
 ) >>
 
+let groups_table_id_seq = <:sequence< bigserial "groups_groupid_seq" >>
+
+let groups_table = <:table< groups (
+       groupid bigint NOT NULL DEFAULT(nextval $groups_table_id_seq$),
+       name text NOT NULL,
+       description text
+) >>
+
+let user_groups_table = <:table< user_groups (
+       userid bigint NOT NULL,
+       groupid bigint NOT NULL
+) >>
+
 (********* Queries *********)
+let get_group name =
+  full_transaction_block
+    (fun dbh ->
+       Lwt_Query.view_one dbh
+         <:view< g | g in $groups_table$;
+                     g.name = $string:name$ >>)
+
+let q_group_exists dbh name =
+  try_lwt
+    lwt g = Lwt_Query.view_one dbh
+    <:view< g | g in $groups_table$;
+                g.name = $string:name$ >>;
+    in
+    Lwt.return (Some g)
+  with _ -> Lwt.return None
+
+let group_exists name =
+  full_transaction_block
+    (fun dbh ->
+       q_group_exists dbh name)
+
+let new_group name ?description =
+  full_transaction_block
+    (fun dbh ->
+       lwt () =
+         match description with
+           | None ->
+               Lwt_Query.query dbh
+                 <:insert<
+                 $groups_table$ := { groupid = groups_table?groupid;
+                                     name = $string:name$;
+                                     description = $Sql.Op.null$ }
+                 >>
+           | Some d ->
+               Lwt_Query.query dbh
+                 <:insert<
+                 $groups_table$ := { groupid = groups_table?groupid;
+                                     name = $string:name$;
+                                     description = $string:d$ }
+                 >>
+       in Lwt.return ())
+
 let new_preregister_email m =
   full_transaction_block
     (fun dbh ->
