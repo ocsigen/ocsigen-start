@@ -70,10 +70,6 @@ let preregister_table = <:table< preregister (
        email text NOT NULL
 ) >>
 
-let global_informations = <:table< global_informations (
-       state smallint NOT NULL
-) >>
-
 (********* Queries *********)
 let new_preregister_email m =
   full_transaction_block
