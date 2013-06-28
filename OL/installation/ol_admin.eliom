@@ -134,6 +134,7 @@ let admin_page_content user set_as_rpc =
           let b1 = D.p ~a:[a_class ["ol_admin_button"]] [pcdata "admin"] in
           let b2 = D.p ~a:[a_class ["ol_admin_button"]] [pcdata "beta"] in
           let b3 = D.p ~a:[a_class ["ol_admin_button"]] [pcdata "user"] in
+          (*
           let enable_with_rights r =
             Ol_misc.remove_class "ol_enabled" (To_dom.of_p b1);
             Ol_misc.remove_class "ol_enabled" (To_dom.of_p b2);
@@ -146,10 +147,14 @@ let admin_page_content user set_as_rpc =
               | Ol_common0.User  ->
                   Ol_misc.add_class "ol_enabled" (To_dom.of_p b3)
           in
+          *)
           let open Lwt_js_events in
           let uid_member = (MBW.id_of_member u) in
+          (*
           let r = (Ol_common0.rights_to_type (MBW.rights_of_member u)) in
+          *)
           let to_dom e = To_dom.of_p e in
+            (*
             Lwt.async (fun () ->
                          (clicks (to_dom b1)
                             (fun _ _ ->
@@ -166,6 +171,7 @@ let admin_page_content user set_as_rpc =
                                enable_with_rights Ol_common0.User;
                                %set_as_rpc (uid_member, Ol_common0.User))));
             enable_with_rights r;
+            *)
             D.div ~a:[a_class ["ol_admin_user_box"]] [
               p [pcdata (MBW.name_of_member u)];
               b1; b2; b3;
@@ -210,7 +216,7 @@ let admin_service_handler
       set_as_rpc
       uid () () =
   lwt user = Ol_db.get_user uid in
-  if not (Ol_common0.is_admin user)
+  if not (false) (* INSERT: is_admin ? *)
    (* should be handle with an exception caught in the Connection_Wrapper ?
     * or just return some html5 stuffs to tell that the user can't reach this
     * page ? (404 ?) *)

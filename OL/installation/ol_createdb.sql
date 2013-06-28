@@ -7,7 +7,6 @@ CREATE TABLE users (
        pwd text,
        firstname text NOT NULL,
        lastname text NOT NULL,
-       rights smallint NOT NULL, -- no default value because of macaque
        pic text
 );
 

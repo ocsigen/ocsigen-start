@@ -35,9 +35,6 @@ module type BaseTypes =
     val mail_avatar: string
     val avatar_of_member: member -> string
     val name_of_member: member -> string
-    (* CHARLY: addition used by the admin completion handler *)
-    val rights_of_member: member -> int
-    (* end *)
     val id_of_member: member -> int64
     val mem_member: member -> member -> bool
     val get_memberlist: (Text.t, member list) Eliom_pervasives.server_function

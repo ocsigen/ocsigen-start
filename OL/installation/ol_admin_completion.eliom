@@ -43,7 +43,6 @@
       username = m;
       useravatar = None;
       new_user = true;
-      rights = 0;
     }
 
   let mem_member u1 u2 =
@@ -54,9 +53,6 @@
 
   let name_of_member u =
     u.username
-
-  let rights_of_member u =
-    u.rights
 
   let avatar_of_member u =
     match u.useravatar with

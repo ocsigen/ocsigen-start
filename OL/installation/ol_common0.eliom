@@ -7,8 +7,7 @@ exception No_such_user
 type user = {userid: int64;
              username : string;
              useravatar : string option;
-             new_user : bool;
-             rights : int}
+             new_user : bool}
     deriving (Json)
 
 
@@ -67,55 +66,6 @@ let print_users ?(cls=cls_users) l =
   D.span ~a:[a_class [cls]] (List.map print_user l)
 }}
 
-(*************************** USER RIGHTS ******************************)
-{shared{
-
-type user_rights_t =
-  | User
-  | Beta
-  | Admin
-      deriving (Json)
-
-let rights_value_to_user_rights = function
-  | 0 -> User
-  | 1 -> Beta
-  | 2 -> Admin
-  | _ -> failwith "invalid rights value"
-
-let type_to_rights = function
-  | User -> 0
-  | Beta -> 1
-  | Admin -> 2
-  | _ -> failwith "invalid rights value"
-
-let rights_to_type = function
-  | 0 -> User
-  | 1 -> Beta
-  | 2 -> Admin
-  | _ -> failwith "invalid rights value"
-
-let is_admin u =
-  try
-    match (rights_to_type u.rights) with
-      | Admin -> true
-      | _ -> false
-  with _ -> false
-
-let is_beta u =
-  try
-    match (rights_to_type u.rights) with
-      | Beta -> true
-      | _ -> false
-  with _ -> false
-
-let is_user u =
-  try
-    match (rights_to_type u.rights) with
-      | User -> true
-      | _ -> false
-  with _ -> false
-}}
-
 (********************************* MISC ***************************************)
 {server{
 let create_user_from_db_info ?(default_avatar=default_user_avatar) u =
@@ -123,9 +73,8 @@ let create_user_from_db_info ?(default_avatar=default_user_avatar) u =
   let id = Sql.get u#userid in
   let fn = Sql.get u#firstname in
   let ln = Sql.get u#lastname in
-  let r = Sql.get u#rights in
   let new_user = (fn = "") in
   let name = if new_user then ln else fn^" "^ln in
-  {userid=id; username=name; useravatar=avatar; new_user; rights=r}
+  {userid=id; username=name; useravatar=avatar; new_user}
 
 }}

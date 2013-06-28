@@ -206,17 +206,12 @@ let send_activation_email ~email ~uri () =
     * in the admin page *)
   let set_right_of_user_rpc =
     server_function
-      Json.t<int64 * Ol_common0.user_rights_t>
+      Json.t<unit>
       (CW.connect_wrapper_rpc
-         (fun uid (uid_of_selected, r) ->
-            lwt user = Ol_db.get_user uid in
-            try_lwt
-              if Ol_common0.is_admin user then
-                Ol_db.update_user_rights uid_of_selected r
-              else
-                Lwt.return ()
-            with
-              _ -> Lwt.return ())) (* FAIL: display message ? *)
+         (fun uid () ->
+            (* INSERT: change right of a user *)
+            Lwt.return ()
+         ))
 
 
   (********* Registration *********)

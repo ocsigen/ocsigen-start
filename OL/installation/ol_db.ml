@@ -11,7 +11,7 @@ module Lwt_PGOCaml = PGOCaml_generic.Make(Lwt_thread)
 module Lwt_Query = Query.Make_with_Db(Lwt_thread)(Lwt_PGOCaml)
 module PGOCaml = Lwt_PGOCaml
 
-let connect () = Lwt_PGOCaml.connect ~database:"ol" ()
+let connect () = Lwt_PGOCaml.connect ~database:"ol" ~port:4230 ()
 
 let validate db =
   try_lwt
@@ -47,7 +47,6 @@ let users_table = <:table< users (
        lastname text NOT NULL,
        (* 0 = user, 1 = beta testeur, 2 = admin *)
        (* there is not default value because it doesn't work with macaque *)
-       rights smallint NOT NULL,
        pic text
 ) >>
 
@@ -76,15 +75,6 @@ let global_informations = <:table< global_informations (
 ) >>
 
 (********* Queries *********)
-let update_user_rights uid r =
-  let rr = Ol_common0.type_to_rights r in
-  full_transaction_block
-    (fun dbh ->
-       lwt () = Lwt_Query.query dbh
-                  <:update< u in $users_table$ := { rights = $int16:rr$ }
-                          | u.userid = $int64:uid$ >>
-       in Lwt.return ())
-
 let new_preregister_email m =
   full_transaction_block
     (fun dbh ->
@@ -246,7 +236,6 @@ let add_user0 dbh ?avatar email key =
                                      lastname = $string:email$;
                                      pwd = $Sql.Op.null$;
                                      pic = $string:avatar$;
-                                     rights = $int16:0$; (* default value = user *)
                                    } >>
       | None ->
         (* Do not put a default pic otherwise it will be cancelled
@@ -257,7 +246,6 @@ let add_user0 dbh ?avatar email key =
                                      lastname = $string:email$;
                                      pwd = $Sql.Op.null$;
                                      pic = $Sql.Op.null$;
-                                     rights = $int16:0$; (* default value = user *)
                                    } >>
   in
   (*VVV When user name is not set, I put the email in lastname
