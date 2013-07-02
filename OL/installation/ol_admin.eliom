@@ -61,7 +61,7 @@ let open_state_desc =
     ]
   ]
 
-let admin_page_content user set_as_rpc =
+let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
   let open Ol_base_widgets in
   lwt state = Ol_site.get_state () in
   let enable_if b =
@@ -128,68 +128,58 @@ let admin_page_content user set_as_rpc =
     let module MBW =
       Ol_users_base_widgets.MakeBaseWidgets(Ol_admin_completion) in
     let module M = Ol_users_selector_widget.MakeSelectionWidget(MBW) in
-    let handler l =
-      let f e =
-        let member_handler u =
-          let b1 = D.p ~a:[a_class ["ol_admin_button"]] [pcdata "admin"] in
-          let b2 = D.p ~a:[a_class ["ol_admin_button"]] [pcdata "beta"] in
-          let b3 = D.p ~a:[a_class ["ol_admin_button"]] [pcdata "user"] in
-          (*
-          let enable_with_rights r =
-            Ol_misc.remove_class "ol_enabled" (To_dom.of_p b1);
-            Ol_misc.remove_class "ol_enabled" (To_dom.of_p b2);
-            Ol_misc.remove_class "ol_enabled" (To_dom.of_p b3);
-            match r with
-              | Ol_common0.Admin ->
-                  Ol_misc.add_class "ol_enabled" (To_dom.of_p b1)
-              | Ol_common0.Beta  ->
-                  Ol_misc.add_class "ol_enabled" (To_dom.of_p b2)
-              | Ol_common0.User  ->
-                  Ol_misc.add_class "ol_enabled" (To_dom.of_p b3)
-          in
-          *)
-          let open Lwt_js_events in
-          let uid_member = (MBW.id_of_member u) in
-          (*
-          let r = (Ol_common0.rights_to_type (MBW.rights_of_member u)) in
-          *)
-          let to_dom e = To_dom.of_p e in
-            (*
-            Lwt.async (fun () ->
-                         (clicks (to_dom b1)
-                            (fun _ _ ->
-                               enable_with_rights Ol_common0.Admin;
-                               %set_as_rpc (uid_member, Ol_common0.Admin))));
-            Lwt.async (fun () ->
-                         (clicks (to_dom b2)
-                            (fun _ _ ->
-                               enable_with_rights Ol_common0.Beta;
-                               %set_as_rpc (uid_member, Ol_common0.Beta))));
-            Lwt.async (fun () ->
-                         (clicks (to_dom b3)
-                            (fun _ _ ->
-                               enable_with_rights Ol_common0.User;
-                               %set_as_rpc (uid_member, Ol_common0.User))));
-            enable_with_rights r;
-            *)
-            D.div ~a:[a_class ["ol_admin_user_box"]] [
-              p [pcdata (MBW.name_of_member u)];
-              b1; b2; b3;
-            ]
+    let member_handler u =
+      let open Lwt_js_events in
+      let uid_member = (MBW.id_of_member u) in
+      let radio_button_of (group, in_group) =
+        let rb =
+          D.raw_input
+            ~a:(if in_group then [a_checked `Checked] else [])
+            ~input_type:`Checkbox
+            ~value:(Ol_groups.name_of group)
+            ()
         in
-          match e with
-            | MBW.Member u ->
-                Eliom_content.Html5.Manip.appendChild
-                  (%users_box)
-                  (member_handler u);
-            | MBW.Invited m ->
-                (* This should never happen. We don't want that an admin
-                 * try to modify user right on an email which is not
-                 * registered *)
-                Eliom_lib.alert "This account does not exist: %s" m
+        let () =
+          Lwt.async
+            (fun () ->
+               let rb = (To_dom.of_input rb) in
+               clicks rb
+                 (fun _ _ ->
+                    let checked = Js.to_bool rb##checked in
+                      %set_group_of_user_rpc (uid_member, (checked, group))))
+        in [
+          rb;
+          pcdata (Ol_groups.name_of group)
+        ]
       in
-        List.iter f l;
-        Lwt.return ()
+      lwt groups = %get_groups_of_user_rpc uid_member in
+      let rbs = List.concat (List.map (radio_button_of) groups) in
+      let div_ct : [> Html5_types.body_content_fun] Eliom_content.Html5.F.elt list = [] in
+      let div_ct =
+        div_ct
+        @ [p [pcdata (MBW.name_of_member u)]]
+        @ rbs
+      in
+        Lwt.return
+          (D.div ~a:[a_class ["ol_admin_user_box"]] div_ct)
+    in
+    let generate_groups_content_of_user e =
+      (* CHARLY: this going to change with the new completion widget *)
+      match e with
+        | MBW.Member u ->
+            lwt rb = member_handler u in
+              Lwt.return
+                (Eliom_content.Html5.Manip.appendChild
+                   (%users_box)
+                   (rb))
+        | MBW.Invited m ->
+            (* This should never happen. We don't want that an admin
+             * try to modify user right on an email which is not
+             * registered *)
+            Lwt.return (Eliom_lib.alert "This account does not exist: %s" m)
+    in
+    let handler l =
+      generate_groups_content_of_user (List.hd l)
     in
     let select, input = M.member_selector
                           handler
@@ -200,23 +190,25 @@ let admin_page_content user set_as_rpc =
       Eliom_content.Html5.Manip.appendChild %widget input;
       ()
   }} in
-    Lwt.return
-      [
-        div ~a:[a_id "ol_admin_welcome"] [
-          h1 [pcdata ("welcome " ^ (Ol_common0.name_of_user user))];
-        ];
-        button1; button2;
-        close_state_div; open_state_div;
-        widget;
-        users_box
-      ]
+  Lwt.return [
+    div ~a:[a_id "ol_admin_welcome"] [
+      h1 [pcdata ("welcome " ^ (Ol_common0.name_of_user user))];
+    ];
+    button1; button2;
+    close_state_div; open_state_div;
+    widget;
+    users_box
+  ]
 
 let admin_service_handler
       page_container
-      set_as_rpc
+      set_group_of_user_rpc
+      get_groups_of_user_rpc
       uid () () =
   lwt user = Ol_db.get_user uid in
-  if not (false) (* INSERT: is_admin ? *)
+  lwt admin = Ol_groups.admin in
+  lwt is_admin = (Ol_groups.in_group ~userid:uid ~group:admin) in
+  if not is_admin
    (* should be handle with an exception caught in the Connection_Wrapper ?
     * or just return some html5 stuffs to tell that the user can't reach this
     * page ? (404 ?) *)
@@ -233,6 +225,5 @@ let admin_service_handler
     Lwt.return
       (page_container [content])
   else
-    lwt content = admin_page_content user set_as_rpc in
-    Lwt.return
-      (page_container content)
+    lwt content = admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc in
+      Lwt.return (page_container content)

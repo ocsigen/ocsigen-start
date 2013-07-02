@@ -204,14 +204,38 @@ let send_activation_email ~email ~uri () =
 
   (** this rpc function is used to change the rights of a user
     * in the admin page *)
-  let set_right_of_user_rpc =
+  let get_groups_of_user_rpc
+        : (int64, ((Ol_groups.t * bool) list)) Eliom_pervasives.server_function
+        =
     server_function
-      Json.t<unit>
+      Json.t<int64>
       (CW.connect_wrapper_rpc
-         (fun uid () ->
-            (* INSERT: change right of a user *)
-            Lwt.return ()
-         ))
+         (fun uid_connected uid ->
+            let group_of_user group =
+              Ol_misc.log (Ol_groups.name_of group);
+              (* (t: group * boolean: the user belongs to this group) *)
+              lwt in_group = Ol_groups.in_group ~userid:uid ~group in
+               Lwt.return (group, in_group)
+            in
+            lwt l = Ol_groups.all () in
+            lwt groups = Lwt_list.map_s (group_of_user) l in
+    List.iter (fun (a,b) -> Printf.printf "(%s, %b)" (Ol_groups.name_of a) (b)) groups;
+            let () = Ol_misc.log "return mec !" in
+              Lwt.return groups))
+
+  (** this rpc function is used to change the rights of a user
+    * in the admin page *)
+  let set_group_of_user_rpc =
+    server_function
+      Json.t<int64 * (bool * Ol_groups.t)>
+      (CW.connect_wrapper_rpc
+         (fun uid_connected (uid, (set, group)) ->
+            lwt () =
+              if set
+              then Ol_groups.add_user ~userid:uid ~group
+              else Ol_groups.remove_user ~userid:uid ~group
+            in
+              Lwt.return ()))
 
 
   (********* Registration *********)
@@ -238,7 +262,8 @@ let send_activation_email ~email ~uri () =
       (connect_wrapper_page
          (Ol_admin.admin_service_handler
             page_container
-            set_right_of_user_rpc))
+            set_group_of_user_rpc
+            get_groups_of_user_rpc));
 
 (* Admin service can't be registered here because it belongs
  * to the user application, so the use have to register it by himself. *)
