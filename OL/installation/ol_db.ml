@@ -126,6 +126,53 @@ let new_group name ?description =
                  >>
        in Lwt.return ())
 
+(* CHARLY: better to user label because we're going to user same
+ * type for both and we don't want to make some mistakes :) *)
+let is_user_in_group ~userid ~groupid =
+  full_transaction_block
+    (fun dbh ->
+       try_lwt
+         lwt _ = Lwt_Query.view_one dbh
+           <:view< ug | ug in $user_groups_table$;
+                        ug.userid = $int64:userid$;
+                        ug.groupid = $int64:groupid$;
+           >>
+         in Lwt.return true
+       with _ -> Lwt.return false)
+
+(* CHARLY: same here *)
+let add_user_in_group ~userid ~groupid =
+  full_transaction_block
+    (fun dbh ->
+       lwt b = is_user_in_group ~userid ~groupid in
+       (* true -> in the group, false -> not in the group *)
+       if b
+       (* we don't need to add user to the groups because he already belongs to it *)
+       then Lwt.return ()
+       (* here, ew add the user to a group *)
+       else
+         Lwt_Query.query dbh
+           <:insert<
+           $user_groups_table$ := { userid = $int64:userid$;
+                                    groupid = $int64:groupid$ }
+           >>)
+
+(* CHARLY: same here *)
+let remove_user_in_group ~userid ~groupid =
+  full_transaction_block
+    (fun dbh ->
+       Lwt_Query.query dbh
+         <:delete< ug in $user_groups_table$
+                   | ug.userid = $int64:userid$;
+                     ug.groupid = $int64:groupid$;
+         >>)
+
+let get_groups () =
+  full_transaction_block
+    (fun dbh ->
+       Lwt_Query.query dbh
+         <:select< g | g in $groups_table$ >>)
+
 let new_preregister_email m =
   full_transaction_block
     (fun dbh ->
