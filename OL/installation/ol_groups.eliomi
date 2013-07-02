@@ -35,4 +35,3 @@ val all : unit -> t list Lwt.t
 
 (** default group needed by OL *)
 val admin : t Lwt.t
-val user  : t Lwt.t
