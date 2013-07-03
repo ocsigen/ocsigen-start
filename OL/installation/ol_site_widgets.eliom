@@ -135,6 +135,7 @@ let userbox user =
   div ~a:[a_class [class_identity]] [Ol_common0.print_user_avatar user;
                                      upload_pic_button ();
                                      Ol_common0.print_user_name user;
+                                     Ol_settings.create ();
                                      logout_button ()
                                     ]
 let globalpart main_title user =
