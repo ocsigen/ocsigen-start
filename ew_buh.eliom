@@ -114,7 +114,7 @@ object (me)
   initializer
     match pressed with
       | None -> ()
-      | Some elt -> node := elt
+      | Some elt -> node := pressed
 end
 
 (** show_hide shows or hides a box when pressed/unpressed.
