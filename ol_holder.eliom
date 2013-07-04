@@ -1,25 +1,30 @@
+(* Copyright Charly Chevalier *)
+
 {shared{
+  open Eliom_content.Html5
+  open Eliom_content.Html5.F
+}}
 
 module type In = sig
-  type container_t
-  type container_content_t
-
-  val default_content : unit -> container_content_t list
-  val create : container_content_t list -> container_t
+  (** return the default content for the container,
+    * this content will be automatically use on the
+    * creation of the container *)
+  val default_content : unit -> Html5_types.div_content Eliom_content.Html5.D.elt list
+  (** create the container *)
+  val create : Html5_types.div_content Eliom_content.Html5.D.elt list -> Html5_types.div Eliom_content.Html5.D.elt
 end
 
 module type Out = sig
-  type container_t
-  type container_content_t
+  (** this function will just add a generator to his list to call it
+    * when creating the container and his content *)
+  val push_generator : (unit -> Html5_types.div_content Eliom_content.Html5.D.elt list) -> unit
 
-  val push_generator : (unit -> container_content_t list) -> unit
-  val create : unit -> container_t
+  (** create the container using the default content and the generator
+    * list to create the container's content *)
+  val create : unit -> Html5_types.div Eliom_content.Html5.D.elt
 end
 
 module Make(M : In) = struct
-
-  type container_t = M.container_t
-  type container_content_t = M.container_content_t
 
   let fl = ref []
 
@@ -34,5 +39,3 @@ module Make(M : In) = struct
          (!fl))
 
 end
-
-}}
