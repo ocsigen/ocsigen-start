@@ -96,6 +96,7 @@ object (me)
   inherit buh ~pressed:(pressed <> None) ?button ?set
     ?method_closeable ?button_closeable ()
   val node = ref None
+  val mutable parent_node = parent_node
   method get_node : 'a Eliom_content.Html5.D.elt list Lwt.t
     = Lwt.return []
   method press_action =
@@ -114,7 +115,11 @@ object (me)
   initializer
     match pressed with
       | None -> ()
-      | Some elt -> node := pressed
+      | Some elt ->
+        Js.Opt.iter (elt##parentNode)
+          (fun p -> Js.Opt.iter (Dom_html.CoerceTo.element p)
+            (fun p -> parent_node <- p));
+        node := pressed
 end
 
 (** show_hide shows or hides a box when pressed/unpressed.
