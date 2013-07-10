@@ -132,12 +132,16 @@ let upload_pic_button () =
   d
 
 let userbox user =
-  div ~a:[a_class [class_identity]] [Ol_common0.print_user_avatar user;
-                                     upload_pic_button ();
-                                     Ol_common0.print_user_name user;
-                                     Ol_settings.create ();
-                                     logout_button ()
-                                    ]
+  lwt settings = Ol_settings.create () in
+  Lwt.return
+    (div ~a:[a_class [class_identity]] [
+      Ol_common0.print_user_avatar user;
+      upload_pic_button ();
+      Ol_common0.print_user_name user;
+      settings;
+      logout_button ()
+    ])
+
 let globalpart main_title user =
 (*INFOBOX
   let infobox = Eliom_widgets.infobox_elts ~class_:[class_main_infobox] () in
@@ -145,11 +149,17 @@ let globalpart main_title user =
     {unit{ REIMPLEMENT
         (new Eliom_widgets.infobox ~multiline:true ~timeout:10. %infobox)}};
 *)
-  aside ~a:[a_class [class_globalpart]]
-    (main_title
-     ::(match user with
-       | Some user -> [userbox user (*; infobox *)]
-       | None -> [(* infobox *)]))
+  lwt content = match user with
+    | Some user ->
+        lwt ubox = userbox user in
+        Lwt.return [ubox(*; infobox *)]
+    | None ->
+        Lwt.return [(* infobox *)]
+  in
+  Lwt.return
+    (aside ~a:[a_class [class_globalpart]]
+       (main_title
+        ::content))
 
 
 let mainpart ?(class_=[]) l = div ~a:[a_class (class_mainpart::class_)] l

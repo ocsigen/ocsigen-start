@@ -15,14 +15,17 @@ module O = Ol_common0
 
 let main_service_handler userid () () =
   lwt user = Ol_db.get_user userid in
-  let mainpart = if (Myproject_sessions.new_user user)
+  let mainpart =
+    if (Myproject_sessions.new_user user)
     then [Ol_base_widgets.welcome_box ()]
     else []
   in
-  Lwt.return (Myproject_sessions.page_container
-                (Ol_site_widgets.globalpart
-                   Myproject_sessions.main_title (Some user)
-                 ::mainpart))
+  lwt gp =
+    Ol_site_widgets.globalpart
+      Myproject_sessions.main_title (Some user)
+  in
+  let gp = gp::mainpart in
+  Lwt.return (Myproject_sessions.page_container gp)
 
 
 (********* Registration *********)
