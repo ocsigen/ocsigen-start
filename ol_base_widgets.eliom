@@ -101,7 +101,7 @@ type restr_show_hide_focus =
 
 {server{
 
-let login_signin_box ~invalid_actkey ~state
+let login_signin_box
       connection_service
       lost_password_service
       sign_up_service
@@ -109,10 +109,12 @@ let login_signin_box ~invalid_actkey ~state
       =
   let id = "ol_login_signup_box" in
   if Eliom_reference.Volatile.get Ol_sessions.activationkey_created
-  then D.div ~a:[a_id id]
-    [p [pcdata "An email has been sent to this address.";
-        br();
-        pcdata "Click on the link it contains to log in."]]
+  then
+    Lwt.return
+      (D.div ~a:[a_id id]
+         [p [pcdata "An email has been sent to this address.";
+             br();
+             pcdata "Click on the link it contains to log in."]])
   else
     let set = {Ew_buh.radio_set{ Ew_buh.new_radio_set () }} in
     let button1 = D.h2 [pcdata "Login"] in
@@ -169,6 +171,7 @@ let login_signin_box ~invalid_actkey ~state
       Lwt.return ())
       }}
     in
+    lwt state = Ol_site.get_state () in
     (* here we will return the div correponding to the current
      * website state, and also a function to handle specific
      * flash messages *)
@@ -187,6 +190,8 @@ let login_signin_box ~invalid_actkey ~state
                 (* Preregister error *)
                 | Ol_fm.User_already_preregistered _ ->
                     (press o3 d "This email is not available")
+                | Ol_fm.Activation_key_outdated ->
+                    (press o2 d "Invalid activation key, ask for a new one.")
                 | _ ->
                     (* default case: SHOULD NEVER HAPPEN !*)
                     (press o1 d "Something went wrong"))
@@ -206,25 +211,23 @@ let login_signin_box ~invalid_actkey ~state
                 (* Lost password error *)
                 | Ol_fm.User_does_not_exist _ ->
                     (press o2 d "This user does not exist")
+                | Ol_fm.Activation_key_outdated ->
+                    (press o2 d "Invalid activation key, ask for a new one.")
                 | _ ->
                     (* default case: SHOULD NEVER HAPPEN !*)
                     (press o1 d "Something went wrong"))
     in
-      ignore
-      (lwt has_flash = Ol_fm.has_flash_msg () in
-        if invalid_actkey || has_flash
-        then begin
-            if invalid_actkey
-            then Lwt.return
-                   (press o2 d "Invalid activation key, ask for a new one.")
-            else
-              lwt flash = (Ol_fm.get_flash_msg ()) in
-              (* this function will Lwt.return unit *)
-              ignore (handle_flash flash d);
-              Lwt.return ()
-        end
-        else Lwt.return ());
-      d
+    lwt has_flash = Ol_fm.has_flash_msg () in
+    lwt () =
+      if has_flash
+      then begin
+        lwt flash = (Ol_fm.get_flash_msg ()) in
+        let () = handle_flash flash d in
+        Lwt.return ()
+      end
+      else Lwt.return ()
+    in
+    Lwt.return d
 
 let personal_info_form ((fn, ln), (p1, p2)) =
   post_form

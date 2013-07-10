@@ -74,9 +74,8 @@ end) = struct
       CW.connect userid
     with Not_found -> Ol_fm.set_flash_msg Ol_fm.Wrong_password
 
-  let login_page ?(invalid_actkey = false) _ _ =
-    lwt state = Ol_site.get_state () in
-    let cb = Ol_base_widgets.login_signin_box ~invalid_actkey ~state
+  let login_page _ _ =
+    lwt cb = Ol_base_widgets.login_signin_box
                login_service
                lost_password_service
                sign_up_service
@@ -199,7 +198,8 @@ let send_activation_email ~email ~uri () =
     with Not_found -> (* outdated activation key *)
       (*CHARLY: not connected (using flash
        * message to display an error ?) *)
-      lwt page = login_page ~invalid_actkey:true () () in
+      Ol_fm.set_flash_msg Ol_fm.Activation_key_outdated;
+      lwt page = login_page () () in
       My_appl.send page
 
   (** this rpc function is used to change the rights of a user

@@ -18,6 +18,7 @@
 type flash_msg_t =
   | No_flash_msg
   | Wrong_password
+  | Activation_key_outdated
   | User_already_preregistered of string
   | User_does_not_exist of string
   | User_already_exists of string
