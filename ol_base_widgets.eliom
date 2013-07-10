@@ -160,15 +160,13 @@ let login_signin_box
     let press o d msg =
       ignore {unit{
         let d = To_dom.of_div %d in
-        let msg = To_dom.of_p
-                    (p ~a:[a_class ["ol_error"]] [pcdata %msg])
-        in
+        let msg = To_dom.of_p (p ~a:[a_class ["ol_error"]] [pcdata %msg]) in
           ignore ((%o)#press);
           Dom.appendChild d msg;
           ignore
             (lwt () = Lwt_js.sleep 2. in
-      Dom.removeChild d msg;
-      Lwt.return ())
+             Dom.removeChild d msg;
+             Lwt.return ())
       }}
     in
     lwt state = Ol_site.get_state () in

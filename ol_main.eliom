@@ -190,7 +190,6 @@ let send_activation_email ~email ~uri () =
      * is outdated. *)
     lwt () = CW.logout () in
     try_lwt
-      Ol_misc.log "activation hdnaler";
       (* If the activationkey is valid, we connect the user *)
       lwt userid = Ol_db.get_userid_from_activationkey akey in
       lwt () = CW.connect userid in
