@@ -116,6 +116,7 @@ object (me)
     match pressed with
       | None -> ()
       | Some elt ->
+        (Js.Unsafe.coerce elt)##o <- me;
         Js.Opt.iter (elt##parentNode)
           (fun p -> Js.Opt.iter (Dom_html.CoerceTo.element p)
             (fun p -> parent_node <- p));

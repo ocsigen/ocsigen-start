@@ -230,6 +230,12 @@ end) = struct
   let connect_wrapper_function f gp pp =
     gen_wrapper f (fun _ _ -> Lwt.fail Not_connected) gp pp
 
+  let anonymous_wrapper f gp pp =
+    gen_wrapper
+      (fun userid gp pp -> f (Some userid) gp pp)
+      (fun gp pp -> f None gp pp)
+      gp pp
+
   let connect_wrapper_rpc f pp =
     gen_wrapper
       (fun userid _ p -> f userid p)
