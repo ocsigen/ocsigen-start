@@ -13,10 +13,15 @@ let (at_start_connected_process, start_connected_process_action) =
 module O = Ol_main.Make(struct
   let app_name = "myproject"
   let capitalized_app_name = "myproject"
-  let css_list = [["myproject.css"]]
-  let js_list = [["jquery-ui.min.js"];
-                 ["accents.js"];
-                 ["unix.js"]]
+  let css_list = [
+    ["font-awesome.css"];
+    ["myproject.css"]
+  ]
+  let js_list = [
+    ["jquery-ui.min.js"];
+    ["accents.js"];
+    ["unix.js"]
+  ]
   let open_session = Lwt.return
   let close_session = Lwt.return
   let start_process = Lwt.return
