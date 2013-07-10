@@ -15,10 +15,10 @@ CLIENT_FILES := $(wildcard *.eliomi *.eliom)
 
 # OCamlfind packages for the server
 
-SERVER_PACKAGES := OL.server
+SERVER_PACKAGES := eba.server
 
 # OCamlfind packages for the client
-CLIENT_PACKAGES := OL.client
+CLIENT_PACKAGES := eba.client
 
 # Directory with files to be statically served
 LOCAL_STATIC = static
