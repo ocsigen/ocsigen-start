@@ -15,11 +15,11 @@ let create_group_with g =
 
 (** creates the group in the database if it does
   * not exist, or returns its id as an abstract value *)
-let create name ?description () =
+let create ?description name =
   match_lwt Ol_db.group_exists name with
     | Some g -> Lwt.return (create_group_with g)
     | None ->
-        lwt () = Ol_db.new_group name ?description in
+        lwt () = Ol_db.new_group ?description name in
   lwt g = Ol_db.get_group name in
   Lwt.return (create_group_with g)
 
@@ -52,4 +52,4 @@ let all () =
   let desc_of group = group.desc
 }}
 
-let admin = create "admin" ()
+let admin = create "admin"

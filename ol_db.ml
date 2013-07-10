@@ -105,7 +105,7 @@ let group_exists name =
     (fun dbh ->
        q_group_exists dbh name)
 
-let new_group name ?description =
+let new_group ?description name =
   full_transaction_block
     (fun dbh ->
        lwt () =
