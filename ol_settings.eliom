@@ -6,12 +6,9 @@
 }}
 
 module MH_base = struct
-  let default_content () =
-    [
-      p [pcdata "This is your settings"];
-    ]
+  let default_content () = Lwt.return []
 
-  let create content = D.div content
+  let create content = Lwt.return (D.div content)
 
 end
 
@@ -24,16 +21,16 @@ let create () =
   let button =
     D.div [D.i ~a:[a_class ["icon-gear"]] []]
   in
-  let content = MH.create () in
-    ignore ({unit{
-      ignore (object(self)
-                inherit [_] Ew_buh.alert
-                      ~button:(To_dom.of_div %button)
-                      ()
+  lwt content = MH.create () in
+  ignore ({unit{
+    ignore (object(self)
+              inherit [_] Ew_buh.alert
+                    ~button:(To_dom.of_div %button)
+                    ()
 
-                method get_node =
-                  Lwt.return [%content]
-              end)
-    }});
-    button
+              method get_node =
+                Lwt.return [%content]
+            end)
+  }});
+  Lwt.return (button)
 
