@@ -6,12 +6,12 @@
 exception Not_admin
 
 let open_service_handler () () =
-  Ol_misc.log "open";
-  Ol_site.set_state Ol_site.Open
+  Eba_misc.log "open";
+  Eba_site.set_state Eba_site.Open
 
 let close_service_handler () () =
-  Ol_misc.log "close";
-  Ol_site.set_state Ol_site.Close
+  Eba_misc.log "close";
+  Eba_site.set_state Eba_site.Close
 
 let confirm_box service value content =
     post_form ~service
@@ -62,50 +62,50 @@ let open_state_desc =
   ]
 
 let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
-  let open Ol_base_widgets in
-  lwt state = Ol_site.get_state () in
+  let open Eba_base_widgets in
+  lwt state = Eba_site.get_state () in
   let enable_if b =
     if b then "ol_current_state"
     else ""
   in
   let set = {Ew_buh.radio_set{ Ew_buh.new_radio_set () }} in
   let button1, form1 =
-    D.h2 ~a:[a_class [enable_if (state = Ol_site.Close)]] [pcdata "CLOSE"],
-    confirm_box Ol_services.open_service
+    D.h2 ~a:[a_class [enable_if (state = Eba_site.Close)]] [pcdata "CLOSE"],
+    confirm_box Eba_services.open_service
       "switch to open mode"
       open_state_desc
   in
   let close_state_div =
     D.div ~a:[
       a_id "ol_close_state";
-      a_class [enable_if (state = Ol_site.Close)]] [
+      a_class [enable_if (state = Eba_site.Close)]] [
         form1
       ]
   in
   let radio1 = {buh_t{
     new Ew_buh.show_hide
-      ~pressed:(%state = Ol_site.Close)
+      ~pressed:(%state = Eba_site.Close)
       ~set:%set ~button:(To_dom.of_h2 %button1)
       ~button_closeable:false
       (To_dom.of_div %close_state_div)
   }}
   in
   let button2, form2 =
-    D.h2 ~a:[a_class [enable_if (state = Ol_site.Open)]] [pcdata "OPEN"],
-    confirm_box Ol_services.close_service
+    D.h2 ~a:[a_class [enable_if (state = Eba_site.Open)]] [pcdata "OPEN"],
+    confirm_box Eba_services.close_service
        "switch to close mode"
        close_state_desc
   in
   let open_state_div =
     D.div ~a:[
       a_id "ol_open_state";
-      a_class [enable_if (state = Ol_site.Open)]] [
+      a_class [enable_if (state = Eba_site.Open)]] [
         form2
       ]
   in
   let radio2 = {buh_t{
     new Ew_buh.show_hide
-      ~pressed:(%state = Ol_site.Open)
+      ~pressed:(%state = Eba_site.Open)
       ~set:%set ~button:(To_dom.of_h2 %button2)
       ~button_closeable:false
       (To_dom.of_div %open_state_div)
@@ -126,8 +126,8 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
   }} in
   let _ = {unit{
     let module MBW =
-      Ol_users_base_widgets.MakeBaseWidgets(Ol_admin_completion) in
-    let module M = Ol_users_selector_widget.MakeSelectionWidget(MBW) in
+      Eba_users_base_widgets.MakeBaseWidgets(Eba_admin_completion) in
+    let module M = Eba_users_selector_widget.MakeSelectionWidget(MBW) in
     let member_handler u =
       let open Lwt_js_events in
       let uid_member = (MBW.id_of_member u) in
@@ -136,7 +136,7 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
           D.raw_input
             ~a:(if in_group then [a_checked `Checked] else [])
             ~input_type:`Checkbox
-            ~value:(Ol_groups.name_of group)
+            ~value:(Eba_groups.name_of group)
             ()
         in
         let () =
@@ -149,7 +149,7 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
                       %set_group_of_user_rpc (uid_member, (checked, group))))
         in [
           rb;
-          pcdata (Ol_groups.name_of group)
+          pcdata (Eba_groups.name_of group)
         ]
       in
       lwt groups = %get_groups_of_user_rpc uid_member in
@@ -192,7 +192,7 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
   }} in
   Lwt.return [
     div ~a:[a_id "ol_admin_welcome"] [
-      h1 [pcdata ("welcome " ^ (Ol_common0.name_of_user user))];
+      h1 [pcdata ("welcome " ^ (Eba_common0.name_of_user user))];
     ];
     button1; button2;
     close_state_div; open_state_div;
@@ -205,9 +205,9 @@ let admin_service_handler
       set_group_of_user_rpc
       get_groups_of_user_rpc
       uid () () =
-  lwt user = Ol_db.get_user uid in
-  lwt admin = Ol_groups.admin in
-  lwt is_admin = (Ol_groups.in_group ~userid:uid ~group:admin) in
+  lwt user = Eba_db.get_user uid in
+  lwt admin = Eba_groups.admin in
+  lwt is_admin = (Eba_groups.in_group ~userid:uid ~group:admin) in
   if not is_admin
    (* should be handle with an exception caught in the Connection_Wrapper ?
     * or just return some html5 stuffs to tell that the user can't reach this
@@ -217,7 +217,7 @@ let admin_service_handler
       div ~a:[a_class ["ol_error"]] [
         h1 [pcdata "You're not allowed to access to this page."];
         a ~a:[a_class ["ol_link_error"]]
-          ~service:Ol_services.main_service
+          ~service:Eba_services.main_service
           [pcdata "back"]
           ()
       ]

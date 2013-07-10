@@ -1,4 +1,4 @@
-PKG_NAME := OL
+PKG_NAME := eba
 
 WARNINGS 	=
 ELIOMC 		= eliomc $(WARNINGS)
@@ -31,7 +31,7 @@ CLIENT_SOURCE_FILES=$(wildcard *.eliom*)
 all: Makefile.depend\
 	 $(addprefix $(ELIOM_SERVER_DIR)/, $(server_cmo_files))\
 	 $(addprefix $(ELIOM_CLIENT_DIR)/, $(client_cmo_files))\
-	 OL.client.cma OL.server.cma\
+	 $(PKG_NAME).client.cma $(PKG_NAME).server.cma\
 	 META
 
 Makefile.depend:

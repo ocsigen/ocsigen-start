@@ -12,7 +12,7 @@ module MH_base = struct
 
 end
 
-module MH = Ol_holder.Make(MH_base)
+module MH = Eba_holder.Make(MH_base)
 
 let push_generator f =
   MH.push_generator f

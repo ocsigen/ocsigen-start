@@ -7,9 +7,9 @@
 open Eliom_content.Html5
 open Eliom_content.Html5.F
 }}
-open Ol_services
+open Eba_services
 
-module Ol_fm = Ol_flash_message
+module Eba_fm = Eba_flash_message
 
 module Make(A : sig
   val app_name : string (** short app name to be used as file name *)
@@ -30,11 +30,11 @@ module Make(A : sig
                        user is connected, or we a user logs in. *)
 end) = struct
 
-  module CW = Ol_sessions.Connect_Wrappers(A)
+  module CW = Eba_sessions.Connect_Wrappers(A)
 
   include CW
 
-  let main_title = Ol_site_widgets.main_title A.capitalized_app_name
+  let main_title = Eba_site_widgets.main_title A.capitalized_app_name
 
   module My_appl =
     Eliom_registration.App (
@@ -56,7 +56,7 @@ end) = struct
   let error_page msg =
     Lwt.return (page_container
                   [main_title;
-                   Ol_site_widgets.mainpart
+                   Eba_site_widgets.mainpart
                      ~class_:["ol_error"] [p [pcdata msg]]])
 
   let logout_action () () =
@@ -70,12 +70,12 @@ end) = struct
     (* SECURITY: no check here. *)
     lwt () = logout_action () () in
     try_lwt
-      lwt userid = Ol_db.check_pwd login pwd in
+      lwt userid = Eba_db.check_pwd login pwd in
       CW.connect userid
-    with Not_found -> Ol_fm.set_flash_msg Ol_fm.Wrong_password
+    with Not_found -> Eba_fm.set_flash_msg Eba_fm.Wrong_password
 
   let login_page _ _ =
-    lwt cb = Ol_base_widgets.login_signin_box
+    lwt cb = Eba_base_widgets.login_signin_box
                login_service
                lost_password_service
                sign_up_service
@@ -90,7 +90,7 @@ end) = struct
 let send_activation_email ~email ~uri () =
   try_lwt
     ignore (Netaddress.parse email);
-    Ol_misc.send_mail
+    Eba_misc.send_mail
       ~from_addr:("Myproject Team", "noreply@ocsigenlabs.com")
       ~to_addrs:[("", email)]
       ~subject:"Myproject registration"
@@ -105,7 +105,7 @@ let send_activation_email ~email ~uri () =
       directly. This key will be send to the [email] address *)
   let generate_new_key email service gp =
     let activationkey = Ocsigen_lib.make_cryptographic_safe_string () in
-    lwt () = Ol_db.new_activation_key email activationkey in
+    lwt () = Eba_db.new_activation_key email activationkey in
     let service = Eliom_service.attach_coservice'
                        ~fallback:service
                        ~service:activation_service
@@ -116,28 +116,28 @@ let send_activation_email ~email ~uri () =
                 activationkey
     in
     (*VVV REMOOOOOOOOOOOOOOOOOOOVE! *)
-    Ol_misc.log ("REMOVE ME activation link: "^uri);
+    Eba_misc.log ("REMOVE ME activation link: "^uri);
     lwt _ = send_activation_email ~email ~uri () in
-    Eliom_reference.Volatile.set Ol_sessions.activationkey_created true;
+    Eliom_reference.Volatile.set Eba_sessions.activationkey_created true;
     Lwt.return ()
 
   let sign_up_action () email =
-    match_lwt Ol_db.user_exists email with
-      | false -> generate_new_key email Ol_services.main_service ()
-      | true -> Ol_fm.set_flash_msg (Ol_fm.User_already_exists email)
+    match_lwt Eba_db.user_exists email with
+      | false -> generate_new_key email Eba_services.main_service ()
+      | true -> Eba_fm.set_flash_msg (Eba_fm.User_already_exists email)
 
 
   let lost_password_action () email =
     (* SECURITY: no check here. *)
-    match_lwt Ol_db.user_exists email with
-      | false -> Ol_fm.set_flash_msg (Ol_fm.User_does_not_exist email)
-      | true -> generate_new_key email Ol_services.main_service ()
+    match_lwt Eba_db.user_exists email with
+      | false -> Eba_fm.set_flash_msg (Eba_fm.User_does_not_exist email)
+      | true -> generate_new_key email Eba_services.main_service ()
 
 
   let connect_wrapper_page f gp pp =
     CW.gen_wrapper f login_page gp pp
 
-  let new_user user = user.Ol_common0.new_user
+  let new_user user = user.Eba_common0.new_user
 
 
   let set_personal_data_action userid ()
@@ -145,10 +145,10 @@ let send_activation_email ~email ~uri () =
     (* SECURITY: We get the userid from session cookie,
        and change personal data for this user. No other check. *)
     if firstname = "" || lastname = "" || pwd <> pwd2
-    then (Eliom_reference.Volatile.set Ol_sessions.wrong_perso_data (Some v);
+    then (Eliom_reference.Volatile.set Eba_sessions.wrong_perso_data (Some v);
           Lwt.return ())
     else let pwd = Bcrypt.hash pwd in
-         Ol_db.set_personal_data userid firstname lastname (Bcrypt.string_of_hash pwd)
+         Eba_db.set_personal_data userid firstname lastname (Bcrypt.string_of_hash pwd)
 
 
   let avatar_dir =
@@ -168,16 +168,16 @@ let send_activation_email ~email ~uri () =
 (*VVV Check that it is a valid picture! *)
 (*VVV Resize? Crop? *)
     let newname = Ocsigen_lib.make_cryptographic_safe_string () in
-    Ol_misc.base64url_of_base64 newname;
+    Eba_misc.base64url_of_base64 newname;
     let newpath = !avatar_dir^"/"^newname in
     Unix.link (Eliom_request_info.get_tmp_filename pic) newpath;
-    lwt pic = Ol_db.get_pic userid in
+    lwt pic = Eba_db.get_pic userid in
     (match pic with
       | None -> ()
       | Some old_pic -> try Unix.unlink (!avatar_dir^"/"^old_pic)
         with Unix.Unix_error _ -> ()
     );
-    lwt () = Ol_db.set_pic userid newname in
+    lwt () = Eba_db.set_pic userid newname in
     Lwt.return newname
 
   (** service which will be attach to the current service to handle
@@ -191,48 +191,48 @@ let send_activation_email ~email ~uri () =
     lwt () = CW.logout () in
     try_lwt
       (* If the activationkey is valid, we connect the user *)
-      lwt userid = Ol_db.get_userid_from_activationkey akey in
+      lwt userid = Eba_db.get_userid_from_activationkey akey in
       lwt () = CW.connect userid in
       Eliom_registration.Redirection.send Eliom_service.void_coservice'
     with Not_found -> (* outdated activation key *)
       (*CHARLY: not connected (using flash
        * message to display an error ?) *)
-      Ol_fm.set_flash_msg Ol_fm.Activation_key_outdated;
+      Eba_fm.set_flash_msg Eba_fm.Activation_key_outdated;
       lwt page = login_page () () in
       My_appl.send page
 
   (** this rpc function is used to change the rights of a user
     * in the admin page *)
   let get_groups_of_user_rpc
-        : (int64, ((Ol_groups.t * bool) list)) Eliom_pervasives.server_function
+        : (int64, ((Eba_groups.t * bool) list)) Eliom_pervasives.server_function
         =
     server_function
       Json.t<int64>
       (CW.connect_wrapper_rpc
          (fun uid_connected uid ->
             let group_of_user group =
-              Ol_misc.log (Ol_groups.name_of group);
+              Eba_misc.log (Eba_groups.name_of group);
               (* (t: group * boolean: the user belongs to this group) *)
-              lwt in_group = Ol_groups.in_group ~userid:uid ~group in
+              lwt in_group = Eba_groups.in_group ~userid:uid ~group in
                Lwt.return (group, in_group)
             in
-            lwt l = Ol_groups.all () in
+            lwt l = Eba_groups.all () in
             lwt groups = Lwt_list.map_s (group_of_user) l in
-    List.iter (fun (a,b) -> Printf.printf "(%s, %b)" (Ol_groups.name_of a) (b)) groups;
-            let () = Ol_misc.log "return mec !" in
+    List.iter (fun (a,b) -> Printf.printf "(%s, %b)" (Eba_groups.name_of a) (b)) groups;
+            let () = Eba_misc.log "return mec !" in
               Lwt.return groups))
 
   (** this rpc function is used to change the rights of a user
     * in the admin page *)
   let set_group_of_user_rpc =
     server_function
-      Json.t<int64 * (bool * Ol_groups.t)>
+      Json.t<int64 * (bool * Eba_groups.t)>
       (CW.connect_wrapper_rpc
          (fun uid_connected (uid, (set, group)) ->
             lwt () =
               if set
-              then Ol_groups.add_user ~userid:uid ~group
-              else Ol_groups.remove_user ~userid:uid ~group
+              then Eba_groups.add_user ~userid:uid ~group
+              else Eba_groups.remove_user ~userid:uid ~group
             in
               Lwt.return ()))
 
@@ -242,7 +242,7 @@ let send_activation_email ~email ~uri () =
     Eliom_registration.Action.register login_service login_action;
     Eliom_registration.Action.register logout_service logout_action;
     Eliom_registration.Action.register preregister_service
-      Ol_preregister.preregister_action;
+      Eba_preregister.preregister_action;
     Eliom_registration.Action.register
       lost_password_service lost_password_action;
     Eliom_registration.Action.register
@@ -254,12 +254,12 @@ let send_activation_email ~email ~uri () =
     Eliom_registration.Ocaml.register pic_service
       (CW.connect_wrapper_function set_pic);
     Eliom_registration.Action.register
-      open_service Ol_admin.open_service_handler;
+      open_service Eba_admin.open_service_handler;
     Eliom_registration.Action.register
-      close_service Ol_admin.close_service_handler;
+      close_service Eba_admin.close_service_handler;
     My_appl.register admin_service
       (connect_wrapper_page
-         (Ol_admin.admin_service_handler
+         (Eba_admin.admin_service_handler
             page_container
             set_group_of_user_rpc
             get_groups_of_user_rpc));

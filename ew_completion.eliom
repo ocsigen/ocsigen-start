@@ -129,7 +129,7 @@ class ['a] completion_on
 
     initializer
 
-    let _ = Ol_misc.add_class cls_completion i in
+    let _ = Eba_misc.add_class cls_completion i in
 
     (* pointers to make it possible to: *)
     let old_child = ref (To_dom.of_ul (ul [])) in (*display fresh choices*)
@@ -168,7 +168,7 @@ class ['a] completion_on
       let cls = Js.string ("."^cls_completion_highlight) in
       let old_line = ul_##querySelector(cls) in
       let some =
-        fun line -> Ol_misc.remove_class cls_completion_highlight line
+        fun line -> Eba_misc.remove_class cls_completion_highlight line
       in
       Js.Opt.iter old_line some
     in
@@ -183,7 +183,7 @@ class ['a] completion_on
             highlight_off (); (* supposed to be useless, but in case... *)
             if n < (List.length l)
             then let new_line = To_dom.of_li (List.nth l (max n 0)) in
-                 Ol_misc.add_class cls_completion_highlight new_line;
+                 Eba_misc.add_class cls_completion_highlight new_line;
                  get_string (List.nth !choices (max n 0))
             else (Js.to_string i##value)
           end

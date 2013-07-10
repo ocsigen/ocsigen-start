@@ -261,7 +261,7 @@ let get_user, reset_user =
   let cache = Eliom_reference.Volatile.eref
     ~scope:Eliom_common.request_scope M.empty
   in
-  ((fun ?(default_avatar=Ol_common0.default_user_avatar) uid ->
+  ((fun ?(default_avatar=Eba_common0.default_user_avatar) uid ->
     let table = Eliom_reference.Volatile.get cache in
     try Lwt.return (M.find uid table) with
       | Not_found ->
@@ -274,11 +274,11 @@ let get_user, reset_user =
                             r.userid = $int64:uid$ >>
               in
               let user =
-                Ol_common0.create_user_from_db_info ~default_avatar u in
+                Eba_common0.create_user_from_db_info ~default_avatar u in
               let () = Eliom_reference.Volatile.set
                 cache (M.add uid user table) in
               Lwt.return user
-            with _ -> Lwt.fail Ol_common0.No_such_user)),
+            with _ -> Lwt.fail Eba_common0.No_such_user)),
    (fun uid ->
      let table = Eliom_reference.Volatile.get cache in
      Eliom_reference.Volatile.set cache (M.remove uid table)))
@@ -433,7 +433,7 @@ let get_userslist () =
 (* pics *)
 let get_pic userid =
   lwt u = get_user userid in
-  Lwt.return u.Ol_common0.useravatar
+  Lwt.return u.Eba_common0.useravatar
 
 let set_pic userid pic =
   full_transaction_block (fun dbh ->

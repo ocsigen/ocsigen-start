@@ -48,14 +48,14 @@ object (me)
     lwt () = close_last () in
     set_close_last (fun () -> me#really_unpress);
     press_state <- true;
-    Ol_misc.apply_option (Ol_misc.add_class "ew_pressed") button;
+    Eba_misc.apply_option (Eba_misc.add_class "ew_pressed") button;
     lwt () = me#pre_press in
     lwt () = me#press_action in
     me#post_press
   method private really_unpress =
     set_close_last Lwt.return;
     press_state <- false;
-    Ol_misc.apply_option (Ol_misc.remove_class "ew_pressed") button;
+    Eba_misc.apply_option (Eba_misc.remove_class "ew_pressed") button;
     lwt () = me#pre_unpress in
     lwt () = me#unpress_action in
     me#post_unpress
@@ -68,7 +68,7 @@ object (me)
     if pressed
     then begin
       set_close_last (fun () -> me#really_unpress);
-      Ol_misc.apply_option (Ol_misc.add_class "ew_pressed") button
+      Eba_misc.apply_option (Eba_misc.add_class "ew_pressed") button
     end;
     match button with
       | None -> ()

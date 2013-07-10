@@ -4,7 +4,7 @@
  * into an object ? And juste provide a function which transform a user type
  * into an user completion type ? *)
 {shared{
-  include Ol_common0
+  include Eba_common0
   type member = user deriving (Json)
 }}
 
@@ -12,16 +12,16 @@
   type t = string deriving (Json)
 
   let get_users_from_server pattern =
-    lwt ul = Ol_db.get_userslist () in
-    let ul = List.map (Ol_common0.create_user_from_db_info) ul in
+    lwt ul = Eba_db.get_userslist () in
+    let ul = List.map (Eba_common0.create_user_from_db_info) ul in
     Lwt.return ul
 
   let get_memberlist =
     let query p =
-      lwt userlist = Ol_db.get_userslist () in
-      let userlist = List.map Ol_common0.create_user_from_db_info userlist in
+      lwt userlist = Eba_db.get_userslist () in
+      let userlist = List.map Eba_common0.create_user_from_db_info userlist in
       let f u =
-        let s =  Ew_accents.without (Ol_common0.name_of_user u) in
+        let s =  Ew_accents.without (Eba_common0.name_of_user u) in
           Ew_completion.is_completed_by (Ew_accents.without p) s
       in
       Lwt.return (List.filter f userlist)
