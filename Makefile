@@ -1,4 +1,4 @@
-PKG_NAME := eba
+PKG_NAME := eliom-base-app
 
 WARNINGS 	=
 ELIOMC 		= eliomc $(WARNINGS)
