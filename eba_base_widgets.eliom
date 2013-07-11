@@ -20,7 +20,7 @@ let (>|=) = Lwt.(>|=)
 
 {server{
 
-module Ol_fm = Ol_flash_message
+module Eba_fm = Eba_flash_message
 
 (** Login box *)
 
@@ -101,18 +101,20 @@ type restr_show_hide_focus =
 
 {server{
 
-let login_signin_box ~invalid_actkey ~state
+let login_signin_box
       connection_service
       lost_password_service
       sign_up_service
       preregister_service
       =
   let id = "ol_login_signup_box" in
-  if Eliom_reference.Volatile.get Ol_sessions.activationkey_created
-  then D.div ~a:[a_id id]
-    [p [pcdata "An email has been sent to this address.";
-        br();
-        pcdata "Click on the link it contains to log in."]]
+  if Eliom_reference.Volatile.get Eba_sessions.activationkey_created
+  then
+    Lwt.return
+      (D.div ~a:[a_id id]
+         [p [pcdata "An email has been sent to this address.";
+             br();
+             pcdata "Click on the link it contains to log in."]])
   else
     let set = {Ew_buh.radio_set{ Ew_buh.new_radio_set () }} in
     let button1 = D.h2 [pcdata "Login"] in
@@ -135,7 +137,7 @@ let login_signin_box ~invalid_actkey ~state
     }}
     in
     let button3 = D.h2 [pcdata "Preregister"] in
-    let form3, i3 = Ol_preregister.preregister_box preregister_service in
+    let form3, i3 = Eba_preregister.preregister_box preregister_service in
     let o3 = {restr_show_hide_focus{
       new show_hide_focus
         ~set:%set ~button:(To_dom.of_h2 %button3)
@@ -158,23 +160,22 @@ let login_signin_box ~invalid_actkey ~state
     let press o d msg =
       ignore {unit{
         let d = To_dom.of_div %d in
-        let msg = To_dom.of_p
-                    (p ~a:[a_class ["ol_error"]] [pcdata %msg])
-        in
+        let msg = To_dom.of_p (p ~a:[a_class ["ol_error"]] [pcdata %msg]) in
           ignore ((%o)#press);
           Dom.appendChild d msg;
           ignore
             (lwt () = Lwt_js.sleep 2. in
-      Dom.removeChild d msg;
-      Lwt.return ())
+             Dom.removeChild d msg;
+             Lwt.return ())
       }}
     in
+    lwt state = Eba_site.get_state () in
     (* here we will return the div correponding to the current
      * website state, and also a function to handle specific
      * flash messages *)
     let d, handle_flash =
       match state with
-        | Ol_site.Close ->
+        | Eba_site.Close ->
            (D.div ~a:[a_id id]
                           [button1; button3; form1; form3]),
            (* this function will handle only flash message error associated
@@ -182,15 +183,17 @@ let login_signin_box ~invalid_actkey ~state
            (fun flash d ->
               match flash with
                 (* Login error *)
-                | Ol_fm.Wrong_password ->
+                | Eba_fm.Wrong_password ->
                     (press o1 d "Wrong password")
                 (* Preregister error *)
-                | Ol_fm.User_already_preregistered _ ->
+                | Eba_fm.User_already_preregistered _ ->
                     (press o3 d "This email is not available")
+                | Eba_fm.Activation_key_outdated ->
+                    (press o2 d "Invalid activation key, ask for a new one.")
                 | _ ->
                     (* default case: SHOULD NEVER HAPPEN !*)
                     (press o1 d "Something went wrong"))
-        | Ol_site.Open ->
+        | Eba_site.Open ->
            (D.div ~a:[a_id id]
                           [button1; button2; button4; form1; form2; form4]),
            (* this function will handle only flash message error associated
@@ -198,38 +201,36 @@ let login_signin_box ~invalid_actkey ~state
            (fun flash d ->
               match flash with
                 (* Login error *)
-                | Ol_fm.Wrong_password ->
+                | Eba_fm.Wrong_password ->
                     (press o1 d "Wrong password")
                 (* Register error *)
-                | Ol_fm.User_already_exists _ ->
+                | Eba_fm.User_already_exists _ ->
                     (press o4 d "This user already exists")
                 (* Lost password error *)
-                | Ol_fm.User_does_not_exist _ ->
+                | Eba_fm.User_does_not_exist _ ->
                     (press o2 d "This user does not exist")
+                | Eba_fm.Activation_key_outdated ->
+                    (press o2 d "Invalid activation key, ask for a new one.")
                 | _ ->
                     (* default case: SHOULD NEVER HAPPEN !*)
                     (press o1 d "Something went wrong"))
     in
-      ignore
-      (lwt has_flash = Ol_fm.has_flash_msg () in
-        if invalid_actkey || has_flash
-        then begin
-            if invalid_actkey
-            then Lwt.return
-                   (press o2 d "Invalid activation key, ask for a new one.")
-            else
-              lwt flash = (Ol_fm.get_flash_msg ()) in
-              (* this function will Lwt.return unit *)
-              ignore (handle_flash flash d);
-              Lwt.return ()
-        end
-        else Lwt.return ());
-      d
+    lwt has_flash = Eba_fm.has_flash_msg () in
+    lwt () =
+      if has_flash
+      then begin
+        lwt flash = (Eba_fm.get_flash_msg ()) in
+        let () = handle_flash flash d in
+        Lwt.return ()
+      end
+      else Lwt.return ()
+    in
+    Lwt.return d
 
 let personal_info_form ((fn, ln), (p1, p2)) =
   post_form
     ~a:[a_id "ol_personal_info_form"]
-    ~service:Ol_services.set_personal_data_service
+    ~service:Eba_services.set_personal_data_service
     (fun ((fnn, lnn), (pwdn, pwd2n)) ->
       let pass1 =
         D.string_input
@@ -273,7 +274,7 @@ let personal_info_form ((fn, ln), (p1, p2)) =
 
 let welcome_box () =
   let info, default_data =
-    (match Eliom_reference.Volatile.get Ol_sessions.wrong_perso_data with
+    (match Eliom_reference.Volatile.get Eba_sessions.wrong_perso_data with
       | None ->
         (p [pcdata "Your personal information has not been set yet.";
             br ();

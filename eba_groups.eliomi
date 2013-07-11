@@ -8,7 +8,7 @@
 
 (** creates the group in the database if it does
   * not exist, or returns its id as an abstract value *)
-val create : string -> ?description:string -> unit -> t Lwt.t
+val create : ?description:string -> string -> t Lwt.t
 
 (** return the group if it exists as an [(Some t) Lwt.t], otherwise
   * it returns None *)

@@ -4,10 +4,10 @@
   open Eliom_content.Html5.F
 }}
 
-module Ol_fm = Ol_flash_message
+module Eba_fm = Eba_flash_message
 
 (** This module is used for preregistration system on your website.
-  * Severals functions are provided in Ol_db:
+  * Severals functions are provided in Eba_db:
   * - all_preregistered: return the list of all the preregistered emails
   * - is_preregistered: return true if the email is already preregistered
   *
@@ -36,13 +36,13 @@ let preregister_box service =
   f, match !r with Some i -> i | None -> failwith "preregister_box"
 
 let preregister_action () (m) =
-  lwt b = Ol_db.is_registered_or_preregistered m in
-  Ol_misc.log (string_of_bool b);
+  lwt b = Eba_db.is_registered_or_preregistered m in
+  Eba_misc.log (string_of_bool b);
   match b with
     | false ->
-        Ol_misc.log "NON PREREGISTERED";
-        Ol_db.new_preregister_email m
+        Eba_misc.log "NON PREREGISTERED";
+        Eba_db.new_preregister_email m
     | true ->
-        Ol_misc.log "ALREADY PREREGISTERED";
-        Ol_fm.set_flash_msg (Ol_fm.User_already_preregistered m)
+        Eba_misc.log "ALREADY PREREGISTERED";
+        Eba_fm.set_flash_msg (Eba_fm.User_already_preregistered m)
 

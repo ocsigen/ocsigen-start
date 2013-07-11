@@ -3,8 +3,8 @@
 {client{
 open Eliom_content.Html5
 open Eliom_content.Html5.F
-open Ol_selection_widgets
-open Ol_users_base_widgets
+open Eba_selection_widgets
+open Eba_users_base_widgets
 
 
 

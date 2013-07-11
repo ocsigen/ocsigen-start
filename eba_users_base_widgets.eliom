@@ -124,11 +124,11 @@ let is_valid_mail s =
 
 (**************** FUNCTIONS ON TYPE MEMBER *******************)
 
-  let contains_member = Ol_misc.List.contains mem_member
+  let contains_member = Eba_misc.List.contains mem_member
 
-  let member_union = Ol_misc.List.union contains_member
+  let member_union = Eba_misc.List.union contains_member
 
-  let remove_member = Ol_misc.List.remove mem_member
+  let remove_member = Eba_misc.List.remove mem_member
 
 
 
@@ -149,11 +149,11 @@ let is_valid_mail s =
     in aux ([],[]) tlist
 
 
-  let remove = Ol_misc.List.remove mem
+  let remove = Eba_misc.List.remove mem
 
-  let contains = Ol_misc.List.contains mem
+  let contains = Eba_misc.List.contains mem
 
-  let union = Ol_misc.List.union contains
+  let union = Eba_misc.List.union contains
 
 
 
