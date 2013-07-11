@@ -17,20 +17,23 @@ module MH = Eba_holder.Make(MH_base)
 let push_generator f =
   MH.push_generator f
 
+
 let create () =
   let button =
-    D.div [D.i ~a:[a_class ["icon-gear"]] []]
+    D.div ~a:[a_class ["eba_settings_button"]]
+                 [D.i ~a:[a_class ["icon-gear"]] []]
   in
   lwt content = MH.create () in
   ignore ({unit{
     ignore (object(self)
               inherit [_] Ew_buh.alert
-                    ~button:(To_dom.of_div %button)
-                    ()
+                ~set:Eba_site_widgets.settings_set
+                ~class_:["eba_settings"]
+                ~button:(To_dom.of_div %button)
+                ()
 
               method get_node =
                 Lwt.return [%content]
             end)
   }});
   Lwt.return (button)
-

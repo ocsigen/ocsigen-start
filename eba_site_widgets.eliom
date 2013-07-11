@@ -116,12 +116,17 @@ let upload_pic_form me () =
    thesubmit]
 }}
 
+{client{
+let settings_set = Ew_buh.new_radio_set ()
+}}
+
 let upload_pic_button () =
   let d = D.div ~a:[a_class ["ol_upload_pic"]] [pcdata "Upload picture"] in
   ignore {unit{
     let d = To_dom.of_div %d in
     ignore (object (me)
       inherit [ Html5_types.div_content_fun ] Ew_buh.alert
+        ~set:settings_set
         ~class_:["ol_upload_pic_form"]
         ~button:d
 (*        ~parent_node:(Eba_misc.of_opt d##parentNode) *)
@@ -131,6 +136,10 @@ let upload_pic_button () =
     }};
   d
 
+let () =
+  Eba_settings.push_generator (fun () -> Lwt.return [logout_button ()])
+
+
 let userbox user =
   lwt settings = Eba_settings.create () in
   Lwt.return
@@ -138,8 +147,7 @@ let userbox user =
       Eba_common0.print_user_avatar user;
       upload_pic_button ();
       Eba_common0.print_user_name user;
-      settings;
-      logout_button ()
+      settings
     ])
 
 let globalpart main_title user =
