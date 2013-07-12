@@ -7,21 +7,21 @@ open Eliom_content.Html5
 open Eliom_content.Html5.F
 
 (* SSS Do not compiles after a distclean if you remove me *)
-module O = Ol_common0
+module O = Eba_common0
 }}
 
 
 (********* Service handlers *********)
 
 let main_service_handler userid () () =
-  lwt user = Ol_db.get_user userid in
+  lwt user = Eba_db.get_user userid in
   let mainpart =
     if (Myproject_sessions.new_user user)
-    then [Ol_base_widgets.welcome_box ()]
+    then [Eba_base_widgets.welcome_box ()]
     else []
   in
   lwt gp =
-    Ol_site_widgets.globalpart
+    Eba_site_widgets.globalpart
       Myproject_sessions.main_title (Some user)
   in
   let gp = gp::mainpart in
@@ -30,7 +30,7 @@ let main_service_handler userid () () =
 
 (********* Registration *********)
 let _ =
-  Myproject_sessions.My_appl.register Ol_services.main_service
+  Myproject_sessions.My_appl.register Eba_services.main_service
     (Myproject_sessions.connect_wrapper_page main_service_handler)
 
 
