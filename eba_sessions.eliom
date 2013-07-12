@@ -160,6 +160,27 @@ end) = struct
       connect_string (Int64.to_string userid)
     with Eba_common0.No_such_user -> A.close_session ()
 
+  let check_allow_deny userid allow deny =
+    lwt b = match allow with
+      | None -> Lwt.return true (* By default allow all *)
+      | Some l -> (* allow only users from one of the groups of list l *)
+        Lwt_list.fold_left_s
+          (fun b group ->
+            lwt b2 = Eba_groups.in_group ~userid ~group in
+            Lwt.return (b || b2)) false l
+    in
+    lwt b = match deny with
+      | None -> Lwt.return b (* By default deny nobody *)
+      | Some l -> (* allow only users that are not
+                     in one of the groups of list l *)
+        Lwt_list.fold_left_s
+          (fun b group ->
+            lwt b2 = Eba_groups.in_group ~userid ~group in
+            Lwt.return (b && (not b2))) b l
+    in
+    if b then Lwt.return () else Lwt.fail Permission_denied
+
+
   (** The connection wrapper checks whether the user is connected,
       and if not displays the login page.
 
@@ -173,7 +194,7 @@ end) = struct
       functions [start_process] is called,
       and also [start_connected_process] if connected.
   *)
-  let gen_wrapper connected not_connected gp pp =
+  let gen_wrapper ~allow ~deny connected not_connected gp pp =
     try_lwt
       let new_process = Eliom_request_info.get_sp_client_appl_name () = None in
       let uids = Eliom_state.get_volatile_data_session_group () in
@@ -220,30 +241,35 @@ end) = struct
       in
       match uid with
         | None -> not_connected gp pp
-        | Some id -> connected id gp pp
+        | Some id ->
+          lwt () = check_allow_deny id allow deny in
+          connected id gp pp
     with Eba_common0.No_such_user ->
       lwt () = A.close_session () in
       not_connected gp pp
 
   (* connect_wrapper_action checks user connection
      and fails if not connected. *)
-  let connect_wrapper_function f gp pp =
-    gen_wrapper f (fun _ _ -> Lwt.fail Not_connected) gp pp
+  let connect_wrapper_function ?allow ?deny f gp pp =
+    gen_wrapper ~allow ~deny f (fun _ _ -> Lwt.fail Not_connected) gp pp
 
-  let anonymous_wrapper f gp pp =
+  let anonymous_wrapper ?allow ?deny f gp pp =
     gen_wrapper
+      ~allow ~deny
       (fun userid gp pp -> f (Some userid) gp pp)
       (fun gp pp -> f None gp pp)
       gp pp
 
-  let connect_wrapper_rpc f pp =
+  let connect_wrapper_rpc ?allow ?deny f pp =
     gen_wrapper
+      ~allow ~deny
       (fun userid _ p -> f userid p)
       (fun _ _ -> Lwt.fail Not_connected)
       () pp
 
-  let anonymous_wrapper_rpc f pp =
+  let anonymous_wrapper_rpc ?allow ?deny f pp =
     gen_wrapper
+      ~allow ~deny
       (fun userid _ p -> f (Some userid) p)
       (fun _ p -> f None p)
       () pp

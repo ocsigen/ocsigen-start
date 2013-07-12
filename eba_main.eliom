@@ -129,8 +129,8 @@ let send_activation_email ~email ~uri () =
       | true -> generate_new_key email Eba_services.main_service ()
 
 
-  let connect_wrapper_page f gp pp =
-    CW.gen_wrapper f login_page gp pp
+  let connect_wrapper_page ?allow ?deny f gp pp =
+    CW.gen_wrapper ~allow ~deny f login_page gp pp
 
   let new_user user = user.Eba_common0.new_user
 

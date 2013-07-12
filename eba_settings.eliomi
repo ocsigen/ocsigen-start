@@ -2,7 +2,8 @@
 
 (** this module define a little extensible settings box for a user *)
 
-(** call the function of the Eba_holder functor *)
+(** call the function of the Eba_holder functor.
+    Must be called only once for each item when starting the site. *)
 val push_generator
   : (unit -> Html5_types.div_content Eliom_content.Html5.D.elt list Lwt.t)
   -> unit
