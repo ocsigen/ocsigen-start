@@ -136,6 +136,7 @@ let login_signin_box
         ~focused:(To_dom.of_input %i2) (To_dom.of_form %form2)
     }}
     in
+      (*
     let button3 = D.h2 [pcdata "Preregister"] in
     let form3, i3 = Eba_preregister.preregister_box preregister_service in
     let o3 = {restr_show_hide_focus{
@@ -145,6 +146,7 @@ let login_signin_box
         ~focused:(To_dom.of_input %i3) (To_dom.of_form %form3)
     }}
     in
+       *)
     let button4 = D.h2 [pcdata "Register"] in
     let form4, i4 = email_box sign_up_service in
     let o4 = {restr_show_hide_focus{
@@ -177,7 +179,7 @@ let login_signin_box
       match state with
         | Eba_site.Close ->
            (D.div ~a:[a_id id]
-                          [button1; button3; form1; form3]),
+                          [button1; (*button3;*) form1; (*form3*)]),
            (* this function will handle only flash message error associated
             * to this website mode *)
            (fun flash d ->
@@ -186,8 +188,10 @@ let login_signin_box
                 | Eba_fm.Wrong_password ->
                     (press o1 d "Wrong password")
                 (* Preregister error *)
+                (*
                 | Eba_fm.User_already_preregistered _ ->
                     (press o3 d "This email is not available")
+                *)
                 | Eba_fm.Activation_key_outdated ->
                     (press o2 d "Invalid activation key, ask for a new one.")
                 | _ ->
