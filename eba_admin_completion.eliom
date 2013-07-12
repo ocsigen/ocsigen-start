@@ -7,6 +7,7 @@
   include Eba_common0
   type member = user deriving (Json)
 }}
+  (*
 
 {server{
   type t = string deriving (Json)
@@ -78,3 +79,4 @@
     "ol_mailbox"
 
 }}
+   *)

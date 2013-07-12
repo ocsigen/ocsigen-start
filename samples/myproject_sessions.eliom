@@ -10,7 +10,7 @@ let (at_start_connected_process, start_connected_process_action) =
    (fun () -> !r ()))
 
 
-module O = Ol_main.Make(struct
+module O = Eba_main.Make(struct
   let app_name = "myproject"
   let capitalized_app_name = "myproject"
   let css_list = [
@@ -35,10 +35,10 @@ include O
 
   let myid_str =
     let r = ref None in
-    (fun () -> match !r, !Ol_sessions.me with
+    (fun () -> match !r, !Eba_sessions.me with
       | Some _, _ -> !r
       | None, None -> None
       | None, Some u ->
-        r := Some (Int64.to_string u.Ol_common0.userid); !r)
+        r := Some (Int64.to_string u.Eba_common0.userid); !r)
 
  }}

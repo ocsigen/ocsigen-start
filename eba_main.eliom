@@ -236,8 +236,10 @@ let send_activation_email ~email ~uri () =
   let _ =
     Eliom_registration.Action.register login_service login_action;
     Eliom_registration.Action.register logout_service logout_action;
+    (*
     Eliom_registration.Action.register preregister_service
       Eba_preregister.preregister_action;
+     *)
     Eliom_registration.Action.register
       lost_password_service lost_password_action;
     Eliom_registration.Action.register
