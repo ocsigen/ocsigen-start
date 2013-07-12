@@ -124,6 +124,7 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
       ~button:(To_dom.of_h2 %dummy_data)
       ()
   }} in
+    (*
   let _ = {unit{
     let module MBW =
       Eba_users_base_widgets.MakeBaseWidgets(Eba_admin_completion) in
@@ -190,6 +191,7 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
       Eliom_content.Html5.Manip.appendChild %widget input;
       ()
   }} in
+     *)
   Lwt.return [
     div ~a:[a_id "ol_admin_welcome"] [
       h1 [pcdata ("welcome " ^ (Eba_common0.name_of_user user))];
