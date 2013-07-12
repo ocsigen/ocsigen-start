@@ -75,12 +75,7 @@ end) = struct
     with Not_found -> Eba_fm.set_flash_msg Eba_fm.Wrong_password
 
   let login_page _ _ =
-    lwt cb = Eba_base_widgets.login_signin_box
-               login_service
-               lost_password_service
-               sign_up_service
-               preregister_service
-    in
+    lwt cb = Eba_base_widgets.login_signin_box () in
     Lwt.return
       (page_container
          [div

@@ -106,6 +106,7 @@ let login_signin_box
       lost_password_service
       sign_up_service
       preregister_service
+      ()
       =
   let id = "ol_login_signup_box" in
   if Eliom_reference.Volatile.get Eba_sessions.activationkey_created
@@ -226,6 +227,13 @@ let login_signin_box
       else Lwt.return ()
     in
     Lwt.return d
+
+let login_signin_box =
+  login_signin_box
+    Eba_services.login_service
+    Eba_services.lost_password_service
+    Eba_services.sign_up_service
+    Eba_services.preregister_service
 
 let personal_info_form ((fn, ln), (p1, p2)) =
   post_form

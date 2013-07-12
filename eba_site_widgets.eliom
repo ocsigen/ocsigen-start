@@ -159,10 +159,11 @@ let globalpart main_title user =
 *)
   lwt content = match user with
     | Some user ->
-        lwt ubox = userbox user in
-        Lwt.return [ubox(*; infobox *)]
+      lwt ubox = userbox user in
+      Lwt.return [ubox(*; infobox *)]
     | None ->
-        Lwt.return [(* infobox *)]
+      lwt cbox = Eba_base_widgets.login_signin_box () in
+      Lwt.return [cbox(* infobox *)]
   in
   Lwt.return
     (aside ~a:[a_class [class_globalpart]]
