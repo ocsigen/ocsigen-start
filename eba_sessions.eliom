@@ -240,7 +240,10 @@ end) = struct
         else Lwt.return ()
       in
       match uid with
-        | None -> not_connected gp pp
+        | None ->
+          if allow = None
+          then not_connected gp pp
+          else Lwt.fail Permission_denied
         | Some id ->
           lwt () = check_allow_deny id allow deny in
           connected id gp pp
