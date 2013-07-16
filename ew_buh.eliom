@@ -99,6 +99,7 @@ object (me)
   val mutable parent_node = parent_node
   method get_node : 'a Eliom_content.Html5.D.elt list Lwt.t
     = Lwt.return []
+  method set_parent_node p = parent_node <- p
   method press_action =
     lwt n = me#get_node in
     let n = D.div ~a:[a_class ("ew_alert"::class_)] n in
