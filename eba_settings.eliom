@@ -26,14 +26,19 @@ let create () =
   lwt content = MH.create () in
   ignore ({unit{
     ignore (object(self)
-              inherit [_] Ew_buh.alert
+              inherit Eliom_widgets.Button.button_alert
                 ~set:Eba_site_widgets.settings_set
                 ~class_:["eba_settings"]
-                ~button:(To_dom.of_div %button)
+                ~button:%button
                 ()
 
+              (* get_node returns div_content type, so we have to
+               * coerce to this type, even if div type could be
+               * into another div. I don't really understand this
+               * coercion.. *)
               method get_node =
-                Lwt.return [%content]
+                let open Eliom_content.Html5 in
+                Lwt.return [(%content :> Html5_types.div_content F.elt)]
             end)
   }});
   Lwt.return (button)

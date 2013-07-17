@@ -69,31 +69,16 @@ let email_box service =
 
  }}
 
-{client{
-
-class ['a] show_hide_focus ?pressed ?button ?set
-  ?method_closeable ?button_closeable ?focused elt =
-object
-  inherit ['a] Ew_buh.show_hide ?pressed ?button ?set
-    ?method_closeable ?button_closeable elt as papa
-  method post_press =
-    lwt () = papa#post_press in
-    (match focused with None -> () | Some e -> e##focus());
-    Lwt.return ()
-end
-
-}}
-
 {shared{
 type restr_show_hide_focus =
   < press : unit Lwt.t;
     unpress : unit Lwt.t;
-    pre_press : unit Lwt.t;
-    pre_unpress : unit Lwt.t;
-    post_press : unit Lwt.t;
-    post_unpress : unit Lwt.t;
-    press_action: unit Lwt.t;
-    unpress_action: unit Lwt.t;
+    on_press : unit Lwt.t;
+    on_unpress : unit Lwt.t;
+    on_pre_press : unit Lwt.t;
+    on_pre_unpress : unit Lwt.t;
+    on_post_press : unit Lwt.t;
+    on_post_unpress : unit Lwt.t;
     switch: unit Lwt.t;
     pressed: bool;
     >
@@ -117,24 +102,26 @@ let login_signin_box
              br();
              pcdata "Click on the link it contains to log in."]])
   else
-    let set = {Ew_buh.radio_set{ Ew_buh.new_radio_set () }} in
+    let set = {(Eliom_widgets.Button.radio_set_t){
+      Eliom_widgets.Button.new_radio_set ()
+    }} in
     let button1 = D.h2 [pcdata "Login"] in
     let form1, i1 = connection_box connection_service in
     let o1 = {restr_show_hide_focus{
-      new show_hide_focus
+      new Eliom_widgets.Button.button_show_hide
         ~pressed:true
-        ~set:%set ~button:(To_dom.of_h2 %button1)
+        ~set:%set ~button:%button1
         ~button_closeable:false
-        ~focused:(To_dom.of_input %i1) (To_dom.of_form %form1)
+        %form1
     }}
     in
     let button2 = D.h2 [pcdata "Lost password"] in
     let form2, i2 = email_box lost_password_service in
     let o2 = {restr_show_hide_focus{
-      new show_hide_focus
-        ~set:%set ~button:(To_dom.of_h2 %button2)
+      new Eliom_widgets.Button.button_show_hide
+        ~set:%set ~button:%button2
         ~button_closeable:false
-        ~focused:(To_dom.of_input %i2) (To_dom.of_form %form2)
+        %form2
     }}
     in
       (*
@@ -151,10 +138,10 @@ let login_signin_box
     let button4 = D.h2 [pcdata "Register"] in
     let form4, i4 = email_box sign_up_service in
     let o4 = {restr_show_hide_focus{
-      new show_hide_focus
-        ~set:%set ~button:(To_dom.of_h2 %button4)
+      new Eliom_widgets.Button.button_show_hide
+        ~set:%set ~button:%button4
         ~button_closeable:false
-        ~focused:(To_dom.of_input %i4) (To_dom.of_form %form4)
+        %form4
     }}
     in
     (* function to press the corresponding button and display

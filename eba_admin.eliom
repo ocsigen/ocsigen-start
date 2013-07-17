@@ -27,17 +27,17 @@ let confirm_box service value content =
          ]) ()
 
 {shared{
-  type buh_t =
+  type button_t =
       < press : unit Lwt.t;
       unpress : unit Lwt.t;
-      pre_press : unit Lwt.t;
-      pre_unpress : unit Lwt.t;
-      post_press : unit Lwt.t;
-      post_unpress : unit Lwt.t;
-      press_action: unit Lwt.t;
-      unpress_action: unit Lwt.t;
-      switch: unit Lwt.t;
-      pressed: bool;
+      on_pre_press : unit Lwt.t;
+      on_pre_unpress : unit Lwt.t;
+      on_post_press : unit Lwt.t;
+      on_post_unpress : unit Lwt.t;
+      on_press : unit Lwt.t;
+      on_unpress : unit Lwt.t;
+      switch : unit Lwt.t;
+      pressed : bool;
       >
 }}
 
@@ -61,6 +61,10 @@ let open_state_desc =
     ]
   ]
 
+{shared{
+  module Ew = Eliom_widgets
+}}
+
 let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
   let open Eba_base_widgets in
   lwt state = Eba_site.get_state () in
@@ -68,7 +72,7 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
     if b then "ol_current_state"
     else ""
   in
-  let set = {Ew_buh.radio_set{ Ew_buh.new_radio_set () }} in
+  let set = {(Ew.Button.radio_set_t){ Ew.Button.new_radio_set () }} in
   let button1, form1 =
     D.h2 ~a:[a_class [enable_if (state = Eba_site.Close)]] [pcdata "CLOSE"],
     confirm_box Eba_services.open_service
@@ -82,12 +86,12 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
         form1
       ]
   in
-  let radio1 = {buh_t{
-    new Ew_buh.show_hide
+  let radio1 = {button_t{
+    new Ew.Button.button_show_hide
       ~pressed:(%state = Eba_site.Close)
-      ~set:%set ~button:(To_dom.of_h2 %button1)
+      ~set:%set ~button:%button1
       ~button_closeable:false
-      (To_dom.of_div %close_state_div)
+      %close_state_div
   }}
   in
   let button2, form2 =
@@ -103,12 +107,12 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
         form2
       ]
   in
-  let radio2 = {buh_t{
-    new Ew_buh.show_hide
+  let radio2 = {button_t{
+    new Ew.Button.button_show_hide
       ~pressed:(%state = Eba_site.Open)
-      ~set:%set ~button:(To_dom.of_h2 %button2)
+      ~set:%set ~button:%button2
       ~button_closeable:false
-      (To_dom.of_div %open_state_div)
+      %open_state_div
   }}
   in
   ignore {unit{
@@ -119,9 +123,9 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
   (* I create a dummy button because the completion widget need it,
    * but it seems to be not used at all by the widget so.. *)
   let dummy_data = D.h2 [pcdata "dummy"] in
-  let dummy_button = {buh_t{
-    new Ew_buh.buh
-      ~button:(To_dom.of_h2 %dummy_data)
+  let dummy_button = {button_t{
+    new Ew.Button.button
+      ~button:%dummy_data
       ()
   }} in
     (*

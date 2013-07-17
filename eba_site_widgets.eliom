@@ -117,18 +117,17 @@ let upload_pic_form me () =
 }}
 
 {client{
-let settings_set = Ew_buh.new_radio_set ()
+let settings_set = Eliom_widgets.Button.new_radio_set ()
 }}
 
 let upload_pic_button () =
   let d = D.div ~a:[a_class ["ol_upload_pic"]] [pcdata "Upload picture"] in
   ignore {unit{
-    let d = To_dom.of_div %d in
     ignore (object (me)
-      inherit [ Html5_types.div_content_fun ] Ew_buh.alert
+      inherit Eliom_widgets.Button.button_alert
         ~set:settings_set
         ~class_:["ol_upload_pic_form"]
-        ~button:d
+        ~button:%d
 (*        ~parent_node:(Eba_misc.of_opt d##parentNode) *)
         ()
       method get_node = Lwt.return (upload_pic_form me ())
