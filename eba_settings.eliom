@@ -5,17 +5,16 @@
   open Eliom_content.Html5.F
 }}
 
-module MH_base = struct
+module InBox = struct
   let default_content () = Lwt.return []
 
   let create content = Lwt.return (D.div content)
-
 end
 
-module MH = Eba_holder.Make(MH_base)
+module M = Eba_box.Make(InBox)
 
-let push_generator f =
-  MH.push_generator f
+let add_item f =
+  M.add_item f
 
 
 let create () =
@@ -23,7 +22,7 @@ let create () =
     D.div ~a:[a_class ["eba_settings_button"]]
                  [D.i ~a:[a_class ["icon-gear"]] []]
   in
-  lwt content = MH.create () in
+  lwt content = M.create () in
   ignore ({unit{
     ignore (object(self)
               inherit Eliom_widgets.Button.button_alert
@@ -39,6 +38,7 @@ let create () =
               method get_node =
                 let open Eliom_content.Html5 in
                 Lwt.return [(%content :> Html5_types.div_content F.elt)]
+
             end)
   }});
   Lwt.return (button)

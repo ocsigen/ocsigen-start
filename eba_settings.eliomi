@@ -1,15 +1,14 @@
 (* Copyright Charly Chevalier *)
 
-(** this module define a little extensible settings box for a user *)
+(** This module define a little extensible settings box for a user *)
 
-(** call the function of the Eba_holder functor.
-    Must be called only once for each item when starting the site. *)
-val push_generator
+(** Will add an item into the box, an item correspond to a function which will
+  * return a list of [Html5_types.div_content Eliom_content.Html5.D.elt]. This
+  * list will be added to the settings box at his creation *)
+val add_item
   : (unit -> Html5_types.div_content Eliom_content.Html5.D.elt list Lwt.t)
   -> unit
 
-(** returns the button which can be used to trigger an Ew_buh.alert. It
-  * also create a Ew_buh.alert and define the get_node method. This method
-  * will call the create function of the Eba_holder functor (see
-  * Eba_settings.eliom). *)
+(** Returns the button corresponding to the settings box. You have to click on
+  * this element to deploy the settings box *)
 val create : unit -> Html5_types.div_content_fun Eliom_content.Html5.D.elt Lwt.t

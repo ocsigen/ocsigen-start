@@ -136,7 +136,7 @@ let upload_pic_button () =
   d
 
 let () =
-  Eba_settings.push_generator (fun () -> Lwt.return [logout_button ()])
+  Eba_settings.add_item (fun () -> Lwt.return [logout_button ()])
 
 
 let userbox user =
