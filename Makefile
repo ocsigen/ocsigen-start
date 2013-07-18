@@ -194,6 +194,7 @@ $(DEPSDIR):
 clean:
 	-rm -f *.cm[ioax] *.cmxa *.cmxs *.o *.a *.annot
 	-rm -f *.type_mli
+	-rm -f META
 	-rm -rf ${ELIOM_CLIENT_DIR} ${ELIOM_SERVER_DIR} ${LIBDIR}
 
 distclean: clean

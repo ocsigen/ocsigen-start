@@ -4,7 +4,7 @@
 #----------------------------------------------------------------------
 
 # Package name for your 
-PKG_NAME := eliom-widgets
+PKG_NAME := eliom-base-app
 PKG_VERS := your version
 PKG_DESC := your description
 
