@@ -152,7 +152,7 @@ install: all META
 	cp $(CLIENT_CMI) `$(OCAMLFIND) query $(PKG_NAME)`/client
 	cp $(SERVER_CMI) `$(OCAMLFIND) query $(PKG_NAME)`/server
 	cp $(LIBDIR)/$(PKG_NAME).client.cma `$(OCAMLFIND) query $(PKG_NAME)`/client
-	cp $(LIBDIR)/$(PKG_NAME).client.cm* `$(OCAMLFIND) query $(PKG_NAME)`/server
+	cp $(LIBDIR)/$(PKG_NAME).server.cm* `$(OCAMLFIND) query $(PKG_NAME)`/server
 
 uninstall:
 	rm -rf `$(OCAMLFIND) query $(PKG_NAME)`/client
