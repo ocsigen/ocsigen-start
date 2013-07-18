@@ -1,0 +1,28 @@
+
+#----------------------------------------------------------------------
+#           SETTINGS FOR YOUR PACKAGE
+#----------------------------------------------------------------------
+
+# Package name for your 
+PKG_NAME := eliom-widgets
+PKG_VERS := your version
+PKG_DESC := your description
+
+# Source files for the server
+SERVER_FILES := $(wildcard *.eliom* *.ml*)
+# Source files for the client
+CLIENT_FILES := $(wildcard *.eliom*)
+
+# OCamlfind packages for the server
+SERVER_PACKAGES := pgocaml,pgocaml.syntax,text,macaque.syntax,calendar,safepass,eliom-widgets.server
+# OCamlfind packages for the client
+CLIENT_PACKAGES := text,calendar,ojwidgets,eliom-widgets.client
+
+# Debug package (yes/no): Debugging info in compilation
+DEBUG := no
+
+# Native mode (yes/no): Compile also with native mode (it will always compile with byte mode)
+NATIVE := no
+
+# Package's library $(PKG_NAME).{client,server}.cma (a,cmxa,cmxs only server side)
+LIBDIR := lib/

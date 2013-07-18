@@ -1,13 +1,16 @@
-names = "OL"
-version = "BETA"
-description = "."
+names = "@@PKG_NAME@@"
+version = "@@PKG_VERS@@"
+description = "@@PKG_DESC@@"
+
 package "server" (
-  requires = "@@SERVER_PA@@"
+  requires = "@@SERVER_REQUIRES@@"
   directory = "server"
-  archive(byte) = "@@SERVER_FILES@@"
+  archive(byte) = "@@SERVER_ARCHIVES_BYTE@@"
+  archive(native) = "@@SERVER_ARCHIVES_NATIVE@@"
 )
+
 package "client" (
- requires = "@@CLIENT_PA@@"
+ requires = "@@CLIENT_REQUIRES@@"
  directory = "client"
- archive(byte) = "@@CLIENT_FILES@@"
+ archive(byte) = "@@CLIENT_ARCHIVES_BYTE@@"
 )

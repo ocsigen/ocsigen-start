@@ -1,85 +1,170 @@
-PKG_NAME := eliom-base-app
-DB_NAME := eba
 
-WARNINGS 	=
-ELIOMC 		= eliomc $(WARNINGS)
-JS_OF_ELIOM = js_of_eliom $(WARNINGS)
-OCAMLC 		= ocamlfind ocamlc $(WARNINGS)
+##----------------------------------------------------------------------
+## DISCLAIMER
+##
+## This file contains the rules to make an ocsigen package. The project
+## is configured through the variables in the file Makefile.options.
+##----------------------------------------------------------------------
 
-SERVER_DIR = server
-CLIENT_DIR = client
+include Makefile.options
 
-export ELIOM_TYPE_DIR = _server
-export ELIOM_SERVER_DIR = _server
-export ELIOM_CLIENT_DIR = _client
+##----------------------------------------------------------------------
+##			      Internals
 
-# FIXME: use SERVER_PACKAGES and CLIENT_PACKAGES instead of redefined them here
-# include ../Makefile.options
-include Makefile.depend
+## Required binaries
+ELIOMC            := eliomc
+ELIOMOPT          := eliomopt
+JS_OF_ELIOM	      := js_of_eliom
+ELIOMDEP          := eliomdep
+OCAMLFIND		  := ocamlfind
 
-SERVER_PA := pgocaml,pgocaml.syntax,text,macaque.syntax,calendar,safepass,eliom-widgets.server
-CLIENT_PA := text,calendar,ojwidgets,eliom-widgets.client
-COMMON_OPTS :=
-SERVER_OPTS := -package $(SERVER_PA)
-CLIENT_OPTS := -package $(CLIENT_PA)
+## Where to put intermediate object files.
+## - ELIOM_{SERVER,CLIENT}_DIR must be distinct
+## - ELIOM_CLIENT_DIR must not be the local dir.
+## - ELIOM_SERVER_DIR could be ".", but you need to
+##   remove it from the "clean" rules...
+export ELIOM_SERVER_DIR := _server
+export ELIOM_CLIENT_DIR := _client
+export ELIOM_TYPE_DIR   := _server
 
-.PHONY: all clean install uninstall depend
+ifeq ($(DEBUG),yes)
+  GENERATE_DEBUG ?= -g
+endif
 
-SERVER_SOURCE_FILES=$(wildcard *.eliom* *.ml)
-CLIENT_SOURCE_FILES=$(wildcard *.eliom*)
+ifeq ($(NATIVE),on)
+  OPT_RULE = opt
+endif
+
+##----------------------------------------------------------------------
+## General
+
+.PHONY: all byte opt
+all: byte $(OPT_RULE)
+byte:: $(LIBDIR)/${PKG_NAME}.server.cma $(LIBDIR)/${PKG_NAME}.client.cma
+opt:: $(LIBDIR)/${PKG_NAME}.server.cmxs
+
+##----------------------------------------------------------------------
+## Aux
+
+# Use `eliomdep -sort' only in OCaml>4
+ifeq ($(shell ocamlc -version|cut -c1),4)
+eliomdep=$(shell $(ELIOMDEP) $(1) -sort $(2) $(filter %.eliom %.ml,$(3))))
+else
+eliomdep=$(3)
+endif
+objs=$(patsubst %.ml,$(1)/%.$(2),$(patsubst %.eliom,$(1)/%.$(2),$(filter %.eliom %.ml,$(3))))
+depsort=$(call objs,$(1),$(2),$(call eliomdep,$(3),$(4),$(5)))
+
+$(LIBDIR):
+	mkdir $(LIBDIR)
+
+##----------------------------------------------------------------------
+## Server side compilation
+
+## make it more elegant ?
+SERVER_DIRS     := $(shell echo $(foreach f, $(SERVER_FILES), $(dir $(f))) |  tr ' ' '\n' | sort -u | tr '\n' ' ')
+SERVER_DEP_DIRS := ${addprefix -I ,${SERVER_DIRS}}
+SERVER_INC_DIRS := ${addprefix -I $(ELIOM_SERVER_DIR)/, ${SERVER_DIRS}}
+
+SERVER_INC  := ${addprefix -package ,${SERVER_PACKAGES}}
+
+${ELIOM_TYPE_DIR}/%.type_mli: %.eliom
+	${ELIOMC} -infer ${SERVER_INC} ${SERVER_INC_DIRS} $<
+
+$(LIBDIR)/$(PKG_NAME).server.cma: $(call objs,$(ELIOM_SERVER_DIR),cmo,$(SERVER_FILES)) | $(LIBDIR)
+	${ELIOMC} -a -o $@ $(GENERATE_DEBUG) \
+          $(call depsort,$(ELIOM_SERVER_DIR),cmo,-server,$(SERVER_INC),$(SERVER_FILES))
+
+$(LIBDIR)/$(PKG_NAME).server.cmxa: $(call objs,$(ELIOM_SERVER_DIR),cmx,$(SERVER_FILES)) | $(LIBDIR)
+	${ELIOMOPT} -a -o $@ $(GENERATE_DEBUG) \
+          $(call depsort,$(ELIOM_SERVER_DIR),cmx,-server,$(SERVER_INC),$(SERVER_FILES))
+
+%.cmxs: %.cmxa
+	$(ELIOMOPT) -shared -linkall -o $@ $(GENERATE_DEBUG) $<
+
+${ELIOM_SERVER_DIR}/%.cmi: %.mli
+	${ELIOMC} -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
+
+${ELIOM_SERVER_DIR}/%.cmi: %.eliomi
+	${ELIOMC} -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
+
+${ELIOM_SERVER_DIR}/%.cmo: %.ml
+	${ELIOMC} -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
+${ELIOM_SERVER_DIR}/%.cmo: %.eliom
+	${ELIOMC} -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
+
+${ELIOM_SERVER_DIR}/%.cmx: %.ml
+	${ELIOMOPT} -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
+${ELIOM_SERVER_DIR}/%.cmx: %.eliom
+	${ELIOMOPT} -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 
 
-all: Makefile.depend\
-	 $(addprefix $(ELIOM_SERVER_DIR)/, $(server_cmo_files))\
-	 $(addprefix $(ELIOM_CLIENT_DIR)/, $(client_cmo_files))\
-	 $(PKG_NAME).client.cma $(PKG_NAME).server.cma\
-	 META
+##----------------------------------------------------------------------
+## Client side compilation
 
-erasedb:
-	-dropdb $(DB_NAME)
-	createdb --encoding UNICODE eba
-	psql $(DB_NAME) < eba_createdb.sql
+## make it more elegant ?
+CLIENT_DIRS     := $(shell echo $(foreach f, $(CLIENT_FILES), $(dir $(f))) |  tr ' ' '\n' | sort -u | tr '\n' ' ')
+CLIENT_DEP_DIRS := ${addprefix -I ,${CLIENT_DIRS}}
+CLIENT_INC_DIRS := ${addprefix -I $(ELIOM_CLIENT_DIR)/,${CLIENT_DIRS}}
 
+CLIENT_LIBS := ${addprefix -package ,${CLIENT_PACKAGES}}
+CLIENT_INC  := ${addprefix -package ,${CLIENT_PACKAGES}}
 
-Makefile.depend:
-	echo "# THIS FILE HAS BEEN GENERATED BY THE INSTALLATION MAKEFILE, DON'T EDIT.\n"\
-	"server_cmo_files :=\
-	$(patsubst %.ml,%.cmo,\
-	$(patsubst %.eliom,%.cmo,\
-	$(patsubst %.eliomi,%.cmi,\
-	$(shell eliomdep -server -sort $(SERVER_OPTS) $(SERVER_SOURCE_FILES)\
-	))))\n"\
-	"client_cmo_files :=\
-	$(patsubst %.eliom,%.cmo,\
-	$(patsubst %.eliomi,%.cmi,\
-	$(shell eliomdep -client -sort $(CLIENT_OPTS) $(CLIENT_SOURCE_FILES)\
-	)))\n"\
-	> Makefile.depend
+CLIENT_OBJS := $(filter %.eliom %.ml, $(CLIENT_FILES))
+CLIENT_OBJS := $(patsubst %.eliom,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
+CLIENT_OBJS := $(patsubst %.ml,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
 
-# FIXME: is it the good way to user SERVER_OPTS here ?
-$(ELIOM_TYPE_DIR)/%.type_mli: %.eliom
-	$(ELIOMC) -infer -package js_of_ocaml $(SERVER_OPTS) $<
+$(LIBDIR)/$(PKG_NAME).client.cma: $(call objs,$(ELIOM_CLIENT_DIR),cmo,$(CLIENT_FILES)) | $(LIBDIR)
+	${JS_OF_ELIOM} -a -o $@ $(GENERATE_DEBUG) \
+          $(call depsort,$(ELIOM_CLIENT_DIR),cmo,-server,$(CLIENT_INC),$(CLIENT_FILES))
 
-$(ELIOM_SERVER_DIR)/%.cmi: %.mli
-	$(ELIOMC) -c $(COMMON_OPTS) $(SERVER_OPTS) $<
+${ELIOM_CLIENT_DIR}/%.cmi: %.mli
+	${JS_OF_ELIOM} -c ${CLIENT_INC} ${CLIENT_INC_DIRS} $(GENERATE_DEBUG) $<
 
-$(ELIOM_SERVER_DIR)/%.cmo: %.ml
-	$(ELIOMC) -c $(COMMON_OPTS) $(SERVER_OPTS) $<
+${ELIOM_CLIENT_DIR}/%.cmo: %.eliom
+	${JS_OF_ELIOM} -c ${CLIENT_INC} ${CLIENT_INC_DIRS} $(GENERATE_DEBUG) $<
+${ELIOM_CLIENT_DIR}/%.cmo: %.ml
+	${JS_OF_ELIOM} -c ${CLIENT_INC} ${CLIENT_INC_DIRS} $(GENERATE_DEBUG) $<
 
-$(ELIOM_SERVER_DIR)/%.cmi: %.eliomi
-	$(ELIOMC) -c $(COMMON_OPTS) $(SERVER_OPTS) $<
+${ELIOM_CLIENT_DIR}/%.cmi: %.eliomi
+	${JS_OF_ELIOM} -c ${CLIENT_INC} ${CLIENT_INC_DIRS} $(GENERATE_DEBUG) $<
 
-$(ELIOM_SERVER_DIR)/%.cmo: %.eliom
-	$(ELIOMC) -c $(COMMON_OPTS) $(SERVER_OPTS) $<
+##----------------------------------------------------------------------
+## Installation
 
-$(ELIOM_CLIENT_DIR)/%.cmi: %.eliomi
-	$(JS_OF_ELIOM) -c $(COMMON_OPTS) $(CLIENT_OPTS) $<
+META: META.in
+	sed -e 's#@@PKG_NAME@@#$(PKG_NAME)#g' \
+		-e 's#@@PKG_VERS@@#$(PKG_VERS)#g' \
+		-e 's#@@PKG_DESC@@#$(PKG_DESC)#g' \
+		-e 's#@@CLIENT_REQUIRES@@#$(CLIENT_PACKAGES)#g' \
+		-e 's#@@CLIENT_ARCHIVES_BYTE@@#$(PKG_NAME).client.cma#g' \
+		-e 's#@@SERVER_REQUIRES@@#$(SERVER_PACKAGES)#g' \
+		-e 's#@@SERVER_ARCHIVES_BYTE@@#$(PKG_NAME).server.cma#g' \
+		-e 's#@@SERVER_ARCHIVES_NATIVE@@#$(PKG_NAME).server.cmxa#g' \
+		$< > $@
 
-$(ELIOM_CLIENT_DIR)/%.cmo: %.eliom
-	$(JS_OF_ELIOM) -c $(COMMON_OPTS) $(CLIENT_OPTS) $<
+CLIENT_CMI=$(wildcard $(addsuffix /*.cmi,$(addprefix $(ELIOM_CLIENT_DIR)/,$(CLIENT_DIRS))))
+SERVER_CMI=$(wildcard $(addsuffix /*.cmi,$(addprefix $(ELIOM_SERVER_DIR)/,$(SERVER_DIRS))))
+install: all META
+	$(OCAMLFIND) install $(PKG_NAME) META
+	mkdir -p `$(OCAMLFIND) query $(PKG_NAME)`/client
+	mkdir -p `$(OCAMLFIND) query $(PKG_NAME)`/server
+	cp $(CLIENT_CMI) `$(OCAMLFIND) query $(PKG_NAME)`/client
+	cp $(SERVER_CMI) `$(OCAMLFIND) query $(PKG_NAME)`/server
+	cp $(LIBDIR)/$(PKG_NAME).client.cma `$(OCAMLFIND) query $(PKG_NAME)`/client
+	cp $(LIBDIR)/$(PKG_NAME).client.cm* `$(OCAMLFIND) query $(PKG_NAME)`/server
 
-%.cmo: %.ml
-	$(OCAMLC) -syntax camlp4o $(SERVER_OPTS) -c -o $@ $<
+uninstall:
+	rm -rf `$(OCAMLFIND) query $(PKG_NAME)`/client
+	rm -rf `$(OCAMLFIND) query $(PKG_NAME)`/server
+	$(OCAMLFIND) remove $(PKG_NAME)
+
+reinstall: uninstall install
+
+##----------------------------------------------------------------------
+## Dependencies
+
+DEPSDIR := _deps
 
 ifneq ($(MAKECMDGOALS),distclean)
 ifneq ($(MAKECMDGOALS),clean)
@@ -89,46 +174,27 @@ endif
 endif
 endif
 
-.depend:
-	eliomdep -server $(SERVER_OPTS) $(SERVER_SOURCE_FILES) > .depend
-	eliomdep -client $(CLIENT_OPTS) $(CLIENT_SOURCE_FILES) >> .depend
+.depend: $(patsubst %,$(DEPSDIR)/%.server,$(SERVER_FILES)) $(patsubst %,$(DEPSDIR)/%.client,$(CLIENT_FILES))
+	cat $^ > $@
 
-depend:
-	eliomdep -server $(SERVER_OPTS) $(SERVER_SOURCE_FILES) > .depend
-	eliomdep -client $(CLIENT_OPTS) $(CLIENT_SOURCE_FILES) >> .depend
+$(DEPSDIR)/%.server: % | $(DEPSDIR)
+	$(ELIOMDEP) -server $(SERVER_INC) $(SERVER_DEP_DIRS) $< > $@
+
+$(DEPSDIR)/%.client: % | $(DEPSDIR)
+	$(ELIOMDEP) -client $(CLIENT_INC) $(CLIENT_DEP_DIRS) $< > $@
+
+$(DEPSDIR):
+	mkdir -p $@
+	mkdir -p $(addprefix $@/, ${CLIENT_DIRS})
+	mkdir -p $(addprefix $@/, ${SERVER_DIRS})
+
+##----------------------------------------------------------------------
+## Clean up
 
 clean:
-	rm -rf *.cmi *.cmo *.cma $(ELIOM_TYPE_DIR) $(ELIOM_SERVER_DIR) $(ELIOM_CLIENT_DIR) META
+	-rm -f *.cm[ioax] *.cmxa *.cmxs *.o *.a *.annot
+	-rm -f *.type_mli
+	-rm -rf ${ELIOM_CLIENT_DIR} ${ELIOM_SERVER_DIR} ${LIBDIR}
 
 distclean: clean
-	rm -rf Makefile.depend .depend
-
-# FIXME: useless ? we don't use the cma for the client package
-$(PKG_NAME).client.cma: $(addprefix $(ELIOM_CLIENT_DIR)/, $(client_cmo_files))
-	$(ELIOMC) -a -o $@ $^
-
-$(PKG_NAME).server.cma: $(addprefix $(ELIOM_SERVER_DIR)/, $(server_cmo_files))
-	$(ELIOMC) -a -o $@ $^
-
-META: META.in Makefile .depend
-	sed -e 's/@@SERVER_FILES@@/$(PKG_NAME).server.cma/g' \
-            -e 's/@@SERVER_PA@@/$(SERVER_PA)/g' \
-            -e 's/@@CLIENT_FILES@@/$(client_cmo_files)/g' \
-            -e 's/@@CLIENT_PA@@/$(CLIENT_PA)/g' \
-	  $< > $@
-
-install: all
-	ocamlfind install $(PKG_NAME) META
-	mkdir `ocamlfind query $(PKG_NAME)`/$(SERVER_DIR)
-	mkdir `ocamlfind query $(PKG_NAME)`/$(CLIENT_DIR)
-	cp $(ELIOM_SERVER_DIR)/*.cmi `ocamlfind query $(PKG_NAME)`/$(SERVER_DIR)
-	cp $(PKG_NAME).server.cma    `ocamlfind query $(PKG_NAME)`/$(SERVER_DIR)
-	# need to copy cmo files for the client, (this prevent from js modules linking errors)
-	cp $(ELIOM_CLIENT_DIR)/* 	 `ocamlfind query $(PKG_NAME)`/$(CLIENT_DIR)
-
-uninstall:
-	rm -rf `ocamlfind query $(PKG_NAME)`/$(SERVER_DIR)
-	rm -rf `ocamlfind query $(PKG_NAME)`/$(CLIENT_DIR)
-	ocamlfind remove $(PKG_NAME)
-
-reinstall: uninstall install
+	-rm -rf $(DEPSDIR) .depend
