@@ -212,13 +212,23 @@ let admin_service_handler
   lwt admin = Eba_groups.admin in
   lwt is_admin = (Eba_groups.in_group ~userid:uid ~group:admin) in
   if not is_admin
-   (* should be handle with an exception caught in the Connection_Wrapper ?
-    * or just return some html5 stuffs to tell that the user can't reach this
-    * page ? (404 ?) *)
   then
     lwt gblp = Eba_site_widgets.globalpart main_title (Some user) in
+    let msg = [p [pcdata "you are not allowed to access to this page"]] in
+    let url =
+      Eliom_content.Html5.F.make_string_uri
+        ~service:Eba_services.main_service
+        ()
+    in
+    ignore {unit{
+      ignore (
+        lwt () = Lwt_js.sleep 2. in
+        Dom_html.window##location##href <- (Js.string %url);
+        Lwt.return ()
+      )
+    }};
     Lwt.return
-      (page_container [gblp])
+      (page_container ([gblp] @ msg))
   else
     lwt content = admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc in
     lwt gblp = Eba_site_widgets.globalpart main_title (Some user) in
