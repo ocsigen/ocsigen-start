@@ -136,8 +136,19 @@ let upload_pic_button () =
   d
 
 let userbox user =
+  lwt admin_g = Eba_groups.admin in
+  lwt is_admin =
+    Eba_groups.in_group
+      ~userid:(Eba_common0.id_of_user user)
+      ~group:admin_g
+  in
+  let admin_content =
+    if is_admin
+    then [F.a ~service:Eba_services.admin_service [pcdata "admin page"] ()]
+    else []
+  in
   let () =
-    Eba_settings.set_content [logout_button ()]
+    Eba_settings.set_content (admin_content @ [logout_button ()])
   in
   let settings = Eba_settings.get () in
   Lwt.return
