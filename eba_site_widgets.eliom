@@ -135,12 +135,11 @@ let upload_pic_button () =
     }};
   d
 
-let () =
-  Eba_settings.add_item (fun () -> Lwt.return [logout_button ()])
-
-
 let userbox user =
-  lwt settings = Eba_settings.create () in
+  let () =
+    Eba_settings.set_content [logout_button ()]
+  in
+  let settings = Eba_settings.get () in
   Lwt.return
     (div ~a:[a_class [class_identity]] [
       Eba_common0.print_user_avatar user;
