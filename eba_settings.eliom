@@ -25,7 +25,7 @@ let create () =
   lwt content = M.create () in
   ignore ({unit{
     ignore (object(self)
-              inherit Eliom_widgets.Button.button_alert
+              inherit Ew_button.alert
                 ~set:Eba_site_widgets.settings_set
                 ~class_:["eba_settings"]
                 ~button:%button

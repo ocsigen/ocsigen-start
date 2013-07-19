@@ -61,10 +61,6 @@ let open_state_desc =
     ]
   ]
 
-{shared{
-  module Ew = Eliom_widgets
-}}
-
 let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
   let open Eba_base_widgets in
   lwt state = Eba_site.get_state () in
@@ -72,7 +68,7 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
     if b then "ol_current_state"
     else ""
   in
-  let set = {(Ew.Button.radio_set_t){ Ew.Button.new_radio_set () }} in
+  let set = {(Ew_button.radio_set_t){ Ew_button.new_radio_set () }} in
   let button1, form1 =
     D.h2 ~a:[a_class [enable_if (state = Eba_site.Close)]] [pcdata "CLOSE"],
     confirm_box Eba_services.open_service
@@ -87,7 +83,7 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
       ]
   in
   let radio1 = {button_t{
-    new Ew.Button.button_show_hide
+    new Ew_button.show_hide
       ~pressed:(%state = Eba_site.Close)
       ~set:%set ~button:%button1
       ~button_closeable:false
@@ -108,7 +104,7 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
       ]
   in
   let radio2 = {button_t{
-    new Ew.Button.button_show_hide
+    new Ew_button.show_hide
       ~pressed:(%state = Eba_site.Open)
       ~set:%set ~button:%button2
       ~button_closeable:false
@@ -124,7 +120,7 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
    * but it seems to be not used at all by the widget so.. *)
   let dummy_data = D.h2 [pcdata "dummy"] in
   let dummy_button = {button_t{
-    new Ew.Button.button
+    new Ew_button.button
       ~button:%dummy_data
       ()
   }} in

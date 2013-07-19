@@ -117,14 +117,14 @@ let upload_pic_form me () =
 }}
 
 {client{
-let settings_set = Eliom_widgets.Button.new_radio_set ()
+  let settings_set = Ew_button.new_radio_set ()
 }}
 
 let upload_pic_button () =
   let d = D.div ~a:[a_class ["ol_upload_pic"]] [pcdata "Upload picture"] in
   ignore {unit{
     ignore (object (me)
-      inherit Eliom_widgets.Button.button_alert
+      inherit Ew_button.alert
         ~set:settings_set
         ~class_:["ol_upload_pic_form"]
         ~button:%d

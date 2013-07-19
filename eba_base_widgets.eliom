@@ -102,13 +102,13 @@ let login_signin_box
              br();
              pcdata "Click on the link it contains to log in."]])
   else
-    let set = {(Eliom_widgets.Button.radio_set_t){
-      Eliom_widgets.Button.new_radio_set ()
+    let set = {(Ew_button.radio_set_t){
+      Ew_button.new_radio_set ()
     }} in
     let button1 = D.h2 [pcdata "Login"] in
     let form1, i1 = connection_box connection_service in
     let o1 = {restr_show_hide_focus{
-      new Eliom_widgets.Button.button_show_hide
+      new Ew_button.show_hide
         ~pressed:true
         ~set:%set ~button:%button1
         ~button_closeable:false
@@ -118,7 +118,7 @@ let login_signin_box
     let button2 = D.h2 [pcdata "Lost password"] in
     let form2, i2 = email_box lost_password_service in
     let o2 = {restr_show_hide_focus{
-      new Eliom_widgets.Button.button_show_hide
+      new Ew_button.show_hide
         ~set:%set ~button:%button2
         ~button_closeable:false
         %form2
@@ -138,7 +138,7 @@ let login_signin_box
     let button4 = D.h2 [pcdata "Register"] in
     let form4, i4 = email_box sign_up_service in
     let o4 = {restr_show_hide_focus{
-      new Eliom_widgets.Button.button_show_hide
+      new Ew_button.show_hide
         ~set:%set ~button:%button4
         ~button_closeable:false
         %form4
