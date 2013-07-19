@@ -258,6 +258,7 @@ let send_activation_email ~email ~uri () =
       (connect_wrapper_page
          (Eba_admin.admin_service_handler
             page_container
+            main_title
             set_group_of_user_rpc
             get_groups_of_user_rpc));
 

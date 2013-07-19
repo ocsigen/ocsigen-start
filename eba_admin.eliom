@@ -204,6 +204,7 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
 
 let admin_service_handler
       page_container
+      main_title
       set_group_of_user_rpc
       get_groups_of_user_rpc
       uid () () =
@@ -215,17 +216,11 @@ let admin_service_handler
     * or just return some html5 stuffs to tell that the user can't reach this
     * page ? (404 ?) *)
   then
-    let content =
-      div ~a:[a_class ["ol_error"]] [
-        h1 [pcdata "You're not allowed to access to this page."];
-        a ~a:[a_class ["ol_link_error"]]
-          ~service:Eba_services.main_service
-          [pcdata "back"]
-          ()
-      ]
-    in
+    lwt gblp = Eba_site_widgets.globalpart main_title (Some user) in
     Lwt.return
-      (page_container [content])
+      (page_container [gblp])
   else
     lwt content = admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc in
-      Lwt.return (page_container content)
+    lwt gblp = Eba_site_widgets.globalpart main_title (Some user) in
+    Lwt.return
+      (page_container (gblp::content))
