@@ -61,6 +61,11 @@ let open_state_desc =
     ]
   ]
 
+let switch_on_mode =
+  server_function
+    Json.t<Eba_site.state_t>
+    (fun state -> Eba_site.set_state state)
+
 let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
   let open Eba_base_widgets in
   lwt state = Eba_site.get_state () in
@@ -68,52 +73,6 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
     if b then "ol_current_state"
     else ""
   in
-  let set = {(Ew_button.radio_set_t){ Ew_button.new_radio_set () }} in
-  let button1, form1 =
-    D.h2 ~a:[a_class [enable_if (state = Eba_site.Close)]] [pcdata "CLOSE"],
-    confirm_box Eba_services.open_service
-      "switch to open mode"
-      open_state_desc
-  in
-  let close_state_div =
-    D.div ~a:[
-      a_id "ol_close_state";
-      a_class [enable_if (state = Eba_site.Close)]] [
-        form1
-      ]
-  in
-  let radio1 = {button_t{
-    new Ew_button.show_hide
-      ~pressed:(%state = Eba_site.Close)
-      ~set:%set ~button:%button1
-      ~button_closeable:false
-      %close_state_div
-  }}
-  in
-  let button2, form2 =
-    D.h2 ~a:[a_class [enable_if (state = Eba_site.Open)]] [pcdata "OPEN"],
-    confirm_box Eba_services.close_service
-       "switch to close mode"
-       close_state_desc
-  in
-  let open_state_div =
-    D.div ~a:[
-      a_id "ol_open_state";
-      a_class [enable_if (state = Eba_site.Open)]] [
-        form2
-      ]
-  in
-  let radio2 = {button_t{
-    new Ew_button.show_hide
-      ~pressed:(%state = Eba_site.Open)
-      ~set:%set ~button:%button2
-      ~button_closeable:false
-      %open_state_div
-  }}
-  in
-  ignore {unit{
-    ignore ((%radio2)#press)
-  }};
   let users_box = D.div [] in
   let widget = D.div [] in
   (* I create a dummy button because the completion widget need it,
@@ -124,6 +83,35 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
       ~button:%dummy_data
       ()
   }} in
+  let make_rb pressed desc =
+    D.raw_input
+      ~a:(if pressed then [a_checked `Checked] else [])
+      ~input_type:`Radio
+      ~name:"state"
+      ~value:desc
+      (),
+    pcdata desc
+  in
+  let rb1,rb_desc1 =
+    make_rb
+      (state = Eba_site.Close)
+      "allow pre-registration of users"
+  in
+  let rb2,rb_desc2 =
+    make_rb
+      (state = Eba_site.Open)
+      "allow registration of users"
+  in
+  ignore {unit{
+    ignore (Lwt_js_events.clicks (To_dom.of_element %rb1)
+              (fun _ _ ->
+                 lwt () = (%switch_on_mode (Eba_site.Close)) in
+                 Lwt.return ()));
+    ignore (Lwt_js_events.clicks (To_dom.of_element %rb2)
+              (fun _ _ ->
+                 lwt () = (%switch_on_mode (Eba_site.Open)) in
+                 Lwt.return ()));
+  }};
     (*
   let _ = {unit{
     let module MBW =
@@ -193,11 +181,10 @@ let admin_page_content user set_group_of_user_rpc get_groups_of_user_rpc =
   }} in
      *)
   Lwt.return [
-    div ~a:[a_id "ol_admin_welcome"] [
-      h1 [pcdata ("welcome " ^ (Eba_common0.name_of_user user))];
-    ];
-    button1; button2;
-    close_state_div; open_state_div;
+    rb1; rb_desc1;
+    br ();
+    rb2; rb_desc2;
+    hr ();
     widget;
     users_box
   ]
