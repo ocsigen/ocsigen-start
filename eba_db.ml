@@ -409,6 +409,18 @@ let get_userid_from_activationkey key =
     )
 
 
+let set_password userid pwd =
+  full_transaction_block (fun dbh ->
+    lwt () = Lwt_Query.query dbh
+      <:update< u in $users_table$ := { pwd = $string:pwd$;
+                                      } |
+                u.userid = $int64:userid$ >>
+    in
+    reset_user userid;
+    Lwt.return ()
+  )
+
+
 (** sets the user info for existing user, and reset its value from the cache *)
 let set_personal_data userid firstname lastname pwd =
   full_transaction_block (fun dbh ->

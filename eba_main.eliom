@@ -135,6 +135,18 @@ let send_activation_email ~email ~uri () =
   let new_user user = user.Eba_common0.new_user
 
 
+  let set_password_handler userid () ((pwd, pwd2) as v) =
+    (* SECURITY: We get the userid from session cookie,
+       and change personal data for this user. No other check. *)
+    if pwd <> pwd2
+    then
+      ((* TODO flash message ? *)
+      Lwt.return ())
+    else
+      let pwd = Bcrypt.hash pwd in
+      Eba_db.set_password userid (Bcrypt.string_of_hash pwd)
+
+
   let set_personal_data_action userid ()
       (((firstname, lastname), (pwd, pwd2)) as v) =
     (* SECURITY: We get the userid from session cookie,
@@ -245,6 +257,9 @@ let send_activation_email ~email ~uri () =
     Eliom_registration.Action.register
       sign_up_service sign_up_action;
     Eliom_registration.Any.register activation_service activation_handler;
+    Eliom_registration.Action.register
+      set_password_service
+      (CW.connect_wrapper_function set_password_handler);
     Eliom_registration.Action.register
       set_personal_data_service
       (CW.connect_wrapper_function set_personal_data_action);

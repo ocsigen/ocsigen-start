@@ -226,6 +226,41 @@ let login_signin_box =
     Eba_services.sign_up_service
     Eba_services.preregister_service
 
+let password_form () =
+  post_form
+    ~service:Eba_services.set_password_service
+    (fun (pwdn, pwd2n) ->
+      let pass1 =
+        D.string_input
+          ~a:[a_required `Required;
+              a_autocomplete `Off]
+          ~input_type:`Password ~name:pwdn ()
+      in
+      let pass2 =
+        D.string_input
+          ~a:[a_required `Required;
+              a_autocomplete `Off]
+          ~input_type:`Password ~name:pwd2n ()
+      in
+      ignore {unit{
+        let pass1 = To_dom.of_input %pass1 in
+        let pass2 = To_dom.of_input %pass2 in
+        Lwt_js_events.(async (fun () ->
+          inputs pass2 (fun _ _ ->
+            if (Js.to_string pass1##value <> Js.to_string pass2##value)
+            then (Js.Unsafe.coerce pass2)##setCustomValidity("Passwords do not match")
+            else (Js.Unsafe.coerce pass2)##setCustomValidity("");
+            Lwt.return ())))
+      }};
+      [table
+         (tr [td [label [pcdata "Password:"]]; td [pass1]])
+         [
+           tr [td [label [pcdata "Retype password:"]]; td [pass2]];
+         ];
+       string_input ~input_type:`Submit ~value:"Send" ()
+      ])
+    ()
+
 let personal_info_form ((fn, ln), (p1, p2)) =
   post_form
     ~a:[a_id "ol_personal_info_form"]

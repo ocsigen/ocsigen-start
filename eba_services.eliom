@@ -28,6 +28,11 @@ let sign_up_service =
 let activation_service =
   coservice' ~name:"activation" ~get_params:(string "activationkey") ()
 
+let set_password_service =
+  post_coservice'
+    ~name:"setpassword"
+    ~post_params:(string "password1" ** string "password2") ()
+
 let set_personal_data_service =
   post_coservice'
     ~name:"setdata"

@@ -148,7 +148,13 @@ let userbox user =
     else []
   in
   let () =
-    Eba_settings.set_content (admin_content @ [logout_button ()])
+    Eba_settings.set_content (
+      admin_content
+      @ [hr ()]
+      @ [Eba_base_widgets.password_form ()]
+      @ [hr ()]
+      @ [logout_button ()]
+    )
   in
   let settings = Eba_settings.get () in
   Lwt.return
