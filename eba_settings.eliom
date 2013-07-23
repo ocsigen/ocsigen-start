@@ -5,24 +5,27 @@
   open Eliom_content.Html5.F
 }}
 
-let content : Html5_types.div_content F.elt list ref = ref []
+let content
+    : (Eba_common0.user -> Html5_types.div_content F.elt list Lwt.t) ref =
+  ref (fun _ -> Lwt.return [])
 
 let set_content cn = content := cn
 
 let get_content () = !content
 
-let get () =
+let create_box user =
   let button =
     D.div ~a:[a_class ["eba_settings_button"]]
                  [D.i ~a:[a_class ["icon-gear"]] []]
   in
-  let content = !content in
+  lwt content = get_content () user in
   ignore ({unit{
     ignore (object(self)
               inherit Ew_button.alert
-                ~set:Eba_site_widgets.settings_set
                 ~class_:["eba_settings"]
+                ~set:Eba_site_widgets.global_widget_set
                 ~button:%button
+                ~allow_outer_click:false
                 ()
 
               (* get_node returns div_content type, so we have to
@@ -35,4 +38,4 @@ let get () =
 
             end)
   }});
-  button
+  Lwt.return button

@@ -14,6 +14,10 @@ let class_mainpart = "ol_mainpart"
 let class_main_infobox = "ol_main_infobox"
 
 {client{
+  let global_widget_set = Ew_button.new_radio_set ()
+}}
+
+{client{
 
   let info ?important ?class_ ?timeout msg =
     Eba_misc.log msg
@@ -116,18 +120,15 @@ let upload_pic_form me () =
    thesubmit]
 }}
 
-{client{
-  let settings_set = Ew_button.new_radio_set ()
-}}
-
 let upload_pic_button () =
   let d = D.div ~a:[a_class ["ol_upload_pic"]] [pcdata "Upload picture"] in
   ignore {unit{
     ignore (object (me)
       inherit Ew_button.alert
-        ~set:settings_set
         ~class_:["ol_upload_pic_form"]
         ~button:%d
+        ~set:global_widget_set
+        ~allow_outer_click:false
 (*        ~parent_node:(Eba_misc.of_opt d##parentNode) *)
         ()
       method get_node = Lwt.return (upload_pic_form me ())
@@ -135,28 +136,29 @@ let upload_pic_button () =
     }};
   d
 
-let userbox user =
+let default_settings_box user =
   lwt admin_g = Eba_groups.admin in
   lwt is_admin =
     Eba_groups.in_group
       ~userid:(Eba_common0.id_of_user user)
       ~group:admin_g
   in
-  let admin_content =
+  let l = [hr ();
+           Eba_base_widgets.password_form ();
+           hr ();
+           logout_button ()]
+  in
+  let l =
     if is_admin
-    then [F.a ~service:Eba_services.admin_service [pcdata "admin page"] ()]
-    else []
+    then F.a ~service:Eba_services.admin_service [pcdata "admin page"] ()::l
+    else l
   in
-  let () =
-    Eba_settings.set_content (
-      admin_content
-      @ [hr ()]
-      @ [Eba_base_widgets.password_form ()]
-      @ [hr ()]
-      @ [logout_button ()]
-    )
-  in
-  let settings = Eba_settings.get () in
+  Lwt.return l
+
+let _ = Eba_settings.set_content default_settings_box
+
+let userbox user =
+  lwt settings = Eba_settings.create_box user in
   Lwt.return
     (div ~a:[a_class [class_identity]] [
       Eba_common0.print_user_avatar user;
