@@ -206,7 +206,7 @@ let is_valid_mail s =
         match r with
           | Member a -> aux (a::acc) l
           | Invited m -> lwt a = newmember_from_mail m in
-                      aux (a::acc) l
+                         aux (a::acc) l
       end
     in
     aux [] tlist

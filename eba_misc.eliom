@@ -158,25 +158,3 @@ let send_mail ~from_addr ~to_addrs ~subject content =
       (Netsendmail.compose ~from_addr ~to_addrs ~subject content);
     Lwt.return true
   with _ -> (Eliom_lib.debug "SENDING INVITATION FAILED" ; Lwt.return false)
-
-let send_invitation ?name ~email ~sponsor ~disctitle ~uri () =
-  let name = match name with
-    | None -> ""
-    | Some n -> n
-  in
-  try_lwt
-    ignore (Netaddress.parse email);
-    send_mail
-      ~from_addr:("Myproject Team", "noreply@ocsigenlabs.com")
-      ~to_addrs:[(name, email)]
-      ~subject:"Myproject invitation"
-      (sponsor ^ "invited you to share a connective discussion on Myproject."
-       ^ "\n"
-       ^ "Title: " ^ disctitle
-       ^ "\n"
-       ^ "To activate your Myproject account, please visit the \
-             following link:\n" ^ uri
-       ^ "\n"
-       ^ "This is an auto-generated message. "
-       ^ "Please do not reply.\n")
-  with _ -> (Eliom_lib.debug "SENDING INVITATION FAILED" ; Lwt.return false)
