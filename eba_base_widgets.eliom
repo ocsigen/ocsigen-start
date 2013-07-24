@@ -111,7 +111,7 @@ let login_signin_box
       new Ew_button.show_hide
         ~pressed:true
         ~set:%set ~button:%button1
-        ~button_closeable:false
+        ~closeable_by_button:false
         %form1
     }}
     in
@@ -120,7 +120,7 @@ let login_signin_box
     let o2 = {restr_show_hide_focus{
       new Ew_button.show_hide
         ~set:%set ~button:%button2
-        ~button_closeable:false
+        ~closeable_by_button:false
         %form2
     }}
     in
@@ -130,7 +130,7 @@ let login_signin_box
     let o3 = {restr_show_hide_focus{
       new show_hide_focus
         ~set:%set ~button:(To_dom.of_h2 %button3)
-        ~button_closeable:false
+        ~closeable_by_button:false
         ~focused:(To_dom.of_input %i3) (To_dom.of_form %form3)
     }}
     in
@@ -140,7 +140,7 @@ let login_signin_box
     let o4 = {restr_show_hide_focus{
       new Ew_button.show_hide
         ~set:%set ~button:%button4
-        ~button_closeable:false
+        ~closeable_by_button:false
         %form4
     }}
     in
