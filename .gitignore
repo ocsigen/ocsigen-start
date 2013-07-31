@@ -16,9 +16,10 @@ _deps/
 _server/
 local/
 
-static/css/*.css
-
 .*.sw*
 
 META
 Makefile.depend
+
+samples/static/avatars
+samples/static/tmp
