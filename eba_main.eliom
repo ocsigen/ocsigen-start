@@ -46,9 +46,20 @@ end) = struct
   (********* Service handlers *********)
   let page_container content =
     let css = List.map (fun cssname -> ("css"::cssname))
-      (["eliom_ui.css"]::["ol.css"]::A.css_list)
+                ([["eliom_ui.css"];
+                  ["ol.css"]; (* merge them together *)
+                  ["eba.css"];
+                  ["popup.css"];
+                  ["jcrop.css"];
+                  ["jquery.Jcrop.css"]]
+                @ A.css_list)
     in
-    let js = List.map (fun jsname -> ("js"::jsname)) A.js_list in
+    let js = List.map (fun jsname -> ("js"::jsname))
+               ([["jquery.js"];
+                 ["jquery.Jcrop.js"];
+                 ["jquery.color.js"]]
+               @ A.js_list)
+    in
     (html
        (Eliom_tools.F.head ~title:A.capitalized_app_name ~css ~js ())
        (body content))
@@ -171,21 +182,48 @@ let send_activation_email ~email ~uri () =
     if !r = "" then failwith "Please set option <avatars dir=\"...\" /> for this Eliom module";
     r
 
-  let set_pic userid () pic =
-(*VVV Check that it is a valid picture! *)
-(*VVV Resize? Crop? *)
-    let newname = Ocsigen_lib.make_cryptographic_safe_string () in
-    Eba_misc.base64url_of_base64 newname;
-    let newpath = !avatar_dir^"/"^newname in
-    Unix.link (Eliom_request_info.get_tmp_filename pic) newpath;
-    lwt pic = Eba_db.get_pic userid in
-    (match pic with
-      | None -> ()
-      | Some old_pic -> try Unix.unlink (!avatar_dir^"/"^old_pic)
-        with Unix.Unix_error _ -> ()
-    );
-    lwt () = Eba_db.set_pic userid newname in
-    Lwt.return newname
+  let crop_handler userid gp pp =
+    let dynup_handler =
+      (* Will return a function which takes GET and POST parameters *)
+      Ew_dyn_upload.handler
+        ~dir:["avatars"]
+        ~remove_on_timeout:true
+        ~extensions:["png"; "jpg"]
+        (fun dname fname ->
+           let path = List.fold_left (fun a b -> a^"/"^b) "./static" dname in
+           let path = path^"/"^fname in
+           let img = Magick.read_image path in
+           let w,h =
+             Magick.get_image_width img,
+             Magick.get_image_height img
+           in
+           let resize w h =
+             Magick.Imper.resize
+               img
+               ~width:w
+               ~height:h
+               ~filter:Magick.Point
+               ~blur:0.0
+           in
+           let ratio w h new_w =
+             let iof,foi = int_of_float,float_of_int in
+               iof ((foi h) /. (foi w) *. (foi new_w))
+           in
+           let normalize n max =
+             n * 100 / max
+           in
+           let w_max,h_max = 700,500 in
+           let () =
+             if w > w_max || h > h_max
+             then
+               if (normalize w w_max) > (normalize h h_max)
+               then resize w_max (ratio w h w_max)
+               else resize (ratio h w h_max) h_max
+           in
+           let () = Magick.write_image img ~filename:path in
+           Lwt.return ())
+    in
+    dynup_handler gp pp
 
   (** service which will be attach to the current service to handle
     * the activation key (the attach_coservice' will be done on
@@ -263,12 +301,13 @@ let send_activation_email ~email ~uri () =
     Eliom_registration.Action.register
       set_personal_data_service
       (CW.connect_wrapper_function set_personal_data_action);
-    Eliom_registration.Ocaml.register pic_service
-      (CW.connect_wrapper_function set_pic);
     Eliom_registration.Action.register
       open_service Eba_admin.open_service_handler;
     Eliom_registration.Action.register
       close_service Eba_admin.close_service_handler;
+    Ew_dyn_upload.register
+      crop_service
+      (CW.connect_wrapper_function crop_handler);
     My_appl.register admin_service
       (connect_wrapper_page
          (Eba_admin.admin_service_handler

@@ -68,3 +68,8 @@ let open_service =
   post_coservice'
     ~name:"open"
     ~post_params:unit ()
+
+let crop_service =
+  Ew_dyn_upload.service
+    ~name:"crop"
+    ()

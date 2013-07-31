@@ -60,82 +60,6 @@ let logout_button () =
     }};
   b
 
-{client{
-
-let current_pic = ref (Js.string "")
-
-let _ =
-  lwt () = Lwt_js_events.request_animation_frame () in
-  current_pic := Js.Opt.case
-    (Dom_html.document##body##querySelector
-       (Js.string ("div.ol_identity img."^Eba_common0.cls_avatar)))
-    (fun () -> Js.string "")
-    (fun v -> (Js.Unsafe.coerce v)##src);
- Lwt.return ()
-
-let update_pics newpic =
-  let oldpic = !current_pic in
-  let newpic =
-    Js.string (Eba_common0.make_pic_string_uri ~absolute:true newpic) in
-  current_pic := newpic;
-  let pics =
-    Dom_html.document##body##querySelectorAll
-      (Js.string ("."^Eba_common0.cls_avatar))
-  in
-  for i = 0 to pics##length - 1 do
-    let img = Js.Unsafe.coerce (Eba_misc.of_opt (pics##item(i))) in
-    Firebug.console##log(oldpic);
-    Firebug.console##log(img##src);
-    if img##src = oldpic
-    then img##src <- newpic
-  done
-
-
-let upload_pic_form me () =
-  let file = D.Raw.input ~a:[a_input_type `File] () in
-  let thesubmit = D.Raw.input ~a:[a_input_type `Submit; a_value "Send"] () in
-  Lwt_js_events.(
-    async (fun () ->
-      clicks (To_dom.of_input thesubmit)
-        (fun _ _ ->
-          Js.Optdef.case ((To_dom.of_input file)##files)
-            Lwt.return
-            (fun files ->
-              Js.Opt.case (files##item(0))
-                Lwt.return
-                (fun file ->
-                  lwt newpic = Eliom_client.call_caml_service
-                    ~service:%Eba_services.pic_service
-                    () file
-                  in
-                  (* close form *)
-                  me#unpress;
-                  (* update all pics on the page? *)
-                  update_pics newpic;
-                  Lwt.return ()
-                )
-        ))));
-  [pcdata "Upload a picture:";
-   file;
-   thesubmit]
-}}
-
-let upload_pic_button () =
-  let d = D.div ~a:[a_class ["ol_upload_pic"]] [pcdata "Upload picture"] in
-  ignore {unit{
-    ignore (object (me)
-      inherit Ew_button.alert
-        ~class_:["ol_upload_pic_form"]
-        ~button:%d
-        ~set:global_widget_set
-        ~allow_outer_click:false
-(*        ~parent_node:(Eba_misc.of_opt d##parentNode) *)
-        ()
-      method get_node = Lwt.return (upload_pic_form me ())
-    end)
-    }};
-  d
-
 let default_settings_box user =
   lwt admin_g = Eba_groups.admin in
   lwt is_admin =
@@ -162,7 +86,7 @@ let userbox user =
   Lwt.return
     (div ~a:[a_class [class_identity]] [
       Eba_common0.print_user_avatar user;
-      upload_pic_button ();
+      Eba_picture_box.create user;
       Eba_common0.print_user_name user;
       settings
     ])

@@ -14,7 +14,7 @@ SERVER_FILES := $(wildcard *.eliom* *.ml*)
 CLIENT_FILES := $(wildcard *.eliom*)
 
 # OCamlfind packages for the server
-SERVER_PACKAGES := pgocaml,pgocaml.syntax,text,macaque.syntax,calendar,safepass,eliom-widgets.server
+SERVER_PACKAGES := pgocaml,pgocaml.syntax,text,macaque.syntax,calendar,safepass,eliom-widgets.server,magick
 # OCamlfind packages for the client
 CLIENT_PACKAGES := text,calendar,ojwidgets,eliom-widgets.client
 
