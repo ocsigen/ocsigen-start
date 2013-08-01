@@ -61,8 +61,8 @@
 
 {client{
   let search_case_accents_i w0 w1 =
-    let w0 = Js.to_string (Ew_accents.removeDiacritics w0) in
-    let w1 = Js.to_string (Ew_accents.removeDiacritics w1) in
+    let w0 = Js.to_string (Ojw_fun.removeDiacritics w0) in
+    let w1 = Js.to_string (Ojw_fun.removeDiacritics w1) in
     search_case_insensitive w0 w1 (*both arg are caml utf8 string *)
 }}
 
@@ -303,7 +303,7 @@ class ['a] completion_on
                       Lwt.return ())
               in
               restrictive <- (switch_to_restrictive i_caml8);
-              let i_wa = Ew_accents.removeDiacritics i_js16 in
+              let i_wa = Ojw_fun.removeDiacritics i_js16 in
               let i_wa_caml8 = Js.to_string i_wa in
               (match !choices with
                 | [] -> me#display_off

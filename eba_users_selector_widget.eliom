@@ -21,7 +21,7 @@ module MakeSelectionWidget(BW:BaseWidgets) =
 
       let build_licontent  get_string pattern m index =
         let good_length s l  =
-          let s = Js.to_string (Ew_accents.removeDiacritics (Js.string s)) in
+          let s = Js.to_string (Ojw_fun.removeDiacritics (Js.string s)) in
           String.length s = l
         in
 
