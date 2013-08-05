@@ -32,6 +32,6 @@ module Make : functor (M : In) -> sig
   (** Use this function if you have a function which alterate the value
     * of type [value_t] to be sure that the data on the cache will be update
     * on the next call of get function *)
-  val wrap_function : M.key_t -> (unit -> M.value_t Lwt.t) -> M.value_t Lwt.t
+  val wrap_function : M.key_t -> (unit -> 'a Lwt.t) -> 'a Lwt.t
 end
 
