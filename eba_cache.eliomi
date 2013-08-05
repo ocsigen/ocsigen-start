@@ -26,6 +26,9 @@ module Make : functor (M : In) -> sig
     * value and to store it into the map *)
   val get : M.key_t -> M.value_t Lwt.t
 
+  (** Remove explicitly the key on the cache *)
+  val reset : M.key_t -> unit
+
   (** Use this function if you have a function which alterate the value
     * of type [value_t] to be sure that the data on the cache will be update
     * on the next call of get function *)

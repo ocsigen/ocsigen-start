@@ -21,6 +21,10 @@ module Make(M : In) = struct
       ~scope:Eliom_common.request_scope
       MMap.empty
 
+  let reset (k : M.key_t) =
+    let table = Eliom_reference.Volatile.get cache in
+    Eliom_reference.Volatile.set cache (MMap.remove k table)
+
   let get (k : M.key_t) =
     let table = Eliom_reference.Volatile.get cache in
     try Lwt.return (MMap.find k table)
@@ -39,8 +43,7 @@ module Make(M : In) = struct
      * to the key to be sure that we're going to use valid data with the
      * cache *)
     lwt ret = f () in
-    (* reset *)
-    Eliom_reference.Volatile.set cache (MMap.remove k table);
+    let () = reset k in
     Lwt.return ret
 
 end
