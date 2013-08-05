@@ -98,6 +98,15 @@ let create user =
           To_dom.of_element (pcdata "Select your photo:");
           To_dom.of_element inp;
         ];
+        let create_div_error content =
+          let p_content = List.map (fun c -> pcdata c) content in
+          div
+            ~a:[a_class ["eba_upload_error"]]
+            [
+              h3 [pcdata "Something went wrong."];
+              p p_content
+            ]
+        in
         (* Close the popup on cancel *)
         ignore (object
                   inherit Ojw_button.button ~button:(To_dom.of_element cancel) ()
@@ -114,34 +123,45 @@ let create user =
 
             val mutable dname' = []
             val mutable fname' = ""
+            val mutable popup_body = []
             val mutable crop_prop' = None
 
             method set_dir dname = dname' <- dname
             method set_filename fname = fname' <- fname
-            method set_crop_prop ((x,y,w,h) as p) = crop_prop' <- Some p
+            method set_crop_prop p =
+              match p with
+                | None -> crop_prop' <- None
+                | Some p -> crop_prop' <- Some p
+            method set_body_popup b = popup_body <- b
 
             method on_press =
-              lwt () =
-                match crop_prop' with
-                  | None -> Lwt.return ()
-                  | Some prop -> begin
-                      %crop_on_server (%user, dname', fname', prop);
-                      (* update all pics on the page? *)
-                      update_pictures dname' fname';
-                      let text =
-                        p [pcdata "You profile's photo has been changed !"]
-                      in
-                      self#set_body [
-                        To_dom.of_element text;
-                      ];
-                      self#set_footer [
-                        To_dom.of_element cancel;
-                      ];
-                      self#update;
-                      Lwt.return ()
-                    end
-              in
-              Lwt.return ()
+              match crop_prop' with
+                | None ->
+                    let error =
+                      create_div_error [
+                        "You have to select an area of the photo !";
+                      ]
+                    in
+                    self#set_body ((To_dom.of_element error)::popup_body);
+                    self#update;
+                    press_state <- false;
+                    Lwt.return ()
+                | Some prop -> begin
+                    %crop_on_server (%user, dname', fname', prop);
+                    (* update all pics on the page? *)
+                    update_pictures dname' fname';
+                    let text =
+                      p [pcdata "You profile's photo has been changed !"]
+                    in
+                    self#set_body [
+                      To_dom.of_element text;
+                    ];
+                    self#set_footer [
+                      To_dom.of_element cancel;
+                    ];
+                    self#update;
+                    Lwt.return ()
+                  end
 
           end
         in
@@ -159,7 +179,10 @@ let create user =
                  crop_butt#set_filename fname;
                  let image_on_load () =
                    let on_select c =
-                     crop_butt#set_crop_prop (c##x,c##y,c##w,c##h)
+                     crop_butt#set_crop_prop (Some (c##x,c##y,c##w,c##h))
+                   in
+                   let on_release _ =
+                     crop_butt#set_crop_prop None
                    in
                    (* We use an wrapper, because jcrop is going to
                     * wrap our image into a div in display:block
@@ -168,6 +191,9 @@ let create user =
                    let inline_wrapper =
                      D.div ~a:[a_style "display: inline-block"] [img]
                    in
+                   crop_butt#set_body_popup [
+                     To_dom.of_element inline_wrapper;
+                   ];
                    self#set_body [
                      To_dom.of_element inline_wrapper;
                    ];
@@ -178,6 +204,7 @@ let create user =
                    ignore (new Ojw_jcrop.jcrop
                              ~aspect_ratio:1.0
                              ~set_select:(100, 100, 50, 50)
+                             ~on_release
                              ~on_select
                              jimg);
                    (* Update the popup because the image has been
@@ -199,7 +226,20 @@ let create user =
               (fun _ -> Lwt.return ())
               (fun files ->
                  Js.Opt.case (files##item(0))
-                   (fun _ -> Lwt.return ())
+                   (fun _ ->
+                      let error =
+                        create_div_error [
+                          "You have to select a file !";
+                        ]
+                      in
+                      self#set_body [
+                        To_dom.of_element error;
+                        To_dom.of_element (pcdata "Select your photo:");
+                        To_dom.of_element inp;
+                      ];
+                      press_state <- false;
+                      self#update;
+                      Lwt.return ())
                    (fun file ->
                       self#set_body [
                         let icon =
@@ -217,21 +257,16 @@ let create user =
                         download_and_crop file
                       with
                         | Eliom_lib.Exception_on_server s ->
-                            let error =
-                              div
-                                ~a:[a_class ["eba_upload_error"]]
-                                [
-                                  h3 [pcdata "Something went wrong."];
-                                  p [
-                                    pcdata "Make sure to have upload ";
-                                    pcdata "file with a valid extentions (png, jpg)"
-                                  ];
-                                ]
-                            in
                             (* reset uploading button before insert it into
                              * the popup (because it is pressed at this
                              * moment, so we have to unpress it) *)
                             press_state <- false;
+                            let error =
+                              create_div_error [
+                                "Make sure to have upload ";
+                                "file with a valid extentions (png, jpg)"
+                              ]
+                            in
                             self#set_header [
                               To_dom.of_p (p [pcdata "Change your photo:"])
                             ];
@@ -244,6 +279,7 @@ let create user =
                               To_dom.of_element (pcdata "Select your photo:");
                               To_dom.of_element inp;
                             ];
+                            self#update;
                             Lwt.return ()))
                 end);
         Lwt.return ()
