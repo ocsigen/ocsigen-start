@@ -13,20 +13,41 @@ let create_group_with g =
     desc = (Sql.getn g#description);
   }
 
+exception No_such_group
+
+module MCache_in = struct
+  type key_t = string
+  type value_t = t
+
+  let compare = compare
+  let get key =
+    print_endline ("get with key="^key);
+    match_lwt Eba_db.group_exists key with
+      | Some g -> Lwt.return (create_group_with g)
+      | None -> Lwt.fail No_such_group
+end
+module MCache = Eba_cache.Make(MCache_in)
+
 (** creates the group in the database if it does
   * not exist, or returns its id as an abstract value *)
 let create ?description name =
-  match_lwt Eba_db.group_exists name with
+  print_endline "eba_group.create";
+   match_lwt Eba_db.group_exists name with
     | Some g -> Lwt.return (create_group_with g)
     | None ->
+        (* we can't use the cache here, because we can use create at top-level
+         * and we don't have access to request scope at top-level *)
         lwt () = Eba_db.new_group ?description name in
-  lwt g = Eba_db.get_group name in
-  Lwt.return (create_group_with g)
+        lwt g = Eba_db.get_group name in
+        Lwt.return (create_group_with g)
 
 let get name =
-  match_lwt Eba_db.group_exists name with
-    | Some g -> Lwt.return (Some (create_group_with g))
-    | None -> Lwt.return None
+  print_endline "eba_group.get";
+  try_lwt
+    lwt g = MCache.get name in
+    Lwt.return (Some g)
+  with
+    | No_such_group -> Lwt.return None
 
 let add_user ~userid ~group =
   Eba_db.add_user_in_group
@@ -45,7 +66,15 @@ let in_group ~userid ~group =
 
 let all () =
   lwt l = Eba_db.get_groups () in
-  Lwt.return (List.map (create_group_with) l)
+  let put_in_cache g =
+    let g = create_group_with g in
+    let () = MCache.set g.name g in
+    g
+  in
+  Lwt.return
+    (List.map
+       (put_in_cache)
+       (l))
 
 {shared{
   let name_of group = group.name
