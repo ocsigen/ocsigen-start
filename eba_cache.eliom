@@ -21,6 +21,18 @@ module Make(M : In) = struct
       ~scope:Eliom_common.request_scope
       MMap.empty
 
+  let has k =
+    let table = Eliom_reference.Volatile.get cache in
+    try
+      ignore (MMap.find k table);
+      true
+    with
+      | Not_found -> false
+
+  let set k v =
+    let table = Eliom_reference.Volatile.get cache in
+    Eliom_reference.Volatile.set cache (MMap.add k v table)
+
   let reset (k : M.key_t) =
     let table = Eliom_reference.Volatile.get cache in
     Eliom_reference.Volatile.set cache (MMap.remove k table)

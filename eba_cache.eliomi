@@ -20,6 +20,12 @@ end
 
 module Make : functor (M : In) -> sig
 
+  (** Return true if the cache has value associated to this key *)
+  val has : M.key_t -> bool
+
+  (** Set explicitly a value for a correponding key *)
+  val set : M.key_t -> M.value_t -> unit
+
   (** Returns the corresponding value for a key, using the cache
     * if the value has been already retrieved, otherwise, it will call
     * the get function of the configuration module to get the corresponding
