@@ -94,8 +94,8 @@ let get_group name =
 let q_group_exists dbh name =
   try_lwt
     lwt g = Lwt_Query.view_one dbh
-    <:view< g | g in $groups_table$;
-                g.name = $string:name$ >>;
+      <:view< g | g in $groups_table$;
+                  g.name = $string:name$ >>;
     in
     Lwt.return (Some g)
   with _ -> Lwt.return None
@@ -249,9 +249,7 @@ module MCache_in = struct
                            r.userid = $int64:key$
                >>
            in
-           let user =
-             Eba_common0.create_user_from_db_info u
-           in
+           let user = Eba_common0.create_user_from_db_info u in
            Lwt.return user
          with
            | _ -> Lwt.fail Eba_common0.No_such_user)
