@@ -234,6 +234,36 @@ let password_view =
       e in $emails_table$;
       u.userid = e.userid >>
 
+module MCache_in = struct
+  type key_t = int64
+  type value_t = Eba_common0.user
+
+  let compare = compare
+  let get key =
+    full_transaction_block
+      (fun dbh ->
+         try_lwt
+           lwt u =
+             Lwt_Query.view_one dbh
+               <:view< r | r in $users_table$;
+                           r.userid = $int64:key$
+               >>
+           in
+           let user =
+             Eba_common0.create_user_from_db_info u
+           in
+           Lwt.return user
+         with
+           | _ -> Lwt.fail Eba_common0.No_such_user)
+end
+module MCache = Eba_cache.Make(MCache_in)
+
+let get_user (uid : int64) =
+  (MCache.get uid :> Eba_common0.user Lwt.t)
+
+let reset_user (uid : int64) : unit =
+  MCache.reset uid
+
 let check_pwd login pwd =
   full_transaction_block
   (fun dbh ->
@@ -253,35 +283,6 @@ let check_pwd login pwd =
         Lwt.return (r#!userid)
     ))
 
-
-(** Returns the informations about one user from one uid.
-    The results are cached in an Eliom reference with scope request. *)
-let get_user, reset_user =
-  let module M = Map.Make(struct type t = int64 let compare = compare end) in
-  let cache = Eliom_reference.Volatile.eref
-    ~scope:Eliom_common.request_scope M.empty
-  in
-  ((fun ?(default_avatar=Eba_common0.default_user_avatar) uid ->
-    let table = Eliom_reference.Volatile.get cache in
-    try Lwt.return (M.find uid table) with
-      | Not_found ->
-        full_transaction_block
-          (fun dbh ->
-            try_lwt
-              lwt u =
-                Lwt_Query.view_one dbh
-                <:view< r | r in $users_table$;
-                            r.userid = $int64:uid$ >>
-              in
-              let user =
-                Eba_common0.create_user_from_db_info ~default_avatar u in
-              let () = Eliom_reference.Volatile.set
-                cache (M.add uid user table) in
-              Lwt.return user
-            with _ -> Lwt.fail Eba_common0.No_such_user)),
-   (fun uid ->
-     let table = Eliom_reference.Volatile.get cache in
-     Eliom_reference.Volatile.set cache (M.remove uid table)))
 
 (** Get the list of users corresponding to one name. *)
 let get_users_from_name (fn, ln) =
