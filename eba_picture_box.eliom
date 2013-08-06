@@ -74,6 +74,17 @@ let create user =
                     ~width:700
                     ~set:(Eba_site_widgets.global_widget_set)
                     (To_dom.of_div %dbox) as super
+
+
+      val img' = D.img ~src:(string_uri [""]) ~alt:"" ()
+
+      (* when leaving the popup *)
+      method on_unpress =
+        let jimg = To_dom.of_img img' in
+        jimg##onload <- Dom.handler (fun _ -> Js.bool true);
+        jimg##src <- Js.string "";
+        Lwt.return ()
+
       method on_press =
         lwt () = super#on_press in
         let inp = D.Raw.input ~a:[a_input_type `File] () in
@@ -173,8 +184,7 @@ let create user =
               ~service:(%Eba_services.crop_service)
               ~file
               (fun dname fname ->
-                 let img = D.img ~src:(string_uri [""]) ~alt:"" () in
-                 let jimg = To_dom.of_img img in
+                 let jimg = To_dom.of_img img' in
                  crop_butt#set_dir dname;
                  crop_butt#set_filename fname;
                  let image_on_load () =
@@ -189,7 +199,7 @@ let create user =
                     * and we want to center our image, using an
                     * inline-block property *)
                    let inline_wrapper =
-                     D.div ~a:[a_style "display: inline-block"] [img]
+                     D.div ~a:[a_style "display: inline-block"] [img']
                    in
                    crop_butt#set_body_popup [
                      To_dom.of_element inline_wrapper;
@@ -213,7 +223,10 @@ let create user =
                    Js.bool true
                  in
                  (* Will be called when the image will be loaded *)
-                 jimg##onload <- Dom.handler (fun _ -> image_on_load ());
+                 jimg##onload <- Dom.handler
+                                   (fun _ -> if self#pressed
+                                      then image_on_load ()
+                                      else Js.bool false);
                  jimg##src <- Js.string (string_uri (dname @ [fname]));
                  Lwt.return ())
         in
