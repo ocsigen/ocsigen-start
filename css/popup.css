@@ -8,14 +8,17 @@
     height: 100%;
     opacity: .80;
     z-index: 9999;
+    overflow: auto;
+    overflow-y: scroll;
 }
+
 .ojw_popup {
-    display: none;
-	background: #fff;
-	float: left;
-	position: fixed;
-	top: 50%; left: 50%;
-	z-index: 99999;
+    position: relative;
+    background: #fff;
+    opacity: 1;
+    z-index: 99999;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .ojw_popup_header {
