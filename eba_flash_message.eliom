@@ -23,22 +23,22 @@ type flash_msg_t =
   | User_does_not_exist of string
   | User_already_exists of string
 
-let flash_msg : flash_msg_t option Eliom_reference.eref =
-  Eliom_reference.eref ~scope:Eliom_common.request_scope None
+let flash_msg : flash_msg_t option Eliom_reference.Volatile.eref =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope None
 
 let set_flash_msg (e : flash_msg_t)  =
-  Eliom_reference.set flash_msg (Some e)
+  Eliom_reference.Volatile.set flash_msg (Some e)
 
 let get_flash_msg ()  =
-  match_lwt Eliom_reference.get flash_msg with
+  match Eliom_reference.Volatile.get flash_msg with
     | None -> Lwt.return No_flash_msg
     | Some e -> Lwt.return e
 
 let get_ref_flash_msg () =
-  Eliom_reference.get flash_msg
+  Eliom_reference.Volatile.get flash_msg
 
 let has_flash_msg () =
-  match_lwt Eliom_reference.get flash_msg with
+  match Eliom_reference.Volatile.get flash_msg with
     | None -> Lwt.return false
     | Some _ -> Lwt.return true
 

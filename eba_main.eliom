@@ -83,7 +83,9 @@ end) = struct
     try_lwt
       lwt userid = Eba_db.check_pwd login pwd in
       CW.connect userid
-    with Not_found -> Eba_fm.set_flash_msg Eba_fm.Wrong_password
+    with Not_found ->
+      Eba_fm.set_flash_msg Eba_fm.Wrong_password;
+      Lwt.return ()
 
   let login_page _ _ =
     lwt cb = Eba_base_widgets.login_signin_box () in
@@ -130,14 +132,17 @@ let send_activation_email ~email ~uri () =
   let sign_up_action () email =
     match_lwt Eba_db.user_exists email with
       | false -> generate_new_key email Eba_services.main_service ()
-      | true -> Eba_fm.set_flash_msg (Eba_fm.User_already_exists email)
-
+      | true ->
+          Eba_fm.set_flash_msg (Eba_fm.User_already_exists email);
+          Lwt.return ()
 
   let lost_password_action () email =
     (* SECURITY: no check here. *)
     match_lwt Eba_db.user_exists email with
-      | false -> Eba_fm.set_flash_msg (Eba_fm.User_does_not_exist email)
       | true -> generate_new_key email Eba_services.main_service ()
+      | false ->
+          Eba_fm.set_flash_msg (Eba_fm.User_does_not_exist email);
+          Lwt.return ()
 
 
   let connect_wrapper_page ?allow ?deny f gp pp =
