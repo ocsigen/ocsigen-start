@@ -58,8 +58,8 @@
          Magick.write_image im ~filename:path;
          (* We mark the as used to prevent an automatic remove from
           * the cleaner thread *)
-         Ew_dyn_upload.mark_as_used fname;
-         Eba_db.set_pic (Eba_common0.id_of_user user) fname;
+         lwt () = Ew_dyn_upload.mark_as_used fname in
+         lwt () = Eba_db.set_pic (Eba_common0.id_of_user user) fname in
          Lwt.return ())
 }}
 
@@ -158,7 +158,7 @@ let create user =
                     press_state <- false;
                     Lwt.return ()
                 | Some prop -> begin
-                    %crop_on_server (%user, dname', fname', prop);
+                    lwt () = %crop_on_server (%user, dname', fname', prop) in
                     (* update all pics on the page? *)
                     update_pictures dname' fname';
                     let text =

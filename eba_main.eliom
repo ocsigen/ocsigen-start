@@ -151,7 +151,7 @@ let send_activation_email ~email ~uri () =
   let new_user user = user.Eba_common0.new_user
 
 
-  let set_password_handler userid () ((pwd, pwd2) as v) =
+  let set_password_handler userid () (pwd, pwd2) =
     (* SECURITY: We get the userid from session cookie,
        and change personal data for this user. No other check. *)
     if pwd <> pwd2
