@@ -1,11 +1,13 @@
 (* Copyright Vincent Balat *)
 
 {shared{
-open Eliom_content.Html5
-open Eliom_content.Html5.F
-exception Not_connected
+  open Eliom_content.Html5
+  open Eliom_content.Html5.F
 }}
 
+{shared{
+  exception Not_connected
+}}
 exception Permission_denied
 
 (********* Eliom references *********)
@@ -32,13 +34,13 @@ let get_current_user_or_fail () =
   match Eliom_reference.Volatile.get me with
     | Some a -> a
     | None -> raise Not_connected
-let get_current_user_option () = Eliom_reference.Volatile.get me
 
-
+let get_current_user_option () =
+  Eliom_reference.Volatile.get me
 
 (*VVV!!! I am not happy with these 2 functions set_user.
   If we forget to call them, the user will be wrong.
-  get_current_user_or_fail could call Eba_db.get_user itself
+  get_current_user_or_fail could call Database.get_user itself
   but it does not work if we want to set the client side value ...
   For the client side value, we could use a wrapped reference but
   - the value must be set before wrapping, otherwise we will wrap a lwt
@@ -51,74 +53,75 @@ let get_current_user_option () = Eliom_reference.Volatile.get me
 
 
 *)
-let set_user_server uid =
-  lwt u = Eba_db.get_user uid in
-  Eliom_reference.Volatile.set me (Some u);
-  Lwt.return ()
-
-let unset_user_server () =
-  Eliom_reference.Volatile.set me None
-
-
 {client{
-let me = ref None
+  let me = ref None
 }}
 
-let set_user_client () =
-  let u = Eliom_reference.Volatile.get me in
-  ignore {unit{ me := %u }}
-
-let unset_user_client () =
-  ignore {unit{ me := None }}
-
 {client{
+  let get_current_user_or_fail () =
+    match !me with
+      | Some a -> a
+      | None -> Eba_misc.alert "Not connected error in Eba_sessions";
+        raise Not_connected
 
-let get_current_user_or_fail () =
-  match !me with
-    | Some a -> a
-    | None -> Eba_misc.alert "Not connected error in Eba_sessions";
-      raise Not_connected
 
-
-(* This will close the client process *)
-let close_client_process () =
-  let d = D.div ~a:[a_class ["ol_process_closed"]]
-    [img ~alt:("Ocsigen Logo")
-        ~src:(Xml.uri_of_string ("https://ocsigen.org/resources/logos/ocsigen_with_shadow.png"))
-        ();
-     p [pcdata "Ocsigen process closed.";
-        br ();
-        a ~xhr:false
-          ~service:Eliom_service.void_coservice'
-          [pcdata "Click"] ();
-        pcdata " to restart."];
-    ]
-  in
-  let d = To_dom.of_div d in
-  Dom.appendChild (Dom_html.document##body) d;
-  lwt () = Lwt_js_events.request_animation_frame () in
-  d##style##backgroundColor <- Js.string "rgba(255, 255, 255, 0.7)";
-  Lwt.return ()
-
+  (* This will close the client process *)
+  let close_client_process () =
+    let d =
+      D.div ~a:[a_class ["ol_process_closed"]] [
+        img ~alt:("Ocsigen Logo")
+          ~src:(Xml.uri_of_string ("https://ocsigen.org/resources/logos/ocsigen_with_shadow.png"))
+          ();
+        p [
+          pcdata "Ocsigen process closed.";
+          br ();
+          a ~xhr:false
+            ~service:Eliom_service.void_coservice'
+            [pcdata "Click"]
+            ();
+          pcdata " to restart."
+        ];
+      ]
+    in
+    let d = To_dom.of_div d in
+    Dom.appendChild (Dom_html.document##body) d;
+    lwt () = Lwt_js_events.request_animation_frame () in
+    d##style##backgroundColor <- Js.string "rgba(255, 255, 255, 0.7)";
+    Lwt.return ()
 }}
 
-(*****************************************************************************)
-(* Connection wrappers *)
+module Make(M : sig
+  val config :
+    < on_open_session : unit Lwt.t;
+      on_close_session : unit Lwt.t;
+      on_start_process : unit Lwt.t;
+      on_start_connected_process : unit Lwt.t;
+    >
 
-module Connect_Wrappers(A : sig
-  val open_session : unit -> unit Lwt.t
-                   (** Function to be called when opening a new session. *)
-  val close_session : unit -> unit Lwt.t
-                   (** Function to be called when closing a session. *)
-  val start_process : unit -> unit Lwt.t
-                   (** The function to be called every time we launch a new
-                       client side process (e.g. opening a new tab) *)
-  val start_connected_process : unit -> unit Lwt.t
-                   (** The function to be called every time we launch a new
-                       client side process (e.g. opening a new tab) when
-                       user is connected, or when a user logs in. *)
-end) = struct
+  module Groups : Eba_groups.T
 
+  module Database : sig
+    module U : sig
+      val get_user : int64 -> Eba_common0.user Lwt.t
+    end
+  end
+end)
+=
+struct
+  let set_user_server uid =
+    lwt u = M.Database.U.get_user uid in
+    Eliom_reference.Volatile.set me (Some u);
+    Lwt.return ()
+
+  let unset_user_server () =
+    Eliom_reference.Volatile.set me None
+
+  let set_user_client () =
+    let u = Eliom_reference.Volatile.get me in
+    ignore {unit{ me := %u }}
+
+  let unset_user_client () =
+    ignore {unit{ me := None }}
 
   let start_connected_process () =
     let () = set_user_client () in
@@ -141,12 +144,12 @@ end) = struct
                 Lwt.fail e))
       }}
     in
-    A.start_connected_process ()
+    M.config#on_start_connected_process
 
   let connect_volatile userid =
     Eliom_state.set_volatile_data_session_group
       ~scope:Eliom_common.default_session_scope userid;
-    A.open_session ()
+    M.config#on_open_session
 
   let connect_string userid =
     lwt () = Eliom_state.set_persistent_data_session_group
@@ -158,7 +161,7 @@ end) = struct
     try_lwt
       lwt () = set_user_server userid in
       connect_string (Int64.to_string userid)
-    with Eba_common0.No_such_user -> A.close_session ()
+    with Eba_common0.No_such_user -> M.config#on_close_session
 
   let check_allow_deny userid allow deny =
     lwt b = match allow with
@@ -166,7 +169,7 @@ end) = struct
       | Some l -> (* allow only users from one of the groups of list l *)
         Lwt_list.fold_left_s
           (fun b group ->
-            lwt b2 = Eba_groups.in_group ~userid ~group in
+            lwt b2 = M.Groups.in_group ~userid ~group in
             Lwt.return (b || b2)) false l
     in
     lwt b = match deny with
@@ -175,7 +178,7 @@ end) = struct
                      in one of the groups of list l *)
         Lwt_list.fold_left_s
           (fun b group ->
-            lwt b2 = Eba_groups.in_group ~userid ~group in
+            lwt b2 = M.Groups.in_group ~userid ~group in
             Lwt.return (b && (not b2))) b l
     in
     if b then Lwt.return () else Lwt.fail Permission_denied
@@ -184,15 +187,15 @@ end) = struct
   (** The connection wrapper checks whether the user is connected,
       and if not displays the login page.
 
-      If yes, [gen_wrapper connected start_process non_connected gp pp]
+      If yes, [gen_wrapper connected on_start_process non_connected gp pp]
       calls the [connected] function given as parameters,
       taking user name, GET parameters [gp] and POST parameters [pp].
 
       If not, it calls the [not_connected] function.
 
       If we are launching a new client side process,
-      functions [start_process] is called,
-      and also [start_connected_process] if connected.
+      functions [on_start_process] is called,
+      and also [on_start_connected_process] if connected.
   *)
   let gen_wrapper ~allow ~deny connected not_connected gp pp =
     try_lwt
@@ -231,7 +234,7 @@ end) = struct
           (* client side process:
              Now we want to do some computation only when we start a
              client side process. *)
-          lwt () = A.start_process () in
+          lwt () = M.config#on_start_process in
           match uid with
             | None -> Lwt.return ()
             | Some id -> (* new client process, but already connected *)
@@ -248,7 +251,7 @@ end) = struct
           lwt () = check_allow_deny id allow deny in
           connected id gp pp
     with Eba_common0.No_such_user ->
-      lwt () = A.close_session () in
+      lwt () = M.config#on_close_session in
       not_connected gp pp
 
   (* connect_wrapper_action checks user connection
@@ -280,6 +283,6 @@ end) = struct
   let logout () =
     unset_user_client (); (*VVV!!! will affect only current tab!! *)
     unset_user_server (); (* ok this is a request reference *)
-    A.close_session ()
+    M.config#on_close_session
 
 end

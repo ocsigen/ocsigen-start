@@ -59,7 +59,7 @@
          (* We mark the as used to prevent an automatic remove from
           * the cleaner thread *)
          lwt () = Ew_dyn_upload.mark_as_used fname in
-         lwt () = Eba_db.set_pic (Eba_common0.id_of_user user) fname in
+         (*lwt () = Eba_db.set_pic (Eba_common0.id_of_user user) fname in*)
          Lwt.return ())
 }}
 

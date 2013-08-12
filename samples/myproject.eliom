@@ -14,7 +14,7 @@ module O = Eba_common0
 (********* Service handlers *********)
 
 let main_service_handler userid () () =
-  lwt user = Eba_db.get_user userid in
+  lwt user = Myproject_sessions.Database.U.get_user userid in
   let mainpart =
     if (Myproject_sessions.new_user user)
     then [Eba_base_widgets.welcome_box ()]
@@ -22,7 +22,7 @@ let main_service_handler userid () () =
   in
   lwt gp =
     Eba_site_widgets.globalpart
-      Myproject_sessions.main_title (Some user)
+      (Myproject_sessions.main_title) (Some user)
   in
   let gp = gp::mainpart in
   Lwt.return (Myproject_sessions.page_container gp)
@@ -30,7 +30,7 @@ let main_service_handler userid () () =
 
 (********* Registration *********)
 let _ =
-  Myproject_sessions.My_appl.register Eba_services.main_service
+  Myproject_sessions.App.register Eba_services.main_service
     (Myproject_sessions.connect_wrapper_page main_service_handler)
 
 

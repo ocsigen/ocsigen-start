@@ -10,25 +10,44 @@ let (at_start_connected_process, start_connected_process_action) =
    (fun () -> !r ()))
 
 
-module O = Eba_main.Make(struct
-  let app_name = "myproject"
-  let capitalized_app_name = "myproject"
-  let css_list = [
-    ["font-awesome.css"];
-    ["myproject.css"]
-  ]
-  let js_list = [
-    ["jquery-ui.min.js"];
-    ["accents.js"];
-    ["unix.js"]
-  ]
-  let open_session = Lwt.return
-  let close_session = Lwt.return
-  let start_process = Lwt.return
-  let start_connected_process () = start_connected_process_action ()
+include Eba_main.App(
+struct
+  include Eba_main.App_default
+
+  let app_config = object(self)
+    method name = "myproject"
+
+    method css = [
+      ["font-awesome.css"];
+      ["myproject.css"]
+    ]
+
+    method js = [
+      ["jquery-ui.min.js"];
+      ["accents.js"];
+      ["unix.js"]
+    ]
+  end
 end)
 
-include O
+    (*
+let app_name = "myproject"
+let capitalized_app_name = "myproject"
+let css_list = [
+  ["font-awesome.css"];
+  ["myproject.css"]
+]
+let js_list = [
+  ["jquery-ui.min.js"];
+  ["accents.js"];
+  ["unix.js"]
+]
+let open_session = Lwt.return
+let close_session = Lwt.return
+let start_process = Lwt.return
+let start_connected_process () = start_connected_process_action ()
+     *)
+
 
 
 {client{

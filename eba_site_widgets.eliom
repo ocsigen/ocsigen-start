@@ -61,12 +61,15 @@ let logout_button () =
   b
 
 let default_settings_box user =
+  (*
   lwt admin_g = Eba_groups.admin in
   lwt is_admin =
     Eba_groups.in_group
       ~userid:(Eba_common0.id_of_user user)
       ~group:admin_g
   in
+   *)
+  let is_admin = true in
   let l = [hr ();
            Eba_base_widgets.password_form ();
            hr ();
