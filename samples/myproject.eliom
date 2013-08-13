@@ -14,7 +14,7 @@ module O = Eba_common0
 (********* Service handlers *********)
 
 let main_service_handler userid () () =
-  lwt user = Myproject_sessions.Database.U.get_user userid in
+  lwt user = Myproject_sessions.User.get_user userid in
   let mainpart =
     if (Myproject_sessions.new_user user)
     then [Eba_base_widgets.welcome_box ()]

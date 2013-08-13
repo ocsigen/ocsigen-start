@@ -68,6 +68,10 @@ module App(M : M_t) = struct
   end
   module G = Groups
 
+  module User = struct
+    include Eba_user.Make(struct module Database = Database end)
+  end
+
   module Admin = Eba_admin.Make(struct
                                   module Groups = Groups
                                 end)
@@ -76,6 +80,7 @@ module App(M : M_t) = struct
   module Session = Eba_sessions.Make(struct
                                        module Database = Database
                                        module Groups = Groups
+                                       module User = User
                                        let config = M.session_config
                                      end)
   module S = Session
@@ -126,9 +131,9 @@ module App(M : M_t) = struct
     (* SECURITY: no check here. *)
     lwt () = logout_handler () () in
     try_lwt
-      lwt userid = Database.U.check_pwd login pwd in
+      lwt userid = User.verify_password login pwd in
       Session.connect userid
-    with Not_found ->
+    with _ -> (* TODO: Not_found exception *)
       Eba_fm.set_flash_msg Eba_fm.Wrong_password;
       Lwt.return ()
 
@@ -157,8 +162,7 @@ module App(M : M_t) = struct
   (** will generate an activation key which can be used to login
       directly. This key will be send to the [email] address *)
   let generate_new_key email service gp =
-    let activationkey = Ocsigen_lib.make_cryptographic_safe_string () in
-    lwt () = Database.U.new_activation_key email activationkey in
+    let act_key = Ocsigen_lib.make_cryptographic_safe_string () in
     let service = Eliom_service.attach_coservice'
                        ~fallback:service
                        ~service:Eba_services.activation_service
@@ -166,34 +170,39 @@ module App(M : M_t) = struct
     let uri = Eliom_content.Html5.F.make_string_uri
                 ~absolute:true
                 ~service
-                activationkey
+                act_key
     in
     (*VVV REMOOOOOOOOOOOOOOOOOOOVE! *)
     Eba_misc.log ("REMOVE ME activation link: "^uri);
     lwt _ = send_activation_email ~email ~uri () in
     Eliom_reference.Volatile.set Eba_sessions.activationkey_created true;
-    Lwt.return ()
+    Lwt.return act_key
 
   let sign_up_handler () email =
-    match_lwt Database.U.does_user_exist email with
-      | false -> generate_new_key email Eba_services.main_service ()
-      | true ->
+    match_lwt User.uid_of_mail email with
+      | None ->
+          lwt act_key = generate_new_key email Eba_services.main_service () in
+          lwt _ = User.create ~act_key email in
+          Lwt.return ()
+      | Some _ ->
           Eba_fm.set_flash_msg (Eba_fm.User_already_exists email);
           Lwt.return ()
 
   let lost_password_handler () email =
     (* SECURITY: no check here. *)
-    match_lwt Database.U.does_user_exist email with
-      | true -> generate_new_key email Eba_services.main_service ()
-      | false ->
+    match_lwt User.uid_of_mail email with
+      | None ->
           Eba_fm.set_flash_msg (Eba_fm.User_does_not_exist email);
           Lwt.return ()
+      | Some uid ->
+          lwt act_key = generate_new_key email Eba_services.main_service () in
+          User.set uid ~act_key ()
 
 
   let connect_wrapper_page ?allow ?deny f gp pp =
     Session.gen_wrapper ~allow ~deny f login_page gp pp
 
-  let new_user user = user.Eba_common0.new_user
+  let new_user user = user.Eba_user.firstname = ""
 
 
   let set_password_handler userid () (pwd, pwd2) =
@@ -204,9 +213,7 @@ module App(M : M_t) = struct
       ((* TODO flash message ? *)
       Lwt.return ())
     else
-      let pwd = Bcrypt.hash pwd in
-      Database.U.set_password userid (Bcrypt.string_of_hash pwd)
-
+      User.set userid ~password:pwd ()
 
   let set_personal_data_handler userid ()
       (((firstname, lastname), (pwd, pwd2)) as v) =
@@ -216,7 +223,12 @@ module App(M : M_t) = struct
     then (Eliom_reference.Volatile.set Eba_sessions.wrong_perso_data (Some v);
           Lwt.return ())
     else let pwd = Bcrypt.hash pwd in
-         Database.U.set_personal_data userid firstname lastname (Bcrypt.string_of_hash pwd)
+         User.set
+           userid
+           ~firstname
+           ~lastname
+           ~password:(Bcrypt.string_of_hash pwd)
+           ()
 
   let crop_handler userid gp pp =
     let dynup_handler =
@@ -270,17 +282,16 @@ module App(M : M_t) = struct
      * we're going to disconnect him even if the actionvation key
      * is outdated. *)
     lwt () = Session.logout () in
-    try_lwt
-      (* If the activationkey is valid, we connect the user *)
-      lwt userid = Database.U.get_userid_from_activationkey akey in
-      lwt () = Session.connect userid in
-      Eliom_registration.Redirection.send Eliom_service.void_coservice'
-    with Not_found -> (* outdated activation key *)
-      (*CHARLY: not connected (using flash
-       * message to display an error ?) *)
-      Eba_fm.set_flash_msg Eba_fm.Activation_key_outdated;
-      lwt page = login_page () () in
-      App.send page
+    match_lwt User.uid_of_activationkey akey with
+      | None ->
+         (* Outdated activation key *)
+          Eba_fm.set_flash_msg Eba_fm.Activation_key_outdated;
+          lwt page = login_page () () in
+          App.send page
+      | Some uid ->
+         (* If the activationkey is valid, we connect the user *)
+          lwt () = Session.connect uid in
+          Eliom_registration.Redirection.send Eliom_service.void_coservice'
 
   (** this rpc function is used to change the rights of a user
     * in the admin page *)
@@ -361,8 +372,10 @@ module App(M : M_t) = struct
          (Admin.admin_service_handler
             page_container
             main_title
-            Database.U.get_user
+            User.user_of_uid
             set_group_of_user_rpc
             get_groups_of_user_rpc));
+    (*
+     *)
 
 end

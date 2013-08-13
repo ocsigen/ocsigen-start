@@ -88,9 +88,9 @@ let userbox user =
   lwt settings = Eba_settings.create_box user in
   Lwt.return
     (div ~a:[a_class [class_identity]] [
-      Eba_common0.print_user_avatar user;
+      Eba_user.print_user_avatar user;
       Eba_picture_box.create user;
-      Eba_common0.print_user_name user;
+      Eba_user.print_user_name user;
       settings
     ])
 

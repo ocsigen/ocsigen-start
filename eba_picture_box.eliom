@@ -17,7 +17,7 @@
     current_src_picture := newpic;
     let pics =
       Dom_html.document##body##querySelectorAll
-        (Js.string ("."^Eba_common0.cls_avatar))
+        (Js.string ("."^Eba_user.cls_avatar))
     in
     for i = 0 to pics##length - 1 do
       let img = Js.Unsafe.coerce (Eba_misc.of_opt (pics##item(i))) in
@@ -31,7 +31,7 @@
     lwt () = Lwt_js_events.request_animation_frame () in
     let default_picture =
       Dom_html.document##body##querySelector
-        (Js.string ("div.ol_identity img."^Eba_common0.cls_avatar))
+        (Js.string ("div.ol_identity img."^Eba_user.cls_avatar))
     in
     let src =
       Js.Opt.case default_picture
@@ -43,7 +43,7 @@
 }}
 
 {shared{
-  type crop_param_t = (Eba_common0.user * string list * string * (int * int * int * int)) deriving (Json)
+  type crop_param_t = (Eba_user.shared_t * string list * string * (int * int * int * int)) deriving (Json)
 }}
 
 {server{

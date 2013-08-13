@@ -50,6 +50,7 @@ let start_connected_process () = start_connected_process_action ()
 
 
 
+    (*
 {client{
 
   let myid_str =
@@ -61,3 +62,4 @@ let start_connected_process () = start_connected_process_action ()
         r := Some (Int64.to_string u.Eba_common0.userid); !r)
 
  }}
+     *)

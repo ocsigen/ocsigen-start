@@ -44,13 +44,17 @@ let id_of_user u = u.userid
 (*************************** FUNCTIONS ON AUTHOR ******************************)
 open Eliom_content.Html5
 open Eliom_content.Html5.F
+
 let make_pic_uri p =
   (make_uri (Eliom_service.static_dir ()) ["avatars" ; p])
+
 let make_pic_string_uri ?absolute p =
   (make_string_uri
      ?absolute ~service:(Eliom_service.static_dir ()) ["avatars" ; p])
+
 let print_user_name u =
   span ~a:[a_class ["ol_username"]] [pcdata (name_of_user u)]
+
 let print_user_avatar ?(cls=cls_avatar) u =
   img
     ~a:[a_class [cls]]

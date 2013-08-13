@@ -22,7 +22,7 @@ let wrong_perso_data
 let activationkey_created =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
-let me : Eba_common0.user option Eliom_reference.Volatile.eref =
+let me : Eba_user.shared_t option Eliom_reference.Volatile.eref =
   (* This is a cache of current user *)
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope None
 
@@ -40,7 +40,7 @@ let get_current_user_option () =
 
 (*VVV!!! I am not happy with these 2 functions set_user.
   If we forget to call them, the user will be wrong.
-  get_current_user_or_fail could call Database.get_user itself
+  get_current_user_or_fail could call User.user_of_uid itself
   but it does not work if we want to set the client side value ...
   For the client side value, we could use a wrapped reference but
   - the value must be set before wrapping, otherwise we will wrap a lwt
@@ -54,7 +54,7 @@ let get_current_user_option () =
 
 *)
 {client{
-  let me = ref None
+  let me : Eba_user.shared_t option ref = ref None
 }}
 
 {client{
@@ -99,17 +99,13 @@ module Make(M : sig
     >
 
   module Groups : Eba_groups.T
-
-  module Database : sig
-    module U : sig
-      val get_user : int64 -> Eba_common0.user Lwt.t
-    end
-  end
+  module User : Eba_user.T
+  module Database : Eba_db.T
 end)
 =
 struct
   let set_user_server uid =
-    lwt u = M.Database.U.get_user uid in
+    lwt u = M.User.user_of_uid uid in
     Eliom_reference.Volatile.set me (Some u);
     Lwt.return ()
 
@@ -161,7 +157,7 @@ struct
     try_lwt
       lwt () = set_user_server userid in
       connect_string (Int64.to_string userid)
-    with Eba_common0.No_such_user -> M.config#on_close_session
+    with Eba_user.No_such_user -> M.config#on_close_session
 
   let check_allow_deny userid allow deny =
     lwt b = match allow with
@@ -250,7 +246,7 @@ struct
         | Some id ->
           lwt () = check_allow_deny id allow deny in
           connected id gp pp
-    with Eba_common0.No_such_user ->
+    with Eba_user.No_such_user ->
       lwt () = M.config#on_close_session in
       not_connected gp pp
 

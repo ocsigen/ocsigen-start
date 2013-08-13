@@ -18,7 +18,7 @@ CREATE TABLE emails (
 
 CREATE TABLE activation (
        activationkey text primary key,
-       email text NOT NULL references emails(email),
+       userid bigint NOT NULL references users(userid),
        creationdate timestamp NOT NULL default now()
 );
 

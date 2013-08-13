@@ -6,7 +6,7 @@
 }}
 
 let content
-    : (Eba_common0.user -> Html5_types.div_content F.elt list Lwt.t) ref =
+    : (Eba_user.shared_t -> Html5_types.div_content F.elt list Lwt.t) ref =
   ref (fun _ -> Lwt.return [])
 
 let set_content cn = content := cn
