@@ -12,9 +12,12 @@ module Lwt_Query = Query.Make_with_Db(Lwt_thread)(Lwt_PGOCaml)
 module PGOCaml = Lwt_PGOCaml
 
 class type config = object
-  method port : int
   method name : string
+  method port : int
   method workers : int
+
+  method hash : string -> string
+  method verify : string -> string -> bool
 end
 
 module type T = sig
@@ -422,7 +425,7 @@ struct
               (match Sql.getn r#pwd with
                  | None -> Lwt.fail Not_found
                  | Some h ->
-                     if Bcrypt.verify pwd (Bcrypt.hash_of_string h)
+                     if M.config#verify pwd h
                      then Lwt.return (r#!userid)
                      else Lwt.fail Not_found)
           | r::_ ->
@@ -479,6 +482,11 @@ struct
                                                         creationdate = activation_table?creationdate
                                                       } >>)
 
+           in
+           let password =
+             match password with
+               | None -> None
+               | Some p -> Some (M.config#hash p)
            in
            match firstname,lastname,password,avatar with
              | None, None, None, None -> Lwt.return ()

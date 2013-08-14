@@ -10,6 +10,13 @@
 }}
 exception Permission_denied
 
+class type config = object
+  method on_open_session : unit Lwt.t
+  method on_close_session : unit Lwt.t
+  method on_start_process : unit Lwt.t
+  method on_start_connected_process : unit Lwt.t
+end
+
 (********* Eliom references *********)
 let wrong_password =
   Eliom_reference.eref ~scope:Eliom_common.request_scope false

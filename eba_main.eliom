@@ -8,25 +8,15 @@
   open Eliom_content.Html5.F
 }}
 
-module type M_t = sig
+module type T = sig
   val app_config :
     < name : string;
       js : string list list;
       css : string list list;
     >
 
-  val session_config :
-    < on_open_session : unit Lwt.t;
-      on_close_session : unit Lwt.t;
-      on_start_process : unit Lwt.t;
-      on_start_connected_process : unit Lwt.t;
-    >
-
-  val db_config :
-    < port : int;
-      name : string;
-      workers : int;
-    >
+  val session_config : Eba_sessions.config
+  val db_config : Eba_db.config
 end
 
 module App_default = struct
@@ -47,11 +37,17 @@ module App_default = struct
     method name = "eba"
     method port = 5432
     method workers = 16
+
+    method hash s =
+      Bcrypt.string_of_hash (Bcrypt.hash s)
+
+    method verify s1 s2 =
+      Bcrypt.verify s1 (Bcrypt.hash_of_string s2)
   end
 
 end
 
-module App(M : M_t) = struct
+module App(M : T) = struct
 
   module App =
     Eliom_registration.App (struct
@@ -222,12 +218,11 @@ module App(M : M_t) = struct
     if firstname = "" || lastname = "" || pwd <> pwd2
     then (Eliom_reference.Volatile.set Eba_sessions.wrong_perso_data (Some v);
           Lwt.return ())
-    else let pwd = Bcrypt.hash pwd in
-         User.set
+    else User.set
            userid
            ~firstname
            ~lastname
-           ~password:(Bcrypt.string_of_hash pwd)
+           ~password:pwd
            ()
 
   let crop_handler userid gp pp =

@@ -72,14 +72,7 @@ struct
   (* FIXME: add_activation_key instead of set function to add one ? *)
 
   let set uid ?act_key ?firstname ?lastname ?password ?avatar () =
-    match password with
-      | None -> M.Database.U.set uid ?act_key ?firstname ?lastname ?avatar ()
-      | Some p ->
-          let p = Bcrypt.hash p in
-          let password = Bcrypt.string_of_hash p in
-          lwt () = M.Database.U.set uid ?act_key ?firstname ?lastname ~password ?avatar () in
-          let () = explicit_reset_uid_from_cache uid in
-          Lwt.return ()
+    M.Database.U.set uid ?act_key ?firstname ?password ?lastname ?avatar ()
 
   let verify_password mail passwd =
     M.Database.U.verify_password mail passwd
