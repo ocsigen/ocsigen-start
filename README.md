@@ -5,7 +5,6 @@
 ##<a id="getting-started"></a>Getting started
 1. [Create your database](#create-your-database)
 2. [Set up EBA for eliom](#set-up-eba-for-eliom)
-- - -
 
 **Do not forget to add `eliom-base-app.client` and `eliom-base-app.server` package into your Makefile !**
 
