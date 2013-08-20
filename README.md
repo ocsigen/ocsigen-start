@@ -3,16 +3,32 @@
 1. [Getting started](#getting-started)
 
 ##<a id="getting-started"></a>Getting started
-1. [Create your database](#create-your-database)
-2. [Set up EBA for eliom](#set-up-eba-for-eliom)
+1. [Set up your eliom project](#set-up-your-eliom-project)
+2. [Create your database](#create-your-database)
+3. [Set up EBA for eliom](#set-up-eba-for-eliom)
 
-**Do not forget to add `eliom-base-app.client` and `eliom-base-app.server` package into your Makefile !**
+###<a id="set-up-your-eliom-project"></a>Set up your eliom project
+
+You must use the **Makefile** and **app.conf.in** which are into the **config** directory of `eliom-base-app`.
+You have to add another Makefile variable into your **Makefile.options**:
+```Makefile
+...
+# OCamlfind packages for the server
+SERVER_PACKAGES_WITH_SERVICES := eliom-base-app.server # add eliom-base-app.server to this variable
+SERVER_PACKAGES := ... # do not put eliom-base-app.server into this variable, otherwise it won't work
+# OCamlfind packages for the client
+CLIENT_PACKAGES := eliom-base-app.client,... # add eliom-base-app.client with your other client packages
+...
+```
+
+We use another Makefile variable because `eliom-base-app` defines some eliom services, so you have to tell to eliom that this module defines services.
+That's why we have change a bit the **eliom-distillery**'s Makefile.
+
+NOTE: This solution is temporary, we're waiting for some changes in **eliom-distillery** to make it easier.
 
 ###<a id="create-your-database"></a>Create your database
 
-There is two importants things to do, before using EBA.
-
-First, you have to create the database used by EBA (we're using `postgresql`).
+You have to create the database used by EBA (we're using `postgresql`).
 
 NOTE: if you're using a local database, you have to give `-D <dir>` option to all of your `pg_ctl` commands.
 ```shell
