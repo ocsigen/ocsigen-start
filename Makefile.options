@@ -9,9 +9,9 @@ PKG_VERS := your version
 PKG_DESC := your description
 
 # Source files for the server
-SERVER_FILES := $(wildcard *.eliom* *.ml*)
+SERVER_FILES := $(wildcard src/*.eliom* src/*.ml*)
 # Source files for the client
-CLIENT_FILES := $(wildcard *.eliom*)
+CLIENT_FILES := $(wildcard src/*.eliom*)
 
 # OCamlfind packages for the server
 SERVER_PACKAGES := pgocaml,pgocaml.syntax,text,macaque.syntax,calendar,safepass,eliom-widgets.server,magick
