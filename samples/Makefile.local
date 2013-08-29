@@ -6,7 +6,6 @@ run: test.byte
 
 locals: $(LOCAL_STATIC)/css \
         $(LOCAL_STATIC)/avatars \
-        $(LOCAL_STATIC)/css/myproject_colors.css \
         $(LOCAL_STATIC)/avatars/__myproject_default_mail_image \
         $(LOCAL_STATIC)/avatars/__ol_default_user_avatar \
         $(TEST_PREFIX)tmp
@@ -29,17 +28,3 @@ $(LOCAL_STATIC)/avatars:
 
 $(TEST_PREFIX)tmp:
 	mkdir -p $@
-
-$(LOCAL_STATIC)/css/myproject_colors.css: t3
-
-t3:
-	ln -sf white_red_colors.css $(LOCAL_STATIC)/css/myproject_colors.css
-	ln -sf myproject-theme3-v.css $(LOCAL_STATIC)/css/myproject.css
-
-
-
-$(LOCAL_STATIC)/avatars/__myproject_default_mail_image:
-	ln -sf ../images/mail.gif $@
-
-$(LOCAL_STATIC)/avatars/__ol_default_user_avatar:
-	ln -sf ../images/unknown-user-photo_rights-tbv.png $@

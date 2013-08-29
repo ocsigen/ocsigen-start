@@ -1,8 +1,8 @@
 #!/bin/sh
 
-PORT=4230
+PORT=5432
 HOST="localhost"
-DB="ol"
+DB="eba"
 
 echo $1
 echo $@
@@ -21,7 +21,6 @@ QUERY=$(
 cat << EOF
 
 update users
-    set rights=2
     from emails
     where emails.userid = users.userid;
 

@@ -4,3 +4,65 @@ div.eba_upload_error {
     margin: 10px;
     padding: 15px;
 }
+
+html{
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+div.eba_navbar {
+  padding-left: 20%;
+  padding-right: 20%;
+  background-color: red;
+  vertical-align: middle;
+}
+
+div.eba_navbar h1 {
+  display: inline-block;
+}
+
+div.eba_navbar_inner {
+  display: inline-block;
+}
+
+div.eba_user_box {
+  display: inline-block;
+  float: right;
+  vertical-align: middle;
+}
+
+div.eba_user_box * {
+  padding: 2px;
+}
+
+div.eba_user_box img {
+  vertical-align: middle;
+}
+
+div.eba_user_box span {
+  display: inline-block;
+  height: 30px;
+  font-size: 24px;
+  vertical-align: middle;
+}
+
+div.eba_user_box div.eba_settings_button {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+  height: 30px;
+}
+
+div.eba_user_box div.eba_settings_button i {
+  display: inline-block;
+}
+
+img.eba_avatar_button {
+  display: inline-block;
+  height: 30px;
+}

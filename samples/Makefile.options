@@ -3,9 +3,9 @@
 #           SETTINGS FOR THE ELIOM PROJECT myproject
 #----------------------------------------------------------------------
 
-PROJECT_NAME := myproject
+PROJECT_NAME := foobar
 
-PGDATABASE:=ol
+PGDATABASE := ol
 export PGDATABASE
 
 # Source files for the server

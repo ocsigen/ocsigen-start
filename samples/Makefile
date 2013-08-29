@@ -150,7 +150,7 @@ endif
 # 	sed $(SED_ARGS) $(GLOBAL_SED_ARGS) $< | sed -e "s|%%PREFIX%%|$(PREFIX)|g" > $@
 # $(TEST_PREFIX)${ETCDIR}/${PROJECT_NAME}-test.conf: ${PROJECT_NAME}.conf.in Makefile.options | $(TEST_PREFIX)$(ETCDIR)
 # 	sed $(SED_ARGS) $(LOCAL_SED_ARGS) $< | sed -e "s|%%PREFIX%%|$(TEST_PREFIX)|g" > $@
-$(TEST_PREFIX)${ETCDIR}/${PROJECT_NAME}-test.conf: myproject.conf
+$(TEST_PREFIX)${ETCDIR}/${PROJECT_NAME}-test.conf: $(PROJECT_NAME).conf
 	mkdir -p $(TEST_PREFIX)$(ETCDIR)
 	cp $< $@
 
