@@ -3,18 +3,12 @@
   * group grants him some special rights (e.g:
   * beta-user, admin or whatever. *)
 {shared{
-  type shared_t = { id : int64; name : string; desc : string option } deriving (Json)
 }}
 
 exception No_such_group
 
-{shared{
-  let name_of group = group.name
-  let desc_of group = group.desc
-}}
-
 module type T = sig
-  type t = shared_t
+  type t = Eba_types.Groups.t
 
   val create : ?description:string -> string -> t Lwt.t
   val get : string -> t option Lwt.t
@@ -33,9 +27,10 @@ module Make(M : sig
 end)
 =
 struct
-  type t = shared_t
+  include Eba_shared.Groups
 
   let create_group_with (g : M.Database.G.t) =
+    let open Eba_types.Groups in
     {
       id   = (Sql.get g#groupid);
       name = (Sql.get g#name);
@@ -44,7 +39,7 @@ struct
 
   module MCache_in = struct
     type key_t = string
-    type value_t = t
+    type value_t = Eba_types.Groups.t
 
     let compare = compare
     let get key =
@@ -78,23 +73,23 @@ struct
   let add_user ~userid ~group =
     M.Database.G.add_user_in_group
       ~userid
-      ~groupid:group.id
+      ~groupid:(id_of_group group)
 
   let remove_user ~userid ~group =
     M.Database.G.remove_user_in_group
       ~userid
-      ~groupid:group.id
+      ~groupid:(id_of_group group)
 
   let in_group ~userid ~group =
     M.Database.G.is_user_in_group
       ~userid
-      ~groupid:group.id
+      ~groupid:(id_of_group group)
 
   let all () =
     lwt l = M.Database.G.all_groups () in
     let put_in_cache g =
       let g = create_group_with g in
-      let () = MCache.set g.name g in
+      let () = MCache.set (name_of_group g) g in
       g
     in
     Lwt.return

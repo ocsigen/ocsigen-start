@@ -1,20 +1,13 @@
 {shared{
-  type shared_t = { uid: int64; firstname : string; lastname : string; avatar : string option; } deriving (Json)
+  open Eliom_content.Html5
+  open Eliom_content.Html5.F
 }}
 
 exception No_such_user
 
-{shared{
-  let firstname_of u = u.firstname
-  let lastname_of u = u.lastname
-  let avatar_of u = u.avatar
-  let id_of u = u.uid
-}}
-
 module type T = sig
-  type t = shared_t
+  type t = Eba_types.User.t
 
-  val user_of_uid : int64 -> t Lwt.t
   val explicit_reset_uid_from_cache : int64 -> unit
 
   val create : ?avatar:string -> act_key:string -> string -> int64 Lwt.t
@@ -27,8 +20,23 @@ module type T = sig
             -> unit
             -> unit Lwt.t
 
+  val is_new : t -> bool
+
+  val users_of_pattern : string -> t list Lwt.t
+
+  val user_of_uid : int64 -> t Lwt.t
   val uid_of_mail : string -> int64 option Lwt.t
   val uid_of_activationkey : string -> int64 option Lwt.t
+
+  val default_avatar : string
+  val make_avatar_uri : string -> Eliom_content.Html5.uri
+  val make_avatar_string_uri : ?absolute:bool -> string -> string
+
+  val firstname_of_user : t -> string
+  val lastname_of_user : t -> string
+  val fullname_of_user : t -> string
+  val avatar_of_user : t -> string
+  val uid_of_user : t -> int64
 end
 
 module Make(M : sig
@@ -36,9 +44,10 @@ module Make(M : sig
 end)
 =
 struct
-  type t = shared_t
+  include Eba_shared.User
 
   let create_user_with (u : M.Database.U.t) =
+    let open Eba_types.User in
     {
       uid = (Sql.get u#userid);
       firstname = (Sql.get u#firstname);
@@ -101,40 +110,4 @@ open Eliom_content.Html5.F
   let cls_user = "ol_user"
   let cls_users = "ol_users"
   let cls_user_box = "ol_user_box"
-
-  let default_user_avatar = "__ol_default_user_avatar"
-  let mail_avatar = "__ol_default_mail_avatar"
-
-  let name_of_user u = u.firstname
-
-  let avatar_of_user u = match u.avatar with
-    | None -> default_user_avatar
-    | Some s -> s
-
-  let id_of_user u = u.uid
 }}
-
-let make_pic_uri p =
-  (make_uri (Eliom_service.static_dir ()) ["avatars" ; p])
-
-let make_pic_string_uri ?absolute p =
-  (make_string_uri
-     ?absolute ~service:(Eliom_service.static_dir ()) ["avatars" ; p])
-
-let print_user_name u =
-  span ~a:[a_class ["ol_username"]] [pcdata (name_of_user u)]
-
-let print_user_avatar ?(cls=cls_avatar) u =
-  img
-    ~a:[a_class [cls]]
-    ~alt:(name_of_user u)
-    ~src:(make_pic_uri (avatar_of_user u))
-    ()
-
-let print_user ?(cls=cls_user_box) u =
-  span ~a:[a_class [cls]]
-    [print_user_avatar u ; print_user_name u]
-
-let print_users ?(cls=cls_users) l =
-  D.span ~a:[a_class [cls]] (List.map print_user l)
-

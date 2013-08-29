@@ -2,12 +2,9 @@
   * a user belongs to one or more groups, each
   * group grants him some special rights (e.g:
   * beta-user, admin or whatever. *)
-{shared{
-  type shared_t = { id : int64; name : string; desc : string option } deriving (Json)
-}}
 
 module type T = sig
-  type t = shared_t
+  type t = Eba_types.Groups.t
 
   val create : ?description:string -> string -> t Lwt.t
   val get : string -> t option Lwt.t
@@ -23,7 +20,7 @@ end
 
 module Make : functor (M : sig module Database : Eba_db.T end) -> sig
 
-  type t = shared_t
+  type t = Eba_types.Groups.t
 
   (** creates the group in the database if it does
     * not exist, or returns its id as an abstract value *)
@@ -45,14 +42,15 @@ module Make : functor (M : sig module Database : Eba_db.T end) -> sig
   (** returns a list of all the created groups *)
   val all : unit -> t list Lwt.t
 
+  (** returns the id of a t type (int64) *)
+  val id_of_group : t -> int64
+
+  (** returns the name of a t type (string) *)
+  val name_of_group : t -> string
+
+  (** returns the description of a t type if exists (string option) *)
+  val desc_of_group : t -> string option
+
   (** default group needed by OL *)
   val admin : t Lwt.t
 end
-
-{shared{
-  (** returns the name of a t type (string) *)
-  val name_of : shared_t -> string
-
-  (** returns the description of a t type if exists (string option) *)
-  val desc_of : shared_t -> string option
-}}
