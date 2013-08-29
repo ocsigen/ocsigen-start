@@ -97,6 +97,15 @@ struct
   let user_of_uid uid =
     ((MCache.get uid) :> t Lwt.t)
 
+  let users_of_pattern pattern =
+    lwt usersl = M.Database.U.get_userslist () in
+    let usersl = List.map (create_user_with) (usersl) in
+    let f u =
+      let fulln = Ew_accents.without (fullname_of_user u) in
+      Ew_completion.is_completed_by (Ew_accents.without pattern) fulln
+    in
+    Lwt.return (List.filter f usersl)
+
 end
 
 open Eliom_content.Html5
