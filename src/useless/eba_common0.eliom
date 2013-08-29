@@ -12,15 +12,15 @@ type user = {userid: int64;
 
 
 (****************************** AVATAR FILES NAME ******************************)
-let default_user_avatar = "__ol_default_user_avatar"
-let mail_avatar = "__ol_default_mail_avatar"
+let default_user_avatar = "__eba_default_user_avatar"
+let mail_avatar = "__eba_default_mail_avatar"
 
 (****************************** CSS CLASSES NAME *******************************)
-let cls_avatar = "ol_avatar"
-let cls_mail = "ol_avatar"
-let cls_user = "ol_user"
-let cls_users = "ol_users"
-let cls_user_box = "ol_user_box"
+let cls_avatar = "eba_avatar"
+let cls_mail = "eba_avatar"
+let cls_user = "eba_user"
+let cls_users = "eba_users"
+let cls_user_box = "eba_user_box"
 
 
 (********************* TEST AND COMPARISON FUNCTIONS **************************)
@@ -53,7 +53,7 @@ let make_pic_string_uri ?absolute p =
      ?absolute ~service:(Eliom_service.static_dir ()) ["avatars" ; p])
 
 let print_user_name u =
-  span ~a:[a_class ["ol_username"]] [pcdata (name_of_user u)]
+  span ~a:[a_class ["eba_username"]] [pcdata (name_of_user u)]
 
 let print_user_avatar ?(cls=cls_avatar) u =
   img

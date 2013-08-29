@@ -50,7 +50,7 @@ body {
 }
 
 
-div.ol_main_infobox {
+div.eba_main_infobox {
   position: fixed;
   right: 30px;
   top: 80px;
@@ -60,7 +60,7 @@ div.ol_main_infobox {
   margin: 0;
 }
 
-div.ol_main_infobox p {
+div.eba_main_infobox p {
   padding: 4px 15px;
 }
 
@@ -73,7 +73,7 @@ p.el_infobox_odd {
 p.el_infobox_important {
 }
 
-div.ol_mainpart {
+div.eba_mainpart {
   position: absolute;
   left: 310px;
   top: 0;
@@ -81,24 +81,24 @@ div.ol_mainpart {
 }
 
 
-div.ol_identity {
+div.eba_identity {
   position: relative;
 }
-div.ol_identity .ol_username {
+div.eba_identity .eba_username {
   display: inline-block;
   width: 280px;
   vertical-align: middle;
 }
-div.ol_identity img {
+div.eba_identity img {
   width: 50px;
   height: 50px;
   vertical-align: middle;
   margin-right: 10px;
 }
-div.ol_identity div.ol_upload_pic {
+div.eba_identity div.eba_upload_pic {
   display: none;
 }
-div.ol_identity:hover div.ol_upload_pic {
+div.eba_identity:hover div.eba_upload_pic {
   display: block;
   position:absolute;
   top: 0;
@@ -112,35 +112,35 @@ div.ol_identity:hover div.ol_upload_pic {
 }
 
 
-div.ol_logout_button {
+div.eba_logout_button {
 }
 
-div.ol_logout_button:hover {
+div.eba_logout_button:hover {
   cursor: pointer;
 }
 
 
 /* users */
-.ol_users {
+.eba_users {
   margin: 0;
   width: 500px;
 }
-div.ol_user_selector input {
+div.eba_user_selector input {
   padding: 0;
   height: 23px;
 }
-span.ol_user_box {
+span.eba_user_box {
   display: inline-block;
   height: 25px;
   vertical-align:text-top;
 }
-span.ol_user_box img.ol_avatar {
+span.eba_user_box img.eba_avatar {
   width: 25px;
   height: 25px;
   vertical-align: middle;
 }
 
-section img.ol_avatar {
+section img.eba_avatar {
   width: 40px;
   height: 40px;
   float: left;
@@ -149,14 +149,14 @@ section img.ol_avatar {
 }
 
 
-span.ol_user_box span.ol_avatar {
+span.eba_user_box span.eba_avatar {
   width: 25px;
   height: 25px;
   margin-left: 0px;
   padding: 0px 3px 2px;
 }
 
-section span.ol_avatar {
+section span.eba_avatar {
   width: 40px;
   height: 40px;
   float: left;
@@ -192,18 +192,18 @@ div.el_expmenu_content {
 }
 
 /* Welcome page */
-div.ol_welcomepage {
+div.eba_welcomepage {
   margin: auto;
   margin-top: 100px;
   width: 580px;
 }
 
-div.ol_welcomepage h1,
-div#ol_login_signup_box {
+div.eba_welcomepage h1,
+div#eba_login_signup_box {
   margin: 0 8px;
 }
 
-div.ol_welcomepage h1 {
+div.eba_welcomepage h1 {
   top: 0;
   left: 0;
   width: 250px;
@@ -214,7 +214,7 @@ div.ol_welcomepage h1 {
   font-size: 150px;
 }
 
-div.ol_welcomepage h2 {
+div.eba_welcomepage h2 {
   padding: 8px 0;
   margin: 0;
   font-size: 18px;
@@ -222,32 +222,32 @@ div.ol_welcomepage h2 {
   cursor: pointer;
 }
 
-div#ol_login_signup_box {
+div#eba_login_signup_box {
   top: 0;
   right: 0;
   width: 280px;
 }
 
-div#ol_login_signup_box form {
+div#eba_login_signup_box form {
   height: 126px;
   text-align: center;
 }
 
-div#ol_login_signup_box label {
+div#eba_login_signup_box label {
   font-size: 16px;
 }
 
-div#ol_login_signup_box p {
+div#eba_login_signup_box p {
   height: 150px;
   padding-top: 60px;
   text-align: center;
 }
 
-div.ol_activation {
+div.eba_activation {
   margin-top: 8px;
 }
 
-div.ol_welcomepage input {
+div.eba_welcomepage input {
   width: 230px;
   font-size: 16px;
   font-weight: bold;
@@ -256,11 +256,11 @@ div.ol_welcomepage input {
   text-align: center;
 }
 
-div.ol_welcomepage input[type="submit"] {
+div.eba_welcomepage input[type="submit"] {
   width: 246px;
 }
 
-div#ol_login_signup_box p.ol_error {
+div#eba_login_signup_box p.eba_error {
   position: absolute;
   top: 0;
   left: 0;
@@ -273,20 +273,20 @@ div#ol_login_signup_box p.ol_error {
 }
 
 /* Personal info box */
-div#ol_welcome_box {
+div#eba_welcome_box {
   width: 480px;
   padding: 10px;
   margin-bottom: 16px;
   text-align: center;
 }
-div#ol_welcome_box h2 {
+div#eba_welcome_box h2 {
   margin-top: 0;
 }
-div#ol_welcome_box table {
+div#eba_welcome_box table {
   display: inline-block;
   padding: 20px;
 }
-div#ol_welcome_box input[type="submit"] {
+div#eba_welcome_box input[type="submit"] {
   width: 246px;
   padding: 8px;
   font-weight: bold;
@@ -303,56 +303,56 @@ div.el_completion ul {
   margin: 0;
 }
 
-div.ol_bubble {
+div.eba_bubble {
   border-radius: 25px;
   box-shadow: 0px 0px 5px 1px #ccc;
   /* box-shadow-color ?? */
 }
 
 
-.ol_del_att_button {
+.eba_del_att_button {
   position: relative;
   font-family: 'HeydingsControlsRegular';
   font-size: 18px;
 }
 
-.ol_del_att_button {
+.eba_del_att_button {
   color: white;
 }
 
-.ol_del_att_button:hover {
+.eba_del_att_button:hover {
   color: #ff605d;
   cursor: pointer;
 }
 
-div.ol_addrecip_widget input {
+div.eba_addrecip_widget input {
   margin: 0 5px;
 }
 
-div.ol_addrecip_widget {
+div.eba_addrecip_widget {
     cursor: default;
     border-bottom: 3px;
     border-color: grey;
 }
 
-span.ol_removerecipbutton {
+span.eba_removerecipbutton {
     color: white;
     padding: 3px;
     font-size: 12px;
 }
 
-span:hover>span.ol_removerecipbutton {
+span:hover>span.eba_removerecipbutton {
     color: #585858;
 }
 
 
-span.ol_openingwidgetbutton {
+span.eba_openingwidgetbutton {
     float: right;
     color: grey;
     padding: 5px;
 }
 
-div.ol_addrecip_widget_buttons {
+div.eba_addrecip_widget_buttons {
     display: block;
     text-align: right;
     color: grey;
@@ -361,16 +361,16 @@ div.ol_addrecip_widget_buttons {
     font-size: 18px;
 }
 
-span.ol_closingwidgetbutton {
+span.eba_closingwidgetbutton {
     padding-right: 10px;
 }
 
-span.ol_sendrecipbutton {
+span.eba_sendrecipbutton {
     padding-left: 10px;
 }
 
 /* Closed process */
-div.ol_process_closed {
+div.eba_process_closed {
   position: fixed;
   height: 100%;
   width: 100%;
@@ -384,12 +384,12 @@ div.ol_process_closed {
   -o-transition: background-color 2s;
 }
 
-div.ol_process_closed img {
+div.eba_process_closed img {
   position: fixed;
   right: 33%;
   top: 55%;
 }
-div.ol_process_closed p {
+div.eba_process_closed p {
   position: fixed;
   left: 66%;
   top: 55%;
@@ -398,78 +398,78 @@ div.ol_process_closed p {
 
 /*
 Disable the display of application name
-div.ol_welcomepage h1.caml_process_node a.caml_link {
+div.eba_welcomepage h1.caml_process_node a.caml_link {
     display: none;
 }
 */
 
-#ol_login_signup_box {
+#eba_login_signup_box {
     background-color: white;
     border-radius: 4px;
 }
 
-#ol_login_signup_box input {
+#eba_login_signup_box input {
     border-radius: 4px;
     border: #aaa solid 1px;
 }
 
-#ol_admin_site_state {
+#eba_admin_site_state {
 }
 
-#ol_open_state input {
+#eba_open_state input {
     background-color: #01cc22;
     font-size: 15px;
     padding: 5px;
 }
 
-.ol_sw_sendbutton {
+.eba_sw_sendbutton {
     width: 20px;
     height: 20px;
     background-color: green;
 }
 
-.ol_sw_cancelbutton {
+.eba_sw_cancelbutton {
     width: 20px;
     height: 20px;
     background-color: red;
 }
 
-.ol_sw_removebutton {
+.eba_sw_removebutton {
     width: 20px;
     height: 20px;
     background-color: red;
 }
 
-.ol_admin_button {
+.eba_admin_button {
     display: inline-block;
     margin: 2px;
     padding: 5px;
     background-color: red;
 }
 
-.ol_enabled {
+.eba_enabled {
     background-color: green;
 }
 
-.ol_admin_user_box {
+.eba_admin_user_box {
 }
 
-.ol_avatar {
+.eba_avatar {
   width: 20px;
   height: 20px;
 }
 
-.ol_sw_selected {
+.eba_sw_selected {
 }
 
-.ol_user_box {
+.eba_user_box {
   border: 1px red solid;
 }
 
-.ol_sw_removebutton {
+.eba_sw_removebutton {
 }
 
-.ol_logout_button {
+.eba_logout_button {
   width: 20px;
   height: 20px;
   background-color: red;

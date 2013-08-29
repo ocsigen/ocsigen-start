@@ -13,7 +13,7 @@
 let print_user_box u =
   let print_user_avatar u =
     let uavatar =
-      D.div ~a:[a_class ["ol_upload_pic"]]
+      D.div ~a:[a_class ["eba_upload_pic"]]
         [pcdata "Upload picture"]
     in
     Ebapp.View.Image.start_crop_on_clicking_on uavatar u;
@@ -61,7 +61,7 @@ let print_user_box u =
     ]
 
 let disconnected_home_page () =
-  let id = "ol_login_signup_box" in
+  let id = "eba_login_signup_box" in
   if Ebapp.Rmsg.Notice.has ((=) `Activation_key_created)
   then
     Lwt.return
@@ -118,7 +118,7 @@ let disconnected_home_page () =
     let press o d msg =
       ignore {unit{
         let d = To_dom.of_div %d in
-        let msg = To_dom.of_p (p ~a:[a_class ["ol_error"]] [pcdata %msg]) in
+        let msg = To_dom.of_p (p ~a:[a_class ["eba_error"]] [pcdata %msg]) in
           ignore ((%o)#press);
           Dom.appendChild d msg;
           ignore
@@ -203,7 +203,7 @@ let connected_welcome_box () =
         ], (("", ""), ("", "")))
   in
   Lwt.return
-    (div ~a:[a_id "ol_welcome_box"]
+    (div ~a:[a_id "eba_welcome_box"]
        [
          h2 [pcdata ("Welcome to "^Ebapp.App.app_name)];
          info;
@@ -254,7 +254,7 @@ let _ =
     (*let lb = Ebapp.V.Form.login_form () in*)
     Lwt.return
       [
-        D.div ~a:[a_class ["ol_welcomepage"]]
+        D.div ~a:[a_class ["eba_welcomepage"]]
           [
             lb
           ]

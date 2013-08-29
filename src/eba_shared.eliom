@@ -8,7 +8,7 @@
     type t = Eba_types.User.t
 
     let default_avatar =
-      "__ol_default_user_avatar"
+      "__eba_default_user_avatar"
 
     let make_avatar_uri p =
       make_uri (Eliom_service.static_dir ()) ["avatars" ; p]

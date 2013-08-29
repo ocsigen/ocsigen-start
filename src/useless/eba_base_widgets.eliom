@@ -11,7 +11,7 @@ module Eba_fm = Eba_flash_message
 {server{
 
 let login_signin_box () =
-  let id = "ol_login_signup_box" in
+  let id = "eba_login_signup_box" in
   if Eliom_reference.Volatile.get Eba_session.activationkey_created
   then
     Lwt.return
@@ -68,7 +68,7 @@ let login_signin_box () =
     let press o d msg =
       ignore {unit{
         let d = To_dom.of_div %d in
-        let msg = To_dom.of_p (p ~a:[a_class ["ol_error"]] [pcdata %msg]) in
+        let msg = To_dom.of_p (p ~a:[a_class ["eba_error"]] [pcdata %msg]) in
           ignore ((%o)#press);
           Dom.appendChild d msg;
           ignore
@@ -150,7 +150,7 @@ let welcome_box () =
         (p [pcdata "Wrong data. Please fix."], wpd)
     )
   in
-  div ~a:[a_id "ol_welcome_box"]
+  div ~a:[a_id "eba_welcome_box"]
     [
       div [
         h2 [pcdata "Welcome to myproject"];

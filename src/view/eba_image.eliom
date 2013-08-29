@@ -33,7 +33,7 @@
     Ojw_log.log "omg"; lwt () = Lwt_js_events.request_animation_frame () in
     let default_picture =
       Dom_html.document##body##querySelector
-        (Js.string ("div.ol_identity img."^Eba_user.cls_avatar))
+        (Js.string ("div.eba_identity img."^Eba_user.cls_avatar))
     in
     let src =
       Js.Opt.case default_picture

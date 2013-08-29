@@ -61,22 +61,22 @@
       | Some a -> (make_pic_string_uri a)
 
   let class_of_memberbox _ =
-    "ol_memberbox"
+    "eba_memberbox"
 
   let class_of_member _ =
-    "ol_member"
+    "eba_member"
 
   let cls_member_selector =
-    "ol_member_selector"
+    "eba_member_selector"
 
   let cls_member_input =
-    "ol_member_input"
+    "eba_member_input"
 
   let cls_members =
-    "ol_members"
+    "eba_members"
 
   let cls_mailbox =
-    "ol_mailbox"
+    "eba_mailbox"
 
 }}
    *)

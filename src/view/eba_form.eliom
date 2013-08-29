@@ -60,7 +60,7 @@ let personal_info_form_with_input
   let ri = ref None in
   let form =
     post_form
-      ~a:[a_id "ol_personal_info_form"]
+      ~a:[a_id "eba_personal_info_form"]
       ~service:Eba_services.set_personal_data_service
       (fun ((fnn, lnn), (pwdn, pwd2n)) ->
          let pass1 =
@@ -123,7 +123,7 @@ let login_form_with_input ?(login = "") () =
   let ri = ref None in
   let form =
     D.post_form
-    ~a:[a_id "ol_connectionbox"]
+    ~a:[a_id "eba_connectionbox"]
     ~service:Eba_services.login_service
     (fun (loginname, pwdname) ->
       let inp =
@@ -178,7 +178,7 @@ let generic_email_form_with_input
 
 let lost_password_form_with_input ?login () =
   generic_email_form_with_input
-    ?login ~id:"ol_activationemail"
+    ?login ~id:"eba_activationemail"
     ~service:Eba_services.lost_password_service
     "Enter your e-mail address to receive an activation link"
 
@@ -187,7 +187,7 @@ let lost_password_form ?login () =
 
 let sign_up_form_with_input ?login () =
   generic_email_form_with_input
-    ?login ~id:"ol_activationemail"
+    ?login ~id:"eba_activationemail"
     ~service:Eba_services.sign_up_service
     "Enter your e-mail address to receive an activation link"
 

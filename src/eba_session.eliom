@@ -65,7 +65,7 @@ let get_current_user_option () =
   (* This will close the client process *)
   let close_client_process () =
     let d =
-      D.div ~a:[a_class ["ol_process_closed"]] [
+      D.div ~a:[a_class ["eba_process_closed"]] [
         img ~alt:("Ocsigen Logo")
           ~src:(Xml.uri_of_string ("https://ocsigen.org/resources/logos/ocsigen_with_shadow.png"))
           ();

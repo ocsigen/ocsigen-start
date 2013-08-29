@@ -159,12 +159,12 @@ struct
       let on_show u =
         [
           img
-            ~a:[a_class ["ol_avatar"]]
+            ~a:[a_class ["eba_avatar"]]
             ~alt:(Eba_shared.User.fullname_of_user u)
             ~src:(Eba_shared.User.make_avatar_uri (Eba_shared.User.avatar_of_user u))
             ();
           span
-            ~a:[a_class ["ol_username"]]
+            ~a:[a_class ["eba_username"]]
             [pcdata (Eba_shared.User.fullname_of_user u)]
         ]
       in

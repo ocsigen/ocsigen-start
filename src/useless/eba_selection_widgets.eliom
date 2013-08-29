@@ -4,14 +4,14 @@
 open Eliom_content.Html5
 open Eliom_content.Html5.F
 
-let cls_widget = "ol_selector_widget"
-let cls_send = "ol_sw_sendbutton"
-let cls_cancel = "ol_sw_cancelbutton"
-let cls_buttons = "ol_sw_buttons"
-let cls_removebutton = "ol_sw_removebutton"
-let cls_selected = "ol_sw_selected"
-let cls_tbox = "ol_user_box"
-let cls_completion_input = "ol_sw_completion_input"
+let cls_widget = "eba_selector_widget"
+let cls_send = "eba_sw_sendbutton"
+let cls_cancel = "eba_sw_cancelbutton"
+let cls_buttons = "eba_sw_buttons"
+let cls_removebutton = "eba_sw_removebutton"
+let cls_selected = "eba_sw_selected"
+let cls_tbox = "eba_user_box"
+let cls_completion_input = "eba_sw_completion_input"
 }}
 
 
