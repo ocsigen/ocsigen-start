@@ -45,7 +45,6 @@ struct
     List.map
       (fun cssname -> ("css"::cssname))
       ([["eliom_ui.css"];
-        ["ol.css"]; (* merge them together *)
         ["ew.css"];
         ["eba.css"];
         ["eba_admin.css"];
