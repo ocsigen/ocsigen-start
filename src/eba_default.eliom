@@ -53,4 +53,9 @@ module App = struct
   let session_config = new session_config ()
   let page_config : Eba_page.config = new page_config ()
   let mail_config = new mail_config ()
+
+  let states = [
+    (`Normal, "Normal", None);
+    (`Restricted, "Restricted", None);
+  ]
 end
