@@ -1,4 +1,4 @@
-(* Copyright Vincent Balat *)
+(* Copyright Vincent Balat, Charly Chevalier *)
 
 {shared{
   open Eliom_content.Html5
@@ -18,18 +18,7 @@ class type config = object
 end
 
 (********* Eliom references *********)
-let wrong_password =
-  Eliom_reference.eref ~scope:Eliom_common.request_scope false
-
-let wrong_perso_data
- : ((string * string) * (string * string)) option Eliom_reference.Volatile.eref
-    =
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope None
-
-let activationkey_created =
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
-
-let me : Eba_user.shared_t option Eliom_reference.Volatile.eref =
+let me : Eba_types.User.t option Eliom_reference.Volatile.eref =
   (* This is a cache of current user *)
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope None
 
@@ -61,15 +50,16 @@ let get_current_user_option () =
 
 *)
 {client{
-  let me : Eba_user.shared_t option ref = ref None
+  let me : Eba_types.User.t option ref = ref None
 }}
 
 {client{
   let get_current_user_or_fail () =
     match !me with
       | Some a -> a
-      | None -> Eba_misc.alert "Not connected error in Eba_sessions";
-        raise Not_connected
+      | None ->
+          Ojw_log.log "Not connected error in Eba_sessions";
+          raise Not_connected
 
 
   (* This will close the client process *)
@@ -97,13 +87,41 @@ let get_current_user_option () =
     Lwt.return ()
 }}
 
+module type T = sig
+  val connect_wrapper_function :
+     ?allow:Eba_types.Groups.t list
+  -> ?deny:Eba_types.Groups.t list
+  -> (int64 -> 'a -> 'b -> 'c Lwt.t)
+  -> 'a -> 'b
+  -> 'c Lwt.t
+
+  val anonymous_wrapper :
+     ?allow:Eba_types.Groups.t list
+  -> ?deny:Eba_types.Groups.t list
+  -> (int64 option -> 'a -> 'b -> 'c Lwt.t)
+  -> 'a -> 'b
+  -> 'c Lwt.t
+
+  val connect_wrapper_rpc :
+     ?allow:Eba_types.Groups.t list
+  -> ?deny:Eba_types.Groups.t list
+  -> (int64 -> 'a -> 'b Lwt.t)
+  -> 'a
+  -> 'b Lwt.t
+
+  val anonymous_wrapper_rpc :
+     ?allow:Eba_types.Groups.t list
+  -> ?deny:Eba_types.Groups.t list
+  -> (int64 option -> 'a -> 'b Lwt.t)
+  -> 'a
+  -> 'b Lwt.t
+
+  val connect : int64 -> unit Lwt.t
+  val logout : unit -> unit Lwt.t
+end
+
 module Make(M : sig
-  val config :
-    < on_open_session : unit Lwt.t;
-      on_close_session : unit Lwt.t;
-      on_start_process : unit Lwt.t;
-      on_start_connected_process : unit Lwt.t;
-    >
+  val config : config
 
   module Groups : Eba_groups.T
   module User : Eba_user.T
@@ -260,7 +278,11 @@ struct
   (* connect_wrapper_action checks user connection
      and fails if not connected. *)
   let connect_wrapper_function ?allow ?deny f gp pp =
-    gen_wrapper ~allow ~deny f (fun _ _ -> Lwt.fail Not_connected) gp pp
+    gen_wrapper
+      ~allow ~deny
+      f
+      (fun _ _ -> Lwt.fail Not_connected)
+      gp pp
 
   let anonymous_wrapper ?allow ?deny f gp pp =
     gen_wrapper
