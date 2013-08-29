@@ -9,7 +9,7 @@ PKG_VERS := your version
 PKG_DESC := your description
 
 # Source files for the server
-SERVER_FILES := $(wildcard src/*.eliom* src/*.ml*)
+SERVER_FILES := $(wildcard src/*.eliom* src/*.ml* src/tools/*.eliom*)
 # Source files for the client
 CLIENT_FILES := $(wildcard src/*.eliom*)
 

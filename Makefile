@@ -63,10 +63,7 @@ $(LIBDIR):
 
 ## make it more elegant ?
 SERVER_DIRS     := $(shell echo $(foreach f, $(SERVER_FILES), $(dir $(f))) |  tr ' ' '\n' | sort -u | tr '\n' ' ')
-# waiting for the pull-request on eliom
-# you can also use this eliom repos: https://github.com/shakurra/eliom
-#SERVER_DEP_DIRS := ${addprefix -eliom-inc ,${SERVER_DIRS}}
-SERVER_DEP_DIRS := ${addprefix -I ,${SERVER_DIRS}}
+SERVER_DEP_DIRS := ${addprefix -eliom-inc ,${SERVER_DIRS}}
 SERVER_INC_DIRS := ${addprefix -I $(ELIOM_SERVER_DIR)/, ${SERVER_DIRS}}
 
 SERVER_INC  := ${addprefix -package ,${SERVER_PACKAGES}}
@@ -107,10 +104,7 @@ ${ELIOM_SERVER_DIR}/%.cmx: %.eliom
 
 ## make it more elegant ?
 CLIENT_DIRS     := $(shell echo $(foreach f, $(CLIENT_FILES), $(dir $(f))) |  tr ' ' '\n' | sort -u | tr '\n' ' ')
-# waiting for the pull-request on eliom
-# you can also use this eliom repos: https://github.com/shakurra/eliom
-#CLIENT_DEP_DIRS := ${addprefix -eliom-inc ,${CLIENT_DIRS}}
-CLIENT_DEP_DIRS := ${addprefix -I ,${CLIENT_DIRS}} #
+CLIENT_DEP_DIRS := ${addprefix -eliom-inc ,${CLIENT_DIRS}}
 CLIENT_INC_DIRS := ${addprefix -I $(ELIOM_CLIENT_DIR)/,${CLIENT_DIRS}}
 
 CLIENT_LIBS := ${addprefix -package ,${CLIENT_PACKAGES}}
