@@ -1,10 +1,3 @@
-(** abstract type which correspond to a group.
-  * a user belongs to one or more groups, each
-  * group grants him some special rights (e.g:
-  * beta-user, admin or whatever. *)
-{shared{
-}}
-
 exception No_such_group
 
 module type T = sig
