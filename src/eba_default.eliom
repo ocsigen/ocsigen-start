@@ -52,7 +52,7 @@ module App = struct
   let mail_config = new mail_config ()
 
   let states = [
-    (`Normal, "Normal", None);
-    (`Restricted, "Restricted", None);
+    (`Normal, "Normal", Some "allow you to register users");
+    (`Restricted, "Restricted", Some "allow you to pre-register (not register) users");
   ]
 end

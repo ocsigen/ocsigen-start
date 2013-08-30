@@ -118,7 +118,11 @@ struct
       }};
       D.div [
         rb;
-        pcdata rbdesc;
+        span ~a:[a_class ["eba_admin_state_desc"]] [
+          b [pcdata rbname];
+          pcdata " - ";
+          pcdata rbdesc;
+        ];
         hr ();
       ]
     in

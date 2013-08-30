@@ -94,3 +94,7 @@ ul.ew_dropdown li.ew_active {
 .eba_admin_group_of_user input {
     float: right;
 }
+
+.eba_admin_state_desc {
+    margin-left: 10px;
+}
