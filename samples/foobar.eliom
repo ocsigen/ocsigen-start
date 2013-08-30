@@ -60,8 +60,18 @@ let print_user_box u =
       print_user_settings u;
     ]
 
+{client{
+  let display_error cont msg f =
+    let msg = To_dom.of_p (p ~a:[a_class ["eba_error"]] [pcdata msg]) in
+      ignore (f ());
+      Dom.appendChild cont msg;
+      ignore
+        (lwt () = Lwt_js.sleep 2. in Dom.removeChild cont msg; Lwt.return ())
+}}
+
 let disconnected_home_page () =
   let id = "eba_login_signup_box" in
+  lwt state = Ebapp.St.get_website_state () in
   if Ebapp.Rmsg.Notice.has ((=) `Activation_key_created)
   then
     Lwt.return
@@ -69,6 +79,13 @@ let disconnected_home_page () =
          [p [pcdata "An email has been sent to this address.";
              br();
              pcdata "Click on the link it contains to log in."]])
+  else if Ebapp.Rmsg.Notice.has ((=) `Preregistered)
+  then
+    Lwt.return
+      (D.div ~a:[a_id id]
+         [p [pcdata "Your e-mail has been pre-registered.";
+             br();
+             pcdata "We will send you an e-mail when your account will be activated."]])
   else
     let set = {(Ew_button.radio_set_t){
       Ew_button.new_radio_set ()
@@ -92,17 +109,19 @@ let disconnected_home_page () =
         %form2
     }}
     in
-      (*
     let button3 = D.h2 [pcdata "Preregister"] in
-    let form3, i3 = Eba_preregister.preregister_box preregister_service in
+    let form3, i3 =
+      Ebapp.Default.generic_email_form_with_input
+        ~service:Ebapp.Sv.preregister_service
+        "Enter your e-mail to be preregistered on our website !"
+    in
     let o3 = {(Ew_button.show_hide_t){
-      new show_hide_focus
-        ~set:%set ~button:(To_dom.of_h2 %button3)
+      new Ew_button.show_hide
+        ~set:%set ~button:%button3
         ~closeable_by_button:false
-        ~focused:(To_dom.of_input %i3) (To_dom.of_form %form3)
+        %form3
     }}
     in
-       *)
     let button4 = D.h2 [pcdata "Register"] in
     let form4, i4 = Ebapp.Default.sign_up_form_with_input () in
     let o4 = {(Ew_button.show_hide_t){
@@ -110,25 +129,13 @@ let disconnected_home_page () =
         ~set:%set ~button:%button4
         ~closeable_by_button:false
         %form4
-    }}
-    in
-    (* function to press the corresponding button and display
-     * the flash message error.
-     * [d] is currently an server value, so we need to use % *)
-    let press o d msg =
+    }} in
+    let press but cont msg =
       ignore {unit{
-        let d = To_dom.of_div %d in
-        let msg = To_dom.of_p (p ~a:[a_class ["eba_error"]] [pcdata %msg]) in
-          ignore ((%o)#press);
-          Dom.appendChild d msg;
-          ignore
-            (lwt () = Lwt_js.sleep 2. in
-             Dom.removeChild d msg;
-             Lwt.return ())
+        display_error (To_dom.of_element %cont) %msg (fun () -> %but#press)
       }};
       Lwt.return ()
     in
-    lwt state = Ebapp.St.get_website_state () in
     (* here we will return the div correponding to the current
      * website state, and also a function to handle specific
      * flash messages *)
@@ -137,20 +144,18 @@ let disconnected_home_page () =
         | `Restricted ->
         (*| (Ebapp.State.restricted_state) ->*)
            (D.div ~a:[a_id id]
-                          [button1; (*button3;*) form1; (*form3*)]),
+                          [button1; button3; form1; form3]),
            (* this function will handle only flash message error associated
             * to this website mode *)
            (fun d rmsg ->
-              print_endline "rmsg";
               match rmsg with
                 (* Login error *)
                 | `Wrong_password ->
                     (press o1 d "Wrong password")
                 (* Preregister error *)
-                (*
-                | Eba_fm.User_already_preregistered _ ->
+                | `User_already_exists _
+                | `User_already_preregistered _ ->
                     (press o3 d "This email is not available")
-                *)
                 | `Activation_key_outdated ->
                     (press o2 d "Invalid activation key, ask for a new one.")
                 | _ ->
@@ -180,7 +185,6 @@ let disconnected_home_page () =
                     (press o1 d "Something went wrong"))
     in
     (* handle_rmsg : currify *)
-      print_endline "foobar";
     lwt () = (Ebapp.R.Error.iter (handle_rmsg d)) in
     Lwt.return d
 

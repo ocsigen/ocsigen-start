@@ -40,6 +40,11 @@ module App(M : T) = struct
   end
   module G = Groups
 
+  module Email_groups = Eba_egroups.Make(struct
+                                      module Database = Database
+                                    end)
+  module Eg = Email_groups
+
   module User = struct
     include Eba_user.Make(struct module Database = Database end)
   end
@@ -140,6 +145,22 @@ module App(M : T) = struct
               * `Send_mail_failed rmsg *)
           R.Error.push `Send_mail_failed;
           Lwt.return false
+
+  let preregister_handler () email =
+    let group = Eg.preregister in
+    lwt is_in = Eg.in_group ~email ~group in
+    match_lwt User.uid_of_mail email with
+      | None ->
+          if is_in
+          then
+            (R.Error.push (`User_already_preregistered email);
+             Lwt.return ())
+          else
+            (R.Notice.push `Preregistered;
+             Eg.add_email ~email ~group)
+      | Some _ ->
+          R.Error.push (`User_already_exists email);
+          Lwt.return ()
 
   (** will generate an activation key which can be used to login
       directly. This key will be send to the [email] address *)
@@ -333,6 +354,10 @@ module App(M : T) = struct
       sign_up_handler;
 
     Eliom_registration.Action.register
+      Eba_services.preregister_service
+      preregister_handler;
+
+    Eliom_registration.Action.register
       Eba_services.set_password_service
       (Session.connect_wrapper_function set_password_handler);
 
@@ -354,11 +379,6 @@ module App(M : T) = struct
     Ew_dyn_upload.register
       Eba_services.crop_service
       (Session.connect_wrapper_function crop_handler);
-
-(*
-    Eliom_registration.Action.register preregister_service
-      Eba_preregister.preregister_handler;
-*)
 
     App.register
       Eba_services.admin_service

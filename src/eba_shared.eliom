@@ -56,6 +56,22 @@
     let desc_of_group group =
       group.desc
   end
+
+  module Email_groups = struct
+
+    type t = Eba_types.Email_groups.t
+
+    open Eba_types.Email_groups
+
+    let id_of_group group =
+      group.id
+
+    let name_of_group group =
+      group.name
+
+    let desc_of_group group =
+      group.desc
+  end
 }}
 
 {server{

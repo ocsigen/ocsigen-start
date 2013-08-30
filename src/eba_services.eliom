@@ -49,12 +49,10 @@ let set_personal_data_service =
     ~post_params:((string "firstname" ** string "lastname")
                   ** (string "password" ** string "password2")) ()
 
-(*
 let preregister_service =
   post_coservice'
     ~name:"preregister"
     ~post_params:(string "email") ()
-*)
 
 let admin_service =
   service

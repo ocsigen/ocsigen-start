@@ -35,15 +35,6 @@ module type User_T = sig
     val does_mail_exist : 'a Lwt_Query.Db.t -> string -> int64 option Lwt.t
   end
 
-  (*
-  val is_registered : string -> bool Lwt.t
-  val is_preregistered : string -> bool Lwt.t
-  val is_registered_or_preregistered : string -> bool Lwt.t
-  val new_preregister_email : string -> unit Lwt.t
-  val all_preregistered : unit -> string list Lwt.t
-
-  val get_user : string -> t Lwt.t
-  *)
   val new_user : ?avatar:string -> string -> int64 Lwt.t
 
   val does_mail_exist : string -> int64 option Lwt.t
@@ -89,6 +80,30 @@ module type Groups_T = sig
   val all_groups : unit -> t list Lwt.t
 end
 
+module type Email_groups_T = sig
+  type t =
+    < description : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
+      groupid : < get : unit; nul : Sql.non_nullable; t : Sql.int64_t > Sql.t;
+      name : < get : unit; nul : Sql.non_nullable; t : Sql.string_t > Sql.t;
+    >
+
+  module Q : sig
+    val does_egroup_exist : 'a Lwt_Query.Db.t -> string -> t option Lwt.t
+    val is_email_in_egroup : 'a Lwt_Query.Db.t -> email:string -> groupid:int64 -> bool Lwt.t
+  end
+
+  val get_egroup : string -> t Lwt.t
+  val new_egroup : ?description:string -> string -> unit Lwt.t
+
+  val is_email_in_egroup : email:string -> groupid:int64 -> bool Lwt.t
+  val add_email_in_egroup : email:string -> groupid:int64 -> unit Lwt.t
+  val remove_email_in_egroup : email:string -> groupid:int64 -> unit Lwt.t
+
+  val does_egroup_exist : string -> t option Lwt.t
+  val all_emails_in_egroup : groupid:int64 -> string list Lwt.t
+  val all_egroups : unit -> t list Lwt.t
+end
+
 
 module type T = sig
   module User : User_T
@@ -96,6 +111,9 @@ module type T = sig
 
   module Groups : Groups_T
   module G : Groups_T
+
+  module Email_groups : Email_groups_T
+  module Eg : Email_groups_T
 end
 
 module Make(M : sig
@@ -175,6 +193,19 @@ struct
 
   let user_groups_table = <:table< user_groups (
          userid bigint NOT NULL,
+         groupid bigint NOT NULL
+  ) >>
+
+  let egroups_table_id_seq = <:sequence< bigserial "egroups_groupid_seq" >>
+
+  let egroups_table = <:table< egroups (
+         groupid bigint NOT NULL DEFAULT(nextval $egroups_table_id_seq$),
+         name text NOT NULL,
+         description text
+  ) >>
+
+  let email_egroups_table = <:table< email_egroups (
+         email text NOT NULL,
          groupid bigint NOT NULL
   ) >>
 
@@ -584,5 +615,118 @@ struct
   end
 
   module G = Groups
+
+  module Email_groups = struct
+
+    type t =
+      < description : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
+        groupid : < get : unit; nul : Sql.non_nullable; t : Sql.int64_t > Sql.t;
+        name : < get : unit; nul : Sql.non_nullable; t : Sql.string_t > Sql.t;
+      >
+
+    module Q = struct
+
+      let does_egroup_exist dbh name =
+        try_lwt
+          lwt g = Lwt_Query.view_one dbh
+            <:view< g | g in $egroups_table$;
+                        g.name = $string:name$ >>;
+          in
+          Lwt.return (Some g)
+        with _ -> Lwt.return None
+
+
+      let is_email_in_egroup dbh ~email ~groupid =
+        try_lwt
+          lwt _ = Lwt_Query.view_one dbh
+            <:view< ug | ug in $email_egroups_table$;
+                         ug.email = $string:email$;
+                         ug.groupid = $int64:groupid$;
+            >>
+          in Lwt.return true
+        with _ -> Lwt.return false
+    end
+
+    let get_egroup name =
+      full_transaction_block
+        (fun dbh ->
+           Lwt_Query.view_one dbh
+             <:view< g | g in $egroups_table$;
+                         g.name = $string:name$ >>)
+
+    let new_egroup ?description name =
+      full_transaction_block
+        (fun dbh ->
+           try_lwt
+             match description with
+               | None ->
+                   Lwt_Query.query dbh
+                     <:insert< $egroups_table$ := { groupid = egroups_table?groupid;
+                                                            name = $string:name$;
+                                                            description = $Sql.Op.null$ } >>
+               | Some d ->
+                   Lwt_Query.query dbh
+                     <:insert< $egroups_table$ := { groupid = egroups_table?groupid;
+                                                   name = $string:name$;
+                                                   description = $string:d$ }
+                     >>
+           with _ -> Lwt.return ())
+
+    (* CHARLY: better to user label because we're going to user same
+     * type for both and we don't want to make some mistakes :) *)
+    let is_email_in_egroup ~email ~groupid =
+      full_transaction_block
+        (fun dbh ->
+           Q.is_email_in_egroup dbh ~email ~groupid)
+
+    (* CHARLY: same here *)
+    let add_email_in_egroup ~email ~groupid =
+      full_transaction_block
+        (fun dbh ->
+           lwt b = Q.is_email_in_egroup dbh ~email ~groupid in
+           (* true -> in the group, false -> not in the group *)
+           if b
+           (* we don't need to add user to the groups because he already belongs to it *)
+           then Lwt.return ()
+           (* here, ew add the user to a group *)
+           else
+             Lwt_Query.query dbh
+               <:insert< $email_egroups_table$ := { email = $string:email$;
+                                                    groupid = $int64:groupid$ }
+               >>)
+
+    (* CHARLY: same here *)
+    let remove_email_in_egroup ~email ~groupid =
+      full_transaction_block
+        (fun dbh ->
+           Lwt_Query.query dbh
+             <:delete< ug in $email_egroups_table$
+                       | ug.email = $string:email$;
+                         ug.groupid = $int64:groupid$;
+             >>)
+
+    let does_egroup_exist name =
+      full_transaction_block
+        (fun dbh ->
+           Q.does_egroup_exist dbh name)
+
+    let all_emails_in_egroup ~groupid =
+      full_transaction_block
+        (fun dbh ->
+           lwt l =
+             Lwt_Query.view dbh
+               <:view< e | e in $email_egroups_table$;
+                           e.groupid = $int64:groupid$ >>
+           in
+           Lwt.return (List.map (fun e -> e#!email) l))
+
+    let all_egroups () =
+      full_transaction_block
+        (fun dbh ->
+           Lwt_Query.query dbh
+             <:select< g | g in $egroups_table$ >>)
+  end
+
+  module Eg = Email_groups
 
 end

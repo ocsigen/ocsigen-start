@@ -21,6 +21,14 @@
     } deriving (Json)
   end
 
+  module Email_groups = struct
+    type t = {
+      id : int64;
+      name : string;
+      desc : string option
+    } deriving (Json)
+  end
+
   type state_t = [ `Normal | `Restricted ] deriving (Json)
 
   type error_t = [
@@ -35,6 +43,7 @@
   ] deriving (Json)
 
   type notice_t = [
+    | `Preregistered
     | `Activation_key_created
   ] deriving (Json)
 }}
