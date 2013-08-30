@@ -5,11 +5,6 @@
   open Eliom_content.Html5.F
 }}
 
-{shared{
-  exception Not_connected
-}}
-exception Permission_denied
-
 class type config = object
   method on_open_session : unit Lwt.t
   method on_close_session : unit Lwt.t
@@ -17,50 +12,7 @@ class type config = object
   method on_start_connected_process : unit Lwt.t
 end
 
-(********* Eliom references *********)
-let me : Eba_types.User.t option Eliom_reference.Volatile.eref =
-  (* This is a cache of current user *)
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope None
-
-(* SECURITY: We can trust these functions on server side,
-   because the user is set at every request from the session cookie value.
-   But do not trust a user sent by te client ...
-*)
-let get_current_user_or_fail () =
-  match Eliom_reference.Volatile.get me with
-    | Some a -> a
-    | None -> raise Not_connected
-
-let get_current_user_option () =
-  Eliom_reference.Volatile.get me
-
-(*VVV!!! I am not happy with these 2 functions set_user.
-  If we forget to call them, the user will be wrong.
-  get_current_user_or_fail could call User.user_of_uid itself
-  but it does not work if we want to set the client side value ...
-  For the client side value, we could use a wrapped reference but
-  - the value must be set before wrapping, otherwise we will wrap a lwt
-  thread ... We need a wrapper that waits the end of the server side threads
-  and wrap the value it returns?
-  - if they are sent only once, the value will be wrong because when
-  the client side program starts, the value is None
-  - if they are sent every request, it's too much, and this is probably
-  not the right semantics for wrapping Eliom references
-
-
-*)
 {client{
-  let me : Eba_types.User.t option ref = ref None
-}}
-
-{client{
-  let get_current_user_or_fail () =
-    match !me with
-      | Some a -> a
-      | None ->
-          Ojw_log.log "Not connected error in Eba_sessions";
-          raise Not_connected
-
 
   (* This will close the client process *)
   let close_client_process () =
@@ -129,6 +81,39 @@ module Make(M : sig
 end)
 =
 struct
+
+  exception Permission_denied
+
+  let me : Eba_types.User.t option Eliom_reference.Volatile.eref =
+    (* This is a cache of current user *)
+    Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope None
+
+  (* SECURITY: We can trust these functions on server side,
+     because the user is set at every request from the session cookie value.
+     But do not trust a user sent by te client ...
+  *)
+  let get_current_user_or_fail () =
+    match Eliom_reference.Volatile.get me with
+      | Some a -> a
+      | None -> raise Eba_shared.Session.Not_connected
+
+  let get_current_user_option () =
+    Eliom_reference.Volatile.get me
+
+  (*VVV!!! I am not happy with these 2 functions set_user.
+    If we forget to call them, the user will be wrong.
+    get_current_user_or_fail could call User.user_of_uid itself
+    but it does not work if we want to set the client side value ...
+    For the client side value, we could use a wrapped reference but
+    - the value must be set before wrapping, otherwise we will wrap a lwt
+    thread ... We need a wrapper that waits the end of the server side threads
+    and wrap the value it returns?
+    - if they are sent only once, the value will be wrong because when
+    the client side program starts, the value is None
+    - if they are sent every request, it's too much, and this is probably
+    not the right semantics for wrapping Eliom references
+
+  *)
   let set_user_server uid =
     lwt u = M.User.user_of_uid uid in
     Eliom_reference.Volatile.set me (Some u);
@@ -139,10 +124,10 @@ struct
 
   let set_user_client () =
     let u = Eliom_reference.Volatile.get me in
-    ignore {unit{ me := %u }}
+    ignore {unit{ Eba_shared.Session.me := %u }}
 
   let unset_user_client () =
-    ignore {unit{ me := None }}
+    ignore {unit{ Eba_shared.Session.me := None }}
 
   let start_connected_process () =
     let () = set_user_client () in
@@ -281,7 +266,7 @@ struct
     gen_wrapper
       ~allow ~deny
       f
-      (fun _ _ -> Lwt.fail Not_connected)
+      (fun _ _ -> Lwt.fail Eba_shared.Session.Not_connected)
       gp pp
 
   let anonymous_wrapper ?allow ?deny f gp pp =
@@ -295,7 +280,7 @@ struct
     gen_wrapper
       ~allow ~deny
       (fun userid _ p -> f userid p)
-      (fun _ _ -> Lwt.fail Not_connected)
+      (fun _ _ -> Lwt.fail Eba_shared.Session.Not_connected)
       () pp
 
   let anonymous_wrapper_rpc ?allow ?deny f pp =

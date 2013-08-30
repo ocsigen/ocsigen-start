@@ -19,7 +19,7 @@ module type T = sig
 
   val all : unit -> t list Lwt.t
 
-  val admin : t Lwt.t
+  val admin : t
 end
 
 module Make(M : sig
@@ -97,5 +97,5 @@ struct
          (put_in_cache)
          (l))
 
-  let admin = create "admin"
+  let admin = Lwt_unix.run (create "admin")
 end

@@ -196,8 +196,7 @@ struct
         get_groups_of_user_rpc
         uid () () =
     lwt user = M.User.user_of_uid uid in
-    lwt admin = M.Groups.admin in
-    lwt is_admin = (M.Groups.in_group ~userid:uid ~group:admin) in
+    lwt is_admin = (M.Groups.in_group ~userid:uid ~group:M.Groups.admin) in
     if not is_admin
     then
       (*

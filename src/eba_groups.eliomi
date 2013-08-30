@@ -15,7 +15,7 @@ module type T = sig
 
   val all : unit -> t list Lwt.t
 
-  val admin : t Lwt.t
+  val admin : t
 end
 
 module Make : functor (M : sig module Database : Eba_db.T end) -> sig
@@ -52,5 +52,5 @@ module Make : functor (M : sig module Database : Eba_db.T end) -> sig
   val desc_of_group : t -> string option
 
   (** default group needed by OL *)
-  val admin : t Lwt.t
+  val admin : t
 end

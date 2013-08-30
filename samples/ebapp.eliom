@@ -18,6 +18,8 @@ struct
     method title = "foobar"
 
     method css = [
+      ["eba.css"];
+      ["eba_admin.css"];
       ["font-awesome.css"];
       ["foobar.css"]
     ]
@@ -29,4 +31,3 @@ struct
     ]
   end
 end)
-

@@ -5,7 +5,7 @@
 
 {shared{
   module User = struct
-    type t = Eba_types.User.t
+    type t = Eba_types.User.t deriving (Json)
 
     let default_avatar =
       "__eba_default_user_avatar"
@@ -55,5 +55,28 @@
 
     let desc_of_group group =
       group.desc
+  end
+}}
+
+{server{
+  module Session = struct
+    exception Not_connected
+  end
+}}
+
+{client{
+  module Session = struct
+    exception Not_connected
+
+    let me : Eba_types.User.t option ref = ref None
+
+    let get_current_user_option () = !me
+
+    let get_current_user_or_fail () =
+      match !me with
+        | Some a -> a
+        | None ->
+          Ojw_log.log "Not connected error in Eba_sessions";
+          raise Not_connected
   end
 }}
