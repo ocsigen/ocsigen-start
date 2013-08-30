@@ -50,7 +50,6 @@ module Make(M : In) = struct
 
 
   let wrap_function (k : M.key_t) f =
-    let table = Eliom_reference.Volatile.get cache in
     (* we call the user function and we will reset the data correponding
      * to the key to be sure that we're going to use valid data with the
      * cache *)

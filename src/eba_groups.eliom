@@ -48,7 +48,7 @@ struct
         | Some g -> Lwt.return (create_group_with g)
         | None -> Lwt.fail No_such_group
   end
-  module MCache = Eba_cache.Make(MCache_in)
+  module MCache = Cache.Make(MCache_in)
 
   (** creates the group in the database if it does
     * not exist, or returns its id as an abstract value *)

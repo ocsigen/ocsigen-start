@@ -65,7 +65,7 @@ struct
         | Some u -> Lwt.return (create_user_with u)
         | None -> Lwt.fail No_such_user
   end
-  module MCache = Eba_cache.Make(MCache_in)
+  module MCache = Cache.Make(MCache_in)
 
   let explicit_reset_uid_from_cache uid =
     MCache.reset (uid :> int64)
