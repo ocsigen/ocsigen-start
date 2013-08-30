@@ -43,7 +43,6 @@ struct
 
     let compare = compare
     let get key =
-      print_endline ("get with key="^key);
       match_lwt M.Database.G.does_group_exist key with
         | Some g -> Lwt.return (create_group_with g)
         | None -> Lwt.fail No_such_group
@@ -63,7 +62,6 @@ struct
          Lwt.return (create_group_with g)
 
   let get name =
-    print_endline "eba_group.get";
     try_lwt
       lwt g = MCache.get name in
       Lwt.return (Some g)

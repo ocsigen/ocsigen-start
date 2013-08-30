@@ -57,7 +57,6 @@ end
 module Make(M : sig module User : Eba_user.T end) = struct
 
   let crop_on_server =
-    print_endline "crop_on_server";
     server_function
       Json.t<crop_param_t>
       (fun (user, dname, fname, (x,y,width,height)) ->

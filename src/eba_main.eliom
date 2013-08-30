@@ -262,7 +262,6 @@ module App(M : T) = struct
     lwt () = match_lwt User.uid_of_activationkey akey with
       | None ->
          (* Outdated activation key *)
-          print_endline "invalid act key";
           R.Error.push `Activation_key_outdated;
           Lwt.return ()
       | Some uid ->
