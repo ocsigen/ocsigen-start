@@ -179,6 +179,7 @@ struct
     ignore {unit{
       Eba_view.Helper.on_click %new_search_but
         (fun e ->
+           %comp_w#clear;
            %comp_w#clear_input;
            Eliom_content.Html5.Manip.removeAllChild %admin_sandbox;
            Eliom_content.Html5.Manip.appendChild %admin_sandbox %inp;
