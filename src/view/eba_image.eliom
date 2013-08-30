@@ -100,7 +100,7 @@ module Make(M : sig module User : Eba_user.T end) = struct
               ~a:[a_input_type `Submit; a_value "Uploading your profile photo"]
               ()
           in
-          let cancel =
+          let close_button =
             D.Raw.input
               ~a:[a_input_type `Button; a_value "Cancel"]
               ()
@@ -110,7 +110,7 @@ module Make(M : sig module User : Eba_user.T end) = struct
           ];
           self#set_footer [
             To_dom.of_element uploading;
-            To_dom.of_element cancel;
+            To_dom.of_element close_button;
           ];
           self#set_body [
             To_dom.of_element (pcdata "Select your photo:");
@@ -125,11 +125,12 @@ module Make(M : sig module User : Eba_user.T end) = struct
                 p p_content
               ]
           in
-          (* Close the popup on cancel *)
-          ignore (object
-                    inherit Ojw_button.button ~button:(To_dom.of_element cancel) ()
-                    method on_press = self#close
-                  end);
+          (* Close the popup on close_button *)
+          ignore
+            (object
+               inherit Ojw_button.button ~button:(To_dom.of_element close_button) ()
+               method on_press = self#close
+             end);
           let crop =
             D.Raw.input ~a:[a_input_type `Submit; a_value "Set as profile photo"] ()
           in
@@ -174,8 +175,9 @@ module Make(M : sig module User : Eba_user.T end) = struct
                       self#set_body [
                         To_dom.of_element text;
                       ];
+                      (To_dom.of_input close_button)##value <- Js.string "OK";
                       self#set_footer [
-                        To_dom.of_element cancel;
+                        To_dom.of_element close_button;
                       ];
                       self#update;
                       Lwt.return ()
@@ -216,7 +218,7 @@ module Make(M : sig module User : Eba_user.T end) = struct
                      ];
                      self#set_footer [
                        To_dom.of_element crop;
-                       To_dom.of_element cancel;
+                       To_dom.of_element close_button;
                      ];
                      ignore (new Ojw_jcrop.jcrop
                                ~aspect_ratio:1.0
@@ -270,7 +272,7 @@ module Make(M : sig module User : Eba_user.T end) = struct
                           To_dom.of_element icon
                         ];
                         self#set_footer [
-                          To_dom.of_element cancel;
+                          To_dom.of_element close_button;
                         ];
                         (* Last step *)
                         try_lwt
@@ -292,7 +294,7 @@ module Make(M : sig module User : Eba_user.T end) = struct
                               ];
                               self#set_footer [
                                 To_dom.of_element uploading;
-                                To_dom.of_element cancel;
+                                To_dom.of_element close_button;
                               ];
                               self#set_body [
                                 To_dom.of_element error;
