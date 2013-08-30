@@ -20,75 +20,82 @@ class type config = object
   method verify : string -> string -> bool
 end
 
+module type User_T = sig
+  type t =
+    < firstname : < get : unit; nul : Sql.non_nullable; t : Sql.string_t > Sql.t;
+      lastname : < get : unit; nul : Sql.non_nullable; t : Sql.string_t > Sql.t;
+      pic : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
+      pwd : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
+      userid : < get : unit; nul : Sql.non_nullable; t : Sql.int64_t > Sql.t
+    >
+
+  module Q : sig
+    val is_registered : 'a Lwt_Query.Db.t -> string -> bool Lwt.t
+    val is_preregistered : 'a Lwt_Query.Db.t -> string -> bool Lwt.t
+    val does_mail_exist : 'a Lwt_Query.Db.t -> string -> int64 option Lwt.t
+  end
+
+  (*
+  val is_registered : string -> bool Lwt.t
+  val is_preregistered : string -> bool Lwt.t
+  val is_registered_or_preregistered : string -> bool Lwt.t
+  val new_preregister_email : string -> unit Lwt.t
+  val all_preregistered : unit -> string list Lwt.t
+
+  val get_user : string -> t Lwt.t
+  *)
+  val new_user : ?avatar:string -> string -> int64 Lwt.t
+
+  val does_mail_exist : string -> int64 option Lwt.t
+  val does_activationkey_exist : string -> int64 option Lwt.t
+  val does_uid_exist : int64 -> t option Lwt.t
+
+  val verify_password : string -> string -> int64 Lwt.t
+
+  val set : int64
+            -> ?act_key:string
+            -> ?firstname:string
+            -> ?lastname:string
+            -> ?password:string
+            -> ?avatar:string
+            -> unit
+            -> unit Lwt.t
+
+  val get_users_from_name : (string * string) -> t list Lwt.t
+  val get_userslist : unit -> t list Lwt.t
+  (*val get_pic : int64 -> string option Lwt.t*)
+end
+
+module type Groups_T = sig
+  type t =
+    < description : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
+      groupid : < get : unit; nul : Sql.non_nullable; t : Sql.int64_t > Sql.t;
+      name : < get : unit; nul : Sql.non_nullable; t : Sql.string_t > Sql.t;
+    >
+
+  module Q : sig
+    val does_group_exist : 'a Lwt_Query.Db.t -> string -> t option Lwt.t
+    val is_user_in_group : 'a Lwt_Query.Db.t -> userid:int64 -> groupid:int64 -> bool Lwt.t
+  end
+
+  val get_group : string -> t Lwt.t
+  val new_group : ?description:string -> string -> unit Lwt.t
+
+  val is_user_in_group : userid:int64 -> groupid:int64 -> bool Lwt.t
+  val add_user_in_group : userid:int64 -> groupid:int64 -> unit Lwt.t
+  val remove_user_in_group : userid:int64 -> groupid:int64 -> unit Lwt.t
+
+  val does_group_exist : string -> t option Lwt.t
+  val all_groups : unit -> t list Lwt.t
+end
+
+
 module type T = sig
-  module U : sig
-    type t =
-      < firstname : < get : unit; nul : Sql.non_nullable; t : Sql.string_t > Sql.t;
-        lastname : < get : unit; nul : Sql.non_nullable; t : Sql.string_t > Sql.t;
-        pic : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
-        pwd : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
-        userid : < get : unit; nul : Sql.non_nullable; t : Sql.int64_t > Sql.t
-      >
+  module User : User_T
+  module U : User_T
 
-    module Q : sig
-      val is_registered : 'a Lwt_Query.Db.t -> string -> bool Lwt.t
-      val is_preregistered : 'a Lwt_Query.Db.t -> string -> bool Lwt.t
-      val does_mail_exist : 'a Lwt_Query.Db.t -> string -> int64 option Lwt.t
-    end
-(*
-    val is_registered : string -> bool Lwt.t
-    val is_preregistered : string -> bool Lwt.t
-    val is_registered_or_preregistered : string -> bool Lwt.t
-    val new_preregister_email : string -> unit Lwt.t
-    val all_preregistered : unit -> string list Lwt.t
-
-    val get_user : string -> t Lwt.t
- *)
-    val new_user : ?avatar:string -> string -> int64 Lwt.t
-
-    val does_mail_exist : string -> int64 option Lwt.t
-    val does_activationkey_exist : string -> int64 option Lwt.t
-    val does_uid_exist : int64 -> t option Lwt.t
-
-    val verify_password : string -> string -> int64 Lwt.t
-
-    val set : int64
-              -> ?act_key:string
-              -> ?firstname:string
-              -> ?lastname:string
-              -> ?password:string
-              -> ?avatar:string
-              -> unit
-              -> unit Lwt.t
-
-    val get_users_from_name : (string * string) -> t list Lwt.t
-    val get_userslist : unit -> t list Lwt.t
-    (*val get_pic : int64 -> string option Lwt.t*)
-  end
-
-  module G : sig
-    type t =
-      < description : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
-        groupid : < get : unit; nul : Sql.non_nullable; t : Sql.int64_t > Sql.t;
-        name : < get : unit; nul : Sql.non_nullable; t : Sql.string_t > Sql.t;
-      >
-
-    module Q : sig
-      val does_group_exist : 'a Lwt_Query.Db.t -> string -> t option Lwt.t
-      val is_user_in_group : 'a Lwt_Query.Db.t -> userid:int64 -> groupid:int64 -> bool Lwt.t
-    end
-
-    val get_group : string -> t Lwt.t
-    val new_group : ?description:string -> string -> unit Lwt.t
-
-    val is_user_in_group : userid:int64 -> groupid:int64 -> bool Lwt.t
-    val add_user_in_group : userid:int64 -> groupid:int64 -> unit Lwt.t
-    val remove_user_in_group : userid:int64 -> groupid:int64 -> unit Lwt.t
-
-    val does_group_exist : string -> t option Lwt.t
-    val all_groups : unit -> t list Lwt.t
-  end
-
+  module Groups : Groups_T
+  module G : Groups_T
 end
 
 module Make(M : sig
@@ -171,110 +178,7 @@ struct
          groupid bigint NOT NULL
   ) >>
 
-  (********* Queries *********)
-  module G = struct
-
-    type t =
-      < description : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
-        groupid : < get : unit; nul : Sql.non_nullable; t : Sql.int64_t > Sql.t;
-        name : < get : unit; nul : Sql.non_nullable; t : Sql.string_t > Sql.t;
-      >
-
-    module Q = struct
-
-      let does_group_exist dbh name =
-        try_lwt
-          lwt g = Lwt_Query.view_one dbh
-            <:view< g | g in $groups_table$;
-                        g.name = $string:name$ >>;
-          in
-          Lwt.return (Some g)
-        with _ -> Lwt.return None
-
-
-      let is_user_in_group dbh ~userid ~groupid =
-        try_lwt
-          lwt _ = Lwt_Query.view_one dbh
-            <:view< ug | ug in $user_groups_table$;
-                         ug.userid = $int64:userid$;
-                         ug.groupid = $int64:groupid$;
-            >>
-          in Lwt.return true
-        with _ -> Lwt.return false
-    end
-
-    let get_group name =
-      full_transaction_block
-        (fun dbh ->
-           Lwt_Query.view_one dbh
-             <:view< g | g in $groups_table$;
-                         g.name = $string:name$ >>)
-
-    let new_group ?description name =
-      full_transaction_block
-        (fun dbh ->
-           try_lwt
-             match description with
-               | None ->
-                   Lwt_Query.query dbh
-                     <:insert< $groups_table$ := { groupid = groups_table?groupid;
-                                                   name = $string:name$;
-                                                   description = $Sql.Op.null$ } >>
-               | Some d ->
-                   Lwt_Query.query dbh
-                     <:insert< $groups_table$ := { groupid = groups_table?groupid;
-                                                   name = $string:name$;
-                                                   description = $string:d$ }
-                     >>
-           with _ -> Lwt.return ())
-
-    (* CHARLY: better to user label because we're going to user same
-     * type for both and we don't want to make some mistakes :) *)
-    let is_user_in_group ~userid ~groupid =
-      full_transaction_block
-        (fun dbh ->
-           Q.is_user_in_group dbh ~userid ~groupid)
-
-    (* CHARLY: same here *)
-    let add_user_in_group ~userid ~groupid =
-      full_transaction_block
-        (fun dbh ->
-           lwt b = Q.is_user_in_group dbh ~userid ~groupid in
-           (* true -> in the group, false -> not in the group *)
-           if b
-           (* we don't need to add user to the groups because he already belongs to it *)
-           then Lwt.return ()
-           (* here, ew add the user to a group *)
-           else
-             Lwt_Query.query dbh
-               <:insert< $user_groups_table$ := { userid = $int64:userid$;
-                                                  groupid = $int64:groupid$ }
-               >>)
-
-    (* CHARLY: same here *)
-    let remove_user_in_group ~userid ~groupid =
-      full_transaction_block
-        (fun dbh ->
-           Lwt_Query.query dbh
-             <:delete< ug in $user_groups_table$
-                       | ug.userid = $int64:userid$;
-                         ug.groupid = $int64:groupid$;
-             >>)
-
-    let does_group_exist name =
-      full_transaction_block
-        (fun dbh ->
-           Q.does_group_exist dbh name)
-
-    let all_groups () =
-      full_transaction_block
-        (fun dbh ->
-           Lwt_Query.query dbh
-             <:select< g | g in $groups_table$ >>)
-
-  end
-
-  module U = struct
+  module User = struct
 
     type t =
       < firstname : < get : unit; nul : Sql.non_nullable; t : Sql.string_t > Sql.t;
@@ -574,4 +478,111 @@ struct
           Lwt_Query.query dbh <:select< r | r in $users_table$ >>)
 
   end
+
+  module U = User
+
+  module Groups = struct
+
+    type t =
+      < description : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
+        groupid : < get : unit; nul : Sql.non_nullable; t : Sql.int64_t > Sql.t;
+        name : < get : unit; nul : Sql.non_nullable; t : Sql.string_t > Sql.t;
+      >
+
+    module Q = struct
+
+      let does_group_exist dbh name =
+        try_lwt
+          lwt g = Lwt_Query.view_one dbh
+            <:view< g | g in $groups_table$;
+                        g.name = $string:name$ >>;
+          in
+          Lwt.return (Some g)
+        with _ -> Lwt.return None
+
+
+      let is_user_in_group dbh ~userid ~groupid =
+        try_lwt
+          lwt _ = Lwt_Query.view_one dbh
+            <:view< ug | ug in $user_groups_table$;
+                         ug.userid = $int64:userid$;
+                         ug.groupid = $int64:groupid$;
+            >>
+          in Lwt.return true
+        with _ -> Lwt.return false
+    end
+
+    let get_group name =
+      full_transaction_block
+        (fun dbh ->
+           Lwt_Query.view_one dbh
+             <:view< g | g in $groups_table$;
+                         g.name = $string:name$ >>)
+
+    let new_group ?description name =
+      full_transaction_block
+        (fun dbh ->
+           try_lwt
+             match description with
+               | None ->
+                   Lwt_Query.query dbh
+                     <:insert< $groups_table$ := { groupid = groups_table?groupid;
+                                                   name = $string:name$;
+                                                   description = $Sql.Op.null$ } >>
+               | Some d ->
+                   Lwt_Query.query dbh
+                     <:insert< $groups_table$ := { groupid = groups_table?groupid;
+                                                   name = $string:name$;
+                                                   description = $string:d$ }
+                     >>
+           with _ -> Lwt.return ())
+
+    (* CHARLY: better to user label because we're going to user same
+     * type for both and we don't want to make some mistakes :) *)
+    let is_user_in_group ~userid ~groupid =
+      full_transaction_block
+        (fun dbh ->
+           Q.is_user_in_group dbh ~userid ~groupid)
+
+    (* CHARLY: same here *)
+    let add_user_in_group ~userid ~groupid =
+      full_transaction_block
+        (fun dbh ->
+           lwt b = Q.is_user_in_group dbh ~userid ~groupid in
+           (* true -> in the group, false -> not in the group *)
+           if b
+           (* we don't need to add user to the groups because he already belongs to it *)
+           then Lwt.return ()
+           (* here, ew add the user to a group *)
+           else
+             Lwt_Query.query dbh
+               <:insert< $user_groups_table$ := { userid = $int64:userid$;
+                                                  groupid = $int64:groupid$ }
+               >>)
+
+    (* CHARLY: same here *)
+    let remove_user_in_group ~userid ~groupid =
+      full_transaction_block
+        (fun dbh ->
+           Lwt_Query.query dbh
+             <:delete< ug in $user_groups_table$
+                       | ug.userid = $int64:userid$;
+                         ug.groupid = $int64:groupid$;
+             >>)
+
+    let does_group_exist name =
+      full_transaction_block
+        (fun dbh ->
+           Q.does_group_exist dbh name)
+
+    let all_groups () =
+      full_transaction_block
+        (fun dbh ->
+           Lwt_Query.query dbh
+             <:select< g | g in $groups_table$ >>)
+
+  end
+
+  module G = Groups
+
 end
