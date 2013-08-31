@@ -189,6 +189,7 @@ module App(M : T) = struct
   let sign_up_handler () email =
     match_lwt User.uid_of_mail email with
       | None ->
+          lwt () = Egroups.remove_email ~group:Egroups.preregister ~email in
           lwt act_key = generate_new_key email Eba_services.main_service () in
           lwt _ = User.create ~act_key email in
           Lwt.return ()
@@ -348,7 +349,6 @@ module App(M : T) = struct
       Json.t<string>
       (Session.connect_wrapper_rpc
          (fun _ email ->
-            lwt () = Egroups.remove_email ~group:Egroups.preregister ~email in
             lwt () = sign_up_handler () email in
             Lwt.return ()))
 
