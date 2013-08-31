@@ -3,16 +3,26 @@
     background-color: #f3f3f3;
 }
 
-.eba_admin_user_information {
-    background-color: #333;
-    color: white;
-    padding: 8px;
+.eba_admin_page input[type=text],
+.eba_admin_page input[type=number] {
+  text-align: center;
+}
+.eba_admin_page input {
 }
 
+.eba_admin_user_information {
+}
+
+.eba_admin_user_information {
+  height: 100%;
+  background-color: #333;
+  color: white;
+  float: left;
+}
 .eba_admin_user_information img {
-    width: 100px;
-    height: 100px;
-    float: left;
+  display: inline-block;
+  height: 70px;
+  float:left;
 }
 
 .eba_admin_user_information table {
@@ -24,23 +34,29 @@
     float: left;
 }
 
-.eba_admin_sandbox {
-    position: relative;
-    margin: 10px;
-    background-color: white;
-    position: relative;
-    text-align: center;
-    vertical-align: middle;
-    min-height: 35%;
+#eba_admin_state_section {
 }
 
-.eba_admin_sandbox input[type=text] {
-    position: absolute;
+#eba_admin_preregister_section {
+}
+
+#eba_admin_completion_section {
+}
+
+.eba_admin_section {
+  margin: 10px;
+  background-color: white;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.eba_admin_section input[type=number] {
+  background-color: #dedede;
+  height: 30px;
+}
+.eba_admin_section input[type=text] {
     background-color: #dedede;
     height: 30px;
-    left: 35%;
-    top: calc(50% - 15px);
-    top: -webkit-calc(50% - 15px);
     width: 30%;
 }
 
@@ -48,14 +64,11 @@ ul.ew_dropdown li.ew_active {
 	background-color: #64B3E8;
 }
 
-.eba_admin_sandbox input[type=button] {
-    width: 20%;
-    height: 40px;
-    border-radius: 8px;
-    font-size: 100%;
-    margin: 4px;
+.eba_admin_page input[type=button] {
+  height: 30px;
+
 }
-.eba_admin_sandbox input[type=button] {
+.eba_admin_page input[type=button] {
 	color: #FFFFFF;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 	background-color: #2D47CC;
@@ -71,11 +84,11 @@ ul.ew_dropdown li.ew_active {
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1C9DFF', endColorstr='#2D47CC', GradientType=0);
 	filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
 }
-.eba_admin_sandbox button:hover,
-.eba_admin_sandbox button:active,
-.eba_admin_sandbox button.active,
-.eba_admin_sandbox button.disabled,
-.eba_admin_sandbox button[disabled] {
+.eba_admin_page button:hover,
+.eba_admin_page button:active,
+.eba_admin_page button.active,
+.eba_admin_page button.disabled,
+.eba_admin_page button[disabled] {
 	color: #FFFFFF;
 	background-color: #2D47CC;
 	*background-color: #003bb3;
@@ -86,6 +99,7 @@ ul.ew_dropdown li.ew_active {
     display: inline-block;
     text-align: center;
     min-width: 10%;
+    max-width: 100%;
     background-color: #ddd;
     margin: 2px;
     padding: 4px;
@@ -95,6 +109,36 @@ ul.ew_dropdown li.ew_active {
     float: right;
 }
 
-.eba_admin_state_desc {
+.eba_admin_state {
+    text-align: left;
     margin-left: 10px;
+}
+
+.eba_admin_preregister_email {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  text-align: left;
+}
+
+#eba_admin_preregister_container {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.eba_admin_preregister_email_selected {
+  background-color: #2e0;
+}
+
+.eba_admin_select_container {
+  float: left;
+}
+
+.eba_admin_header_section {
+  color: white;
+  background-color: #555;
+  padding: 10px;
+}
+
+.eba_admin_header_section input[type=button] {
+  float: right;
 }
