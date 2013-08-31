@@ -336,6 +336,23 @@ module App(M : T) = struct
             in
             Lwt.return ()))
 
+  let get_preregistered_emails_rpc : (int, string list) Eliom_pervasives.server_function =
+    server_function
+      Json.t<int>
+      (Session.connect_wrapper_rpc
+         (fun _ n ->
+            Egroups.get_emails_in ~group:Egroups.preregister ~n))
+
+  let create_account_rpc =
+    server_function
+      Json.t<string>
+      (Session.connect_wrapper_rpc
+         (fun _ email ->
+            lwt () = Egroups.remove_email ~group:Egroups.preregister ~email in
+            lwt () = sign_up_handler () email in
+            Lwt.return ()))
+
+
   (********* Registration *********)
   let _ =
     Eliom_registration.Action.register
@@ -386,6 +403,8 @@ module App(M : T) = struct
       (Page.connected_page
          (Admin.admin_service_handler
             set_group_of_user_rpc
+            create_account_rpc
+            get_preregistered_emails_rpc
             get_users_from_completion_rpc
             get_groups_of_user_rpc));
 
