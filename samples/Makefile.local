@@ -4,11 +4,9 @@ run: test.byte
 
 .PHONY: locals
 
-locals: $(LOCAL_STATIC)/css \
-        $(LOCAL_STATIC)/avatars \
-        $(LOCAL_STATIC)/avatars/__myproject_default_mail_image \
-        $(LOCAL_STATIC)/avatars/__ol_default_user_avatar \
-        $(TEST_PREFIX)tmp
+locals: $(LOCAL_STATIC)/css $(LOCAL_STATIC)/avatars $(TEST_PREFIX)tmp
+	ln -sf ../../../css/eba_admin.css $(LOCAL_STATIC)/css/eba_admin.css
+	ln -sf ../../../css/eba.css $(LOCAL_STATIC)/css/eba.css
 
 db:
 	-dropdb $(DB_NAME)
