@@ -40,10 +40,10 @@ module App(M : T) = struct
   end
   module G = Groups
 
-  module Email_groups = Eba_egroups.Make(struct
+  module Egroups = Eba_egroups.Make(struct
                                       module Database = Database
                                     end)
-  module Eg = Email_groups
+  module Eg = Egroups
 
   module User = struct
     include Eba_user.Make(struct module Database = Database end)
@@ -62,6 +62,7 @@ module App(M : T) = struct
                                   module User = User
                                   module State = State
                                   module Groups = Groups
+                                  module Egroups = Egroups
                                 end)
   module A = Admin
 (*
