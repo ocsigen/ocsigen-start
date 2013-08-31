@@ -100,7 +100,7 @@ module type Email_groups_T = sig
   val remove_email_in_egroup : email:string -> groupid:int64 -> unit Lwt.t
 
   val does_egroup_exist : string -> t option Lwt.t
-  val all_emails_in_egroup : groupid:int64 -> string list Lwt.t
+  val get_emails_in_egroup : groupid:int64 -> n:int -> string list Lwt.t
   val all_egroups : unit -> t list Lwt.t
 end
 
@@ -710,13 +710,15 @@ struct
         (fun dbh ->
            Q.does_egroup_exist dbh name)
 
-    let all_emails_in_egroup ~groupid =
+    let get_emails_in_egroup ~groupid ~n =
       full_transaction_block
         (fun dbh ->
+           let n = Int64.of_int n in
+           let n_limit = <:value< $int64:n$ >> in
            lwt l =
              Lwt_Query.view dbh
-               <:view< e | e in $email_egroups_table$;
-                           e.groupid = $int64:groupid$ >>
+               <:view< e limit $n_limit$ | e in $email_egroups_table$;
+                                   e.groupid = $int64:groupid$ >>
            in
            Lwt.return (List.map (fun e -> e#!email) l))
 

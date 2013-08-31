@@ -10,7 +10,7 @@ module type T = sig
   val remove_email : email:string -> group:t -> unit Lwt.t
   val in_group : email:string -> group:t -> bool Lwt.t
 
-  val all_emails_in : group:t -> string list Lwt.t
+  val get_emails_in : group:t -> n:int -> string list Lwt.t
   val all : unit -> t list Lwt.t
 
   val preregister : t
@@ -77,9 +77,10 @@ struct
       ~email
       ~groupid:(id_of_group group)
 
-  let all_emails_in ~group =
-    M.Database.Eg.all_emails_in_egroup
+  let get_emails_in ~group ~n =
+    M.Database.Eg.get_emails_in_egroup
       ~groupid:(id_of_group group)
+      ~n
 
   let all () =
     lwt l = M.Database.Eg.all_egroups () in
