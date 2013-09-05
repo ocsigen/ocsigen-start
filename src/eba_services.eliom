@@ -4,7 +4,7 @@ open Eliom_parameter
 
 (********* Services *********)
 let main_service =
-  Eliom_service.Http.service
+  Eliom_service.Appl.service
     ~path:[]
     ~get_params:unit ()
 
