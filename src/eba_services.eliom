@@ -4,7 +4,7 @@ open Eliom_parameter
 
 (********* Services *********)
 let main_service =
-  Eliom_service.Appl.service
+  Eliom_service.App.service
     ~path:[]
     ~get_params:unit ()
 
@@ -54,7 +54,7 @@ let preregister_service =
     ~post_params:(string "email") ()
 
 let admin_service =
-  Eliom_service.Appl.service
+  Eliom_service.App.service
     ~path:["admin"]
     ~get_params:unit ()
 
