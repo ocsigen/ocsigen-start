@@ -26,8 +26,7 @@ struct
 
     method js = [
       ["jquery-ui.min.js"];
-      ["accents.js"];
-      ["unix.js"]
+      ["accents.js"]
     ]
   end
 end)
