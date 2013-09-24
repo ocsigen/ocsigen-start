@@ -284,17 +284,15 @@ module App(M : T) = struct
      * we're going to disconnect him even if the actionvation key
      * is outdated. *)
     lwt () = Session.logout () in
-    lwt () = match_lwt User.uid_of_activationkey akey with
+    match_lwt User.uid_of_activationkey akey with
       | None ->
-         (* Outdated activation key *)
-          R.Error.push `Activation_key_outdated;
-          Lwt.return ()
+        (* Outdated activation key *)
+        R.Error.push `Activation_key_outdated;
+        Eliom_registration.Action.send ()
       | Some uid ->
-         (* If the activationkey is valid, we connect the user *)
-          Session.connect uid
-    in
-    Lwt.return ()
-    (*Eliom_registration.Redirection.send Eliom_service.void_coservice'*)
+        (* If the activationkey is valid, we connect the user *)
+        lwt () = Session.connect uid in
+        Eliom_registration.Redirection.send Eliom_service.void_coservice'
 
   let get_users_from_completion_rpc
         : (string, (User.t list)) Eliom_pervasives.server_function
@@ -385,14 +383,7 @@ module App(M : T) = struct
       Eba_services.set_personal_data_service
       (Session.connect_wrapper_function set_personal_data_handler);
 
-    (* FIXME: We don't use Eliom_registration.Action here, otherwise the
-     * activation key is not removed from the URL. Using Eliom_registration.Any
-     * and an explicit redirection to a void_coservice' do the trick of
-     * removing the activation key. Any other suggestions to clean the URL ?
-     *
-     * btw, in the future, we should use Eliom_registration.Action.
-     * *)
-    Eliom_registration.Action.register
+    Eliom_registration.Any.register
       Eba_services.activation_service
       activation_handler;
 
