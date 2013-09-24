@@ -14,8 +14,8 @@ class page_config () : Eba_page.config = object
     (fun _ _ -> Lwt.return [D.div [p [pcdata "error"]]])
 
   method default_error_connected_page (_:int64) gp pp : [Html5_types.body_content] Eliom_content.Html5.elt list Lwt.t =
-    Lwt.return
-      [D.div [p [pcdata "error"]]]
+    Lwt.return [D.div [p [pcdata "error"]]]
+
 end
 
 class session_config () = object

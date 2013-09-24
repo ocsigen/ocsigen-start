@@ -165,12 +165,14 @@ module App(M : T) = struct
 
   (** will generate an activation key which can be used to login
       directly. This key will be send to the [email] address *)
-  let generate_new_key email service gp =
+  let generate_new_key email ?service gp =
     let act_key = Ocsigen_lib.make_cryptographic_safe_string () in
-    let service =
-      Eliom_service.attach_coservice'
-        ~fallback:service
-        ~service:Eba_services.activation_service
+    let service = match service with
+      | Some service ->
+        Eliom_service.attach_coservice'
+          ~fallback:service
+          ~service:Eba_services.activation_service
+      | None -> Eba_services.activation_service
     in
     let uri =
       Eliom_content.Html5.F.make_string_uri ~absolute:true ~service act_key
@@ -190,7 +192,7 @@ module App(M : T) = struct
     match_lwt User.uid_of_mail email with
       | None ->
           lwt () = Egroups.remove_email ~group:Egroups.preregister ~email in
-          lwt act_key = generate_new_key email Eba_services.main_service () in
+          lwt act_key = generate_new_key email () in
           lwt _ = User.create ~act_key email in
           Lwt.return ()
       | Some _ ->
@@ -204,7 +206,7 @@ module App(M : T) = struct
           R.Error.push (`User_does_not_exist email);
           Lwt.return ()
       | Some uid ->
-          lwt act_key = generate_new_key email Eba_services.main_service () in
+          lwt act_key = generate_new_key email () in
           User.set uid ~act_key ()
 
   let set_password_handler userid () (pwd, pwd2) =

@@ -10,9 +10,7 @@ class type config = object
   method title : string
   method js : string list list
   method css : string list list
-  (* FIXME: should be 'a and 'b instead of unit *)
   method default_error_page : 'a 'b. 'a -> 'b -> page_content_t Lwt.t
-  (* FIXME: should be 'a and 'b instead of unit *)
   method default_error_connected_page : int64 -> unit -> unit -> page_content_t Lwt.t
 end
 
@@ -60,7 +58,6 @@ struct
       @ M.config#js)
 
   let page
-        ?allow ?deny
         ?(predicate = (fun _ _ -> Lwt.return true))
         ?(fallback = M.config#default_error_page)
         f gp pp
