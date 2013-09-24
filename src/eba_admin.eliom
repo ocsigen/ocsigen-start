@@ -18,8 +18,7 @@ let restrictive_number_input text =
                    if not (c >= 48 && c <= 57)
                    then Dom.preventDefault e
                    else ());
-              Lwt.return ());
-         Lwt.return ())
+              Lwt.return ()))
   }};
   number_input
 
