@@ -144,7 +144,7 @@ let disconnected_home_page () =
         | `Restricted ->
         (*| (Ebapp.State.restricted_state) ->*)
            (D.div ~a:[a_id id]
-                          [button1; button3; form1; form3]),
+                          [button1; button3; button2; form1; form3; form2]),
            (* this function will handle only flash message error associated
             * to this website mode *)
            (fun d rmsg ->
