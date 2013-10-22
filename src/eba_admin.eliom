@@ -69,7 +69,7 @@ let create_state_section
 
 let create_preregister_section
       create_account_rpc
-      get_preregistered_email_rpc
+      get_preregistered_emails_rpc
       =
     let number_input = restrictive_number_input "enter a number" in
     let go_button =
@@ -179,7 +179,7 @@ let create_preregister_section
              int_of_string
                (Js.to_string (To_dom.of_input %number_input)##value)
            in
-           lwt pr_email_l = %get_preregistered_email_rpc n in
+           lwt pr_email_l = %get_preregistered_emails_rpc n in
            Eliom_content.Html5.Manip.appendChilds
              %container
              (List.map (make_cb) (pr_email_l));
@@ -269,17 +269,32 @@ module Make(M : sig
   module State : Eba_state.T
   module Groups : Eba_groups.T
   module Egroups : Eba_egroups.T
+
+  val create_account_rpc
+    : (string, unit)
+    Eliom_pervasives.server_function
+
+  val get_preregistered_emails_rpc
+    : (int, string list)
+    Eliom_pervasives.server_function
+
+  val get_users_from_completion_rpc
+    : (string, (Eba_types.User.t list))
+    Eliom_pervasives.server_function
+
+  val get_groups_of_user_rpc
+    : (int64, ((Eba_types.Groups.t * bool) list))
+    Eliom_pervasives.server_function
+
+  val set_group_of_user_rpc
+    : (int64 * (bool * Eba_types.Groups.t), unit)
+    Eliom_pervasives.server_function
+
+
 end)
 =
 struct
-  let admin_page_content
-        user
-        set_group_of_user_rpc
-        create_account_rpc
-        get_preregistered_email_rpc
-        get_users_from_completion_rpc
-        get_groups_of_user_rpc
-    =
+  let admin_page_content user =
     lwt state = M.State.get_website_state () in
     let state_section =
       create_state_section
@@ -291,8 +306,8 @@ struct
     in
     let preregister_section =
       create_preregister_section
-        create_account_rpc
-        get_preregistered_email_rpc
+        M.create_account_rpc
+        M.get_preregistered_emails_rpc
     in
     let inp =
       D.raw_input
@@ -322,8 +337,8 @@ struct
       let on_confirm u =
         lwt body_content =
           create_body_completion_section
-            %get_groups_of_user_rpc
-            %set_group_of_user_rpc
+            %M.get_groups_of_user_rpc
+            %M.set_group_of_user_rpc
             u
         in
         Manip.removeAllChild %header_section;
@@ -347,7 +362,7 @@ struct
       new Ew_completion.completion
                 ~input:%inp
                 ~to_string:Eba_shared.User.fullname_of_user
-                ~on_refresh:%get_users_from_completion_rpc
+                ~on_refresh:%M.get_users_from_completion_rpc
                 ~on_confirm
                 ~on_show
                 ()
@@ -368,48 +383,12 @@ struct
          ::[completion_section])
 
   let admin_service_handler
-        set_group_of_user_rpc
-        create_account_rpc
-        get_preregistered_email_rpc
-        get_users_from_completion_rpc
-        get_groups_of_user_rpc
         uid () () =
     lwt user = M.User.user_of_uid uid in
-    lwt is_admin = (M.Groups.in_group ~userid:uid ~group:M.Groups.admin) in
-    if not is_admin
-    then
-      (*
-      lwt gblp = Eba_site_widgets.globalpart main_title (Some user) in
-       *)
-      let msg = [p [pcdata "you are not allowed to access to this page"]] in
-      let url =
-        Eliom_content.Html5.F.make_string_uri
-          ~service:Eba_services.main_service
-          ()
-      in
-      ignore {unit{
-        ignore (
-          lwt () = Lwt_js.sleep 2. in
-          Dom_html.window##location##href <- (Js.string %url);
-          Lwt.return ()
-        )
-      }};
-      Lwt.return (msg)
-    else
-      lwt content =
-        admin_page_content
-          user
-          set_group_of_user_rpc
-          create_account_rpc
-          get_preregistered_email_rpc
-          get_users_from_completion_rpc
-          get_groups_of_user_rpc
-      in
-      (*lwt gblp = Eba_site_widgets.globalpart main_title (Some user) in*)
-        (*(page_container (gblp::content))*)
-      Lwt.return [
-          div ~a:[a_class ["eba_admin_page"]]
-            (content)
-        ]
+    lwt cnt = admin_page_content user in
+    Lwt.return [
+      div ~a:[a_class ["eba_admin_page"]]
+        (cnt)
+    ]
 
 end

@@ -58,16 +58,6 @@ module App(M : T) = struct
                              end)
   module St = State
 
-  module Admin = Eba_admin.Make(struct
-                                  module User = User
-                                  module State = State
-                                  module Groups = Groups
-                                  module Egroups = Egroups
-                                end)
-  module A = Admin
-(*
-*)
-
   module Session = Eba_session.Make(struct
                                        module Database = Database
                                        module Groups = Groups
@@ -294,64 +284,70 @@ module App(M : T) = struct
         lwt () = Session.connect uid in
         Eliom_registration.Redirection.send Eliom_service.void_coservice'
 
-  let get_users_from_completion_rpc
-        : (string, (User.t list)) Eliom_pervasives.server_function
-        =
-    server_function
-      Json.t<string>
-      (Session.connect_wrapper_rpc
-         (fun uid_connected pattern ->
-            User.users_of_pattern pattern))
+  module Admin = Eba_admin.Make(
+  struct
+    module User = User
+    module State = State
+    module Groups = Groups
+    module Egroups = Egroups
 
-  (** this rpc function is used to change the rights of a user
-    * in the admin page *)
-  let get_groups_of_user_rpc
-        : (int64, ((Groups.t * bool) list)) Eliom_pervasives.server_function
-        =
-    server_function
-      Json.t<int64>
-      (Session.connect_wrapper_rpc
-         (fun uid_connected uid ->
-            let group_of_user group =
-              (*Eba_misc.log (Groups.name_of group);*)
-              (* (t: group * boolean: the user belongs to this group) *)
-              lwt in_group = Groups.in_group ~userid:uid ~group in
-              Lwt.return (group, in_group)
-            in
-            lwt l = Groups.all () in
-            lwt groups = Lwt_list.map_s (group_of_user) l in
-            (*List.iter (fun (a,b) -> Printf.printf "(%s, %b)" (Groups.name_of a) (b)) groups;*)
-            Lwt.return groups))
+    let get_users_from_completion_rpc =
+      server_function
+        Json.t<string>
+        (Session.connect_wrapper_rpc
+           (fun uid_connected pattern ->
+              User.users_of_pattern pattern))
 
-  (** this rpc function is used to change the rights of a user
-    * in the admin page *)
-  let set_group_of_user_rpc =
-    server_function
-      Json.t<int64 * (bool * Eba_types.Groups.t)>
-      (Session.connect_wrapper_rpc
-         (fun uid_connected (uid, (set, group)) ->
-            lwt () =
-              if set
-              then Groups.add_user ~userid:uid ~group
-              else Groups.remove_user ~userid:uid ~group
-            in
-            Lwt.return ()))
+    (** this rpc function is used to change the rights of a user
+      * in the admin page *)
+    let get_groups_of_user_rpc =
+      server_function
+        Json.t<int64>
+        (Session.connect_wrapper_rpc
+           (fun uid_connected uid ->
+              let group_of_user group =
+                (*Eba_misc.log (Groups.name_of group);*)
+                (* (t: group * boolean: the user belongs to this group) *)
+                lwt in_group = Groups.in_group ~userid:uid ~group in
+                Lwt.return (group, in_group)
+              in
+              lwt l = Groups.all () in
+              lwt groups = Lwt_list.map_s (group_of_user) l in
+              (*List.iter (fun (a,b) -> Printf.printf "(%s, %b)" (Groups.name_of a) (b)) groups;*)
+              Lwt.return groups))
 
-  let get_preregistered_emails_rpc : (int, string list) Eliom_pervasives.server_function =
-    server_function
-      Json.t<int>
-      (Session.connect_wrapper_rpc
-         (fun _ n ->
-            Egroups.get_emails_in ~group:Egroups.preregister ~n))
+    (** this rpc function is used to change the rights of a user
+      * in the admin page *)
+    let set_group_of_user_rpc =
+      server_function
+        Json.t<int64 * (bool * Eba_types.Groups.t)>
+        (Session.connect_wrapper_rpc
+           (fun uid_connected (uid, (set, group)) ->
+              lwt () =
+                if set
+                then Groups.add_user ~userid:uid ~group
+                else Groups.remove_user ~userid:uid ~group
+              in
+              Lwt.return ()))
 
-  let create_account_rpc =
-    server_function
-      Json.t<string>
-      (Session.connect_wrapper_rpc
-         (fun _ email ->
-            lwt () = sign_up_handler () email in
-            Lwt.return ()))
+    let get_preregistered_emails_rpc =
+      server_function
+        Json.t<int>
+        (Session.connect_wrapper_rpc
+           (fun _ n ->
+              Egroups.get_emails_in ~group:Egroups.preregister ~n))
 
+    let create_account_rpc =
+      server_function
+        Json.t<string>
+        (Session.connect_wrapper_rpc
+           (fun _ email ->
+              lwt () = sign_up_handler () email in
+              Lwt.return ()))
+
+  end)
+
+  module A = Admin
 
   (********* Registration *********)
   let _ =
@@ -394,11 +390,7 @@ module App(M : T) = struct
     App.register
       Eba_services.admin_service
       (Page.connected_page
-         (Admin.admin_service_handler
-            set_group_of_user_rpc
-            create_account_rpc
-            get_preregistered_emails_rpc
-            get_users_from_completion_rpc
-            get_groups_of_user_rpc));
+         ~allow:[Groups.admin]
+         (Admin.admin_service_handler));
 
 end
