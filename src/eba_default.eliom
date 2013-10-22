@@ -8,13 +8,19 @@ class page_config () : Eba_page.config = object
   method js : string list list = []
   method css : string list list = []
 
-  method default_error_page
-    : 'a 'b. 'a -> 'b ->
-      [Html5_types.body_content] Eliom_content.Html5.elt list Lwt.t =
-    (fun _ _ -> Lwt.return [D.div [p [pcdata "error"]]])
+  method default_error_page :
+    'a 'b. 'a -> 'b -> exn option -> Eba_page.page_content_t Lwt.t =
+    (fun gp pp exc ->
+       Lwt.return [
+         D.div [p [pcdata "error"]]
+       ])
 
-  method default_error_connected_page (_:int64) gp pp : [Html5_types.body_content] Eliom_content.Html5.elt list Lwt.t =
-    Lwt.return [D.div [p [pcdata "error"]]]
+  method default_connect_error_page :
+    'a 'b. int64 -> 'a -> 'b -> exn option -> Eba_page.page_content_t Lwt.t =
+    (fun uid gp pp exc ->
+       Lwt.return [
+         D.div [p [pcdata "error"]]
+       ])
 
 end
 
