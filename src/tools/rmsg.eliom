@@ -1,6 +1,8 @@
 module type T = sig
   type t
 
+  val to_list : unit -> t list
+
   val push : t -> unit
   val has : (t -> bool) -> bool
   val get : (t -> 'a option) -> 'a
@@ -14,6 +16,9 @@ module Make(M : sig type t end) = struct
 
   let rmsgs : t list Eliom_reference.Volatile.eref =
     Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope []
+
+  let to_list () =
+    Eliom_reference.Volatile.get rmsgs
 
   let push (rmsg : t) =
     Eliom_reference.Volatile.set
