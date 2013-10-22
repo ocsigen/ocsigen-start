@@ -42,9 +42,7 @@ struct
   let css =
     List.map
       (fun cssname -> ("css"::cssname))
-      ([["eliom_ui.css"];
-        ["ew.css"];
-        ["popup.css"];
+      ([["popup.css"];
         ["jcrop.css"];
         ["jquery.Jcrop.css"]]
       @ M.config#css)
