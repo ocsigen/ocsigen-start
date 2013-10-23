@@ -95,10 +95,6 @@ module App(M : T) = struct
                                 module Rmsg = Rmsg
                               end)
 
-  module Default = struct
-    include Eba_form
-  end
-
   let logout_handler () () =
     (* SECURITY: no check here because we logout the session cookie owner. *)
     lwt () = Session.logout () in

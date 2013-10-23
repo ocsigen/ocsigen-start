@@ -3,6 +3,18 @@
   open Eliom_content.Html5.F
 }}
 
+{client{
+  let on_click ?use_capture ?(prevent_default = false) elt f =
+    Lwt_js_events.async
+      (fun () ->
+         Lwt_js_events.clicks ?use_capture (To_dom.of_element elt)
+           (fun event thread ->
+              lwt () = f event thread in
+              if prevent_default then
+                (Dom.preventDefault event; Dom_html.stopPropagation event);
+              Lwt.return ()))
+}}
+
 let restrictive_number_input text =
   let number_input =
     D.raw_input ~input_type:`Number ~a:[a_placeholder text] ()
@@ -103,15 +115,15 @@ let create_preregister_section
     let clear_div = clear () in
     ignore {unit{
       let select_all_button' = To_dom.of_input %select_all_button in
-      Eba_view.Helper.on_click %back_button
-        (fun () ->
+      on_click %back_button
+        (fun _ _ ->
            Manip.removeAllChild %container;
            Manip.removeAllChild %header_section;
            Manip.appendChilds %header_section
              [%number_input; %go_button];
            Lwt.return ());
-      Eba_view.Helper.on_click %select_all_button
-        (fun () ->
+      on_click %select_all_button
+        (fun _ _ ->
            let checked =
              Js.to_bool select_all_button'##checked
            in
@@ -120,8 +132,8 @@ let create_preregister_section
              (fun node -> (Js.Unsafe.coerce node)##check checked)
              (l);
            Lwt.return ());
-      Eba_view.Helper.on_click %create_account_button
-        (fun () ->
+      on_click %create_account_button
+        (fun _ _ ->
            select_all_button'##checked <- Js.bool false;
            let l = Manip.childNodes %container in
            List.iter
@@ -130,8 +142,8 @@ let create_preregister_section
                 then (Js.Unsafe.coerce node)##create_account ())
              (l);
            Lwt.return ());
-      Eba_view.Helper.on_click %back_button
-        (fun () ->
+      on_click %back_button
+        (fun _ _ ->
            let checked = Js.to_bool select_all_button'##checked in
            let l = Manip.childNodes %container in
            List.iter
@@ -167,14 +179,14 @@ let create_preregister_section
              lwt () = %create_account_rpc name in
              Manip.removeChild %container pr_email;
              Lwt.return ());
-        Eba_view.Helper.on_click cb
-          (fun () ->
+        on_click cb
+          (fun _ _ ->
              uns_pr_email##check (uns_pr_email##checked ());
              Lwt.return ());
         pr_email
       in
-      Eba_view.Helper.on_click %go_button
-        (fun () ->
+      on_click %go_button
+        (fun _ _ ->
            let n =
              int_of_string
                (Js.to_string (To_dom.of_input %number_input)##value)
@@ -368,8 +380,8 @@ struct
                 ()
     }} in
     ignore {unit{
-      Eba_view.Helper.on_click %back_button
-        (fun e ->
+      on_click %back_button
+        (fun _ _ ->
            %comp_w#clear;
            %comp_w#clear_input;
            Manip.removeAllChild %header_section;

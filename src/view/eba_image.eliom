@@ -79,7 +79,7 @@ module Make(M : sig module User : Eba_user.T end) = struct
          * different steps (select a photo, downloading, cropping). *)
         inherit Ojw_popup.popup
                       ~width:700
-                      ~set:(Eba_view.global_set)
+                      (*~set:(Eba_view.global_set)*)
                       (To_dom.of_element %elt)
         as super
 
