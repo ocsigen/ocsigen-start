@@ -192,11 +192,11 @@ let create_preregister_section
                (Js.to_string (To_dom.of_input %number_input)##value)
            in
            lwt pr_email_l = %get_preregistered_emails_rpc n in
-           Eliom_content.Html5.Manip.appendChilds
+           Manip.appendChilds
              %container
              (List.map (make_cb) (pr_email_l));
-           Eliom_content.Html5.Manip.removeAllChild %header_section;
-           Eliom_content.Html5.Manip.appendChilds
+           Manip.removeAllChild %header_section;
+           Manip.appendChilds
              %header_section [
                %select_all_container;
                %back_button;
