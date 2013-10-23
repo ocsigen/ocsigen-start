@@ -51,6 +51,6 @@ module Make : functor (M : sig module Database : Eba_db.T end) -> sig
   (** returns the description of a t type if exists (string option) *)
   val desc_of_group : t -> string option
 
-  (** default group needed by OL *)
+  (** default group needed by EBA *)
   val admin : t
 end
