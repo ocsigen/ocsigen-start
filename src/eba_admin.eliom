@@ -112,7 +112,6 @@ let create_preregister_section
         go_button;
       ]
     in
-    let clear_div = clear () in
     ignore {unit{
       let select_all_button' = To_dom.of_input %select_all_button in
       on_click %back_button

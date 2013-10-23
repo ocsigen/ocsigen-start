@@ -91,8 +91,7 @@ struct
           else fallback uid gp pp None
         in
         M.Session.connect_wrapper_function ?allow ?deny f_wrapped gp pp
-      with _ as exc ->
-        fallback (Int64.of_int (-1)) gp pp (Some exc)
+      with exc -> fallback (Int64.of_int (-1)) gp pp (Some exc)
       (* FIXME: is the -1 (uid) the best solution for non-connected user ?
        * If yes, this must be in the documentation *)
     in
