@@ -21,7 +21,7 @@
     } deriving (Json)
   end
 
-  module Email_groups = struct
+  module Egroups = struct
     type t = {
       id : int64;
       name : string;

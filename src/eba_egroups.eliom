@@ -1,17 +1,21 @@
 exception No_such_egroup
 
 module type T = sig
-  type t = Eba_types.Email_groups.t
+  type t = Eba_types.Egroups.t
 
   val create : ?description:string -> string -> t Lwt.t
   val get : string -> t option Lwt.t
-
-  val add_email : email:string -> group:t -> unit Lwt.t
-  val remove_email : email:string -> group:t -> unit Lwt.t
-  val in_group : email:string -> group:t -> bool Lwt.t
-
-  val get_emails_in : group:t -> n:int -> string list Lwt.t
   val all : unit -> t list Lwt.t
+
+  val add_email : email:string -> egroup:t -> unit Lwt.t
+  val remove_email : email:string -> egroup:t -> unit Lwt.t
+  val in_egroup : email:string -> egroup:t -> bool Lwt.t
+
+  val get_emails_in : egroup:t -> n:int -> string list Lwt.t
+
+  val id_of_egroup : t -> int64
+  val name_of_egroup : t -> string
+  val desc_of_egroup : t -> string option
 
   val preregister : t
 end
@@ -21,10 +25,10 @@ module Make(M : sig
 end)
 =
 struct
-  include Eba_shared.Email_groups
+  include Eba_shared.Egroups
 
   let create_egroup_with (g : M.Database.Eg.t) =
-    let open Eba_types.Email_groups in
+    let open Eba_types.Egroups in
     {
       id   = (Sql.get g#groupid);
       name = (Sql.get g#name);
@@ -33,7 +37,7 @@ struct
 
   module MCache_in = struct
     type key_t = string
-    type value_t = Eba_types.Email_groups.t
+    type value_t = Eba_types.Egroups.t
 
     let compare = compare
     let get key =
@@ -43,7 +47,7 @@ struct
   end
   module MCache = Cache.Make(MCache_in)
 
-  (** creates the group in the database if it does
+  (** creates the egroup in the database if it does
     * not exist, or returns its id as an abstract value *)
   let create ?description name =
     match_lwt M.Database.Eg.does_egroup_exist name with
@@ -62,31 +66,31 @@ struct
     with
       | No_such_egroup -> Lwt.return None
 
-  let add_email ~email ~group =
+  let add_email ~email ~egroup =
     M.Database.Eg.add_email_in_egroup
       ~email
-      ~groupid:(id_of_group group)
+      ~egroupid:(id_of_egroup egroup)
 
-  let remove_email ~email ~group =
+  let remove_email ~email ~egroup =
     M.Database.Eg.remove_email_in_egroup
       ~email
-      ~groupid:(id_of_group group)
+      ~egroupid:(id_of_egroup egroup)
 
-  let in_group ~email ~group =
+  let in_egroup ~email ~egroup =
     M.Database.Eg.is_email_in_egroup
       ~email
-      ~groupid:(id_of_group group)
+      ~egroupid:(id_of_egroup egroup)
 
-  let get_emails_in ~group ~n =
+  let get_emails_in ~egroup ~n =
     M.Database.Eg.get_emails_in_egroup
-      ~groupid:(id_of_group group)
+      ~egroupid:(id_of_egroup egroup)
       ~n
 
   let all () =
     lwt l = M.Database.Eg.all_egroups () in
     let put_in_cache g =
       let g = create_egroup_with g in
-      let () = MCache.set (name_of_group g) g in
+      let () = MCache.set (name_of_egroup g) g in
       g
     in
     Lwt.return

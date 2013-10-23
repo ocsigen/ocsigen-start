@@ -134,8 +134,8 @@ module App(M : T) = struct
           Lwt.return false
 
   let preregister_handler () email =
-    let group = Eg.preregister in
-    lwt is_in = Eg.in_group ~email ~group in
+    let egroup = Eg.preregister in
+    lwt is_in = Eg.in_egroup ~email ~egroup in
     match_lwt User.uid_of_mail email with
       | None ->
           if is_in
@@ -144,7 +144,7 @@ module App(M : T) = struct
              Lwt.return ())
           else
             (R.Notice.push `Preregistered;
-             Eg.add_email ~email ~group)
+             Eg.add_email ~email ~egroup)
       | Some _ ->
           R.Error.push (`User_already_exists email);
           Lwt.return ()
@@ -177,7 +177,7 @@ module App(M : T) = struct
   let sign_up_handler () email =
     match_lwt User.uid_of_mail email with
       | None ->
-          lwt () = Egroups.remove_email ~group:Egroups.preregister ~email in
+          lwt () = Eg.remove_email ~egroup:Egroups.preregister ~email in
           lwt act_key = generate_new_key email () in
           lwt _ = User.create ~act_key email in
           Lwt.return ()
@@ -331,7 +331,7 @@ module App(M : T) = struct
         Json.t<int>
         (Session.connect_wrapper_rpc
            (fun _ n ->
-              Egroups.get_emails_in ~group:Egroups.preregister ~n))
+              Egroups.get_emails_in ~egroup:Egroups.preregister ~n))
 
     let create_account_rpc =
       server_function

@@ -80,7 +80,7 @@ module type Groups_T = sig
   val all_groups : unit -> t list Lwt.t
 end
 
-module type Email_groups_T = sig
+module type Egroups_T = sig
   type t =
     < description : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
       groupid : < get : unit; nul : Sql.non_nullable; t : Sql.int64_t > Sql.t;
@@ -89,18 +89,18 @@ module type Email_groups_T = sig
 
   module Q : sig
     val does_egroup_exist : 'a Lwt_Query.Db.t -> string -> t option Lwt.t
-    val is_email_in_egroup : 'a Lwt_Query.Db.t -> email:string -> groupid:int64 -> bool Lwt.t
+    val is_email_in_egroup : 'a Lwt_Query.Db.t -> email:string -> egroupid:int64 -> bool Lwt.t
   end
 
   val get_egroup : string -> t Lwt.t
   val new_egroup : ?description:string -> string -> unit Lwt.t
 
-  val is_email_in_egroup : email:string -> groupid:int64 -> bool Lwt.t
-  val add_email_in_egroup : email:string -> groupid:int64 -> unit Lwt.t
-  val remove_email_in_egroup : email:string -> groupid:int64 -> unit Lwt.t
+  val is_email_in_egroup : email:string -> egroupid:int64 -> bool Lwt.t
+  val add_email_in_egroup : email:string -> egroupid:int64 -> unit Lwt.t
+  val remove_email_in_egroup : email:string -> egroupid:int64 -> unit Lwt.t
 
   val does_egroup_exist : string -> t option Lwt.t
-  val get_emails_in_egroup : groupid:int64 -> n:int -> string list Lwt.t
+  val get_emails_in_egroup : egroupid:int64 -> n:int -> string list Lwt.t
   val all_egroups : unit -> t list Lwt.t
 end
 
@@ -112,8 +112,8 @@ module type T = sig
   module Groups : Groups_T
   module G : Groups_T
 
-  module Email_groups : Email_groups_T
-  module Eg : Email_groups_T
+  module Egroups : Egroups_T
+  module Eg : Egroups_T
 end
 
 module Make(M : sig
@@ -616,7 +616,7 @@ struct
 
   module G = Groups
 
-  module Email_groups = struct
+  module Egroups = struct
 
     type t =
       < description : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
@@ -636,12 +636,12 @@ struct
         with _ -> Lwt.return None
 
 
-      let is_email_in_egroup dbh ~email ~groupid =
+      let is_email_in_egroup dbh ~email ~egroupid =
         try_lwt
           lwt _ = Lwt_Query.view_one dbh
             <:view< ug | ug in $email_egroups_table$;
                          ug.email = $string:email$;
-                         ug.groupid = $int64:groupid$;
+                         ug.groupid = $int64:egroupid$;
             >>
           in Lwt.return true
         with _ -> Lwt.return false
@@ -674,16 +674,16 @@ struct
 
     (* CHARLY: better to user label because we're going to user same
      * type for both and we don't want to make some mistakes :) *)
-    let is_email_in_egroup ~email ~groupid =
+    let is_email_in_egroup ~email ~egroupid =
       full_transaction_block
         (fun dbh ->
-           Q.is_email_in_egroup dbh ~email ~groupid)
+           Q.is_email_in_egroup dbh ~email ~egroupid)
 
     (* CHARLY: same here *)
-    let add_email_in_egroup ~email ~groupid =
+    let add_email_in_egroup ~email ~egroupid =
       full_transaction_block
         (fun dbh ->
-           lwt b = Q.is_email_in_egroup dbh ~email ~groupid in
+           lwt b = Q.is_email_in_egroup dbh ~email ~egroupid in
            (* true -> in the group, false -> not in the group *)
            if b
            (* we don't need to add user to the groups because he already belongs to it *)
@@ -692,17 +692,17 @@ struct
            else
              Lwt_Query.query dbh
                <:insert< $email_egroups_table$ := { email = $string:email$;
-                                                    groupid = $int64:groupid$ }
+                                                    groupid = $int64:egroupid$ }
                >>)
 
     (* CHARLY: same here *)
-    let remove_email_in_egroup ~email ~groupid =
+    let remove_email_in_egroup ~email ~egroupid =
       full_transaction_block
         (fun dbh ->
            Lwt_Query.query dbh
              <:delete< ug in $email_egroups_table$
                        | ug.email = $string:email$;
-                         ug.groupid = $int64:groupid$;
+                         ug.groupid = $int64:egroupid$;
              >>)
 
     let does_egroup_exist name =
@@ -710,7 +710,7 @@ struct
         (fun dbh ->
            Q.does_egroup_exist dbh name)
 
-    let get_emails_in_egroup ~groupid ~n =
+    let get_emails_in_egroup ~egroupid ~n =
       full_transaction_block
         (fun dbh ->
            let n = Int64.of_int n in
@@ -718,7 +718,7 @@ struct
            lwt l =
              Lwt_Query.view dbh
                <:view< e limit $n_limit$ | e in $email_egroups_table$;
-                                   e.groupid = $int64:groupid$ >>
+                                   e.groupid = $int64:egroupid$ >>
            in
            Lwt.return (List.map (fun e -> e#!email) l))
 
@@ -729,6 +729,6 @@ struct
              <:select< g | g in $egroups_table$ >>)
   end
 
-  module Eg = Email_groups
+  module Eg = Egroups
 
 end

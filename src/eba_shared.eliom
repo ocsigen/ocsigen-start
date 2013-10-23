@@ -57,20 +57,19 @@
       group.desc
   end
 
-  module Email_groups = struct
+  module Egroups = struct
+    type t = Eba_types.Egroups.t
 
-    type t = Eba_types.Email_groups.t
+    open Eba_types.Egroups
 
-    open Eba_types.Email_groups
+    let id_of_egroup egroup =
+      egroup.id
 
-    let id_of_group group =
-      group.id
+    let name_of_egroup egroup =
+      egroup.name
 
-    let name_of_group group =
-      group.name
-
-    let desc_of_group group =
-      group.desc
+    let desc_of_egroup egroup =
+      egroup.desc
   end
 }}
 
