@@ -25,75 +25,83 @@ end
 module App(M : T) = struct
 
   module App = struct
-    include Eliom_registration.App (struct let application_name = M.app_name end)
+    include Eliom_registration.App(
+    struct
+      let application_name = M.app_name
+    end)
 
     let app_name = M.app_name
   end
 
-  module Database = Eba_db.Make(struct
-                                  let config = M.db_config
-                                end)
-  module D = Database
+  module Database = Eba_db.Make(
+  struct
+    let config = M.db_config
+  end)
 
-  module Groups = struct
-    include Eba_groups.Make(struct module Database = Database end)
-  end
-  module G = Groups
+  module Groups =
+    Eba_groups.Make(struct module Database = Database end)
 
-  module Egroups = Eba_egroups.Make(struct
-                                      module Database = Database
-                                    end)
-  module Eg = Egroups
+  module Egroups =
+    Eba_egroups.Make(struct module Database = Database end)
 
-  module User = struct
-    include Eba_user.Make(struct module Database = Database end)
-  end
-  module U = User
+  module User =
+    Eba_user.Make(struct module Database = Database end)
 
-  module State = Eba_state.Make(struct
-                               let app_name = M.app_name
-                               let states = M.states
+  module State = Eba_state.Make(
+  struct
+    let app_name = M.app_name
+    let states = M.states
 
-                               type t = M.state_t deriving (Json)
-                             end)
-  module St = State
+    type t = M.state_t deriving (Json)
+  end)
 
-  module Session = Eba_session.Make(struct
-                                       module Database = Database
-                                       module Groups = Groups
-                                       module User = User
-                                       let config = M.session_config
-                                     end)
-  module Ss = Session
+  module Session = Eba_session.Make(
+  struct
+    module Database = Database
+    module Groups = Groups
+    module User = User
 
-  module Page = Eba_page.Make(struct
-                                let config = M.page_config
-                                module Session = Ss
-                              end)
-  module P = Page
+    let config = M.session_config
+  end)
+
+  module Page = Eba_page.Make(
+  struct
+    let config = M.page_config
+    module Session = Session
+  end)
 
   module Services = Eba_services
-  module Sv = Services
 
-  module View = Eba_view.Make(struct
-                                module User = User
-                              end)
-  module V = View
+  module View = Eba_view.Make(
+  struct
+    module User = User
+  end)
 
-  (* *)
+  module Rmsg = Eba_rmsg.Make(
+  struct
+    type error_t = M.error_t
+    type notice_t = M.notice_t
+  end)
 
-  module Rmsg = Eba_rmsg.Make(struct
-                                type error_t = M.error_t
-                                type notice_t = M.notice_t
-                              end)
+  module Mail = Eba_mail.Make(
+  struct
+    let app_name = M.app_name
+    let config = M.mail_config
+
+    module Rmsg = Rmsg
+  end)
+
   module R = Rmsg
-
-  module Mail = Eba_mail.Make(struct
-                                let app_name = M.app_name
-                                let config = M.mail_config
-
-                                module Rmsg = Rmsg
-                              end)
+  module V = View
+  module M = Mail
+  module D = Database
+  module U = User
+  module P = Page
+  module St = State
+  module Ss = Session
+  module Sv = Services
+  module G = Groups
+  module Eg = Egroups
 
   let disconnect_handler () () =
     (* SECURITY: no check here because we disconnect the session cookie owner. *)
@@ -117,7 +125,7 @@ module App(M : T) = struct
       ignore (Netaddress.parse email);
       Mail.send
         ~to_addrs:[email]
-        ~subject:(M.app_name^" registration")
+        ~subject:(App.app_name^" registration")
         (fun app_name ->
            Lwt.return
              [

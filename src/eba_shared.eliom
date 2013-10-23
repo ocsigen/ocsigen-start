@@ -42,7 +42,6 @@
   end
 
   module Groups = struct
-
     type t = Eba_types.Groups.t
 
     open Eba_types.Groups

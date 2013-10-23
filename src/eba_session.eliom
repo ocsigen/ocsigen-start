@@ -80,7 +80,6 @@ module Make(M : sig
 end)
 =
 struct
-
   include Eba_shared.Session
 
   exception Permission_denied
