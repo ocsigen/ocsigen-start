@@ -5,12 +5,15 @@ module type T = sig
 
   val create : ?description:string -> string -> t Lwt.t
   val get : string -> t option Lwt.t
+  val all : unit -> t list Lwt.t
 
   val add_user : userid:int64 -> group:t -> unit Lwt.t
   val remove_user : userid:int64 -> group:t -> unit Lwt.t
   val in_group : userid:int64 -> group:t -> bool Lwt.t
 
-  val all : unit -> t list Lwt.t
+  val id_of_group : t -> int64
+  val name_of_group : t -> string
+  val desc_of_group : t -> string option
 
   val admin : t
 end
