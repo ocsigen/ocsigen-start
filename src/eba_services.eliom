@@ -8,14 +8,14 @@ let main_service =
     ~path:[]
     ~get_params:unit ()
 
-let login_service =
+let connect_service =
   Eliom_service.Http.post_coservice'
-    ~name:"login"
+    ~name:"connect"
     ~post_params:(string "login" ** string "password") ()
 
-let logout_service =
+let disconnect_service =
   Eliom_service.Http.post_coservice'
-    ~name:"logout"
+    ~name:"disconnect"
     ~post_params:unit ()
 
 let lost_password_service =

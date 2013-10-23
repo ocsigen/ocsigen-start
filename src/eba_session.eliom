@@ -13,7 +13,6 @@ class type config = object
 end
 
 {client{
-
   (* This will close the client process *)
   let close_client_process () =
     let d =
@@ -69,7 +68,7 @@ module type T = sig
   -> 'b Lwt.t
 
   val connect : int64 -> unit Lwt.t
-  val logout : unit -> unit Lwt.t
+  val disconnect : unit -> unit Lwt.t
 end
 
 module Make(M : sig
@@ -81,6 +80,8 @@ module Make(M : sig
 end)
 =
 struct
+
+  include Eba_shared.Session
 
   exception Permission_denied
 
@@ -166,6 +167,11 @@ struct
       lwt () = set_user_server userid in
       connect_string (Int64.to_string userid)
     with Eba_user.No_such_user -> M.config#on_close_session
+
+  let disconnect () =
+    unset_user_client (); (*VVV!!! will affect only current tab!! *)
+    unset_user_server (); (* ok this is a request reference *)
+    M.config#on_close_session
 
   let check_allow_deny userid allow deny =
     lwt b = match allow with
@@ -289,10 +295,5 @@ struct
       (fun userid _ p -> f (Some userid) p)
       (fun _ p -> f None p)
       () pp
-
-  let logout () =
-    unset_user_client (); (*VVV!!! will affect only current tab!! *)
-    unset_user_server (); (* ok this is a request reference *)
-    M.config#on_close_session
 
 end

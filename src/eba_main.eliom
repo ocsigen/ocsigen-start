@@ -95,16 +95,16 @@ module App(M : T) = struct
                                 module Rmsg = Rmsg
                               end)
 
-  let logout_handler () () =
-    (* SECURITY: no check here because we logout the session cookie owner. *)
-    lwt () = Session.logout () in
+  let disconnect_handler () () =
+    (* SECURITY: no check here because we disconnect the session cookie owner. *)
+    lwt () = Session.disconnect () in
     lwt () = Eliom_state.discard ~scope:Eliom_common.default_session_scope () in
     lwt () = Eliom_state.discard ~scope:Eliom_common.default_process_scope () in
     Eliom_state.discard ~scope:Eliom_common.request_scope ()
 
-  let login_handler () (login, pwd) =
+  let connect_handler () (login, pwd) =
     (* SECURITY: no check here. *)
-    lwt () = logout_handler () () in
+    lwt () = disconnect_handler () () in
     try_lwt
       lwt userid = User.verify_password login pwd in
       Session.connect userid
@@ -269,7 +269,7 @@ module App(M : T) = struct
      * moreover in this case, if the user is already disconnect
      * we're going to disconnect him even if the actionvation key
      * is outdated. *)
-    lwt () = Session.logout () in
+    lwt () = Session.disconnect () in
     match_lwt User.uid_of_activationkey akey with
       | None ->
         (* Outdated activation key *)
@@ -348,12 +348,12 @@ module App(M : T) = struct
   (********* Registration *********)
   let _ =
     Eliom_registration.Action.register
-      Eba_services.login_service
-      login_handler;
+      Eba_services.connect_service
+      connect_handler;
 
     Eliom_registration.Action.register
-      Eba_services.logout_service
-      logout_handler;
+      Eba_services.disconnect_service
+      disconnect_handler;
 
     Eliom_registration.Action.register
       Eba_services.lost_password_service
