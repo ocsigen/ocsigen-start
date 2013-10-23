@@ -47,7 +47,7 @@ module type T = sig
   -> 'a -> 'b
   -> 'c Lwt.t
 
-  val anonymous_wrapper :
+  val anonymous_wrapper_function :
      ?allow:Eba_types.Groups.t list
   -> ?deny:Eba_types.Groups.t list
   -> (int64 option -> 'a -> 'b -> 'c Lwt.t)
@@ -269,7 +269,7 @@ struct
       (fun _ _ -> Lwt.fail Eba_shared.Session.Not_connected)
       gp pp
 
-  let anonymous_wrapper ?allow ?deny f gp pp =
+  let anonymous_wrapper_function ?allow ?deny f gp pp =
     gen_wrapper
       ~allow ~deny
       (fun userid gp pp -> f (Some userid) gp pp)
