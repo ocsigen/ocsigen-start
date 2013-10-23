@@ -387,10 +387,4 @@ module App(M : T) = struct
       Eba_services.crop_service
       (Session.connect_wrapper_function crop_handler);
 
-    App.register
-      Eba_services.admin_service
-      (Page.connected_page
-         ~allow:[Groups.admin]
-         (Admin.admin_service_handler));
-
 end

@@ -382,13 +382,4 @@ struct
          ::preregister_section
          ::[completion_section])
 
-  let admin_service_handler
-        uid () () =
-    lwt user = M.User.user_of_uid uid in
-    lwt cnt = admin_page_content user in
-    Lwt.return [
-      div ~a:[a_class ["eba_admin_page"]]
-        (cnt)
-    ]
-
 end
