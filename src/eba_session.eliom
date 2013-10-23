@@ -134,22 +134,20 @@ struct
     (* We want to warn the client when the server side process state is closed.
        To do that, we listen on a channel and wait for exception. *)
     let c : unit Eliom_comet.Channel.t =
-      Eliom_comet.Channel.create (fst (Lwt_stream.create ())) in
-    let _ =
-      {unit{
-        Lwt.async (fun () ->
-          Lwt.catch (fun () ->
-            Lwt_stream.iter_s
-              (fun () -> Lwt.return ())
-              %c)
-            (function
-              | Eliom_comet.Process_closed ->
-                close_client_process ()
-              | e ->
-                Eliom_lib.debug_exn "comet exception: " e;
-                Lwt.fail e))
-      }}
+      Eliom_comet.Channel.create (fst (Lwt_stream.create ()))
     in
+    ignore {unit{
+      Lwt.async
+        (fun () ->
+           Lwt.catch
+             (fun () -> Lwt_stream.iter_s (fun () -> Lwt.return ()) %c)
+             (function
+                | Eliom_comet.Process_closed ->
+                    close_client_process ()
+                | e ->
+                    Eliom_lib.debug_exn "comet exception: " e;
+                    Lwt.fail e))
+    }};
     M.config#on_start_connected_process
 
   let connect_volatile userid =
@@ -207,10 +205,11 @@ struct
     try_lwt
       let new_process = Eliom_request_info.get_sp_client_appl_name () = None in
       let uids = Eliom_state.get_volatile_data_session_group () in
-      let get_uid uid = try
-                          (match uid with
-                            | None -> None
-                            | Some u -> Some (Int64.of_string u))
+      let get_uid uid =
+        try
+          match uid with
+             | None -> None
+             | Some u -> Some (Int64.of_string u)
         with Failure _ -> None
       in
       lwt uid = match get_uid uids with
@@ -235,7 +234,8 @@ struct
           lwt () = set_user_server uid in
           Lwt.return (Some uid)
       in
-      lwt () = if new_process
+      lwt () =
+        if new_process
         then begin
           (* client side process:
              Now we want to do some computation only when we start a
