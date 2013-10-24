@@ -17,18 +17,18 @@ class type config = object
 end
 
 module type T = sig
-  val page :    ?allow:Eba_types.Groups.t list
-             -> ?deny:Eba_types.Groups.t list
-             -> ?predicate:('a -> 'b -> bool Lwt.t)
+  val page :    ?predicate:('a -> 'b -> bool Lwt.t)
              -> ?fallback:('a -> 'b -> exn option -> page_content_t Lwt.t)
-             -> (unit -> page_content_t Lwt.t)
+             -> ('a -> 'b -> page_content_t Lwt.t)
+             -> 'a -> 'b
              -> page_t Lwt.t
 
   val connected_page :    ?allow:Eba_types.Groups.t list
                        -> ?deny:Eba_types.Groups.t list
                        -> ?predicate:(int64 -> 'a -> 'b -> bool Lwt.t)
                        -> ?fallback:(int64 -> 'a -> 'b -> exn option -> page_content_t Lwt.t)
-                       -> (int64 -> page_content_t Lwt.t)
+                       -> (int64 -> 'a -> 'b -> page_content_t Lwt.t)
+                       -> 'a -> 'b
                        -> page_t Lwt.t
 end
 
