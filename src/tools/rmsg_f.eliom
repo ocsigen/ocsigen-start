@@ -11,7 +11,6 @@ module type T = sig
 end
 
 module Make(M : sig type t end) = struct
-
   type t = M.t
 
   let rmsgs : t list Eliom_reference.Volatile.eref =

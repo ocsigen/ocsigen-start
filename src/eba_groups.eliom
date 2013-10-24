@@ -33,7 +33,8 @@ struct
       desc = (Sql.getn g#description);
     }
 
-  module MCache_in = struct
+  module MCache = Eba_tools.Cache_f.Make(
+  struct
     type key_t = string
     type value_t = Eba_types.Groups.t
 
@@ -42,8 +43,7 @@ struct
       match_lwt M.Database.G.does_group_exist key with
         | Some g -> Lwt.return (create_group_with g)
         | None -> Lwt.fail No_such_group
-  end
-  module MCache = Cache.Make(MCache_in)
+  end)
 
   (** creates the group in the database if it does
     * not exist, or returns its id as an abstract value *)

@@ -55,7 +55,8 @@ struct
       avatar = (Sql.getn u#pic);
     }
 
-  module MCache_in = struct
+  module MCache = Eba_tools.Cache_f.Make(
+  struct
     type key_t = int64
     type value_t = t
 
@@ -64,8 +65,7 @@ struct
       match_lwt M.Database.U.does_uid_exist key with
         | Some u -> Lwt.return (create_user_with u)
         | None -> Lwt.fail No_such_user
-  end
-  module MCache = Cache.Make(MCache_in)
+  end)
 
   let explicit_reset_uid_from_cache uid =
     MCache.reset (uid :> int64)

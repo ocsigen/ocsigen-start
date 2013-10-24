@@ -29,6 +29,6 @@ module type MT = sig
 end
 
 module Make(M : MT) = struct
-  module Error = Rmsg.Make(struct type t = M.error_t end)
-  module Notice = Rmsg.Make(struct type t = M.notice_t end)
+  module Error = Eba_tools.Rmsg_f.Make(struct type t = M.error_t end)
+  module Notice = Eba_tools.Rmsg_f.Make(struct type t = M.notice_t end)
 end
