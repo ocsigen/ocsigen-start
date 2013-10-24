@@ -3,6 +3,11 @@
   open Eliom_content.Html5.F
 }}
 
+module type T = sig
+  val admin_page_content : Eba_types.User.t
+  -> [Html5_types.body_content] Eliom_content.Html5.F.elt list Lwt.t
+end
+
 {client{
   let on_click ?use_capture ?(prevent_default = false) elt f =
     Lwt_js_events.async
@@ -300,8 +305,6 @@ module Make(M : sig
   val set_group_of_user_rpc
     : (int64 * (bool * Eba_types.Groups.t), unit)
     Eliom_pervasives.server_function
-
-
 end)
 =
 struct
