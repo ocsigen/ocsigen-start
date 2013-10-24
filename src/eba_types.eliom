@@ -35,7 +35,7 @@
     | `Wrong_password
     | `Wrong_personal_data of ((string * string) * (string * string))
     | `Set_password_failed of string
-    | `Send_mail_failed
+    | `Send_mail_failed of string
     | `Activation_key_outdated
     | `User_already_preregistered of string
     | `User_does_not_exist of string

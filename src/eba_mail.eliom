@@ -4,13 +4,20 @@ class type config = object
 end
 
 module type T = sig
+  val send :    ?from_addr:(string * string)
+             -> to_addrs:(string list) -> subject:string
+             -> (string -> string list Lwt.t)
+             -> bool Lwt.t
+end
+
+module Make(M : sig
   val app_name : string
   val config : config
 
   module Rmsg : Eba_rmsg.T
-end
-
-module Make(M : T) = struct
+end)
+=
+struct
   let send ?(from_addr = M.config#from_addr M.app_name) ~to_addrs ~subject f =
     (* TODO with fork ou mieux en utilisant l'event loop de ocamlnet *)
     try_lwt
@@ -25,8 +32,7 @@ module Make(M : T) = struct
       sendmail (compose ~from_addr ~to_addrs ~subject content);
       Lwt.return true
     with
-      | _ -> (* TODO: get informations from exception and forward them into
-              * `Send_mail_failed rmsg *)
-          M.Rmsg.Error.push `Send_mail_failed;
+      | exc ->
+          M.Rmsg.Error.push (`Send_mail_failed (Printexc.to_string exc));
           Lwt.return false
 end

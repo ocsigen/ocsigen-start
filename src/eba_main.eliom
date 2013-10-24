@@ -136,9 +136,9 @@ module App(M : T) = struct
                "Please do not reply."
              ])
     with
-      | _ -> (* TODO: get informations from exception and forward them into
-              * `Send_mail_failed rmsg *)
-          R.Error.push `Send_mail_failed;
+      | _ ->
+          (* we just want to know if the email is valid *)
+          R.Error.push (`Send_mail_failed "invalid e-mail address");
           Lwt.return false
 
   let preregister_handler () email =
