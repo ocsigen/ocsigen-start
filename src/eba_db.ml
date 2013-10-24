@@ -30,8 +30,6 @@ module type User_T = sig
     >
 
   module Q : sig
-    val is_registered : 'a Lwt_Query.Db.t -> string -> bool Lwt.t
-    val is_preregistered : 'a Lwt_Query.Db.t -> string -> bool Lwt.t
     val does_mail_exist : 'a Lwt_Query.Db.t -> string -> int64 option Lwt.t
   end
 
@@ -174,15 +172,6 @@ struct
          creationdate timestamp NOT NULL DEFAULT(current_timestamp)
   ) >>
 
-  let contacts_table = <:table< contacts (
-         userid bigint NOT NULL,
-         contactid bigint NOT NULL
-  ) >>
-
-  let preregister_table = <:table< preregister (
-         email text NOT NULL
-  ) >>
-
   let groups_table_id_seq = <:sequence< bigserial "groups_groupid_seq" >>
 
   let groups_table = <:table< groups (
@@ -220,24 +209,6 @@ struct
       >
 
     module Q = struct
-      let is_registered dbh m =
-        try_lwt
-          lwt _ = Lwt_Query.view_one dbh
-          <:view< e | e in $emails_table$;
-                      e.email = $string:m$ >>;
-          in
-          Lwt.return true
-        with _ -> Lwt.return false
-
-      let is_preregistered dbh m =
-        try_lwt
-          lwt _ = Lwt_Query.view_one dbh
-            <:view< p | p in $preregister_table$;
-                        p.email = $string:m$ >>
-          in
-          Lwt.return true
-        with _ -> Lwt.return false
-
       let does_mail_exist dbh email =
         try_lwt
           lwt e =
@@ -288,42 +259,6 @@ struct
            in
            (*lwt () = create_activation_key dbh userid key in*)
            Lwt.return userid)
-
-    let new_preregister_email m =
-      full_transaction_block
-        (fun dbh ->
-           Lwt_Query.query dbh
-             <:insert<
-                $preregister_table$ := { email = $string:m$; }
-             >>)
-
-    let is_registered m =
-      full_transaction_block
-        (fun dbh ->
-           (* this will return a Lwt.t *)
-           Q.is_registered dbh m)
-
-    let is_preregistered m =
-      full_transaction_block
-        (fun dbh ->
-           (* this will return a Lwt.t *)
-           Q.is_preregistered dbh m)
-
-    let is_registered_or_preregistered m =
-      full_transaction_block
-        (fun dbh ->
-           lwt b1 = Q.is_preregistered dbh m in
-           lwt b2 = Q.is_registered dbh m in
-           Lwt.return (b1 || b2))
-
-    let all_preregistered () =
-      full_transaction_block
-        (fun dbh ->
-           lwt l = (Lwt_Query.query dbh
-                      <:select< p | p in $preregister_table$; >>)
-           in
-           Lwt.return (List.map (fun r -> r#!email) l))
-
 
     let does_uid_exist uid =
       full_transaction_block

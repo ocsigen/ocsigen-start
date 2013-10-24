@@ -22,18 +22,6 @@ CREATE TABLE activation (
        creationdate timestamp NOT NULL default now()
 );
 
--- A
-CREATE TABLE contacts (
-       userid bigint NOT NULL references users(userid),
-       contactid bigint NOT NULL references users(userid),
-       primary key (userid, contactid) --- ???VVV Why?
-);
-
--- A
-CREATE TABLE preregister (
-       email text primary key
-);
-
 CREATE TABLE groups (
        groupid bigserial primary key,
        name text NOT NULL,
