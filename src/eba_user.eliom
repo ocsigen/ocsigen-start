@@ -30,7 +30,21 @@ module type T = sig
             -> int64 Lwt.t
 
   val update : ?password:string -> t Eba_types.User.ext_t -> unit Lwt.t
-  val attach_activationkey : ?act_key:string -> int64 -> unit Lwt.t
+  val attach_activationkey :
+               email:string
+            -> service:(unit, unit,
+                        [ `Attached of
+                            ([ `Internal of [> `Service ] ], [`Get ])
+                              Eliom_service.a_s ],
+                        [ `WithoutSuffix ], unit, unit,
+                        [< Eliom_service.registrable > `Registrable ],
+                        [> Eliom_service.appl_service ])
+                 Eliom_service.service
+            -> ?act_key:string
+            -> ?act_email_content:(string -> string -> string list Lwt.t)
+            -> ?act_email_subject:string
+            -> int64
+            -> unit Lwt.t
 
   val basic_user_of_uid : int64 -> basic_t Lwt.t
   val user_of_uid : int64 -> t Eba_types.User.ext_t Lwt.t
@@ -94,36 +108,46 @@ struct
       M.Rmsg.Error.push (`Send_mail_failed "invalid e-mail address");
       Lwt.return false
 
-  let create ~email ~service
-        ?password
-        (*?(get = ()) TODO *)
+  let attach_activationkey ~email ~service
         ?(act_key = default_act_key ())
         ?(act_email_content = default_act_email_content)
         ?(act_email_subject = default_act_email_subject)
+        uid =
+    let service =
+      Eliom_service.attach_coservice'
+        ~fallback:service
+        ~service:Eba_services.activation_service
+    in
+    let act_key' = F.make_string_uri ~absolute:true ~service act_key in
+    lwt () = M.attach_activationkey ~act_key uid in
+    M.Rmsg.Notice.push `Activation_key_created;
+    lwt _ =
+      send_activation_email
+        ~email ~act_key:act_key'
+        ~subject:act_email_subject
+        act_email_content
+    in Lwt.return ()
+
+  let create ~email ~service
+        ?password
+        (*?(get = ()) TODO *)
+        ?act_key
+        ?act_email_content
+        ?act_email_subject
         ext =
     match_lwt M.uid_of_email email with
      | Some uid -> Lwt.return uid
      | None ->
          lwt uid = M.new_user ?password ~email ext in
-         let service =
-           Eliom_service.attach_coservice'
-             ~fallback:service
-             ~service:Eba_services.activation_service
+         lwt () =
+           attach_activationkey
+             ~service ~email
+             ?act_key
+             ?act_email_content
+             ?act_email_subject
+             uid
          in
-         let act_key' = F.make_string_uri ~absolute:true ~service act_key in
-         lwt () = M.attach_activationkey ~act_key uid in
-         lwt _ =
-           send_activation_email
-             ~email ~act_key:act_key'
-             ~subject:act_email_subject
-             act_email_content
-         in
-         M.Rmsg.Notice.push `Activation_key_created;
          Lwt.return uid
-
-  let attach_activationkey ?(act_key = default_act_key ()) uid =
-    M.Rmsg.Notice.push `Activation_key_created;
-    M.attach_activationkey ~act_key uid
 
   let update ?password user =
     M.update ?password user
