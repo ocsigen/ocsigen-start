@@ -4,7 +4,7 @@
 }}
 
 module type T = sig
-  val admin_page_content : Eba_types.User.t
+  val admin_page_content : Eba_types.User.basic_t
   -> [Html5_types.body_content] Eliom_content.Html5.F.elt list Lwt.t
 end
 
@@ -218,6 +218,7 @@ let create_preregister_section
     ]
 
 {client{
+  (*
   let create_body_completion_section
         get_groups_of_user_rpc
         set_group_of_user_rpc
@@ -277,6 +278,7 @@ let create_preregister_section
           ]
       ]
       ::(rbs @ [div ~a:[a_style "clear: both"] []]))
+   *)
 }}
 
 
@@ -284,7 +286,6 @@ module Make(M : sig
   module User : Eba_user.T
   module State : Eba_state.T
   module Groups : Eba_groups.T
-  module Egroups : Eba_egroups.T
 
   val create_account_rpc
     : (string, unit)
@@ -295,7 +296,7 @@ module Make(M : sig
     Eliom_pervasives.server_function
 
   val get_users_from_completion_rpc
-    : (string, (Eba_types.User.t list))
+    : (string, (Eba_types.User.basic_t list))
     Eliom_pervasives.server_function
 
   val get_groups_of_user_rpc
@@ -309,6 +310,8 @@ end)
 =
 struct
   let admin_page_content user =
+    Lwt.return []
+      (*
     lwt state = M.State.get_website_state () in
     let state_section =
       create_state_section
@@ -395,5 +398,6 @@ struct
         (state_section
          ::preregister_section
          ::[completion_section])
+       *)
 
 end

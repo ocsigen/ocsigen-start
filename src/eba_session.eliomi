@@ -66,5 +66,4 @@ sig
 
   module Groups : Eba_groups.T
   module User : Eba_user.T
-  module Database : Eba_db.T
 end) -> T

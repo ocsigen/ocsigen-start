@@ -5,12 +5,15 @@
 
 {shared{
   module User = struct
-    type t = {
+    type 'a ext_t = {
       uid: int64;
-      firstname : string;
-      lastname : string;
-      avatar : string option;
+      ext: 'a;
     } deriving (Json)
+
+    type basic_t = unit ext_t deriving (Json)
+
+    let get_ext record =
+      record.ext
   end
 
   module Groups = struct

@@ -5,7 +5,7 @@ module type T = sig
     * {2 preregister accounts}
     * {3 users settings}
     * *) (* TODO: add more content *)
-  val admin_page_content : Eba_types.User.t
+  val admin_page_content : Eba_types.User.basic_t
   -> [Html5_types.body_content] Eliom_content.Html5.F.elt list Lwt.t
 end
 
@@ -14,7 +14,6 @@ sig
   module User : Eba_user.T
   module State : Eba_state.T
   module Groups : Eba_groups.T
-  module Egroups : Eba_egroups.T
 
   val create_account_rpc
     : (string, unit)
@@ -25,7 +24,7 @@ sig
     Eliom_pervasives.server_function
 
   val get_users_from_completion_rpc
-    : (string, (Eba_types.User.t list))
+    : (string, (Eba_types.User.basic_t list))
     Eliom_pervasives.server_function
 
   val get_groups_of_user_rpc

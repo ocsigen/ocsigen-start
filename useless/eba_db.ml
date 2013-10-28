@@ -20,41 +20,6 @@ class type config = object
   method verify : string -> string -> bool
 end
 
-module type User_T = sig
-  type t =
-    < firstname : < get : unit; nul : Sql.non_nullable; t : Sql.string_t > Sql.t;
-      lastname : < get : unit; nul : Sql.non_nullable; t : Sql.string_t > Sql.t;
-      pic : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
-      pwd : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
-      userid : < get : unit; nul : Sql.non_nullable; t : Sql.int64_t > Sql.t
-    >
-
-  module Q : sig
-    val does_mail_exist : 'a Lwt_Query.Db.t -> string -> int64 option Lwt.t
-  end
-
-  val new_user : ?avatar:string -> string -> int64 Lwt.t
-
-  val does_mail_exist : string -> int64 option Lwt.t
-  val does_activationkey_exist : string -> int64 option Lwt.t
-  val does_uid_exist : int64 -> t option Lwt.t
-
-  val verify_password : string -> string -> int64 Lwt.t
-
-  val set : int64
-            -> ?act_key:string
-            -> ?firstname:string
-            -> ?lastname:string
-            -> ?password:string
-            -> ?avatar:string
-            -> unit
-            -> unit Lwt.t
-
-  val get_users_from_name : (string * string) -> t list Lwt.t
-  val get_userslist : unit -> t list Lwt.t
-  (*val get_pic : int64 -> string option Lwt.t*)
-end
-
 module type Groups_T = sig
   type t =
     < description : < get : unit; nul : Sql.nullable; t : Sql.string_t > Sql.t;
@@ -104,9 +69,6 @@ end
 
 
 module type T = sig
-  module User : User_T
-  module U : User_T
-
   module Groups : Groups_T
   module G : Groups_T
 
@@ -168,8 +130,8 @@ struct
 
   let activation_table = <:table< activation (
          activationkey text NOT NULL,
-         userid bigint NOT NULL,
-         creationdate timestamp NOT NULL DEFAULT(current_timestamp)
+         userid bigint NOT NULL
+         (*creationdate timestamp NOT NULL DEFAULT(current_timestamp)*)
   ) >>
 
   let groups_table_id_seq = <:sequence< bigserial "groups_groupid_seq" >>
@@ -198,6 +160,7 @@ struct
          groupid bigint NOT NULL
   ) >>
 
+  (*
   module User = struct
 
     type t =
@@ -446,6 +409,7 @@ struct
   end
 
   module U = User
+  *)
 
   module Groups = struct
 

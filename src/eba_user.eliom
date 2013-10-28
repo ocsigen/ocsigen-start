@@ -6,106 +6,147 @@
 exception No_such_user
 
 module type T = sig
-  type t = Eba_types.User.t
+  type basic_t = Eba_types.User.basic_t
+  type t
 
   val explicit_reset_uid_from_cache : int64 -> unit
 
-  val create : ?avatar:string -> act_key:string -> string -> int64 Lwt.t
-  val set : int64
+  (*val create : ?password:string -> act_key:string -> email:string -> ext_t -> int64 Lwt.t*)
+  val create : ?password:string
+            -> email:string
+            -> ?service:(unit, unit,
+                         [ `Attached of
+                            ([ `Internal of [> `Service ] ], [`Get ])
+                              Eliom_service.a_s ],
+                         [ `WithoutSuffix ], unit, unit,
+                         [< Eliom_service.registrable > `Registrable ],
+                         [> Eliom_service.appl_service ])
+                 Eliom_service.service
+            (* -> ?get: TODO *)
             -> ?act_key:string
-            -> ?firstname:string
-            -> ?lastname:string
-            -> ?password:string
-            -> ?avatar:string
-            -> unit
-            -> unit Lwt.t
+            -> ?act_email_content:(string -> string -> string list Lwt.t)
+            -> ?act_email_subject:string
+            -> t
+            -> int64 Lwt.t
 
-  val is_new : t -> bool
+  val update : ?password:string -> t Eba_types.User.ext_t -> unit Lwt.t
+  val attach_activationkey : ?act_key:string -> int64 -> unit Lwt.t
 
-  val users_of_pattern : string -> t list Lwt.t
+  val basic_user_of_uid : int64 -> basic_t Lwt.t
+  val user_of_uid : int64 -> t Eba_types.User.ext_t Lwt.t
 
-  val user_of_uid : int64 -> t Lwt.t
-  val uid_of_mail : string -> int64 option Lwt.t
+  val uid_of_email : string -> int64 option Lwt.t
   val uid_of_activationkey : string -> int64 option Lwt.t
 
-  val default_avatar : string
-  val make_avatar_uri : string -> Eliom_content.Html5.uri
-  val make_avatar_string_uri : ?absolute:bool -> string -> string
-
-  val firstname_of_user : t -> string
-  val lastname_of_user : t -> string
-  val fullname_of_user : t -> string
-  val avatar_of_user : t -> string
-  val uid_of_user : t -> int64
+  include Eba_shared.TUser
 end
 
 module Make(M : sig
-  module Database : Eba_db.T
+  include Eba_database.Tuser
+  module App : sig include Eliom_registration.ELIOM_APPL val app_name : string end
+  module Mail : Eba_mail.T
+  module Rmsg : Eba_rmsg.T
 end)
-=
+  =
 struct
-  include Eba_shared.User
+  type t = M.ext_t
+  type basic_t = Eba_types.User.basic_t
 
-  let create_user_with (u : M.Database.U.t) =
-    let open Eba_types.User in
-    {
-      uid = (Sql.get u#userid);
-      firstname = (Sql.get u#firstname);
-      lastname = (Sql.get u#lastname);
-      avatar = (Sql.getn u#pic);
-    }
+  include Eba_shared.User
 
   module MCache = Eba_tools.Cache_f.Make(
   struct
     type key_t = int64
-    type value_t = t
+    type value_t = t Eba_types.User.ext_t
 
     let compare = compare
     let get key =
-      match_lwt M.Database.U.does_uid_exist key with
-        | Some u -> Lwt.return (create_user_with u)
+      match_lwt M.user_of_uid key with
+        | Some u -> Lwt.return u
         | None -> Lwt.fail No_such_user
   end)
 
   let explicit_reset_uid_from_cache uid =
     MCache.reset (uid :> int64)
 
-  let create ?avatar ~act_key mail =
-    match_lwt M.Database.U.does_mail_exist mail with
+  let default_act_key = Ocsigen_lib.make_cryptographic_safe_string
+
+  let default_act_email_subject = M.App.app_name^ "registration"
+  let default_act_email_content act_key app_name =
+    Lwt.return [
+      "To activate your "^app_name^" account, please visit the following link:";
+      act_key;
+      "";
+      "This is an auto-generated message.";
+      "Please do not reply."
+    ]
+
+  let send_activation_email ~act_key ~subject ~email cnt_fn =
+    try_lwt
+      ignore (Netaddress.parse email);
+      lwt ret =
+        M.Mail.send ~to_addrs:[email]
+          ~subject
+          (cnt_fn act_key)
+      in
+      Lwt.return ret
+    with _ ->
+      M.Rmsg.Error.push (`Send_mail_failed "invalid e-mail address");
+      Lwt.return false
+
+  let create ?password ~email
+        ?(service = Eba_services.main_service)
+        (*?(get = ()) TODO *)
+        ?(act_key = default_act_key ())
+        ?(act_email_content = default_act_email_content)
+        ?(act_email_subject = default_act_email_subject)
+        ext =
+    match_lwt M.uid_of_email email with
      | Some uid -> Lwt.return uid
      | None ->
-         lwt uid = M.Database.U.new_user ?avatar mail in
-         lwt () = M.Database.U.set uid ~act_key () in
+         lwt uid = M.new_user ?password ~email ext in
+         let service =
+           Eliom_service.attach_coservice'
+             ~fallback:service
+             ~service:Eba_services.activation_service
+         in
+         let act_key' = F.make_string_uri ~absolute:true ~service act_key in
+         lwt () = M.attach_activationkey ~act_key uid in
+         lwt _ =
+           send_activation_email
+             ~email ~act_key:act_key'
+             ~subject:act_email_subject
+             act_email_content
+         in
+         M.Rmsg.Notice.push `Activation_key_created;
          Lwt.return uid
 
-  (* FIXME: add_activation_key instead of set function to add one ? *)
+  let attach_activationkey ?(act_key = default_act_key ()) uid =
+    M.Rmsg.Notice.push `Activation_key_created;
+    M.attach_activationkey ~act_key uid
 
-  let set uid ?act_key ?firstname ?lastname ?password ?avatar () =
-    lwt () = M.Database.U.set uid ?act_key ?firstname ?password ?lastname ?avatar () in
-    let () = explicit_reset_uid_from_cache uid in
-    Lwt.return ()
+  let update ?password user =
+    M.update ?password user
 
-  let verify_password mail passwd =
-    M.Database.U.verify_password mail passwd
+  let verify_password email passwd =
+    M.verify_password email passwd
 
-  let uid_of_mail mail =
-    M.Database.U.does_mail_exist mail
+  let uid_of_email email =
+    M.uid_of_email email
 
   let uid_of_activationkey act_key =
-    M.Database.U.does_activationkey_exist act_key
+    M.uid_of_activationkey act_key
 
   let user_of_uid uid =
-    ((MCache.get uid) :> t Lwt.t)
+    ((MCache.get uid) :> t Eba_types.User.ext_t Lwt.t)
 
-  let users_of_pattern pattern =
-    lwt usersl = M.Database.U.get_userslist () in
-    let usersl = List.map (create_user_with) (usersl) in
-    let f u =
-      let fulln = Ew_accents.without (fullname_of_user u) in
-      Ew_completion.is_completed_by (Ew_accents.without pattern) fulln
-    in
-    Lwt.return (List.filter f usersl)
-
+  let basic_user_of_uid uid =
+    lwt u = MCache.get uid in
+    let open Eba_types.User in
+    Lwt.return ({
+      uid = (uid_of_user u);
+      ext = ();
+    } :> basic_t)
 end
 
 open Eliom_content.Html5

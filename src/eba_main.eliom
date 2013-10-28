@@ -8,7 +8,7 @@
   open Eliom_content.Html5.F
 }}
 
-module type T = sig
+module type ParamT = sig
   type state_t = private [> Eba_types.state_t ] deriving (Json)
   type error_t = private [> Eba_types.error_t ] deriving (Json)
   type notice_t = private [> Eba_types.notice_t ] deriving (Json)
@@ -19,11 +19,28 @@ module type T = sig
   val page_config : Eba_page.config
   val session_config : Eba_session.config
   val mail_config : Eba_mail.config
-  val db_config : Eba_db.config
+
+  module Database : Eba_database.T
 end
 
-module App(M : T) = struct
+module App(M : ParamT) : sig
+  module App : sig include Eliom_registration.ELIOM_APPL val app_name : string end
+  module User : Eba_user.T
+  module Groups : Eba_groups.T
+  module Session : Eba_session.T
+  module Services : Eba_services.T
+  module Page : Eba_page.T
+  module Rmsg : Eba_rmsg.T
 
+  module U : Eba_user.T
+  module G : Eba_groups.T
+  module Ss : Eba_session.T
+  module Sv : Eba_services.T
+  module R : Eba_rmsg.T
+  module P : Eba_page.T
+end with type User.t = M.Database.User.ext_t
+=
+struct
   module App = struct
     include Eliom_registration.App(
     struct
@@ -33,19 +50,13 @@ module App(M : T) = struct
     let app_name = M.app_name
   end
 
-  module Database = Eba_db.Make(
-  struct
-    let config = M.db_config
-  end)
-
   module Groups =
-    Eba_groups.Make(struct module Database = Database end)
+    Eba_groups.Make(M.Database.Groups)
 
+      (*
   module Egroups =
     Eba_egroups.Make(struct module Database = Database end)
-
-  module User =
-    Eba_user.Make(struct module Database = Database end)
+       *)
 
   module State = Eba_state.Make(
   struct
@@ -55,9 +66,30 @@ module App(M : T) = struct
     type t = M.state_t deriving (Json)
   end)
 
+  module Rmsg = Eba_rmsg.Make(
+  struct
+    type error_t = M.error_t
+    type notice_t = M.notice_t
+  end)
+
+  module Mail = Eba_mail.Make(
+  struct
+    let app_name = M.app_name
+    let config = M.mail_config
+
+    module Rmsg = Rmsg
+  end)
+
+  module User = Eba_user.Make(
+  struct
+    include M.Database.User
+    module App = App
+    module Mail = Mail
+    module Rmsg = Rmsg
+  end)
+
   module Session = Eba_session.Make(
   struct
-    module Database = Database
     module Groups = Groups
     module User = User
 
@@ -77,31 +109,19 @@ module App(M : T) = struct
     module User = User
   end)
 
-  module Rmsg = Eba_rmsg.Make(
-  struct
-    type error_t = M.error_t
-    type notice_t = M.notice_t
-  end)
-
-  module Mail = Eba_mail.Make(
-  struct
-    let app_name = M.app_name
-    let config = M.mail_config
-
-    module Rmsg = Rmsg
-  end)
 
   module R = Rmsg
   module V = View
   module M = Mail
-  module D = Database
   module U = User
   module P = Page
   module St = State
   module Ss = Session
   module Sv = Services
   module G = Groups
+               (*
   module Eg = Egroups
+                *)
 
   let disconnect_handler () () =
     (* SECURITY: no check here because we disconnect the session cookie owner. *)
@@ -113,34 +133,13 @@ module App(M : T) = struct
   let connect_handler () (login, pwd) =
     (* SECURITY: no check here. *)
     lwt () = disconnect_handler () () in
-    try_lwt
-      lwt userid = User.verify_password login pwd in
-      Session.connect userid
-    with _ -> (* TODO: Not_found exception *)
-      R.Error.push `Wrong_password;
-      Lwt.return ()
+    match_lwt User.verify_password login pwd with
+      | Some uid -> Session.connect uid
+      | None ->
+          R.Error.push `Wrong_password;
+          Lwt.return ()
 
-  let send_activation_email ~email ~uri () =
-    try_lwt
-      ignore (Netaddress.parse email);
-      Mail.send
-        ~to_addrs:[email]
-        ~subject:(App.app_name^" registration")
-        (fun app_name ->
-           Lwt.return
-             [
-               "To activate your "^app_name^" account, please visit the following link:";
-               uri;
-               "\n";
-               "This is an auto-generated message. ";
-               "Please do not reply."
-             ])
-    with
-      | _ ->
-          (* we just want to know if the email is valid *)
-          R.Error.push (`Send_mail_failed "invalid e-mail address");
-          Lwt.return false
-
+            (*
   let preregister_handler () email =
     let egroup = Eg.preregister in
     lwt is_in = Eg.in_egroup ~email ~egroup in
@@ -156,52 +155,33 @@ module App(M : T) = struct
       | Some _ ->
           R.Error.push (`User_already_exists email);
           Lwt.return ()
+             *)
 
-  (** will generate an activation key which can be used to login
-      directly. This key will be send to the [email] address *)
-  let generate_new_key email ?service gp =
-    let act_key = Ocsigen_lib.make_cryptographic_safe_string () in
-    let service = match service with
-      | Some service ->
-        Eliom_service.attach_coservice'
-          ~fallback:service
-          ~service:Eba_services.activation_service
-      | None -> Eba_services.activation_service
-    in
-    let uri =
-      Eliom_content.Html5.F.make_string_uri ~absolute:true ~service act_key
-    in
-    let echo = print_endline in
-    let for_ = "for the user ["^email^"]" in
-    echo ("Here, the new activation key "^for_^": "^uri);
-    lwt ret = send_activation_email ~email ~uri () in
-    (* TODO: log errors differently than notice log -> create a Log module ? *)
-    if ret
-    then echo ("The activation email "^for_^" has been sent.")
-    else echo ("The activation email "^for_^" has not been sent.");
-    R.Notice.push `Activation_key_created;
-    Lwt.return act_key
-
+            (*
   let sign_up_handler () email =
     match_lwt User.uid_of_mail email with
       | None ->
-          lwt () = Eg.remove_email ~egroup:Egroups.preregister ~email in
+          (*lwt () = Eg.remove_email ~egroup:Egroups.preregister ~email in*)
           lwt act_key = generate_new_key email () in
-          lwt _ = User.create ~act_key email in
+          lwt _ = User.create ~act_key ~email (User.empty ()) in
           Lwt.return ()
       | Some _ ->
           R.Error.push (`User_already_exists email);
           Lwt.return ()
+             *)
 
   let lost_password_handler () email =
     (* SECURITY: no check here. *)
-    match_lwt User.uid_of_mail email with
+    match_lwt User.uid_of_email email with
       | None ->
           R.Error.push (`User_does_not_exist email);
           Lwt.return ()
       | Some uid ->
-          lwt act_key = generate_new_key email () in
-          User.set uid ~act_key ()
+          Lwt.return ()
+          (*
+           lwt act_key = generate_new_key email () in
+           User.attach_activationkey ~act_key uid
+           *)
 
   let set_password_handler userid () (pwd, pwd2) =
     (* SECURITY: We get the userid from session cookie,
@@ -210,7 +190,9 @@ module App(M : T) = struct
     then
       (R.Error.push (`Set_password_failed "password does not match");
        Lwt.return ())
-    else (User.set userid ~password:pwd ())
+    else (
+      Lwt.return ())
+      (*(User.set userid ~password:pwd ())*)
 
   let set_personal_data_handler userid ()
       (((firstname, lastname), (pwd, pwd2)) as pd) =
@@ -221,10 +203,13 @@ module App(M : T) = struct
       (R.Error.push (`Wrong_personal_data pd);
        Lwt.return ())
     else
+      Lwt.return ()
+        (*
       (User.set
          userid
          ~firstname ~lastname
          ~password:pwd ())
+         *)
 
   let crop_handler userid gp pp =
     let dynup_handler =
@@ -293,14 +278,14 @@ module App(M : T) = struct
     module User = User
     module State = State
     module Groups = Groups
-    module Egroups = Egroups
 
     let get_users_from_completion_rpc =
       server_function
         Json.t<string>
         (Session.connect_wrapper_rpc
            (fun uid_connected pattern ->
-              User.users_of_pattern pattern))
+              Lwt.return []))
+              (*User.users_of_pattern pattern))*)
 
     (** this rpc function is used to change the rights of a user
       * in the admin page *)
@@ -315,8 +300,11 @@ module App(M : T) = struct
                 lwt in_group = Groups.in_group ~userid:uid ~group in
                 Lwt.return (group, in_group)
               in
+           (*
               lwt l = Groups.all () in
               lwt groups = Lwt_list.map_s (group_of_user) l in
+            *)
+              let groups = [] in
               (*List.iter (fun (a,b) -> Printf.printf "(%s, %b)" (Groups.name_of a) (b)) groups;*)
               Lwt.return groups))
 
@@ -339,14 +327,15 @@ module App(M : T) = struct
         Json.t<int>
         (Session.connect_wrapper_rpc
            (fun _ n ->
-              Egroups.get_emails_in ~egroup:Egroups.preregister ~n))
+              Lwt.return []))
+              (*Egroups.get_emails_in ~egroup:Egroups.preregister ~n))*)
 
     let create_account_rpc =
       server_function
         Json.t<string>
         (Session.connect_wrapper_rpc
            (fun _ email ->
-              lwt () = sign_up_handler () email in
+              (*lwt () = sign_up_handler () email in*)
               Lwt.return ()))
 
   end)
@@ -367,13 +356,17 @@ module App(M : T) = struct
       Eba_services.lost_password_service
       lost_password_handler;
 
+    (*
     Eliom_registration.Action.register
       Eba_services.sign_up_service
       sign_up_handler;
+     *)
 
+    (*
     Eliom_registration.Action.register
       Eba_services.preregister_service
       preregister_handler;
+     *)
 
     Eliom_registration.Action.register
       Eba_services.set_password_service

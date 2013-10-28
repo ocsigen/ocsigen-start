@@ -10,9 +10,8 @@ module type T = sig
     * not exist, or returns its id as an abstract value *)
   val create : ?description:string -> string -> t Lwt.t
 
-  (** return the group if it exists as an [(Some t) Lwt.t], otherwise
-    * it returns None *)
-  val get : string -> t option Lwt.t
+  (** return the group if it exists, otherwise raise No_such_group *)
+  val get : string -> t Lwt.t
 
   (** returns a list of all the created groups *)
   val all : unit -> t list Lwt.t
@@ -39,4 +38,4 @@ module type T = sig
   val admin : t
 end
 
-module Make : functor (M : sig module Database : Eba_db.T end) -> T
+module Make : functor (M : Eba_database.Tgroups) -> T

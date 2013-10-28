@@ -4,7 +4,8 @@ module type T = sig
   type t = Eba_types.Groups.t
 
   val create : ?description:string -> string -> t Lwt.t
-  val get : string -> t option Lwt.t
+  val get : string -> t Lwt.t
+
   val all : unit -> t list Lwt.t
 
   val add_user : userid:int64 -> group:t -> unit Lwt.t
@@ -18,20 +19,8 @@ module type T = sig
   val admin : t
 end
 
-module Make(M : sig
-  module Database : Eba_db.T
-end)
-=
-struct
+module Make(M : Eba_database.Tgroups) = struct
   include Eba_shared.Groups
-
-  let create_group_with (g : M.Database.G.t) =
-    let open Eba_types.Groups in
-    {
-      id   = (Sql.get g#groupid);
-      name = (Sql.get g#name);
-      desc = (Sql.getn g#description);
-    }
 
   module MCache = Eba_tools.Cache_f.Make(
   struct
@@ -40,56 +29,42 @@ struct
 
     let compare = compare
     let get key =
-      match_lwt M.Database.G.does_group_exist key with
-        | Some g -> Lwt.return (create_group_with g)
+      match_lwt M.get_group key with
+        | Some g -> Lwt.return g
         | None -> Lwt.fail No_such_group
   end)
 
   (** creates the group in the database if it does
     * not exist, or returns its id as an abstract value *)
   let create ?description name =
-    match_lwt M.Database.G.does_group_exist name with
-     | Some g -> Lwt.return (create_group_with g)
+    match_lwt M.get_group name with
+     | Some g -> Lwt.return g
      | None ->
          (* we can't use the cache here, because we can use create at top-level
           * and we don't have access to request scope at top-level *)
-         lwt () = M.Database.G.new_group ?description name in
-         lwt g = M.Database.G.get_group name in
-         Lwt.return (create_group_with g)
+         lwt () = M.new_group ?description name in
+         match_lwt M.get_group name with
+           | None -> raise No_such_group
+           | Some g -> Lwt.return g
 
   let get name =
-    try_lwt
-      lwt g = MCache.get name in
-      Lwt.return (Some g)
-    with
-      | No_such_group -> Lwt.return None
+    MCache.get name
 
   let add_user ~userid ~group =
-    M.Database.G.add_user_in_group
-      ~userid
-      ~groupid:(id_of_group group)
+    M.add_user_in_group
+      ~userid ~group
 
   let remove_user ~userid ~group =
-    M.Database.G.remove_user_in_group
-      ~userid
-      ~groupid:(id_of_group group)
+    M.remove_user_in_group
+      ~userid ~group
 
   let in_group ~userid ~group =
-    M.Database.G.is_user_in_group
-      ~userid
-      ~groupid:(id_of_group group)
+    M.in_group
+      ~userid ~group
 
   let all () =
-    lwt l = M.Database.G.all_groups () in
-    let put_in_cache g =
-      let g = create_group_with g in
-      let () = MCache.set (name_of_group g) g in
-      g
-    in
-    Lwt.return
-      (List.map
-         (put_in_cache)
-         (l))
+    M.all ()
 
-  let admin = Lwt_unix.run (create "admin")
+  let admin =
+    Lwt_unix.run (create "admin")
 end

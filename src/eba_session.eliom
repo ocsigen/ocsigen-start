@@ -76,7 +76,6 @@ module Make(M : sig
 
   module Groups : Eba_groups.T
   module User : Eba_user.T
-  module Database : Eba_db.T
 end)
 =
 struct
@@ -84,7 +83,7 @@ struct
 
   exception Permission_denied
 
-  let me : Eba_types.User.t option Eliom_reference.Volatile.eref =
+  let me : Eba_types.User.basic_t option Eliom_reference.Volatile.eref =
     (* This is a cache of current user *)
     Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope None
 
@@ -115,7 +114,7 @@ struct
 
   *)
   let set_user_server uid =
-    lwt u = M.User.user_of_uid uid in
+    lwt u = M.User.basic_user_of_uid uid in
     Eliom_reference.Volatile.set me (Some u);
     Lwt.return ()
 
