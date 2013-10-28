@@ -11,9 +11,6 @@
     } deriving (Json)
 
     type basic_t = unit ext_t deriving (Json)
-
-    let get_ext record =
-      record.ext
   end
 
   module Groups = struct

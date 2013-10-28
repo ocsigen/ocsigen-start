@@ -1,6 +1,7 @@
 {shared{
   module type TUser = sig
     val uid_of_user : 'a Eba_types.User.ext_t -> int64
+    val ext_of_user : 'a Eba_types.User.ext_t -> 'a
   end
 
   module type TGroups = sig
