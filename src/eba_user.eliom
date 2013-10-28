@@ -148,16 +148,3 @@ struct
       ext = ();
     } :> basic_t)
 end
-
-open Eliom_content.Html5
-open Eliom_content.Html5.F
-
-(* FIXME: the followings should be in another module I think, it concerns
- * only css/style, and should be maybe, into a "view" user module *)
-{shared{
-  let cls_avatar = "eba_avatar"
-  let cls_mail = "eba_avatar"
-  let cls_user = "eba_user"
-  let cls_users = "eba_users"
-  let cls_user_box = "eba_user_box"
-}}
