@@ -12,9 +12,8 @@ module type T = sig
   val explicit_reset_uid_from_cache : int64 -> unit
 
   (*val create : ?password:string -> act_key:string -> email:string -> ext_t -> int64 Lwt.t*)
-  val create : ?password:string
-            -> email:string
-            -> ?service:(unit, unit,
+  val create : email:string
+            -> service:(unit, unit,
                          [ `Attached of
                             ([ `Internal of [> `Service ] ], [`Get ])
                               Eliom_service.a_s ],
@@ -23,6 +22,7 @@ module type T = sig
                          [> Eliom_service.appl_service ])
                  Eliom_service.service
             (* -> ?get: TODO *)
+            -> ?password:string
             -> ?act_key:string
             -> ?act_email_content:(string -> string -> string list Lwt.t)
             -> ?act_email_subject:string
@@ -94,8 +94,8 @@ struct
       M.Rmsg.Error.push (`Send_mail_failed "invalid e-mail address");
       Lwt.return false
 
-  let create ?password ~email
-        ?(service = Eba_services.main_service)
+  let create ~email ~service
+        ?password
         (*?(get = ()) TODO *)
         ?(act_key = default_act_key ())
         ?(act_email_content = default_act_email_content)
