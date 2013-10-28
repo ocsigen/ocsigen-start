@@ -18,7 +18,7 @@ module type ParamT = sig
 
   val page_config : Eba_page.config
   val session_config : Eba_session.config
-  val mail_config : Eba_mail.config
+  val email_config : Eba_email.config
 
   module Database : Eba_database.T
 end
@@ -67,10 +67,10 @@ struct
     type notice_t = M.notice_t
   end)
 
-  module Mail = Eba_mail.Make(
+  module Email = Eba_email.Make(
   struct
     let app_name = M.app_name
-    let config = M.mail_config
+    let config = M.email_config
 
     module Rmsg = Rmsg
   end)
@@ -79,7 +79,7 @@ struct
   struct
     include M.Database.User
     module App = App
-    module Mail = Mail
+    module Email = Email
     module Rmsg = Rmsg
   end)
 
@@ -100,7 +100,7 @@ struct
   module Services = Eba_services
 
   module R = Rmsg
-  module M = Mail
+  module E = Email
   module U = User
   module P = Page
   module St = State

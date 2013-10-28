@@ -44,7 +44,7 @@ end
 module Make(M : sig
   include Eba_database.Tuser
   module App : sig include Eliom_registration.ELIOM_APPL val app_name : string end
-  module Mail : Eba_mail.T
+  module Email : Eba_email.T
   module Rmsg : Eba_rmsg.T
 end)
   =
@@ -85,7 +85,7 @@ struct
     try_lwt
       ignore (Netaddress.parse email);
       lwt ret =
-        M.Mail.send ~to_addrs:[email]
+        M.Email.send ~to_addrs:[email]
           ~subject
           (cnt_fn act_key)
       in
