@@ -28,7 +28,7 @@ module type MT = sig
   type notice_t = private [> Eba_types.notice_t ]
 end
 
-module Make(M : MT) = struct
+module Make(M : MT) : T = struct
   module Error = Eba_tools.Rmsg_f.Make(struct type t = M.error_t end)
   module Notice = Eba_tools.Rmsg_f.Make(struct type t = M.notice_t end)
 end

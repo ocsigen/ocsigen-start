@@ -46,12 +46,12 @@
 
 {shared{
   type crop_param_t =
-      (Eba_types.User.t * string list * string * (int * int * int * int)
+      (Eba_types.User.basic_t * string list * string * (int * int * int * int)
       ) deriving (Json)
 }}
 
 module type T = sig
-  val start_crop_on_clicking_on : Dom_html.element Js.t -> Eba_types.User.t -> unit
+  val start_crop_on_clicking_on : Dom_html.element Js.t -> Eba_types.User.basic_t -> unit
 end
 
 module Make(M : sig module User : Eba_user.T end) = struct
@@ -68,7 +68,7 @@ module Make(M : sig module User : Eba_user.T end) = struct
          (* We mark the as used to prevent an automatic remove from
           * the cleaner thread *)
          lwt () = Ew_dyn_upload.mark_as_used fname in
-         lwt () = M.User.set (M.User.uid_of_user user) ~avatar:fname () in
+         (*lwt () = M.User.set (M.User.basic_uid_of_user user) ~avatar:fname () in*)
          Lwt.return ())
 
   let start_crop_on_clicking_on elt user =

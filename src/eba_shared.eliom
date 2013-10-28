@@ -4,41 +4,31 @@
 }}
 
 {shared{
+  module type TUser = sig
+    val uid_of_user : 'a Eba_types.User.ext_t -> int64
+  end
+
+  module type TGroups = sig
+    type t = Eba_types.Groups.t
+
+    val id_of_group : t -> int64
+    val name_of_group : t -> string
+    val desc_of_group : t -> string option
+  end
+
+  module type TEgroups = sig
+    type t = Eba_types.Egroups.t
+
+    val id_of_egroup : t -> int64
+    val name_of_egroup : t -> string
+    val desc_of_egroup : t -> string option
+  end
+
   module User = struct
-    type t = Eba_types.User.t deriving (Json)
-
-    let default_avatar =
-      "__eba_default_user_avatar"
-
-    let make_avatar_uri p =
-      make_uri (Eliom_service.static_dir ()) ["avatars" ; p]
-
-    let make_avatar_string_uri ?absolute p =
-      make_string_uri
-        ?absolute ~service:(Eliom_service.static_dir ()) ["avatars" ; p]
-
     open Eba_types.User
 
-    let is_new u =
-      u.firstname = ""
-
-    let firstname_of_user u =
-      u.firstname
-
-    let lastname_of_user u =
-      u.lastname
-
-    let fullname_of_user u =
-      (u.firstname)^" "^(u.lastname)
-
-    let uid_of_user u =
+    let uid_of_user (u : 'a ext_t) =
       u.uid
-
-    let avatar_of_user u =
-      match u.avatar with
-        | None -> default_avatar
-        | Some s -> s
-
   end
 
   module Groups = struct
@@ -82,7 +72,7 @@
   module Session = struct
     exception Not_connected
 
-    let me : Eba_types.User.t option ref = ref None
+    let me : Eba_types.User.basic_t option ref = ref None
 
     let get_current_user_option () = !me
 

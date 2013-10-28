@@ -31,18 +31,6 @@ class session_config () = object
   method on_start_connected_process = Lwt.return ()
 end
 
-class db_config () = object
-  method name = "eba"
-  method port = 5432
-  method workers = 16
-
-  method hash s =
-    Bcrypt.string_of_hash (Bcrypt.hash s)
-
-  method verify s1 s2 =
-    Bcrypt.verify s1 (Bcrypt.hash_of_string s2)
-end
-
 class mail_config () = object
   method from_addr app_name =
     (app_name^" team", "noreply@ocsigenlabs.com")
@@ -52,7 +40,6 @@ class mail_config () = object
 end
 
 module App = struct
-  let db_config = new db_config ()
   let session_config = new session_config ()
   let page_config : Eba_page.config = new page_config ()
   let mail_config = new mail_config ()

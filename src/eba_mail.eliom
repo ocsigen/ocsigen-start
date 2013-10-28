@@ -1,3 +1,7 @@
+open Printf
+
+exception No_content
+
 class type config = object
   method from_addr : string -> (string * string)
   method to_addr : string -> (string * string)
@@ -20,19 +24,37 @@ end)
 struct
   let send ?(from_addr = M.config#from_addr M.app_name) ~to_addrs ~subject f =
     (* TODO with fork ou mieux en utilisant l'event loop de ocamlnet *)
+    let echo = printf "%s\n" in
+    let flush () = printf "%!" in
     try_lwt
       let open Netsendmail in
       lwt content = f M.app_name in
-      let content =
-        List.fold_left
-          (fun s1 s2 -> s1^"\n"^s2)
-          ("") (content)
-      in
-      let to_addrs = List.map (M.config#to_addr) to_addrs in
-      sendmail (compose ~from_addr ~to_addrs ~subject content);
-      Lwt.return true
-    with
-      | exc ->
-          M.Rmsg.Error.push (`Send_mail_failed (Printexc.to_string exc));
-          Lwt.return false
+      if List.length content = 0
+      then raise No_content
+      else (
+        let content =
+          List.fold_left
+            (fun s1 s2 -> s1^"\n"^s2)
+            (List.hd content) (List.tl content)
+        in
+        let to_addrs = List.map (M.config#to_addr) to_addrs in
+        let print_tuple (a,b) = printf " (%s,%s)\n" a b in
+        echo "Sending e-mail:";
+        echo "[from_addr]: "; print_tuple from_addr;
+        echo "[to_addrs]: [";
+        List.iter print_tuple to_addrs;
+        echo "]";
+        printf "[content]:\n%s\n" content;
+        sendmail (compose ~from_addr ~to_addrs ~subject content);
+        echo "[SUCCESS]: e-mail has been sent!";
+        Lwt.return true)
+    with exc ->
+      (match exc with
+        | No_content ->
+            M.Rmsg.Error.push (`Send_mail_failed "There is no content in the email's body.");
+        | exc ->
+            M.Rmsg.Error.push (`Send_mail_failed (Printexc.to_string exc)));
+      echo "[FAIL]: e-mail has not been sent!";
+      flush ();
+      Lwt.return false
 end
