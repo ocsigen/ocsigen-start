@@ -6,6 +6,7 @@ module type TError = sig
   val get : (t -> 'a option) -> 'a
 
   val iter : (t -> unit Lwt.t) -> unit Lwt.t
+  val to_list : unit -> t list
 end
 
 module type TNotice = sig
@@ -16,6 +17,7 @@ module type TNotice = sig
   val get : (t -> 'a option) -> 'a
 
   val iter : (t -> unit Lwt.t) -> unit Lwt.t
+  val to_list : unit -> t list
 end
 
 module type T = sig
