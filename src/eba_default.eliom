@@ -21,7 +21,6 @@ class page_config () : Eba_page.config = object
        Lwt.return [
          D.div [p [pcdata "error"]]
        ])
-
 end
 
 class session_config () = object
@@ -31,7 +30,7 @@ class session_config () = object
   method on_start_connected_process = Lwt.return ()
 end
 
-class mail_config () = object
+class email_config () = object
   method from_addr app_name =
     (app_name^" team", "noreply@ocsigenlabs.com")
 
@@ -42,7 +41,7 @@ end
 module App = struct
   let session_config = new session_config ()
   let page_config : Eba_page.config = new page_config ()
-  let mail_config = new mail_config ()
+  let email_config = new email_config ()
 
   let states = [
     (`Normal, "Normal", Some "allow you to register users");
