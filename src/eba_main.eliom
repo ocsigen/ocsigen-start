@@ -104,14 +104,7 @@ struct
 
   module Services = Eba_services
 
-  module View = Eba_view.Make(
-  struct
-    module User = User
-  end)
-
-
   module R = Rmsg
-  module V = View
   module M = Mail
   module U = User
   module P = Page
@@ -273,6 +266,7 @@ struct
         lwt () = Session.connect uid in
         Eliom_registration.Redirection.send Eliom_service.void_coservice'
 
+          (*
   module Admin = Eba_admin.Make(
   struct
     module User = User
@@ -341,6 +335,7 @@ struct
   end)
 
   module A = Admin
+           *)
 
   (********* Registration *********)
   let _ =
