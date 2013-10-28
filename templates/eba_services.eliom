@@ -1,4 +1,13 @@
 module type T = sig
+  val main_service :
+    (unit, unit,
+     [> `Attached of
+        ([> `Internal of [> `Service ] ], [> `Get ])
+          Eliom_service.a_s ],
+     [ `WithoutSuffix ], unit, unit,
+     [< Eliom_service.registrable > `Registrable ],
+     [> Eliom_service.appl_service ])
+    Eliom_service.service
   val lost_password_service :
     (unit, string,
      [> `Nonattached of [> `Post ] Eliom_service.na_s ],
@@ -56,6 +65,11 @@ module type T = sig
     Eliom_service.service
   val crop_service : Ew_dyn_upload.dynup_service_t
 end
+
+let main_service =
+  Eliom_service.App.service
+    ~path:[]
+    ~get_params:unit ()
 
 let lost_password_service =
   (* Ask to receive an activation key if the user exists *)

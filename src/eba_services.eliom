@@ -3,15 +3,6 @@
 open Eliom_parameter
 
 module type T = sig
-  val main_service :
-    (unit, unit,
-     [> `Attached of
-        ([> `Internal of [> `Service ] ], [> `Get ])
-          Eliom_service.a_s ],
-     [ `WithoutSuffix ], unit, unit,
-     [< Eliom_service.registrable > `Registrable ],
-     [> Eliom_service.appl_service ])
-    Eliom_service.service
   val connect_service :
     (unit, string * string,
      [> `Nonattached of [> `Post ] Eliom_service.na_s ],
@@ -37,11 +28,6 @@ module type T = sig
      [> Eliom_service.http_service ])
     Eliom_service.service
 end
-
-let main_service =
-  Eliom_service.App.service
-    ~path:[]
-    ~get_params:unit ()
 
 let connect_service =
   Eliom_service.Http.post_coservice'
