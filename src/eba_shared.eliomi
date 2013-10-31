@@ -12,17 +12,8 @@
     val desc_of_group : t -> string option
   end
 
-  module type TEgroups = sig
-    type t = Eba_types.Egroups.t
-
-    val id_of_egroup : t -> int64
-    val name_of_egroup : t -> string
-    val desc_of_egroup : t -> string option
-  end
-
   module User : TUser
   module Groups : TGroups
-  module Egroups : TEgroups
 }}
 
 {server{

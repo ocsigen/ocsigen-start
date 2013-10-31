@@ -17,14 +17,6 @@
     val desc_of_group : t -> string option
   end
 
-  module type TEgroups = sig
-    type t = Eba_types.Egroups.t
-
-    val id_of_egroup : t -> int64
-    val name_of_egroup : t -> string
-    val desc_of_egroup : t -> string option
-  end
-
   module User = struct
     open Eba_types.User
 
@@ -48,21 +40,6 @@
 
     let desc_of_group group =
       group.desc
-  end
-
-  module Egroups = struct
-    type t = Eba_types.Egroups.t
-
-    open Eba_types.Egroups
-
-    let id_of_egroup egroup =
-      egroup.id
-
-    let name_of_egroup egroup =
-      egroup.name
-
-    let desc_of_egroup egroup =
-      egroup.desc
   end
 }}
 

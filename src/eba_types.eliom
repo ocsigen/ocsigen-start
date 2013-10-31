@@ -21,14 +21,6 @@
     } deriving (Json)
   end
 
-  module Egroups = struct
-    type t = {
-      id : int64;
-      name : string;
-      desc : string option
-    } deriving (Json)
-  end
-
   type state_t = [ `Normal | `Restricted ] deriving (Json)
 
   type error_t = [
