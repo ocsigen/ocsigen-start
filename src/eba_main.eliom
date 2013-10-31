@@ -115,7 +115,8 @@ struct
     lwt () = Session.disconnect () in
     lwt () = Eliom_state.discard ~scope:Eliom_common.default_session_scope () in
     lwt () = Eliom_state.discard ~scope:Eliom_common.default_process_scope () in
-    Eliom_state.discard ~scope:Eliom_common.request_scope ()
+    lwt () = Eliom_state.discard ~scope:Eliom_common.request_scope () in
+    Lwt.return ()
 
   let connect_handler () (login, pwd) =
     (* SECURITY: no check here. *)
