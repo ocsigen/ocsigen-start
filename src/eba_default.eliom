@@ -31,16 +31,15 @@ class session_config () = object
 end
 
 class email_config () = object
-  method from_addr app_name =
-    (app_name^" team", "noreply@ocsigenlabs.com")
+  method from_addr =
+    ("team DEFAULT", "noreply@DEFAULT.DEFAULT")
 
-  method to_addr (mail : string) =
-    ("", mail)
+  method mailer = "/usr/bin/sendmail"
 end
 
 module App = struct
   let session_config = new session_config ()
-  let page_config : Eba_page.config = new page_config ()
+  let page_config = new page_config ()
   let email_config = new email_config ()
 
   let states = [

@@ -24,7 +24,7 @@ module type T = sig
             (* -> ?get: TODO *)
             -> ?password:string
             -> ?act_key:string
-            -> ?act_email_content:(string -> string -> string list Lwt.t)
+            -> ?act_email_content:(string -> string list)
             -> ?act_email_subject:string
             -> t
             -> int64 Lwt.t
@@ -41,7 +41,7 @@ module type T = sig
                         [> Eliom_service.appl_service ])
                  Eliom_service.service
             -> ?act_key:string
-            -> ?act_email_content:(string -> string -> string list Lwt.t)
+            -> ?act_email_content:(string -> string list)
             -> ?act_email_subject:string
             -> int64
             -> unit Lwt.t
@@ -86,9 +86,9 @@ struct
   let default_act_key = Ocsigen_lib.make_cryptographic_safe_string
 
   let default_act_email_subject = M.App.app_name^ "registration"
-  let default_act_email_content act_key app_name =
-    Lwt.return [
-      "To activate your "^app_name^" account, please visit the following link:";
+  let default_act_email_content act_key =
+    [
+      "To activate your "^M.App.app_name^" account, please visit the following link:";
       act_key;
       "";
       "This is an auto-generated message.";
@@ -96,17 +96,15 @@ struct
     ]
 
   let send_activation_email ~act_key ~subject ~email cnt_fn =
-    try_lwt
-      ignore (Netaddress.parse email);
-      lwt ret =
-        M.Email.send ~to_addrs:[email]
-          ~subject
-          (cnt_fn act_key)
-      in
-      Lwt.return ret
-    with _ ->
+    if not (M.Email.is_valid email)
+    then (
       M.Rmsg.Error.push (`Send_mail_failed "invalid e-mail address");
-      Lwt.return false
+      false)
+    else (
+      M.Email.send ~to_addrs:[("", email)]
+        ~subject
+        (cnt_fn act_key);
+      true)
 
   let attach_activationkey ~email ~service
         ?(act_key = default_act_key ())
@@ -121,7 +119,7 @@ struct
     let act_key' = F.make_string_uri ~absolute:true ~service act_key in
     lwt () = M.attach_activationkey ~act_key uid in
     M.Rmsg.Notice.push `Activation_key_created;
-    lwt _ =
+    let _ =
       send_activation_email
         ~email ~act_key:act_key'
         ~subject:act_email_subject

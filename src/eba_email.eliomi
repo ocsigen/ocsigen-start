@@ -1,18 +1,22 @@
 class type config = object
-  method from_addr : string -> (string * string)
-  method to_addr : string -> (string * string)
+  method from_addr : (string * string)
+  method mailer : string
 end
 
 module type T = sig
+  exception Invalid_mailer of string
+
+  val email_pattern : string
+  val is_valid : string -> bool
   val send :    ?from_addr:(string * string)
-             -> to_addrs:(string list) -> subject:string
-             -> (string -> string list Lwt.t)
-             -> bool Lwt.t
+             -> to_addrs:(string * string) list
+             -> subject:string
+             -> string list
+             -> unit
 end
 
 module Make : functor (M :
 sig
-  val app_name : string
   val config : config
 
   module Rmsg : Eba_rmsg.T

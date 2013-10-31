@@ -1,60 +1,64 @@
 open Printf
 
-exception No_content
-
 class type config = object
-  method from_addr : string -> (string * string)
-  method to_addr : string -> (string * string)
+  method from_addr : (string * string)
+  method mailer : string
 end
 
 module type T = sig
+  exception Invalid_mailer of string
+
+  val email_pattern : string
+  val is_valid : string -> bool
   val send :    ?from_addr:(string * string)
-             -> to_addrs:(string list) -> subject:string
-             -> (string -> string list Lwt.t)
-             -> bool Lwt.t
+             -> to_addrs:((string * string) list)
+             -> subject:string
+             -> string list
+             -> unit
 end
 
 module Make(M : sig
-  val app_name : string
   val config : config
 
   module Rmsg : Eba_rmsg.T
 end)
 =
 struct
-  let send ?(from_addr = M.config#from_addr M.app_name) ~to_addrs ~subject f =
+  exception Invalid_mailer of string
+
+  let email_pattern = Eba_config.Email.email_pattern
+
+  let email_regexp =
+    Str.regexp_case_fold email_pattern
+
+  let is_valid email =
+    Str.string_match email_regexp email 0
+
+  let send ?(from_addr = M.config#from_addr) ~to_addrs ~subject content =
     (* TODO with fork ou mieux en utilisant l'event loop de ocamlnet *)
     let echo = printf "%s\n" in
     let flush () = printf "%!" in
-    try_lwt
-      let open Netsendmail in
-      lwt content = f M.app_name in
-      if List.length content = 0
-      then raise No_content
-      else (
-        let content =
+    try
+      let content =
+        if List.length content = 0
+        then ""
+        else (
           List.fold_left
             (fun s1 s2 -> s1^"\n"^s2)
-            (List.hd content) (List.tl content)
-        in
-        let to_addrs = List.map (M.config#to_addr) to_addrs in
-        let print_tuple (a,b) = printf " (%s,%s)\n" a b in
-        echo "Sending e-mail:";
-        echo "[from_addr]: "; print_tuple from_addr;
-        echo "[to_addrs]: [";
-        List.iter print_tuple to_addrs;
-        echo "]";
-        printf "[content]:\n%s\n" content;
-        sendmail (compose ~from_addr ~to_addrs ~subject content);
-        echo "[SUCCESS]: e-mail has been sent!";
-        Lwt.return true)
-    with exc ->
-      (match exc with
-        | No_content ->
-            M.Rmsg.Error.push (`Send_mail_failed "There is no content in the email's body.");
-        | exc ->
-            M.Rmsg.Error.push (`Send_mail_failed (Printexc.to_string exc)));
+            (List.hd content) (List.tl content))
+      in
+      let print_tuple (a,b) = printf " (%s,%s)\n" a b in
+      echo "Sending e-mail:";
+      echo "[from_addr]: "; print_tuple from_addr;
+      echo "[to_addrs]: [";
+      List.iter print_tuple to_addrs;
+      echo "]";
+      printf "[content]:\n%s\n" content;
+      Netsendmail.sendmail ~mailer:M.config#mailer
+        (Netsendmail.compose ~from_addr ~to_addrs ~subject content);
+      echo "[SUCCESS]: e-mail has been sent!"
+    with Netchannels.Command_failure (Unix.WEXITED 127) ->
       echo "[FAIL]: e-mail has not been sent!";
       flush ();
-      Lwt.return false
+      raise (Invalid_mailer (M.config#mailer^" not found"))
 end

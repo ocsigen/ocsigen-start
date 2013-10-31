@@ -40,3 +40,9 @@
     val get_current_user_or_fail : unit -> Eba_types.User.basic_t
   end
 }}
+
+{client{
+  module Email : sig
+    val is_valid : string -> bool
+  end
+}}

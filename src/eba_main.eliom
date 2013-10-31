@@ -29,6 +29,7 @@ module App(M : ParamT) : sig
   module Groups : Eba_groups.T
   module Session : Eba_session.T
   module Services : Eba_services.T
+  module Email : Eba_email.T
   module Page : Eba_page.T
   module Rmsg : Eba_rmsg.T
 
@@ -36,6 +37,7 @@ module App(M : ParamT) : sig
   module G : Eba_groups.T
   module Ss : Eba_session.T
   module Sv : Eba_services.T
+  module E : Eba_email.T
   module R : Eba_rmsg.T
   module P : Eba_page.T
 end with type User.t = M.Database.User.ext_t

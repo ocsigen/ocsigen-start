@@ -88,3 +88,15 @@
           raise Not_connected
   end
 }}
+
+{client{
+  module Email = struct
+    let regexp_email =
+      Regexp.regexp_with_flag Eba_config.Email.email_pattern "i"
+
+    let is_valid email =
+      match Regexp.string_match regexp_email email 0 with
+        | None -> false
+        | Some _ -> true
+  end
+}}
