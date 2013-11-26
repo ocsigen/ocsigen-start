@@ -38,7 +38,7 @@ endif
 ##----------------------------------------------------------------------
 ## General
 
-.PHONY: all byte opt
+.PHONY: all byte opt doc
 all: byte $(OPT_RULE)
 byte:: $(LIBDIR)/${PKG_NAME}.server.cma $(LIBDIR)/${PKG_NAME}.client.cma
 opt:: $(LIBDIR)/${PKG_NAME}.server.cmxs
@@ -190,6 +190,17 @@ $(DEPSDIR):
 	mkdir -p $@
 	mkdir -p $(addprefix $@/, ${CLIENT_DIRS})
 	mkdir -p $(addprefix $@/, ${SERVER_DIRS})
+
+##----------------------------------------------------------------------
+## Documentation
+
+doc: all
+	rm -rf doc
+	mkdir -p doc
+	mkdir -p doc/client
+	mkdir -p doc/server
+	eliomdoc -client -sort -html -d doc/client $(CLIENT_INC_DIRS) $(CLIENT_FILES_DOC)
+	eliomdoc -server -sort -html -d doc/server $(SERVER_INC_DIRS) $(SERVER_FILES_DOC)
 
 ##----------------------------------------------------------------------
 ## Clean up

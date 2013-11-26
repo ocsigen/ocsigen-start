@@ -9,9 +9,32 @@ PKG_VERS := your version
 PKG_DESC := your description
 
 # Source files for the server
-SERVER_FILES := $(wildcard src/*.eliom* src/*.ml* src/view/*.eliom* src/tools/*.eliom*)
+SERVER_FILES := $(wildcard \
+  src/*.ml* \
+  src/*.eliom* \
+  src/view/*.eliom* \
+  src/tools/*.eliom* \
+)
 # Source files for the client
-CLIENT_FILES := $(wildcard src/*.eliom* src/view/*.eliom* src/tools/*.eliom)
+CLIENT_FILES := $(wildcard \
+  src/*.eliom* \
+  src/view/*.eliom* \
+  src/tools/*.eliom* \
+)
+
+# Source files for the server
+SERVER_FILES_DOC := $(wildcard \
+  src/*.eliomi \
+  src/*.mli \
+  src/view/*.eliomi \
+  src/tools/*.eliomi \
+)
+# Source files for the client
+CLIENT_FILES_DOC := $(wildcard \
+  src/*.eliomi \
+  src/view/*.eliomi \
+  src/tools/*.eliomi \
+)
 
 # OCamlfind packages for the server
 SERVER_PACKAGES := pgocaml,pgocaml.syntax,text,macaque.syntax,calendar,safepass,eliom-widgets.server,magick
