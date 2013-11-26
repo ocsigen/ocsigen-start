@@ -87,18 +87,17 @@ let user_groups_table = <:table< user_groups (
 
 module User = struct
 
-  open Eba_types.User
-  open Foobar_types.User
-
-  type ext_t = Foobar_types.User.ext_t
+  type t = {
+    uid : int64;
+    fn : string;
+    ln : string;
+  }
 
   let create_user_with u =
     {
       uid = Sql.get u#userid;
-      ext = {
-        fn = Sql.get u#firstname;
-        ln = Sql.get u#lastname;
-      }
+      fn = Sql.get u#firstname;
+      ln = Sql.get u#lastname;
     }
 
   let new_user ?password ~email ext =

@@ -11,13 +11,23 @@ let view_one_opt rq =
 
 module User = struct
   open Eba_types.User
-  open Foobar_types.User
 
-  type ext_t = Foobar_types.User.ext_t
+  type t = {
+    uid : int64;
+    fn : string;
+    ln : string;
+  }
 
-  let new_user ?password ~email ext =
-    let firstname = ext.fn in
-    let lastname = ext.ln in
+  let uid_of_user t = t.uid
+
+  let record_user (uid, fn, ln) =
+    {
+      uid = uid;
+      fn = fn;
+      ln = ln;
+    }
+
+  let new_user ?password ~firstname ~lastname email =
     PGSQL(dbh) "
     INSERT INTO users
     (firstname, lastname, password)
@@ -32,17 +42,26 @@ module User = struct
         ";
         Lwt.return uid
 
-  let update ?password user =
-    let uid = user.uid in
-    let firstname = user.ext.fn in
-    let lastname = user.ext.ln in
-    PGSQL(dbh) "
-    UPDATE users
-    SET firstname = $firstname,
-        lastname = $lastname,
-        password = $?password
-    WHERE userid = $uid
-    ";
+  let update ?password t =
+    let uid = t.uid in
+    let firstname = t.fn in
+    let lastname = t.ln in
+    (match password with
+    | None ->
+        PGSQL(dbh) "
+        UPDATE users
+        SET firstname = $firstname,
+            lastname = $lastname
+        WHERE userid = $uid
+        "
+    | Some password ->
+        PGSQL(dbh) "
+        UPDATE users
+        SET firstname = $firstname,
+            lastname = $lastname,
+            password = $password
+        WHERE userid = $uid
+        ");
     Lwt.return ()
 
    let attach_activationkey ~act_key uid =
@@ -52,9 +71,9 @@ module User = struct
     ";
     Lwt.return ()
 
-  let verify_password email password =
+  let verify_password ~email ~password =
     Lwt.return
-      (view_one_opt (PGSQL(dbh) "
+      (view_one (PGSQL(dbh) "
        SELECT t1.userid
        FROM users  as t1,
             emails as t2
@@ -64,19 +83,11 @@ module User = struct
        "))
 
   let user_of_uid uid =
-    let (uid, fn, ln) =
-      view_one (PGSQL(dbh) "
-      SELECT userid, firstname, lastname FROM users
-      WHERE userid = $uid
-      ")
-    in
-    Lwt.return (Some {
-      uid = uid;
-      ext = {
-        fn = fn;
-        ln = ln;
-      }
-    })
+    Lwt.return
+      (record_user (view_one (PGSQL(dbh) "
+       SELECT userid, firstname, lastname FROM users
+       WHERE userid = $uid
+       ")))
 
   let uid_of_activationkey act_key =
     let uid =
@@ -85,25 +96,52 @@ module User = struct
        WHERE activationkey = $act_key
        "))
     in
-    Lwt.return
-      (match uid with
-       | None -> None
-       | Some uid ->
-           PGSQL(dbh) "
-           DELETE FROM activation
-           WHERE activationkey = $act_key
-           ";
-           Some uid)
+    (match uid with
+     | None -> Lwt.fail (Failure "uid_of_activationkey")
+     | Some uid ->
+         PGSQL(dbh) "
+         DELETE FROM activation
+         WHERE activationkey = $act_key
+         ";
+         Lwt.return uid)
 
   let uid_of_email email =
     Lwt.return
-      (view_one_opt (PGSQL(dbh) "
+      (view_one (PGSQL(dbh) "
        SELECT t1.userid
        FROM users  as t1,
             emails as t2
        WHERE t1.userid = t2.userid
        AND t2.email = $email
        "))
+
+  module Opt = struct
+    let verify_password ~email ~password =
+      try
+        lwt p = verify_password ~email ~password in
+        Lwt.return (Some p)
+      with Failure _ -> Lwt.return None
+
+    let user_of_uid uid =
+      try
+        lwt user = user_of_uid uid in
+        Lwt.return (Some user)
+      with Failure _ -> Lwt.return None
+
+    let uid_of_activationkey act_key =
+      try_lwt
+        lwt uid = uid_of_activationkey act_key in
+        Lwt.return (Some uid)
+      with Failure _ -> Lwt.return None
+
+    let uid_of_email email =
+      try
+        lwt uid = uid_of_email email in
+        Lwt.return (Some uid)
+      with Failure _ -> Lwt.return None
+
+
+  end
 
 end
 

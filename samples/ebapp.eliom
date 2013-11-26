@@ -35,7 +35,9 @@ include Eba_main.App(struct
   module Database = Foobar_pgocaml
 end)
 
-include Foobar_pgocaml
+module User = struct
+  include Foobar_pgocaml.User
+end
 
 {client{
   module User = struct

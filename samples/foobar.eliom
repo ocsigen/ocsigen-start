@@ -44,57 +44,69 @@ let main_service_fallback uid gp pp exc =
 
 let main_service_handler uid gp pp =
   let open Ebapp.User in
-  let open Foobar_types.User in
-  let open Foobar_user in
   lwt user = Ebapp.User.user_of_uid uid in
-  let ext = Ebapp.User.ext_of_user user in
   lwt () =
     Ebapp.Groups.add_user
       ~group:Ebapp.Groups.admin
       ~userid:(Ebapp.User.uid_of_user user)
   in
   Lwt.return (Foobar_container.page ~user [
-    if (ext.fn = "" || ext.ln = "")
+    if (user.fn = "" || user.ln = "")
     then Foobar_view.information_form ()
     else (
       pcdata "welcome !";
     );
   ])
 
-let set_personal_data_handler' userid ()
+let set_personal_data_handler' uid ()
     (((firstname, lastname), (pwd, pwd2)) as pd) =
-  (* SECURITY: We get the userid from session cookie,
+  (* SECURITY: We get the uid from session cookie,
      and change personal data for this user. No other check. *)
   if firstname = "" || lastname = "" || pwd <> pwd2
   then
     (Ebapp.R.Error.push (`Wrong_personal_data pd);
      Lwt.return ())
   else (
-    lwt u = Ebapp.User.user_of_uid userid in
-    let open Eba_types.User in
-    let open Foobar_types.User in
-    let ext = {
-        fn = firstname;
-        ln = lastname;
-    } in
+    lwt user = Ebapp.User.user_of_uid uid in
+    let open Ebapp.User in
     let record = {
-      uid = userid;
-      ext = ext;
+      user with
+      fn = firstname;
+      ln = lastname;
     } in
     Ebapp.User.update ~password:pwd record)
 
+let generate_act_key
+    ?(act_key = Ocsigen_lib.make_cryptographic_safe_string ())
+    ?(send_email = true)
+    ~service
+    email =
+  let service =
+    Eliom_service.attach_coservice' ~fallback:service
+      ~service:Eba_services.activation_service
+  in
+  let act_key' = F.make_string_uri ~absolute:true ~service act_key in
+  print_endline act_key';
+  (if send_email then try
+       Ebapp.Email.send
+         ~to_addrs:[(email, "")]
+         ~subject:"creation"
+         [
+           "you activation key: "; act_key'; "do not reply";
+         ]
+     with _ -> ());
+  act_key
+
 let sign_up_handler' () email =
-  match_lwt Ebapp.User.uid_of_email email with
-    | None ->
-        let open Foobar_types.User in
-        lwt _ =
-          Ebapp.User.create ~service:Foobar_services.main_service ~email
-            {fn = ""; ln = ""}
-        in
-        Lwt.return ()
-    | Some _ ->
-        Ebapp.Rmsg.Error.push (`User_already_exists email);
-        Lwt.return ()
+  match_lwt Ebapp.User.Opt.uid_of_email email with
+  | None ->
+      let act_key = generate_act_key ~service:Foobar_services.main_service email in
+      lwt uid = Ebapp.User.new_user ~firstname:"" ~lastname:"" email in
+      lwt () = Ebapp.User.attach_activationkey ~act_key uid in
+      Lwt.return ()
+  | Some _ ->
+      Ebapp.Rmsg.Error.push (`User_already_exists email);
+      Lwt.return ()
 
 let forgot_password_handler () () =
   Lwt.return (Foobar_container.page [
@@ -109,13 +121,13 @@ let forgot_password_handler () () =
   ])
 
 let forgot_password_handler' () email =
-  match_lwt Ebapp.User.uid_of_email email with
+  match_lwt Ebapp.User.Opt.uid_of_email email with
     | None ->
         Ebapp.Rmsg.Error.push (`User_does_not_exist email);
         Lwt.return ()
     | Some uid ->
-        Ebapp.User.attach_activationkey
-          ~email ~service:Foobar_services.main_service uid
+        let act_key = generate_act_key ~service:Foobar_services.main_service email in
+        Ebapp.User.attach_activationkey ~act_key uid
 
 let about_handler () () =
   Lwt.return (Foobar_container.page [
@@ -141,7 +153,7 @@ let disconnect_handler () () =
 let connect_handler () (login, pwd) =
   (* SECURITY: no check here. *)
   lwt () = disconnect_handler () () in
-  match_lwt Ebapp.User.verify_password login pwd with
+  match_lwt Ebapp.User.Opt.verify_password login pwd with
     | Some uid -> Ebapp.Session.connect uid
     | None ->
         Ebapp.R.Error.push `Wrong_password;
@@ -153,7 +165,7 @@ let activation_handler akey () =
    * we're going to disconnect him even if the actionvation key
    * is outdated. *)
   lwt () = Ebapp.Session.disconnect () in
-  match_lwt User.uid_of_activationkey akey with
+  match_lwt Ebapp.User.Opt.uid_of_activationkey akey with
     | None ->
       (* Outdated activation key *)
       Ebapp.R.Error.push `Activation_key_outdated;
