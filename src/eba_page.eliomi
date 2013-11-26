@@ -12,6 +12,8 @@ class type config = object
 end
 
 module type T = sig
+  (** Module doc *)
+
   (** Generate a page visible for non-connected and connected user.
     * Use the [predicate] function if you have something to check
     * before the generation of the page. Note that, if you return

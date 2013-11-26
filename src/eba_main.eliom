@@ -25,7 +25,6 @@ end
 
 module App(M : ParamT) : sig
   module App : sig include Eliom_registration.ELIOM_APPL val app_name : string end
-  module User : Eba_user.T
   module Groups : Eba_groups.T
   module Session : Eba_session.T
   module Services : Eba_services.T
@@ -33,14 +32,13 @@ module App(M : ParamT) : sig
   module Page : Eba_page.T
   module Rmsg : Eba_rmsg.T
 
-  module U : Eba_user.T
   module G : Eba_groups.T
   module Ss : Eba_session.T
   module Sv : Eba_services.T
   module E : Eba_email.T
   module R : Eba_rmsg.T
   module P : Eba_page.T
-end with type User.t = M.Database.User.ext_t
+end
 =
 struct
   module App = struct
@@ -77,18 +75,9 @@ struct
     module Rmsg = Rmsg
   end)
 
-  module User = Eba_user.Make(
-  struct
-    include M.Database.User
-    module App = App
-    module Email = Email
-    module Rmsg = Rmsg
-  end)
-
   module Session = Eba_session.Make(
   struct
     module Groups = Groups
-    module User = User
 
     let config = M.session_config
   end)
@@ -103,13 +92,13 @@ struct
 
   module R = Rmsg
   module E = Email
-  module U = User
   module P = Page
   module St = State
   module Ss = Session
   module Sv = Services
   module G = Groups
 
+               (*
   let disconnect_handler () () =
     (* SECURITY: no check here because we disconnect the session cookie owner. *)
     lwt () = Session.disconnect () in
@@ -159,4 +148,5 @@ struct
     Eliom_registration.Any.register
       Eba_services.activation_service
       activation_handler;
+                *)
 end

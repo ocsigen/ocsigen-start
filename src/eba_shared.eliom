@@ -53,16 +53,23 @@
   module Session = struct
     exception Not_connected
 
-    let me : Eba_types.User.basic_t option ref = ref None
+    let userid : int64 option ref = ref None
 
-    let get_current_user_option () = !me
+    let set_current_userid uid =
+      userid := Some uid
 
-    let get_current_user_or_fail () =
-      match !me with
-        | Some a -> a
-        | None ->
-          Ojw_log.log "Not connected error in Eba_sessions";
-          raise Not_connected
+    let unset_current_userid () =
+      userid := None
+
+    let get_current_userid () =
+      match !userid with
+        | Some userid -> userid
+        | None -> raise Not_connected
+
+    module Opt = struct
+      let get_current_userid () =
+        !userid
+    end
   end
 }}
 

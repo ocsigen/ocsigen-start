@@ -39,43 +39,48 @@ end
 }}
 
 module type T = sig
-  val connect_wrapper_function :
+  val connect : int64 -> unit Lwt.t
+  val disconnect : unit -> unit Lwt.t
+
+  val connected_fun :
      ?allow:Eba_types.Groups.t list
   -> ?deny:Eba_types.Groups.t list
   -> (int64 -> 'a -> 'b -> 'c Lwt.t)
   -> 'a -> 'b
   -> 'c Lwt.t
 
-  val anonymous_wrapper_function :
-     ?allow:Eba_types.Groups.t list
-  -> ?deny:Eba_types.Groups.t list
-  -> (int64 option -> 'a -> 'b -> 'c Lwt.t)
-  -> 'a -> 'b
-  -> 'c Lwt.t
-
-  val connect_wrapper_rpc :
+  val connected_rpc :
      ?allow:Eba_types.Groups.t list
   -> ?deny:Eba_types.Groups.t list
   -> (int64 -> 'a -> 'b Lwt.t)
   -> 'a
   -> 'b Lwt.t
 
-  val anonymous_wrapper_rpc :
-     ?allow:Eba_types.Groups.t list
-  -> ?deny:Eba_types.Groups.t list
-  -> (int64 option -> 'a -> 'b Lwt.t)
-  -> 'a
-  -> 'b Lwt.t
+  val get_current_userid : unit -> int64
 
-  val connect : int64 -> unit Lwt.t
-  val disconnect : unit -> unit Lwt.t
+  module Opt : sig
+    val connected_fun :
+       ?allow:Eba_types.Groups.t list
+    -> ?deny:Eba_types.Groups.t list
+    -> (int64 option -> 'a -> 'b -> 'c Lwt.t)
+    -> 'a -> 'b
+    -> 'c Lwt.t
+
+    val connected_rpc :
+       ?allow:Eba_types.Groups.t list
+    -> ?deny:Eba_types.Groups.t list
+    -> (int64 option -> 'a -> 'b Lwt.t)
+    -> 'a
+    -> 'b Lwt.t
+
+    val get_current_userid : unit -> int64 option
+  end
 end
 
 module Make(M : sig
   val config : config
 
   module Groups : Eba_groups.T
-  module User : Eba_user.T
 end)
 =
 struct
@@ -83,7 +88,7 @@ struct
 
   exception Permission_denied
 
-  let me : Eba_types.User.basic_t option Eliom_reference.Volatile.eref =
+  let userid : int64 option Eliom_reference.Volatile.eref =
     (* This is a cache of current user *)
     Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope None
 
@@ -91,13 +96,10 @@ struct
      because the user is set at every request from the session cookie value.
      But do not trust a user sent by te client ...
   *)
-  let get_current_user_or_fail () =
-    match Eliom_reference.Volatile.get me with
+  let get_current_userid () =
+    match Eliom_reference.Volatile.get userid with
       | Some a -> a
       | None -> raise Eba_shared.Session.Not_connected
-
-  let get_current_user_option () =
-    Eliom_reference.Volatile.get me
 
   (*VVV!!! I am not happy with these 2 functions set_user.
     If we forget to call them, the user will be wrong.
@@ -114,19 +116,20 @@ struct
 
   *)
   let set_user_server uid =
-    lwt u = M.User.basic_user_of_uid uid in
-    Eliom_reference.Volatile.set me (Some u);
+    Eliom_reference.Volatile.set userid (Some uid);
     Lwt.return ()
 
   let unset_user_server () =
-    Eliom_reference.Volatile.set me None
+    Eliom_reference.Volatile.set userid None
 
   let set_user_client () =
-    let u = Eliom_reference.Volatile.get me in
-    ignore {unit{ Eba_shared.Session.me := %u }}
+    match Eliom_reference.Volatile.get userid with
+      | None -> () (* Should never happen *)
+      | Some userid ->
+          ignore {unit{ Eba_shared.Session.set_current_userid %userid }}
 
   let unset_user_client () =
-    ignore {unit{ Eba_shared.Session.me := None }}
+    ignore {unit{ Eba_shared.Session.unset_current_userid () }}
 
   let start_connected_process () =
     let () = set_user_client () in
@@ -161,10 +164,8 @@ struct
     start_connected_process ()
 
   let connect userid =
-    try_lwt
-      lwt () = set_user_server userid in
-      connect_string (Int64.to_string userid)
-    with Eba_user.No_such_user -> M.config#on_close_session
+    lwt () = set_user_server userid in
+    connect_string (Int64.to_string userid)
 
   let disconnect () =
     unset_user_client (); (*VVV!!! will affect only current tab!! *)
@@ -206,92 +207,90 @@ struct
       and also [on_start_connected_process] if connected.
   *)
   let gen_wrapper ~allow ~deny connected not_connected gp pp =
-    try_lwt
-      let new_process = Eliom_request_info.get_sp_client_appl_name () = None in
-      let uids = Eliom_state.get_volatile_data_session_group () in
-      let get_uid uid =
-        try
-          match uid with
-             | None -> None
-             | Some u -> Some (Int64.of_string u)
-        with Failure _ -> None
-      in
-      lwt uid = match get_uid uids with
-        | None ->
-          lwt uids = Eliom_state.get_persistent_data_session_group () in
-          (match get_uid uids  with
-            | Some uid ->
-              (* A persistent session exists, but the volatile session has gone.
-                 It may be due to a timeout or may be the server has been
-                 relaunched.
-                 We restart the volatile session silently
-                 (comme si de rien n'était, pom pom pom). *)
-              lwt () = set_user_server uid in
-              (* We record the user info on server side
-                 as a request reference.
-                 As it is computed from the session cookie,
-                 it is safe on server side. *)
-              lwt () = connect_volatile (Int64.to_string uid) in
-              Lwt.return (Some uid)
-            | None -> Lwt.return None)
-        | Some uid ->
-          lwt () = set_user_server uid in
-          Lwt.return (Some uid)
-      in
-      lwt () =
-        if new_process
-        then begin
-          (* client side process:
-             Now we want to do some computation only when we start a
-             client side process. *)
-          lwt () = M.config#on_start_process in
-          match uid with
-            | None -> Lwt.return ()
-            | Some id -> (* new client process, but already connected *)
-              start_connected_process ()
-        end
-        else Lwt.return ()
-      in
-      match uid with
-        | None ->
-          if allow = None
-          then not_connected gp pp
-          else Lwt.fail Permission_denied
-        | Some id ->
-          lwt () = check_allow_deny id allow deny in
-          connected id gp pp
-    with Eba_user.No_such_user ->
-      lwt () = M.config#on_close_session in
-      not_connected gp pp
+    let new_process = Eliom_request_info.get_sp_client_appl_name () = None in
+    let uids = Eliom_state.get_volatile_data_session_group () in
+    let get_uid uid =
+      try
+        match uid with
+          | None -> None
+          | Some u -> Some (Int64.of_string u)
+      with Failure _ -> None
+    in
+    lwt uid = match get_uid uids with
+      | None ->
+        lwt uids = Eliom_state.get_persistent_data_session_group () in
+        (match get_uid uids  with
+          | Some uid ->
+            (* A persistent session exists, but the volatile session has gone.
+               It may be due to a timeout or may be the server has been
+               relaunched.
+               We restart the volatile session silently
+               (comme si de rien n'était, pom pom pom). *)
+            lwt () = set_user_server uid in
+            (* We record the user info on server side
+               as a request reference.
+               As it is computed from the session cookie,
+               it is safe on server side. *)
+            lwt () = connect_volatile (Int64.to_string uid) in
+            Lwt.return (Some uid)
+          | None -> Lwt.return None)
+      | Some uid ->
+        lwt () = set_user_server uid in
+        Lwt.return (Some uid)
+    in
+    lwt () =
+      if new_process
+      then begin
+        (* client side process:
+           Now we want to do some computation only when we start a
+           client side process. *)
+        lwt () = M.config#on_start_process in
+        match uid with
+          | None -> Lwt.return ()
+          | Some id -> (* new client process, but already connected *)
+            start_connected_process ()
+      end
+      else Lwt.return ()
+    in
+    match uid with
+      | None ->
+        if allow = None
+        then not_connected gp pp
+        else Lwt.fail Permission_denied
+      | Some id ->
+        lwt () = check_allow_deny id allow deny in
+        connected id gp pp
 
-  (* connect_wrapper_action checks user connection
-     and fails if not connected. *)
-  let connect_wrapper_function ?allow ?deny f gp pp =
+  let connected_fun ?allow ?deny f gp pp =
     gen_wrapper
       ~allow ~deny
       f
       (fun _ _ -> Lwt.fail Eba_shared.Session.Not_connected)
       gp pp
 
-  let anonymous_wrapper_function ?allow ?deny f gp pp =
-    gen_wrapper
-      ~allow ~deny
-      (fun userid gp pp -> f (Some userid) gp pp)
-      (fun gp pp -> f None gp pp)
-      gp pp
-
-  let connect_wrapper_rpc ?allow ?deny f pp =
+  let connected_rpc ?allow ?deny f pp =
     gen_wrapper
       ~allow ~deny
       (fun userid _ p -> f userid p)
       (fun _ _ -> Lwt.fail Eba_shared.Session.Not_connected)
       () pp
 
-  let anonymous_wrapper_rpc ?allow ?deny f pp =
-    gen_wrapper
-      ~allow ~deny
-      (fun userid _ p -> f (Some userid) p)
-      (fun _ p -> f None p)
-      () pp
+  module Opt = struct
+    let connected_fun ?allow ?deny f gp pp =
+      gen_wrapper
+        ~allow ~deny
+        (fun userid gp pp -> f (Some userid) gp pp)
+        (fun gp pp -> f None gp pp)
+        gp pp
 
+    let connected_rpc ?allow ?deny f pp =
+      gen_wrapper
+        ~allow ~deny
+        (fun userid _ p -> f (Some userid) p)
+        (fun _ p -> f None p)
+        () pp
+
+    let get_current_userid () =
+      Eliom_reference.Volatile.get userid
+  end
 end

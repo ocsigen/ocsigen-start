@@ -1,10 +1,5 @@
 {shared{
-  open Eliom_content.Html5
-  open Eliom_content.Html5.F
-}}
-
-{shared{
-  module Groups = struct
+  module Groups : sig
     type t = {
       id : int64;
       name : string;

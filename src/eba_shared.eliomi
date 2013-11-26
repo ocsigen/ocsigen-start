@@ -26,9 +26,12 @@
   module Session : sig
     exception Not_connected
 
-    val me : Eba_types.User.basic_t option ref
-    val get_current_user_option : unit -> Eba_types.User.basic_t option
-    val get_current_user_or_fail : unit -> Eba_types.User.basic_t
+    val set_current_userid : int64 -> unit
+    val get_current_userid : unit -> int64
+    val unset_current_userid : unit -> unit
+    module Opt : sig
+      val get_current_userid : unit -> int64 option
+    end
   end
 }}
 
