@@ -1,0 +1,14 @@
+ul.ew_dropdown {
+  border: solid 1px #ece;
+  position: absolute;
+  list-style-type: none;
+  -webkit-margin-before: 0px;
+  -webkit-margin-after: 0px;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+  -webkit-padding-start: 0px;
+}
+
+ul.ew_dropdown li.ew_active {
+    background-color: #ccc;
+}

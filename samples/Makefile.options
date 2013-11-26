@@ -1,22 +1,18 @@
-
 #----------------------------------------------------------------------
-#           SETTINGS FOR THE ELIOM PROJECT myproject
+#           SETTINGS FOR THE ELIOM PROJECT foobar
 #----------------------------------------------------------------------
 
 PROJECT_NAME := foobar
-
-PGDATABASE := ol
-export PGDATABASE
 
 # Source files for the server
 SERVER_FILES := $(wildcard *.eliomi *.eliom *.ml)
 # Source files for the client
 CLIENT_FILES := $(wildcard *.eliomi *.eliom)
 
+# OCamlfind packages for the server (for modules which defines services)
+SERVER_ELIOM_PACKAGES := eliom-base-app.server
 # OCamlfind packages for the server
-
-SERVER_PACKAGES := eliom-base-app.server
-
+SERVER_PACKAGES := macaque.syntax pgocaml.syntax
 # OCamlfind packages for the client
 CLIENT_PACKAGES := eliom-base-app.client
 
@@ -28,7 +24,7 @@ PERSISTENT_DATA_BACKEND = dbm
 
 # Debug application (yes/no): Debugging info in compilation,
 # JavaScript, ocsigenserver
-DEBUG := yes
+DEBUG := no
 
 # User to run server with (make run.*)
 WWWUSER := www-data
@@ -59,6 +55,6 @@ LOGDIR := var/log/${PROJECT_NAME}
 # Ocsigenserver's persistent data files
 DATADIR := var/data/${PROJECT_NAME}
 # Copy of $(LOCAL_STATIC)
-STATICDIR := var/www/${PROJECT_NAME}
+STATICDIR := var/www/${PROJECT_NAME}/static
 # Project's JavaScript file
-ELIOMSTATICDIR := var/www/${PROJECT_NAME}/js
+ELIOMSTATICDIR := var/www/${PROJECT_NAME}/eliom

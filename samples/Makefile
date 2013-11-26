@@ -8,6 +8,7 @@
 
 include Makefile.options
 
+
 ##----------------------------------------------------------------------
 ##			      Internals
 
@@ -31,7 +32,7 @@ DEPSDIR := _deps
 
 ifeq ($(DEBUG),yes)
   GENERATE_DEBUG ?= -g
-  RUN_DEBUG ?= ""
+  RUN_DEBUG ?= "-v"
   DEBUG_JS ?= -jsopt -pretty -jsopt -noinline -jsopt -debuginfo
 endif
 
@@ -39,16 +40,25 @@ endif
 ## General
 
 .PHONY: all byte opt
-all: byte locals
-#all: byte opt
-
+all: byte opt
 byte opt:: $(TEST_PREFIX)$(ELIOMSTATICDIR)/${PROJECT_NAME}.js
-byte opt:: #$(TEST_PREFIX)$(ETCDIR)/$(PROJECT_NAME).conf
-byte opt:: #$(TEST_PREFIX)$(ETCDIR)/$(PROJECT_NAME)-test.conf
+byte opt:: $(TEST_PREFIX)$(ETCDIR)/$(PROJECT_NAME).conf
+byte opt:: $(TEST_PREFIX)$(ETCDIR)/$(PROJECT_NAME)-test.conf
 byte:: $(TEST_PREFIX)$(LIBDIR)/${PROJECT_NAME}.cma
 opt:: $(TEST_PREFIX)$(LIBDIR)/${PROJECT_NAME}.cmxs
 
 DIST_DIRS = $(ETCDIR) $(DATADIR) $(LIBDIR) $(LOGDIR) $(STATICDIR) $(ELIOMSTATICDIR) $(shell dirname $(CMDPIPE))
+
+##----------------------------------------------------------------------
+## The following part has been generated with EBA template.
+## This will overload the default the required binaries
+
+## DO NOT MOVE IT ON TOP OF THE `all` RULE!
+  
+include Makefile.local
+
+## end of `include Makefile.local`
+##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
 ## Testing
@@ -63,6 +73,14 @@ test.opt: $(addprefix $(TEST_PREFIX),$(ETCDIR)/$(PROJECT_NAME)-test.conf $(DIST_
 
 $(addprefix $(TEST_PREFIX), $(DIST_DIRS)):
 	mkdir -p $@
+
+##----------------------------------------------------------------------
+## Assets
+
+#$(warning\
+#	$(foreach pkg,$(SERVER_PACKAGES) $(SERVER_ELIOM_PACKAGES),\
+#	$(shell find $(shell ocamlfind query $(pkg))/css ))\
+#	)
 
 ##----------------------------------------------------------------------
 ## Installing & Running
@@ -115,6 +133,7 @@ depsort=$(call objs,$(1),$(2),$(call eliomdep,$(3),$(4),$(5)))
 ##----------------------------------------------------------------------
 ## Config files
 
+ELIOM_MODULES=$(patsubst %,\<eliommodule\ findlib-package=\"%\"\ /\>,$(SERVER_ELIOM_PACKAGES))
 FINDLIB_PACKAGES=$(patsubst %,\<extension\ findlib-package=\"%\"\ /\>,$(SERVER_PACKAGES))
 EDIT_WARNING=DON\'T EDIT THIS FILE! It is generated from $(PROJECT_NAME).conf.in, edit that one, or the variables in Makefile.options
 SED_ARGS := -e "/^ *%%%/d"
@@ -128,6 +147,7 @@ SED_ARGS += -e "s|%%PERSISTENT_DATA_BACKEND%%|$(PERSISTENT_DATA_BACKEND)|g"
 SED_ARGS += -e "s|%%LIBDIR%%|%%PREFIX%%$(LIBDIR)|g"
 SED_ARGS += -e "s|%%WARNING%%|$(EDIT_WARNING)|g"
 SED_ARGS += -e "s|%%PACKAGES%%|$(FINDLIB_PACKAGES)|g"
+SED_ARGS += -e "s|%%ELIOM_MODULES%%|$(ELIOM_MODULES)|g"
 SED_ARGS += -e "s|%%ELIOMSTATICDIR%%|%%PREFIX%%$(ELIOMSTATICDIR)|g"
 ifeq ($(DEBUG),yes)
   SED_ARGS += -e "s|%%DEBUGMODE%%|\<debugmode /\>|g"
@@ -146,18 +166,15 @@ else
   GLOBAL_SED_ARGS += -e "s|%%USERGROUP%%|<user>$(WWWUSER)</user><group>$(WWWGROUP)</group>|g"
 endif
 
-# $(TEST_PREFIX)${ETCDIR}/${PROJECT_NAME}.conf: ${PROJECT_NAME}.conf.in Makefile.options | $(TEST_PREFIX)$(ETCDIR)
-# 	sed $(SED_ARGS) $(GLOBAL_SED_ARGS) $< | sed -e "s|%%PREFIX%%|$(PREFIX)|g" > $@
-# $(TEST_PREFIX)${ETCDIR}/${PROJECT_NAME}-test.conf: ${PROJECT_NAME}.conf.in Makefile.options | $(TEST_PREFIX)$(ETCDIR)
-# 	sed $(SED_ARGS) $(LOCAL_SED_ARGS) $< | sed -e "s|%%PREFIX%%|$(TEST_PREFIX)|g" > $@
-$(TEST_PREFIX)${ETCDIR}/${PROJECT_NAME}-test.conf: $(PROJECT_NAME).conf
-	mkdir -p $(TEST_PREFIX)$(ETCDIR)
-	cp $< $@
+$(TEST_PREFIX)${ETCDIR}/${PROJECT_NAME}.conf: ${PROJECT_NAME}.conf.in Makefile.options | $(TEST_PREFIX)$(ETCDIR)
+	sed $(SED_ARGS) $(GLOBAL_SED_ARGS) $< | sed -e "s|%%PREFIX%%|$(PREFIX)|g" > $@
+$(TEST_PREFIX)${ETCDIR}/${PROJECT_NAME}-test.conf: ${PROJECT_NAME}.conf.in Makefile.options | $(TEST_PREFIX)$(ETCDIR)
+	sed $(SED_ARGS) $(LOCAL_SED_ARGS) $< | sed -e "s|%%PREFIX%%|$(TEST_PREFIX)|g" > $@
 
 ##----------------------------------------------------------------------
 ## Server side compilation
 
-SERVER_INC  := ${addprefix -package ,${SERVER_PACKAGES}}
+SERVER_INC  := ${addprefix -package ,${SERVER_PACKAGES} ${SERVER_ELIOM_PACKAGES}}
 
 ${ELIOM_TYPE_DIR}/%.type_mli: %.eliom
 	${ELIOMC} -infer ${SERVER_INC} $<
@@ -180,13 +197,12 @@ ${ELIOM_SERVER_DIR}/%.cmi: %.eliomi
 	${ELIOMC} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%.cmo: %.ml
-	PGDATABASE=$(PGDATABASE) ${ELIOMC} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
+	${ELIOMC} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmo: %.eliom
 	${ELIOMC} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
-
 ${ELIOM_SERVER_DIR}/%.cmx: %.ml
-	PGDATABASE=$(PGDATABASE) ${ELIOMOPT} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
+	${ELIOMOPT} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmx: %.eliom
 	${ELIOMOPT} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
@@ -244,5 +260,3 @@ clean:
 
 distclean: clean
 	-rm -rf $(TEST_PREFIX) $(DEPSDIR) .depend
-
-include Makefile.local

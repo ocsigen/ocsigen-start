@@ -3,267 +3,211 @@
   open Eliom_content.Html5.F
 }}
 
-(* The following codes could be use as a distillery's template. It defines
- * a basic user interface using EBA.
- *
- * Many parts could be modify to make your website more personnal. Feel free
- * to remove or add code into these ones.
- * *)
-
-let print_user_box u =
-  let print_user_avatar u =
-    let uavatar =
-      D.div ~a:[a_class ["eba_upload_pic"]]
-        [pcdata "Upload picture"]
-    in
-    Ebapp.View.Image.start_crop_on_clicking_on uavatar u;
-    uavatar
-    (*
-    D.img
-      ~a:[a_class ["eba_avatar_button"]]
-      ~alt:(Ebapp.U.firstname_of_user u)
-      ~src:(Ebapp.U.make_avatar_uri (Ebapp.U.avatar_of_user u))
-      ()
-     *)
-  in
-  let print_user_name u =
-    D.span ~a:[a_class ["eba_username"]] [pcdata (Ebapp.U.fullname_of_user u)]
-  in
-  let print_user_settings u =
-    let but =
-      D.span ~a:[a_class ["eba_settings_button"]]
-        [i ~a:[a_class ["icon-gear";"icon-large"]] []]
-    in
-    let password_form = Ebapp.Default.password_form () in
-    ignore {unit{
-      Eba_view.H.box_on_click ~set:Eba_view.global_set (%but)
-        (fun () ->
-           let log_but =
-             D.span ~a:[a_class ["eba_logout_button"]]
-               [i ~a:[a_class ["icon-signout"]] []]
-           in
-           Eba_view.H.on_click (log_but)
-             (fun () ->
-                Eliom_client.change_page %Ebapp.Sv.logout_service () ());
-           Lwt.return [
-             log_but;
-             %password_form;
-             F.a ~service:%Ebapp.Sv.admin_service [pcdata "admin page"] ();
-           ])
-    }};
-    but
-  in
-  D.div ~a:[a_class ["eba_user_box"]]
-    [
-      print_user_avatar u;
-      print_user_name u;
-      print_user_settings u;
-    ]
-
-{client{
-  let display_error cont msg f =
-    let msg = To_dom.of_p (p ~a:[a_class ["eba_error"]] [pcdata msg]) in
-      ignore (f ());
-      Dom.appendChild cont msg;
-      ignore
-        (lwt () = Lwt_js.sleep 2. in Dom.removeChild cont msg; Lwt.return ())
-}}
-
-let disconnected_home_page () =
-  let id = "eba_login_signup_box" in
-  lwt state = Ebapp.St.get_website_state () in
-  if Ebapp.Rmsg.Notice.has ((=) `Activation_key_created)
-  then
-    Lwt.return
-      (D.div ~a:[a_id id]
-         [p [pcdata "An email has been sent to this address.";
-             br();
-             pcdata "Click on the link it contains to log in."]])
-  else if Ebapp.Rmsg.Notice.has ((=) `Preregistered)
-  then
-    Lwt.return
-      (D.div ~a:[a_id id]
-         [p [pcdata "Your e-mail has been pre-registered.";
-             br();
-             pcdata "We will send you an e-mail when your account will be activated."]])
-  else
-    let set = {(Ew_button.radio_set_t){
-      Ew_button.new_radio_set ()
-    }} in
-    let button1 = D.h2 [pcdata "Login"] in
-    let form1, i1 = Ebapp.Default.login_form_with_input () in
-    let o1 = {(Ew_button.show_hide_t){
-      new Ew_button.show_hide
-        ~pressed:true
-        ~set:%set ~button:%button1
-        ~closeable_by_button:false
-        %form1
-    }}
-    in
-    let button2 = D.h2 [pcdata "Lost password"] in
-    let form2, i2 = Ebapp.Default.lost_password_form_with_input () in
-    let o2 = {(Ew_button.show_hide_t){
-      new Ew_button.show_hide
-        ~set:%set ~button:%button2
-        ~closeable_by_button:false
-        %form2
-    }}
-    in
-    let button3 = D.h2 [pcdata "Preregister"] in
-    let form3, i3 =
-      Ebapp.Default.generic_email_form_with_input
-        ~service:Ebapp.Sv.preregister_service
-        "Enter your e-mail to be preregistered on our website !"
-    in
-    let o3 = {(Ew_button.show_hide_t){
-      new Ew_button.show_hide
-        ~set:%set ~button:%button3
-        ~closeable_by_button:false
-        %form3
-    }}
-    in
-    let button4 = D.h2 [pcdata "Register"] in
-    let form4, i4 = Ebapp.Default.sign_up_form_with_input () in
-    let o4 = {(Ew_button.show_hide_t){
-      new Ew_button.show_hide
-        ~set:%set ~button:%button4
-        ~closeable_by_button:false
-        %form4
-    }} in
-    let press but cont msg =
-      ignore {unit{
-        display_error (To_dom.of_element %cont) %msg (fun () -> %but#press)
-      }};
-      Lwt.return ()
-    in
-    (* here we will return the div correponding to the current
-     * website state, and also a function to handle specific
-     * flash messages *)
-    let d, handle_rmsg =
-      match state with
-        | `Restricted ->
-        (*| (Ebapp.State.restricted_state) ->*)
-           (D.div ~a:[a_id id]
-                          [button1; button3; button2; form1; form3; form2]),
-           (* this function will handle only flash message error associated
-            * to this website mode *)
-           (fun d rmsg ->
-              match rmsg with
-                (* Login error *)
-                | `Wrong_password ->
-                    (press o1 d "Wrong password")
-                (* Preregister error *)
-                | `User_already_exists _
-                | `User_already_preregistered _ ->
-                    (press o3 d "This email is not available")
-                | `Activation_key_outdated ->
-                    (press o2 d "Invalid activation key, ask for a new one.")
-                | _ ->
-                    (* default case: SHOULD NEVER HAPPEN !*)
-                    (press o1 d "Something went wrong"))
-        | `Normal ->
-           (D.div ~a:[a_id id]
-                          [button1; button2; button4; form1; form2; form4]),
-           (* this function will handle only flash message error associated
-            * to this website mode *)
-           (fun d rmsg ->
-              print_endline "rmsg";
-              match rmsg with
-                (* Login error *)
-                | `Wrong_password ->
-                    (press o1 d "Wrong password")
-                (* Register error *)
-                | `User_already_exists _ ->
-                    (press o4 d "This user already exists")
-                (* Lost password error *)
-                | `User_does_not_exist _ ->
-                    (press o2 d "This user does not exist")
-                | `Activation_key_outdated ->
-                    (press o2 d "Invalid activation key, ask for a new one.")
-                | _ ->
-                    (* default case: SHOULD NEVER HAPPEN !*)
-                    (press o1 d "Something went wrong"))
-    in
-    (* handle_rmsg : currify *)
-    lwt () = (Ebapp.R.Error.iter (handle_rmsg d)) in
-    Lwt.return d
-
-let connected_welcome_box () =
-  lwt info, ((fn,ln),(p1,p2)) =
-    try
-      let wpd =
-        Ebapp.R.Error.get
-          (function
-             | `Wrong_personal_data wpd -> Some wpd
-             | _ -> None)
-      in
-      Lwt.return (p [pcdata "Wrong data. Please fix."], wpd)
-    with Not_found ->
-      Lwt.return
-        (p [
-          pcdata "Your personal information has not been set yet.";
-          br ();
-          pcdata "Please take time to enter your name and to set a password."
-        ], (("", ""), ("", "")))
-  in
-  Lwt.return
-    (div ~a:[a_id "eba_welcome_box"]
-       [
-         h2 [pcdata ("Welcome to "^Ebapp.App.app_name)];
-         info;
-         Ebapp.Default.personal_info_form
-           ~firstname:fn ~lastname:ln
-           ~password1:p1 ~password2:p2
-           ()
-       ])
-
-let main_service_handler uid () () =
-  lwt user = Ebapp.User.user_of_uid uid in
-  let title =
-    Eliom_content.Html5.Id.create_global_elt
-      (D.h1 [
-        a ~service:Eba_services.main_service
-          [pcdata Ebapp.App.app_name] ()
-      ])
-  in
-  lwt page_content =
-    if Ebapp.U.is_new user
-    then
-      (lwt wb = connected_welcome_box () in
-       Lwt.return
-         [
-           wb;
-         ])
-    else Lwt.return []
-  in
-  lwt st = Ebapp.St.get_website_state () in
-  let st = Ebapp.St.name_of_state st in
-  let navbar =
-    D.div ~a:[a_class ["eba_navbar"]]
-      [
-        title;
-        D.div ~a:[a_class ["eba_navbar_inner"]]
-          [
-            p [pcdata st]
+let main_service_fallback uid gp pp exc =
+  if (Int64.to_int uid) = -1
+  then (* not connected *)
+    (** The following correspond to the home page on when disconnected. *)
+    Lwt.return (Foobar_container.page [
+        div ~a:[a_id "foobar-forms"] [
+          div ~a:[a_class ["left-bar"]] [
+            b [
+              pcdata "Sign in:";
+            ];
+            hr ();
+            p [
+              pcdata "You can sign in if you have already an account:";
+            ];
+            Foobar_view.connect_form ();
+            a ~service:Foobar_services.forgot_password_service [
+              pcdata "Forgot your password?";
+            ] ();
           ];
-        print_user_box user
-      ]
-  in
-  Lwt.return
-    (navbar::page_content)
+          p [
+            b [pcdata "OR";]
+          ];
+          div ~a:[a_class ["left-bar"]] [
+            b [
+              pcdata "Sign up:";
+            ];
+            hr ();
+            p [
+              pcdata "Just sign up to our awesome application!";
+            ];
+            Foobar_view.sign_up_form ();
+          ];
+        ];
+        div ~a:[a_class ["clear"]] [];
+    ])
+  else (* connected *)
+    Lwt.return (Foobar_container.page [
+    ])
 
-let _ =
-  let fallback gp pp =
-    lwt lb = disconnected_home_page () in
-    (*let lb = Ebapp.V.Form.login_form () in*)
-    Lwt.return
-      [
-        D.div ~a:[a_class ["eba_welcomepage"]]
-          [
-            lb
-          ]
-      ]
+let main_service_handler uid gp pp =
+  let open Ebapp.User in
+  let open Foobar_types.User in
+  let open Foobar_user in
+  lwt user = Ebapp.User.user_of_uid uid in
+  let ext = Ebapp.User.ext_of_user user in
+  lwt () =
+    Ebapp.Groups.add_user
+      ~group:Ebapp.Groups.admin
+      ~userid:(Ebapp.User.uid_of_user user)
   in
+  Lwt.return (Foobar_container.page ~user [
+    if (ext.fn = "" || ext.ln = "")
+    then Foobar_view.information_form ()
+    else (
+      pcdata "welcome !";
+    );
+  ])
+
+let set_personal_data_handler' userid ()
+    (((firstname, lastname), (pwd, pwd2)) as pd) =
+  (* SECURITY: We get the userid from session cookie,
+     and change personal data for this user. No other check. *)
+  if firstname = "" || lastname = "" || pwd <> pwd2
+  then
+    (Ebapp.R.Error.push (`Wrong_personal_data pd);
+     Lwt.return ())
+  else (
+    lwt u = Ebapp.User.user_of_uid userid in
+    let open Eba_types.User in
+    let open Foobar_types.User in
+    let ext = {
+        fn = firstname;
+        ln = lastname;
+    } in
+    let record = {
+      uid = userid;
+      ext = ext;
+    } in
+    Ebapp.User.update ~password:pwd record)
+
+let sign_up_handler' () email =
+  match_lwt Ebapp.User.uid_of_email email with
+    | None ->
+        let open Foobar_types.User in
+        lwt _ =
+          Ebapp.User.create ~service:Foobar_services.main_service ~email
+            {fn = ""; ln = ""}
+        in
+        Lwt.return ()
+    | Some _ ->
+        Ebapp.Rmsg.Error.push (`User_already_exists email);
+        Lwt.return ()
+
+let forgot_password_handler () () =
+  Lwt.return (Foobar_container.page [
+    div ~a:[a_id "foobar-forms"] [
+      div ~a:[a_class ["left-bar"]] [
+        p [
+          pcdata "Enter your email to get an activation link to access to your account!";
+        ];
+        Foobar_view.forgot_password_form ();
+      ];
+    ]
+  ])
+
+let forgot_password_handler' () email =
+  match_lwt Ebapp.User.uid_of_email email with
+    | None ->
+        Ebapp.Rmsg.Error.push (`User_does_not_exist email);
+        Lwt.return ()
+    | Some uid ->
+        Ebapp.User.attach_activationkey
+          ~email ~service:Foobar_services.main_service uid
+
+let about_handler () () =
+  Lwt.return (Foobar_container.page [
+    div [
+      p [
+        pcdata "This template provides you a skeleton for an ocsigen application.";
+      ];
+      hr ();
+      p [
+        pcdata "Feel free to modify the code.";
+      ];
+    ]
+  ])
+
+let disconnect_handler () () =
+  (* SECURITY: no check here because we disconnect the session cookie owner. *)
+  lwt () = Ebapp.Session.disconnect () in
+  lwt () = Eliom_state.discard ~scope:Eliom_common.default_session_scope () in
+  lwt () = Eliom_state.discard ~scope:Eliom_common.default_process_scope () in
+  lwt () = Eliom_state.discard ~scope:Eliom_common.request_scope () in
+  Lwt.return ()
+
+let connect_handler () (login, pwd) =
+  (* SECURITY: no check here. *)
+  lwt () = disconnect_handler () () in
+  match_lwt Ebapp.User.verify_password login pwd with
+    | Some uid -> Ebapp.Session.connect uid
+    | None ->
+        Ebapp.R.Error.push `Wrong_password;
+        Lwt.return ()
+
+let activation_handler akey () =
+  (* SECURITY: we disconnect the user before doing anything
+   * moreover in this case, if the user is already disconnect
+   * we're going to disconnect him even if the actionvation key
+   * is outdated. *)
+  lwt () = Ebapp.Session.disconnect () in
+  match_lwt User.uid_of_activationkey akey with
+    | None ->
+      (* Outdated activation key *)
+      Ebapp.R.Error.push `Activation_key_outdated;
+      Eliom_registration.Action.send ()
+    | Some uid ->
+      lwt () = Ebapp.Session.connect uid in
+      Eliom_registration.Redirection.send Eliom_service.void_coservice'
+
+          (*
+let admin_service_handler uid gp pp =
+  lwt user = Ebapp.User.user_of_uid uid in
+  (*lwt cnt = Ebapp.Admin.admin_page_content user in*)
+  Lwt.return (Foobar_container.page [
+  ] (*@ cnt*) )
+           *)
+
+let () =
   Ebapp.App.register
-    (Ebapp.Sv.main_service)
-    (Ebapp.P.connected_page ~fallback main_service_handler)
+    (Foobar_services.main_service)
+    (Ebapp.Page.connected_page
+       ~fallback:main_service_fallback
+       main_service_handler);
+
+  Ebapp.App.register
+    (Foobar_services.forgot_password_service)
+    (Ebapp.Page.page
+       forgot_password_handler);
+
+  Ebapp.App.register
+    (Foobar_services.about_service)
+    (Ebapp.Page.page
+       about_handler);
+
+  Eliom_registration.Action.register
+    (Foobar_services.set_personal_data_service')
+    (Ebapp.Session.connected_fun
+       set_personal_data_handler');
+
+  Eliom_registration.Action.register
+    (Foobar_services.forgot_password_service')
+    (forgot_password_handler');
+
+  Eliom_registration.Action.register
+    (Foobar_services.sign_up_service')
+    (sign_up_handler');
+
+  Eliom_registration.Action.register
+    (Eba_services.connect_service)
+    (connect_handler);
+
+  Eliom_registration.Action.register
+    (Eba_services.disconnect_service)
+    (disconnect_handler);
+
+  Eliom_registration.Any.register
+    (Eba_services.activation_service)
+    (activation_handler)
