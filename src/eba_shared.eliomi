@@ -1,10 +1,5 @@
 {shared{
-  module type TUser = sig
-    val uid_of_user : 'a Eba_types.User.ext_t -> int64
-    val ext_of_user : 'a Eba_types.User.ext_t -> 'a
-  end
-
-  module type TGroups = sig
+  module Groups : sig
     type t = Eba_types.Groups.t
 
     val id_of_group : t -> int64
@@ -12,8 +7,6 @@
     val desc_of_group : t -> string option
   end
 
-  module User : TUser
-  module Groups : TGroups
 }}
 
 {server{
