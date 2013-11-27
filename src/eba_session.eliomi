@@ -6,6 +6,9 @@
 }}
 
 class type config = object
+  method on_request : unit Lwt.t
+  method on_denied_request : int64 -> unit Lwt.t
+  method on_connected_request : int64 -> unit Lwt.t
   method on_open_session : unit Lwt.t
   method on_close_session : unit Lwt.t
   method on_start_process : unit Lwt.t

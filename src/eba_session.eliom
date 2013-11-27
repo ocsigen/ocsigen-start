@@ -6,6 +6,9 @@
 }}
 
 class type config = object
+  method on_request : unit Lwt.t
+  method on_denied_request : int64 -> unit Lwt.t
+  method on_connected_request : int64 -> unit Lwt.t
   method on_open_session : unit Lwt.t
   method on_close_session : unit Lwt.t
   method on_start_process : unit Lwt.t
@@ -190,7 +193,11 @@ struct
             lwt b2 = M.Groups.in_group ~userid ~group in
             Lwt.return (b && (not b2))) b l
     in
-    if b then Lwt.return () else Lwt.fail Permission_denied
+    if b then Lwt.return ()
+    else begin
+      M.config#on_denied_request userid;
+      Lwt.fail Permission_denied
+    end
 
 
   (** The connection wrapper checks whether the user is connected,
@@ -252,6 +259,7 @@ struct
       end
       else Lwt.return ()
     in
+    lwt () = M.config#on_request in
     match uid with
       | None ->
         if allow = None
@@ -259,6 +267,7 @@ struct
         else Lwt.fail Permission_denied
       | Some id ->
         lwt () = check_allow_deny id allow deny in
+        lwt () = M.config#on_connected_request id in
         connected id gp pp
 
   let connected_fun ?allow ?deny f gp pp =
