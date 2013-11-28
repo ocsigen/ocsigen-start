@@ -15,9 +15,4 @@ module type T = sig
              -> unit
 end
 
-module Make : functor (M :
-sig
-  val config : config
-
-  module Rmsg : Eba_rmsg.T
-end) -> T
+module Make(M : sig val config : config end) : T

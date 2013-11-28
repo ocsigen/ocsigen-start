@@ -1,14 +1,33 @@
-(* Copyright Vincent Balat, Charly Chevalier *)
+module type T = sig
+  module Make : functor
+    (M : sig
+       type key_t
+       type value_t
 
-module type In = sig
+       val compare : key_t -> key_t -> int
+       val get : key_t -> value_t Lwt.t
+     end) -> sig
+    type key_t
+    type value_t
+
+    val has : key_t -> bool
+    val set : key_t -> value_t -> unit
+
+    val reset : key_t -> unit
+    val get : key_t -> value_t Lwt.t
+    val wrap_function : key_t -> (unit -> 'a Lwt.t) -> 'a Lwt.t
+  end
+end
+
+module Make(M : sig
   type key_t
   type value_t
 
   val compare : key_t -> key_t -> int
   val get : key_t -> value_t Lwt.t
-end
-
-module Make(M : In) = struct
+end) = struct
+  type key_t = M.key_t
+  type value_t = M.value_t
 
   (* we use an associative map to store the data *)
   module MMap = Map.Make(struct type t = M.key_t let compare = M.compare end)

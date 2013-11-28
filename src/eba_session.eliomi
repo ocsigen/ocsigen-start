@@ -16,6 +16,10 @@ class type config = object
 end
 
 module type T = sig
+  (** A type which represents a group. A user can belongs to a group or not.
+    * You have to provide an interface of your group representation. *)
+  type group
+
   (** Explicitly connect the user. (on both side) *)
   val connect : int64 -> unit Lwt.t
 
@@ -27,8 +31,8 @@ module type T = sig
     * of the user as first parameter and call it only if the user is
     * connected, otherwise it raise Not_connected. *)
   val connected_fun :
-     ?allow:Eba_types.Groups.t list
-  -> ?deny:Eba_types.Groups.t list
+     ?allow:group list
+  -> ?deny:group list
   -> (int64 -> 'a -> 'b -> 'c Lwt.t)
   -> 'a -> 'b
   -> 'c Lwt.t
@@ -37,8 +41,8 @@ module type T = sig
     * the uid and post parameters. You should use this wrapper for your
     * rpc ([Eliom_pervasives.server_function]). *)
   val connected_rpc :
-     ?allow:Eba_types.Groups.t list
-  -> ?deny:Eba_types.Groups.t list
+     ?allow:group list
+  -> ?deny:group list
   -> (int64 -> 'a -> 'b Lwt.t)
   -> 'a
   -> 'b Lwt.t
@@ -52,8 +56,8 @@ module type T = sig
       * parameter is wrapped into an option, None tells you that the user
       * is currently not connected. *)
     val connected_fun :
-       ?allow:Eba_types.Groups.t list
-    -> ?deny:Eba_types.Groups.t list
+       ?allow:group list
+    -> ?deny:group list
     -> (int64 option -> 'a -> 'b -> 'c Lwt.t)
     -> 'a -> 'b
     -> 'c Lwt.t
@@ -61,8 +65,8 @@ module type T = sig
     (** Same as [connected_wrapper] but the first parameter is wrapped into
       * an option and None represents a non-connected user. *)
     val connected_rpc :
-       ?allow:Eba_types.Groups.t list
-    -> ?deny:Eba_types.Groups.t list
+       ?allow:group list
+    -> ?deny:group list
     -> (int64 option -> 'a -> 'b Lwt.t)
     -> 'a
     -> 'b Lwt.t
@@ -74,9 +78,4 @@ module type T = sig
 
 end
 
-module Make : functor (M :
-sig
-  val config : config
-
-  module Groups : Eba_groups.T
-end) -> T
+module Make(M : sig val config : config end)(Groups : Eba_sigs.Groups) : T

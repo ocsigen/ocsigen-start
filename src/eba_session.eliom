@@ -42,19 +42,21 @@ end
 }}
 
 module type T = sig
+  type group
+
   val connect : int64 -> unit Lwt.t
   val disconnect : unit -> unit Lwt.t
 
   val connected_fun :
-     ?allow:Eba_types.Groups.t list
-  -> ?deny:Eba_types.Groups.t list
+     ?allow:group list
+  -> ?deny:group list
   -> (int64 -> 'a -> 'b -> 'c Lwt.t)
   -> 'a -> 'b
   -> 'c Lwt.t
 
   val connected_rpc :
-     ?allow:Eba_types.Groups.t list
-  -> ?deny:Eba_types.Groups.t list
+     ?allow:group list
+  -> ?deny:group list
   -> (int64 -> 'a -> 'b Lwt.t)
   -> 'a
   -> 'b Lwt.t
@@ -63,15 +65,15 @@ module type T = sig
 
   module Opt : sig
     val connected_fun :
-       ?allow:Eba_types.Groups.t list
-    -> ?deny:Eba_types.Groups.t list
+       ?allow:group list
+    -> ?deny:group list
     -> (int64 option -> 'a -> 'b -> 'c Lwt.t)
     -> 'a -> 'b
     -> 'c Lwt.t
 
     val connected_rpc :
-       ?allow:Eba_types.Groups.t list
-    -> ?deny:Eba_types.Groups.t list
+       ?allow:group list
+    -> ?deny:group list
     -> (int64 option -> 'a -> 'b Lwt.t)
     -> 'a
     -> 'b Lwt.t
@@ -80,14 +82,14 @@ module type T = sig
   end
 end
 
-module Make(M : sig
-  val config : config
-
-  module Groups : Eba_groups.T
-end)
+module Make
+  (M : sig val config : config end)
+  (Groups : sig type t val in_group : group:t -> userid:int64 -> bool Lwt.t end)
 =
 struct
   include Eba_shared.Session
+
+  type group = Groups.t
 
   exception Permission_denied
 
@@ -181,7 +183,7 @@ struct
       | Some l -> (* allow only users from one of the groups of list l *)
         Lwt_list.fold_left_s
           (fun b group ->
-            lwt b2 = M.Groups.in_group ~userid ~group in
+            lwt b2 = Groups.in_group ~userid ~group in
             Lwt.return (b || b2)) false l
     in
     lwt b = match deny with
@@ -190,7 +192,7 @@ struct
                      in one of the groups of list l *)
         Lwt_list.fold_left_s
           (fun b group ->
-            lwt b2 = M.Groups.in_group ~userid ~group in
+            lwt b2 = Groups.in_group ~userid ~group in
             Lwt.return (b && (not b2))) b l
     in
     if b then Lwt.return ()

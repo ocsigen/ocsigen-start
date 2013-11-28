@@ -4,23 +4,23 @@
 }}
 
 class page_config () : Eba_page.config = object
-  method title = "app"
-  method js : string list list = []
-  method css : string list list = []
+  method title = ""
+  method js = []
+  method css = []
 
-  method default_error_page :
-    'a 'b. 'a -> 'b -> exn option -> Eba_page.page_content_t Lwt.t =
-    (fun gp pp exc ->
-       Lwt.return [
-         D.div [p [pcdata "error"]]
-       ])
+  method default_predicate
+    : 'a 'b. 'a -> 'b -> bool Lwt.t
+    = (fun _ _ -> Lwt.return true)
+  method default_connected_predicate
+    : 'a 'b. int64 -> 'a -> 'b -> bool Lwt.t
+    = (fun _ _ _ -> Lwt.return true)
 
-  method default_connect_error_page :
-    'a 'b. int64 -> 'a -> 'b -> exn option -> Eba_page.page_content_t Lwt.t =
-    (fun uid gp pp exc ->
-       Lwt.return [
-         D.div [p [pcdata "error"]]
-       ])
+  method default_error_page
+    : 'a 'b. 'a -> 'b -> exn option -> Eba_page.page_content' Lwt.t
+    = (fun _ _ _ -> Lwt.return [])
+  method default_connected_error_page
+    : 'a 'b. int64 -> 'a -> 'b -> exn option -> Eba_page.page_content' Lwt.t
+    = (fun _ _ _ _ -> Lwt.return [])
 end
 
 class session_config () = object

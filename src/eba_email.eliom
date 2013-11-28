@@ -17,13 +17,7 @@ module type T = sig
              -> unit
 end
 
-module Make(M : sig
-  val config : config
-
-  module Rmsg : Eba_rmsg.T
-end)
-=
-struct
+module Make(M : sig val config : config end) = struct
   exception Invalid_mailer of string
 
   let email_pattern = Eba_config.Email.email_pattern
