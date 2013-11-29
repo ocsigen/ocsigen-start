@@ -17,18 +17,12 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
   let css =
     List.map
       (fun cssname -> ("css"::cssname))
-      ([["popup.css"];
-        ["jcrop.css"];
-        ["jquery.Jcrop.css"]]
-      @ C.config#css)
+      (C.config#css)
 
   let js =
     List.map
       (fun jsname -> ("js"::jsname))
-      ([["jquery.js"];
-        ["jquery.Jcrop.js"];
-        ["jquery.color.js"]]
-      @ C.config#js)
+      (C.config#js)
 
   let page
       ?(predicate = C.config#default_predicate)
