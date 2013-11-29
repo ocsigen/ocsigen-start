@@ -35,19 +35,18 @@ OCSIGENSERVER.OPT := $(ENV_PGOCAML) $(OCSIGENSERVER.OPT)
 # no: will use the default database daemon
 LOCAL := yes
 
-PSQL_DIR := $(TEST_PREFIX)/db
+PSQL_DIR := local_db
 PSQL_LOG := $(PSQL_DIR)/log
 PSQL_FILE := $(DATABASE).sql
 PSQL_PARAMS := -p $(PORT) -h $(HOST)
 
-$(TEST_PREFIX)/db:
-	-mkdir -p $(TEST_PREFIX)
-	-mkdir -p $(TEST_PREFIX)/db
+$(PSQL_DIR):
+	-mkdir -p $<
 
 ifeq ($(LOCAL),yes)
 
-db-init: $(TEST_PREFIX)/db
-	initdb $(TEST_PREFIX)/db
+db-init: $(PSQL_DIR)
+	initdb $(PSQL_DIR)
 	pg_ctl -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
 
 db-start:
