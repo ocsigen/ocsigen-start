@@ -1,14 +1,3 @@
-{shared{
-  module Groups : sig
-    type t = Eba_types.Groups.t
-
-    val id_of_group : t -> int64
-    val name_of_group : t -> string
-    val desc_of_group : t -> string option
-  end
-
-}}
-
 {server{
   module Session : sig
     exception Not_connected
@@ -28,8 +17,24 @@
   end
 }}
 
+{server{
+  module Page : sig
+    type page =
+      [ Html5_types.html ] Eliom_content.Html5.elt
+    type page_content =
+      [ Html5_types.body_content ] Eliom_content.Html5.elt list
+  end
+}}
+
 {client{
   module Email : sig
+    val email_pattern : string
     val is_valid : string -> bool
+  end
+}}
+
+{server{
+  module Email : sig
+    val email_pattern : string
   end
 }}

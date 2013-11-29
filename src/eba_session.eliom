@@ -5,16 +5,6 @@
   open Eliom_content.Html5.F
 }}
 
-class type config = object
-  method on_request : unit Lwt.t
-  method on_denied_request : int64 -> unit Lwt.t
-  method on_connected_request : int64 -> unit Lwt.t
-  method on_open_session : unit Lwt.t
-  method on_close_session : unit Lwt.t
-  method on_start_process : unit Lwt.t
-  method on_start_connected_process : unit Lwt.t
-end
-
 {client{
   (* This will close the client process *)
   let close_client_process () =
@@ -41,50 +31,9 @@ end
     Lwt.return ()
 }}
 
-module type T = sig
-  type group
-
-  val connect : int64 -> unit Lwt.t
-  val disconnect : unit -> unit Lwt.t
-
-  val connected_fun :
-     ?allow:group list
-  -> ?deny:group list
-  -> (int64 -> 'a -> 'b -> 'c Lwt.t)
-  -> 'a -> 'b
-  -> 'c Lwt.t
-
-  val connected_rpc :
-     ?allow:group list
-  -> ?deny:group list
-  -> (int64 -> 'a -> 'b Lwt.t)
-  -> 'a
-  -> 'b Lwt.t
-
-  val get_current_userid : unit -> int64
-
-  module Opt : sig
-    val connected_fun :
-       ?allow:group list
-    -> ?deny:group list
-    -> (int64 option -> 'a -> 'b -> 'c Lwt.t)
-    -> 'a -> 'b
-    -> 'c Lwt.t
-
-    val connected_rpc :
-       ?allow:group list
-    -> ?deny:group list
-    -> (int64 option -> 'a -> 'b Lwt.t)
-    -> 'a
-    -> 'b Lwt.t
-
-    val get_current_userid : unit -> int64 option
-  end
-end
-
 module Make
-  (M : sig val config : config end)
-  (Groups : sig type t val in_group : group:t -> userid:int64 -> bool Lwt.t end)
+  (C : Eba_config.Session)
+  (Groups : Eba_sigs.Groups)
 =
 struct
   include Eba_shared.Session
@@ -155,12 +104,12 @@ struct
                     Eliom_lib.debug_exn "comet exception: " e;
                     Lwt.fail e))
     }};
-    M.config#on_start_connected_process
+    C.config#on_start_connected_process
 
   let connect_volatile userid =
     Eliom_state.set_volatile_data_session_group
       ~scope:Eliom_common.default_session_scope userid;
-    M.config#on_open_session
+    C.config#on_open_session
 
   let connect_string userid =
     lwt () = Eliom_state.set_persistent_data_session_group
@@ -175,7 +124,7 @@ struct
   let disconnect () =
     unset_user_client (); (*VVV!!! will affect only current tab!! *)
     unset_user_server (); (* ok this is a request reference *)
-    M.config#on_close_session
+    C.config#on_close_session
 
   let check_allow_deny userid allow deny =
     lwt b = match allow with
@@ -197,7 +146,7 @@ struct
     in
     if b then Lwt.return ()
     else begin
-      M.config#on_denied_request userid;
+      C.config#on_denied_request userid;
       Lwt.fail Permission_denied
     end
 
@@ -253,7 +202,7 @@ struct
         (* client side process:
            Now we want to do some computation only when we start a
            client side process. *)
-        lwt () = M.config#on_start_process in
+        lwt () = C.config#on_start_process in
         match uid with
           | None -> Lwt.return ()
           | Some id -> (* new client process, but already connected *)
@@ -261,7 +210,7 @@ struct
       end
       else Lwt.return ()
     in
-    lwt () = M.config#on_request in
+    lwt () = C.config#on_request in
     match uid with
       | None ->
         if allow = None
@@ -269,7 +218,7 @@ struct
         else Lwt.fail Permission_denied
       | Some id ->
         lwt () = check_allow_deny id allow deny in
-        lwt () = M.config#on_connected_request id in
+        lwt () = C.config#on_connected_request id in
         connected id gp pp
 
   let connected_fun ?allow ?deny f gp pp =

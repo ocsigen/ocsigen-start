@@ -3,31 +3,6 @@
   open Eliom_content.Html5.F
 }}
 
-{shared{
-  module type TGroups = sig
-    type t = Eba_types.Groups.t
-
-    val id_of_group : t -> int64
-    val name_of_group : t -> string
-    val desc_of_group : t -> string option
-  end
-
-  module Groups = struct
-    type t = Eba_types.Groups.t
-
-    open Eba_types.Groups
-
-    let id_of_group group =
-      group.id
-
-    let name_of_group group =
-      group.name
-
-    let desc_of_group group =
-      group.desc
-  end
-}}
-
 {server{
   module Session = struct
     exception Not_connected
@@ -58,14 +33,37 @@
   end
 }}
 
+{server{
+  module Page = struct
+    type page =
+      [ Html5_types.html ] Eliom_content.Html5.elt
+    type page_content =
+      [ Html5_types.body_content ] Eliom_content.Html5.elt list
+  end
+}}
+
+{shared{
+  module Email' = struct
+    let email_pattern = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]+$"
+  end
+}}
+
 {client{
   module Email = struct
+    include Email'
+
     let regexp_email =
-      Regexp.regexp_with_flag Eba_config.Email.email_pattern "i"
+      Regexp.regexp_with_flag email_pattern "i"
 
     let is_valid email =
       match Regexp.string_match regexp_email email 0 with
         | None -> false
         | Some _ -> true
+  end
+}}
+
+{server{
+  module Email = struct
+    include Email'
   end
 }}

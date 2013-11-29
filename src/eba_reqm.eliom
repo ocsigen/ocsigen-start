@@ -1,51 +1,6 @@
 module Er = Eliom_reference
 open Html5_types
 
-module type T = sig
-  type html = div Eliom_content_core.Html5.elt
-
-  class type virtual reqm_base = object
-    method virtual to_html : html
-  end
-
-  class type ['a] reqm = object
-    inherit reqm_base
-
-    method set : 'a -> unit
-    method clear : unit
-    method has : bool
-    method get : 'a
-    method get_opt : 'a option
-    method to_html : html
-  end
-
-  type set
-  type 'a cons
-
-  val cons : 'a cons
-
-  val create_set : string -> set
-  val create :
-       ?cons:'a cons
-    -> ?set:set
-    -> ?default:(unit -> 'a)
-    -> to_html:('a -> html)
-    -> unit
-    -> 'a reqm
-
-  val to_html : #reqm_base -> html
-
-  val set : 'a reqm -> 'a -> unit
-  val push : 'a list reqm -> 'a -> unit
-  val get : 'a reqm -> 'a
-  val get_opt : 'a reqm -> 'a option
-  val has : 'a reqm -> bool
-  val clear : 'a reqm -> unit
-
-  val name_of_set : set -> string
-  val to_list : set -> reqm_base list
-end
-
 exception No_value
 
 type html = div Eliom_content_core.Html5.elt
