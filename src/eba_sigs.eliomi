@@ -230,6 +230,29 @@ module type State = sig
   val all : unit -> (state list)
 end
 
+module Tools : sig
+  module type Cache_f = sig
+    module Make : functor
+      (M : sig
+         type key_t
+         type value_t
+
+         val compare : key_t -> key_t -> int
+         val get : key_t -> value_t Lwt.t
+       end) -> sig
+      type key_t
+      type value_t
+
+      val has : key_t -> bool
+      val set : key_t -> value_t -> unit
+
+      val reset : key_t -> unit
+      val get : key_t -> value_t Lwt.t
+      val wrap_function : key_t -> (unit -> 'a Lwt.t) -> 'a Lwt.t
+    end
+  end
+end
+
 module type Tools = sig
-  module Cache_f : Cache_f.T
+  module Cache_f : Tools.Cache_f
 end
