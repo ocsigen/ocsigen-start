@@ -4,7 +4,7 @@
 }}
 
 let connect_form () =
-  post_form ~service:Ebapp.Services.connect_service
+  post_form ~service:Foobar_services.connect_service
     (fun (login, password) -> [
       string_input
         ~a:[a_placeholder "Your email"]
@@ -24,7 +24,7 @@ let connect_form () =
     ]) ()
 
 let disconnect_button () =
-  post_form ~service:Ebapp.Services.disconnect_service
+  post_form ~service:Foobar_services.disconnect_service
     (fun _ -> [
       string_input
         ~a:[a_class ["button"]]

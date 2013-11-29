@@ -56,7 +56,8 @@ let page ?user cnt =
     header ?user ();
     div ~a:[a_id "foobar-body"; a_class ["center"]]
       (div ~a:[a_id "foobar-request-msgs"]
-         (Foobar_rmsg.get ())
+         ( (List.map (Ebapp.Reqm.to_html) (Ebapp.Reqm.to_list Foobar_reqm.notice_set))
+         @ (List.map (Ebapp.Reqm.to_html) (Ebapp.Reqm.to_list Foobar_reqm.error_set)))
        ::cnt);
     footer ?user ();
   ]

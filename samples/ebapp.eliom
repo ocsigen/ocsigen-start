@@ -1,49 +1,71 @@
-include Eba_main.App(struct
-  include Eba_default.App
+{shared{
+  open Eliom_content.Html5.F
+  open Eliom_content.Html5
+}}
 
+include Eba_main.App(struct
   let app_name = "foobar"
 
-  type notice_t = [ Eba_types.notice_t ] deriving (Json)
-  type error_t = [ Eba_types.error_t ] deriving (Json)
+  module Session = Eba_default.Session
 
-  type state_t = [ Eba_types.state_t ] deriving (Json)
+  module State = struct
+    include Eba_default.State
 
-  let states =
-    Eba_default.App.states
-    @ []
+    type t =
+      | Default
 
-  let email_config = object
-    inherit Eba_default.email_config ()
+    let states =
+      [
+        (Default, "default", None)
+      ]
 
-    method mailer = "/usr/sbin/sendmail"
+    let default () =
+      Default
   end
 
-  let page_config = object(self)
-    inherit Eba_default.page_config ()
+  module Email = struct
+    include Eba_default.Email
 
-    method title = "foobar"
+    let config = object
+      inherit Eba_default.Email.config ()
 
-    method css = [
-      ["foobar.css"];
-    ]
-
-    method js = [
-      ["onload.js"]
-    ]
+      method mailer = "/usr/sbin/sendmail"
+    end
   end
 
-  module Database = Foobar_pgocaml
-end)
-
-module User = struct
-  include Foobar_pgocaml.User
-end
-
-{client{
-  module User = struct
-    include Eba_shared.User
-  end
   module Groups = struct
-    include Eba_shared.Groups
+    type t = Foobar_groups.t
+
+    let in_group = Foobar_groups.in_group
   end
-}}
+
+  module Page = struct
+    include Eba_default.Page
+
+    let config = object
+      inherit Eba_default.Page.config ()
+
+      method title = "foobar"
+
+      method css = [
+        ["foobar.css"];
+      ]
+
+      method js = [
+        ["onload.js"]
+      ]
+
+      method default_predicate : 'a 'b. 'a -> 'b -> bool Lwt.t
+        = (fun _ _ -> Lwt.return true)
+
+      method default_connected_predicate : 'a 'b. int64 -> 'a -> 'b -> bool Lwt.t
+        = (fun _ _ _ -> Lwt.return true)
+
+      method default_error_page : 'a 'b. 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
+        = (fun _ _ _ -> Lwt.return [])
+
+      method default_connected_error_page : 'a 'b. int64 -> 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
+        = (fun _ _ _ _ -> Lwt.return [])
+    end
+  end
+end)

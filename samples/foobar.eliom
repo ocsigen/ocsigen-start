@@ -3,53 +3,37 @@
   open Eliom_content.Html5.F
 }}
 
-let main_service_fallback uid gp pp exc =
-  if (Int64.to_int uid) = -1
-  then (* not connected *)
-    (** The following correspond to the home page on when disconnected. *)
-    Lwt.return (Foobar_container.page [
+let rec main_service_fallback uid gp pp exc =
+  let open Ebapp.Page in
+  match exc with
+  | Ebapp.Session.Not_connected ->
+      (** The following correspond to the home page on when disconnected. *)
+      Lwt.return (Foobar_container.page [
         div ~a:[a_id "foobar-forms"] [
           div ~a:[a_class ["left-bar"]] [
-            b [
-              pcdata "Sign in:";
-            ];
+            b [pcdata "Sign in:"];
             hr ();
-            p [
-              pcdata "You can sign in if you have already an account:";
-            ];
+            p [pcdata "You can sign in if you have already an account:"];
             Foobar_view.connect_form ();
             a ~service:Foobar_services.forgot_password_service [
               pcdata "Forgot your password?";
             ] ();
           ];
-          p [
-            b [pcdata "OR";]
-          ];
+          p [b [pcdata "OR"]];
           div ~a:[a_class ["left-bar"]] [
-            b [
-              pcdata "Sign up:";
-            ];
+            b [pcdata "Sign up:"];
             hr ();
-            p [
-              pcdata "Just sign up to our awesome application!";
-            ];
+            p [pcdata "Just sign up to our awesome application!"];
             Foobar_view.sign_up_form ();
           ];
         ];
         div ~a:[a_class ["clear"]] [];
-    ])
-  else (* connected *)
-    Lwt.return (Foobar_container.page [
-    ])
+      ])
+  | _ -> Lwt.return (Foobar_container.page [])
 
 let main_service_handler uid gp pp =
-  let open Ebapp.User in
-  lwt user = Ebapp.User.user_of_uid uid in
-  lwt () =
-    Ebapp.Groups.add_user
-      ~group:Ebapp.Groups.admin
-      ~userid:(Ebapp.User.uid_of_user user)
-  in
+  let open Foobar_user in
+  lwt user = Foobar_user.user_of_uid uid in
   Lwt.return (Foobar_container.page ~user [
     if (user.fn = "" || user.ln = "")
     then Foobar_view.information_form ()
@@ -60,21 +44,19 @@ let main_service_handler uid gp pp =
 
 let set_personal_data_handler' uid ()
     (((firstname, lastname), (pwd, pwd2)) as pd) =
-  (* SECURITY: We get the uid from session cookie,
-     and change personal data for this user. No other check. *)
   if firstname = "" || lastname = "" || pwd <> pwd2
   then
-    (Ebapp.R.Error.push (`Wrong_personal_data pd);
+    (Foobar_reqm.(set wrong_pdata pd);
      Lwt.return ())
   else (
-    lwt user = Ebapp.User.user_of_uid uid in
-    let open Ebapp.User in
+    lwt user = Foobar_user.user_of_uid uid in
+    let open Foobar_user in
     let record = {
       user with
       fn = firstname;
       ln = lastname;
     } in
-    Ebapp.User.update ~password:pwd record)
+    Foobar_user.update' ~password:pwd record)
 
 let generate_act_key
     ?(act_key = Ocsigen_lib.make_cryptographic_safe_string ())
@@ -83,7 +65,7 @@ let generate_act_key
     email =
   let service =
     Eliom_service.attach_coservice' ~fallback:service
-      ~service:Eba_services.activation_service
+      ~service:Foobar_services.activation_service
   in
   let act_key' = F.make_string_uri ~absolute:true ~service act_key in
   print_endline act_key';
@@ -98,47 +80,41 @@ let generate_act_key
   act_key
 
 let sign_up_handler' () email =
-  match_lwt Ebapp.User.Opt.uid_of_email email with
-  | None ->
-      let act_key = generate_act_key ~service:Foobar_services.main_service email in
-      lwt uid = Ebapp.User.new_user ~firstname:"" ~lastname:"" email in
-      lwt () = Ebapp.User.attach_activationkey ~act_key uid in
-      Lwt.return ()
-  | Some _ ->
-      Ebapp.Rmsg.Error.push (`User_already_exists email);
-      Lwt.return ()
+  try_lwt
+    lwt _ = Foobar_user.uid_of_email email in
+    let s = Foobar_reqm.(error_string "This user already exists") in
+    Lwt.return ()
+  with Foobar_db.No_such_resource ->
+    let act_key = generate_act_key ~service:Foobar_services.main_service email in
+    lwt uid = Foobar_user.create ~firstname:"" ~lastname:"" email in
+    lwt () = Foobar_user.add_activationkey ~act_key uid in
+    Lwt.return ()
 
 let forgot_password_handler () () =
   Lwt.return (Foobar_container.page [
     div ~a:[a_id "foobar-forms"] [
       div ~a:[a_class ["left-bar"]] [
-        p [
-          pcdata "Enter your email to get an activation link to access to your account!";
-        ];
+        p [pcdata "Enter your email to get an activation link to access to your account!"];
         Foobar_view.forgot_password_form ();
       ];
     ]
   ])
 
 let forgot_password_handler' () email =
-  match_lwt Ebapp.User.Opt.uid_of_email email with
-    | None ->
-        Ebapp.Rmsg.Error.push (`User_does_not_exist email);
-        Lwt.return ()
-    | Some uid ->
-        let act_key = generate_act_key ~service:Foobar_services.main_service email in
-        Ebapp.User.attach_activationkey ~act_key uid
+  try_lwt
+    lwt uid = Foobar_user.uid_of_email email in
+    let act_key = generate_act_key ~service:Foobar_services.main_service email in
+    Foobar_user.add_activationkey ~act_key uid
+  with Foobar_db.No_such_resource ->
+    Foobar_reqm.(error_string "This user does not exists");
+    Lwt.return ()
 
 let about_handler () () =
   Lwt.return (Foobar_container.page [
     div [
-      p [
-        pcdata "This template provides you a skeleton for an ocsigen application.";
-      ];
+      p [pcdata "This template provides you a skeleton for an ocsigen application."];
       hr ();
-      p [
-        pcdata "Feel free to modify the code.";
-      ];
+      p [pcdata "Feel free to modify the code."]
     ]
   ])
 
@@ -153,11 +129,12 @@ let disconnect_handler () () =
 let connect_handler () (login, pwd) =
   (* SECURITY: no check here. *)
   lwt () = disconnect_handler () () in
-  match_lwt Ebapp.User.Opt.verify_password login pwd with
-    | Some uid -> Ebapp.Session.connect uid
-    | None ->
-        Ebapp.R.Error.push `Wrong_password;
-        Lwt.return ()
+  try_lwt
+    lwt uid = Foobar_user.verify_password login pwd in
+    Ebapp.Session.connect uid
+  with Foobar_db.No_such_resource ->
+    Foobar_reqm.(error_string "Your password does not match.");
+    Lwt.return ()
 
 let activation_handler akey () =
   (* SECURITY: we disconnect the user before doing anything
@@ -165,18 +142,17 @@ let activation_handler akey () =
    * we're going to disconnect him even if the actionvation key
    * is outdated. *)
   lwt () = Ebapp.Session.disconnect () in
-  match_lwt Ebapp.User.Opt.uid_of_activationkey akey with
-    | None ->
-      (* Outdated activation key *)
-      Ebapp.R.Error.push `Activation_key_outdated;
-      Eliom_registration.Action.send ()
-    | Some uid ->
-      lwt () = Ebapp.Session.connect uid in
-      Eliom_registration.Redirection.send Eliom_service.void_coservice'
+  try_lwt
+    lwt uid = Foobar_user.uid_of_activationkey akey in
+    lwt () = Ebapp.Session.connect uid in
+    Eliom_registration.Redirection.send Eliom_service.void_coservice'
+  with Foobar_db.No_such_resource ->
+    Foobar_reqm.(notice_string "An activation key has been created");
+    Eliom_registration.Action.send ()
 
           (*
 let admin_service_handler uid gp pp =
-  lwt user = Ebapp.User.user_of_uid uid in
+  lwt user = Foobar_user.user_of_uid uid in
   (*lwt cnt = Ebapp.Admin.admin_page_content user in*)
   Lwt.return (Foobar_container.page [
   ] (*@ cnt*) )
@@ -213,13 +189,13 @@ let () =
     (sign_up_handler');
 
   Eliom_registration.Action.register
-    (Eba_services.connect_service)
+    (Foobar_services.connect_service)
     (connect_handler);
 
   Eliom_registration.Action.register
-    (Eba_services.disconnect_service)
+    (Foobar_services.disconnect_service)
     (disconnect_handler);
 
   Eliom_registration.Any.register
-    (Eba_services.activation_service)
+    (Foobar_services.activation_service)
     (activation_handler)
