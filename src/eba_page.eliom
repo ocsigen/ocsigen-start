@@ -5,9 +5,9 @@
 
 module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
 
-type page_content' = [
-    Html5_types.body_content
-] Eliom_content.Html5.elt list
+  exception Predicate_failed of (exn option)
+  exception Not_connected = Session.Not_connected
+  exception Permission_denied = Session.Permission_denied
 
   type page = Eba_shared.Page.page
   type page_content = Eba_shared.Page.page_content
@@ -34,13 +34,14 @@ type page_content' = [
       ?(predicate = C.config#default_predicate)
       ?(fallback = C.config#default_error_page)
       f gp pp =
-    lwt b = predicate gp pp in
     lwt content =
-      if b
-      then
-        try_lwt f gp pp
-        with exc -> fallback gp pp (Some exc)
-      else fallback gp pp None
+      try_lwt
+        lwt b = predicate gp pp in
+        if b then
+          try_lwt f gp pp
+          with exc -> fallback gp pp (exc)
+        else fallback gp pp (Predicate_failed None)
+      with exc -> fallback gp pp (Predicate_failed (Some exc))
     in
     Lwt.return
       (html
@@ -53,23 +54,22 @@ type page_content' = [
       ?(fallback = C.config#default_connected_error_page)
       f gp pp =
     lwt content =
-      try_lwt
-        let f_wrapped uid gp pp =
+      let uid' = ref (Int64.of_int 0) in
+      let f_wrapped uid gp pp =
+        uid' := uid;
+        try_lwt
           lwt b = predicate uid gp pp in
-          if b
-          then
+          if b then
             try_lwt f uid gp pp
-            with exc -> fallback uid gp pp (Some exc)
-          else fallback uid gp pp None
-        in
-        Session.connected_fun ?allow ?deny f_wrapped gp pp
-      with exc -> fallback (Int64.of_int (-1)) gp pp (Some exc)
-      (* FIXME: is the -1 (uid) the best solution for non-connected user ?
-       * If yes, this must be in the documentation *)
+            with exc -> fallback uid gp pp (exc)
+          else raise (Predicate_failed None)
+        with exc -> raise (Predicate_failed (Some exc))
+      in
+      try_lwt Session.connected_fun ?allow ?deny f_wrapped gp pp
+      with exc -> fallback !uid' gp pp exc
     in
     Lwt.return
       (html
          (Eliom_tools.F.head ~title:C.config#title ~css ~js ())
          (body content))
-
 end
