@@ -14,12 +14,15 @@ exception No_such_user
  *
  * *)
 
-(** The type which represents a user. *)
-type t = {
-  uid : int64;
-  fn : string;
-  ln : string;
-}
+{shared{
+  (** The type which represents a user. *)
+  type t = {
+    uid : int64;
+    fn : string;
+    ln : string;
+  } deriving (Json)
+}}
+
 
 val uid_of_user : t -> int64
 val firstname_of_user : t -> string

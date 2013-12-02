@@ -16,12 +16,14 @@ exception No_such_user
  *
  * *)
 
-(** The type which represents a user. *)
-type t = {
-  uid : int64;
-  fn : string;
-  ln : string;
-}
+{shared{
+  (** The type which represents a user. *)
+  type t = {
+    uid : int64;
+    fn : string;
+    ln : string;
+  } deriving (Json)
+}}
 
 (** Create a user of type [t] using db informations. *)
 let create_user_from_db (uid, fn, ln) = {
