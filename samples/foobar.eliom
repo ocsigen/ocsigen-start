@@ -34,11 +34,16 @@ let rec main_service_fallback uid gp pp exc =
 let main_service_handler uid gp pp =
   let open Foobar_user in
   lwt user = Foobar_user.user_of_uid uid in
+  let crop = (D.div [pcdata "start cropping"]) in
+  Foobar_image.start_crop_on_clicking_on
+    crop
+    (user);
   Lwt.return (Foobar_container.page ~user [
     if (user.fn = "" || user.ln = "")
     then Foobar_view.information_form ()
     else (
       pcdata "welcome !";
+      crop;
     );
   ])
 
