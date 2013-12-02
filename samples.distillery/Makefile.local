@@ -1,0 +1,88 @@
+#----------------------------------------------------------------------
+#           SETTINGS FOR THE ELIOM PROJECT %%%PROJECT_NAME%%%
+#----------------------------------------------------------------------
+
+
+##----------------------------------------------------------------------
+## The following part is only used for PGOcaml
+
+# Database name
+DATABASE := %%%PROJECT_NAME%%%
+
+# Database port
+PORT := 3000
+
+# Database host
+HOST := localhost
+
+# User used when connecting to the database
+USER := shakurra
+
+# DO NOT EDIT
+ENV_PGOCAML := PGDATABASE=$(DATABASE) PGPORT=$(PORT) PGUSER=$(USER)
+
+## OVERLOAD Required binaries
+ELIOMC            := $(ENV_PGOCAML) $(ELIOMC)
+ELIOMOPT          := $(ENV_PGOCAML) $(ELIOMOPT)
+JS_OF_ELIOM       := $(ENV_PGOCAML) $(JS_OF_ELIOM)
+ELIOMDEP          := $(ENV_PGOCAML) $(ELIOMDEP)
+OCSIGENSERVER     := $(ENV_PGOCAML) $(OCSIGENSERVER)
+OCSIGENSERVER.OPT := $(ENV_PGOCAML) $(OCSIGENSERVER.OPT)
+
+## Here are some extra rules to help you to manage your database
+
+# yes: will create the database in the $(TEXT_PREFIX)/db
+# no: will use the default database daemon
+LOCAL := yes
+
+PSQL_DIR := local_db
+PSQL_LOG := $(PSQL_DIR)/log
+PSQL_FILE := $(DATABASE).sql
+PSQL_PARAMS := -p $(PORT) -h $(HOST)
+
+$(PSQL_DIR):
+	-mkdir -p $<
+
+ifeq ($(LOCAL),yes)
+
+db-init: $(PSQL_DIR)
+	initdb $(PSQL_DIR)
+	pg_ctl -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
+
+db-start:
+	pg_ctl -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
+
+db-stop:
+	pg_ctl -D $(PSQL_DIR) -l $(PSQL_LOG) stop
+
+db-status:
+	pg_ctl -D $(PSQL_DIR) -l $(PSQL_LOG) status
+
+db-delete:
+	pg_ctl -D $(PSQL_DIR) -l $(PSQL_LOG) stop || true
+	rm -rf $(PSQL_DIR)
+
+else
+
+db-start:
+	pg_ctl -o "-F -p $(PORT)" start
+
+db-status:
+	pg_ctl status
+
+db-stop:
+	pg_ctl stop
+
+endif
+
+db-create:
+	createdb $(PSQL_PARAMS) $(DATABASE)
+	psql $(PSQL_PARAMS) -d $(DATABASE) -f $(PSQL_FILE)
+
+db-drop:
+	dropdb $(PSQL_PARAMS) $(DATABASE)
+
+db-psql:
+	psql $(PSQL_PARAMS) $(DATABASE)
+
+##----------------------------------------------------------------------

@@ -1,0 +1,144 @@
+.eba_admin_page {
+    height: 100%;
+    background-color: #f3f3f3;
+}
+
+.eba_admin_page input[type=text],
+.eba_admin_page input[type=number] {
+  text-align: center;
+}
+.eba_admin_page input {
+}
+
+.eba_admin_user_information {
+}
+
+.eba_admin_user_information {
+  height: 100%;
+  background-color: #333;
+  color: white;
+  float: left;
+}
+.eba_admin_user_information img {
+  display: inline-block;
+  height: 70px;
+  float:left;
+}
+
+.eba_admin_user_information table {
+    float: left;
+    text-align: left;
+}
+
+.eba_admin_user_information {
+    float: left;
+}
+
+#eba_admin_state_section {
+}
+
+#eba_admin_preregister_section {
+}
+
+#eba_admin_completion_section {
+}
+
+.eba_admin_section {
+  margin: 10px;
+  background-color: white;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.eba_admin_section input[type=number] {
+  background-color: #dedede;
+  height: 30px;
+}
+.eba_admin_section input[type=text] {
+    background-color: #dedede;
+    height: 30px;
+    width: 30%;
+}
+
+ul.ew_dropdown li.ew_active {
+	background-color: #64B3E8;
+}
+
+.eba_admin_page input[type=button] {
+  height: 30px;
+
+}
+.eba_admin_page input[type=button] {
+	color: #FFFFFF;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+	background-color: #2D47CC;
+	*background-color: #2D47CC;
+	background-image: -moz-linear-gradient(top, #1C9DFF, #2D47CC);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#1C9DFF), to(#2D47CC));
+	background-image: -webkit-linear-gradient(top, #1C9DFF, #2D47CC);
+	background-image: -o-linear-gradient(top, #1C9DFF, #2D47CC);
+	background-image: linear-gradient(to bottom, #1C9DFF, #2D47CC);
+	background-repeat: repeat-x;
+	border-color: #2D47CC;
+	border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1C9DFF', endColorstr='#2D47CC', GradientType=0);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+.eba_admin_page button:hover,
+.eba_admin_page button:active,
+.eba_admin_page button.active,
+.eba_admin_page button.disabled,
+.eba_admin_page button[disabled] {
+	color: #FFFFFF;
+	background-color: #2D47CC;
+	*background-color: #003bb3;
+}
+
+.eba_admin_group_of_user {
+    float: left;
+    display: inline-block;
+    text-align: center;
+    min-width: 10%;
+    max-width: 100%;
+    background-color: #ddd;
+    margin: 2px;
+    padding: 4px;
+}
+
+.eba_admin_group_of_user input {
+    float: right;
+}
+
+.eba_admin_state {
+    text-align: left;
+    margin-left: 10px;
+}
+
+.eba_admin_preregister_email {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  text-align: left;
+}
+
+#eba_admin_preregister_container {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.eba_admin_preregister_email_selected {
+  background-color: #2e0;
+}
+
+.eba_admin_select_container {
+  float: left;
+}
+
+.eba_admin_header_section {
+  color: white;
+  background-color: #555;
+  padding: 10px;
+}
+
+.eba_admin_header_section input[type=button] {
+  float: right;
+}

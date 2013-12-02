@@ -1,0 +1,72 @@
+/* Copyright Vincent Balat */
+
+/* ------------------------------------------------------------------ */
+/* Menus and openables */
+div.el_expmenu {
+  position: absolute;
+  top: -4px;
+  right: 10px;
+}
+div.el_expmenu ul {
+  width: 300px;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+div.el_expmenu_button {
+  position: relative;
+  color: #bbb;
+  padding: 0 4px;
+  background-color: white;
+  border: 1px solid #bbb;
+  z-index: 10;
+}
+div.el_expmenu_button:hover {
+  color: #222;
+  cursor: pointer;
+  outline: 1px solid #222;
+}
+div.el_expmenu_button.el_expandable_button_opened {
+  position: relative;
+  color: #bbb;
+  background-color: #444;
+  outline: 1px solid black;
+  z-index: 30;
+}
+div.el_expmenu_content {
+  position: absolute;
+  top: 20px;
+  right: -5px;
+  z-index: 20;
+  background-color: white;
+  border: 1px solid #444;
+}
+div.el_expmenu_content ul { padding: 4px 0; }
+div.el_expmenu_content li { padding: 2px 4px 2px 2em; }
+div.el_hiddenmenu>div.el_expmenu_button { visibility: hidden; }
+div.el_withmenu:hover div.el_hiddenmenu>div.el_expmenu_button { visibility: visible; }
+div.el_withmenu { position: relative; }
+
+
+/* ------------------------------------------------------------------ */
+/* infobox */
+div.el_infobox {
+  overflow: auto;
+}
+
+/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+button {
+  border: none;
+  background-color: transparent;
+}
+p {
+  margin: 0;
+}
+
+div.el_completion {
+  border: 1px solid black;
+  background-color: white;
+}

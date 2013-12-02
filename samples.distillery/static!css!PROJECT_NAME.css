@@ -1,0 +1,153 @@
+html{
+  height: 100%;
+}
+
+body {
+  margin: 0px;
+  min-height: 100%;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-weight: 500;
+}
+
+a {
+  text-decoration: none;
+  color: #4183c4;
+}
+a:visited {
+  text-decoration: none;
+  color: #4183c4;
+}
+
+.presentation {
+  padding: 10px;
+  text-align: justify;
+}
+
+.presentation-title {
+  font-size: 40pt;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.advice {
+  font-size: 10pt;
+}
+
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.column {
+  width: 50%;
+}
+.left-bar {
+  border-left: 3px solid #dbdbdb;
+  padding-left: 10px;
+}
+
+.left {
+  left: 0;
+}
+.right {
+  right: 0;
+}
+.absolute {
+  position: absolute;
+}
+.bottom {
+  bottom: 0;
+}
+
+.bar-item {
+  margin-bottom: 10px;
+}
+
+.button {
+  border: none;
+  background-color: #4183c4;
+  color: white;
+}
+
+.clear {
+  clear: both;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+#%%%PROJECT_NAME%%%-logo {
+  color: black;
+  text-decoration: none;
+  font-size: 30pt;
+  font-weight: 700;
+}
+#%%%PROJECT_NAME%%%-logo:hover {
+  color: #4183c4;
+}
+#%%%PROJECT_NAME%%%-logo:visited {
+  color: black;
+}
+
+#%%%PROJECT_NAME%%%-header {
+  position: relative;
+  width: 70%;
+  border-bottom: 2px solid #dbdbdb;
+  height: 50px;
+}
+
+#%%%PROJECT_NAME%%%-body {
+  margin-top: 40px;
+  margin-bottom: 40px;
+  width: 70%;
+  text-align: center;
+}
+
+#%%%PROJECT_NAME%%%-footer {
+  width: 70%;
+  text-align: center;
+  padding: 10px;
+  border-top: 2px solid #dbdbdb;
+  height: 50px;
+}
+
+#%%%PROJECT_NAME%%%-forms {
+  text-align: left;
+  display: inline-block;
+}
+
+#%%%PROJECT_NAME%%%-navbar {
+  margin-bottom: 10px;
+}
+
+#%%%PROJECT_NAME%%%-navbar .item {
+  margin-left: 5px;
+}
+
+.eba-template {
+  font-size: 10pt;
+  color: #bdbdbd;
+}
+
+#%%%PROJECT_NAME%%%-request-msgs {
+  padding: 5px;
+}
+
+.rmsg {
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+
+.error {
+  background-color: #db6573;
+}
+
+.notice {
+  background-color: #4de886;
+}
+
+#%%%PROJECT_NAME%%%-user-box {
+  margin-bottom: 10px;
+}
