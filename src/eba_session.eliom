@@ -146,7 +146,7 @@ struct
     in
     if b then Lwt.return ()
     else begin
-      C.config#on_denied_request userid;
+      lwt () = C.config#on_denied_request userid in
       Lwt.fail Permission_denied
     end
 
