@@ -38,14 +38,16 @@ let main_service_handler uid gp pp =
   %%%MODULE_NAME%%%_image.start_crop_on_clicking_on
     crop
     (user);
-  Lwt.return (%%%MODULE_NAME%%%_container.page ~user [
+  lwt email = %%%MODULE_NAME%%%_user.email_of_uid uid in
+  Lwt.return (%%%MODULE_NAME%%%_container.page ~user (
     if (user.fn = "" || user.ln = "")
-    then %%%MODULE_NAME%%%_view.information_form ()
-    else (
+    then [%%%MODULE_NAME%%%_view.information_form ()]
+    else [
       pcdata "welcome !";
+      D.p [pcdata email];
       crop;
-    );
-  ])
+    ];
+  ))
 
 let set_personal_data_handler' uid ()
     (((firstname, lastname), (pwd, pwd2)) as pd) =

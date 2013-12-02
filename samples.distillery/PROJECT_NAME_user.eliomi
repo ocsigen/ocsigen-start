@@ -41,6 +41,8 @@ val uid_of_activationkey : string -> int64 Lwt.t
 (** Retrieve an uid from an activation key. May raise [No_such_resource] if
   * the activation key is not found (or outdated). *)
 val uid_of_email : string -> int64 Lwt.t
+(** Retrieve the main e-mail of the corresponding uid. *)
+val email_of_uid : int64 -> string Lwt.t
 
 (** Create a new user and returns his uid. *)
 val create :
