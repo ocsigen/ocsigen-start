@@ -98,6 +98,15 @@ module User = struct
      AND t2.email = $email
      "))
 
+  let email_of_uid uid =
+    (view_one_lwt (PGSQL(dbh) "
+     SELECT t2.email
+     FROM users  as t1,
+          emails as t2
+     WHERE t1.userid = t2.userid
+     AND t1.userid = $uid
+     "))
+
 end
 
 module Groups = struct
