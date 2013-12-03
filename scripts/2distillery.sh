@@ -25,7 +25,7 @@ function backup {
     echo $1.$SUFFIX
 }
 
-if [ $# -lt 1 ]; then
+if [ $# -lt 2 ]; then
     usage
 fi
 
@@ -48,7 +48,17 @@ fi
 notice "create '$DEST_DIR'"
 mkdir -p $DEST_DIR
 
-for file in $( find $DIR | cut -d '/' -f 2- ); do
+function filter {
+    find $DIR\
+         -not -path "*/local*"\
+    -and -not -path "*/_server*"\
+    -and -not -path "*/_client*"\
+    -and -not -path "*/_deps*"\
+    -and -not -path "*/trash*"\
+    -and -not -name ".*"
+}
+
+for file in $( filter | cut -d '/' -f 2- ); do
     FILE="$DIR/$file"
     if [ ! -d $FILE ] && [ -f $FILE ] ; then
         DFILE="$( echo $file | sed "s|$PROJECT_NAME|PROJECT_NAME|g" )"
