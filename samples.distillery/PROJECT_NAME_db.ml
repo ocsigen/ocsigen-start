@@ -11,7 +11,7 @@ module Lwt_Query = Query.Make_with_Db(Lwt_thread)(Lwt_PGOCaml)
 module PGOCaml = Lwt_PGOCaml
 
 let connect () =
-  Lwt_PGOCaml.connect ~port:3000 ~database:"xprime_eba" ()
+  Lwt_PGOCaml.connect ~port:3000 ~database:"%%%PROJECT_NAME%%%" ()
 
 let validate db =
   try_lwt
