@@ -16,7 +16,9 @@ PORT := 3000
 HOST := localhost
 
 # User used when connecting to the database
-USER := shakurra
+# default: environment variable USER
+# --------------
+USER := $(USER)
 
 # DO NOT EDIT
 ENV_PGOCAML := PGDATABASE=$(DATABASE) PGPORT=$(PORT) PGUSER=$(USER)
