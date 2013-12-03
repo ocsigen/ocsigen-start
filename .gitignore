@@ -30,3 +30,4 @@ samples/local
 
 samples.distillery/local*
 samples.distillery/_*
+samples.distillery.*
