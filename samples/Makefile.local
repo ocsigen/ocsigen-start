@@ -41,7 +41,7 @@ PSQL_FILE := $(DATABASE).sql
 PSQL_PARAMS := -p $(PORT) -h $(HOST)
 
 $(PSQL_DIR):
-	-mkdir -p $<
+	-mkdir -p $@
 
 ifeq ($(LOCAL),yes)
 
