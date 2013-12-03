@@ -3,4 +3,4 @@
 module Make
   (C : Eba_config.Session)
   (Groups : Eba_sigs.Groups)
-  : Eba_sigs.Session
+  : Eba_sigs.Session with type group = Groups.t

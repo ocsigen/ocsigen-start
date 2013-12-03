@@ -19,6 +19,7 @@ end
 module App(M : ParamT) : sig
   module App : Eba_sigs.App
   module Session : Eba_sigs.Session
+    with type group = M.Groups.t
   module Email : Eba_sigs.Email
   module Page : Eba_sigs.Page
   module Tools : Eba_sigs.Tools
