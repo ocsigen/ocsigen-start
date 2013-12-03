@@ -84,6 +84,7 @@ module User = struct
         WHERE userid = $uid
         "
         | Some password ->
+          let password = Bcrypt.string_of_hash (Bcrypt.hash password) in
           PGSQL(dbh) "
         UPDATE users
         SET firstname = $firstname,
@@ -101,14 +102,21 @@ module User = struct
 
   let verify_password ~email ~password =
     full_transaction_block (fun dbh ->
-      (view_one_lwt (PGSQL(dbh) "
-         SELECT t1.userid
+      lwt (uid,password') =
+        (view_one_lwt (PGSQL(dbh) "
+         SELECT t1.userid, t1.password
          FROM users  as t1,
               emails as t2
          WHERE t1.userid = t2.userid
          AND t2.email = $email
-         AND t1.password = $password
-         ")))
+         "))
+      in
+      match password' with
+      | None -> Lwt.fail No_such_resource
+      | Some password' ->
+          if Bcrypt.verify password (Bcrypt.hash_of_string password')
+          then Lwt.return uid
+          else Lwt.fail No_such_resource)
 
   let user_of_uid uid =
     full_transaction_block (fun dbh ->
