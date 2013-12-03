@@ -25,6 +25,7 @@ module App(M : ParamT) : sig
   module Tools : Eba_sigs.Tools
   module Reqm : Eba_sigs.Reqm
   module State : Eba_sigs.State
+    with type state = M.State.t
 
   module R : Eba_sigs.Reqm
   module E : Eba_sigs.Email
