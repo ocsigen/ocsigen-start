@@ -46,7 +46,7 @@ $(PSQL_DIR):
 ifeq ($(LOCAL),yes)
 
 db-init: $(PSQL_DIR)
-	initdb $(PSQL_DIR)
+	pg_ctl initdb -D $(PSQL_DIR)
 	pg_ctl -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
 
 db-start:
