@@ -1,163 +1,211 @@
 exception No_such_resource
 
-let dbh = PGOCaml.connect ~database:"foobar" ~port:3000 ()
+let (>>=) = Lwt.bind
+
+module Lwt_thread = struct
+  include Lwt
+  include Lwt_chan
+end
+module Lwt_PGOCaml = PGOCaml_generic.Make(Lwt_thread)
+module Lwt_Query = Query.Make_with_Db(Lwt_thread)(Lwt_PGOCaml)
+module PGOCaml = Lwt_PGOCaml
+
+let connect () =
+  Lwt_PGOCaml.connect ~port:3000 ~database:"xprime_eba" ()
+
+let validate db =
+  try_lwt
+    lwt () = Lwt_PGOCaml.ping db in
+    Lwt.return true
+  with _ ->
+    Lwt.return false
+
+let transaction_block db f =
+  Lwt_PGOCaml.begin_work db >>= fun _ ->
+  try_lwt
+    lwt r = f () in
+    lwt () = Lwt_PGOCaml.commit db in
+    Lwt.return r
+  with e ->
+    lwt () = Lwt_PGOCaml.rollback db in
+    Lwt.fail e
+
+let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Lwt_pool.t =
+  Lwt_pool.create 16 ~validate connect
+
+let full_transaction_block f =
+  Lwt_pool.use pool (fun db -> transaction_block db (fun () -> f db))
 
 let view_one rq =
-  try List.nth rq 0
+  try List.hd rq
   with Failure _ -> raise No_such_resource
 
 let view_one_lwt rq =
-  try Lwt.return (view_one rq)
+  try_lwt
+    lwt rq = rq in
+    Lwt.return (view_one rq)
   with No_such_resource -> Lwt.fail No_such_resource
 
 let view_one_opt rq =
-  try Some (view_one rq)
-  with No_such_resource -> None
+  try_lwt
+    lwt rq = rq in
+    Lwt.return (Some (view_one rq))
+  with No_such_resource -> Lwt.return None
 
 module User = struct
+
   let create ?password ~firstname ~lastname email =
-    PGSQL(dbh) "
-    INSERT INTO users
-    (firstname, lastname, password)
-    VALUES ($firstname, $lastname, $?password)
-    ";
-    match view_one (PGSQL(dbh) "select currval('users_userid_seq')") with
-    | None -> raise No_such_resource
-    | Some uid ->
-        PGSQL(dbh) "
-        INSERT INTO emails
-        (email, userid) VALUES ($email, $uid)
-        ";
+    full_transaction_block (fun dbh ->
+      lwt () = PGSQL(dbh) "
+        INSERT INTO users
+        (firstname, lastname, password)
+        VALUES ($firstname, $lastname, $?password)
+       "
+      in
+      match_lwt PGSQL(dbh) "select currval('users_userid_seq')" with
+      | Some uid::_ ->
+        lwt () = PGSQL(dbh) "
+          INSERT INTO emails
+          (email, userid) VALUES ($email, $uid)
+          "
+        in
         Lwt.return uid
+      | _ -> Lwt.fail No_such_resource
+    )
 
   let update ?password ~firstname ~lastname uid =
-    (match password with
-    | None ->
-        PGSQL(dbh) "
+    full_transaction_block (fun dbh ->
+      (match password with
+        | None ->
+          PGSQL(dbh) "
         UPDATE users
         SET firstname = $firstname,
             lastname = $lastname
         WHERE userid = $uid
         "
-    | Some password ->
-        PGSQL(dbh) "
+        | Some password ->
+          PGSQL(dbh) "
         UPDATE users
         SET firstname = $firstname,
             lastname = $lastname,
             password = $password
         WHERE userid = $uid
-        ");
-    print_endline "updated";
-    Lwt.return ()
+        "))
 
    let add_activationkey ~act_key uid =
-    PGSQL(dbh) "
-    INSERT INTO activation
-    (userid, activationkey) VALUES ($uid, $act_key)
-    ";
-    Lwt.return ()
+    full_transaction_block (fun dbh ->
+      PGSQL(dbh) "
+        INSERT INTO activation
+        (userid, activationkey) VALUES ($uid, $act_key)
+        ")
 
   let verify_password ~email ~password =
-    (view_one_lwt (PGSQL(dbh) "
-     SELECT t1.userid
-     FROM users  as t1,
-          emails as t2
-     WHERE t1.userid = t2.userid
-     AND t2.email = $email
-     AND t1.password = $password
-     "))
+    full_transaction_block (fun dbh ->
+      (view_one_lwt (PGSQL(dbh) "
+         SELECT t1.userid
+         FROM users  as t1,
+              emails as t2
+         WHERE t1.userid = t2.userid
+         AND t2.email = $email
+         AND t1.password = $password
+         ")))
 
   let user_of_uid uid =
-    ((view_one_lwt (PGSQL(dbh) "
-     SELECT userid, firstname, lastname FROM users
-     WHERE userid = $uid
-     ")))
+    full_transaction_block (fun dbh ->
+      (view_one_lwt (PGSQL(dbh) "
+         SELECT userid, firstname, lastname FROM users
+         WHERE userid = $uid
+         ")))
 
   let uid_of_activationkey act_key =
-    let uid =
-      (view_one_opt (PGSQL(dbh) "
-       SELECT userid FROM activation
-       WHERE activationkey = $act_key
-       "))
-    in
-    (match uid with
-     | None -> Lwt.fail No_such_resource
-     | Some uid ->
-         PGSQL(dbh) "
-         DELETE FROM activation
-         WHERE activationkey = $act_key
-         ";
-         Lwt.return uid)
+    full_transaction_block (fun dbh ->
+      lwt uid =
+        (view_one_opt (PGSQL(dbh) "
+           SELECT userid FROM activation
+           WHERE activationkey = $act_key
+           "))
+      in
+      (match uid with
+        | None -> Lwt.fail No_such_resource
+        | Some uid ->
+          lwt () = PGSQL(dbh) "
+            DELETE FROM activation
+            WHERE activationkey = $act_key
+            "
+          in
+          Lwt.return uid))
 
   let uid_of_email email =
-    (view_one_lwt (PGSQL(dbh) "
-     SELECT t1.userid
-     FROM users  as t1,
-          emails as t2
-     WHERE t1.userid = t2.userid
-     AND t2.email = $email
-     "))
+    full_transaction_block (fun dbh ->
+      (view_one_lwt (PGSQL(dbh) "
+         SELECT t1.userid
+         FROM users  as t1,
+              emails as t2
+         WHERE t1.userid = t2.userid
+         AND t2.email = $email
+         ")))
 
   let email_of_uid uid =
-    (view_one_lwt (PGSQL(dbh) "
-     SELECT t2.email
-     FROM users  as t1,
-          emails as t2
-     WHERE t1.userid = t2.userid
-     AND t1.userid = $uid
-     "))
-
+    full_transaction_block (fun dbh ->
+      (view_one_lwt (PGSQL(dbh) "
+         SELECT t2.email
+         FROM users  as t1,
+              emails as t2
+         WHERE t1.userid = t2.userid
+         AND t1.userid = $uid
+         ")))
 end
 
 module Groups = struct
   let create ?description name =
-    PGSQL(dbh) "
-    INSERT INTO groups
-    (description, name) VALUES ($?description, $name)
-    ";
-    Lwt.return ()
+    full_transaction_block (fun dbh ->
+      PGSQL(dbh) "
+        INSERT INTO groups
+        (description, name) VALUES ($?description, $name)
+        ")
 
   let group_of_name name =
-    let group =
-      view_one_opt (PGSQL(dbh) "
-      SELECT groupid, name, description FROM groups
-      WHERE name = $name
-      ")
-    in
-    Lwt.return
-      (match group with
-        | None -> raise No_such_resource
-        | Some group -> group)
+    full_transaction_block (fun dbh ->
+      lwt group =
+        view_one_opt (PGSQL(dbh) "
+          SELECT groupid, name, description FROM groups
+          WHERE name = $name
+          ")
+      in
+      match group with
+        | None -> Lwt.fail No_such_resource
+        | Some group -> Lwt.return group)
 
   let add_user_in_group ~groupid ~userid =
-    PGSQL(dbh) "
-    INSERT INTO user_groups
-    (userid, groupid) VALUES ($userid, $groupid)
-    ";
-    Lwt.return ()
+    full_transaction_block (fun dbh ->
+      PGSQL(dbh) "
+        INSERT INTO user_groups
+        (userid, groupid) VALUES ($userid, $groupid)
+        ")
 
   let remove_user_in_group ~groupid ~userid =
-    PGSQL(dbh) "
-    DELETE FROM user_groups
-    WHERE groupid = $groupid
-    AND userid = $userid
-    ";
-    Lwt.return ()
+    full_transaction_block (fun dbh ->
+      PGSQL(dbh) "
+        DELETE FROM user_groups
+        WHERE groupid = $groupid
+        AND userid = $userid
+        ")
 
   let in_group ~groupid ~userid =
-    try_lwt
-      lwt _ =
-        (view_one_lwt (PGSQL(dbh) "
-         SELECT * FROM user_groups
-         WHERE groupid = $groupid
-         AND userid = $userid
-         "))
-      in Lwt.return true
-    with No_such_resource -> Lwt.return false
+    full_transaction_block (fun dbh ->
+      try_lwt
+        lwt _ =
+          view_one_lwt (PGSQL(dbh) "
+            SELECT * FROM user_groups
+            WHERE groupid = $groupid
+            AND userid = $userid
+            ")
+        in Lwt.return true
+      with No_such_resource -> Lwt.return false)
 
   let all () =
-    Lwt.return
-      (PGSQL(dbh) "
-       SELECT groupid, name, description FROM groups
-       ")
+    full_transaction_block (fun dbh ->
+      PGSQL(dbh) "
+        SELECT groupid, name, description FROM groups
+        ")
 end
