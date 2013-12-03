@@ -85,7 +85,7 @@ struct
   let unset_user_client () =
     ignore {unit{ Eba_shared.Session.unset_current_userid () }}
 
-  let start_connected_process () =
+  let start_connected_process uid =
     let () = set_user_client () in
     (* We want to warn the client when the server side process state is closed.
        To do that, we listen on a channel and wait for exception. *)
@@ -104,18 +104,19 @@ struct
                     Eliom_lib.debug_exn "comet exception: " e;
                     Lwt.fail e))
     }};
-    C.config#on_start_connected_process
+    C.config#on_start_connected_process uid
 
-  let connect_volatile userid =
+  let connect_volatile uid =
     Eliom_state.set_volatile_data_session_group
-      ~scope:Eliom_common.default_session_scope userid;
-    C.config#on_open_session
+      ~scope:Eliom_common.default_session_scope uid;
+    C.config#on_open_session (Int64.of_string uid)
 
-  let connect_string userid =
+  let connect_string uid =
     lwt () = Eliom_state.set_persistent_data_session_group
-      ~scope:Eliom_common.default_session_scope userid in
-    lwt () = connect_volatile userid in
-    start_connected_process ()
+      ~scope:Eliom_common.default_session_scope uid in
+    lwt () = connect_volatile uid in
+    let uid = Int64.of_string uid in
+    start_connected_process uid
 
   let connect userid =
     lwt () = set_user_server userid in
@@ -206,7 +207,7 @@ struct
         match uid with
           | None -> Lwt.return ()
           | Some id -> (* new client process, but already connected *)
-            start_connected_process ()
+            start_connected_process id
       end
       else Lwt.return ()
     in

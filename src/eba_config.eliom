@@ -25,10 +25,10 @@ module type Session = sig
     method on_request : unit Lwt.t
     method on_denied_request : int64 -> unit Lwt.t
     method on_connected_request : int64 -> unit Lwt.t
-    method on_open_session : unit Lwt.t
+    method on_open_session : int64 -> unit Lwt.t
     method on_close_session : unit Lwt.t
     method on_start_process : unit Lwt.t
-    method on_start_connected_process : unit Lwt.t
+    method on_start_connected_process : int64 -> unit Lwt.t
   end
 
   val config : config
