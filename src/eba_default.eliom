@@ -20,7 +20,7 @@ module Page = struct
       : 'a 'b. 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
       = (fun _ _ _ -> Lwt.return [])
     method default_connected_error_page
-      : 'a 'b. int64 -> 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
+      : 'a 'b. int64 option -> 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
       = (fun _ _ _ _ -> Lwt.return [])
   end
 

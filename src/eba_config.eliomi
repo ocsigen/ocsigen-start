@@ -9,7 +9,7 @@ module type Page = sig
     method default_error_page :
       'a 'b. 'a -> 'b -> exn -> page_content Lwt.t
     method default_connected_error_page :
-      'a 'b. int64 -> 'a -> 'b -> exn -> page_content Lwt.t
+      'a 'b. int64 option -> 'a -> 'b -> exn -> page_content Lwt.t
 
     method default_predicate :
       'a 'b. 'a -> 'b -> bool Lwt.t

@@ -48,21 +48,19 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
       ?(fallback = C.config#default_connected_error_page)
       f gp pp =
     lwt content =
-      let uid' = ref (Int64.of_int 0) in
       let f_wrapped uid gp pp =
-        uid' := uid;
         try_lwt
           lwt b = predicate uid gp pp in
           if b then
             try_lwt f uid gp pp
-            with exc -> fallback uid gp pp (exc)
+            with exc -> fallback (Some uid) gp pp (exc)
           else raise (Predicate_failed None)
         with
           | (Predicate_failed _) as exc -> raise exc
           | exc -> raise (Predicate_failed (Some exc))
       in
       try_lwt Session.connected_fun ?allow ?deny f_wrapped gp pp
-      with exc -> fallback !uid' gp pp exc
+      with exc -> fallback None gp pp exc
     in
     Lwt.return
       (html
