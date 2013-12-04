@@ -31,3 +31,7 @@ CREATE TABLE user_groups ( -- DEFAULT
        userid bigint NOT NULL references users(userid), -- DEFAULT
        groupid bigint NOT NULL references groups(groupid) -- DEFAULT
 );
+
+CREATE TABLE preregister (
+       email text NOT NULL
+);

@@ -57,3 +57,18 @@ val update :
   ?password:string -> firstname:string -> lastname:string -> int64 -> unit Lwt.t
 (** Another version of [update] using a type [t] instead of labels. *)
 val update' : ?password:string -> t -> unit Lwt.t
+
+(** Check wether or not a user exists *)
+val is_registered : string -> bool Lwt.t
+
+(** Check wether or not a user exists. *)
+val is_preregistered : string -> bool Lwt.t
+
+(** Add an email into the preregister collections. *)
+val add_preregister : string -> unit Lwt.t
+
+(** Rempve an email from the preregister collections. *)
+val remove_preregister : string -> unit Lwt.t
+
+(** Get [limit] (default: 10) emails from the preregister collections. *)
+val all : ?limit:int64 -> unit -> string list Lwt.t

@@ -94,6 +94,21 @@ let information_form () =
         ();
     ]) ()
 
+let preregister_form () =
+  post_form ~service:%%%MODULE_NAME%%%_services.preregister_service'
+    (fun email -> [
+      string_input
+        ~a:[a_placeholder "Your email"]
+        ~name:email
+        ~input_type:`Email
+        ();
+      string_input
+        ~a:[a_class ["button"]]
+        ~input_type:`Submit
+        ~value:"Submit"
+        ();
+    ]) ()
+
 let home_button () =
   form ~service:%%%MODULE_NAME%%%_services.main_service
     (fun _ -> [

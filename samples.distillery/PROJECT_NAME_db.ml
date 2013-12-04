@@ -54,6 +54,53 @@ let view_one_opt rq =
 
 module User = struct
 
+  let select_user_from_email_q dbh email =
+      (view_one_lwt (PGSQL(dbh) "
+         SELECT t1.userid
+         FROM users  as t1,
+              emails as t2
+         WHERE t1.userid = t2.userid
+         AND t2.email = $email
+         "))
+
+  let is_registered email =
+    full_transaction_block (fun dbh ->
+      try_lwt
+        lwt _ = select_user_from_email_q dbh email in
+        Lwt.return true
+      with No_such_resource -> Lwt.return false)
+
+  let add_preregister email =
+    full_transaction_block (fun dbh ->
+      (PGSQL(dbh) "
+         INSERT INTO preregister
+         (email) VALUES ($email)
+         "))
+
+  let remove_preregister email =
+    full_transaction_block (fun dbh ->
+      (PGSQL(dbh) "
+        DELETE FROM preregister
+        WHERE email = $email
+        "))
+
+  let is_preregistered email =
+    full_transaction_block (fun dbh ->
+      try_lwt
+        lwt _ =
+          view_one_lwt (PGSQL(dbh) "
+          SELECT email FROM preregister
+          WHERE email = $email
+          ")
+        in Lwt.return true
+      with No_such_resource -> Lwt.return false)
+
+  let all ?(limit = 10L) () =
+    full_transaction_block (fun dbh ->
+      (PGSQL(dbh) "
+        SELECT email FROM preregister
+        LIMIT $limit
+        "))
   let create ?password ~firstname ~lastname email =
     full_transaction_block (fun dbh ->
       lwt () = PGSQL(dbh) "
@@ -69,6 +116,7 @@ module User = struct
           (email, userid) VALUES ($email, $uid)
           "
         in
+        lwt () = remove_preregister email in
         Lwt.return uid
       | _ -> Lwt.fail No_such_resource
     )
@@ -143,16 +191,6 @@ module User = struct
           in
           Lwt.return uid))
 
-  let uid_of_email email =
-    full_transaction_block (fun dbh ->
-      (view_one_lwt (PGSQL(dbh) "
-         SELECT t1.userid
-         FROM users  as t1,
-              emails as t2
-         WHERE t1.userid = t2.userid
-         AND t2.email = $email
-         ")))
-
   let email_of_uid uid =
     full_transaction_block (fun dbh ->
       (view_one_lwt (PGSQL(dbh) "
@@ -162,6 +200,11 @@ module User = struct
          WHERE t1.userid = t2.userid
          AND t1.userid = $uid
          ")))
+
+  let uid_of_email email =
+    full_transaction_block (fun dbh ->
+         select_user_from_email_q dbh email)
+
 end
 
 module Groups = struct

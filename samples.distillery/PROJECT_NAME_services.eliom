@@ -10,6 +10,12 @@ let forgot_password_service =
     ~path:["forgot-password"]
     ~get_params:unit ()
 
+let preregister_service' =
+  Eliom_service.Http.post_coservice'
+    ~name:"preregister_service"
+    ~post_params:(string "email")
+    ()
+
 let about_service =
   Eliom_service.App.service
     ~path:["about"]

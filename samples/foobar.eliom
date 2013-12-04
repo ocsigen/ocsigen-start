@@ -26,6 +26,16 @@ let rec main_service_fallback uid gp pp exc =
             p [pcdata "Just sign up to our awesome application!"];
             Foobar_view.sign_up_form ();
           ];
+          p [b [pcdata "OR"]];
+          div ~a:[a_class ["left-bar"]] [
+            b [pcdata "Preregister:"];
+            hr ();
+            p [
+              pcdata "If you are interested by our application,";
+              pcdata " please let us your email address!";
+            ];
+            Foobar_view.preregister_form ();
+          ];
         ];
         div ~a:[a_class ["clear"]] [];
       ])
@@ -85,15 +95,16 @@ let generate_act_key
   act_key
 
 let sign_up_handler' () email =
-  try_lwt
-    lwt _ = Foobar_user.uid_of_email email in
-    let s = Foobar_reqm.(error_string "This user already exists") in
+  lwt is_registered = Foobar_user.is_registered email in
+  if is_registered then begin
+    ignore (Foobar_reqm.(error_string "This user already exists"));
     Lwt.return ()
-  with Foobar_db.No_such_resource ->
+  end else begin
     let act_key = generate_act_key ~service:Foobar_services.main_service email in
     lwt uid = Foobar_user.create ~firstname:"" ~lastname:"" email in
     lwt () = Foobar_user.add_activationkey ~act_key uid in
     Lwt.return ()
+  end
 
 let forgot_password_handler () () =
   Lwt.return (Foobar_container.page [
@@ -163,6 +174,17 @@ let admin_service_handler uid gp pp =
   ] (*@ cnt*) )
            *)
 
+let preregister_handler' () email =
+  lwt is_preregistered = Foobar_user.is_preregistered email in
+  lwt is_registered = Foobar_user.is_registered email in
+  Printf.printf "%b:%b%!\n" is_preregistered is_registered;
+  if not (is_preregistered || is_registered)
+   then Foobar_user.add_preregister email
+   else begin
+     ignore (Foobar_reqm.(error_string "Email already uses"));
+     Lwt.return ()
+   end
+
 let () =
   Ebapp.App.register
     (Foobar_services.main_service)
@@ -188,6 +210,10 @@ let () =
   Eliom_registration.Action.register
     (Foobar_services.forgot_password_service')
     (forgot_password_handler');
+
+  Eliom_registration.Action.register
+    (Foobar_services.preregister_service')
+    (preregister_handler');
 
   Eliom_registration.Action.register
     (Foobar_services.sign_up_service')

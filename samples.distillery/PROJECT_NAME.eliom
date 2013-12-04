@@ -26,6 +26,16 @@ let rec main_service_fallback uid gp pp exc =
             p [pcdata "Just sign up to our awesome application!"];
             %%%MODULE_NAME%%%_view.sign_up_form ();
           ];
+          p [b [pcdata "OR"]];
+          div ~a:[a_class ["left-bar"]] [
+            b [pcdata "Preregister:"];
+            hr ();
+            p [
+              pcdata "If you are interested by our application,";
+              pcdata " please let us your email address!";
+            ];
+            %%%MODULE_NAME%%%_view.preregister_form ();
+          ];
         ];
         div ~a:[a_class ["clear"]] [];
       ])
@@ -87,15 +97,16 @@ let generate_act_key
   act_key
 
 let sign_up_handler' () email =
-  try_lwt
-    lwt _ = %%%MODULE_NAME%%%_user.uid_of_email email in
-    let s = %%%MODULE_NAME%%%_reqm.(error_string "This user already exists") in
+  lwt is_registered = %%%MODULE_NAME%%%_user.is_registered email in
+  if is_registered then begin
+    ignore (%%%MODULE_NAME%%%_reqm.(error_string "This user already exists"));
     Lwt.return ()
-  with %%%MODULE_NAME%%%_db.No_such_resource ->
+  end else begin
     let act_key = generate_act_key ~service:%%%MODULE_NAME%%%_services.main_service email in
     lwt uid = %%%MODULE_NAME%%%_user.create ~firstname:"" ~lastname:"" email in
     lwt () = %%%MODULE_NAME%%%_user.add_activationkey ~act_key uid in
     Lwt.return ()
+  end
 
 let forgot_password_handler () () =
   Lwt.return (%%%MODULE_NAME%%%_container.page [
@@ -165,6 +176,17 @@ let admin_service_handler uid gp pp =
   ] (*@ cnt*) )
            *)
 
+let preregister_handler' () email =
+  lwt is_preregistered = %%%MODULE_NAME%%%_user.is_preregistered email in
+  lwt is_registered = %%%MODULE_NAME%%%_user.is_registered email in
+  Printf.printf "%b:%b%!\n" is_preregistered is_registered;
+  if not (is_preregistered || is_registered)
+   then %%%MODULE_NAME%%%_user.add_preregister email
+   else begin
+     ignore (%%%MODULE_NAME%%%_reqm.(error_string "Email already uses"));
+     Lwt.return ()
+   end
+
 let () =
   Ebapp.App.register
     (%%%MODULE_NAME%%%_services.main_service)
@@ -190,6 +212,10 @@ let () =
   Eliom_registration.Action.register
     (%%%MODULE_NAME%%%_services.forgot_password_service')
     (forgot_password_handler');
+
+  Eliom_registration.Action.register
+    (%%%MODULE_NAME%%%_services.preregister_service')
+    (preregister_handler');
 
   Eliom_registration.Action.register
     (%%%MODULE_NAME%%%_services.sign_up_service')
