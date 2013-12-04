@@ -1,3 +1,5 @@
+let doc_start = ()
+
 module Er = Eliom_reference
 open Html5_types
 

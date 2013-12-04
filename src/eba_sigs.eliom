@@ -1,3 +1,5 @@
+let doc_start = ()
+
 module type App = sig
   include Eliom_registration.ELIOM_APPL
 

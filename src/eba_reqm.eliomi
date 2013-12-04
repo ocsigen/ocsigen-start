@@ -1,3 +1,5 @@
+val doc_start : unit
+
 (** This module attemps to follow the same design of the flash messages in
   * RoR.
   *
