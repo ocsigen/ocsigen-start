@@ -151,3 +151,8 @@ a:visited {
 #foobar-user-box {
   margin-bottom: 10px;
 }
+
+.foobar-avatar {
+  width: 200px;
+  height: 200px;
+}

@@ -151,3 +151,8 @@ a:visited {
 #%%%PROJECT_NAME%%%-user-box {
   margin-bottom: 10px;
 }
+
+.%%%PROJECT_NAME%%%-avatar {
+  width: 200px;
+  height: 200px;
+}

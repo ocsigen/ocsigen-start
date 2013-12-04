@@ -102,7 +102,7 @@ module User = struct
         LIMIT $limit
         "))
 
-  let create ?password ~firstname ~lastname email =
+  let create ?password ?avatar ~firstname ~lastname email =
     full_transaction_block (fun dbh ->
       lwt () = PGSQL(dbh) "
         INSERT INTO users
@@ -122,25 +122,43 @@ module User = struct
       | _ -> Lwt.fail No_such_resource
     )
 
-  let update ?password ~firstname ~lastname uid =
+  let update ?password ?avatar ~firstname ~lastname uid =
     full_transaction_block (fun dbh ->
-      (match password with
-        | None ->
+      (match password,avatar with
+        | None,None ->
           PGSQL(dbh) "
-        UPDATE users
-        SET firstname = $firstname,
-            lastname = $lastname
-        WHERE userid = $uid
-        "
-        | Some password ->
+            UPDATE users
+            SET firstname = $firstname,
+                lastname = $lastname
+            WHERE userid = $uid
+            "
+        | None,Some avatar ->
+          PGSQL(dbh) "
+            UPDATE users
+            SET firstname = $firstname,
+                lastname = $lastname,
+                avatar = $avatar
+            WHERE userid = $uid
+            "
+        | Some password,None ->
           let password = Bcrypt.string_of_hash (Bcrypt.hash password) in
           PGSQL(dbh) "
-        UPDATE users
-        SET firstname = $firstname,
-            lastname = $lastname,
-            password = $password
-        WHERE userid = $uid
-        "))
+            UPDATE users
+            SET firstname = $firstname,
+                lastname = $lastname,
+                password = $password
+            WHERE userid = $uid
+            "
+        | Some password,Some avatar ->
+          let password = Bcrypt.string_of_hash (Bcrypt.hash password) in
+          PGSQL(dbh) "
+            UPDATE users
+            SET firstname = $firstname,
+                lastname = $lastname,
+                password = $password,
+                avatar = $avatar
+            WHERE userid = $uid
+            "))
 
    let add_activationkey ~act_key uid =
     full_transaction_block (fun dbh ->
@@ -170,7 +188,7 @@ module User = struct
   let user_of_uid uid =
     full_transaction_block (fun dbh ->
       (view_one_lwt (PGSQL(dbh) "
-         SELECT userid, firstname, lastname FROM users
+         SELECT userid, firstname, lastname, avatar FROM users
          WHERE userid = $uid
          ")))
 
@@ -210,11 +228,11 @@ module User = struct
     full_transaction_block (fun dbh ->
       match pattern with
       | None ->
-         (PGSQL(dbh) "SELECT userid, firstname, lastname FROM users")
+         (PGSQL(dbh) "SELECT userid, firstname, lastname, avatar FROM users")
       | Some pattern ->
          let pattern = "%"^pattern^"%" in
          (PGSQL(dbh) "
-         SELECT userid, firstname, lastname
+         SELECT userid, firstname, lastname, avatar
          FROM users
          WHERE CONCAT_WS(' ',firstname,lastname) LIKE $pattern
          "))

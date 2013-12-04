@@ -48,14 +48,16 @@ let main_service_handler uid gp pp =
   Foobar_image.start_crop_on_clicking_on
     crop
     (user);
-  Lwt.return (Foobar_container.page ~user [
+  Lwt.return (Foobar_container.page ~user (
     if (user.fn = "" || user.ln = "")
-    then Foobar_view.information_form ()
-    else (
-      pcdata "welcome !";
+    then [ Foobar_view.information_form () ]
+    else [
+      img ~alt:"no photo" ~a:[a_class ["foobar-avatar"]]
+        ~src:(Foobar_user.avatar_uri_of_user user)
+        ();
       crop;
-    );
-  ])
+    ];
+  ))
 
 let set_personal_data_handler' uid ()
     (((firstname, lastname), (pwd, pwd2)) as pd) =

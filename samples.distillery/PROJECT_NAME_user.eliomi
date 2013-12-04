@@ -20,6 +20,7 @@ exception No_such_user
     uid : int64;
     fn : string;
     ln : string;
+    avatar : string option;
   } deriving (Json)
 }}
 
@@ -27,6 +28,9 @@ exception No_such_user
 val uid_of_user : t -> int64
 val firstname_of_user : t -> string
 val lastname_of_user : t -> string
+val avatar_of_user : t -> string
+val avatar_uri_of_avatar : string -> Eliom_content_core.Xml.uri
+val avatar_uri_of_user : t -> Eliom_content_core.Xml.uri
 
 (** Returns true if the firstname and the lastname of [t] has not
   * been completed yet. *)
@@ -49,15 +53,15 @@ val get_users : ?pattern:string -> unit -> t list Lwt.t
 
 (** Create a new user and returns his uid. *)
 val create :
-  ?password:string -> firstname:string -> lastname:string -> string -> int64 Lwt.t
+  ?password:string -> ?avatar:string -> firstname:string -> lastname:string -> string -> int64 Lwt.t
 (** Same as above, but instead of returning the uid, it returns a user of type
   * [t] *)
 val create' :
-  ?password:string -> firstname:string -> lastname:string -> string -> t Lwt.t
+  ?password:string -> ?avatar:string -> firstname:string -> lastname:string -> string -> t Lwt.t
 
 (** Update the informations of a user. *)
 val update :
-  ?password:string -> firstname:string -> lastname:string -> int64 -> unit Lwt.t
+  ?password:string -> ?avatar:string -> firstname:string -> lastname:string -> int64 -> unit Lwt.t
 (** Another version of [update] using a type [t] instead of labels. *)
 val update' : ?password:string -> t -> unit Lwt.t
 

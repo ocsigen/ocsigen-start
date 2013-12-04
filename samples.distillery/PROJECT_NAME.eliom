@@ -48,13 +48,13 @@ let main_service_handler uid gp pp =
   %%%MODULE_NAME%%%_image.start_crop_on_clicking_on
     crop
     (user);
-  lwt email = %%%MODULE_NAME%%%_user.email_of_uid uid in
   Lwt.return (%%%MODULE_NAME%%%_container.page ~user (
     if (user.fn = "" || user.ln = "")
-    then [%%%MODULE_NAME%%%_view.information_form ()]
+    then [ %%%MODULE_NAME%%%_view.information_form () ]
     else [
-      pcdata "welcome !";
-      D.p [pcdata email];
+      img ~alt:"no photo" ~a:[a_class ["%%%PROJECT_NAME%%%-avatar"]]
+        ~src:(%%%MODULE_NAME%%%_user.avatar_uri_of_user user)
+        ();
       crop;
     ];
   ))

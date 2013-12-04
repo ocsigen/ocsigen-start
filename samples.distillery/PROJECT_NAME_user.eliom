@@ -1,4 +1,5 @@
 open %%%MODULE_NAME%%%_db
+open Eliom_content.Html5.F
 
 exception Already_exists
 exception No_such_user
@@ -22,20 +23,31 @@ exception No_such_user
     uid : int64;
     fn : string;
     ln : string;
+    avatar : string option;
   } deriving (Json)
 }}
 
 (** Create a user of type [t] using db informations. *)
-let create_user_from_db (uid, fn, ln) = {
+let create_user_from_db (uid, fn, ln, avatar) = {
   uid = uid;
   fn = fn;
   ln = ln;
+  avatar = avatar;
 }
 
 (** Getters functions. *)
 let uid_of_user u = u.uid
 let firstname_of_user u = u.fn
 let lastname_of_user u = u.ln
+let avatar_of_user u =
+  match u.avatar with
+    | None -> "%%%PROJECT_NAME%%%_default_avatar"
+    | Some avatar -> avatar
+
+let avatar_uri_of_avatar avatar =
+  uri_of_string (fun () -> "avatars/"^avatar)
+
+let avatar_uri_of_user user = avatar_uri_of_avatar (avatar_of_user user)
 
 let is_complete u =
   not (u.fn = "" && u.ln = "")
@@ -73,26 +85,34 @@ let user_of_uid uid =
  *
  * *)
 
+let empty = {
+  uid = 0L;
+  fn = "";
+  ln = "";
+  avatar = None;
+}
 
 (** Helper function which creates a new user and return it as
  * a record of type [t]. May raise [Already_exists] *)
-let create' ?password ~firstname ~lastname email =
+let create' ?password ?avatar ~firstname ~lastname email =
   try_lwt
     lwt _ = %%%MODULE_NAME%%%_db.User.uid_of_email email in
     Lwt.fail Already_exists
   with No_such_resource ->
-    lwt uid = %%%MODULE_NAME%%%_db.User.create ~firstname ~lastname ?password email in
+    lwt uid =
+      %%%MODULE_NAME%%%_db.User.create ~firstname ~lastname ?password ?avatar email
+    in
     lwt u = %%%MODULE_NAME%%%_db.User.user_of_uid uid in
     Lwt.return (create_user_from_db u)
 
 (* Overwrite the function [update] of [%%%MODULE_NAME%%%_db.User] to reset the cache *)
-let update ?password ~firstname ~lastname uid =
-  lwt () = %%%MODULE_NAME%%%_db.User.update ?password ~firstname ~lastname uid in
+let update ?password ?avatar ~firstname ~lastname uid =
+  lwt () = %%%MODULE_NAME%%%_db.User.update ?password ?avatar ~firstname ~lastname uid in
   MCache.reset uid;
   Lwt.return ()
 
 let update' ?password t =
-  update ?password ~firstname:t.fn ~lastname:t.ln t.uid
+  update ?password ?avatar:t.avatar ~firstname:t.fn ~lastname:t.ln t.uid
 
 let get_users ?pattern () =
   lwt users = %%%MODULE_NAME%%%_db.User.get_users ?pattern () in
