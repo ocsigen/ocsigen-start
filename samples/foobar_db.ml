@@ -101,6 +101,7 @@ module User = struct
         SELECT email FROM preregister
         LIMIT $limit
         "))
+
   let create ?password ~firstname ~lastname email =
     full_transaction_block (fun dbh ->
       lwt () = PGSQL(dbh) "
@@ -204,6 +205,19 @@ module User = struct
   let uid_of_email email =
     full_transaction_block (fun dbh ->
          select_user_from_email_q dbh email)
+
+  let get_users ?pattern () =
+    full_transaction_block (fun dbh ->
+      match pattern with
+      | None ->
+         (PGSQL(dbh) "SELECT userid, firstname, lastname FROM users")
+      | Some pattern ->
+         let pattern = "%"^pattern^"%" in
+         (PGSQL(dbh) "
+         SELECT userid, firstname, lastname
+         FROM users
+         WHERE CONCAT_WS(' ',firstname,lastname) LIKE $pattern
+         "))
 
 end
 

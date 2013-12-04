@@ -93,3 +93,7 @@ let update ?password ~firstname ~lastname uid =
 
 let update' ?password t =
   update ?password ~firstname:t.fn ~lastname:t.ln t.uid
+
+let get_users ?pattern () =
+  lwt users = Foobar_db.User.get_users ?pattern () in
+  Lwt.return (List.map create_user_from_db users)

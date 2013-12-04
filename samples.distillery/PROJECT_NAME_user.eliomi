@@ -44,6 +44,9 @@ val uid_of_email : string -> int64 Lwt.t
 (** Retrieve the main e-mail of the corresponding uid. *)
 val email_of_uid : int64 -> string Lwt.t
 
+(** Get users who match the [pattern] (useful for completion) *)
+val get_users : ?pattern:string -> unit -> t list Lwt.t
+
 (** Create a new user and returns his uid. *)
 val create :
   ?password:string -> firstname:string -> lastname:string -> string -> int64 Lwt.t
