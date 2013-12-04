@@ -57,7 +57,9 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
             try_lwt f uid gp pp
             with exc -> fallback uid gp pp (exc)
           else raise (Predicate_failed None)
-        with exc -> raise (Predicate_failed (Some exc))
+        with
+          | (Predicate_failed _) as exc -> raise exc
+          | exc -> raise (Predicate_failed (Some exc))
       in
       try_lwt Session.connected_fun ?allow ?deny f_wrapped gp pp
       with exc -> fallback !uid' gp pp exc
