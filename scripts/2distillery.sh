@@ -2,25 +2,25 @@
 
 PROJECT_NAME="foobar"
 
-function usage {
+usage() {
     echo "usage: $0 <script> <dir>"
     exit 1
 }
 
-function notice {
+notice() {
     echo "notice: $@"
 }
 
-function warning {
+warning() {
     echo "warning: $@"
 }
 
-function error {
+error() {
     echo "error: $@"
     exit 1
 }
 
-function backup {
+backup() {
     SUFFIX=$( date +"%Y-%m-%d__%Hh%Mm%Ss" )
     echo $1.$SUFFIX
 }
@@ -48,7 +48,7 @@ fi
 notice "create '$DEST_DIR'"
 mkdir -p $DEST_DIR
 
-function filter {
+filter() {
     find $DIR\
          -not -path "*/local*"\
     -and -not -path "*/_server*"\

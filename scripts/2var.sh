@@ -2,7 +2,7 @@
 
 FILE=$1
 
-function ident {
+ident() {
     echo "%%%$1%%%"
 }
 
