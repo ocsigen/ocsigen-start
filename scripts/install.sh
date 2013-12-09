@@ -11,6 +11,7 @@ fi
 
 TPL_DIR=$1
 TPL_NAME=$2
-DEST=$( ocamlfind query eliom )/share/distillery/$TPL_NAME
+DEST=$( eliom-distillery -dir)/$TPL_NAME
+
 
 cp -rf $TPL_DIR $DEST

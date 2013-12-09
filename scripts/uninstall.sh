@@ -10,7 +10,7 @@ if [ $# -lt 1 ]; then
 fi
 
 TPL_NAME=$1
-DEST=$( ocamlfind query eliom )/share/distillery/$TPL_NAME
+DEST=$( eliom-distillery -dir )/$TPL_NAME
 if [ -d $DEST ]; then
     echo "$DEST exists."
     rm -rf $DEST
