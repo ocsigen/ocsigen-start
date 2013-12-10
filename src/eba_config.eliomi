@@ -30,6 +30,10 @@ module type Page = sig
       * the suffix "css/" as directory.  *)
     method css : string list list
 
+    (** [other_head] is a list of custom elements to add in the head section,
+      * it can be used to add "meta" elements, for example. *)
+    method other_head : Eba_shared.Page.head_content
+
     (** [default_error_page] See NOTE (above) *)
     method default_error_page :
       'a 'b. 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t

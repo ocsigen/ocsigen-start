@@ -8,6 +8,7 @@ module Page = struct
     method title = ""
     method js : string list list = []
     method css : string list list = []
+    method other_head : Eba_shared.Page.head_content = []
 
     method default_predicate
       : 'a 'b. 'a -> 'b -> bool Lwt.t

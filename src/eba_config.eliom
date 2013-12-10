@@ -5,6 +5,7 @@ module type Page = sig
     method title : string
     method js : string list list
     method css : string list list
+    method other_head : Eba_shared.Page.head_content
 
     method default_error_page :
       'a 'b. 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
