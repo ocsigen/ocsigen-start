@@ -196,29 +196,22 @@ $(DEPSDIR):
 ##----------------------------------------------------------------------
 ## Documentation
 
-OPTIONS := -colorize-code -stars -sort
+COMMON_OPTIONS := -colorize-code -stars -sort
 
-doc: all
-	rm -rf doc
-	mkdir -p doc
-	mkdir -p doc/client
+eliomdoc_wiki = eliomdoc -$(1) -intro doc/indexdoc.$(1) $(COMMON_OPTIONS) -i $(shell ocamlfind query wikidoc) -g odoc_wiki.cma  -d doc/$(1)/wiki $(2)
+eliomdoc_html = eliomdoc -$(1) -intro doc/indexdoc.$(1) $(COMMON_OPTIONS) -html -d doc/$(1)/html $(2)
+
+doc:
+	rm -rf doc/client
+	rm -rf doc/server
 	mkdir -p doc/client/html
 	mkdir -p doc/client/wiki
-	mkdir -p doc/server
 	mkdir -p doc/server/html
 	mkdir -p doc/server/wiki
-	eliomdoc -client -i $(shell ocamlfind query wikidoc)\
-		-g odoc_wiki.cma $(OPTIONS) -html -d doc/client/html\
-		$(CLIENT_INC_DIRS) $(CLIENT_FILES_DOC)
-	eliomdoc -client -i $(shell ocamlfind query wikidoc)\
-		-g odoc_wiki.cma $(OPTIONS) -d doc/client/wiki\
-		$(CLIENT_INC_DIRS) $(CLIENT_FILES_DOC)
-	eliomdoc -server -i $(shell ocamlfind query wikidoc)\
-		-g odoc_wiki.cma $(OPTIONS) -html -d doc/server/html\
-		$(SERVER_INC_DIRS) $(SERVER_FILES_DOC)
-	eliomdoc -server -i $(shell ocamlfind query wikidoc)\
-		-g odoc_wiki.cma $(OPTIONS) -d doc/server/wiki\
-		$(SERVER_INC_DIRS) $(SERVER_FILES_DOC)
+	$(call eliomdoc_html,client, $(CLIENT_INC_DIRS) $(CLIENT_FILES_DOC))
+	$(call eliomdoc_wiki,client, $(CLIENT_INC_DIRS) $(CLIENT_FILES_DOC))
+	$(call eliomdoc_html,server, $(SERVER_INC_DIRS) $(SERVER_FILES_DOC))
+	$(call eliomdoc_wiki,server, $(SERVER_INC_DIRS) $(SERVER_FILES_DOC))
 
 ##----------------------------------------------------------------------
 ## Clean up
