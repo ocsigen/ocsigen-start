@@ -198,8 +198,8 @@ $(DEPSDIR):
 
 COMMON_OPTIONS := -colorize-code -stars -sort
 
-eliomdoc_wiki = eliomdoc -$(1) -intro doc/indexdoc.$(1) $(COMMON_OPTIONS) -i $(shell ocamlfind query wikidoc) -g odoc_wiki.cma  -d doc/$(1)/wiki $(2)
-eliomdoc_html = eliomdoc -$(1) -intro doc/indexdoc.$(1) $(COMMON_OPTIONS) -html -d doc/$(1)/html $(2)
+eliomdoc_wiki = ODOC_WIKI_SUBPROJECT="$(1)" eliomdoc -$(1) -intro doc/indexdoc.$(1) $(COMMON_OPTIONS) -i $(shell ocamlfind query wikidoc) -g odoc_wiki.cma  -d doc/$(1)/wiki $(2)
+eliomdoc_html = ODOC_WIKI_SUBPROJECT="$(1)" eliomdoc -$(1) -intro doc/indexdoc.$(1) $(COMMON_OPTIONS) -html -d doc/$(1)/html $(2)
 
 doc:
 	rm -rf doc/client
