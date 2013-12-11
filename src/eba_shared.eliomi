@@ -23,6 +23,8 @@
       [ Html5_types.html ] Eliom_content.Html5.elt
     type page_content =
       [ Html5_types.body_content ] Eliom_content.Html5.elt list
+    type head_content =
+      Html5_types.head_content_fun Eliom_content.Html5.elt list
   end
 }}
 
