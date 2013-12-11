@@ -65,6 +65,7 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
     in
     Lwt.return
       (html
-         (Eliom_tools.F.head ~title:C.config#title ~css ~js ())
+         (Eliom_tools.F.head ~title:C.config#title ~css ~js
+           ~other:C.config#other_head ())
          (body content))
 end
