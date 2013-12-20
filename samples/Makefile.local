@@ -45,35 +45,43 @@ PSQL_PARAMS := -p $(PORT) -h $(HOST)
 $(PSQL_DIR):
 	-mkdir -p $@
 
+pg_ctl = $(shell\
+		 sh -c "which pg_ctl" ||\
+		 sh -c "if [ -f pg_ctl ]; then (echo pg_ctl) else (echo '') fi")
+
+ifeq ($(pg_ctl),)
+$(error "no 'pg_ctl' binary found, please run 'scripts/find_pg_ctl.sh'")
+endif
+
 ifeq ($(LOCAL),yes)
 
 db-init: $(PSQL_DIR)
-	pg_ctl initdb -D $(PSQL_DIR)
-	pg_ctl -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
+	$(pg_ctl) initdb -D $(PSQL_DIR)
+	$(pg_ctl) -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
 
 db-start:
-	pg_ctl -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
+	$(pg_ctl) -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
 
 db-stop:
-	pg_ctl -D $(PSQL_DIR) -l $(PSQL_LOG) stop
+	$(pg_ctl) -D $(PSQL_DIR) -l $(PSQL_LOG) stop
 
 db-status:
-	pg_ctl -D $(PSQL_DIR) -l $(PSQL_LOG) status
+	$(pg_ctl) -D $(PSQL_DIR) -l $(PSQL_LOG) status
 
 db-delete:
-	pg_ctl -D $(PSQL_DIR) -l $(PSQL_LOG) stop || true
+	$(pg_ctl) -D $(PSQL_DIR) -l $(PSQL_LOG) stop || true
 	rm -rf $(PSQL_DIR)
 
 else
 
 db-start:
-	pg_ctl -o "-F -p $(PORT)" start
+	$(pg_ctl) -o "-F -p $(PORT)" start
 
 db-status:
-	pg_ctl status
+	$(pg_ctl) status
 
 db-stop:
-	pg_ctl stop
+	$(pg_ctl) stop
 
 endif
 
