@@ -5,7 +5,7 @@ build: [
   ["%{make}%" "install"]
 ]
 remove: [
-  ["ocamlfind" "remove" "eliom-base-app"]
+  ["%{make}%" "uninstall"]
 ]
 depends: [
   "ocamlfind"
