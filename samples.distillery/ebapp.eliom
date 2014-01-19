@@ -58,14 +58,24 @@ include Eba_main.App(struct
       method default_predicate : 'a 'b. 'a -> 'b -> bool Lwt.t
         = (fun _ _ -> Lwt.return true)
 
-      method default_connected_predicate : 'a 'b. int64 -> 'a -> 'b -> bool Lwt.t
+      method default_connected_predicate
+        : 'a 'b. int64 -> 'a -> 'b -> bool Lwt.t
         = (fun _ _ _ -> Lwt.return true)
 
-      method default_error_page : 'a 'b. 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
-        = (fun _ _ _ -> Lwt.return [])
+      method default_error_page
+        : 'a 'b. 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
+        = (fun _ _ exn ->
+          Lwt.return (if Ocsigen_config.get_debugmode ()
+            then [p [pcdata (Printexc.to_string exn)]]
+            else [p [pcdata "Error"]]))
 
-      method default_connected_error_page : 'a 'b. int64 option -> 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
-        = (fun _ _ _ _ -> Lwt.return [])
+      method default_connected_error_page
+        : 'a 'b. int64 option -> 'a -> 'b -> exn
+          -> Eba_shared.Page.page_content Lwt.t
+        = (fun _ _ _ exn ->
+          Lwt.return (if Ocsigen_config.get_debugmode ()
+            then [p [pcdata (Printexc.to_string exn)]]
+            else [p [pcdata "Error"]]))
     end
   end
 end)
