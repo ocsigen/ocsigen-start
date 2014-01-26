@@ -44,10 +44,6 @@ let rec main_service_fallback uid gp pp exc =
 let main_service_handler uid gp pp =
   let open %%%MODULE_NAME%%%_user in
   lwt user = %%%MODULE_NAME%%%_user.user_of_uid uid in
-  let crop = (D.div [pcdata "start cropping"]) in
-  %%%MODULE_NAME%%%_image.start_crop_on_clicking_on
-    crop
-    (user);
   Lwt.return (%%%MODULE_NAME%%%_container.page ~user (
     if (user.fn = "" || user.ln = "")
     then [ %%%MODULE_NAME%%%_view.information_form () ]
@@ -55,7 +51,6 @@ let main_service_handler uid gp pp =
       img ~alt:"no photo" ~a:[a_class ["%%%PROJECT_NAME%%%-avatar"]]
         ~src:(%%%MODULE_NAME%%%_user.avatar_uri_of_user user)
         ();
-      crop;
     ];
   ))
 
