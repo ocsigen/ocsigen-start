@@ -21,7 +21,7 @@ module App(M : ParamT) : sig
   module Session : Eba_sigs.Session
     with type group = M.Groups.t
   module Email : Eba_sigs.Email
-  module Page : Eba_sigs.Page
+  module Page : Eba_sigs.Page with module Session = Session
   module Tools : Eba_sigs.Tools
   module Reqm : Eba_sigs.Reqm
   module State : Eba_sigs.State
