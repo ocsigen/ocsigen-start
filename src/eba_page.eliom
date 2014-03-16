@@ -68,4 +68,28 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
          (Eliom_tools.F.head ~title:C.config#title ~css ~js
            ~other:C.config#other_head ())
          (body content))
+
+  let maybe_connected_page
+      ?allow ?deny
+      ~ondenied
+      ~onerror
+      f gp pp =
+    lwt content =
+      let f_wrapped user gp pp =
+        try_lwt
+          match user with
+          | Some uid -> f uid gp pp
+          | None     -> ondenied gp pp
+        with
+          | exc -> onerror user gp pp exc
+      in
+      try_lwt Session.Opt.connected_fun ?allow ?deny f_wrapped gp pp
+      with
+      | exc -> onerror None gp pp exc
+    in
+    Lwt.return
+      (html
+         (Eliom_tools.F.head ~title:C.config#title ~css ~js
+           ~other:C.config#other_head ())
+         (body content))
 end
