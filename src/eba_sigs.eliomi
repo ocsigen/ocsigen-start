@@ -146,13 +146,13 @@ module type Page = sig
                        -> (int64 -> 'a -> 'b -> page_content Lwt.t)
                        -> 'a -> 'b
                        -> page Lwt.t
-  val maybe_connected_page :
+
+  val how_connected_page :
        ?allow:Session.group list
     -> ?deny:Session.group list
-    -> ondenied:('a -> 'b -> page_content Lwt.t)
-    -> onerror:(int64 option -> 'a -> 'b -> exn -> page_content Lwt.t)
-    -> (int64 -> 'a -> 'b -> page_content Lwt.t)
-    -> 'a -> 'b -> page Lwt.t
+    -> onerror:('get -> 'post -> exn -> page_content Lwt.t)
+    -> (Session.conn_mode -> 'get -> 'post -> page_content Lwt.t)
+    -> 'get -> 'post -> page Lwt.t
 
 end
 
