@@ -139,13 +139,6 @@ module type Page = sig
                        -> 'a -> 'b
                        -> page Lwt.t
 
-  val connected_page :    ?allow:Session.group list
-                       -> ?deny:Session.group list
-                       -> ?predicate:(int64 -> 'a -> 'b -> bool Lwt.t)
-                       -> ?fallback:(int64 option -> 'a -> 'b -> exn -> page_content Lwt.t)
-                       -> (int64 -> 'a -> 'b -> page_content Lwt.t)
-                       -> 'a -> 'b
-                       -> page Lwt.t
 
   val how_connected_page :
        ?allow:Session.group list
