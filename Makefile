@@ -31,7 +31,7 @@ ifeq ($(DEBUG),yes)
   GENERATE_DEBUG ?= -g
 endif
 
-ifeq ($(NATIVE),on)
+ifeq ($(NATIVE),yes)
   OPT_RULE = opt
 endif
 
@@ -143,6 +143,7 @@ META: META.in
 		-e 's#@@SERVER_REQUIRES@@#$(SERVER_PACKAGES)#g' \
 		-e 's#@@SERVER_ARCHIVES_BYTE@@#$(PKG_NAME).server.cma#g' \
 		-e 's#@@SERVER_ARCHIVES_NATIVE@@#$(PKG_NAME).server.cmxa#g' \
+		-e 's#@@SERVER_ARCHIVES_NATIVE_PLUGIN@@#$(PKG_NAME).server.cmxs#g' \
 		$< > $@
 
 CLIENT_CMI=$(wildcard $(addsuffix /eba_*.cmi,$(addprefix $(ELIOM_CLIENT_DIR)/,$(CLIENT_DIRS))))

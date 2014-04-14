@@ -6,11 +6,14 @@ package "server" (
   requires = "@@SERVER_REQUIRES@@"
   directory = "server"
   archive(byte) = "@@SERVER_ARCHIVES_BYTE@@"
+  archive(byte, plugin) = "@@SERVER_ARCHIVES_BYTE@@"
   archive(native) = "@@SERVER_ARCHIVES_NATIVE@@"
+  archive(native, plugin) = "@@SERVER_ARCHIVES_NATIVE_PLUGIN@@"
 )
 
 package "client" (
  requires = "@@CLIENT_REQUIRES@@"
  directory = "client"
  archive(byte) = "@@CLIENT_ARCHIVES_BYTE@@"
+ archive(byte, plugin) = "@@CLIENT_ARCHIVES_BYTE@@"
 )
