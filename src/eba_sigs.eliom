@@ -97,7 +97,7 @@ module type Email = sig
 end
 
 module type Reqm = sig
-  type html = Html5_types.div Eliom_content_core.Html5.elt
+  type html = Html5_types.div Eliom_content.Html5.elt
 
   class type virtual reqm_base = object
     method virtual to_html : html

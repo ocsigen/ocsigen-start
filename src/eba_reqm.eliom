@@ -5,7 +5,7 @@ open Html5_types
 
 exception No_value
 
-type html = div Eliom_content_core.Html5.elt
+type html = div Eliom_content.Html5.elt
 
 class virtual reqm_base () = object
   method virtual to_html : html
