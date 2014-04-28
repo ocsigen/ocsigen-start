@@ -19,7 +19,7 @@ open Html5_types
 exception No_value
 
 (** The type of the html representation of request messages. *)
-type html = div Eliom_content_core.Html5.elt
+type html = div Eliom_content.Html5.elt
 
 (** The type of a basic request message. *)
 class type virtual reqm_base = object

@@ -121,9 +121,9 @@ let create_preregister_section
       let select_all_button' = To_dom.of_input %select_all_button in
       on_click %back_button
         (fun _ _ ->
-           Manip.removeAllChild %container;
-           Manip.removeAllChild %header_section;
-           Manip.appendChilds %header_section
+           Manip.removeAllChildren %container;
+           Manip.removeAllChildren %header_section;
+           Manip.appendChildren %header_section
              [%number_input; %go_button];
            Lwt.return ());
       on_click %select_all_button
@@ -196,11 +196,11 @@ let create_preregister_section
                (Js.to_string (To_dom.of_input %number_input)##value)
            in
            lwt pr_email_l = %get_preregistered_emails_rpc n in
-           Manip.appendChilds
+           Manip.appendChildren
              %container
              (List.map (make_cb) (pr_email_l));
-           Manip.removeAllChild %header_section;
-           Manip.appendChilds
+           Manip.removeAllChildren %header_section;
+           Manip.appendChildren
              %header_section [
                %select_all_container;
                %back_button;
@@ -358,10 +358,10 @@ struct
             %M.set_group_of_user_rpc
             u
         in
-        Manip.removeAllChild %header_section;
-        Manip.appendChilds %header_section [%back_button; clear ()];
-        Manip.removeAllChild %body_section;
-        Manip.appendChilds %body_section body_content;
+        Manip.removeAllChildren %header_section;
+        Manip.appendChildren %header_section [%back_button; clear ()];
+        Manip.removeAllChildren %body_section;
+        Manip.appendChildren %body_section body_content;
         Lwt.return ()
       in
       let on_show u =
@@ -389,7 +389,7 @@ struct
         (fun _ _ ->
            %comp_w#clear;
            %comp_w#clear_input;
-           Manip.removeAllChild %header_section;
+           Manip.removeAllChildren %header_section;
            Manip.appendChild %header_section %inp;
            Manip.removeChild %completion_section %body_section;
            Lwt.return ())
