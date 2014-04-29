@@ -121,8 +121,8 @@ let create_preregister_section
       let select_all_button' = To_dom.of_input %select_all_button in
       on_click %back_button
         (fun _ _ ->
-           Manip.removeAllChildren %container;
-           Manip.removeAllChildren %header_section;
+           Manip.removeChildren %container;
+           Manip.removeChildren %header_section;
            Manip.appendChildren %header_section
              [%number_input; %go_button];
            Lwt.return ());
@@ -199,7 +199,7 @@ let create_preregister_section
            Manip.appendChildren
              %container
              (List.map (make_cb) (pr_email_l));
-           Manip.removeAllChildren %header_section;
+           Manip.removeChildren %header_section;
            Manip.appendChildren
              %header_section [
                %select_all_container;
@@ -358,9 +358,9 @@ struct
             %M.set_group_of_user_rpc
             u
         in
-        Manip.removeAllChildren %header_section;
+        Manip.removeChildren %header_section;
         Manip.appendChildren %header_section [%back_button; clear ()];
-        Manip.removeAllChildren %body_section;
+        Manip.removeChildren %body_section;
         Manip.appendChildren %body_section body_content;
         Lwt.return ()
       in
@@ -389,7 +389,7 @@ struct
         (fun _ _ ->
            %comp_w#clear;
            %comp_w#clear_input;
-           Manip.removeAllChildren %header_section;
+           Manip.removeChildren %header_section;
            Manip.appendChild %header_section %inp;
            Manip.removeChild %completion_section %body_section;
            Lwt.return ())
