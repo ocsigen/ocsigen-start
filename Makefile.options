@@ -50,7 +50,7 @@ CLIENT_PACKAGES := text,calendar,ojwidgets,eliom-widgets.client
 DEBUG := no
 
 # Native mode (yes/no): Compile also with native mode (it will always compile with byte mode)
-NATIVE := no
+NATIVE := yes
 
 # Package's library $(PKG_NAME).{client,server}.cma (a,cmxa,cmxs only server side)
 LIBDIR := lib/
