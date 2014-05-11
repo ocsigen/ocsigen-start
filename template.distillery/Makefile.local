@@ -45,9 +45,33 @@ PSQL_PARAMS := -p $(PORT) -h $(HOST)
 $(PSQL_DIR):
 	-mkdir -p $@
 
-pg_ctl = $(shell\
-		 sh -c "which pg_ctl" ||\
-		 sh -c "if [ -f pg_ctl ]; then (echo pg_ctl) else (echo '') fi")
+
+# Find the exec pg_ctl
+# Default command. If the command isn't available
+# the program will use the latest pg_ctl in the install folder
+def_pg_ctl := pg_ctl
+pg_install_folder := /usr/lib/postgresql/
+
+pg_ctl := ""
+
+# Try to see if this command is in the path. Non empty if command available
+is_def_pg_ctl_installed := $(shell ${def_pg_ctl} --version 2>/dev/null)
+
+ifdef is_def_pg_ctl_installed
+pg_ctl := ${def_pg_ctl} # Command available
+
+else
+# On debian/ubuntu try to find in pg_install_folder/<last version>/bin
+debian_pg_ctl := $(shell (echo -n ${pg_install_folder};(ls ${pg_install_folder} -1 | sort -k1,1n | tail -1 | tr -d '\n'); echo "/bin/pg_ctl") 2>/dev/null)
+is_debian := $(shell ${debian_pg_ctl} --version 2>/dev/null)
+
+ifdef is_debian
+pg_ctl := ${debian_pg_ctl}
+
+else
+pg_ctl := ""
+endif
+endif
 
 ifeq ($(pg_ctl),)
 $(error "no 'pg_ctl' binary found, please run 'scripts/find_pg_ctl.sh'")
