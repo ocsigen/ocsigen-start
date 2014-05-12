@@ -49,7 +49,7 @@ Makefile targets
 
 Here's some help on how to work with this basic distillery project:
 
- - PostgreSQL database initialization: `mkae -f Makefile.local db-init`. This command will
+ - PostgreSQL database initialization: `make -f Makefile.local db-init`. This command will
    configure cluster in `./local_db` directory and will configure peer (i.e. without password)
    authentification for you. You can check is database connectable to using `make psql` command.
 
@@ -131,15 +131,3 @@ This explanation is neither full nor well-written. Any comments are appreciated.
 N.B. At the moment we should use command `make -f Makefile.local db-init` to init database. We can't use main
 `Makefile` because it checks for the existancs of `.depend` file and generates it. During its generation OCaml
 tries to connect to database which obviously is not available yet. 
-
-
-    
-
-
-
-
-
-
-
-
-
