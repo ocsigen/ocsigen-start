@@ -73,8 +73,8 @@ pg_ctl := ""
 endif
 endif
 
-ifeq ($(pg_ctl),)
-$(error "no 'pg_ctl' binary found, please run 'scripts/find_pg_ctl.sh'")
+ifeq ($(pg_ctl),"")
+$(error "no 'pg_ctl' binary found, please edit 'def_pg_ctl' in Makefile.local")
 endif
 
 ifeq ($(LOCAL),yes)
