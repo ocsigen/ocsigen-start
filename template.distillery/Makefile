@@ -67,11 +67,11 @@ DIST_FILES = $(ELIOMSTATICDIR)/$(PROJECT_NAME).js $(LIBDIR)/$(PROJECT_NAME).cma
 
 .PHONY: test.byte test.opt
 test.byte: $(addprefix $(TEST_PREFIX),$(ETCDIR)/$(PROJECT_NAME)-test.conf $(DIST_DIRS) $(DIST_FILES))
-	@echo "==== The website is opened port $(TEST_PORT) (http://localhost:$(TEST_PORT)) ===="
+	@echo "==== The website is served port $(TEST_PORT) (http://localhost:$(TEST_PORT)) ===="
 	$(OCSIGENSERVER) $(RUN_DEBUG) -c $<
 
 test.opt: $(addprefix $(TEST_PREFIX),$(ETCDIR)/$(PROJECT_NAME)-test.conf $(DIST_DIRS) $(patsubst %.cma,%.cmxs, $(DIST_FILES)))
-	@echo "==== The website is opened port $(TEST_PORT) (http://localhost:$(TEST_PORT)) ===="
+	@echo "==== The website is served port $(TEST_PORT) (http://localhost:$(TEST_PORT)) ===="
 	$(OCSIGENSERVER.OPT) $(RUN_DEBUG) -c $<
 
 $(addprefix $(TEST_PREFIX), $(DIST_DIRS)):
@@ -117,11 +117,11 @@ $(addprefix $(PREFIX),$(DATADIR) $(LOGDIR) $(STATICDIR) $(ELIOMSTATICDIR) $(shel
 	install $(addprefix -o ,$(WWWUSER)) -d $@
 
 run.byte:
-	@echo "==== The website is opened port $(PORT) (http://localhost:$(PORT)) ===="
+	@echo "==== The website is served port $(PORT) (http://localhost:$(PORT)) ===="
 	$(OCSIGENSERVER) $(RUN_DEBUG) -c ${PREFIX}${ETCDIR}/${PROJECT_NAME}.conf
 
 run.opt:
-	@echo "==== The website is opened port $(PORT) (http://localhost:$(PORT)) ===="
+	@echo "==== The website is served port $(PORT) (http://localhost:$(PORT)) ===="
 	$(OCSIGENSERVER.OPT) $(RUN_DEBUG) -c ${PREFIX}${ETCDIR}/${PROJECT_NAME}.conf
 
 
