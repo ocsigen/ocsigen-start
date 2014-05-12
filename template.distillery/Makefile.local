@@ -21,7 +21,7 @@ HOST := localhost
 USER := $(USER)
 
 # DO NOT EDIT
-ENV_PGOCAML := PGHOST=$(HOST) PGDATABASE=$(DATABASE) PGPORT=$(PORT) PGUSER=$(USER)
+ENV_PGOCAML := PGDATABASE=$(DATABASE) PGPORT=$(PORT) PGUSER=$(USER) PGHOST=$(HOST)
 
 ## OVERLOAD Required binaries
 ELIOMC            := $(ENV_PGOCAML) $(ELIOMC)
@@ -80,8 +80,13 @@ endif
 ifeq ($(LOCAL),yes)
 
 db-init: $(PSQL_DIR)
-	$(pg_ctl) initdb -D $(PSQL_DIR)
+	$(pg_ctl) initdb -D $(PSQL_DIR) -U $(USER)
+	echo "\nunix_socket_directories='$(PWD)/$(PSQL_DIR)'\n" >> $(PSQL_DIR)/postgresql.conf
+	echo "\nexternal_pid_file='$(PWD)/$(PSQL_DIR)/$(DATABASE).pid'\n">>$(PSQL_DIR)/postgresql.conf
 	$(pg_ctl) -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
+	echo "Waiting for server start...." && sleep 3
+	createdb -h $(PWD)/$(PSQL_DIR) -p $(PORT) $(DATABASE)
+	psql -h $(PWD)/$(PSQL_DIR) -p $(PORT) $(DATABASE) -f $(DATABASE).sql
 
 db-start:
 	$(pg_ctl) -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
@@ -95,6 +100,9 @@ db-status:
 db-delete:
 	$(pg_ctl) -D $(PSQL_DIR) -l $(PSQL_LOG) stop || true
 	rm -rf $(PSQL_DIR)
+
+psql:
+	psql -h $(PWD)/$(PSQL_DIR) -p $(PORT) $(DATABASE)
 
 else
 

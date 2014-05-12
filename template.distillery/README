@@ -49,6 +49,10 @@ Makefile targets
 
 Here's some help on how to work with this basic distillery project:
 
+ - PostgreSQL database initialization: `mkae -f Makefile.local db-init`. This command will
+   configure cluster in `./local_db` directory and will configure peer (i.e. without password)
+   authentification for you. You can check is database connectable to using `make psql` command.
+
  - Test your application by compiling it and running ocsigenserver locally
      $ make test.byte (or test.opt)
 
@@ -69,3 +73,73 @@ Here's some help on how to work with this basic distillery project:
  - If you need a findlib package in your project, add it to the
    variables SERVER_PACKAGES and/or CLIENT_PACKAGES. The configuration
    file will be automatically updated.
+
+Some remarks about database initialization
+------------------------------------------
+
+You can initialize database using command `make -f Makefile.local db-init`. The database files will be created at 
+`$(PWD)/local_db`. If directory already exists and is not empty it will tell you to remove it. So first command is
+
+     $(pg_ctl) initdb -D $(PSQL_DIR) -U $(USER)
+
+Using switch `-U` we tell who will own newly created database. If all is going right it will be you, i.e. current user 
+in terminal emulator.
+
+Also we need to explain postgres where socket files should be stored. By default they are created at 
+`/var/lib/postgres/...` but on some systems (like Debian GNU/Linux) you haven't write access to this folder by default.
+That's we add config line which sets good socket's directory. 
+   
+     echo "\nunix_socket_directories='$(PWD)/$(PSQL_DIR)'\n" >> $(PSQL_DIR)/postgresql.conf
+     
+The same logic can be applied to file which stores postgres's process id. If postgres can't find PID file it can't 
+terminate process. (TODO: check correctness of last sentence. Frankly speaking I don't remember for sure why we need to
+set PID file)
+     
+     echo "\nexternal_pid_file='$(PWD)/$(PSQL_DIR)/$(DATABASE).pid'\n">>$(PSQL_DIR)/postgresql.conf
+
+Next command starts postgres server. Line after switch `-o` will be passed as parameters of postgres's process. `-D`
+specifies directory where database files are stored. `-l` sets where should we write logs.
+
+     $(pg_ctl) -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
+
+After starting database process we can check that it is really started. Using `ps -fu |grep postgres` we can see 3-4
+postgres processes with their descriptions. Using `netstat -l |grep 3000` (where 3000 is default port in EBA) we 
+can see if some process is using this port. If database was started successfully this port should be used by 
+UNIX socket. (TODO: check this.)
+
+In Makefile we wait some time to be sure that server has started successfully.
+
+    echo "Waiting for server start...." && sleep 3
+    
+Now we can create database in our postgres cluster.
+
+    createdb -h $(PWD)/$(PSQL_DIR) -p $(PORT) $(DATABASE)
+    
+Option -h specifies where server is located. IT DOES REALLY MATTER THAT WE USE FULL PATH THERE. Without full path
+postgres will try to connect to machine with name `local_db`. It makes this decision according to starting '/' in 
+`-h` option parameter. Another two parameters are rather obvious.
+
+EBA template also genereates SQL script for database initialisation. It should be called `PROJECT_NAME.sql`. We can 
+import it to database using command:
+
+    psql -h $(PWD)/$(PSQL_DIR) -p $(PORT) $(DATABASE) -f $(DATABASE).sql
+    
+The same idea about `-h` option is appliable  as in previous command. 
+
+This explanation is neither full nor well-written. Any comments are appreciated.
+
+N.B. At the moment we should use command `make -f Makefile.local db-init` to init database. We can't use main
+`Makefile` because it checks for the existancs of `.depend` file and generates it. During its generation OCaml
+tries to connect to database which obviously is not available yet. 
+
+
+    
+
+
+
+
+
+
+
+
+
