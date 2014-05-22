@@ -1,0 +1,2 @@
+Eliom base app is still alpha.
+Look at the API documentaion for more information.
