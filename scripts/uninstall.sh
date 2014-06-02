@@ -14,6 +14,6 @@ DEST=$( eliom-distillery -dir )/$TPL_NAME
 if [ -d $DEST ]; then
     echo "$DEST exists."
     rm -rf $DEST
-else 
+else
     echo "$DEST: no such directory. Nothing to do."
 fi
