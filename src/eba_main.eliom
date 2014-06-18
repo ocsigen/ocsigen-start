@@ -16,7 +16,11 @@ module type ParamT = sig
   module State : Eba_config.State
 end
 
-module App(M : ParamT) : sig
+module App(M : ParamT)
+
+(*VVV FIX! Removing the signature as some functions are missing
+  (used by xprime) *)
+(* : sig
   module App : Eba_sigs.App
   module Session : Eba_sigs.Session
     with type group = M.Groups.t
@@ -33,7 +37,7 @@ module App(M : ParamT) : sig
   module St : Eba_sigs.State
   module Ss : Eba_sigs.Session
   module T : Eba_sigs.Tools
-end
+end *)
 =
 struct
   module App = struct
