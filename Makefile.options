@@ -3,7 +3,7 @@
 #           SETTINGS FOR YOUR PACKAGE
 #----------------------------------------------------------------------
 
-# Package name for your 
+# Package name for your
 PKG_NAME := eliom-base-app
 PKG_VERS := your version
 PKG_DESC := your description
@@ -44,7 +44,7 @@ TEMPLATE_NAME := eba.pgocaml
 # OCamlfind packages for the server
 SERVER_PACKAGES := pgocaml,pgocaml.syntax,text,macaque.syntax,calendar,safepass,eliom-widgets.server,magick
 # OCamlfind packages for the client
-CLIENT_PACKAGES := text,calendar,ojwidgets,eliom-widgets.client
+CLIENT_PACKAGES := calendar,ojwidgets,eliom-widgets.client
 
 # Debug package (yes/no): Debugging info in compilation
 DEBUG := no
