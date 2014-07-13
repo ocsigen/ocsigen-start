@@ -1,5 +1,6 @@
 opam-version: "1"
 maintainer: "dev@ocsigen.org"
+version: "dev"
 build: [
   ["%{make}%"]
   ["%{make}%" "install"]
@@ -13,6 +14,6 @@ depends: [
   "pgocaml"
   "macaque"
   "safepass"
-  "eliom"         {>= "9999"}
-  "eliom-widgets" {>= "9999"}
+  "eliom"         {>= "dev"}
+  "eliom-widgets" {>= "dev"}
 ]
