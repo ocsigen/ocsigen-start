@@ -21,7 +21,7 @@ HOST := localhost
 USER := $(USER)
 
 # DO NOT EDIT
-ENV_PGOCAML := PGDATABASE=$(DATABASE) PGPORT=$(PORT) PGUSER=$(USER)
+ENV_PGOCAML := PGDATABASE=$(DATABASE) PGPORT=$(PORT) PGUSER=$(USER) PGHOST=$(HOST)
 
 ## OVERLOAD Required binaries
 ELIOMC            := $(ENV_PGOCAML) $(ELIOMC)
@@ -45,19 +45,59 @@ PSQL_PARAMS := -p $(PORT) -h $(HOST)
 $(PSQL_DIR):
 	-mkdir -p $@
 
-pg_ctl = $(shell\
-		 sh -c "which pg_ctl" ||\
-		 sh -c "if [ -f pg_ctl ]; then (echo pg_ctl) else (echo '') fi")
 
-ifeq ($(pg_ctl),)
-$(error "no 'pg_ctl' binary found, please run 'scripts/find_pg_ctl.sh'")
+# Find the exec pg_ctl
+# Default command. If the command isn't available
+# the program will use the latest pg_ctl in the install folder
+def_pg_ctl := pg_ctl
+pg_install_folder := /usr/lib/postgresql/
+
+pg_ctl := ""
+
+# Try to see if this command is in the path. Non empty if command available
+is_def_pg_ctl_installed := $(shell $(def_pg_ctl) --version 2>/dev/null)
+
+ifdef is_def_pg_ctl_installed
+pg_ctl := $(def_pg_ctl) # Command available
+
+else
+# On debian/ubuntu try to find in pg_install_folder/<last version>/bin
+debian_pg_ctl := $(shell (echo -n $(pg_install_folder);(ls $(pg_install_folder) -1 | sort -k1,1n | tail -1 | tr -d '\n'); echo "/bin/pg_ctl") 2>/dev/null)
+is_debian := $(shell $(debian_pg_ctl) --version 2>/dev/null)
+
+ifdef is_debian
+pg_ctl := $(debian_pg_ctl)
+
+else
+pg_ctl := ""
+endif
+endif
+
+ifeq ($(pg_ctl),"")
+$(error "no 'pg_ctl' binary found, please edit 'def_pg_ctl' in Makefile.local")
+endif
+
+# unix_socket_directories is for postgres >= 9.3 (before singular)
+pg_ctl_version := $(shell $(pg_ctl) --version | grep -o "[0-9][0-9]*\.[0-9][0-9]*") # I don't use '\+' because I'm not sure every grep implementation escape +
+is_recent := $(shell echo "$(pg_ctl_version)>=9.3" | bc -l)
+
+ifeq ($(is_recent),1)
+sock_dir := "unix_socket_directories"
+else
+sock_dir := "unix_socket_directory"
 endif
 
 ifeq ($(LOCAL),yes)
 
 db-init: $(PSQL_DIR)
-	$(pg_ctl) initdb -D $(PSQL_DIR)
+	@echo "pg_ctl : $(pg_ctl), version $(pg_ctl_version)"
+	$(pg_ctl) initdb -D $(PSQL_DIR) -U $(USER)
+	echo "\n$(sock_dir)='$(PWD)/$(PSQL_DIR)'\n" >> $(PSQL_DIR)/postgresql.conf
+	echo "\nexternal_pid_file='$(PWD)/$(PSQL_DIR)/$(DATABASE).pid'\n">>$(PSQL_DIR)/postgresql.conf
 	$(pg_ctl) -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
+	echo "Waiting for server start...." && sleep 3
+	createdb -h $(PWD)/$(PSQL_DIR) -p $(PORT) $(DATABASE)
+	psql -h $(PWD)/$(PSQL_DIR) -p $(PORT) $(DATABASE) -f $(DATABASE).sql
 
 db-start:
 	$(pg_ctl) -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
@@ -71,6 +111,9 @@ db-status:
 db-delete:
 	$(pg_ctl) -D $(PSQL_DIR) -l $(PSQL_LOG) stop || true
 	rm -rf $(PSQL_DIR)
+
+psql:
+	psql -h $(PWD)/$(PSQL_DIR) -p $(PORT) $(DATABASE)
 
 else
 
