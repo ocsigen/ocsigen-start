@@ -21,7 +21,7 @@ HOST := localhost
 USER := $(USER)
 
 # DO NOT EDIT
-ENV_PGOCAML := PGDATABASE=$(DATABASE) PGPORT=$(PORT) PGUSER=$(USER)
+ENV_PGOCAML := PGHOST=localhost PGDATABASE=$(DATABASE) PGPORT=$(PORT) PGUSER=$(USER)
 
 ## OVERLOAD Required binaries
 ELIOMC            := $(ENV_PGOCAML) $(ELIOMC)
@@ -47,7 +47,7 @@ $(PSQL_DIR):
 
 pg_ctl = $(shell\
 		 sh -c "which pg_ctl" ||\
-		 sh -c "if [ -f pg_ctl ]; then (echo pg_ctl) else (echo '') fi")
+		 sh -c "if [ -f pg_ctl ]; then (echo ./pg_ctl) else (echo '') fi")
 
 ifeq ($(pg_ctl),)
 $(error "no 'pg_ctl' binary found, please run 'scripts/find_pg_ctl.sh'")
@@ -57,6 +57,7 @@ ifeq ($(LOCAL),yes)
 
 db-init: $(PSQL_DIR)
 	$(pg_ctl) initdb -D $(PSQL_DIR)
+	echo unix_socket_directories = \'/tmp\' >> $(PSQL_DIR)/postgresql.conf
 	$(pg_ctl) -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
 
 db-start:

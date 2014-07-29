@@ -1,8 +1,11 @@
 #!/bin/bash
 
-# The only motivation of this script is to found automatically
+# The only motivation of this script is to find automatically
 # a 'pg_ctl' binary on the system. Because on ubuntu and debian,
 # the path of the binary is not included in the PATH variable.
+
+# # Update: The right solution on Debian/Ubuntu seems to be pg_ctlcluster
+# # -- Vincent 
 
 # The script create a file (named $file, see below) if it does
 # not exist.
