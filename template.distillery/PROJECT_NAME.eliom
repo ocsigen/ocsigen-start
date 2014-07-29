@@ -13,7 +13,7 @@ let rec main_service_fallback uid gp pp exc =
           div ~a:[a_class ["left-bar"]] [
             b [pcdata "Sign in:"];
             hr ();
-            p [pcdata "You can sign in if you have already an account:"];
+            p [pcdata "Sign in if you already have an account:"];
             %%%MODULE_NAME%%%_view.connect_form ();
             a ~service:%%%MODULE_NAME%%%_services.forgot_password_service [
               pcdata "Forgot your password?";
@@ -23,7 +23,7 @@ let rec main_service_fallback uid gp pp exc =
           div ~a:[a_class ["left-bar"]] [
             b [pcdata "Sign up:"];
             hr ();
-            p [pcdata "Just sign up to our awesome application!"];
+            p [pcdata "Write your e-mail address to register:"];
             %%%MODULE_NAME%%%_view.sign_up_form ();
           ];
           p [b [pcdata "OR"]];
@@ -31,8 +31,8 @@ let rec main_service_fallback uid gp pp exc =
             b [pcdata "Preregister:"];
             hr ();
             p [
-              pcdata "If you are interested by our application,";
-              pcdata " please let us your email address!";
+              pcdata "Write your e-mail address if you want to get informed";
+              pcdata " about this application.";
             ];
             %%%MODULE_NAME%%%_view.preregister_form ();
           ];
@@ -125,9 +125,9 @@ let forgot_password_handler' () email =
 let about_handler () () =
   Lwt.return (%%%MODULE_NAME%%%_container.page [
     div [
-      p [pcdata "This template provides you a skeleton for an ocsigen application."];
+      p [pcdata "This template provides a skeleton for an Ocsigen application."];
       hr ();
-      p [pcdata "Feel free to modify the code."]
+      p [pcdata "Feel free to modify the generated code and use it or redistribute it as you want."]
     ]
   ])
 
