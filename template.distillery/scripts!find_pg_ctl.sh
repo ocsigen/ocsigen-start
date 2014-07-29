@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # The only motivation of this script is to found automatically
 # a 'pg_ctl' binary on the system. Because on ubuntu and debian,
@@ -40,7 +40,7 @@ fi
 pg_ctl=$( which pg_ctl )
 
 # If 'pg_ctl' is found, write it into the script used by the Makefile
-if [ $? = "1" ]; then
+if [ $? = "0" ]; then
     symbolic_link_to_pg_ctl $pg_ctl
     exit 0
 fi
