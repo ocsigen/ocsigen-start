@@ -21,18 +21,18 @@ let to_notice_box s =
   ]
 
 let notice_string s =
-  Ebapp.Reqm.create
-    ~set:notice_set
-    ~to_html:(to_notice_box)
-    ~default:(fun () -> s)
-    ()
+  ignore (Ebapp.Reqm.create
+            ~set:notice_set
+            ~to_html:(to_notice_box)
+            ~default:(fun () -> s)
+            ())
 
 let error_string s =
-  Ebapp.Reqm.create
-    ~set:error_set
-    ~to_html:(to_error_box)
-    ~default:(fun () -> s)
-    ()
+  ignore (Ebapp.Reqm.create
+            ~set:error_set
+            ~to_html:(to_error_box)
+            ~default:(fun () -> s)
+            ())
 
 let wrong_pdata =
   Ebapp.Reqm.create

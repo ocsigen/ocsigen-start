@@ -72,6 +72,7 @@ let page ?user cnt =
   lwt h = header ?user () in
   Lwt.return (h
               ::match user with
-                | Some user when (user.fn = "" || user.ln = "") ->
+                | Some user when (user.%%%MODULE_NAME%%%_user.fn = ""
+                                 || user.%%%MODULE_NAME%%%_user.ln = "") ->
                   %%%MODULE_NAME%%%_view.information_form () :: l
                 | _ -> l)

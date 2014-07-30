@@ -1,6 +1,13 @@
+(*VVV
+
+  MISSING HERE: AN EXPLANATION OF WHAT IS THIS MODULE
+  I DON'T EVEN KNOW MYSELF ...
+  -- Vincent
+
+*)
+
 let doc_start = ()
 
-module Er = Eliom_reference
 open Html5_types
 
 exception No_value
@@ -14,37 +21,40 @@ end
 class set name = object(self)
 
   val name : string = name
-  val reqms' : (reqm_base list) Er.Volatile.eref =
-    (Er.Volatile.eref
+  val reqms' : (reqm_base list) Eliom_reference.Volatile.eref =
+    (Eliom_reference.Volatile.eref
        ~scope:Eliom_common.request_scope [])
 
   method get_name = name
 
-  method actives = Er.Volatile.get reqms'
+  method actives = Eliom_reference.Volatile.get reqms'
 
   method is_active (reqm : reqm_base) =
     try
-      ignore (List.find ((=) reqm) (Er.Volatile.get reqms'));
+      ignore (List.find ((=) reqm) (Eliom_reference.Volatile.get reqms'));
       true
     with Not_found -> false
 
   method set_active reqm =
     (try
-       let reqm' = List.find ((=) reqm) (Er.Volatile.get reqms') in
+       let reqm' = List.find ((=) reqm) (Eliom_reference.Volatile.get reqms') in
        self # unset_active reqm'
      with Not_found -> ());
-    Er.Volatile.set reqms' (reqm::(Er.Volatile.get reqms'))
+    Eliom_reference.Volatile.set reqms'
+      (reqm::(Eliom_reference.Volatile.get reqms'))
 
   method unset_active reqm =
     try
-      let reqm = List.find ((=) reqm) (Er.Volatile.get reqms') in
+      let reqm = List.find ((=) reqm) (Eliom_reference.Volatile.get reqms') in
       let rec aux rl = function
         | [] -> rl
         | hd::tl ->
             if hd = reqm
             then aux rl tl
             else aux (hd::rl) tl
-      in Er.Volatile.set reqms' (aux [] (Er.Volatile.get reqms'))
+      in
+      Eliom_reference.Volatile.set reqms'
+        (aux [] (Eliom_reference.Volatile.get reqms'))
     with Not_found -> ()
 end
 
@@ -66,17 +76,17 @@ class ['a] reqm ?set ?default ~to_html name =
 object(self)
   inherit reqm_base name
 
-  val mutable v' : ('a option) Er.Volatile.eref option = None
+  val mutable v' : ('a option) Eliom_reference.Volatile.eref option = None
 
   method set v =
     set_if_set_is_def (self :> reqm_base) set;
-    Er.Volatile.set (unsafe_get v') (Some v)
+    Eliom_reference.Volatile.set (unsafe_get v') (Some v)
 
   method clear =
     unset_if_set_is_def (self :> reqm_base) set;
-    Er.Volatile.set (unsafe_get v') (None)
+    Eliom_reference.Volatile.set (unsafe_get v') (None)
 
-  method get_opt = Er.Volatile.get (unsafe_get v')
+  method get_opt = Eliom_reference.Volatile.get (unsafe_get v')
 
   method has = not (self # get_opt = None)
 
@@ -89,7 +99,7 @@ object(self)
     to_html (self # get)
 
   initializer
-    v' <- Some (Er.Volatile.eref
+    v' <- Some (Eliom_reference.Volatile.eref
            ~scope:Eliom_common.request_scope None)
 end
 
