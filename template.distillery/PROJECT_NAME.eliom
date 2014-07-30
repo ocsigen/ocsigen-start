@@ -4,45 +4,7 @@
 }}
 
 let rec main_service_fallback uid gp pp exc =
-  let open Ebapp.Page in
-  match exc with
-  | Ebapp.Session.Not_connected ->
-      (** The following correspond to the home page on when disconnected. *)
-      %%%MODULE_NAME%%%_container.page [
-        div ~a:[a_id "%%%PROJECT_NAME%%%-forms"] [
-          div ~a:[a_class ["eba-box"]] [
-            b [pcdata "Sign in:"];
-            hr ();
-            p [pcdata "Sign in if you already have an account:"];
-            %%%MODULE_NAME%%%_view.connect_form ();
-            a ~service:%%%MODULE_NAME%%%_services.forgot_password_service [
-              pcdata "Forgot your password?";
-            ] ();
-          ];
-          p [b [pcdata "OR"]];
-          div ~a:[a_class ["eba-box"]] [
-            b [pcdata "Sign up:"];
-            hr ();
-            p [pcdata "Write your e-mail address to register:"];
-            %%%MODULE_NAME%%%_view.sign_up_form ();
-          ];
-          (* ** Pre-registration *)
-          (* ** If your Web site is not open and you want to add a
-             ** pre-registration form, uncomment: *)
-          (* p [b [pcdata "OR"]]; *)
-          (* div ~a:[a_class ["eba-box"]] [ *)
-          (*   b [pcdata "Preregister:"]; *)
-          (*   hr (); *)
-          (*   p [ *)
-          (*     pcdata "Write your e-mail address if you want to get informed"; *)
-          (*     pcdata " about this application."; *)
-          (*   ]; *)
-          (*   %%%MODULE_NAME%%%_view.preregister_form (); *)
-          (* ]; *)
-          (* ** end pre-registration *)
-        ];
-      ]
-  | _ -> %%%MODULE_NAME%%%_container.page []
+  %%%MODULE_NAME%%%_container.page [p [pcdata "Welcome!"]]
 
 let main_service_handler uid gp pp =
   let open %%%MODULE_NAME%%%_user in
@@ -97,13 +59,14 @@ let generate_act_key
 let sign_up_handler' () email =
   lwt is_registered = %%%MODULE_NAME%%%_user.is_registered email in
   if is_registered then begin
-    ignore (%%%MODULE_NAME%%%_reqm.(error_string "This user already exist."));
+    Eliom_reference.Volatile.set %%%MODULE_NAME%%%_reqm.user_already_exists true;
     Lwt.return ()
   end else begin
     let act_key =
       generate_act_key ~service:%%%MODULE_NAME%%%_services.main_service email in
     lwt uid = %%%MODULE_NAME%%%_user.create ~firstname:"" ~lastname:"" email in
-    Incus_reqm.(notice_string
+    Eliom_reference.Volatile.set %%%MODULE_NAME%%%_reqm.activation_key_created true;
+    %%%MODULE_NAME%%%_reqm.(notice_string
                   "An activation link has been sent to your e-mail.");
     lwt () = %%%MODULE_NAME%%%_user.add_activationkey ~act_key uid in
     Lwt.return ()
@@ -125,11 +88,10 @@ let forgot_password_handler' () email =
     lwt uid = %%%MODULE_NAME%%%_user.uid_of_email email in
     let act_key =
       generate_act_key ~service:%%%MODULE_NAME%%%_services.main_service email in
-    Incus_reqm.(notice_string
-                  "An activation link has been sent to your e-mail.");
+    Eliom_reference.Volatile.set %%%MODULE_NAME%%%_reqm.activation_key_created true;
     %%%MODULE_NAME%%%_user.add_activationkey ~act_key uid
   with %%%MODULE_NAME%%%_db.No_such_resource ->
-    %%%MODULE_NAME%%%_reqm.(error_string "This user does not exist.");
+    Eliom_reference.Volatile.set %%%MODULE_NAME%%%_reqm.user_does_not_exist true;
     Lwt.return ()
 
 let about_handler () () =
@@ -160,7 +122,7 @@ let connect_handler () (login, pwd) =
     lwt uid = %%%MODULE_NAME%%%_user.verify_password login pwd in
     Ebapp.Session.connect uid
   with %%%MODULE_NAME%%%_db.No_such_resource ->
-    %%%MODULE_NAME%%%_reqm.(error_string "Wrong password.");
+    Eliom_reference.Volatile.set %%%MODULE_NAME%%%_reqm.wrong_password true;
     Lwt.return ()
 
 let activation_handler akey () =
@@ -173,8 +135,7 @@ let activation_handler akey () =
     lwt () = Ebapp.Session.connect uid in
     Eliom_registration.Redirection.send Eliom_service.void_coservice'
   with %%%MODULE_NAME%%%_db.No_such_resource ->
-    %%%MODULE_NAME%%%_reqm.(
-      notice_string "Activation key outdated. Please ask for a new one.");
+    Eliom_reference.Volatile.set %%%MODULE_NAME%%%_reqm.activation_key_outdated true;
     (*VVV This should be a redirection, in order to erase the outdated URL.
       But we do not have a simple way of
       writing an error message after a redirection for now.*)
@@ -195,7 +156,7 @@ let preregister_handler' () email =
   if not (is_preregistered || is_registered)
    then %%%MODULE_NAME%%%_user.add_preregister email
    else begin
-     ignore (%%%MODULE_NAME%%%_reqm.(error_string "Email already used"));
+     Eliom_reference.Volatile.set %%%MODULE_NAME%%%_reqm.user_already_preregistered true;
      Lwt.return ()
    end
 

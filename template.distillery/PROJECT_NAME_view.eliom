@@ -3,6 +3,26 @@
   open Eliom_content.Html5.F
 }}
 
+let generic_email_form ?label ~service () =
+  D.post_form ~service
+    (fun name ->
+      let l = [
+        string_input
+          ~a:[a_placeholder "e-mail address"]
+          ~input_type:`Email
+          ~name
+          ();
+        string_input
+          ~a:[a_class ["button"]]
+          ~input_type:`Submit
+          ~value:"Send"
+          ();
+      ]
+      in
+      match label with
+        | None -> l
+        | Some lab -> F.label [pcdata lab]::l) ()
+
 let connect_form () =
   post_form ~service:%%%MODULE_NAME%%%_services.connect_service
     (fun (login, password) -> [
@@ -34,34 +54,10 @@ let disconnect_button () =
     ]) ()
 
 let sign_up_form () =
-  post_form ~service:%%%MODULE_NAME%%%_services.sign_up_service'
-    (fun (email) -> [
-      string_input
-        ~a:[a_placeholder "Your email"]
-        ~name:email
-        ~input_type:`Email
-        ();
-      string_input
-        ~a:[a_class ["button"]]
-        ~input_type:`Submit
-        ~value:"Sign up"
-        ();
-    ]) ()
+  generic_email_form ~service:%%%MODULE_NAME%%%_services.sign_up_service' ()
 
 let forgot_password_form () =
-  post_form ~service:%%%MODULE_NAME%%%_services.forgot_password_service'
-    (fun (email) -> [
-      string_input
-        ~a:[a_placeholder "Your email"]
-        ~name:email
-        ~input_type:`Email
-        ();
-      string_input
-        ~a:[a_class ["button"]]
-        ~input_type:`Submit
-        ~value:"Go"
-        ();
-    ]) ()
+  generic_email_form ~service:%%%MODULE_NAME%%%_services.forgot_password_service' ()
 
 let information_form () =
   post_form
@@ -95,20 +91,8 @@ let information_form () =
         ();
     ]) ()
 
-let preregister_form () =
-  post_form ~service:%%%MODULE_NAME%%%_services.preregister_service'
-    (fun email -> [
-      string_input
-        ~a:[a_placeholder "Your email"]
-        ~name:email
-        ~input_type:`Email
-        ();
-      string_input
-        ~a:[a_class ["button"]]
-        ~input_type:`Submit
-        ~value:"Submit"
-        ();
-    ]) ()
+let preregister_form label =
+  generic_email_form ~service:%%%MODULE_NAME%%%_services.preregister_service' ~label ()
 
 let home_button () =
   form ~service:%%%MODULE_NAME%%%_services.main_service

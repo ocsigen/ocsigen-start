@@ -487,3 +487,46 @@ div.eba_upload_error {
     margin: 10px;
     padding: 15px;
 }
+
+
+
+
+/* Login box */
+div#eba_login_signup_box {
+  height: auto;
+  right: 0;
+  position: absolute;
+  top: 0;
+  width: 400px;
+}
+div#eba_login_signup_box form {
+  text-align: left;
+  height: auto;
+}
+div#eba_login_signup_box input {
+  display: inline-block;
+  margin: 0 10px 10px 0;
+  width: 120px;
+}
+div#eba_login_signup_box label {
+  margin: 0 10px 0 0;
+}
+div#eba_login_signup_box h2 {
+  display: inline;
+  margin: 0 10px 0 0;
+  color: #ddd;
+  cursor: pointer;
+  font-size: 12px;
+}
+div#eba_login_signup_box h2.ojw_pressed {
+  color: black;
+}
+div#eba_login_signup_box p {
+  width: 400px;
+  background-color: white;
+  padding: 14px 8px;
+  margin: 0;
+  text-align: left;
+  position: absolute;
+  top: 0;
+}
