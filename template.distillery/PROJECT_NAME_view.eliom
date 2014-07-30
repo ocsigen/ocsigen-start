@@ -51,7 +51,6 @@ let sign_up_form () =
 let forgot_password_form () =
   post_form ~service:%%%MODULE_NAME%%%_services.forgot_password_service'
     (fun (email) -> [
-      label [pcdata "Forgot your password ?"];
       string_input
         ~a:[a_placeholder "Your email"]
         ~name:email
@@ -65,7 +64,9 @@ let forgot_password_form () =
     ]) ()
 
 let information_form () =
-  post_form ~service:%%%MODULE_NAME%%%_services.set_personal_data_service'
+  post_form
+    ~a:[a_class ["info-form"]]
+    ~service:%%%MODULE_NAME%%%_services.set_personal_data_service'
     (fun ((fname, lname), (password1, password2)) -> [
       string_input
         ~a:[a_placeholder "Your firstname"]
@@ -117,3 +118,19 @@ let home_button () =
         ~value:"home"
         ();
     ])
+
+let avatar user =
+  img ~alt:"picture" ~a:[a_class ["%%%PROJECT_NAME%%%-avatar"]]
+    ~src:(%%%MODULE_NAME%%%_user.avatar_uri_of_user user)
+    ()
+
+let username user =
+  match %%%MODULE_NAME%%%_user.firstname_of_user user with
+    | "" ->
+      lwt email = %%%MODULE_NAME%%%_user.email_of_user user in
+      Lwt.return (span [pcdata email])
+    | s ->
+      Lwt.return (span [pcdata s;
+                        pcdata " ";
+                        pcdata (%%%MODULE_NAME%%%_user.lastname_of_user user);
+                       ])

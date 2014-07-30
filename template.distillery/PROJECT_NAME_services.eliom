@@ -58,12 +58,12 @@ let activation_service =
 
 let eba_github_service =
   Eliom_service.Http.external_service
-    ~prefix:"http://"
-    ~path:["github.com"; "ocsigen"; "eliom-base-app"]
+    ~prefix:"http://github.com"
+    ~path:["ocsigen"; "eliom-base-app"]
     ~get_params:Eliom_parameter.unit ()
 
 let ocsigen_service =
   Eliom_service.Http.external_service
-    ~prefix:"http://"
-    ~path:["ocsigen.org"]
+    ~prefix:"http://ocsigen.org"
+    ~path:[]
     ~get_params:Eliom_parameter.unit ()

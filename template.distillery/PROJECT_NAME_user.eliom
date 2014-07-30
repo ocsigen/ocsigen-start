@@ -41,13 +41,15 @@ let firstname_of_user u = u.fn
 let lastname_of_user u = u.ln
 let avatar_of_user u =
   match u.avatar with
-    | None -> "%%%PROJECT_NAME%%%_default_avatar"
+    | None -> "%%%PROJECT_NAME%%%_default_avatar.jpg"
     | Some avatar -> avatar
 
 let avatar_uri_of_avatar avatar =
-  uri_of_string (fun () -> "avatars/"^avatar)
+  make_uri ~service:(Eliom_service.static_dir ()) ["avatars"; avatar]
 
 let avatar_uri_of_user user = avatar_uri_of_avatar (avatar_of_user user)
+
+let email_of_user user = %%%MODULE_NAME%%%_db.User.email_of_uid user.uid
 
 let is_complete u =
   not (u.fn = "" && u.ln = "")
@@ -100,12 +102,14 @@ let create' ?password ?avatar ~firstname ~lastname email =
     Lwt.fail Already_exists
   with No_such_resource ->
     lwt uid =
-      %%%MODULE_NAME%%%_db.User.create ~firstname ~lastname ?password ?avatar email
+      %%%MODULE_NAME%%%_db.User.create
+        ~firstname ~lastname ?password ?avatar email
     in
     lwt u = %%%MODULE_NAME%%%_db.User.user_of_uid uid in
     Lwt.return (create_user_from_db u)
 
-(* Overwrite the function [update] of [%%%MODULE_NAME%%%_db.User] to reset the cache *)
+(* Overwrites the function [update] of [%%%MODULE_NAME%%%_db.User]
+   to reset the cache *)
 let update ?password ?avatar ~firstname ~lastname uid =
   lwt () = %%%MODULE_NAME%%%_db.User.update ?password ?avatar ~firstname ~lastname uid in
   MCache.reset uid;

@@ -26,14 +26,15 @@ eliom-distillery:
    This is your initial source file.
    All Eliom files (*.eliom, *.eliomi) in this directory are
    automatically considered.  To add a .ml/.mli file to your project,
-   append it to the variable SERVER_FILES or CLIENT_FILES.
+   append it to the variable SERVER_FILES or CLIENT_FILES in Makefile.options.
 
  - static/
-   The content of this folder is statically served. Put your CSS or
-   additional JavaScript files here!
+   This folder contains the static data for your Website.
+   The content will be copied into the static file directory of the server.
+   Put your CSS or additional JavaScript files here.
 
  - Makefile.options
-   Configure your project here!
+   Configure your project here.
 
  - %%%PROJECT_NAME%%%.conf.in
    This file is a template for the configuration file for
@@ -44,8 +45,7 @@ eliom-distillery:
 
  - Makefile
    This contains all rules necessary to build, test, and run your
-   Eliom application. You better don't touch it ;) See below for the
-   relevant targets.
+   Eliom application. See below for the relevant targets.
 
  - README
 

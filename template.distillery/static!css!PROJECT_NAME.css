@@ -5,7 +5,7 @@ html{
 body {
   margin: 0px;
   min-height: 100%;
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 500;
 }
 
@@ -118,6 +118,10 @@ a:visited {
   display: inline-block;
 }
 
+.info-form {
+  text-align: center;
+}
+
 #%%%PROJECT_NAME%%%-navbar {
   margin-bottom: 10px;
 }
@@ -149,10 +153,25 @@ a:visited {
 }
 
 #%%%PROJECT_NAME%%%-user-box {
-  margin-bottom: 10px;
+}
+
+#%%%PROJECT_NAME%%%-user-box img,
+#%%%PROJECT_NAME%%%-user-box span,
+#%%%PROJECT_NAME%%%-user-box form {
+  display: inline-block;
+}
+
+#%%%PROJECT_NAME%%%-user-box img {
+  height: 50px;
+  padding: 17px 8px;
+}
+
+#%%%PROJECT_NAME%%%-user-box span {
+  height: 50px;
+  width: 200px;
 }
 
 .%%%PROJECT_NAME%%%-avatar {
-  width: 200px;
-  height: 200px;
+  width: 50px;
+  height: 50px;
 }
