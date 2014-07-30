@@ -104,6 +104,8 @@ let sign_up_handler' () email =
     let act_key =
       generate_act_key ~service:%%%MODULE_NAME%%%_services.main_service email in
     lwt uid = %%%MODULE_NAME%%%_user.create ~firstname:"" ~lastname:"" email in
+    Incus_reqm.(notice_string
+                  "An activation link has been sent to your e-mail.");
     lwt () = %%%MODULE_NAME%%%_user.add_activationkey ~act_key uid in
     Lwt.return ()
   end
@@ -124,6 +126,8 @@ let forgot_password_handler' () email =
     lwt uid = %%%MODULE_NAME%%%_user.uid_of_email email in
     let act_key =
       generate_act_key ~service:%%%MODULE_NAME%%%_services.main_service email in
+    Incus_reqm.(notice_string
+                  "An activation link has been sent to your e-mail.");
     %%%MODULE_NAME%%%_user.add_activationkey ~act_key uid
   with %%%MODULE_NAME%%%_db.No_such_resource ->
     %%%MODULE_NAME%%%_reqm.(error_string "This user does not exist.");
