@@ -128,9 +128,9 @@ let username user =
   match %%%MODULE_NAME%%%_user.firstname_of_user user with
     | "" ->
       lwt email = %%%MODULE_NAME%%%_user.email_of_user user in
-      Lwt.return (span [pcdata email])
+      Lwt.return (div [pcdata email])
     | s ->
-      Lwt.return (span [pcdata s;
-                        pcdata " ";
-                        pcdata (%%%MODULE_NAME%%%_user.lastname_of_user user);
-                       ])
+      Lwt.return (div [pcdata s;
+                       pcdata " ";
+                       pcdata (%%%MODULE_NAME%%%_user.lastname_of_user user);
+                      ])

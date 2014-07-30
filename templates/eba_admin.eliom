@@ -39,9 +39,6 @@ let restrictive_number_input text =
   }};
   number_input
 
-{shared{
-  let clear () = div ~a:[a_style "clear: both"] []
-}}
 
 let create_state_section
       state
@@ -205,7 +202,6 @@ let create_preregister_section
                %select_all_container;
                %back_button;
                %create_account_button;
-               clear ()
              ];
            Lwt.return ())
     }};
@@ -277,7 +273,7 @@ let create_preregister_section
             ];
           ]
       ]
-      ::(rbs @ [div ~a:[a_style "clear: both"] []]))
+      ::rbs)
    *)
 }}
 
@@ -359,7 +355,7 @@ struct
             u
         in
         Manip.removeChildren %header_section;
-        Manip.appendChildren %header_section [%back_button; clear ()];
+        Manip.appendChildren %header_section [%back_button];
         Manip.removeChildren %body_section;
         Manip.appendChildren %body_section body_content;
         Lwt.return ()

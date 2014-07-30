@@ -5,36 +5,30 @@
 }}
 
 let header ?user () =
-  let navbar_cls =
-    match user with
-      | None -> ["absolute"; "right"]
-      | Some _ -> ["inline-block"]
-  in
   lwt user_box =
     match user with
       | None -> Lwt.return (nothing ())
       | Some user ->
         lwt username = %%%MODULE_NAME%%%_view.username user in
-        Lwt.return (div ~a:[a_id "%%%PROJECT_NAME%%%-user-box";
-                            a_class ["absolute"; "right"; "bottom"]] [
+        Lwt.return (div ~a:[a_id "%%%PROJECT_NAME%%%-user-box"] [
                       %%%MODULE_NAME%%%_view.avatar user;
                       username;
                       %%%MODULE_NAME%%%_view.disconnect_button ();
                     ])
   in
   Lwt.return
-    (div ~a:[a_id "%%%PROJECT_NAME%%%-header"; a_class ["center"]] [
+    (div ~a:[a_id "%%%PROJECT_NAME%%%-header"] [
       a ~a:[a_id "%%%PROJECT_NAME%%%-logo"]
         ~service:%%%MODULE_NAME%%%_services.main_service [
           pcdata Ebapp.App.app_name;
         ] ();
-      div ~a:[a_id "%%%PROJECT_NAME%%%-navbar"; a_class ("bottom"::navbar_cls)]
+      div ~a:[a_id "%%%PROJECT_NAME%%%-navbar"]
         [
-          a ~a:[a_class ["item"; "left-bar"]]
+          a ~a:[a_class ["item"; "eba-box"]]
             ~service:%%%MODULE_NAME%%%_services.main_service [
               pcdata "Home";
             ] ();
-          a ~a:[a_class ["item"; "left-bar"]]
+          a ~a:[a_class ["item"; "eba-box"]]
             ~service:%%%MODULE_NAME%%%_services.about_service [
               pcdata "About";
             ] ();
@@ -43,7 +37,7 @@ let header ?user () =
     ])
 
 let footer ?user () =
-  div ~a:[a_id "%%%PROJECT_NAME%%%-footer"; a_class ["center"]] [
+  div ~a:[a_id "%%%PROJECT_NAME%%%-footer"] [
     span ~a:[a_class ["eba-template"]] [
       pcdata "This application has been generated using the ";
       a ~service:%%%MODULE_NAME%%%_services.eba_github_service [
@@ -59,7 +53,7 @@ let footer ?user () =
 
 let page ?user cnt =
   let l =
-    [ div ~a:[a_id "%%%PROJECT_NAME%%%-body"; a_class ["center"]]
+    [ div ~a:[a_id "%%%PROJECT_NAME%%%-body"]
         (div ~a:[a_id "%%%PROJECT_NAME%%%-request-msgs"]
            ( (List.map (Ebapp.Reqm.to_html)
                 (Ebapp.Reqm.to_list %%%MODULE_NAME%%%_reqm.notice_set))

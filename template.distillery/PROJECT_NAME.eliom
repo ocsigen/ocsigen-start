@@ -10,7 +10,7 @@ let rec main_service_fallback uid gp pp exc =
       (** The following correspond to the home page on when disconnected. *)
       %%%MODULE_NAME%%%_container.page [
         div ~a:[a_id "%%%PROJECT_NAME%%%-forms"] [
-          div ~a:[a_class ["left-bar"]] [
+          div ~a:[a_class ["eba-box"]] [
             b [pcdata "Sign in:"];
             hr ();
             p [pcdata "Sign in if you already have an account:"];
@@ -20,7 +20,7 @@ let rec main_service_fallback uid gp pp exc =
             ] ();
           ];
           p [b [pcdata "OR"]];
-          div ~a:[a_class ["left-bar"]] [
+          div ~a:[a_class ["eba-box"]] [
             b [pcdata "Sign up:"];
             hr ();
             p [pcdata "Write your e-mail address to register:"];
@@ -30,7 +30,7 @@ let rec main_service_fallback uid gp pp exc =
           (* ** If your Web site is not open and you want to add a
              ** pre-registration form, uncomment: *)
           (* p [b [pcdata "OR"]]; *)
-          (* div ~a:[a_class ["left-bar"]] [ *)
+          (* div ~a:[a_class ["eba-box"]] [ *)
           (*   b [pcdata "Preregister:"]; *)
           (*   hr (); *)
           (*   p [ *)
@@ -41,7 +41,6 @@ let rec main_service_fallback uid gp pp exc =
           (* ]; *)
           (* ** end pre-registration *)
         ];
-        div ~a:[a_class ["clear"]] [];
       ]
   | _ -> %%%MODULE_NAME%%%_container.page []
 
@@ -113,7 +112,7 @@ let sign_up_handler' () email =
 let forgot_password_handler () () =
   %%%MODULE_NAME%%%_container.page [
     div ~a:[a_id "%%%PROJECT_NAME%%%-forms"] [
-      div ~a:[a_class ["left-bar"]] [
+      div ~a:[a_class ["eba-box"]] [
         p [pcdata "Enter your e-mail address to receive an activation link \
                    to access to your account:"];
         %%%MODULE_NAME%%%_view.forgot_password_form ();

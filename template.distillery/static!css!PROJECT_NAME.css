@@ -34,30 +34,12 @@ a:visited {
   font-size: 10pt;
 }
 
-.center {
-  margin-left: auto;
-  margin-right: auto;
-}
-
 .column {
   width: 50%;
 }
-.left-bar {
+.eba-box {
   border-left: 3px solid #dbdbdb;
   padding-left: 10px;
-}
-
-.left {
-  left: 0;
-}
-.right {
-  right: 0;
-}
-.absolute {
-  position: absolute;
-}
-.bottom {
-  bottom: 0;
 }
 
 .bar-item {
@@ -68,10 +50,6 @@ a:visited {
   border: none;
   background-color: #4183c4;
   color: white;
-}
-
-.clear {
-  clear: both;
 }
 
 .inline-block {
@@ -96,6 +74,8 @@ a:visited {
   width: 70%;
   border-bottom: 2px solid #dbdbdb;
   height: 50px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #%%%PROJECT_NAME%%%-body {
@@ -103,6 +83,8 @@ a:visited {
   margin-bottom: 40px;
   width: 70%;
   text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #%%%PROJECT_NAME%%%-footer {
@@ -111,6 +93,8 @@ a:visited {
   padding: 10px;
   border-top: 2px solid #dbdbdb;
   height: 50px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #%%%PROJECT_NAME%%%-forms {
@@ -124,6 +108,8 @@ a:visited {
 
 #%%%PROJECT_NAME%%%-navbar {
   margin-bottom: 10px;
+  bottom: 0;
+  display: inline-block;
 }
 
 #%%%PROJECT_NAME%%%-navbar .item {
@@ -153,22 +139,26 @@ a:visited {
 }
 
 #%%%PROJECT_NAME%%%-user-box {
+  right: 0;
+  position: absolute;
+  bottom: 0;
 }
 
 #%%%PROJECT_NAME%%%-user-box img,
-#%%%PROJECT_NAME%%%-user-box span,
+#%%%PROJECT_NAME%%%-user-box div,
 #%%%PROJECT_NAME%%%-user-box form {
   display: inline-block;
+  vertical-align: middle;
+  padding: 0;
 }
 
 #%%%PROJECT_NAME%%%-user-box img {
   height: 50px;
-  padding: 17px 8px;
 }
 
-#%%%PROJECT_NAME%%%-user-box span {
-  height: 50px;
+#%%%PROJECT_NAME%%%-user-box div {
   width: 200px;
+  padding: 0px 8px;
 }
 
 .%%%PROJECT_NAME%%%-avatar {
