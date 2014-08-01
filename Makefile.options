@@ -5,8 +5,8 @@
 
 # Package name for your
 PKG_NAME := eliom-base-app
-PKG_VERS := your version
-PKG_DESC := your description
+PKG_VERS := 0.1
+PKG_DESC := Eliom application skeleton ready to use to build your own application with users, (pre)registration, notifications, etc.
 
 # Source files for the server
 SERVER_FILES := $(wildcard \

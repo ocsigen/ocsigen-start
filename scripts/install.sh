@@ -11,7 +11,7 @@ fi
 
 TPL_DIR=$1
 TPL_NAME=$2
-DEST=$( eliom-distillery -dir)/$TPL_NAME
+DEST=$DESTDIR/$(eliom-distillery -dir)/$TPL_NAME
 
-
+mkdir -p $DEST
 cp -rf $TPL_DIR $DEST
