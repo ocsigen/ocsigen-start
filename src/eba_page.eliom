@@ -68,4 +68,17 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
          (Eliom_tools.F.head ~title:C.config#title ~css ~js
            ~other:C.config#other_head ())
          (body content))
+
+  let how_connected_page ?allow ?deny ~onerror f gp pp =
+    lwt content =
+      try_lwt Session.how_connected ?allow ?deny f gp pp
+      with
+      | exc -> onerror gp pp exc
+    in
+    Lwt.return
+      (html
+         (Eliom_tools.F.head ~title:C.config#title ~css ~js
+           ~other:C.config#other_head ())
+         (body content))
+
 end

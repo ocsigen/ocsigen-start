@@ -37,6 +37,13 @@ module type Session = sig
 
   val get_current_userid : unit -> int64
 
+  type conn_mode = [ `GuestConnected | `GuestDenied | `Denied of int64 | `Allowed of int64 ]
+  val how_connected :
+     ?allow:group list
+  -> ?deny:group list
+  -> (conn_mode -> 'get -> 'post -> 'a Lwt.t)
+  -> 'get -> 'post -> 'a Lwt.t
+
   module Opt : sig
     val connected_fun :
        ?allow:group list
@@ -82,6 +89,14 @@ module type Page = sig
     -> (int64 -> 'a -> 'b -> page_content Lwt.t)
     -> 'a -> 'b
     -> page Lwt.t
+
+  val how_connected_page :
+       ?allow:Session.group list
+    -> ?deny:Session.group list
+    -> onerror:('get -> 'post -> exn -> page_content Lwt.t)
+    -> (Session.conn_mode -> 'get -> 'post -> page_content Lwt.t)
+    -> 'get -> 'post -> page Lwt.t
+
 end
 
 module type Email = sig

@@ -151,6 +151,11 @@ struct
       Lwt.fail Permission_denied
     end
 
+    let check_allow_deny_opt userid allow deny =
+      try_lwt
+        lwt () = check_allow_deny userid allow deny in
+        Lwt.return true
+      with Permission_denied -> Lwt.return false
 
   (** The connection wrapper checks whether the user is connected,
       and if not displays the login page.
@@ -165,7 +170,7 @@ struct
       functions [on_start_process] is called,
       and also [on_start_connected_process] if connected.
   *)
-  let gen_wrapper ~allow ~deny connected not_connected gp pp =
+  let gen_wrapper' () =
     let new_process = Eliom_request_info.get_sp_client_appl_name () = None in
     let uids = Eliom_state.get_volatile_data_session_group () in
     let get_uid uid =
@@ -212,6 +217,10 @@ struct
       else Lwt.return ()
     in
     lwt () = C.config#on_request in
+    Lwt.return uid
+
+  let gen_wrapper ~allow ~deny connected not_connected gp pp =
+    lwt uid = gen_wrapper' () in
     match uid with
       | None ->
         if allow = None
@@ -221,6 +230,22 @@ struct
         lwt () = check_allow_deny id allow deny in
         lwt () = C.config#on_connected_request id in
         connected id gp pp
+
+  type conn_mode = [ `GuestConnected | `GuestDenied | `Denied of int64 | `Allowed of int64 ]
+  let how_connected ?allow ?deny connected gp pp =
+    lwt uid = gen_wrapper' () in
+    match uid with
+      | None ->
+        if allow = None
+        then connected `GuestConnected gp pp
+        else connected `GuestDenied gp pp
+      | Some id ->
+        lwt ok = check_allow_deny_opt id allow deny in
+        if ok then begin
+          lwt () = C.config#on_connected_request id in
+          connected (`Allowed id) gp pp
+        end else
+          connected (`Denied id) gp pp
 
   let connected_fun ?allow ?deny f gp pp =
     gen_wrapper
