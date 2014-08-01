@@ -153,19 +153,28 @@ struct
 
 
   (** The connection wrapper checks whether the user is connected,
-      and if not displays the login page.
+      and calls the page generator accordingly.
+      It is usually recommended to have both a connected and non-connected
+      version of each page. By default, the non-connected version
+      will display a connection form.
 
-      If yes, [gen_wrapper connected on_start_process non_connected gp pp]
+      If connected, [gen_wrapper connected non_connected gp pp]
       calls the [connected] function given as parameters,
-      taking user name, GET parameters [gp] and POST parameters [pp].
+      taking user id, GET parameters [gp] and POST parameters [pp].
 
       If not, it calls the [not_connected] function.
 
       If we are launching a new client side process,
       functions [on_start_process] is called,
       and also [on_start_connected_process] if connected.
+
+      If [allow] or [deny] are present, it will check that the user belongs
+      or not to these groups, and call function [deny_fun] otherwise.
+      By default, it raises [Permission_denied].
   *)
-  let gen_wrapper ~allow ~deny connected not_connected gp pp =
+  let gen_wrapper ~allow ~deny
+      ?(deny_fun = fun _ -> Lwt.fail Permission_denied)
+      connected not_connected gp pp =
     let new_process = Eliom_request_info.get_sp_client_appl_name () = None in
     let uids = Eliom_state.get_volatile_data_session_group () in
     let get_uid uid =
@@ -216,37 +225,39 @@ struct
       | None ->
         if allow = None
         then not_connected gp pp
-        else Lwt.fail Permission_denied
+        else deny_fun None
       | Some id ->
-        lwt () = check_allow_deny id allow deny in
-        lwt () = C.on_connected_request id in
-        connected id gp pp
+        try_lwt
+          lwt () = check_allow_deny id allow deny in
+          lwt () = C.on_connected_request id in
+          connected id gp pp
+        with Permission_denied -> deny_fun uid
 
-  let connected_fun ?allow ?deny f gp pp =
+  let connected_fun ?allow ?deny ?deny_fun f gp pp =
     gen_wrapper
-      ~allow ~deny
+      ~allow ~deny ?deny_fun
       f
       (fun _ _ -> Lwt.fail Eba_shared.Session.Not_connected)
       gp pp
 
-  let connected_rpc ?allow ?deny f pp =
+  let connected_rpc ?allow ?deny ?deny_fun f pp =
     gen_wrapper
-      ~allow ~deny
+      ~allow ~deny ?deny_fun
       (fun userid _ p -> f userid p)
       (fun _ _ -> Lwt.fail Eba_shared.Session.Not_connected)
       () pp
 
   module Opt = struct
-    let connected_fun ?allow ?deny f gp pp =
+    let connected_fun ?allow ?deny ?deny_fun f gp pp =
       gen_wrapper
-        ~allow ~deny
+        ~allow ~deny ?deny_fun
         (fun userid gp pp -> f (Some userid) gp pp)
         (fun gp pp -> f None gp pp)
         gp pp
 
-    let connected_rpc ?allow ?deny f pp =
+    let connected_rpc ?allow ?deny ?deny_fun f pp =
       gen_wrapper
-        ~allow ~deny
+        ~allow ~deny ?deny_fun
         (fun userid _ p -> f (Some userid) p)
         (fun _ p -> f None p)
         () pp

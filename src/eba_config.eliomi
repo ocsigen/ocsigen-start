@@ -46,7 +46,7 @@ module type Page = sig
 
     (** [default_connected_error_page] See NOTE (above) *)
   val default_connected_predicate :
-      int64 -> 'a -> 'b -> bool Lwt.t
+      int64 option -> 'a -> 'b -> bool Lwt.t
 
 end
 

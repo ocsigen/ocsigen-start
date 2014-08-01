@@ -14,7 +14,7 @@ module type Page = sig
   val default_predicate :
       'a -> 'b -> bool Lwt.t
   val default_connected_predicate :
-      int64 -> 'a -> 'b -> bool Lwt.t
+      int64 option -> 'a -> 'b -> bool Lwt.t
 end
 
 module type Session = sig

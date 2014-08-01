@@ -34,6 +34,7 @@ module type Session = sig
   val connected_fun :
      ?allow:group list
   -> ?deny:group list
+  -> ?deny_fun:(int64 option -> 'c Lwt.t)
   -> (int64 -> 'a -> 'b -> 'c Lwt.t)
   -> 'a -> 'b
   -> 'c Lwt.t
@@ -44,6 +45,7 @@ module type Session = sig
   val connected_rpc :
      ?allow:group list
   -> ?deny:group list
+  -> ?deny_fun:(int64 option -> 'b Lwt.t)
   -> (int64 -> 'a -> 'b Lwt.t)
   -> 'a
   -> 'b Lwt.t
@@ -59,6 +61,7 @@ module type Session = sig
     val connected_fun :
        ?allow:group list
     -> ?deny:group list
+    -> ?deny_fun:(int64 option -> 'c Lwt.t)
     -> (int64 option -> 'a -> 'b -> 'c Lwt.t)
     -> 'a -> 'b
     -> 'c Lwt.t
@@ -68,6 +71,7 @@ module type Session = sig
     val connected_rpc :
        ?allow:group list
     -> ?deny:group list
+    -> ?deny_fun:(int64 option -> 'b Lwt.t)
     -> (int64 option -> 'a -> 'b Lwt.t)
     -> 'a
     -> 'b Lwt.t
@@ -97,11 +101,29 @@ module type Page = sig
   (** The type of the content of a page. *)
   type page_content = [ Html5_types.body_content ] Eliom_content.Html5.elt list
 
+  module Opt : sig
+  (** The main function to generate pages for connected or non-connected user.
+      The optional user id is given to the function as first argument.
+      The arguments [allow] and [deny] represents groups to which
+      the user has to belongs or not. If the user does not
+      respect these requirements, the [fallback] function will be
+      used.
+  *)
+    val connected_page :
+      ?allow:Session.group list
+      -> ?deny:Session.group list
+      -> ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t)
+      -> ?fallback:(int64 option -> 'a -> 'b -> exn -> page_content Lwt.t)
+      -> (int64 option -> 'a -> 'b -> page_content Lwt.t)
+      -> 'a -> 'b
+      -> page Lwt.t
+  end
+
   (** Generate a page visible for non-connected and connected user.
-    * Use the [predicate] function if you have something to check
-    * before the generation of the page. Note that, if you return
-    * [false], the page will be generated using the [fallback]
-    * function. *)
+      Use the [predicate] function if you have something to check
+      before the generation of the page. If [predicate] returns
+      [false], the page will be generated using the [fallback]
+      function. *)
   val page :    ?predicate:('a -> 'b -> bool Lwt.t)
              -> ?fallback:('a -> 'b -> exn -> page_content Lwt.t)
              -> ('a -> 'b -> page_content Lwt.t)
@@ -109,18 +131,17 @@ module type Page = sig
              -> page Lwt.t
 
   (** Generate a page only visible for connected user.
-    * The arguments [allow] and [deny] represents groups to which
-    * the user has belongs to them or not. If the user does not
-    * respect these requirements, the [fallback] function will be
-    * used.
-    * The predicate has the same behaviour that the [page] one. *)
-  val connected_page :    ?allow:Session.group list
-                       -> ?deny:Session.group list
-                       -> ?predicate:(int64 -> 'a -> 'b -> bool Lwt.t)
-                       -> ?fallback:(int64 option -> 'a -> 'b -> exn -> page_content Lwt.t)
-                       -> (int64 -> 'a -> 'b -> page_content Lwt.t)
-                       -> 'a -> 'b
-                       -> page Lwt.t
+      It behaves like [Opt.connected_page] but will display
+      the fallback if not connected.
+      The predicate is checked only for connected users.
+  *)
+  val connected_page : ?allow:Session.group list
+    -> ?deny:Session.group list
+    -> ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t)
+    -> ?fallback:(int64 option -> 'a -> 'b -> exn -> page_content Lwt.t)
+    -> (int64 -> 'a -> 'b -> page_content Lwt.t)
+    -> 'a -> 'b
+    -> page Lwt.t
 end
 
 (** Email module : TODO *)

@@ -5,17 +5,7 @@
 }}
 
 let header ?user () =
-  lwt user_box =
-    match user with
-      | None -> Lwt.return (nothing ())
-      | Some user ->
-        lwt username = %%%MODULE_NAME%%%_view.username user in
-        Lwt.return (div ~a:[a_id "%%%PROJECT_NAME%%%-user-box"] [
-                      %%%MODULE_NAME%%%_view.avatar user;
-                      username;
-                      %%%MODULE_NAME%%%_view.disconnect_button ();
-                    ])
-  in
+  lwt user_box = Incus_userbox.userbox user in
   Lwt.return
     (div ~a:[a_id "%%%PROJECT_NAME%%%-header"] [
       a ~a:[a_id "%%%PROJECT_NAME%%%-logo"]
@@ -51,7 +41,11 @@ let footer ?user () =
     ];
   ]
 
-let page ?user cnt =
+let page uid_o cnt =
+  lwt user = match uid_o with None -> Lwt.return None
+    | Some uid -> lwt u = %%%MODULE_NAME%%%_user.user_of_uid uid in
+                  Lwt.return (Some u)
+  in
   let l =
     [ div ~a:[a_id "%%%PROJECT_NAME%%%-body"]
         (div ~a:[a_id "%%%PROJECT_NAME%%%-request-msgs"]

@@ -24,7 +24,7 @@ let generic_email_form ?label ~service () =
         | Some lab -> F.label [pcdata lab]::l) ()
 
 let connect_form () =
-  post_form ~service:%%%MODULE_NAME%%%_services.connect_service
+  D.post_form ~service:%%%MODULE_NAME%%%_services.connect_service
     (fun (login, password) -> [
       string_input
         ~a:[a_placeholder "Your email"]

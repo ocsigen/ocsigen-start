@@ -33,14 +33,13 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
         lwt b = predicate gp pp in
         if b then
           try_lwt f gp pp
-          with exc -> fallback gp pp (exc)
+          with exc -> fallback gp pp exc
         else fallback gp pp (Predicate_failed None)
       with exc -> fallback gp pp (Predicate_failed (Some exc))
     in
     Lwt.return
       (html
-         (Eliom_tools.F.head ~title:C.title ~css ~js
-           ~other:C.other_head ())
+         (Eliom_tools.F.head ~title:C.title ~css ~js ~other:C.other_head ())
          (body content))
 
   let connected_page
@@ -48,24 +47,58 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
       ?(predicate = C.default_connected_predicate)
       ?(fallback = C.default_connected_error_page)
       f gp pp =
+    let f_wrapped uid gp pp =
+      try_lwt
+        lwt b = predicate (Some uid) gp pp in
+        if b then
+          try_lwt f uid gp pp
+          with exc -> fallback (Some uid) gp pp exc
+        else Lwt.fail (Predicate_failed None)
+      with
+        | (Predicate_failed _) as exc -> fallback (Some uid) gp pp exc
+        | exc -> fallback (Some uid) gp pp (Predicate_failed (Some exc))
+    in
     lwt content =
-      let f_wrapped uid gp pp =
-        try_lwt
-          lwt b = predicate uid gp pp in
-          if b then
-            try_lwt f uid gp pp
-            with exc -> fallback (Some uid) gp pp (exc)
-          else raise (Predicate_failed None)
-        with
-          | (Predicate_failed _) as exc -> raise exc
-          | exc -> raise (Predicate_failed (Some exc))
-      in
-      try_lwt Session.connected_fun ?allow ?deny f_wrapped gp pp
-      with exc -> fallback None gp pp exc
+      try_lwt
+        Session.connected_fun ?allow ?deny
+          ~deny_fun:(fun uid_o ->
+            fallback uid_o gp pp Session.Permission_denied)
+          f_wrapped gp pp
+      with Session.Not_connected as exc -> fallback None gp pp exc
     in
     Lwt.return
       (html
-         (Eliom_tools.F.head ~title:C.title ~css ~js
-           ~other:C.other_head ())
+         (Eliom_tools.F.head ~title:C.title ~css ~js ~other:C.other_head ())
          (body content))
+
+
+  module Opt = struct
+
+    let connected_page
+        ?allow ?deny
+        ?(predicate = C.default_connected_predicate)
+        ?(fallback = C.default_connected_error_page)
+        f gp pp =
+      let f_wrapped (uid_o : int64 option) gp pp =
+        try_lwt
+          lwt b = predicate uid_o gp pp in
+          if b then
+            try_lwt f uid_o gp pp
+            with exc -> fallback uid_o gp pp exc
+          else Lwt.fail (Predicate_failed None)
+        with
+          | (Predicate_failed _) as exc -> fallback uid_o gp pp exc
+          | exc -> fallback uid_o gp pp (Predicate_failed (Some exc))
+      in
+      lwt content = Session.Opt.connected_fun
+        ?allow ?deny
+        ~deny_fun:(fun uid_o ->
+          fallback uid_o gp pp Session.Permission_denied)
+        f_wrapped gp pp in
+      Lwt.return
+        (html
+           (Eliom_tools.F.head ~title:C.title ~css ~js ~other:C.other_head ())
+           (body content))
+
+  end
 end

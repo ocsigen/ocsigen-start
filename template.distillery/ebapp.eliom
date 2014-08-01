@@ -38,18 +38,19 @@ module Page_ = struct
   let title = "%%%PROJECT_NAME%%%"
 
   let css = [
-      ["%%%PROJECT_NAME%%%.css"];
-    ]
+    ["eba.css"];
+    ["%%%PROJECT_NAME%%%.css"];
+  ]
 
   let js = [
-      ["onload.js"]
-    ]
+    ["onload.js"]
+  ]
 
   let default_predicate : 'a 'b. 'a -> 'b -> bool Lwt.t
       = (fun _ _ -> Lwt.return true)
 
   let default_connected_predicate
-      : 'a 'b. int64 -> 'a -> 'b -> bool Lwt.t
+      : 'a 'b. int64 option -> 'a -> 'b -> bool Lwt.t
         = (fun _ _ _ -> Lwt.return true)
 
   let default_error_page

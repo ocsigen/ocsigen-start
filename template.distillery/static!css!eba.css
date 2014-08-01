@@ -267,18 +267,6 @@ div.eba_welcomepage input[type="submit"] {
   width: 246px;
 }
 
-div#eba_login_signup_box p.eba_error {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 280px;
-  height: 150px;
-  font-weight: bold;
-  font-size: 24px;
-  text-align: center;
-  padding-top: 60px;
-}
-
 /* Personal info box */
 div#eba_welcome_box {
   width: 480px;

@@ -1,3 +1,12 @@
+(* VVV
+   I DON'T UNDERSTAND WHAT A "STATE" IS.
+   IT IS NOT THE SAME NOTION AS STATE IN ELIOM.
+   DO YOU HAVE EXAMPLE OF USE OF THIS?
+   IS IT GENERIC ENOUGH TO REQUIRE A MODULE?
+   --Vincent
+*)
+
+
 module Make(C : Eba_config.State)(App : Eliom_registration.ELIOM_APPL) = struct
 
   module MMap = Map.Make(struct type t = C.t let compare = compare end)

@@ -18,6 +18,7 @@ module type Session = sig
   val connected_fun :
      ?allow:group list
   -> ?deny:group list
+  -> ?deny_fun:(int64 option -> 'c Lwt.t)
   -> (int64 -> 'a -> 'b -> 'c Lwt.t)
   -> 'a -> 'b
   -> 'c Lwt.t
@@ -25,6 +26,7 @@ module type Session = sig
   val connected_rpc :
      ?allow:group list
   -> ?deny:group list
+  -> ?deny_fun:(int64 option -> 'b Lwt.t)
   -> (int64 -> 'a -> 'b Lwt.t)
   -> 'a
   -> 'b Lwt.t
@@ -35,6 +37,7 @@ module type Session = sig
     val connected_fun :
        ?allow:group list
     -> ?deny:group list
+    -> ?deny_fun:(int64 option -> 'c Lwt.t)
     -> (int64 option -> 'a -> 'b -> 'c Lwt.t)
     -> 'a -> 'b
     -> 'c Lwt.t
@@ -42,6 +45,7 @@ module type Session = sig
     val connected_rpc :
        ?allow:group list
     -> ?deny:group list
+    -> ?deny_fun:(int64 option -> 'b Lwt.t)
     -> (int64 option -> 'a -> 'b Lwt.t)
     -> 'a
     -> 'b Lwt.t
@@ -60,6 +64,22 @@ module type Page = sig
   type page = [ Html5_types.html ] Eliom_content.Html5.elt
   type page_content = [ Html5_types.body_content ] Eliom_content.Html5.elt list
 
+  module Opt : sig
+  (** The main function to generate pages for connected or non-connected user.
+      The arguments [allow] and [deny] represents groups to which
+      the user has to belongs or not. If the user does not
+      respect these requirements, the [fallback] function will be
+      used.
+  *)
+    val connected_page :
+      ?allow:Session.group list
+      -> ?deny:Session.group list
+      -> ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t)
+      -> ?fallback:(int64 option -> 'a -> 'b -> exn -> page_content Lwt.t)
+      -> (int64 option -> 'a -> 'b -> page_content Lwt.t)
+      -> 'a -> 'b
+      -> page Lwt.t
+  end
 
   val page :
        ?predicate:('a -> 'b -> bool Lwt.t)
@@ -71,7 +91,7 @@ module type Page = sig
   val connected_page :
        ?allow:Session.group list
     -> ?deny:Session.group list
-    -> ?predicate:(int64 -> 'a -> 'b -> bool Lwt.t)
+    -> ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t)
     -> ?fallback:(int64 option -> 'a -> 'b -> exn -> page_content Lwt.t)
     -> (int64 -> 'a -> 'b -> page_content Lwt.t)
     -> 'a -> 'b

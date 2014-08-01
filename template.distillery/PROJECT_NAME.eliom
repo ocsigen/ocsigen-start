@@ -3,13 +3,8 @@
   open Eliom_content.Html5.F
 }}
 
-let rec main_service_fallback uid gp pp exc =
-  %%%MODULE_NAME%%%_container.page [p [pcdata "Welcome!"]]
-
-let main_service_handler uid gp pp =
-  let open %%%MODULE_NAME%%%_user in
-  lwt user = %%%MODULE_NAME%%%_user.user_of_uid uid in
-  %%%MODULE_NAME%%%_container.page ~user (
+let main_service_handler uid_o gp pp =
+  %%%MODULE_NAME%%%_container.page uid_o (
     [
      p [em [pcdata "Eliom base app: Put here the app content."]]
     ]
@@ -72,8 +67,8 @@ let sign_up_handler' () email =
     Lwt.return ()
   end
 
-let forgot_password_handler () () =
-  %%%MODULE_NAME%%%_container.page [
+let forgot_password_handler uid_o () () =
+  %%%MODULE_NAME%%%_container.page uid_o [
     div ~a:[a_id "%%%PROJECT_NAME%%%-forms"] [
       div ~a:[a_class ["eba-box"]] [
         p [pcdata "Enter your e-mail address to receive an activation link \
@@ -94,8 +89,8 @@ let forgot_password_handler' () email =
     Eliom_reference.Volatile.set %%%MODULE_NAME%%%_reqm.user_does_not_exist true;
     Lwt.return ()
 
-let about_handler () () =
-  %%%MODULE_NAME%%%_container.page [
+let about_handler uid_o () () =
+  %%%MODULE_NAME%%%_container.page uid_o [
     div [
       p [pcdata "This template provides a skeleton \
                  for an Ocsigen application."];
@@ -162,43 +157,41 @@ let preregister_handler' () email =
 
 let () =
   Ebapp.App.register
-    (%%%MODULE_NAME%%%_services.main_service)
-    (Ebapp.Page.connected_page
-       ~fallback:main_service_fallback
-       main_service_handler);
+    %%%MODULE_NAME%%%_services.main_service
+    (Ebapp.Page.Opt.connected_page main_service_handler);
 
   Ebapp.App.register
-    (%%%MODULE_NAME%%%_services.forgot_password_service)
-    (Ebapp.Page.page forgot_password_handler);
+    %%%MODULE_NAME%%%_services.forgot_password_service
+    (Ebapp.Page.Opt.connected_page forgot_password_handler);
 
   Ebapp.App.register
-    (%%%MODULE_NAME%%%_services.about_service)
-    (Ebapp.Page.page about_handler);
+    %%%MODULE_NAME%%%_services.about_service
+    (Ebapp.Page.Opt.connected_page about_handler);
 
   Eliom_registration.Action.register
-    (%%%MODULE_NAME%%%_services.set_personal_data_service')
+    %%%MODULE_NAME%%%_services.set_personal_data_service'
     (Ebapp.Session.connected_fun set_personal_data_handler');
 
   Eliom_registration.Action.register
-    (%%%MODULE_NAME%%%_services.forgot_password_service')
+    %%%MODULE_NAME%%%_services.forgot_password_service'
     (forgot_password_handler');
 
   Eliom_registration.Action.register
-    (%%%MODULE_NAME%%%_services.preregister_service')
+    %%%MODULE_NAME%%%_services.preregister_service'
     (preregister_handler');
 
   Eliom_registration.Action.register
-    (%%%MODULE_NAME%%%_services.sign_up_service')
+    %%%MODULE_NAME%%%_services.sign_up_service'
     (sign_up_handler');
 
   Eliom_registration.Action.register
-    (%%%MODULE_NAME%%%_services.connect_service)
+    %%%MODULE_NAME%%%_services.connect_service
     (connect_handler);
 
   Eliom_registration.Action.register
-    (%%%MODULE_NAME%%%_services.disconnect_service)
+    %%%MODULE_NAME%%%_services.disconnect_service
     (disconnect_handler);
 
   Eliom_registration.Any.register
-    (%%%MODULE_NAME%%%_services.activation_service)
+    %%%MODULE_NAME%%%_services.activation_service
     (activation_handler)
