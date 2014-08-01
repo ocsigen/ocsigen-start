@@ -17,16 +17,16 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
   let css =
     List.map
       (fun cssname -> ("css"::cssname))
-      (C.config#css)
+      C.css
 
   let js =
     List.map
       (fun jsname -> ("js"::jsname))
-      (C.config#js)
+      C.js
 
   let page
-      ?(predicate = C.config#default_predicate)
-      ?(fallback = C.config#default_error_page)
+      ?(predicate = C.default_predicate)
+      ?(fallback = C.default_error_page)
       f gp pp =
     lwt content =
       try_lwt
@@ -39,14 +39,14 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
     in
     Lwt.return
       (html
-         (Eliom_tools.F.head ~title:C.config#title ~css ~js
-           ~other:C.config#other_head ())
+         (Eliom_tools.F.head ~title:C.title ~css ~js
+           ~other:C.other_head ())
          (body content))
 
   let connected_page
       ?allow ?deny
-      ?(predicate = C.config#default_connected_predicate)
-      ?(fallback = C.config#default_connected_error_page)
+      ?(predicate = C.default_connected_predicate)
+      ?(fallback = C.default_connected_error_page)
       f gp pp =
     lwt content =
       let f_wrapped uid gp pp =
@@ -65,7 +65,7 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
     in
     Lwt.return
       (html
-         (Eliom_tools.F.head ~title:C.config#title ~css ~js
-           ~other:C.config#other_head ())
+         (Eliom_tools.F.head ~title:C.title ~css ~js
+           ~other:C.other_head ())
          (body content))
 end

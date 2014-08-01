@@ -104,12 +104,12 @@ struct
                     Eliom_lib.debug_exn "comet exception: " e;
                     Lwt.fail e))
     }};
-    C.config#on_start_connected_process uid
+    C.on_start_connected_process uid
 
   let connect_volatile uid =
     Eliom_state.set_volatile_data_session_group
       ~scope:Eliom_common.default_session_scope uid;
-    C.config#on_open_session (Int64.of_string uid)
+    C.on_open_session (Int64.of_string uid)
 
   let connect_string uid =
     lwt () = Eliom_state.set_persistent_data_session_group
@@ -125,7 +125,7 @@ struct
   let disconnect () =
     unset_user_client (); (*VVV!!! will affect only current tab!! *)
     unset_user_server (); (* ok this is a request reference *)
-    C.config#on_close_session
+    C.on_close_session
 
   let check_allow_deny userid allow deny =
     lwt b = match allow with
@@ -147,7 +147,7 @@ struct
     in
     if b then Lwt.return ()
     else begin
-      lwt () = C.config#on_denied_request userid in
+      lwt () = C.on_denied_request userid in
       Lwt.fail Permission_denied
     end
 
@@ -203,7 +203,7 @@ struct
         (* client side process:
            Now we want to do some computation only when we start a
            client side process. *)
-        lwt () = C.config#on_start_process in
+        lwt () = C.on_start_process in
         match uid with
           | None -> Lwt.return ()
           | Some id -> (* new client process, but already connected *)
@@ -211,7 +211,7 @@ struct
       end
       else Lwt.return ()
     in
-    lwt () = C.config#on_request in
+    lwt () = C.on_request in
     match uid with
       | None ->
         if allow = None
@@ -219,7 +219,7 @@ struct
         else Lwt.fail Permission_denied
       | Some id ->
         lwt () = check_allow_deny id allow deny in
-        lwt () = C.config#on_connected_request id in
+        lwt () = C.on_connected_request id in
         connected id gp pp
 
   let connected_fun ?allow ?deny f gp pp =

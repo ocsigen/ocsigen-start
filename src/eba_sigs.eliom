@@ -1,11 +1,5 @@
 let doc_start = ()
 
-module type App = sig
-  include Eliom_registration.ELIOM_APPL
-
-  val app_name : string
-end
-
 module type Groups = sig
   type t
 

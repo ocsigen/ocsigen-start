@@ -2,15 +2,6 @@ val doc_start : unit
 
 (** This module defines all functor application module signatures. *)
 
-(** This module include the [App] module of [Eliom], it also include [app_name]
-  * which simply corresponds to the name of your application. *)
-module type App = sig
-  include Eliom_registration.ELIOM_APPL
-
-  (** The name of you application. *)
-  val app_name : string
-end
-
 (** Groups module needed by EBA to implement permissions on connected pages
   * and connected fun (module [Session] and [Page]). *)
 module type Groups = sig

@@ -1,4 +1,4 @@
-module Make(C : Eba_config.State)(App : Eba_sigs.App) = struct
+module Make(C : Eba_config.State)(App : Eliom_registration.ELIOM_APPL) = struct
 
   module MMap = Map.Make(struct type t = C.t let compare = compare end)
 
@@ -29,7 +29,7 @@ module Make(C : Eba_config.State)(App : Eba_sigs.App) = struct
   let state : state Eliom_reference.eref =
     Eliom_reference.eref_from_fun
       ~scope:Eliom_common.site_scope
-      ~persistent:(App.app_name^"_website_state")
+      ~persistent:(App.application_name^"_website_state")
       C.default
 
   let set_website_state st =

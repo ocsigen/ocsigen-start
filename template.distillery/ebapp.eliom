@@ -17,18 +17,13 @@ module State_ = struct
       (Default, "default", None)
     ]
 
-  let default () =
-    Default
+  let default () = Default
 end
 
 module Email_ = struct
   include Eba_default.Email
 
-  let config = object
-    inherit Eba_default.Email.config ()
-
-    method mailer = "/usr/sbin/sendmail"
-  end
+  let mailer = "/usr/sbin/sendmail"
 end
 
 module Groups_ = struct
@@ -40,52 +35,44 @@ end
 module Page_ = struct
   include Eba_default.Page
 
-  let config = object
-    inherit Eba_default.Page.config ()
+  let title = "%%%PROJECT_NAME%%%"
 
-    method title = "%%%PROJECT_NAME%%%"
-
-    method css = [
+  let css = [
       ["%%%PROJECT_NAME%%%.css"];
     ]
 
-    method js = [
+  let js = [
       ["onload.js"]
     ]
 
-    method default_predicate : 'a 'b. 'a -> 'b -> bool Lwt.t
+  let default_predicate : 'a 'b. 'a -> 'b -> bool Lwt.t
       = (fun _ _ -> Lwt.return true)
 
-    method default_connected_predicate
+  let default_connected_predicate
       : 'a 'b. int64 -> 'a -> 'b -> bool Lwt.t
         = (fun _ _ _ -> Lwt.return true)
 
-    method default_error_page
+  let default_error_page
       : 'a 'b. 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
         = (fun _ _ exn ->
           Lwt.return (if Ocsigen_config.get_debugmode ()
             then [p [pcdata (Printexc.to_string exn)]]
             else [p [pcdata "Error"]]))
 
-    method default_connected_error_page
+  let default_connected_error_page
       : 'a 'b. int64 option -> 'a -> 'b -> exn
         -> Eba_shared.Page.page_content Lwt.t
           = (fun _ _ _ exn ->
             Lwt.return (if Ocsigen_config.get_debugmode ()
               then [p [pcdata (Printexc.to_string exn)]]
               else [p [pcdata "Error"]]))
-  end
 end
 
 
 
-module App = struct
-  include Eliom_registration.App(struct
+module App = Eliom_registration.App(struct
     let application_name = app_name
   end)
-
-  let app_name = app_name
-end
 
 module State = Eba_state.Make(State_)(App)
 module Email = Eba_email.Make(Email_)

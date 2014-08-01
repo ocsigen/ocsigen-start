@@ -20,7 +20,7 @@ let header ?user () =
     (div ~a:[a_id "%%%PROJECT_NAME%%%-header"] [
       a ~a:[a_id "%%%PROJECT_NAME%%%-logo"]
         ~service:%%%MODULE_NAME%%%_services.main_service [
-          pcdata Ebapp.App.app_name;
+          pcdata Ebapp.App.application_name;
         ] ();
       div ~a:[a_id "%%%PROJECT_NAME%%%-navbar"]
         [

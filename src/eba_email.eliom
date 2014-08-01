@@ -11,7 +11,7 @@ module Make(C : Eba_config.Email) = struct
   let is_valid email =
     Str.string_match email_regexp email 0
 
-  let send ?(from_addr = C.config#from_addr) ~to_addrs ~subject content =
+  let send ?(from_addr = C.from_addr) ~to_addrs ~subject content =
     (* TODO with fork ou mieux en utilisant l'event loop de ocamlnet *)
     let echo = printf "%s\n" in
     let flush () = printf "%!" in
@@ -31,11 +31,11 @@ module Make(C : Eba_config.Email) = struct
       List.iter print_tuple to_addrs;
       echo "]";
       printf "[content]:\n%s\n" content;
-      Netsendmail.sendmail ~mailer:C.config#mailer
+      Netsendmail.sendmail ~mailer:C.mailer
         (Netsendmail.compose ~from_addr ~to_addrs ~subject content);
       echo "[SUCCESS]: e-mail has been sent!"
     with Netchannels.Command_failure (Unix.WEXITED 127) ->
       echo "[FAIL]: e-mail has not been sent!";
       flush ();
-      raise (Invalid_mailer (C.config#mailer^" not found"))
+      raise (Invalid_mailer (C.mailer^" not found"))
 end
