@@ -55,10 +55,10 @@ let page ?user cnt =
   let l =
     [ div ~a:[a_id "%%%PROJECT_NAME%%%-body"]
         (div ~a:[a_id "%%%PROJECT_NAME%%%-request-msgs"]
-           ( (List.map (Ebapp.Reqm.to_html)
-                (Ebapp.Reqm.to_list %%%MODULE_NAME%%%_reqm.notice_set))
-             @ (List.map (Ebapp.Reqm.to_html)
-                  (Ebapp.Reqm.to_list %%%MODULE_NAME%%%_reqm.error_set)))
+           ( (List.map (Eba_reqm.to_html)
+                (Eba_reqm.to_list %%%MODULE_NAME%%%_reqm.notice_set))
+             @ (List.map (Eba_reqm.to_html)
+                  (Eba_reqm.to_list %%%MODULE_NAME%%%_reqm.error_set)))
          ::cnt);
       footer ?user ();
     ]

@@ -169,18 +169,15 @@ let () =
 
   Ebapp.App.register
     (%%%MODULE_NAME%%%_services.forgot_password_service)
-    (Ebapp.Page.page
-       forgot_password_handler);
+    (Ebapp.Page.page forgot_password_handler);
 
   Ebapp.App.register
     (%%%MODULE_NAME%%%_services.about_service)
-    (Ebapp.Page.page
-       about_handler);
+    (Ebapp.Page.page about_handler);
 
   Eliom_registration.Action.register
     (%%%MODULE_NAME%%%_services.set_personal_data_service')
-    (Ebapp.Session.connected_fun
-       set_personal_data_handler');
+    (Ebapp.Session.connected_fun set_personal_data_handler');
 
   Eliom_registration.Action.register
     (%%%MODULE_NAME%%%_services.forgot_password_service')

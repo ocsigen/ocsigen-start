@@ -1,14 +1,14 @@
 open Eliom_content.Html5.F
 open Printf
 
-include Ebapp.Reqm
+include Eba_reqm
 
 exception Ignored
 
 let ignore_to_html _ = raise Ignored
 
-let error_set = Ebapp.Reqm.create_set "error"
-let notice_set = Ebapp.Reqm.create_set "notice"
+let error_set = Eba_reqm.create_set "error"
+let notice_set = Eba_reqm.create_set "notice"
 
 let to_error_box s =
   div ~a:[a_class ["error"]] [
@@ -21,21 +21,21 @@ let to_notice_box s =
   ]
 
 let notice_string s =
-  ignore (Ebapp.Reqm.create
+  ignore (Eba_reqm.create
             ~set:notice_set
             ~to_html:(to_notice_box)
             ~default:(fun () -> s)
             ())
 
 let error_string s =
-  ignore (Ebapp.Reqm.create
+  ignore (Eba_reqm.create
             ~set:error_set
             ~to_html:(to_error_box)
             ~default:(fun () -> s)
             ())
 
 let wrong_pdata =
-  Ebapp.Reqm.create
+  Eba_reqm.create
     ~to_html:ignore_to_html
     ~cons:(cons : ((string * string) * (string * string)) cons)
     ()
