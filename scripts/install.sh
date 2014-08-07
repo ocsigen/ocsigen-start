@@ -14,4 +14,4 @@ TPL_NAME=$2
 DEST=$DESTDIR/$(eliom-distillery -dir)/$TPL_NAME
 
 mkdir -p $DEST
-cp -rf $TPL_DIR $DEST
+cp -rf $TPL_DIR/* $DEST
