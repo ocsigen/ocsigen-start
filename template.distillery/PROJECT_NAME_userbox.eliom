@@ -38,25 +38,26 @@ let connection_box () =
              br();
              pcdata "Click on the link it contains to log in."]])
   else
-    let set = {Ew_button.radio_set_t{ Ew_button.new_radio_set () }} in
+    let set = {Ew_active_set.t'{
+      Ew_active_set.to_server_set
+        (Ew_active_set.set ~at_least_one:true ())
+    }} in
     let button1 = D.h2 [pcdata "Login"] in
     let form1 = %%%MODULE_NAME%%%_view.connect_form () in
-    let o1 = {Ew_button.show_hide_t{
-        new Ew_button.show_hide
-          ~pressed:true
-          ~set:%set ~button:%button1
-          ~closeable_by_button:false
-        %form1
-      }}
+    let o1,_ =
+      Ew_button.button_alert
+        ~set
+        ~pressed:true
+        button1
+        form1
     in
     let button2 = D.h2 [pcdata "Lost password"] in
     let form2 = %%%MODULE_NAME%%%_view.forgot_password_form () in
-    let o2 = {Ew_button.show_hide_t{
-        new Ew_button.show_hide
-          ~set:%set ~button:%button2
-          ~closeable_by_button:false
-        %form2
-      }}
+    let o2,_ =
+      Ew_button.button_alert
+        ~set:set
+        button2
+        form2
     in
     let button3 = D.h2 [pcdata "Preregister"] in
     let form3 =
@@ -64,28 +65,26 @@ let connection_box () =
         "Enter your e-mail address to get informed when the site opens \
          and be one of the first users"
     in
-    let o3 = {Ew_button.show_hide_t{
-        new Ew_button.show_hide
-          ~set:%set ~button:%button3
-          ~closeable_by_button:false
-          %form3
-      }}
+    let o3,_ =
+      Ew_button.button_alert
+        ~set
+        button3
+        form3
     in
     let button4 = D.h2 [pcdata "Register"] in
     let form4 = %%%MODULE_NAME%%%_view.sign_up_form () in
-    let o4 = {Ew_button.show_hide_t{
-        new Ew_button.show_hide
-          ~set:%set ~button:%button4
-          ~closeable_by_button:false
-        %form4
-      }}
+    let o4,_ =
+        Ew_button.button_alert
+          ~set
+          button4
+          form4
     in
     (* function to press the corresponding button and display
      * the flash message error.
      * [d] is currently an server value, so we need to use % *)
     let press but cont msg =
       ignore {unit{
-          display_error (To_dom.of_element %cont) %msg (fun () -> %but#press)
+          display_error (To_dom.of_element %cont) %msg (fun () -> (Ew_button.to_button_alert %but)##press())
         }};
       Lwt.return ()
     in
