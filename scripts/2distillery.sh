@@ -1,9 +1,7 @@
 #!/bin/sh
 
-PROJECT_NAME="foobar"
-
 usage() {
-    echo "usage: $0 <script> <dir>"
+    echo "usage: $0 <script> <dir> <project_name>"
     exit 1
 }
 
@@ -25,14 +23,18 @@ backup() {
     echo $1.$SUFFIX
 }
 
-if [ $# -lt 2 ]; then
+if [ $# -lt 3 ]; then
     usage
 fi
 
 # The directory used for generate the template
 SCRIPT=$1
-DIR=$2
-DEST_DIR=$DIR.distillery
+
+# Automatically remove the '/' at the end
+DIR=$( echo $2 | sed 's|/*$||' )
+DEST_DIR=$2.distillery
+
+PROJECT_NAME=$3
 
 if [ ! -d $DIR ]; then
     error "'$DIR': no such file or directory. Make sur to give a valid directory"
@@ -58,13 +60,13 @@ filter() {
     -and -not -name ".*"
 }
 
-for file in $( filter | cut -d '/' -f 2- ); do
-    FILE="$DIR/$file"
+for FILE in $( filter ); do
     if [ ! -d $FILE ] && [ -f $FILE ] ; then
-        DFILE="$( echo $file | sed "s|$PROJECT_NAME|PROJECT_NAME|g" )"
-        DFILE="$( echo $DFILE | sed 's|/|!|g' )"
-        DFILE="$DEST_DIR/$DFILE"
-        echo "$SCRIPT $FILE > $DFILE"
-        $SCRIPT $FILE > $DFILE
+        DEST_FILE="$( echo $FILE | sed "s|$DIR/||" )"
+        DEST_FILE="$( echo $DEST_FILE | sed "s|$PROJECT_NAME|PROJECT_NAME|g" )"
+        DEST_FILE="$( echo $DEST_FILE | sed 's|/|!|g' )"
+        DEST_FILE="$DEST_DIR/$DEST_FILE"
+        notice "$SCRIPT $FILE $PROJECT_NAME > $DEST_FILE"
+        $SCRIPT $FILE $PROJECT_NAME > $DEST_FILE
     fi
 done

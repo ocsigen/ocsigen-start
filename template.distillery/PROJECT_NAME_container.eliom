@@ -5,7 +5,7 @@
 }}
 
 let header ?user () =
-  lwt user_box = Incus_userbox.userbox user in
+  lwt user_box = %%%MODULE_NAME%%%_userbox.userbox user in
   Lwt.return
     (div ~a:[a_id "%%%PROJECT_NAME%%%-header"] [
       a ~a:[a_id "%%%PROJECT_NAME%%%-logo"]
