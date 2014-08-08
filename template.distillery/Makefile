@@ -235,7 +235,15 @@ ${ELIOM_CLIENT_DIR}/%.cmi: %.eliomi
 ##----------------------------------------------------------------------
 ## Dependencies
 
+# DO NOT include `.depend' for the following commands: db-*, clean, distclean
+is_db_command=$(shell echo $(1) | grep -q "db-" && echo "true" || echo "false")
+ifneq ($(call is_db_command,$(MAKECMDGOALS)),true)
+ifneq ($(MAKECMDGOALS),"clean")
+ifneq ($(MAKECMDGOALS),"distclean")
 include .depend
+endif
+endif
+endif
 
 .depend: $(patsubst %,$(DEPSDIR)/%.server,$(SERVER_FILES)) $(patsubst %,$(DEPSDIR)/%.client,$(CLIENT_FILES))
 	cat $^ > $@
