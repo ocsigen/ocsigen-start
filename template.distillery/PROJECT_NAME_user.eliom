@@ -35,6 +35,7 @@ let create_user_from_db (uid, fn, ln, avatar) = {
   avatar = avatar;
 }
 
+{shared{
 (** Getters functions. *)
 let uid_of_user u = u.uid
 let firstname_of_user u = u.fn
@@ -45,14 +46,16 @@ let avatar_of_user u =
     | Some avatar -> avatar
 
 let avatar_uri_of_avatar avatar =
-  make_uri ~service:(Eliom_service.static_dir ()) ["avatars"; avatar]
+  Eliom_content.Html5.F.make_uri
+    ~service:(Eliom_service.static_dir ()) ["avatars"; avatar]
 
 let avatar_uri_of_user user = avatar_uri_of_avatar (avatar_of_user user)
-
+ }}
 let email_of_user user = %%%MODULE_NAME%%%_db.User.email_of_uid user.uid
 
 let is_complete u =
   not (u.fn = "" && u.ln = "")
+
 
 include %%%MODULE_NAME%%%_db.User
 

@@ -65,12 +65,12 @@ module Page = struct
 end
 
 module Session = struct
-  let on_request = Lwt.return ()
+  let on_request = Lwt.return
   let on_denied_request (_ : int64) = Lwt.return ()
   let on_connected_request (_ : int64) = Lwt.return ()
   let on_open_session (_ : int64) = Lwt.return ()
-  let on_close_session = Lwt.return ()
-  let on_start_process = Lwt.return ()
+  let on_close_session = Lwt.return
+  let on_start_process = Lwt.return
   let on_start_connected_process (_ : int64) = Lwt.return ()
 end
 

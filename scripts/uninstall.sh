@@ -12,7 +12,7 @@ fi
 TPL_NAME=$1
 DEST=$( eliom-distillery -dir )/$TPL_NAME
 if [ -d $DEST ]; then
-    echo "$DEST exists."
+    echo "$DEST exists. Removing."
     rm -rf $DEST
 else
     echo "$DEST: no such directory. Nothing to do."

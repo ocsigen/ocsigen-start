@@ -146,7 +146,7 @@ struct
   let disconnect () =
     unset_user_client (); (*VVV!!! will affect only current tab!! *)
     unset_user_server (); (* ok this is a request reference *)
-    C.on_close_session
+    C.on_close_session ()
 
   let check_allow_deny userid allow deny =
     lwt b = match allow with
@@ -233,7 +233,7 @@ struct
         (* client side process:
            Now we want to do some computation only when we start a
            client side process. *)
-        lwt () = C.on_start_process in
+        lwt () = C.on_start_process () in
         match uid with
           | None -> Lwt.return ()
           | Some id -> (* new client process, but already connected *)
@@ -241,7 +241,7 @@ struct
       end
       else Lwt.return ()
     in
-    lwt () = C.on_request in
+    lwt () = C.on_request () in
     match uid with
       | None ->
         if allow = None

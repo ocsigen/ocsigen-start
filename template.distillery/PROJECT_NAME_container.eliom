@@ -41,26 +41,41 @@ let footer ?user () =
     ];
   ]
 
+let connected_welcome_box () =
+  let info, ((fn, ln), (p1, p2)) =
+    match Eliom_reference.Volatile.get %%%MODULE_NAME%%%_err.wrong_pdata with
+    | None ->
+      p [
+        pcdata "Your personal information has not been set yet.";
+        br ();
+        pcdata "Please take time to enter your name and to set a password."
+      ], (("", ""), ("", ""))
+    | Some wpd -> p [pcdata "Wrong data. Please fix."], wpd
+  in
+  (div ~a:[a_id "eba_welcome_box"]
+     [
+       div [h2 [pcdata ("Welcome to "^Ebapp.App.application_name)];
+            info];
+       %%%MODULE_NAME%%%_view.information_form
+         ~firstname:fn ~lastname:ln
+         ~password1:p1 ~password2:p2
+         ()
+     ])
+
 let page uid_o cnt =
   lwt user = match uid_o with None -> Lwt.return None
     | Some uid -> lwt u = %%%MODULE_NAME%%%_user.user_of_uid uid in
                   Lwt.return (Some u)
   in
   let l =
-    [ div ~a:[a_id "%%%PROJECT_NAME%%%-body"]
-        (div ~a:[a_id "%%%PROJECT_NAME%%%-request-msgs"]
-           ( (List.map (Eba_reqm.to_html)
-                (Eba_reqm.to_list %%%MODULE_NAME%%%_reqm.notice_set))
-             @ (List.map (Eba_reqm.to_html)
-                  (Eba_reqm.to_list %%%MODULE_NAME%%%_reqm.error_set)))
-         ::cnt);
+    [ div ~a:[a_id "%%%PROJECT_NAME%%%-body"] cnt;
       footer ?user ();
     ]
   in
   lwt h = header ?user () in
-  Lwt.return (h
-              ::match user with
-                | Some user when (user.%%%MODULE_NAME%%%_user.fn = ""
-                                 || user.%%%MODULE_NAME%%%_user.ln = "") ->
-                  %%%MODULE_NAME%%%_view.information_form () :: l
-                | _ -> l)
+  Lwt.return
+    (h
+     ::match user with
+       | Some user when (not (%%%MODULE_NAME%%%_user.is_complete user)) ->
+         connected_welcome_box () :: l
+       | _ -> l)

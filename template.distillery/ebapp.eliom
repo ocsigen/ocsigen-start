@@ -3,7 +3,7 @@
   open Eliom_content.Html5
 }}
 
-let app_name = "%%%PROJECT_NAME%%%"
+let application_name = "%%%PROJECT_NAME%%%"
 
 
 module State_ = struct
@@ -72,7 +72,7 @@ end
 
 
 module App = Eliom_registration.App(struct
-    let application_name = app_name
+    let application_name = application_name
   end)
 
 module State = Eba_state.Make(State_)(App)

@@ -39,12 +39,12 @@ module type Page = sig
 end
 
 module type Session = sig
-  val on_request : unit Lwt.t
+  val on_request : unit -> unit Lwt.t
   val on_denied_request : int64 -> unit Lwt.t
   val on_connected_request : int64 -> unit Lwt.t
   val on_open_session : int64 -> unit Lwt.t
-  val on_close_session : unit Lwt.t
-  val on_start_process : unit Lwt.t
+  val on_close_session : unit -> unit Lwt.t
+  val on_start_process : unit -> unit Lwt.t
   val on_start_connected_process : int64 -> unit Lwt.t
 end
 

@@ -59,37 +59,41 @@ let sign_up_form () =
 let forgot_password_form () =
   generic_email_form ~service:%%%MODULE_NAME%%%_services.forgot_password_service' ()
 
-let information_form () =
-  post_form
-    ~a:[a_class ["info-form"]]
-    ~service:%%%MODULE_NAME%%%_services.set_personal_data_service'
-    (fun ((fname, lname), (password1, password2)) -> [
-      string_input
-        ~a:[a_placeholder "Your firstname"]
-        ~name:fname
-        ~input_type:`Text
-        ();
-      string_input
-        ~a:[a_placeholder "Your lastname"]
-        ~name:lname
-        ~input_type:`Text
-        ();
-      string_input
-        ~a:[a_placeholder "Your password"]
-        ~name:password1
-        ~input_type:`Password
-        ();
-      string_input
-        ~a:[a_placeholder "Re-enter password"]
-        ~name:password2
-        ~input_type:`Password
-        ();
-      string_input
-        ~a:[a_class ["button"]]
-        ~input_type:`Submit
-        ~value:"Submit"
-        ();
-    ]) ()
+let information_form
+    ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
+    () =
+  D.post_form ~service:%%%MODULE_NAME%%%_services.set_personal_data_service'
+    (fun ((fname, lname), (passwordn1, passwordn2)) -> [
+         string_input
+           ~a:[a_placeholder "Your firstname"]
+           ~name:fname
+           ~value:firstname
+           ~input_type:`Text
+           ();
+         string_input
+           ~a:[a_placeholder "Your lastname"]
+           ~name:lname
+           ~value:lastname
+           ~input_type:`Text
+           ();
+         string_input
+           ~a:[a_placeholder "Your password"]
+           ~name:passwordn1
+           ~value:password1
+           ~input_type:`Password
+           ();
+         string_input
+           ~a:[a_placeholder "Re-enter password"]
+           ~name:passwordn2
+           ~value:password2
+           ~input_type:`Password
+           ();
+         string_input
+           ~a:[a_class ["button"]]
+           ~input_type:`Submit
+           ~value:"Submit"
+           ();
+       ]) ()
 
 let preregister_form label =
   generic_email_form ~service:%%%MODULE_NAME%%%_services.preregister_service' ~label ()

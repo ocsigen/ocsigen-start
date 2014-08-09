@@ -22,17 +22,16 @@ exception No_such_user
     ln : string;
     avatar : string option;
   } deriving (Json)
-}}
-
 
 val uid_of_user : t -> int64
 val firstname_of_user : t -> string
 val lastname_of_user : t -> string
-val email_of_user : t -> string Lwt.t
 val avatar_of_user : t -> string
 val avatar_uri_of_avatar : string -> Eliom_content.Xml.uri
 val avatar_uri_of_user : t -> Eliom_content.Xml.uri
+}}
 
+val email_of_user : t -> string Lwt.t
 (** Returns true if the firstname and the lastname of [t] has not
   * been completed yet. *)
 val is_complete : t -> bool
@@ -46,8 +45,10 @@ val uid_of_activationkey : string -> int64 Lwt.t
 (** Retrieve an uid from an activation key. May raise [No_such_resource] if
   * the activation key is not found (or outdated). *)
 val uid_of_email : string -> int64 Lwt.t
-(** Retrieve the main e-mail of the corresponding uid. *)
+(** Retrieve the main e-mail of the corresponding user id. *)
 val email_of_uid : int64 -> string Lwt.t
+(** Retrieve the main e-mail of the corresponding user. *)
+val email_of_user : t -> string Lwt.t
 
 (** Get users who match the [pattern] (useful for completion) *)
 val get_users : ?pattern:string -> unit -> t list Lwt.t

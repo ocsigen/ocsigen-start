@@ -80,7 +80,7 @@ end
 module type Session = sig
 
     (** [on_request] is called during each requests *)
-  val on_request : unit Lwt.t
+  val on_request : unit -> unit Lwt.t
 
     (** [on_denied_request] is called when a user can't access to a page
       * ([allows] and [deny] parameter of the connected [functions], see
@@ -94,11 +94,11 @@ module type Session = sig
   val on_open_session : int64 -> unit Lwt.t
 
     (** [on_close_session] is called when a user disconnects *)
-  val on_close_session : unit Lwt.t
+  val on_close_session : unit -> unit Lwt.t
 
     (** [on_start_process] is called when a new process is executed (a
       * process corresponds to a tab into your browser) *)
-  val on_start_process : unit Lwt.t
+  val on_start_process : unit -> unit Lwt.t
 
     (** [on_start_connected_process] is the same as above, but it is only
       * called when a user is connected *)

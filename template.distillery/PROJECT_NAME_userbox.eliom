@@ -30,7 +30,7 @@ let connected_user_box user =
 
 let connection_box () =
   let id = "eba_login_signup_box" in
-  if Eliom_reference.Volatile.get %%%MODULE_NAME%%%_reqm.activation_key_created
+  if Eliom_reference.Volatile.get %%%MODULE_NAME%%%_err.activation_key_created
   then
     Lwt.return
       (D.div ~a:[a_id id]
@@ -91,21 +91,21 @@ let connection_box () =
     let display_error o34 d =
       (* Function to display flash message error *)
       let wrong_password =
-        Eliom_reference.Volatile.get %%%MODULE_NAME%%%_reqm.wrong_password
+        Eliom_reference.Volatile.get %%%MODULE_NAME%%%_err.wrong_password
       in
       let user_already_exists =
-        Eliom_reference.Volatile.get %%%MODULE_NAME%%%_reqm.user_already_exists
+        Eliom_reference.Volatile.get %%%MODULE_NAME%%%_err.user_already_exists
       in
       let user_does_not_exist =
-        Eliom_reference.Volatile.get %%%MODULE_NAME%%%_reqm.user_does_not_exist
+        Eliom_reference.Volatile.get %%%MODULE_NAME%%%_err.user_does_not_exist
       in
       let user_already_preregistered =
         Eliom_reference.Volatile.get
-          %%%MODULE_NAME%%%_reqm.user_already_preregistered
+          %%%MODULE_NAME%%%_err.user_already_preregistered
       in
       let activation_key_outdated =
         Eliom_reference.Volatile.get
-          %%%MODULE_NAME%%%_reqm.activation_key_outdated
+          %%%MODULE_NAME%%%_err.activation_key_outdated
       in
 
       if wrong_password
