@@ -506,7 +506,7 @@ div#eba_login_signup_box h2 {
   cursor: pointer;
   font-size: 12px;
 }
-div#eba_login_signup_box h2.ojw_pressed {
+div#eba_login_signup_box h2.pressed {
   color: black;
 }
 div#eba_login_signup_box p {
