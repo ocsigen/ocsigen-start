@@ -84,7 +84,8 @@ let connection_box () =
      * [d] is currently an server value, so we need to use % *)
     let press but cont msg =
       ignore {unit{
-          display_error (To_dom.of_element %cont) %msg (fun () -> (Ew_button.to_button_alert %but)##press())
+        display_error (To_dom.of_element %cont) %msg
+          (fun () -> (Ew_button.to_button_alert %but)##press())
         }};
       Lwt.return ()
     in

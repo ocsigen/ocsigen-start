@@ -19,6 +19,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
+
+(*VVV WHAT IS IT?? *)
 val doc_start : unit
 
 (** This module defines all functor application module signatures. *)
@@ -97,10 +99,12 @@ module type Session = sig
     -> 'a
     -> 'b Lwt.t
 
-    (** When connected, you can retrieve the current user id using this function.
-      * If there is not user connected, the function will return None. *)
+    (** When connected,
+        you can retrieve the current user id using this function.
+        If there is not user connected, the function will return None. *)
     val get_current_userid : unit -> int64 option
   end
+
 end
 
 

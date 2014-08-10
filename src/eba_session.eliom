@@ -1,7 +1,7 @@
 (* Eliom-base-app
  * http://www.ocsigen.org/eliom-base-app
  *
- * Copyright (C) 2014
+ * Copyright 2014
  *      Charly Chevalier
  *      Vincent Balat
  *
@@ -19,7 +19,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-(* Copyright Vincent Balat, Charly Chevalier *)
 
 {shared{
   open Eliom_content.Html5
@@ -51,6 +50,67 @@
     d##style##backgroundColor <- Js.string "rgba(255, 255, 255, 0.7)";
     Lwt.return ()
 }}
+
+
+(* Call this to add an action to be done on server side
+   when the process starts *)
+let (on_start_process, start_process_action) =
+  let r = ref Lwt.return in
+  ((fun f ->
+      let oldf = !r in
+      r := (fun () -> lwt () = oldf () in f ())),
+   (fun () -> !r ()))
+
+(* Call this to add an action to be done
+   when the process starts in connected mode, or when the user logs in *)
+let (on_start_connected_process, start_connected_process_action) =
+  let r = ref Lwt.return in
+  ((fun f ->
+      let oldf = !r in
+      r := (fun () -> lwt () = oldf () in f ())),
+   (fun () -> !r ()))
+
+(* Call this to add an action to be done at each connected request *)
+let (on_connected_request, connected_request_action) =
+  let r = ref (fun _ -> Lwt.return ()) in
+  ((fun f ->
+      let oldf = !r in
+      r := (fun userid -> lwt () = oldf userid in f userid)),
+   (fun userid -> !r userid))
+
+(* Call this to add an action to be done just after openning a session *)
+let (on_open_session, open_session_action) =
+  let r = ref (fun _ -> Lwt.return ()) in
+  ((fun f ->
+      let oldf = !r in
+      r := (fun userid -> lwt () = oldf userid in f userid)),
+   (fun userid -> !r userid))
+
+(* Call this to add an action to be done just before closing the session *)
+let (on_close_session, close_session_action) =
+  let r = ref (fun _ -> Lwt.return ()) in
+  ((fun f ->
+      let oldf = !r in
+      r := (fun () -> lwt () = oldf () in f ())),
+   (fun () -> !r ()))
+
+(* Call this to add an action to be done just before handling a request *)
+let (on_request, request_action) =
+  let r = ref (fun _ -> Lwt.return ()) in
+  ((fun f ->
+      let oldf = !r in
+      r := (fun () -> lwt () = oldf () in f ())),
+   (fun () -> !r ()))
+
+(* Call this to add an action to be done just for each denied request *)
+let (on_denied_request, denied_request_action) =
+  let r = ref (fun _ -> Lwt.return ()) in
+  ((fun f ->
+      let oldf = !r in
+      r := (fun userido -> lwt () = oldf userido in f userido)),
+   (fun userido -> !r userido))
+
+
 
 module Make
   (C : Eba_config.Session)
@@ -125,12 +185,15 @@ struct
                     Eliom_lib.debug_exn "comet exception: " e;
                     Lwt.fail e))
     }};
-    C.on_start_connected_process uid
+    lwt () = C.on_start_connected_process uid in
+    start_connected_process_action ()
 
   let connect_volatile uid =
     Eliom_state.set_volatile_data_session_group
       ~scope:Eliom_common.default_session_scope uid;
-    C.on_open_session (Int64.of_string uid)
+    let uid = Int64.of_string uid in
+    lwt () = C.on_open_session uid in
+    open_session_action uid
 
   let connect_string uid =
     lwt () = Eliom_state.set_persistent_data_session_group
@@ -144,9 +207,11 @@ struct
     connect_string (Int64.to_string userid)
 
   let disconnect () =
+    lwt () = C.on_close_session () in
+    lwt () = close_session_action () in
     unset_user_client (); (*VVV!!! will affect only current tab!! *)
     unset_user_server (); (* ok this is a request reference *)
-    C.on_close_session ()
+    Lwt.return ()
 
   let check_allow_deny userid allow deny =
     lwt b = match allow with
@@ -169,6 +234,7 @@ struct
     if b then Lwt.return ()
     else begin
       lwt () = C.on_denied_request userid in
+      lwt () = denied_request_action (Some userid) in
       Lwt.fail Permission_denied
     end
 
@@ -234,6 +300,7 @@ struct
            Now we want to do some computation only when we start a
            client side process. *)
         lwt () = C.on_start_process () in
+        lwt () = start_process_action () in
         match uid with
           | None -> Lwt.return ()
           | Some id -> (* new client process, but already connected *)
@@ -242,15 +309,18 @@ struct
       else Lwt.return ()
     in
     lwt () = C.on_request () in
+    lwt () = request_action () in
     match uid with
       | None ->
         if allow = None
         then not_connected gp pp
-        else deny_fun None
+        else lwt () = denied_request_action None in
+             deny_fun None
       | Some id ->
         try_lwt
           lwt () = check_allow_deny id allow deny in
           lwt () = C.on_connected_request id in
+          lwt () = connected_request_action id in
           connected id gp pp
         with Permission_denied -> deny_fun uid
 

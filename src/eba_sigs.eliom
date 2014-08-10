@@ -19,6 +19,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
+
+(*VVV WHAT IS IT?? *)
 let doc_start = ()
 
 module type Groups = sig
@@ -73,6 +75,7 @@ module type Session = sig
 
     val get_current_userid : unit -> int64 option
   end
+
 end
 
 module type Page = sig
