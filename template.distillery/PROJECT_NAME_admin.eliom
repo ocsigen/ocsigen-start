@@ -38,7 +38,7 @@ let refresh_preregister_rpc =
        Lwt.return ((
          List.map
            (fun s ->
-              Ew_completion.li ~value:s [ pcdata s ])
+              Ew_completion.li ~value_to_match:s ~value:s [ pcdata s ])
            (l)
        ) : Html5_types.li elt list) (* FIXME *))
 
