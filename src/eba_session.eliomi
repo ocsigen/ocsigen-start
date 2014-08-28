@@ -26,7 +26,7 @@ val on_start_process : (unit -> unit Lwt.t) -> unit
 
 (** Call this to add an action to be done
     when the process starts in connected mode, or when the user logs in *)
-val on_start_connected_process : (unit -> unit Lwt.t) -> unit
+val on_start_connected_process : (int64 -> unit Lwt.t) -> unit
 
 (** Call this to add an action to be done at each connected request.
     The function takes the user id as parameter. *)
@@ -46,6 +46,20 @@ val on_request : (unit -> unit Lwt.t) -> unit
     The function takes the user id as parameter, if some user is connected. *)
 val on_denied_request : (int64 option -> unit Lwt.t) -> unit
 
+
+(** Scopes that are independant from user connection.
+    Use this scopes for example when you want to store
+    server side data for one browser or tab, but not user dependant.
+    (Remains when user logs out).
+*)
+val user_indep_state_hierarchy : Eliom_common.scope_hierarchy
+val user_indep_process_scope : Eliom_common.client_process_scope
+val user_indep_session_scope : Eliom_common.session_scope
+
+{shared{
+exception Not_connected
+exception Permission_denied
+}}
 
 module Make
   (C : Eba_config.Session)

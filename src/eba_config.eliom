@@ -25,12 +25,14 @@ module type Page = sig
   val title : string
   val js : string list list
   val css : string list list
-  val other_head : Eba_shared.Page.head_content
+  val other_head : [ Html5_types.head_content_fun ] Eliom_content.Html5.elt list
 
   val default_error_page :
-      'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
+      'a -> 'b -> exn ->
+      [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
   val default_connected_error_page :
-      int64 option -> 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
+      int64 option -> 'a -> 'b -> exn ->
+      [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
 
   val default_predicate :
       'a -> 'b -> bool Lwt.t

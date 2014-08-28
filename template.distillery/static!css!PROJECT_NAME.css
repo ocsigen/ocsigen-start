@@ -165,3 +165,8 @@ a:visited {
   width: 50px;
   height: 50px;
 }
+
+div#eba_welcome_box {
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -30,7 +30,8 @@ module Page = struct
   let title = ""
   let js : string list list = []
   let css : string list list = []
-  let other_head : Eba_shared.Page.head_content = []
+  let other_head : [ Html5_types.head_content_fun ] Eliom_content.Html5.elt list
+    = []
 
   let err_page exn =
     let de = if Ocsigen_config.get_debugmode ()
@@ -39,7 +40,7 @@ module Page = struct
              else []
     in
     let l = match exn with
-      | Eba_shared.Session.Not_connected ->
+      | Eba_session.Not_connected ->
         p [pcdata "You must be connected to see this page."]::de
       | _ -> de
     in
@@ -54,12 +55,13 @@ module Page = struct
       = (fun _ _ _ -> Lwt.return true)
 
   let default_error_page
-      : 'a 'b. 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
+      : 'a 'b. 'a -> 'b -> exn ->
+        [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
       = (fun _ _ exn -> err_page exn)
 
   let default_connected_error_page
       : 'a 'b. int64 option -> 'a -> 'b -> exn
-    -> Eba_shared.Page.page_content Lwt.t
+        -> [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
       = (fun _ _ _ exn -> err_page exn)
 
 end

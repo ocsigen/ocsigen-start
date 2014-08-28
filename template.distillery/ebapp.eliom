@@ -46,27 +46,19 @@ module Page_ = struct
     ["onload.js"]
   ]
 
-  let default_predicate : 'a 'b. 'a -> 'b -> bool Lwt.t
-      = (fun _ _ -> Lwt.return true)
+  let default_predicate _ _ = Lwt.return true
 
-  let default_connected_predicate
-      : 'a 'b. int64 option -> 'a -> 'b -> bool Lwt.t
-        = (fun _ _ _ -> Lwt.return true)
+  let default_connected_predicate _ _ _ = Lwt.return true
 
-  let default_error_page
-      : 'a 'b. 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
-        = (fun _ _ exn ->
-          Lwt.return (if Ocsigen_config.get_debugmode ()
-            then [p [pcdata (Printexc.to_string exn)]]
-            else [p [pcdata "Error"]]))
+  let default_error_page _ _ exn =
+    Lwt.return (if Ocsigen_config.get_debugmode ()
+                then [p [pcdata (Printexc.to_string exn)]]
+                else [p [pcdata "Error"]])
 
-  let default_connected_error_page
-      : 'a 'b. int64 option -> 'a -> 'b -> exn
-        -> Eba_shared.Page.page_content Lwt.t
-          = (fun _ _ _ exn ->
-            Lwt.return (if Ocsigen_config.get_debugmode ()
-              then [p [pcdata (Printexc.to_string exn)]]
-              else [p [pcdata "Error"]]))
+  let default_connected_error_page _ _ _ exn =
+    Lwt.return (if Ocsigen_config.get_debugmode ()
+                then [p [pcdata (Printexc.to_string exn)]]
+                else [p [pcdata "Error"]])
 end
 
 

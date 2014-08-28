@@ -21,10 +21,14 @@
  *)
 open Printf
 
+{shared{
+  let email_pattern = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]+$"
+}}
+
 module Make(C : Eba_config.Email) = struct
   exception Invalid_mailer of string
 
-  include Eba_shared.Email
+  let email_pattern = email_pattern
 
   let email_regexp =
     Str.regexp_case_fold email_pattern
@@ -60,3 +64,19 @@ module Make(C : Eba_config.Email) = struct
       flush ();
       raise (Invalid_mailer (C.mailer^" not found"))
 end
+
+
+{client{
+module Email = struct
+
+  let email_pattern = email_pattern
+  let regexp_email =
+    Regexp.regexp_with_flag email_pattern "i"
+
+  let is_valid email =
+    match Regexp.string_match regexp_email email 0 with
+    | None -> false
+    | Some _ -> true
+
+end
+}}

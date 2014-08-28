@@ -25,6 +25,10 @@
   open Eliom_content.Html5.F
 }}
 
+let user_indep_state_hierarchy = Eliom_common.create_scope_hierarchy "userindep"
+let user_indep_process_scope = `Client_process user_indep_state_hierarchy
+let user_indep_session_scope = `Session user_indep_state_hierarchy
+
 {client{
   (* This will close the client process *)
   let close_client_process () =
@@ -64,11 +68,11 @@ let (on_start_process, start_process_action) =
 (* Call this to add an action to be done
    when the process starts in connected mode, or when the user logs in *)
 let (on_start_connected_process, start_connected_process_action) =
-  let r = ref Lwt.return in
+  let r = ref (fun _ -> Lwt.return ()) in
   ((fun f ->
       let oldf = !r in
-      r := (fun () -> lwt () = oldf () in f ())),
-   (fun () -> !r ()))
+      r := (fun userid -> lwt () = oldf userid in f userid)),
+   (fun userid -> !r userid))
 
 (* Call this to add an action to be done at each connected request *)
 let (on_connected_request, connected_request_action) =
@@ -111,63 +115,20 @@ let (on_denied_request, denied_request_action) =
    (fun userido -> !r userido))
 
 
+{shared{
+exception Not_connected
+exception Permission_denied
+}}
 
 module Make
   (C : Eba_config.Session)
   (Groups : Eba_sigs.Groups)
 =
 struct
-  include Eba_shared.Session
 
   type group = Groups.t
 
-  exception Permission_denied
-
-  let userid : int64 option Eliom_reference.Volatile.eref =
-    (* This is a cache of current user *)
-    Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope None
-
-  (* SECURITY: We can trust these functions on server side,
-     because the user is set at every request from the session cookie value.
-     But do not trust a user sent by te client ...
-  *)
-  let get_current_userid () =
-    match Eliom_reference.Volatile.get userid with
-      | Some a -> a
-      | None -> raise Eba_shared.Session.Not_connected
-
-  (*VVV!!! I am not happy with these 2 functions set_user.
-    If we forget to call them, the user will be wrong.
-    get_current_user_or_fail could call User.user_of_uid itself
-    but it does not work if we want to set the client side value ...
-    For the client side value, we could use a wrapped reference but
-    - the value must be set before wrapping, otherwise we will wrap a lwt
-    thread ... We need a wrapper that waits the end of the server side threads
-    and wrap the value it returns?
-    - if they are sent only once, the value will be wrong because when
-    the client side program starts, the value is None
-    - if they are sent every request, it's too much, and this is probably
-    not the right semantics for wrapping Eliom references
-
-  *)
-  let set_user_server uid =
-    Eliom_reference.Volatile.set userid (Some uid);
-    Lwt.return ()
-
-  let unset_user_server () =
-    Eliom_reference.Volatile.set userid None
-
-  let set_user_client () =
-    match Eliom_reference.Volatile.get userid with
-      | None -> () (* Should never happen *)
-      | Some userid ->
-          ignore {unit{ Eba_shared.Session.set_current_userid %userid }}
-
-  let unset_user_client () =
-    ignore {unit{ Eba_shared.Session.unset_current_userid () }}
-
   let start_connected_process uid =
-    let () = set_user_client () in
     (* We want to warn the client when the server side process state is closed.
        To do that, we listen on a channel and wait for exception. *)
     let c : unit Eliom_comet.Channel.t =
@@ -179,14 +140,14 @@ struct
            Lwt.catch
              (fun () -> Lwt_stream.iter_s (fun () -> Lwt.return ()) %c)
              (function
-                | Eliom_comet.Process_closed ->
-                    close_client_process ()
-                | e ->
-                    Eliom_lib.debug_exn "comet exception: " e;
-                    Lwt.fail e))
+               | Eliom_comet.Process_closed ->
+                 close_client_process ()
+               | e ->
+                 Eliom_lib.debug_exn "comet exception: " e;
+                 Lwt.fail e))
     }};
     lwt () = C.on_start_connected_process uid in
-    start_connected_process_action ()
+    start_connected_process_action uid
 
   let connect_volatile uid =
     Eliom_state.set_volatile_data_session_group
@@ -203,14 +164,11 @@ struct
     start_connected_process uid
 
   let connect userid =
-    lwt () = set_user_server userid in
     connect_string (Int64.to_string userid)
 
   let disconnect () =
     lwt () = C.on_close_session () in
     lwt () = close_session_action () in
-    unset_user_client (); (*VVV!!! will affect only current tab!! *)
-    unset_user_server (); (* ok this is a request reference *)
     Lwt.return ()
 
   let check_allow_deny userid allow deny =
@@ -267,31 +225,24 @@ struct
     let get_uid uid =
       try
         match uid with
-          | None -> None
-          | Some u -> Some (Int64.of_string u)
+        | None -> None
+        | Some u -> Some (Int64.of_string u)
       with Failure _ -> None
     in
     lwt uid = match get_uid uids with
       | None ->
         lwt uids = Eliom_state.get_persistent_data_session_group () in
         (match get_uid uids  with
-          | Some uid ->
-            (* A persistent session exists, but the volatile session has gone.
+         | Some uid ->
+           (* A persistent session exists, but the volatile session has gone.
                It may be due to a timeout or may be the server has been
                relaunched.
                We restart the volatile session silently
                (comme si de rien n'était, pom pom pom). *)
-            lwt () = set_user_server uid in
-            (* We record the user info on server side
-               as a request reference.
-               As it is computed from the session cookie,
-               it is safe on server side. *)
-            lwt () = connect_volatile (Int64.to_string uid) in
-            Lwt.return (Some uid)
-          | None -> Lwt.return None)
-      | Some uid ->
-        lwt () = set_user_server uid in
-        Lwt.return (Some uid)
+           lwt () = connect_volatile (Int64.to_string uid) in
+           Lwt.return (Some uid)
+         | None -> Lwt.return None)
+      | Some uid -> Lwt.return (Some uid)
     in
     lwt () =
       if new_process
@@ -328,14 +279,14 @@ struct
     gen_wrapper
       ~allow ~deny ?deny_fun
       f
-      (fun _ _ -> Lwt.fail Eba_shared.Session.Not_connected)
+      (fun _ _ -> Lwt.fail Not_connected)
       gp pp
 
   let connected_rpc ?allow ?deny ?deny_fun f pp =
     gen_wrapper
       ~allow ~deny ?deny_fun
       (fun userid _ p -> f userid p)
-      (fun _ _ -> Lwt.fail Eba_shared.Session.Not_connected)
+      (fun _ _ -> Lwt.fail Not_connected)
       () pp
 
   module Opt = struct
@@ -353,7 +304,5 @@ struct
         (fun _ p -> f None p)
         () pp
 
-    let get_current_userid () =
-      Eliom_reference.Volatile.get userid
   end
 end

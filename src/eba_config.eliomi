@@ -51,15 +51,17 @@ module type Page = sig
 
     (** [other_head] is a list of custom elements to add in the head section,
       * it can be used to add "meta" elements, for example. *)
-  val other_head : Eba_shared.Page.head_content
+  val other_head : [ Html5_types.head_content_fun ] Eliom_content.Html5.elt list
 
     (** [default_error_page] See NOTE (above) *)
   val default_error_page :
-      'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
+      'a -> 'b -> exn ->
+      [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
 
     (** [default_connected_error_page] See NOTE (above) *)
   val default_connected_error_page :
-      int64 option -> 'a -> 'b -> exn -> Eba_shared.Page.page_content Lwt.t
+      int64 option -> 'a -> 'b -> exn ->
+      [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
 
     (** [default_predicate] See NOTE (above) *)
   val default_predicate :

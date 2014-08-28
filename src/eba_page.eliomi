@@ -19,7 +19,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-open Eba_shared.Page
+
+exception Predicate_failed of (exn option)
 
 module Make
   (C : Eba_config.Page)

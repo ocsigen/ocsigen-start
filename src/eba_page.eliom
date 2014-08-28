@@ -24,14 +24,9 @@
   open Eliom_content.Html5.F
 }}
 
+exception Predicate_failed of (exn option)
+
 module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
-
-  exception Predicate_failed of (exn option)
-  exception Not_connected = Session.Not_connected
-  exception Permission_denied = Session.Permission_denied
-
-  type page = Eba_shared.Page.page
-  type page_content = Eba_shared.Page.page_content
 
   module Session = Session
 
@@ -83,9 +78,9 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
       try_lwt
         Session.connected_fun ?allow ?deny
           ~deny_fun:(fun uid_o ->
-            fallback uid_o gp pp Session.Permission_denied)
+            fallback uid_o gp pp Eba_session.Permission_denied)
           f_wrapped gp pp
-      with Session.Not_connected as exc -> fallback None gp pp exc
+      with Eba_session.Not_connected as exc -> fallback None gp pp exc
     in
     Lwt.return
       (html
@@ -114,7 +109,7 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
       lwt content = Session.Opt.connected_fun
         ?allow ?deny
         ~deny_fun:(fun uid_o ->
-          fallback uid_o gp pp Session.Permission_denied)
+          fallback uid_o gp pp Eba_session.Permission_denied)
         f_wrapped gp pp in
       Lwt.return
         (html

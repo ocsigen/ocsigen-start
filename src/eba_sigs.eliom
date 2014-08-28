@@ -32,9 +32,6 @@ end
 module type Session = sig
   type group
 
-  exception Permission_denied
-  exception Not_connected
-
   val connect : int64 -> unit Lwt.t
   val disconnect : unit -> unit Lwt.t
 
@@ -54,8 +51,6 @@ module type Session = sig
   -> 'a
   -> 'b Lwt.t
 
-  val get_current_userid : unit -> int64
-
   module Opt : sig
     val connected_fun :
        ?allow:group list
@@ -73,20 +68,12 @@ module type Session = sig
     -> 'a
     -> 'b Lwt.t
 
-    val get_current_userid : unit -> int64 option
   end
 
 end
 
 module type Page = sig
   module Session : Session
-
-  exception Predicate_failed of (exn option)
-  exception Permission_denied
-  exception Not_connected
-
-  type page = [ Html5_types.html ] Eliom_content.Html5.elt
-  type page_content = [ Html5_types.body_content ] Eliom_content.Html5.elt list
 
   module Opt : sig
   (** The main function to generate pages for connected or non-connected user.
@@ -99,27 +86,36 @@ module type Page = sig
       ?allow:Session.group list
       -> ?deny:Session.group list
       -> ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t)
-      -> ?fallback:(int64 option -> 'a -> 'b -> exn -> page_content Lwt.t)
-      -> (int64 option -> 'a -> 'b -> page_content Lwt.t)
+      -> ?fallback:(int64 option -> 'a -> 'b -> exn ->
+                    [ Html5_types.body_content ] Eliom_content.Html5.elt
+                      list Lwt.t)
+      -> (int64 option -> 'a -> 'b ->
+          [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t)
       -> 'a -> 'b
-      -> page Lwt.t
+      -> [ Html5_types.html ] Eliom_content.Html5.elt Lwt.t
   end
 
   val page :
        ?predicate:('a -> 'b -> bool Lwt.t)
-    -> ?fallback:('a -> 'b -> exn -> page_content Lwt.t)
-    -> ('a -> 'b -> page_content Lwt.t)
+    -> ?fallback:('a -> 'b -> exn ->
+                  [ Html5_types.body_content ] Eliom_content.Html5.elt
+                    list Lwt.t)
+    -> ('a -> 'b -> [ Html5_types.body_content ] Eliom_content.Html5.elt list
+          Lwt.t)
     -> 'a -> 'b
-    -> page Lwt.t
+    -> [ Html5_types.html ] Eliom_content.Html5.elt Lwt.t
 
   val connected_page :
        ?allow:Session.group list
     -> ?deny:Session.group list
     -> ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t)
-    -> ?fallback:(int64 option -> 'a -> 'b -> exn -> page_content Lwt.t)
-    -> (int64 -> 'a -> 'b -> page_content Lwt.t)
+    -> ?fallback:(int64 option -> 'a -> 'b -> exn ->
+                  [ Html5_types.body_content ] Eliom_content.Html5.elt list
+                    Lwt.t)
+    -> (int64 -> 'a -> 'b ->
+        [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t)
     -> 'a -> 'b
-    -> page Lwt.t
+    -> [ Html5_types.html ] Eliom_content.Html5.elt Lwt.t
 end
 
 module type Email = sig

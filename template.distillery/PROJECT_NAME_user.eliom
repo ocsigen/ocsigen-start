@@ -114,7 +114,9 @@ let create' ?password ?avatar ~firstname ~lastname email =
 (* Overwrites the function [update] of [%%%MODULE_NAME%%%_db.User]
    to reset the cache *)
 let update ?password ?avatar ~firstname ~lastname uid =
-  lwt () = %%%MODULE_NAME%%%_db.User.update ?password ?avatar ~firstname ~lastname uid in
+  lwt () = %%%MODULE_NAME%%%_db.User.update
+             ?password ?avatar ~firstname ~lastname uid
+  in
   MCache.reset uid;
   Lwt.return ()
 
