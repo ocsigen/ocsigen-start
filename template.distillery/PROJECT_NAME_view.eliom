@@ -108,9 +108,10 @@ let home_button () =
     ])
 
 let avatar user =
-  img ~alt:"picture" ~a:[a_class ["%%%PROJECT_NAME%%%-avatar"]]
-    ~src:(%%%MODULE_NAME%%%_user.avatar_uri_of_user user)
-    ()
+  match %%%MODULE_NAME%%%_user.avatar_uri_of_user user with
+  | Some src ->
+    img ~alt:"picture" ~a:[a_class ["%%%MODULE_NAME%%%-avatar"]] ~src ()
+  | None -> %%%MODULE_NAME%%%_icons.user
 
 let username user =
   match %%%MODULE_NAME%%%_user.firstname_of_user user with

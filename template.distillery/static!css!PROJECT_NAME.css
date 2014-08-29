@@ -161,6 +161,13 @@ a:visited {
   padding: 0px 8px;
 }
 
+#%%%PROJECT_NAME%%%-user-box i.fa {
+  color: #ddd;
+  font-size: 38px;
+  vertical-align: middle;
+  padding: 6px;
+}
+
 .%%%PROJECT_NAME%%%-avatar {
   width: 50px;
   height: 50px;

@@ -26,9 +26,9 @@ exception No_such_user
 val uid_of_user : t -> int64
 val firstname_of_user : t -> string
 val lastname_of_user : t -> string
-val avatar_of_user : t -> string
+val avatar_of_user : t -> string option
 val avatar_uri_of_avatar : string -> Eliom_content.Xml.uri
-val avatar_uri_of_user : t -> Eliom_content.Xml.uri
+val avatar_uri_of_user : t -> Eliom_content.Xml.uri option
 }}
 
 val email_of_user : t -> string Lwt.t

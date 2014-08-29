@@ -38,6 +38,7 @@ module Page_ = struct
   let title = "%%%PROJECT_NAME%%%"
 
   let css = [
+    ["font-awesome.css"];
     ["eba.css"];
     ["%%%PROJECT_NAME%%%.css"];
   ]
