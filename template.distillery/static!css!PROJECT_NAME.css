@@ -1,3 +1,6 @@
+
+@import url(http://fonts.googleapis.com/css?family=PT+Sans:400,700);
+
 html{
   height: 100%;
 }
@@ -5,7 +8,7 @@ html{
 body {
   margin: 0px;
   min-height: 100%;
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-family: "PT Sans", sans-serif;
   font-weight: 500;
 }
 
@@ -37,10 +40,6 @@ a:visited {
 .column {
   width: 50%;
 }
-.eba-box {
-  border-left: 3px solid #dbdbdb;
-  padding-left: 10px;
-}
 
 .bar-item {
   margin-bottom: 10px;
@@ -57,23 +56,26 @@ a:visited {
 }
 
 #%%%PROJECT_NAME%%%-logo {
-  color: black;
+  color: white;
   text-decoration: none;
-  font-size: 30pt;
+  font-size: 25pt;
   font-weight: 700;
+  padding: 0 20px;
 }
 #%%%PROJECT_NAME%%%-logo:hover {
   color: #4183c4;
 }
 #%%%PROJECT_NAME%%%-logo:visited {
-  color: black;
+  color: white;
 }
 
 #%%%PROJECT_NAME%%%-header {
   position: relative;
-  width: 70%;
-  border-bottom: 2px solid #dbdbdb;
+  width: 100%;
   height: 50px;
+  background-color: #ddeeff;
+  color: white;
+  padding: 0 50px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -81,20 +83,22 @@ a:visited {
 #%%%PROJECT_NAME%%%-body {
   margin-top: 40px;
   margin-bottom: 40px;
-  width: 70%;
+  width: 980px;
+  min-height: 500px;
   text-align: center;
   margin-left: auto;
   margin-right: auto;
 }
 
 #%%%PROJECT_NAME%%%-footer {
-  width: 70%;
+  width: 100%;
   text-align: center;
-  padding: 10px;
-  border-top: 2px solid #dbdbdb;
-  height: 50px;
+  padding: 20px;
+  height: 30px;
   margin-left: auto;
   margin-right: auto;
+  background-color: #ddeeff;
+  color: #445588;
 }
 
 #%%%PROJECT_NAME%%%-forms {
@@ -106,20 +110,18 @@ a:visited {
   text-align: center;
 }
 
-#%%%PROJECT_NAME%%%-navbar {
+ul#%%%PROJECT_NAME%%%-navbar {
+  list-style-type: none;
   margin-bottom: 10px;
   bottom: 0;
   display: inline-block;
 }
 
-#%%%PROJECT_NAME%%%-navbar .item {
-  margin-left: 5px;
+#%%%PROJECT_NAME%%%-navbar li {
+  display: inline-block;
+  padding-right: 15px;
 }
 
-.eba-template {
-  font-size: 10pt;
-  color: #bdbdbd;
-}
 
 #%%%PROJECT_NAME%%%-request-msgs {
   padding: 5px;
@@ -167,7 +169,6 @@ a:visited {
   vertical-align: middle;
   padding: 6px;
 }
-
 .%%%PROJECT_NAME%%%-avatar {
   width: 50px;
   height: 50px;
@@ -176,4 +177,10 @@ a:visited {
 div#eba_welcome_box {
   margin-left: auto;
   margin-right: auto;
+}
+
+div#eba_login_signup_box {
+  position: absolute;
+  top: 0;
+  right: 0;
 }

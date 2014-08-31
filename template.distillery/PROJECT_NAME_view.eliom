@@ -32,7 +32,7 @@ let connect_form () =
         ~input_type:`Email
         ();
       string_input
-        ~a:[a_placeholder "You password"]
+        ~a:[a_placeholder "Your password"]
         ~name:password
         ~input_type:`Password
         ();

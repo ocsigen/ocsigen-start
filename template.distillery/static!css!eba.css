@@ -1,16 +1,5 @@
 
 /* */
-@font-face {
-    font-family: 'HeydingsControlsRegular';
-    src: url('../fonts/heydings_controls-webfont.eot');
-    src: url('../fonts/heydings_controls-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/heydings_controls-webfont.woff') format('woff'),
-         url('../fonts/heydings_controls-webfont.ttf') format('truetype'),
-         url('../fonts/heydings_controls-webfont.svg#HeydingsControlsRegular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
 
 html {
     height: 100%;
@@ -40,6 +29,7 @@ textarea, textarea:focus {
 
 input {
   border: none;
+  padding: 0 2px;
 }
 input:focus {
   outline: none;
@@ -230,8 +220,6 @@ div.eba_welcomepage h2 {
 }
 
 div#eba_login_signup_box {
-  top: 0;
-  right: 0;
   width: 280px;
 }
 
@@ -398,15 +386,6 @@ div.eba_welcomepage h1.caml_process_node a.caml_link {
 }
 */
 
-#eba_login_signup_box {
-    background-color: white;
-    border-radius: 4px;
-}
-
-#eba_login_signup_box input {
-    border-radius: 4px;
-    border: #aaa solid 1px;
-}
 
 #eba_admin_site_state {
 }
@@ -482,10 +461,10 @@ div.eba_upload_error {
 /* Login box */
 div#eba_login_signup_box {
   height: auto;
-  right: 0;
-  position: absolute;
-  top: 0;
-  width: 400px;
+  width: 600px;
+  padding: 0 20px;
+}
+#eba_login_signup_box input {
 }
 div#eba_login_signup_box form {
   text-align: left;

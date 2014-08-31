@@ -6,7 +6,7 @@
 let main_service_handler uid_o gp pp =
   %%%MODULE_NAME%%%_container.page uid_o (
     [
-     p [em [pcdata "Eliom base app: Put here the app content."]]
+     p [em [pcdata "Eliom base app: Put app content here."]]
     ]
   )
 

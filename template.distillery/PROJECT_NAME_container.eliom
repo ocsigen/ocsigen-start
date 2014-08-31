@@ -12,33 +12,27 @@ let header ?user () =
         ~service:%%%MODULE_NAME%%%_services.main_service [
           pcdata Ebapp.App.application_name;
         ] ();
-      div ~a:[a_id "%%%PROJECT_NAME%%%-navbar"]
+      ul ~a:[a_id "%%%PROJECT_NAME%%%-navbar"]
         [
-          a ~a:[a_class ["item"; "eba-box"]]
-            ~service:%%%MODULE_NAME%%%_services.main_service [
-              pcdata "Home";
-            ] ();
-          a ~a:[a_class ["item"; "eba-box"]]
-            ~service:%%%MODULE_NAME%%%_services.about_service [
-              pcdata "About";
-            ] ();
+          li [a ~service:%%%MODULE_NAME%%%_services.main_service
+                [pcdata "Home"] ()];
+          li [a ~service:%%%MODULE_NAME%%%_services.about_service
+                [pcdata "About"] ()]
         ];
       user_box;
     ])
 
 let footer ?user () =
   div ~a:[a_id "%%%PROJECT_NAME%%%-footer"] [
-    span ~a:[a_class ["eba-template"]] [
-      pcdata "This application has been generated using the ";
-      a ~service:%%%MODULE_NAME%%%_services.eba_github_service [
-        pcdata "Eliom-base-app"
-      ] ();
-      pcdata " template for Eliom-distillery and uses the ";
-      a ~service:%%%MODULE_NAME%%%_services.ocsigen_service [
-        pcdata "Ocsigen"
-      ] ();
-      pcdata " technology.";
-    ];
+    pcdata "This application has been generated using the ";
+    a ~service:%%%MODULE_NAME%%%_services.eba_github_service [
+      pcdata "Eliom-base-app"
+    ] ();
+    pcdata " template for Eliom-distillery and uses the ";
+    a ~service:%%%MODULE_NAME%%%_services.ocsigen_service [
+      pcdata "Ocsigen"
+    ] ();
+    pcdata " technology.";
   ]
 
 let connected_welcome_box () =
