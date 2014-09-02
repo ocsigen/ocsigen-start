@@ -17,7 +17,7 @@ let get_current_user () =
   match !me with
   | Some a -> a
   | None ->
-    Ojw_log.log "Not connected error in %%%PROJECT_NAME%%%_current_user";
+    Ow_log.log "Not connected error in %%%PROJECT_NAME%%%_current_user";
     raise Eba_session.Not_connected
 
 }}

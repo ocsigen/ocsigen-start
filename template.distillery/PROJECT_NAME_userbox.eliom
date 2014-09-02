@@ -38,14 +38,14 @@ let connection_box () =
              br();
              pcdata "Click on the link it contains to log in."]])
   else
-    let set = {Ew_active_set.t'{
-      Ew_active_set.to_server_set
-        (Ew_active_set.set ~at_least_one:true ())
+    let set = {Ow_active_set.t'{
+      Ow_active_set.to_server_set
+        (Ow_active_set.set ~at_least_one:true ())
     }} in
     let button1 = D.h2 [pcdata "Login"] in
     let form1 = %%%MODULE_NAME%%%_view.connect_form () in
     let o1,_ =
-      Ew_button.button_alert
+      Ow_button.button_alert
         ~set
         ~pressed:true
         button1
@@ -54,7 +54,7 @@ let connection_box () =
     let button2 = D.h2 [pcdata "Lost password"] in
     let form2 = %%%MODULE_NAME%%%_view.forgot_password_form () in
     let o2,_ =
-      Ew_button.button_alert
+      Ow_button.button_alert
         ~set:set
         button2
         form2
@@ -66,7 +66,7 @@ let connection_box () =
          and be one of the first users"
     in
     let o3,_ =
-      Ew_button.button_alert
+      Ow_button.button_alert
         ~set
         button3
         form3
@@ -74,7 +74,7 @@ let connection_box () =
     let button4 = D.h2 [pcdata "Register"] in
     let form4 = %%%MODULE_NAME%%%_view.sign_up_form () in
     let o4,_ =
-        Ew_button.button_alert
+        Ow_button.button_alert
           ~set
           button4
           form4
@@ -85,7 +85,7 @@ let connection_box () =
     let press but cont msg =
       ignore {unit{
         display_error (To_dom.of_element %cont) %msg
-          (fun () -> (Ew_button.to_button_alert %but)##press())
+          (fun () -> (Ow_button.to_button_alert %but)##press())
         }};
       Lwt.return ()
     in

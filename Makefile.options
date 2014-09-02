@@ -42,9 +42,9 @@ TEMPLATE_DIR := template.distillery
 TEMPLATE_NAME := eba.pgocaml
 
 # OCamlfind packages for the server
-SERVER_PACKAGES := pgocaml,pgocaml.syntax,text,macaque.syntax,calendar,safepass,eliom-widgets.server,magick
+SERVER_PACKAGES := pgocaml,pgocaml.syntax,text,macaque.syntax,calendar,safepass,ocsigen-widgets.server,magick
 # OCamlfind packages for the client
-CLIENT_PACKAGES := calendar,ojwidgets,eliom-widgets.client
+CLIENT_PACKAGES := calendar,ocsigen-widgets.client
 
 # Debug package (yes/no): Debugging info in compilation
 DEBUG := no
