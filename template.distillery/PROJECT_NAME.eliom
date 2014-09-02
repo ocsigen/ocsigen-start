@@ -26,6 +26,16 @@ let set_personal_data_handler' uid ()
     } in
     %%%MODULE_NAME%%%_user.update' ~password:pwd record)
 
+let set_password_handler' uid () (pwd, pwd2) =
+  if pwd <> pwd2
+  then
+    (Eliom_reference.Volatile.set %%%MODULE_NAME%%%_err.passwords_do_not_match
+       true;
+     Lwt.return ())
+  else (
+    lwt user = %%%MODULE_NAME%%%_user.user_of_uid uid in
+    %%%MODULE_NAME%%%_user.update' ~password:pwd user)
+
 let generate_act_key
     ?(act_key = Ocsigen_lib.make_cryptographic_safe_string ())
     ?(send_email = true)
@@ -169,6 +179,10 @@ let () =
   Eliom_registration.Action.register
     %%%MODULE_NAME%%%_services.set_personal_data_service'
     (Ebapp.Session.connected_fun set_personal_data_handler');
+
+  Eliom_registration.Action.register
+    %%%MODULE_NAME%%%_services.set_password_service'
+    (Ebapp.Session.connected_fun set_password_handler');
 
   Eliom_registration.Action.register
     %%%MODULE_NAME%%%_services.forgot_password_service'

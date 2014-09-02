@@ -21,6 +21,18 @@ a:visited {
   color: #4183c4;
 }
 
+hr {
+  border: none;
+  border-bottom: 1px #ddd solid;
+}
+
+input {
+  background-color: #eef8ff;
+}
+input[type="submit"] {
+  background-color: #4183c4;
+}
+
 .presentation {
   padding: 10px;
   text-align: justify;
@@ -71,7 +83,6 @@ a:visited {
 
 #%%%PROJECT_NAME%%%-header {
   position: relative;
-  width: 100%;
   height: 50px;
   background-color: #ddeeff;
   color: white;
@@ -91,7 +102,6 @@ a:visited {
 }
 
 #%%%PROJECT_NAME%%%-footer {
-  width: 100%;
   text-align: center;
   padding: 20px;
   height: 30px;
@@ -140,39 +150,13 @@ ul#%%%PROJECT_NAME%%%-navbar {
   background-color: #4de886;
 }
 
-#%%%PROJECT_NAME%%%-user-box {
+#eba-user-box {
   right: 0;
   position: absolute;
   bottom: 0;
+  width: 500px;
 }
 
-#%%%PROJECT_NAME%%%-user-box img,
-#%%%PROJECT_NAME%%%-user-box div,
-#%%%PROJECT_NAME%%%-user-box form {
-  display: inline-block;
-  vertical-align: middle;
-  padding: 0;
-}
-
-#%%%PROJECT_NAME%%%-user-box img {
-  height: 50px;
-}
-
-#%%%PROJECT_NAME%%%-user-box div {
-  width: 200px;
-  padding: 0px 8px;
-}
-
-#%%%PROJECT_NAME%%%-user-box i.fa {
-  color: #ddd;
-  font-size: 38px;
-  vertical-align: middle;
-  padding: 6px;
-}
-.%%%PROJECT_NAME%%%-avatar {
-  width: 50px;
-  height: 50px;
-}
 
 div#eba_welcome_box {
   margin-left: auto;

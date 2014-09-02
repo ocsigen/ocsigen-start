@@ -29,7 +29,7 @@ textarea, textarea:focus {
 
 input {
   border: none;
-  padding: 0 2px;
+  padding: 2px 4px;
 }
 input:focus {
   outline: none;
@@ -232,11 +232,6 @@ div#eba_login_signup_box label {
   font-size: 16px;
 }
 
-div#eba_login_signup_box p {
-  height: 150px;
-  padding-top: 60px;
-  text-align: center;
-}
 
 div.eba_activation {
   margin-top: 8px;
@@ -461,7 +456,7 @@ div.eba_upload_error {
 /* Login box */
 div#eba_login_signup_box {
   height: auto;
-  width: 600px;
+  width: 560px;
   padding: 0 20px;
 }
 #eba_login_signup_box input {
@@ -489,11 +484,79 @@ div#eba_login_signup_box h2.pressed {
   color: black;
 }
 div#eba_login_signup_box p {
-  width: 400px;
+  width: 584px;
   background-color: white;
-  padding: 14px 8px;
+  color: #445588;
+  padding: 14px 10px;
   margin: 0;
   text-align: left;
   position: absolute;
   top: 0;
+  height: 22px;
+}
+div#eba_login_signup_box p.eba_error {
+  width: 584px;
+  background-color: #db6573;
+  color: white;
+  font-weight: bold;
+  padding: 14px 10px;
+  margin: 0;
+  text-align: left;
+  position: absolute;
+  top: 0;
+  height: 22px;
+}
+
+
+#eba-user-box {
+  position: relative;
+}
+
+#eba-user-box img,
+#eba-user-box div.eba_username,
+#eba-user-box i {
+  display: inline-block;
+  vertical-align: middle;
+  padding: 0;
+}
+
+#eba-user-box img {
+  height: 50px;
+}
+
+#eba-user-box div.eba_username {
+  padding: 0px 8px;
+}
+
+#eba-user-box i.fa {
+  color: #ddd;
+  font-size: 38px;
+  vertical-align: middle;
+  padding: 6px;
+}
+#eba-user-box div.eba_usermenu {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+#eba-user-box div.eba_usermenu_button {
+  position: relative;
+  right: 0;
+  cursor: pointer;
+  width: 50px;
+}
+#eba-user-box div.ojw_alert {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  color: black;
+  background-color: white;
+  border: 1px #ddd solid;
+  padding: 10px;
+  display: none;
+}
+
+.eba-avatar {
+  width: 50px;
+  height: 50px;
 }

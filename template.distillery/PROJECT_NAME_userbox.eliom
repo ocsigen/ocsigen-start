@@ -8,13 +8,31 @@ open Eliom_content.Html5
 open Eliom_content.Html5.F
 }}
 
+{shared{
+let user_menu user =
+  let but = D.div ~a:[a_class ["eba_usermenu_button"]]
+      [Eba_icons.config ~class_:["fa-large"] ()]
+  in
+  let password_form = %%%MODULE_NAME%%%_view.password_form () in
+  let logout_but = %%%MODULE_NAME%%%_view.disconnect_button () in
+  let menu =
+    D.div [
+      p [pcdata "Change your password:"];
+      password_form;
+      hr ();
+      logout_but;
+    ]
+  in
+  ignore (Ow_button.button_alert but menu);
+  div ~a:[a_class ["eba_usermenu"]] [but; menu]
+ }}
 
 let connected_user_box user =
   lwt username = %%%MODULE_NAME%%%_view.username user in
-  Lwt.return (div ~a:[a_id "incus-user-box"] [
+  Lwt.return (div ~a:[a_id "eba-user-box"] [
     %%%MODULE_NAME%%%_view.avatar user;
     username;
-    %%%MODULE_NAME%%%_view.disconnect_button ();
+    user_menu user;
   ])
 
 
@@ -34,8 +52,7 @@ let connection_box () =
   then
     Lwt.return
       (D.div ~a:[a_id id]
-         [p [pcdata "An email has been sent to this address.";
-             br();
+         [p [pcdata "An email has been sent to this address. ";
              pcdata "Click on the link it contains to log in."]])
   else
     let set = {Ow_active_set.t'{
@@ -140,5 +157,16 @@ let connection_box () =
 
 let userbox user =
   match user with
-    | Some user -> connected_user_box user
+    | Some user ->
+      let passwords_do_not_match =
+        Eliom_reference.Volatile.get
+          %%%MODULE_NAME%%%_err.passwords_do_not_match
+      in
+      lwt box = connected_user_box user in
+      ignore {unit{
+        if %passwords_do_not_match
+        then display_error (To_dom.of_element %box)
+            "Passwords do not match" (fun () -> ())
+      }};
+      Lwt.return box
     | None -> connection_box ()

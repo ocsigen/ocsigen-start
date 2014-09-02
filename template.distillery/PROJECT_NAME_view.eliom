@@ -43,21 +43,21 @@ let connect_form () =
         ();
     ]) ()
 
+{shared{
 let disconnect_button () =
-  post_form ~service:%%%MODULE_NAME%%%_services.disconnect_service
+  post_form ~service:%(%%%MODULE_NAME%%%_services.disconnect_service)
     (fun _ -> [
-      string_input
-        ~a:[a_class ["button"]]
-        ~input_type:`Submit
-        ~value:"Logout"
-        ();
-    ]) ()
+         button ~button_type:`Submit
+           [Eba_icons.signout (); pcdata "Logout"]
+       ]) ()
+ }}
 
 let sign_up_form () =
   generic_email_form ~service:%%%MODULE_NAME%%%_services.sign_up_service' ()
 
 let forgot_password_form () =
-  generic_email_form ~service:%%%MODULE_NAME%%%_services.forgot_password_service' ()
+  generic_email_form
+    ~service:%%%MODULE_NAME%%%_services.forgot_password_service' ()
 
 let information_form
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
@@ -111,15 +111,60 @@ let avatar user =
   match %%%MODULE_NAME%%%_user.avatar_uri_of_user user with
   | Some src ->
     img ~alt:"picture" ~a:[a_class ["%%%MODULE_NAME%%%-avatar"]] ~src ()
-  | None -> %%%MODULE_NAME%%%_icons.user
+  | None -> %%%MODULE_NAME%%%_icons.user ()
 
 let username user =
-  match %%%MODULE_NAME%%%_user.firstname_of_user user with
+  lwt n = match %%%MODULE_NAME%%%_user.firstname_of_user user with
     | "" ->
       lwt email = %%%MODULE_NAME%%%_user.email_of_user user in
-      Lwt.return (div [pcdata email])
+      Lwt.return [pcdata email]
     | s ->
-      Lwt.return (div [pcdata s;
-                       pcdata " ";
-                       pcdata (%%%MODULE_NAME%%%_user.lastname_of_user user);
-                      ])
+      Lwt.return [pcdata s;
+                  pcdata " ";
+                  pcdata (%%%MODULE_NAME%%%_user.lastname_of_user user);
+                 ]
+  in
+  Lwt.return (div ~a:[a_class ["eba_username"]] n)
+
+{shared{
+let password_form () =
+  D.post_form
+    ~service:%(%%%MODULE_NAME%%%_services.set_password_service')
+    (fun (pwdn, pwd2n) ->
+       let pass1 =
+         D.string_input
+           ~a:[a_required `Required;
+               a_autocomplete `Off]
+           ~input_type:`Password ~name:pwdn ()
+       in
+       let pass2 =
+         D.string_input
+           ~a:[a_required `Required;
+               a_autocomplete `Off]
+           ~input_type:`Password ~name:pwd2n ()
+       in
+       ignore {unit{
+         let pass1 = To_dom.of_input %pass1 in
+         let pass2 = To_dom.of_input %pass2 in
+         Lwt_js_events.async
+           (fun () ->
+              Lwt_js_events.inputs pass2
+                (fun _ _ ->
+                   ignore
+                     (if Js.to_string pass1##value <> Js.to_string pass2##value
+                      then
+                        (Js.Unsafe.coerce
+                           pass2)##setCustomValidity("Passwords do not match")
+                      else (Js.Unsafe.coerce pass2)##setCustomValidity(""));
+                   Lwt.return ()))
+       }};
+       [
+         table
+           [
+             tr [td [label [pcdata "Password:"]]; td [pass1]];
+             tr [td [label [pcdata "Retype password:"]]; td [pass2]];
+           ];
+         string_input ~input_type:`Submit ~value:"Send" ()
+       ])
+    ()
+ }}

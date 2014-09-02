@@ -67,3 +67,9 @@ let ocsigen_service =
     ~prefix:"http://ocsigen.org"
     ~path:[]
     ~get_params:Eliom_parameter.unit ()
+
+let set_password_service' =
+  Eliom_service.Http.post_coservice'
+    ~name:"set_password"
+    ~post_params:(string "password" ** string "password2")
+    ()

@@ -22,3 +22,6 @@ let activation_key_created =
 let wrong_pdata =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope
     (None : ((string * string) * (string * string)) option)
+
+let passwords_do_not_match =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
