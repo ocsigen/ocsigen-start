@@ -1,5 +1,3 @@
-open %%%MODULE_NAME%%%_db
-
 exception No_such_group
 
 (* -----------------------------------------------------------------
@@ -40,27 +38,28 @@ struct
   let compare = compare
   let get key =
     try_lwt
-      lwt g = %%%MODULE_NAME%%%_db.Groups.group_of_name key in
+      lwt g = Eba_db.Groups.group_of_name key in
       Lwt.return (create_group_from_db g)
-    with No_such_resource -> Lwt.fail No_such_group
+    with Eba_db.No_such_resource -> Lwt.fail No_such_group
 end)
 
 (** Helper function which creates a new group and return it as
   * a record of type [t]. *)
 let create ?description name =
   let group_of_name name =
-    lwt g = %%%MODULE_NAME%%%_db.Groups.group_of_name name in
+    lwt g = Eba_db.Groups.group_of_name name in
     Lwt.return (create_group_from_db g)
   in
   try_lwt group_of_name name with
-  | No_such_resource ->
-    lwt () = %%%MODULE_NAME%%%_db.Groups.create ?description name in
+  | Eba_db.No_such_resource ->
+    lwt () = Eba_db.Groups.create ?description name in
     try_lwt
       lwt g = group_of_name name in
       Lwt.return g
-    with No_such_resource -> Lwt.fail No_such_group (* Should never happen *)
+    with Eba_db.No_such_resource ->
+      Lwt.fail No_such_group (* Should never happen *)
 
-(** Overwrite the function [group_of_name] of [%%%MODULE_NAME%%%_db.User] and use
+(** Overwrite the function [group_of_name] of [Eba_db.User] and use
   * the [get] function of the cache module. *)
 let group_of_name = MCache.get
 
@@ -73,13 +72,13 @@ let group_of_name = MCache.get
  * *)
 
 let add_user_in_group ~group =
-  %%%MODULE_NAME%%%_db.Groups.add_user_in_group ~groupid:(group.id)
+  Eba_db.Groups.add_user_in_group ~groupid:(group.id)
 let remove_user_in_group ~group =
-  %%%MODULE_NAME%%%_db.Groups.remove_user_in_group ~groupid:(group.id)
+  Eba_db.Groups.remove_user_in_group ~groupid:(group.id)
 let in_group ~group =
-  %%%MODULE_NAME%%%_db.Groups.in_group ~groupid:(group.id)
+  Eba_db.Groups.in_group ~groupid:(group.id)
 
 (** Returns all the groups of the database. *)
 let all () =
-  lwt groups = %%%MODULE_NAME%%%_db.Groups.all () in
+  lwt groups = Eba_db.Groups.all () in
   Lwt.return (List.map (create_group_from_db) groups)

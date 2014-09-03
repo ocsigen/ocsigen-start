@@ -10,8 +10,15 @@ module Lwt_PGOCaml = PGOCaml_generic.Make(Lwt_thread)
 module Lwt_Query = Query.Make_with_Db(Lwt_thread)(Lwt_PGOCaml)
 module PGOCaml = Lwt_PGOCaml
 
+let port = ref 3000
+let db = ref "eba"
+
+let init ~port:p ~database () =
+  port := p;
+  db := database
+
 let connect () =
-  Lwt_PGOCaml.connect ~port:3000 ~database:"%%%PROJECT_NAME%%%" ()
+  Lwt_PGOCaml.connect ~port:!port ~database:!db ()
 
 let validate db =
   try_lwt

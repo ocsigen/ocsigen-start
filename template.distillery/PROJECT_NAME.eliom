@@ -93,7 +93,7 @@ let forgot_password_handler' () email =
       generate_act_key ~service:%%%MODULE_NAME%%%_services.main_service email in
     Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
     %%%MODULE_NAME%%%_user.add_activationkey ~act_key uid
-  with %%%MODULE_NAME%%%_db.No_such_resource ->
+  with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
       %%%MODULE_NAME%%%_userbox.user_does_not_exist true;
     Lwt.return ()
@@ -125,7 +125,7 @@ let connect_handler () (login, pwd) =
   try_lwt
     lwt uid = %%%MODULE_NAME%%%_user.verify_password login pwd in
     Ebapp.Session.connect uid
-  with %%%MODULE_NAME%%%_db.No_such_resource ->
+  with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set %%%MODULE_NAME%%%_userbox.wrong_password true;
     Lwt.return ()
 
@@ -138,7 +138,7 @@ let activation_handler akey () =
     lwt uid = %%%MODULE_NAME%%%_user.uid_of_activationkey akey in
     lwt () = Ebapp.Session.connect uid in
     Eliom_registration.Redirection.send Eliom_service.void_coservice'
-  with %%%MODULE_NAME%%%_db.No_such_resource ->
+  with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
       %%%MODULE_NAME%%%_userbox.activation_key_outdated true;
     (*VVV This should be a redirection, in order to erase the outdated URL.

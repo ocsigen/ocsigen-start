@@ -5,6 +5,7 @@
 
 let application_name = "%%%PROJECT_NAME%%%"
 
+let () = Eba_db.init ~port:3000 ~database:"%%%PROJECT_NAME%%%" ()
 
 module State_ = struct
   include Eba_default.State
