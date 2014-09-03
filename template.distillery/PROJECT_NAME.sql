@@ -18,7 +18,7 @@ CREATE TABLE emails ( -- DEFAULT
 CREATE TABLE activation ( -- DEFAULT
        activationkey text primary key, -- DEFAULT
        userid bigint NOT NULL references users(userid), -- DEFAULT
-       creationdate timestamp NOT NULL default now()
+       creationdate timestamptz NOT NULL default now()
 );
 
 CREATE TABLE groups ( -- DEFAULT

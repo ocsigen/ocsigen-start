@@ -52,16 +52,72 @@ let view_one_opt rq =
     Lwt.return (Some (view_one rq))
   with No_such_resource -> Lwt.return None
 
+
+(*****************************************************************************)
+(* tables, for Macaque *)
+let users_userid_seq = <:sequence< bigserial "users_userid_seq" >>
+
+let users_table =
+  <:table< users (
+       userid bigint NOT NULL DEFAULT(nextval $users_userid_seq$),
+       firstname text NOT NULL,
+       lastname text NOT NULL,
+       password text,
+       avatar text
+          ) >>
+
+let emails_table =
+  <:table< emails (
+       email text NOT NULL,
+       userid bigint NOT NULL
+          ) >>
+
+let activation_table :
+  (< .. >,
+   < creationdate : < nul : Sql.non_nullable; .. > Sql.t > Sql.writable)
+    Sql.view =
+  <:table< activation (
+       activationkey text NOT NULL,
+       userid bigint NOT NULL,
+       creationdate timestamptz NOT NULL DEFAULT(current_timestamp ())
+           ) >>
+
+let groups_groupid_seq = <:sequence< bigserial "groups_groupid_seq" >>
+
+let groups_table =
+  <:table< groups (
+       groupid bigint NOT NULL DEFAULT(nextval $groups_groupid_seq$),
+       name text NOT NULL,
+       description text
+          ) >>
+
+let user_groups_table =
+  <:table< user_groups (
+       userid bigint NOT NULL,
+       groupid bigint NOT NULL
+          ) >>
+
+let preregister_table =
+  <:table< preregister (
+       email text NOT NULL
+          ) >>
+
+
+
+(*****************************************************************************)
+
 module User = struct
 
   let select_user_from_email_q dbh email =
-      (view_one_lwt (PGSQL(dbh) "
-         SELECT t1.userid
-         FROM users  as t1,
-              emails as t2
-         WHERE t1.userid = t2.userid
-         AND t2.email = $email
-         "))
+    lwt r = Lwt_Query.view_one dbh
+      <:view< { t1.userid } |
+              t1 in $users_table$;
+              t2 in $emails_table$;
+              t1.userid = t2.userid;
+              t2.email = $string:email$;
+      >>
+    in
+    Lwt.return (r#!userid)
 
   let is_registered email =
     full_transaction_block (fun dbh ->
@@ -72,112 +128,130 @@ module User = struct
 
   let add_preregister email =
     full_transaction_block (fun dbh ->
-      (PGSQL(dbh) "
-         INSERT INTO preregister
-         (email) VALUES ($email)
-         "))
+      Lwt_Query.query dbh
+        <:insert< $preregister_table$ := { email = $string:email$ } >>)
 
   let remove_preregister email =
     full_transaction_block (fun dbh ->
-      (PGSQL(dbh) "
-        DELETE FROM preregister
-        WHERE email = $email
-        "))
+      Lwt_Query.query dbh
+        <:delete< r in $preregister_table$ |
+                  r.email = $string:email$ >>)
 
   let is_preregistered email =
     full_transaction_block (fun dbh ->
       try_lwt
         lwt _ =
-          view_one_lwt (PGSQL(dbh) "
-          SELECT email FROM preregister
-          WHERE email = $email
-          ")
+          Lwt_Query.view_one dbh
+            <:view< { r.email } |
+              r in $preregister_table$;
+              r.email = $string:email$;
+            >>
         in Lwt.return true
       with No_such_resource -> Lwt.return false)
 
   let all ?(limit = 10L) () =
     full_transaction_block (fun dbh ->
-      (PGSQL(dbh) "
-        SELECT email FROM preregister
-        LIMIT $limit
-        "))
+      lwt l = Lwt_Query.query dbh
+        <:select< { email = a.email } limit $int64:limit$ |
+                  a in $preregister_table$;
+        >>
+      in
+      Lwt.return (List.map (fun a -> a#!email) l))
 
   let create ?password ?avatar ~firstname ~lastname email =
     full_transaction_block (fun dbh ->
-      lwt () = PGSQL(dbh) "
-        INSERT INTO users
-        (firstname, lastname, password)
-        VALUES ($firstname, $lastname, $?password)
-       "
+      let password_o =
+        Eliom_lib.Option.map (fun x -> <:value< $string:x$ >>) password
       in
-      match_lwt PGSQL(dbh) "select currval('users_userid_seq')" with
-      | Some uid::_ ->
-        lwt () = PGSQL(dbh) "
-          INSERT INTO emails
-          (email, userid) VALUES ($email, $uid)
-          "
-        in
-        lwt () = remove_preregister email in
-        Lwt.return uid
-      | _ -> Lwt.fail No_such_resource
+      lwt () =
+        Lwt_Query.query dbh
+          <:insert< $users_table$ :=
+                    { userid    = users_table?userid;
+                      firstname = $string:firstname$;
+                      lastname  = $string:lastname$;
+                      password  = of_option $password_o$;
+                      avatar    = null
+                    } >>
+      in
+      lwt userid =
+        Lwt_Query.view_one dbh <:view< {x = currval $users_userid_seq$} >>
+      in
+      let userid = userid#!x in
+      lwt () =
+        Lwt_Query.query dbh
+          <:insert< $emails_table$ :=
+                      { email = $string:email$;
+                        userid  = $int64:userid$}
+            >>
+      in
+      lwt () = remove_preregister email in
+      Lwt.return userid
     )
 
-  let update ?password ?avatar ~firstname ~lastname uid =
+  let update ?password ?avatar ~firstname ~lastname userid =
     full_transaction_block (fun dbh ->
       (match password,avatar with
-        | None,None ->
-          PGSQL(dbh) "
-            UPDATE users
-            SET firstname = $firstname,
-                lastname = $lastname
-            WHERE userid = $uid
-            "
-        | None,Some avatar ->
-          PGSQL(dbh) "
-            UPDATE users
-            SET firstname = $firstname,
-                lastname = $lastname,
-                avatar = $avatar
-            WHERE userid = $uid
-            "
-        | Some password,None ->
+        | None, None ->
+          Lwt_Query.query dbh
+             <:update< d in $users_table$ :=
+                      { firstname = $string:firstname$;
+                        lastname = $string:lastname$ } |
+                       d.userid = $int64:userid$
+             >>
+        | None, Some avatar ->
+          let avatar = Some <:value< $string:avatar$ >> in
+          Lwt_Query.query dbh
+             <:update< d in $users_table$ :=
+                      { firstname = $string:firstname$;
+                        lastname = $string:lastname$;
+                        avatar = of_option $avatar$ } |
+                       d.userid = $int64:userid$
+             >>
+        | Some password, None ->
           let password = Bcrypt.string_of_hash (Bcrypt.hash password) in
-          PGSQL(dbh) "
-            UPDATE users
-            SET firstname = $firstname,
-                lastname = $lastname,
-                password = $password
-            WHERE userid = $uid
-            "
-        | Some password,Some avatar ->
+          let password = Some <:value< $string:password$ >> in
+          Lwt_Query.query dbh
+             <:update< d in $users_table$ :=
+                      { firstname = $string:firstname$;
+                        lastname = $string:lastname$;
+                        password = of_option $password$ } |
+                       d.userid = $int64:userid$
+             >>
+        | Some password, Some avatar ->
           let password = Bcrypt.string_of_hash (Bcrypt.hash password) in
-          PGSQL(dbh) "
-            UPDATE users
-            SET firstname = $firstname,
-                lastname = $lastname,
-                password = $password,
-                avatar = $avatar
-            WHERE userid = $uid
-            "))
+          let password = Some <:value< $string:password$ >> in
+          let avatar = Some <:value< $string:avatar$ >> in
+          Lwt_Query.query dbh
+             <:update< d in $users_table$ :=
+                      { firstname = $string:firstname$;
+                        lastname = $string:lastname$;
+                        avatar = of_option $avatar$;
+                        password = of_option $password$
+                       } |
+                       d.userid = $int64:userid$
+             >>
+      ))
 
-   let add_activationkey ~act_key uid =
+   let add_activationkey ~act_key userid =
     full_transaction_block (fun dbh ->
-      PGSQL(dbh) "
-        INSERT INTO activation
-        (userid, activationkey) VALUES ($uid, $act_key)
-        ")
+       Lwt_Query.query dbh
+         <:insert< $activation_table$ :=
+                      { userid = $int64:userid$;
+                        activationkey  = $string:act_key$;
+                        creationdate = activation_table?creationdate }
+         >>)
 
   let verify_password ~email ~password =
     full_transaction_block (fun dbh ->
-      lwt (uid,password') =
-        (view_one_lwt (PGSQL(dbh) "
-         SELECT t1.userid, t1.password
-         FROM users  as t1,
-              emails as t2
-         WHERE t1.userid = t2.userid
-         AND t2.email = $email
-         "))
+      lwt r = Lwt_Query.view_one dbh
+          <:view< { t1.userid; t1.password } |
+                    t1 in $users_table$;
+                    t2 in $emails_table$;
+                    t1.userid = t2.userid;
+                    t2.email = $string:email$;
+            >>
       in
+      let (uid, password') = (r#!userid, r#?password) in
       match password' with
       | None -> Lwt.fail No_such_resource
       | Some password' ->
@@ -185,110 +259,145 @@ module User = struct
           then Lwt.return uid
           else Lwt.fail No_such_resource)
 
-  let user_of_uid uid =
+  let user_of_uid userid =
     full_transaction_block (fun dbh ->
-      (view_one_lwt (PGSQL(dbh) "
-         SELECT userid, firstname, lastname, avatar FROM users
-         WHERE userid = $uid
-         ")))
+      lwt r = Lwt_Query.view_one dbh
+          <:view< t |
+                  t in $users_table$;
+                  t.userid = $int64:userid$
+            >>
+      in
+      Lwt.return (r#!userid, r#!firstname, r#!lastname, r#?avatar))
 
   let uid_of_activationkey act_key =
     full_transaction_block (fun dbh ->
-      lwt uid =
-        (view_one_opt (PGSQL(dbh) "
-           SELECT userid FROM activation
-           WHERE activationkey = $act_key
-           "))
+      lwt r = Lwt_Query.view_opt dbh
+          <:view< t |
+                  t in $activation_table$;
+                  t.activationkey = $string:act_key$
+            >>
       in
-      (match uid with
-        | None -> Lwt.fail No_such_resource
-        | Some uid ->
-          lwt () = PGSQL(dbh) "
-            DELETE FROM activation
-            WHERE activationkey = $act_key
-            "
-          in
-          Lwt.return uid))
+      match r with
+      | None -> Lwt.fail No_such_resource
+      | Some r ->
+        let userid = r#!userid in
+        lwt () = Lwt_Query.query dbh
+            <:delete< r in $activation_table$ |
+                      r.activationkey = $string:act_key$ >>
+        in
+        Lwt.return userid)
 
-  let email_of_uid uid =
+  let email_of_uid userid =
     full_transaction_block (fun dbh ->
-      (view_one_lwt (PGSQL(dbh) "
-         SELECT t2.email
-         FROM users  as t1,
-              emails as t2
-         WHERE t1.userid = t2.userid
-         AND t1.userid = $uid
-         ")))
+      lwt r = Lwt_Query.view_one dbh
+          <:view< { t2.email } |
+                    t1 in $users_table$;
+                    t2 in $emails_table$;
+                    t1.userid = t2.userid;
+                    t1.userid = $int64:userid$;
+            >>
+      in
+      Lwt.return (r#!email))
 
   let uid_of_email email =
     full_transaction_block (fun dbh ->
-         select_user_from_email_q dbh email)
+      select_user_from_email_q dbh email)
 
   let get_users ?pattern () =
     full_transaction_block (fun dbh ->
       match pattern with
       | None ->
-         (PGSQL(dbh) "SELECT userid, firstname, lastname, avatar FROM users")
+        lwt l = Lwt_Query.view dbh <:view< r | r in $users_table$ >> in
+        Lwt.return (List.map
+                      (fun a -> a#!userid, a#!firstname, a#!lastname, a#?avatar)
+                      l)
       | Some pattern ->
-         let pattern = "%"^pattern^"%" in
-         (PGSQL(dbh) "
-         SELECT userid, firstname, lastname, avatar
-         FROM users
-         WHERE CONCAT_WS(' ',firstname,lastname) LIKE $pattern
-         "))
+        let pattern = "(^"^pattern^")|(.* "^pattern^")" in
+(*VVV CHECK! *)
+        (* Here I'm using the low-level pgocaml interface
+           because macaque is missing some features
+           and I canot use pgocaml syntax extension because
+           it requires the db to be created (which is impossible in a lib). *)
+        let query = "
+             SELECT userid, firstname, lastname, avatar
+             FROM users
+             WHERE
+               firstname <> '' -- avoids email addresses
+             AND CONCAT_WS(' ', firstname, lastname) ~* ?
+         "
+        in
+        lwt () = PGOCaml.prepare dbh ~query () in
+        lwt l = PGOCaml.execute dbh [Some pattern] () in
+        lwt () = PGOCaml.close_statement dbh () in
+        Lwt.return (List.map
+                      (function
+                        | [Some userid; Some firstname; Some lastname; avatar]
+                          ->
+                          (PGOCaml.int64_of_string userid,
+                           firstname, lastname, avatar)
+                        | _ -> failwith "Eba_db.get_users")
+                      l))
 
 end
 
 module Groups = struct
   let create ?description name =
+    let description_o =
+      Eliom_lib.Option.map (fun x -> <:value< $string:x$ >>) description
+    in
     full_transaction_block (fun dbh ->
-      PGSQL(dbh) "
-        INSERT INTO groups
-        (description, name) VALUES ($?description, $name)
-        ")
+      Lwt_Query.query dbh
+        <:insert< $groups_table$ :=
+                      { description = of_option $description_o$;
+                        name  = $string:name$;
+                        groupid = groups_table?groupid }
+         >>)
 
   let group_of_name name =
     full_transaction_block (fun dbh ->
-      lwt group =
-        view_one_opt (PGSQL(dbh) "
-          SELECT groupid, name, description FROM groups
-          WHERE name = $name
-          ")
+      lwt r = Lwt_Query.view_opt dbh
+          <:view< r |
+                  r in $groups_table$;
+                  r.name = $string:name$;
+            >>
       in
-      match group with
+      match r with
         | None -> Lwt.fail No_such_resource
-        | Some group -> Lwt.return group)
+        | Some r -> Lwt.return (r#!groupid, r#!name, r#?description))
 
   let add_user_in_group ~groupid ~userid =
     full_transaction_block (fun dbh ->
-      PGSQL(dbh) "
-        INSERT INTO user_groups
-        (userid, groupid) VALUES ($userid, $groupid)
-        ")
+      Lwt_Query.query dbh
+        <:insert< $user_groups_table$ :=
+                      { userid = $int64:userid$;
+                        groupid = $int64:groupid$ }
+         >>)
 
   let remove_user_in_group ~groupid ~userid =
     full_transaction_block (fun dbh ->
-      PGSQL(dbh) "
-        DELETE FROM user_groups
-        WHERE groupid = $groupid
-        AND userid = $userid
-        ")
+      Lwt_Query.query dbh
+        <:delete< r in $user_groups_table$ |
+                  r.groupid = $int64:groupid$;
+                  r.userid = $int64:userid$
+        >>)
 
   let in_group ~groupid ~userid =
     full_transaction_block (fun dbh ->
       try_lwt
-        lwt _ =
-          view_one_lwt (PGSQL(dbh) "
-            SELECT * FROM user_groups
-            WHERE groupid = $groupid
-            AND userid = $userid
-            ")
-        in Lwt.return true
+        lwt _ = Lwt_Query.view_one dbh
+            <:view< t |
+                    t in $user_groups_table$;
+                    t.groupid = $int64:groupid$;
+                    t.userid = $int64:userid$;
+            >>
+        in
+        Lwt.return true
       with No_such_resource -> Lwt.return false)
 
   let all () =
     full_transaction_block (fun dbh ->
-      PGSQL(dbh) "
-        SELECT groupid, name, description FROM groups
-        ")
+      lwt l = Lwt_Query.query dbh <:select< r | r in $groups_table$; >> in
+      Lwt.return (List.map (fun a -> (a#!groupid, a#!name, a#?description)) l))
+
+
 end
