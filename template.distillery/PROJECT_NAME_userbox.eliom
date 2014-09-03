@@ -29,26 +29,32 @@ let user_menu user =
 
 let connected_user_box user =
   lwt username = %%%MODULE_NAME%%%_view.username user in
-  Lwt.return (div ~a:[a_id "eba-user-box"] [
+  Lwt.return (D.div ~a:[a_id "eba-user-box"] [
     %%%MODULE_NAME%%%_view.avatar user;
     username;
     user_menu user;
   ])
 
 
-{client{
-  let display_error cont msg f =
-    let msg = To_dom.of_p (p ~a:[a_class ["eba_error"]] [pcdata msg]) in
-    ignore (f ());
-    Dom.appendChild cont msg;
-    ignore
-      (lwt () = Lwt_js.sleep 2. in Dom.removeChild cont msg; Lwt.return ())
-}}
+let wrong_password =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
+
+let user_already_exists =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
+
+let user_does_not_exist =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
+
+let user_already_preregistered =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
+
+let activation_key_outdated =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
 
 let connection_box () =
   let id = "eba_login_signup_box" in
-  if Eliom_reference.Volatile.get %%%MODULE_NAME%%%_err.activation_key_created
+  if Eliom_reference.Volatile.get Eba_msg.activation_key_created
   then
     Lwt.return
       (D.div ~a:[a_id id]
@@ -97,45 +103,38 @@ let connection_box () =
           form4
     in
     (* function to press the corresponding button and display
-     * the flash message error.
-     * [d] is currently an server value, so we need to use % *)
-    let press but cont msg =
+     * the flash message error. *)
+    let press but msg =
       ignore {unit{
-        display_error (To_dom.of_element %cont) %msg
-          (fun () -> (Ow_button.to_button_alert %but)##press())
+        (Ow_button.to_button_alert %but)##press();
+        Eba_msg.display_msg ~level:`Err %msg
         }};
       Lwt.return ()
     in
-    let display_error o34 d =
+    let display_error o34 () =
       (* Function to display flash message error *)
-      let wrong_password =
-        Eliom_reference.Volatile.get %%%MODULE_NAME%%%_err.wrong_password
+      let wrong_password = Eliom_reference.Volatile.get wrong_password in
+      let user_already_exists = Eliom_reference.Volatile.get user_already_exists
       in
-      let user_already_exists =
-        Eliom_reference.Volatile.get %%%MODULE_NAME%%%_err.user_already_exists
-      in
-      let user_does_not_exist =
-        Eliom_reference.Volatile.get %%%MODULE_NAME%%%_err.user_does_not_exist
+      let user_does_not_exist = Eliom_reference.Volatile.get user_does_not_exist
       in
       let user_already_preregistered =
-        Eliom_reference.Volatile.get
-          %%%MODULE_NAME%%%_err.user_already_preregistered
+        Eliom_reference.Volatile.get user_already_preregistered
       in
       let activation_key_outdated =
-        Eliom_reference.Volatile.get
-          %%%MODULE_NAME%%%_err.activation_key_outdated
+        Eliom_reference.Volatile.get activation_key_outdated
       in
 
       if wrong_password
-      then press o1 d "Wrong password"
+      then press o1 "Wrong password"
       else if activation_key_outdated
-      then press o2 d "Invalid activation key, ask for a new one."
+      then press o2 "Invalid activation key, ask for a new one."
       else if user_already_exists
-      then press o34 d "E-mail already exists"
+      then press o34 "E-mail already exists"
       else if user_does_not_exist
-      then press o2 d "User does not exist"
+      then press o2 "User does not exist"
       else if user_already_preregistered
-      then press o3 d "E-mail already preregistered"
+      then press o3 "E-mail already preregistered"
       else Lwt.return ()
     in
 
@@ -152,21 +151,10 @@ let connection_box () =
          [button1; button2; button4; form1; form2; form4]),
       display_error o4
     in
-    lwt () = handle_rmsg d in
+    lwt () = handle_rmsg () in
     Lwt.return d
 
 let userbox user =
   match user with
-    | Some user ->
-      let passwords_do_not_match =
-        Eliom_reference.Volatile.get
-          %%%MODULE_NAME%%%_err.passwords_do_not_match
-      in
-      lwt box = connected_user_box user in
-      ignore {unit{
-        if %passwords_do_not_match
-        then display_error (To_dom.of_element %box)
-            "Passwords do not match" (fun () -> ())
-      }};
-      Lwt.return box
+    | Some user -> connected_user_box user
     | None -> connection_box ()

@@ -14,7 +14,7 @@ let set_personal_data_handler' uid ()
     (((firstname, lastname), (pwd, pwd2)) as pd) =
   if firstname = "" || lastname = "" || pwd <> pwd2
   then
-    (Eliom_reference.Volatile.set %%%MODULE_NAME%%%_err.wrong_pdata (Some pd);
+    (Eliom_reference.Volatile.set Eba_msg.wrong_pdata (Some pd);
      Lwt.return ())
   else (
     lwt user = %%%MODULE_NAME%%%_user.user_of_uid uid in
@@ -29,8 +29,7 @@ let set_personal_data_handler' uid ()
 let set_password_handler' uid () (pwd, pwd2) =
   if pwd <> pwd2
   then
-    (Eliom_reference.Volatile.set %%%MODULE_NAME%%%_err.passwords_do_not_match
-       true;
+    (Eba_msg.display_msg ~level:`Err "Passwords do not match";
      Lwt.return ())
   else (
     lwt user = %%%MODULE_NAME%%%_user.user_of_uid uid in
@@ -64,13 +63,14 @@ let generate_act_key
 let sign_up_handler' () email =
   lwt is_registered = %%%MODULE_NAME%%%_user.is_registered email in
   if is_registered then begin
-    Eliom_reference.Volatile.set %%%MODULE_NAME%%%_err.user_already_exists true;
+    Eliom_reference.Volatile.set
+      %%%MODULE_NAME%%%_userbox.user_already_exists true;
     Lwt.return ()
   end else begin
     let act_key =
       generate_act_key ~service:%%%MODULE_NAME%%%_services.main_service email in
     lwt uid = %%%MODULE_NAME%%%_user.create ~firstname:"" ~lastname:"" email in
-    Eliom_reference.Volatile.set %%%MODULE_NAME%%%_err.activation_key_created true;
+    Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
     lwt () = %%%MODULE_NAME%%%_user.add_activationkey ~act_key uid in
     Lwt.return ()
   end
@@ -91,10 +91,11 @@ let forgot_password_handler' () email =
     lwt uid = %%%MODULE_NAME%%%_user.uid_of_email email in
     let act_key =
       generate_act_key ~service:%%%MODULE_NAME%%%_services.main_service email in
-    Eliom_reference.Volatile.set %%%MODULE_NAME%%%_err.activation_key_created true;
+    Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
     %%%MODULE_NAME%%%_user.add_activationkey ~act_key uid
   with %%%MODULE_NAME%%%_db.No_such_resource ->
-    Eliom_reference.Volatile.set %%%MODULE_NAME%%%_err.user_does_not_exist true;
+    Eliom_reference.Volatile.set
+      %%%MODULE_NAME%%%_userbox.user_does_not_exist true;
     Lwt.return ()
 
 let about_handler uid_o () () =
@@ -125,7 +126,7 @@ let connect_handler () (login, pwd) =
     lwt uid = %%%MODULE_NAME%%%_user.verify_password login pwd in
     Ebapp.Session.connect uid
   with %%%MODULE_NAME%%%_db.No_such_resource ->
-    Eliom_reference.Volatile.set %%%MODULE_NAME%%%_err.wrong_password true;
+    Eliom_reference.Volatile.set %%%MODULE_NAME%%%_userbox.wrong_password true;
     Lwt.return ()
 
 let activation_handler akey () =
@@ -138,7 +139,8 @@ let activation_handler akey () =
     lwt () = Ebapp.Session.connect uid in
     Eliom_registration.Redirection.send Eliom_service.void_coservice'
   with %%%MODULE_NAME%%%_db.No_such_resource ->
-    Eliom_reference.Volatile.set %%%MODULE_NAME%%%_err.activation_key_outdated true;
+    Eliom_reference.Volatile.set
+      %%%MODULE_NAME%%%_userbox.activation_key_outdated true;
     (*VVV This should be a redirection, in order to erase the outdated URL.
       But we do not have a simple way of
       writing an error message after a redirection for now.*)
@@ -159,7 +161,8 @@ let preregister_handler' () email =
   if not (is_preregistered || is_registered)
    then %%%MODULE_NAME%%%_user.add_preregister email
    else begin
-     Eliom_reference.Volatile.set %%%MODULE_NAME%%%_err.user_already_preregistered true;
+     Eliom_reference.Volatile.set
+       %%%MODULE_NAME%%%_userbox.user_already_preregistered true;
      Lwt.return ()
    end
 
