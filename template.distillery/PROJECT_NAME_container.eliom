@@ -37,7 +37,7 @@ let footer ?user () =
 
 let connected_welcome_box () =
   let info, ((fn, ln), (p1, p2)) =
-    match Eliom_reference.Volatile.get %%%MODULE_NAME%%%_err.wrong_pdata with
+    match Eliom_reference.Volatile.get Eba_msg.wrong_pdata with
     | None ->
       p [
         pcdata "Your personal information has not been set yet.";

@@ -7,7 +7,7 @@ module Lwt_thread = struct
   include Lwt_chan
 end
 module Lwt_PGOCaml = PGOCaml_generic.Make(Lwt_thread)
-module Lwt_Query = Query.Make_with_Db(Lwt_thread)(Lwt_PGOCaml)
+module Lwt_Query_ = Query.Make_with_Db(Lwt_thread)(Lwt_PGOCaml)
 module PGOCaml = Lwt_PGOCaml
 
 let port = ref 3000
@@ -58,6 +58,14 @@ let view_one_opt rq =
     lwt rq = rq in
     Lwt.return (Some (view_one rq))
   with No_such_resource -> Lwt.return None
+
+module Lwt_Query = struct
+  include Lwt_Query_
+  let view_one dbh rq =
+    try_lwt
+      view_one dbh rq
+    with Failure _ -> Lwt.fail No_such_resource
+end
 
 
 (*****************************************************************************)

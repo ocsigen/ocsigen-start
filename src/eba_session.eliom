@@ -223,10 +223,7 @@ struct
     let new_process = Eliom_request_info.get_sp_client_appl_name () = None in
     let uids = Eliom_state.get_volatile_data_session_group () in
     let get_uid uid =
-      try
-        match uid with
-        | None -> None
-        | Some u -> Some (Int64.of_string u)
+      try Eliom_lib.Option.map Int64.of_string uid
       with Failure _ -> None
     in
     lwt uid = match get_uid uids with

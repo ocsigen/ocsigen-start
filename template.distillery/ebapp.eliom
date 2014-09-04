@@ -28,9 +28,9 @@ module Email_ = struct
 end
 
 module Groups_ = struct
-  type t = %%%MODULE_NAME%%%_groups.t
+  type t = Eba_groups.t
 
-  let in_group = %%%MODULE_NAME%%%_groups.in_group
+  let in_group = Eba_groups.in_group
 end
 
 module Page_ = struct
