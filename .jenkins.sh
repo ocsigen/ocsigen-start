@@ -5,7 +5,9 @@ opam pin add --no-action eliom 'https://github.com/ocsigen/eliom.git#master'
 opam pin add --no-action ojwidgets 'https://github.com/ocsigen/ojwidgets.git#master'
 opam pin add --no-action ojquery 'https://github.com/ocsigen/ojquery.git#master'
 opam pin add --no-action eliom-widgets 'https://github.com/ocsigen/eliom-widgets.git#master'
+opam pin add --no-action ocsigen-widgets 'https://github.com/ocsigen/ocsigen-widgets.git#master'
 opam install --deps-only eliom-base-app
+opam install ocsigen-widgets
 opam install --verbose eliom-base-app
 
 do_build_doc () {
