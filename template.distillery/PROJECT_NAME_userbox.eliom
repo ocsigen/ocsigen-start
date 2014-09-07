@@ -11,7 +11,7 @@ open Eliom_content.Html5.F
 {shared{
 let user_menu user =
   let but = D.div ~a:[a_class ["eba_usermenu_button"]]
-      [Eba_icons.config ~class_:["fa-large"] ()]
+      [%%%MODULE_NAME%%%_icons.config ~class_:["fa-large"] ()]
   in
   let password_form = %%%MODULE_NAME%%%_view.password_form () in
   let logout_but = %%%MODULE_NAME%%%_view.disconnect_button () in

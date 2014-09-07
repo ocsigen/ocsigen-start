@@ -1,7 +1,7 @@
 
 {shared{
 
-include Eba_icons
+include Ow_icons
 
 (* Add your own icons here *)
 

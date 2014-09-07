@@ -48,7 +48,7 @@ let disconnect_button () =
   post_form ~service:%(%%%MODULE_NAME%%%_services.disconnect_service)
     (fun _ -> [
          button ~button_type:`Submit
-           [Eba_icons.signout (); pcdata "Logout"]
+           [%%%MODULE_NAME%%%_icons.signout (); pcdata "Logout"]
        ]) ()
  }}
 
