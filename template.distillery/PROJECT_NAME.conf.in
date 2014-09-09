@@ -10,6 +10,7 @@
     <logdir>%%LOGDIR%%</logdir>
     <datadir>%%DATADIR%%</datadir>
     <charset>utf-8</charset>
+    <uploaddir>/tmp</uploaddir> <!-- Customize this -->
     %%% Only set when debugging
     %%DEBUGMODE%%
     <commandpipe>%%CMDPIPE%%</commandpipe>
@@ -20,9 +21,11 @@
     %%PACKAGES%%
     <host hostfilter="*">
       <static dir="%%STATICDIR%%" />
-      <static dir="%%ELIOMSTATICDIR%%" />
+      <static dir="%%FILESDIR%%" />
       %%ELIOM_MODULES%%
-      <eliommodule module="%%LIBDIR%%/%%PROJECT_NAME%%.cma" />
+      <eliommodule module="%%LIBDIR%%/%%PROJECT_NAME%%.cma">
+        <avatars dir="%%FILESDIR%%/avatars" />
+      </eliommodule>
       <eliom/>
     </host>
   </server>

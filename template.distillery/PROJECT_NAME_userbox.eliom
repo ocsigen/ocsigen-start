@@ -8,7 +8,43 @@ open Eliom_content.Html5
 open Eliom_content.Html5.F
 }}
 
+let uploader = Ow_pic_uploader.make
+  ~directory:!%%%MODULE_NAME%%%_config.avatar_dir
+  ~name:"uppic"
+  ~crop_ratio:(Some 1.)
+  ~max_width:500
+  ~continuation:(Ebapp.Session.connected_rpc
+                   (fun userid fname -> %%%MODULE_NAME%%%_user.update_avatar
+                                          fname
+                                          userid))
+  ()
+
 {shared{
+let upload_pic_link user =
+  let link = D.Raw.a [pcdata "Upload picture"] in
+  let uploader = %uploader in
+  ignore {unit{
+    Lwt_js_events.async (fun () ->
+      Lwt_js_events.clicks (To_dom.of_element %link)
+        (fun _ _ ->
+           lwt fname = Ow_pic_uploader.upload_pic_popup
+                         %uploader
+                         ~url_path:["avatars"]
+                         ~text:"Upload new picture"
+                         ~err_log:(fun s -> Eba_msg.msg ~level:`Err s)
+                         ~std_log:(fun s -> Eba_msg.msg ~level:`Msg s)
+                         ()
+           in
+           (* For now I don't update in place, but reload *)
+           lwt () = Lwt_js.sleep 1. in
+           Eliom_client.change_page
+             ~service:Eliom_service.void_coservice' () ();
+           Lwt.return ()
+        ))
+  }};
+  link
+
+
 let user_menu user =
   let but = D.div ~a:[a_class ["eba_usermenu_button"]]
       [%%%MODULE_NAME%%%_icons.config ~class_:["fa-large"] ()]
@@ -19,6 +55,8 @@ let user_menu user =
     D.div [
       p [pcdata "Change your password:"];
       password_form;
+      hr ();
+      upload_pic_link user;
       hr ();
       logout_but;
     ]
@@ -107,7 +145,7 @@ let connection_box () =
     let press but msg =
       ignore {unit{
         (Ow_button.to_button_alert %but)##press();
-        Eba_msg.display_msg ~level:`Err %msg
+        Eba_msg.msg ~level:`Err %msg
         }};
       Lwt.return ()
     in

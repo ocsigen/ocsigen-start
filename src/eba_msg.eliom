@@ -40,7 +40,7 @@ open Eliom_content.Html5.F
 
 {shared{
 
-  let display_msg ?(level = `Err) msg =
+  let msg ?(level = `Err) msg =
     ignore {unit{
       let c = if %level = `Msg then [] else ["eba_err"] in
       Eliom_lib.debug "%s" %msg;

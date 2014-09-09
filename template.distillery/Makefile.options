@@ -56,5 +56,7 @@ LOGDIR := var/log/${PROJECT_NAME}
 DATADIR := var/data/${PROJECT_NAME}
 # Copy of $(LOCAL_STATIC)
 STATICDIR := var/www/${PROJECT_NAME}/static
-# Project's JavaScript file
-ELIOMSTATICDIR := var/www/${PROJECT_NAME}/eliom
+# Project's static files
+FILESDIR := var/www/${PROJECT_NAME}
+# Project's JavaScript file directory
+ELIOMSTATICDIR := var/www/${PROJECT_NAME}

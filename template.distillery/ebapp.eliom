@@ -40,12 +40,15 @@ module Page_ = struct
 
   let css = [
     ["font-awesome.css"];
+    ["jquery.Jcrop.css"];
     ["eba.css"];
     ["%%%PROJECT_NAME%%%.css"];
   ]
 
   let js = [
-    ["onload.js"]
+    ["onload.js"];
+    ["jquery.js"];
+    ["jquery.Jcrop.js"]
   ]
 
   let default_predicate _ _ = Lwt.return true

@@ -29,7 +29,7 @@ let set_personal_data_handler' uid ()
 let set_password_handler' uid () (pwd, pwd2) =
   if pwd <> pwd2
   then
-    (Eba_msg.display_msg ~level:`Err "Passwords do not match";
+    (Eba_msg.msg ~level:`Err "Passwords do not match";
      Lwt.return ())
   else (
     lwt user = %%%MODULE_NAME%%%_user.user_of_uid uid in

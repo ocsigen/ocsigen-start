@@ -29,7 +29,7 @@
     The two levels correspond to different classes that you can
     personalize in CSS.
 *)
-val display_msg : ?level:[`Err | `Msg] -> string -> unit
+val msg : ?level:[`Err | `Msg] -> string -> unit
  }}
 
 val activation_key_created : bool Eliom_reference.Volatile.eref

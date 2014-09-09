@@ -227,7 +227,7 @@ module User = struct
 
   let update ?password ?avatar ~firstname ~lastname userid =
     full_transaction_block (fun dbh ->
-      (match password,avatar with
+      (match password, avatar with
         | None, None ->
           Lwt_Query.query dbh
              <:update< d in $users_table$ :=
@@ -268,6 +268,15 @@ module User = struct
                        d.userid = $int64:userid$
              >>
       ))
+
+  let update_avatar avatar userid =
+    full_transaction_block (fun dbh ->
+      Lwt_Query.query dbh
+        <:update< d in $users_table$ :=
+                      { avatar = $string:avatar$ } |
+                       d.userid = $int64:userid$
+        >>
+    )
 
    let add_activationkey ~act_key userid =
     full_transaction_block (fun dbh ->

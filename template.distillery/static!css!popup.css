@@ -1,5 +1,5 @@
 .ojw_background {
-    display: none;
+    visibility: hidden;
     top: 0;
     left: 0;
     background: #000;
@@ -13,12 +13,12 @@
 }
 
 .ojw_popup {
-    position: relative;
+    position: fixed;
     background: #fff;
-    opacity: 1;
     z-index: 99999;
     margin-left: auto;
     margin-right: auto;
+    top: 100px;
 }
 
 .ojw_popup_header {
