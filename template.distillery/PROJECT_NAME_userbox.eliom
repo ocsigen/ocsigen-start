@@ -13,10 +13,11 @@ let uploader = Ow_pic_uploader.make
   ~name:"uppic"
   ~crop_ratio:(Some 1.)
   ~max_width:500
-  ~continuation:(Ebapp.Session.connected_rpc
-                   (fun userid fname -> %%%MODULE_NAME%%%_user.update_avatar
-                                          fname
-                                          userid))
+  ~service_wrapper:(fun f -> Ebapp.Session.connected_rpc (fun userid -> f))
+  ~crop_wrapper:(fun f -> Ebapp.Session.connected_rpc
+                    (fun userid p ->
+                       lwt fname = f p in
+                       %%%MODULE_NAME%%%_user.update_avatar fname userid))
   ()
 
 {shared{
@@ -27,19 +28,20 @@ let upload_pic_link user =
     Lwt_js_events.async (fun () ->
       Lwt_js_events.clicks (To_dom.of_element %link)
         (fun _ _ ->
-           lwt fname = Ow_pic_uploader.upload_pic_popup
-                         %uploader
-                         ~url_path:["avatars"]
-                         ~text:"Upload new picture"
-                         ~err_log:(fun s -> Eba_msg.msg ~level:`Err s)
-                         ~std_log:(fun s -> Eba_msg.msg ~level:`Msg s)
-                         ()
-           in
-           (* For now I don't update in place, but reload *)
-           lwt () = Lwt_js.sleep 1. in
-           Eliom_client.change_page
-             ~service:Eliom_service.void_coservice' () ();
-           Lwt.return ()
+           try_lwt
+             lwt fname = Ow_pic_uploader.upload_pic_popup
+                           %uploader
+                           ~url_path:["avatars"]
+                           ~text:"Upload new picture"
+                           ()
+             in
+             (* For now I don't update in place, but reload *)
+             Eliom_client.change_page
+               ~service:Eliom_service.void_coservice' () ()
+           with e ->
+             Eba_msg.msg ~level:`Err "Error while uploading the picture";
+             Lwt.return ()
+
         ))
   }};
   link
