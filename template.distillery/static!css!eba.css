@@ -569,11 +569,26 @@ div#eba_msg p.eba_err {
   position: fixed;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.6);
   top: 0;
   left: 0;
   text-align: center;
   padding-top: 80px;
+}
+
+div.ow_popup {
+  position: relative;
+  display: inline-block;
+  background-color: white;
+  box-shadow: 0px 0px 5px 1px black;
+  padding-top: 20px;
+}
+
+div.ow_popup>i {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  cursor: pointer;
 }
 
 /* Pic upload */
@@ -582,7 +597,6 @@ div.ow_pic_uploader {
   background-color: white;
   width: 800px;
   padding: 40px;
-  margin: auto;
 }
 
 div.ow_pic_uploader img {

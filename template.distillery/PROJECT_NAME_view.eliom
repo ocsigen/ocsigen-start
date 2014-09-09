@@ -48,7 +48,7 @@ let disconnect_button () =
   post_form ~service:%(%%%MODULE_NAME%%%_services.disconnect_service)
     (fun _ -> [
          button ~button_type:`Submit
-           [%%%MODULE_NAME%%%_icons.signout (); pcdata "Logout"]
+           [%%%MODULE_NAME%%%_icons.F.signout (); pcdata "Logout"]
        ]) ()
  }}
 
@@ -111,7 +111,7 @@ let avatar user =
   match %%%MODULE_NAME%%%_user.avatar_uri_of_user user with
   | Some src ->
     img ~alt:"picture" ~a:[a_class ["%%%MODULE_NAME%%%-avatar"]] ~src ()
-  | None -> %%%MODULE_NAME%%%_icons.user ()
+  | None -> %%%MODULE_NAME%%%_icons.F.user ()
 
 let username user =
   lwt n = match %%%MODULE_NAME%%%_user.firstname_of_user user with

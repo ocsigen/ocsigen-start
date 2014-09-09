@@ -29,15 +29,17 @@ let upload_pic_link user =
       Lwt_js_events.clicks (To_dom.of_element %link)
         (fun _ _ ->
            try_lwt
-             lwt fname = Ow_pic_uploader.upload_pic_popup
+             match_lwt Ow_pic_uploader.upload_pic_popup
                            %uploader
                            ~url_path:["avatars"]
                            ~text:"Upload new picture"
                            ()
-             in
-             (* For now I don't update in place, but reload *)
-             Eliom_client.change_page
-               ~service:Eliom_service.void_coservice' () ()
+             with
+             | None -> Lwt.return ()
+             | _ ->
+               (* For now I don't update in place, but reload *)
+               Eliom_client.change_page
+                 ~service:Eliom_service.void_coservice' () ()
            with e ->
              Eba_msg.msg ~level:`Err "Error while uploading the picture";
              Lwt.return ()
@@ -49,7 +51,7 @@ let upload_pic_link user =
 
 let user_menu user =
   let but = D.div ~a:[a_class ["eba_usermenu_button"]]
-      [%%%MODULE_NAME%%%_icons.config ~class_:["fa-large"] ()]
+      [%%%MODULE_NAME%%%_icons.F.config ~class_:["fa-large"] ()]
   in
   let password_form = %%%MODULE_NAME%%%_view.password_form () in
   let logout_but = %%%MODULE_NAME%%%_view.disconnect_button () in
