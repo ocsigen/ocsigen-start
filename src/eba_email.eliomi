@@ -25,7 +25,7 @@
 *)
 
 (** The config module the module Email *)
-module type Email = sig
+module type EMAIL = sig
 
   (** [from_addr] is email address used to send mail *)
   val from_addr : (string * string)
@@ -35,9 +35,11 @@ module type Email = sig
 
 end
 
+module Default_config : EMAIL
+
 exception Invalid_mailer of string
 
-module Make (C : Email) : sig
+module Make (C : EMAIL) : sig
 
   (** The pattern used to check the validity of an e-mail address *)
   val email_pattern : string

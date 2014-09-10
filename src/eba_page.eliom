@@ -27,7 +27,7 @@
 exception Predicate_failed of (exn option)
 
 
-module type Page = sig
+module type PAGE = sig
   val title : string
   val js : string list list
   val css : string list list
@@ -42,7 +42,34 @@ module type Page = sig
   val default_connected_predicate : int64 option -> 'a -> 'b -> bool Lwt.t
 end
 
-module Make(C : Page) = struct
+module Default_config = struct
+  let title = ""
+  let js : string list list = []
+  let css : string list list = []
+  let other_head : [ Html5_types.head_content_fun ] Eliom_content.Html5.elt list
+    = []
+
+  let err_page exn =
+    let de = if Ocsigen_config.get_debugmode ()
+             then [p [pcdata "Debug info: ";
+                      em [pcdata (Printexc.to_string exn)]]]
+             else []
+    in
+    let l = match exn with
+      | Eba_session.Not_connected ->
+        p [pcdata "You must be connected to see this page."]::de
+      | _ -> de
+    in
+    Lwt.return [div ~a:[a_class ["errormsg"]] (h2 [pcdata "Error"]::l)]
+
+  let default_predicate _ _ = Lwt.return true
+  let default_connected_predicate _ _ _ = Lwt.return true
+  let default_error_page _ _ exn = err_page exn
+  let default_connected_error_page _ _ _ exn = err_page exn
+
+end
+
+module Make(C : PAGE) = struct
 
   let css =
     List.map

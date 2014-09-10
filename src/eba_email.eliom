@@ -25,14 +25,21 @@ open Printf
   let email_pattern = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]+$"
 }}
 
-module type Email = sig
+module type EMAIL = sig
   val from_addr : (string * string)
   val mailer : string
 end
 
+module Default_config = struct
+  let from_addr =
+      ("team DEFAULT", "noreply@DEFAULT.DEFAULT")
+
+  let mailer = "/usr/bin/sendmail"
+end
+
 exception Invalid_mailer of string
 
-module Make(C : Email) = struct
+module Make(C : EMAIL) = struct
 
   let email_pattern = email_pattern
 

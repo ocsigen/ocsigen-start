@@ -28,7 +28,7 @@ exception Predicate_failed of (exn option)
 (** The signature of the module to be given as parameter to the functor.
     It allows to personnalize your pages (CSS, JS, etc).
 *)
-module type Page = sig
+module type PAGE = sig
 
   (** [title] corresponds to the html tag <title>, it will be inserted on all
       pages.  *)
@@ -64,8 +64,9 @@ module type Page = sig
 
 end
 
+module Default_config : PAGE
 
-module Make (C : Page) : sig
+module Make (C : PAGE) : sig
 
   (** Default wrapper for service handler generating pages.
       It takes as parameter a function generating page content
