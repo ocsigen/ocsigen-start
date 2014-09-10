@@ -28,11 +28,6 @@ let main_service =
     ~path:[]
     ~get_params:unit ()
 
-let forgot_password_service =
-  Eliom_service.App.service
-    ~path:["forgot-password"]
-    ~get_params:unit ()
-
 let preregister_service' =
   Eliom_service.Http.post_coservice'
     ~name:"preregister_service"
@@ -44,7 +39,7 @@ let about_service =
     ~path:["about"]
     ~get_params:unit ()
 
-let forgot_password_service' =
+let forgot_password_service =
   Eliom_service.Http.post_coservice'
     ~name:"lost_password"
     ~post_params:(string "email")

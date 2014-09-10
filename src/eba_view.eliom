@@ -57,7 +57,7 @@ let sign_up_form () =
 
 let forgot_password_form () =
   generic_email_form
-    ~service:Eba_services.forgot_password_service' ()
+    ~service:Eba_services.forgot_password_service ()
 
 let information_form
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")

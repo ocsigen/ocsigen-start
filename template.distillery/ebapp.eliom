@@ -7,11 +7,7 @@ let application_name = "%%%PROJECT_NAME%%%"
 
 let () = Eba_db.init ~port:3000 ~database:"%%%PROJECT_NAME%%%" ()
 
-module Email_config = struct
-  include Eba_email.Default_config
-
-  let mailer = "/usr/sbin/sendmail"
-end
+let () = Eba_email.set_mailer "/usr/sbin/sendmail"
 
 module Page_config = struct
   include Eba_page.Default_config
@@ -52,5 +48,4 @@ module App = Eliom_registration.App(struct
     let application_name = application_name
   end)
 
-module Email = Eba_email.Make(Email_config)
 module Page = Eba_page.Make(Page_config)

@@ -25,71 +25,59 @@ open Printf
   let email_pattern = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]+$"
 }}
 
-module type EMAIL = sig
-  val from_addr : (string * string)
-  val mailer : string
-end
+let from_addr = ref ("team DEFAULT", "noreply@DEFAULT.DEFAULT")
 
-module Default_config = struct
-  let from_addr =
-      ("team DEFAULT", "noreply@DEFAULT.DEFAULT")
+let mailer = ref "/usr/bin/sendmail"
 
-  let mailer = "/usr/bin/sendmail"
-end
+let set_from_addr s = from_addr := s
+let set_mailer s = mailer := s
 
 exception Invalid_mailer of string
 
-module Make(C : EMAIL) = struct
+let email_pattern = email_pattern
 
-  let email_pattern = email_pattern
+let email_regexp =
+  Str.regexp_case_fold email_pattern
 
-  let email_regexp =
-    Str.regexp_case_fold email_pattern
+let is_valid email =
+  Str.string_match email_regexp email 0
 
-  let is_valid email =
-    Str.string_match email_regexp email 0
-
-  let send ?(from_addr = C.from_addr) ~to_addrs ~subject content =
-    (* TODO with fork ou mieux en utilisant l'event loop de ocamlnet *)
-    let echo = printf "%s\n" in
-    let flush () = printf "%!" in
-    try
-      let content =
-        if List.length content = 0
-        then ""
-        else (
-          List.fold_left
-            (fun s1 s2 -> s1^"\n"^s2)
-            (List.hd content) (List.tl content))
-      in
-      let print_tuple (a,b) = printf " (%s,%s)\n" a b in
-      echo "Sending e-mail:";
-      echo "[from_addr]: "; print_tuple from_addr;
-      echo "[to_addrs]: [";
-      List.iter print_tuple to_addrs;
-      echo "]";
-      printf "[content]:\n%s\n" content;
-      Netsendmail.sendmail ~mailer:C.mailer
-        (Netsendmail.compose ~from_addr ~to_addrs ~subject content);
-      echo "[SUCCESS]: e-mail has been sent!"
-    with Netchannels.Command_failure (Unix.WEXITED 127) ->
-      echo "[FAIL]: e-mail has not been sent!";
-      flush ();
-      raise (Invalid_mailer (C.mailer^" not found"))
-end
+let send ?(from_addr = !from_addr) ~to_addrs ~subject content =
+  (* TODO with fork ou mieux en utilisant l'event loop de ocamlnet *)
+  let echo = printf "%s\n" in
+  let flush () = printf "%!" in
+  try
+    let content =
+      if List.length content = 0
+      then ""
+      else (
+        List.fold_left
+          (fun s1 s2 -> s1^"\n"^s2)
+          (List.hd content) (List.tl content))
+    in
+    let print_tuple (a,b) = printf " (%s,%s)\n" a b in
+    echo "Sending e-mail:";
+    echo "[from_addr]: "; print_tuple from_addr;
+    echo "[to_addrs]: [";
+    List.iter print_tuple to_addrs;
+    echo "]";
+    printf "[content]:\n%s\n" content;
+    Netsendmail.sendmail ~mailer:!mailer
+      (Netsendmail.compose ~from_addr ~to_addrs ~subject content);
+    echo "[SUCCESS]: e-mail has been sent!"
+  with Netchannels.Command_failure (Unix.WEXITED 127) ->
+    echo "[FAIL]: e-mail has not been sent!";
+    flush ();
+    raise (Invalid_mailer (!mailer^" not found"))
 
 
 {client{
-module Email = struct
+let email_pattern = email_pattern
+let regexp_email =
+  Regexp.regexp_with_flag email_pattern "i"
 
-  let email_pattern = email_pattern
-  let regexp_email =
-    Regexp.regexp_with_flag email_pattern "i"
-
-  let is_valid email =
-    match Regexp.string_match regexp_email email 0 with
-    | None -> false
-    | Some _ -> true
-
-end
+let is_valid email =
+  match Regexp.string_match regexp_email email 0 with
+  | None -> false
+  | Some _ -> true
 }}
