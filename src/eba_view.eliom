@@ -24,7 +24,7 @@ let generic_email_form ?label ~service () =
         | Some lab -> F.label [pcdata lab]::l) ()
 
 let connect_form () =
-  D.post_form ~service:%%%MODULE_NAME%%%_services.connect_service
+  D.post_form ~service:Eba_services.connect_service
     (fun (login, password) -> [
       string_input
         ~a:[a_placeholder "Your email"]
@@ -45,24 +45,24 @@ let connect_form () =
 
 {shared{
 let disconnect_button () =
-  post_form ~service:%(%%%MODULE_NAME%%%_services.disconnect_service)
+  post_form ~service:%(Eba_services.disconnect_service)
     (fun _ -> [
          button ~button_type:`Submit
-           [%%%MODULE_NAME%%%_icons.F.signout (); pcdata "Logout"]
+           [Ow_icons.F.signout (); pcdata "Logout"]
        ]) ()
  }}
 
 let sign_up_form () =
-  generic_email_form ~service:%%%MODULE_NAME%%%_services.sign_up_service' ()
+  generic_email_form ~service:Eba_services.sign_up_service' ()
 
 let forgot_password_form () =
   generic_email_form
-    ~service:%%%MODULE_NAME%%%_services.forgot_password_service' ()
+    ~service:Eba_services.forgot_password_service' ()
 
 let information_form
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
     () =
-  D.post_form ~service:%%%MODULE_NAME%%%_services.set_personal_data_service'
+  D.post_form ~service:Eba_services.set_personal_data_service'
     (fun ((fname, lname), (passwordn1, passwordn2)) -> [
          string_input
            ~a:[a_placeholder "Your firstname"]
@@ -96,10 +96,10 @@ let information_form
        ]) ()
 
 let preregister_form label =
-  generic_email_form ~service:%%%MODULE_NAME%%%_services.preregister_service' ~label ()
+  generic_email_form ~service:Eba_services.preregister_service' ~label ()
 
 let home_button () =
-  form ~service:%%%MODULE_NAME%%%_services.main_service
+  form ~service:Eba_services.main_service
     (fun _ -> [
       string_input
         ~input_type:`Submit
@@ -108,20 +108,20 @@ let home_button () =
     ])
 
 let avatar user =
-  match %%%MODULE_NAME%%%_user.avatar_uri_of_user user with
+  match Eba_user.avatar_uri_of_user user with
   | Some src ->
-    img ~alt:"picture" ~a:[a_class ["%%%MODULE_NAME%%%-avatar"]] ~src ()
-  | None -> %%%MODULE_NAME%%%_icons.F.user ()
+    img ~alt:"picture" ~a:[a_class ["eba_avatar"]] ~src ()
+  | None -> Ow_icons.F.user ()
 
 let username user =
-  lwt n = match %%%MODULE_NAME%%%_user.firstname_of_user user with
+  lwt n = match Eba_user.firstname_of_user user with
     | "" ->
-      lwt email = %%%MODULE_NAME%%%_user.email_of_user user in
+      lwt email = Eba_user.email_of_user user in
       Lwt.return [pcdata email]
     | s ->
       Lwt.return [pcdata s;
                   pcdata " ";
-                  pcdata (%%%MODULE_NAME%%%_user.lastname_of_user user);
+                  pcdata (Eba_user.lastname_of_user user);
                  ]
   in
   Lwt.return (div ~a:[a_class ["eba_username"]] n)
@@ -129,7 +129,7 @@ let username user =
 {shared{
 let password_form () =
   D.post_form
-    ~service:%(%%%MODULE_NAME%%%_services.set_password_service')
+    ~service:%(Eba_services.set_password_service')
     (fun (pwdn, pwd2n) ->
        let pass1 =
          D.string_input

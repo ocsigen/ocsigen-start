@@ -1,20 +1,11 @@
+(* This file is part of Eliom-base-app.
+   Feel free to use it, modify it according to your needs,
+   and redistribute it as you wish. *)
+
 open Eliom_content.Html5.F
 
 exception Already_exists
 exception No_such_user
-
-(* -----------------------------------------------------------------
- *
- * If you want to expand your user informations:
- *
- * You have to:
-   *
- *   - expand the type [t] and adapt the function to create it
- *     [create_user_from_db].
- *
- *   - adapt the queries in the module [Eba_db.User]
- *
- * *)
 
 {shared{
   (** The type which represents a user. *)
@@ -33,6 +24,7 @@ let create_user_from_db (uid, fn, ln, avatar) = {
   ln = ln;
   avatar = avatar;
 }
+
 
 {shared{
 (** Getters functions. *)

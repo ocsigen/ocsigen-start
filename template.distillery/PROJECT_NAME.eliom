@@ -17,14 +17,14 @@ let set_personal_data_handler' uid ()
     (Eliom_reference.Volatile.set Eba_msg.wrong_pdata (Some pd);
      Lwt.return ())
   else (
-    lwt user = %%%MODULE_NAME%%%_user.user_of_uid uid in
-    let open %%%MODULE_NAME%%%_user in
+    lwt user = Eba_user.user_of_uid uid in
+    let open Eba_user in
     let record = {
       user with
       fn = firstname;
       ln = lastname;
     } in
-    %%%MODULE_NAME%%%_user.update' ~password:pwd record)
+    Eba_user.update' ~password:pwd record)
 
 let set_password_handler' uid () (pwd, pwd2) =
   if pwd <> pwd2
@@ -32,8 +32,8 @@ let set_password_handler' uid () (pwd, pwd2) =
     (Eba_msg.msg ~level:`Err "Passwords do not match";
      Lwt.return ())
   else (
-    lwt user = %%%MODULE_NAME%%%_user.user_of_uid uid in
-    %%%MODULE_NAME%%%_user.update' ~password:pwd user)
+    lwt user = Eba_user.user_of_uid uid in
+    Eba_user.update' ~password:pwd user)
 
 let generate_act_key
     ?(act_key = Ocsigen_lib.make_cryptographic_safe_string ())
@@ -42,7 +42,7 @@ let generate_act_key
     email =
   let service =
     Eliom_service.attach_coservice' ~fallback:service
-      ~service:%%%MODULE_NAME%%%_services.activation_service
+      ~service:Eba_services.activation_service
   in
   let act_link = F.make_string_uri ~absolute:true ~service act_key in
   (* For debugging we print the activation link on standard output
@@ -61,17 +61,17 @@ let generate_act_key
   act_key
 
 let sign_up_handler' () email =
-  lwt is_registered = %%%MODULE_NAME%%%_user.is_registered email in
+  lwt is_registered = Eba_user.is_registered email in
   if is_registered then begin
     Eliom_reference.Volatile.set
-      %%%MODULE_NAME%%%_userbox.user_already_exists true;
+      Eba_userbox.user_already_exists true;
     Lwt.return ()
   end else begin
     let act_key =
-      generate_act_key ~service:%%%MODULE_NAME%%%_services.main_service email in
-    lwt uid = %%%MODULE_NAME%%%_user.create ~firstname:"" ~lastname:"" email in
+      generate_act_key ~service:Eba_services.main_service email in
+    lwt uid = Eba_user.create ~firstname:"" ~lastname:"" email in
     Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
-    lwt () = %%%MODULE_NAME%%%_user.add_activationkey ~act_key uid in
+    lwt () = Eba_user.add_activationkey ~act_key uid in
     Lwt.return ()
   end
 
@@ -81,21 +81,21 @@ let forgot_password_handler uid_o () () =
       div ~a:[a_class ["eba-box"]] [
         p [pcdata "Enter your e-mail address to receive an activation link \
                    to access to your account:"];
-        %%%MODULE_NAME%%%_view.forgot_password_form ();
+        Eba_view.forgot_password_form ();
       ];
     ]
   ]
 
 let forgot_password_handler' () email =
   try_lwt
-    lwt uid = %%%MODULE_NAME%%%_user.uid_of_email email in
+    lwt uid = Eba_user.uid_of_email email in
     let act_key =
-      generate_act_key ~service:%%%MODULE_NAME%%%_services.main_service email in
+      generate_act_key ~service:Eba_services.main_service email in
     Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
-    %%%MODULE_NAME%%%_user.add_activationkey ~act_key uid
+    Eba_user.add_activationkey ~act_key uid
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
-      %%%MODULE_NAME%%%_userbox.user_does_not_exist true;
+      Eba_userbox.user_does_not_exist true;
     Lwt.return ()
 
 let about_handler uid_o () () =
@@ -119,10 +119,10 @@ let connect_handler () (login, pwd) =
      to be connected with the new account if the password is wrong. *)
   lwt () = disconnect_handler () () in
   try_lwt
-    lwt uid = %%%MODULE_NAME%%%_user.verify_password login pwd in
+    lwt uid = Eba_user.verify_password login pwd in
     Eba_session.connect uid
   with Eba_db.No_such_resource ->
-    Eliom_reference.Volatile.set %%%MODULE_NAME%%%_userbox.wrong_password true;
+    Eliom_reference.Volatile.set Eba_userbox.wrong_password true;
     Lwt.return ()
 
 let activation_handler akey () =
@@ -131,12 +131,12 @@ let activation_handler akey () =
      we're going to disconnect him even if the activation key outdated. *)
   lwt () = Eba_session.disconnect () in
   try_lwt
-    lwt uid = %%%MODULE_NAME%%%_user.uid_of_activationkey akey in
+    lwt uid = Eba_user.uid_of_activationkey akey in
     lwt () = Eba_session.connect uid in
     Eliom_registration.Redirection.send Eliom_service.void_coservice'
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
-      %%%MODULE_NAME%%%_userbox.activation_key_outdated true;
+      Eba_userbox.activation_key_outdated true;
     (*VVV This should be a redirection, in order to erase the outdated URL.
       But we do not have a simple way of
       writing an error message after a redirection for now.*)
@@ -144,65 +144,65 @@ let activation_handler akey () =
 
           (*
 let admin_service_handler uid gp pp =
-  lwt user = %%%MODULE_NAME%%%_user.user_of_uid uid in
+  lwt user = Eba_user.user_of_uid uid in
   (*lwt cnt = Ebapp.Admin.admin_page_content user in*)
   %%%MODULE_NAME%%%_container.page [
   ] (*@ cnt*)
            *)
 
 let preregister_handler' () email =
-  lwt is_preregistered = %%%MODULE_NAME%%%_user.is_preregistered email in
-  lwt is_registered = %%%MODULE_NAME%%%_user.is_registered email in
+  lwt is_preregistered = Eba_user.is_preregistered email in
+  lwt is_registered = Eba_user.is_registered email in
   Printf.printf "%b:%b%!\n" is_preregistered is_registered;
   if not (is_preregistered || is_registered)
-   then %%%MODULE_NAME%%%_user.add_preregister email
+   then Eba_user.add_preregister email
    else begin
      Eliom_reference.Volatile.set
-       %%%MODULE_NAME%%%_userbox.user_already_preregistered true;
+       Eba_userbox.user_already_preregistered true;
      Lwt.return ()
    end
 
 let () =
   Ebapp.App.register
-    %%%MODULE_NAME%%%_services.main_service
+    Eba_services.main_service
     (Ebapp.Page.Opt.connected_page main_service_handler);
 
   Ebapp.App.register
-    %%%MODULE_NAME%%%_services.forgot_password_service
+    Eba_services.forgot_password_service
     (Ebapp.Page.Opt.connected_page forgot_password_handler);
 
   Ebapp.App.register
-    %%%MODULE_NAME%%%_services.about_service
+    Eba_services.about_service
     (Ebapp.Page.Opt.connected_page about_handler);
 
   Eliom_registration.Action.register
-    %%%MODULE_NAME%%%_services.set_personal_data_service'
+    Eba_services.set_personal_data_service'
     (Eba_session.connected_fun set_personal_data_handler');
 
   Eliom_registration.Action.register
-    %%%MODULE_NAME%%%_services.set_password_service'
+    Eba_services.set_password_service'
     (Eba_session.connected_fun set_password_handler');
 
   Eliom_registration.Action.register
-    %%%MODULE_NAME%%%_services.forgot_password_service'
+    Eba_services.forgot_password_service'
     forgot_password_handler';
 
   Eliom_registration.Action.register
-    %%%MODULE_NAME%%%_services.preregister_service'
+    Eba_services.preregister_service'
     preregister_handler';
 
   Eliom_registration.Action.register
-    %%%MODULE_NAME%%%_services.sign_up_service'
+    Eba_services.sign_up_service'
     sign_up_handler';
 
   Eliom_registration.Action.register
-    %%%MODULE_NAME%%%_services.connect_service
+    Eba_services.connect_service
     connect_handler;
 
   Eliom_registration.Action.register
-    %%%MODULE_NAME%%%_services.disconnect_service
+    Eba_services.disconnect_service
     disconnect_handler;
 
   Eliom_registration.Any.register
-    %%%MODULE_NAME%%%_services.activation_service
+    Eba_services.activation_service
     activation_handler

@@ -2,14 +2,14 @@
 
 
 (* current user *)
-let me : %%%MODULE_NAME%%%_user.t option Eliom_reference.Volatile.eref =
+let me : Eba_user.t option Eliom_reference.Volatile.eref =
   (* This is a request cache of current user *)
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope None
 
 
 {client{
 
-let me : %%%MODULE_NAME%%%_user.t option ref = ref None
+let me : Eba_user.t option ref = ref None
 
 let get_current_user_option () = !me
 
@@ -17,7 +17,7 @@ let get_current_user () =
   match !me with
   | Some a -> a
   | None ->
-    Ow_log.log "Not connected error in %%%PROJECT_NAME%%%_current_user";
+    Ow_log.log "Not connected error in Eba_current_user";
     raise Eba_session.Not_connected
 
 }}
@@ -42,14 +42,14 @@ module Opt = struct
 
   let get_current_userid () =
     Eliom_lib.Option.map
-      %%%MODULE_NAME%%%_user.uid_of_user
+      Eba_user.uid_of_user
       (get_current_user_option ())
 
 end
  }}
 
 let set_user_server uid =
-  lwt u = %%%MODULE_NAME%%%_user.user_of_uid uid in
+  lwt u = Eba_user.user_of_uid uid in
   Eliom_reference.Volatile.set me (Some u);
   Lwt.return ()
 

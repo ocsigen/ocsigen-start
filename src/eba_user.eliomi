@@ -1,18 +1,6 @@
 exception Already_exists
 exception No_such_user
 
-(* -----------------------------------------------------------------
- *
- * If you want to expand your user informations:
- *
- * You have to:
-   *
- *   - expand the type [t] and adapt the function to create it
- *     [create_user_from_db].
- *
- *   - adapt the queries in the module [%%%MODULE_NAME%%%_db.User]
- *
- * *)
 
 {shared{
   (** The type which represents a user. *)

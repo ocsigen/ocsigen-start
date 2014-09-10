@@ -22,15 +22,6 @@
 
 exception No_such_group
 
-(* -----------------------------------------------------------------
- *
- * The implementation of this module should be sufficient. Groups are
- * needed by EBA to allow or deny access to functions or pages.
- *
- * EBA uses only the type [t] of the module and the [in_group] function
- * to know if a userid belongs to a group.
- *
- * *)
 
 (** The type of a group *)
 type t = {
