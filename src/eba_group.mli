@@ -20,6 +20,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+(** Groups of users.
+    Groups are sets of users. Groups and group members are saved in database.
+    Groups are used by EBA for example to restrict access to pages or
+    server functions. *)
+
 exception No_such_group
 
 (* -----------------------------------------------------------------
@@ -30,11 +35,7 @@ exception No_such_group
 *)
 
 (** The type of a group *)
-type t = {
-  id : int64;
-  name : string;
-  desc : string option;
-}
+type t
 
 val id_of_group : t -> int64
 val name_of_group : t -> string
@@ -56,8 +57,13 @@ val group_of_name : string -> t Lwt.t
 
 *)
 
+(** Insert a user to a group. *)
 val add_user_in_group : group:t -> userid:int64 -> unit Lwt.t
+
+(** Remove a user from a group. *)
 val remove_user_in_group : group:t -> userid:int64 -> unit Lwt.t
+
+(** Does user belong to a group? *)
 val in_group : group:t -> userid:int64 -> bool Lwt.t
 
 (** Returns all the groups of the database. *)

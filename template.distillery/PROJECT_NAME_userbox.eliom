@@ -13,8 +13,8 @@ let uploader = Ow_pic_uploader.make
   ~name:"uppic"
   ~crop_ratio:(Some 1.)
   ~max_width:500
-  ~service_wrapper:(fun f -> Ebapp.Session.connected_rpc (fun userid -> f))
-  ~crop_wrapper:(fun f -> Ebapp.Session.connected_rpc
+  ~service_wrapper:(fun f -> Eba_session.connected_rpc (fun userid -> f))
+  ~crop_wrapper:(fun f -> Eba_session.connected_rpc
                     (fun userid p ->
                        lwt fname = f p in
                        %%%MODULE_NAME%%%_user.update_avatar fname userid))

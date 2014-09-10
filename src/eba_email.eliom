@@ -25,8 +25,14 @@ open Printf
   let email_pattern = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]+$"
 }}
 
-module Make(C : Eba_config.Email) = struct
-  exception Invalid_mailer of string
+module type Email = sig
+  val from_addr : (string * string)
+  val mailer : string
+end
+
+exception Invalid_mailer of string
+
+module Make(C : Email) = struct
 
   let email_pattern = email_pattern
 

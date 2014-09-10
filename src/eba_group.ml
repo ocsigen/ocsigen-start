@@ -52,10 +52,10 @@ let desc_of_group g = g.desc
 
 (* Using cache tools to prevent multiple same database queries
    during the request. *)
-module MCache = Eba_tools.Cache_f.Make(
+module MCache = Eba_request_cache.Make(
 struct
-  type key_t = string
-  type value_t = t
+  type key = string
+  type value = t
 
   let compare = compare
   let get key =

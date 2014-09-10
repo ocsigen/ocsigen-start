@@ -20,6 +20,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+(** Connection and disconnection of users,
+    restrict access to services or server functions,
+    define actions to be executed at some points of the session. *)
+
 (** Call this to add an action to be done on server side
     when the process starts *)
 val on_start_process : (unit -> unit Lwt.t) -> unit
@@ -61,7 +65,72 @@ exception Not_connected
 exception Permission_denied
 }}
 
-module Make
-  (C : Eba_config.Session)
-  (Groups : Eba_sigs.Groups)
-  : Eba_sigs.Session with type group = Groups.t
+(** Open a session for a user by setting a session group for the browser
+    which initiated the current request.
+    Eliom base app is using both persistent and volatile session groups.
+    The volatile groups is recreated from persistent group if absent.
+*)
+val connect : int64 -> unit Lwt.t
+
+(** Close a session by discarding server side states for current browser
+    (session and session group), current client process (tab) and current
+    request.
+    Only default Eliom scopes are affected, but not user independant scopes.
+    The actions registered for session close (by {!on_close_session})
+    will be executed just before the session is actually closed.
+*)
+val disconnect : unit -> unit Lwt.t
+
+(** Wrapper for service handlers that fetches automatically connection
+    information.
+    Register [(connected_fun f)] as handler for your services,
+    where [f] is a function taking user id, GET parameters and POST parameters.
+    If no user is connected, the service will fail by raising [Not_connected].
+    Otherwise it calls function [f].
+    To provide another behaviour in case the user is not connected,
+    have a look at {!Opt.connected_fun} or module {!Eba_page}.
+
+    Arguments [?allow] and [?deny] make possible to restrict access to some
+    user groups. If access is denied, function [?deny_fun] will be called.
+    By default, it raises {!Permission denied}.
+*)
+val connected_fun :
+  ?allow:Eba_group.t list ->
+  ?deny:Eba_group.t list ->
+  ?deny_fun:(int64 option -> 'c Lwt.t) ->
+  (int64 -> 'a -> 'b -> 'c Lwt.t) ->
+  ('a -> 'b -> 'c Lwt.t)
+
+(** Wrapper for server functions (see {!connected_fun}). *)
+val connected_rpc :
+  ?allow:Eba_group.t list ->
+  ?deny:Eba_group.t list ->
+  ?deny_fun:(int64 option -> 'b Lwt.t) ->
+  (int64 -> 'a -> 'b Lwt.t) ->
+  ('a -> 'b Lwt.t)
+
+module Opt : sig
+
+  (** Same as {!connected_fun} but instead of failing in case the user is
+      not connected, the function given as parameter takes an [int64 option]
+      for user id.
+  *)
+  val connected_fun :
+    ?allow:Eba_group.t list ->
+    ?deny:Eba_group.t list ->
+    ?deny_fun:(int64 option -> 'c Lwt.t) ->
+    (int64 option -> 'a -> 'b -> 'c Lwt.t) ->
+    ('a -> 'b -> 'c Lwt.t)
+
+  (** Same as {!connected_rpc} but instead of failing in case the user is
+      not connected, the function given as parameter takes an [int64 option]
+      for user id.
+  *)
+  val connected_rpc :
+    ?allow:Eba_group.t list ->
+    ?deny:Eba_group.t list ->
+    ?deny_fun:(int64 option -> 'b Lwt.t) ->
+    (int64 option -> 'a -> 'b Lwt.t) ->
+    ('a -> 'b Lwt.t)
+
+end

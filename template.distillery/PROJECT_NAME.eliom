@@ -111,11 +111,7 @@ let about_handler uid_o () () =
 
 let disconnect_handler () () =
   (* SECURITY: no check here because we disconnect the session cookie owner. *)
-  lwt () = Ebapp.Session.disconnect () in
-  lwt () = Eliom_state.discard ~scope:Eliom_common.default_session_scope () in
-  lwt () = Eliom_state.discard ~scope:Eliom_common.default_process_scope () in
-  lwt () = Eliom_state.discard ~scope:Eliom_common.request_scope () in
-  Lwt.return ()
+  Eba_session.disconnect ()
 
 let connect_handler () (login, pwd) =
   (* SECURITY: no check here.
@@ -124,7 +120,7 @@ let connect_handler () (login, pwd) =
   lwt () = disconnect_handler () () in
   try_lwt
     lwt uid = %%%MODULE_NAME%%%_user.verify_password login pwd in
-    Ebapp.Session.connect uid
+    Eba_session.connect uid
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set %%%MODULE_NAME%%%_userbox.wrong_password true;
     Lwt.return ()
@@ -133,10 +129,10 @@ let activation_handler akey () =
   (* SECURITY: we disconnect the user before doing anything. *)
   (* If the user is already connected,
      we're going to disconnect him even if the activation key outdated. *)
-  lwt () = Ebapp.Session.disconnect () in
+  lwt () = Eba_session.disconnect () in
   try_lwt
     lwt uid = %%%MODULE_NAME%%%_user.uid_of_activationkey akey in
-    lwt () = Ebapp.Session.connect uid in
+    lwt () = Eba_session.connect uid in
     Eliom_registration.Redirection.send Eliom_service.void_coservice'
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
@@ -181,32 +177,32 @@ let () =
 
   Eliom_registration.Action.register
     %%%MODULE_NAME%%%_services.set_personal_data_service'
-    (Ebapp.Session.connected_fun set_personal_data_handler');
+    (Eba_session.connected_fun set_personal_data_handler');
 
   Eliom_registration.Action.register
     %%%MODULE_NAME%%%_services.set_password_service'
-    (Ebapp.Session.connected_fun set_password_handler');
+    (Eba_session.connected_fun set_password_handler');
 
   Eliom_registration.Action.register
     %%%MODULE_NAME%%%_services.forgot_password_service'
-    (forgot_password_handler');
+    forgot_password_handler';
 
   Eliom_registration.Action.register
     %%%MODULE_NAME%%%_services.preregister_service'
-    (preregister_handler');
+    preregister_handler';
 
   Eliom_registration.Action.register
     %%%MODULE_NAME%%%_services.sign_up_service'
-    (sign_up_handler');
+    sign_up_handler';
 
   Eliom_registration.Action.register
     %%%MODULE_NAME%%%_services.connect_service
-    (connect_handler);
+    connect_handler;
 
   Eliom_registration.Action.register
     %%%MODULE_NAME%%%_services.disconnect_service
-    (disconnect_handler);
+    disconnect_handler;
 
   Eliom_registration.Any.register
     %%%MODULE_NAME%%%_services.activation_service
-    (activation_handler)
+    activation_handler

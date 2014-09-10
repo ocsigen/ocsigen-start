@@ -26,9 +26,23 @@
 
 exception Predicate_failed of (exn option)
 
-module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
 
-  module Session = Session
+module type Page = sig
+  val title : string
+  val js : string list list
+  val css : string list list
+  val other_head : [ Html5_types.head_content_fun ] Eliom_content.Html5.elt list
+  val default_error_page :
+    'a -> 'b -> exn ->
+    [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
+  val default_connected_error_page :
+    int64 option -> 'a -> 'b -> exn ->
+    [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
+  val default_predicate : 'a -> 'b -> bool Lwt.t
+  val default_connected_predicate : int64 option -> 'a -> 'b -> bool Lwt.t
+end
+
+module Make(C : Page) = struct
 
   let css =
     List.map
@@ -76,7 +90,7 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
     in
     lwt content =
       try_lwt
-        Session.connected_fun ?allow ?deny
+        Eba_session.connected_fun ?allow ?deny
           ~deny_fun:(fun uid_o ->
             fallback uid_o gp pp Eba_session.Permission_denied)
           f_wrapped gp pp
@@ -106,7 +120,7 @@ module Make(C : Eba_config.Page)(Session : Eba_sigs.Session) = struct
           | (Predicate_failed _) as exc -> fallback uid_o gp pp exc
           | exc -> fallback uid_o gp pp (Predicate_failed (Some exc))
       in
-      lwt content = Session.Opt.connected_fun
+      lwt content = Eba_session.Opt.connected_fun
         ?allow ?deny
         ~deny_fun:(fun uid_o ->
           fallback uid_o gp pp Eba_session.Permission_denied)

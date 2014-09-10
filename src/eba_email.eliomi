@@ -19,6 +19,40 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-module Make
-  (C : Eba_config.Email)
-  : Eba_sigs.Email
+
+(** Basic module for sending e-mail messages to users,
+    using some local sendmail program.
+*)
+
+(** The config module the module Email *)
+module type Email = sig
+
+  (** [from_addr] is email address used to send mail *)
+  val from_addr : (string * string)
+
+  (** [mailer] corresponds to the [sendmail] program on your system *)
+  val mailer : string
+
+end
+
+exception Invalid_mailer of string
+
+module Make (C : Email) : sig
+
+  (** The pattern used to check the validity of an e-mail address *)
+  val email_pattern : string
+
+  (** Check if the given e-mail address is valid or not *)
+  val is_valid : string -> bool
+
+  (** Send an e-mail to [to_addrs]. You have to define the [subject] of your
+      email. The body of the email is a list of strings
+      and each element of the list is automatically separated by a new line. *)
+  val send :
+    ?from_addr:(string * string) ->
+    to_addrs:((string * string) list) ->
+    subject:string ->
+    string list ->
+    unit
+
+end

@@ -13,13 +13,11 @@ SERVER_FILES := $(wildcard \
   src/*.ml* \
   src/*.eliom* \
   src/view/*.eliom* \
-  src/tools/*.eliom* \
 )
 # Source files for the client
 CLIENT_FILES := $(wildcard \
   src/*.eliom* \
   src/view/*.eliom* \
-  src/tools/*.eliom* \
 )
 
 # Source files for the server
@@ -27,13 +25,11 @@ SERVER_FILES_DOC := $(wildcard \
   src/*.eliomi \
   src/*.mli \
   src/view/*.eliomi \
-  src/tools/*.eliomi \
 )
 # Source files for the client
 CLIENT_FILES_DOC := $(wildcard \
   src/*.eliomi \
   src/view/*.eliomi \
-  src/tools/*.eliomi \
 )
 
 # Template directory (used when installing template with distillery)

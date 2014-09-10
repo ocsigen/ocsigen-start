@@ -58,10 +58,10 @@ include Eba_db.User
 
 (* Using cache tools to prevent multiple same database queries
  * during the request. *)
-module MCache = Eba_tools.Cache_f.Make(
+module MCache = Eba_request_cache.Make(
 struct
-  type key_t = int64
-  type value_t = t
+  type key = int64
+  type value = t
 
   let compare = compare
   let get key =
