@@ -43,9 +43,6 @@ module type Cache_sig = sig
   (** Get the value corresponding to the given key. *)
   val get : key -> value Lwt.t
 
-  (** Not so useful.. Should be removed I think. *)
-  val wrap_function : key -> (unit -> 'a Lwt.t) -> 'a Lwt.t
-
 end
 
 

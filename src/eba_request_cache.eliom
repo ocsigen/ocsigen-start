@@ -28,17 +28,6 @@ module type Cache_sig = sig
 
   val reset : key -> unit
   val get : key -> value Lwt.t
-  val wrap_function : key -> (unit -> 'a Lwt.t) -> 'a Lwt.t
-end
-module type Cache_f = sig
-  module Make : functor
-    (M : sig
-       type key
-       type value
-
-       val compare : key -> key -> int
-       val get : key -> value Lwt.t
-     end) -> Cache_sig with type key = M.key and type value = M.value
 end
 
 module Make(M : sig
@@ -55,8 +44,7 @@ end) = struct
   module MMap = Map.Make(struct type t = M.key let compare = M.compare end)
 
   (* we use an eliom reference with the restrictive request scope, which is
-   * sufficient and pretty safe (SECURITY), this permit to work on valid
-   * data during the request *)
+     sufficient and safe (SECURITY) *)
   let cache =
     Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope MMap.empty
 
@@ -86,14 +74,5 @@ end) = struct
             Eliom_reference.Volatile.set cache (MMap.add k ret table);
             Lwt.return ret
           with _ -> Lwt.fail Not_found
-
-
-  let wrap_function (k : M.key) f =
-    (* we call the user function and we will reset the data correponding
-       to the key to be sure that we're going to use valid data with the
-       cache *)
-    lwt ret = f () in
-    let () = reset k in
-    Lwt.return ret
 
 end
