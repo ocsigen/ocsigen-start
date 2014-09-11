@@ -20,6 +20,8 @@ let user_menu user =
     hr ();
     Userbox.upload_pic_link ();
     hr ();
+    Userbox.reset_tips_link ();
+    hr ();
     Eba_view.disconnect_button ();
   ]
 
@@ -28,6 +30,7 @@ let _ = Userbox.set_user_menu user_menu
 
 let header ?user () =
   lwt user_box = Userbox.userbox user in
+  lwt () = %%%MODULE_NAME%%%_tips.example_tip () in
   Lwt.return
     (div ~a:[a_id "%%%PROJECT_NAME%%%-header"] [
       a ~a:[a_id "%%%PROJECT_NAME%%%-logo"]

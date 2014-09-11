@@ -29,9 +29,12 @@
           Eba_user.t option ->
           [> Html5_types.div ] Eliom_content.Html5.D.elt Lwt.t
 
-
         (** Link to upload a picture *)
         val upload_pic_link :
+          unit -> [> `A of [> `PCDATA ] ] Eliom_content.Html5.D.Raw.elt
+
+        (** Link to start to see the help from the begining *)
+        val reset_tips_link :
           unit -> [> `A of [> `PCDATA ] ] Eliom_content.Html5.D.Raw.elt
 
         (** Display user menu *)

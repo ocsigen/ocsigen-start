@@ -66,12 +66,30 @@ module Make(A : sig
     }};
     link
 
+
+  let reset_tips_link () =
+    let l = D.Raw.a [pcdata "See help again from beginning"] in
+    ignore {unit{
+      Lwt_js_events.(async (fun () ->
+        clicks (To_dom.of_element %l)
+          (fun _ _ ->
+             Eliom_client.exit_to
+               ~service:%Eba_tips.reset_tips_service
+               () ();
+             Lwt.return ()
+          )));
+    }};
+    l
+
+
   let user_menu_ user =
   [
     p [pcdata "Change your password:"];
     Eba_view.password_form ();
     hr ();
     upload_pic_link ();
+    hr ();
+    reset_tips_link ();
     hr ();
     Eba_view.disconnect_button ();
   ]
