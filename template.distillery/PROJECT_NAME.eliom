@@ -28,5 +28,5 @@ let () =
     (Ebapp.Page.Opt.connected_page main_service_handler);
 
   Ebapp.App.register
-    Eba_services.about_service
+    %%%MODULE_NAME%%%_services.about_service
     (Ebapp.Page.Opt.connected_page about_handler)

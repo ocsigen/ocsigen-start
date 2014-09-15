@@ -34,11 +34,6 @@ let preregister_service' =
     ~post_params:(string "email")
     ()
 
-let about_service =
-  Eliom_service.App.service
-    ~path:["about"]
-    ~get_params:unit ()
-
 let forgot_password_service =
   Eliom_service.Http.post_coservice'
     ~name:"lost_password"

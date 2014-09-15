@@ -6,7 +6,6 @@
 {shared{
   open Eliom_content.Html5
   open Eliom_content.Html5.F
-  open %%%MODULE_NAME%%%_tools
 }}
 
 module Userbox = Eba_userbox.Make(struct
