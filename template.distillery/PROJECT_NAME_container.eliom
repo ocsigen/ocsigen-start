@@ -40,7 +40,7 @@ let header ?user () =
         [
           li [a ~service:Eba_services.main_service
                 [pcdata "Home"] ()];
-          li [a ~service:Eba_services.about_service
+          li [a ~service:%%%MODULE_NAME%%%_services.about_service
                 [pcdata "About"] ()]
         ];
       user_box;

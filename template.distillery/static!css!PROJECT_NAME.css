@@ -1,23 +1,10 @@
 
 @import url(http://fonts.googleapis.com/css?family=PT+Sans:400,700);
 
-html{
-  height: 100%;
-}
+/*****************************************************************************
+/* Default tag style */
 
-body {
-  margin: 0px;
-  min-height: 100%;
-  font-family: "PT Sans", sans-serif;
-  font-weight: 500;
-}
-
-a {
-  text-decoration: none;
-  color: #4183c4;
-}
-a:visited {
-  text-decoration: none;
+a, a:visited {
   color: #4183c4;
 }
 
@@ -33,38 +20,21 @@ input[type="submit"] {
   background-color: #4183c4;
 }
 
-.presentation {
-  padding: 10px;
-  text-align: justify;
-}
-
-.presentation-title {
-  font-size: 40pt;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.advice {
-  font-size: 10pt;
-}
-
-.column {
-  width: 50%;
-}
-
-.bar-item {
-  margin-bottom: 10px;
-}
-
 .button {
   border: none;
   background-color: #4183c4;
   color: white;
 }
 
-.inline-block {
-  display: inline-block;
+
+/*****************************************************************************
+/* Main layout */
+
+body {
+  margin: 0px;
+  min-height: 500px;
+  font-family: "PT Sans", sans-serif;
+  font-weight: 500;
 }
 
 #%%%PROJECT_NAME%%%-logo {
@@ -73,12 +43,6 @@ input[type="submit"] {
   font-size: 25pt;
   font-weight: 700;
   padding: 0 20px;
-}
-#%%%PROJECT_NAME%%%-logo:hover {
-  color: #4183c4;
-}
-#%%%PROJECT_NAME%%%-logo:visited {
-  color: white;
 }
 
 #%%%PROJECT_NAME%%%-header {
@@ -111,60 +75,41 @@ input[type="submit"] {
   color: #445588;
 }
 
-#%%%PROJECT_NAME%%%-forms {
-  text-align: left;
-  display: inline-block;
+div#eba_welcome_box {
+  margin-left: auto;
+  margin-right: auto;
 }
-
-.info-form {
+div#eba_welcome_box {
+  width: 480px;
+  padding: 10px;
+  margin-bottom: 16px;
   text-align: center;
 }
+div#eba_welcome_box h2 {
+  margin-top: 0;
+}
+div#eba_welcome_box input[type="submit"] {
+  width: 246px;
+  padding: 8px;
+  font-weight: bold;
+}
 
+/*****************************************************************************
+/* Misc boxes */
 ul#%%%PROJECT_NAME%%%-navbar {
   list-style-type: none;
   margin-bottom: 10px;
   bottom: 0;
   display: inline-block;
 }
-
 #%%%PROJECT_NAME%%%-navbar li {
   display: inline-block;
   padding-right: 15px;
 }
 
-
-#%%%PROJECT_NAME%%%-request-msgs {
-  padding: 5px;
-}
-
-.rmsg {
-  padding-bottom: 5px;
-  padding-top: 5px;
-}
-
-.error {
-  background-color: #db6573;
-}
-
-.notice {
-  background-color: #4de886;
-}
-
 #eba-user-box {
-  right: 0;
   position: absolute;
+  right: 0;
   bottom: 0;
   width: 500px;
-}
-
-
-div#eba_welcome_box {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-div#eba_login_signup_box {
-  position: absolute;
-  top: 0;
-  right: 0;
 }
