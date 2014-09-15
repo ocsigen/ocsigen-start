@@ -3,7 +3,7 @@
   open Eliom_content.Html5.F
 }}
 
-let main_service_handler uid_o gp pp =
+let main_service_handler uid_o () () =
   %%%MODULE_NAME%%%_container.page uid_o (
     [
      p [em [pcdata "Eliom base app: Put app content here."]]
