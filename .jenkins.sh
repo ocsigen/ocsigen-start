@@ -1,4 +1,6 @@
 opam pin add --no-action eliom-base-app .
+opam pin add --no-action deriving 'https://github.com/ocsigen/deriving.git#master'
+opam pin add --no-action tyxml 'https://github.com/ocsigen/tyxml.git#master'
 opam pin add --no-action ocsigenserver 'https://github.com/ocsigen/ocsigenserver.git#master'
 opam pin add --no-action js_of_ocaml 'https://github.com/ocsigen/js_of_ocaml.git#master'
 opam pin add --no-action eliom 'https://github.com/ocsigen/eliom.git#master'
