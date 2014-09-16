@@ -12,7 +12,7 @@ depends: [
   "ocamlfind"
   "imagemagick"
   "pgocaml" {= "1.7.1"}
-  "macaque"
+  "macaque" {>= "dev"}
   "safepass"
   "eliom"         {>= "dev"}
   "ocsigen-widgets" {>= "dev"}
