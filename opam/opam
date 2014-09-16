@@ -11,7 +11,7 @@ remove: [
 depends: [
   "ocamlfind"
   "imagemagick"
-  "pgocaml" {= "1.7.1"}
+  "pgocaml"
   "macaque" {>= "dev"}
   "safepass"
   "eliom"         {>= "dev"}
