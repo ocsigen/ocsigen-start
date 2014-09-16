@@ -15,5 +15,5 @@ depends: [
   "macaque"
   "safepass"
   "eliom"         {>= "dev"}
-  "eliom-widgets" {>= "dev"}
+  "ocsigen-widgets" {>= "dev"}
 ]
