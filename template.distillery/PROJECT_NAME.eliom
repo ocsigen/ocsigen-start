@@ -3,15 +3,15 @@
   open Eliom_content.Html5.F
 }}
 
-let main_service_handler uid_o () () =
-  %%%MODULE_NAME%%%_container.page uid_o (
+let main_service_handler userid_o () () =
+  %%%MODULE_NAME%%%_container.page userid_o (
     [
      p [em [pcdata "Eliom base app: Put app content here."]]
     ]
   )
 
-let about_handler uid_o () () =
-  %%%MODULE_NAME%%%_container.page uid_o [
+let about_handler userid_o () () =
+  %%%MODULE_NAME%%%_container.page userid_o [
     div [
       p [pcdata "This template provides a skeleton \
                  for an Ocsigen application."];

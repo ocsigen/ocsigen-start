@@ -80,9 +80,9 @@ let connected_welcome_box () =
          ()
      ])
 
-let page uid_o cnt =
-  lwt user = match uid_o with None -> Lwt.return None
-    | Some uid -> lwt u = Eba_user.user_of_uid uid in
+let page userid_o cnt =
+  lwt user = match userid_o with None -> Lwt.return None
+    | Some userid -> lwt u = Eba_user.user_of_userid userid in
                   Lwt.return (Some u)
   in
   let l =
