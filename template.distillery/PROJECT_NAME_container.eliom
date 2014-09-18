@@ -34,7 +34,7 @@ let header ?user () =
     (div ~a:[a_id "%%%PROJECT_NAME%%%-header"] [
       a ~a:[a_id "%%%PROJECT_NAME%%%-logo"]
         ~service:Eba_services.main_service [
-          pcdata Ebapp.App.application_name;
+          pcdata %%%MODULE_NAME%%%_base.App.application_name;
         ] ();
       ul ~a:[a_id "%%%PROJECT_NAME%%%-navbar"]
         [
@@ -72,7 +72,7 @@ let connected_welcome_box () =
   in
   (div ~a:[a_id "eba_welcome_box"]
      [
-       div [h2 [pcdata ("Welcome to "^Ebapp.App.application_name)];
+       div [h2 [pcdata ("Welcome!")];
             info];
        Eba_view.information_form
          ~firstname:fn ~lastname:ln
@@ -80,13 +80,13 @@ let connected_welcome_box () =
          ()
      ])
 
-let page userid_o cnt =
+let page userid_o content =
   lwt user = match userid_o with None -> Lwt.return None
     | Some userid -> lwt u = Eba_user.user_of_userid userid in
                   Lwt.return (Some u)
   in
   let l =
-    [ div ~a:[a_id "%%%PROJECT_NAME%%%-body"] cnt;
+    [ div ~a:[a_id "%%%PROJECT_NAME%%%-body"] content;
       footer ?user ();
     ]
   in
