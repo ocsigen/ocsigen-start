@@ -11,7 +11,9 @@ fi
 
 TPL_DIR=$1
 TPL_NAME=$2
-DEST=$DESTDIR/$(eliom-distillery -dir)/$TPL_NAME
+DEST0=$DESTDIR/$(eliom-distillery -dir)
+DEST=$DEST0/$TPL_NAME
 
-mkdir -p $DEST
-cp -rf $TPL_DIR/* $DEST
+mkdir -p $DEST0
+[ -f $DEST ] && mv $DEST $DEST-`date +'%F-%H%M%S'`
+cp -rf $TPL_DIR $DEST
