@@ -81,6 +81,11 @@ module Make(C : PAGE) = struct
       (fun jsname -> ("js"::jsname))
       C.js
 
+  let make_page content =
+    html
+      (Eliom_tools.F.head ~title:C.title ~css ~js ~other:C.other_head ())
+      (body content)
+
   let page
       ?(predicate = C.default_predicate)
       ?(fallback = C.default_error_page)
@@ -94,10 +99,7 @@ module Make(C : PAGE) = struct
         else fallback gp pp (Predicate_failed None)
       with exc -> fallback gp pp (Predicate_failed (Some exc))
     in
-    Lwt.return
-      (html
-         (Eliom_tools.F.head ~title:C.title ~css ~js ~other:C.other_head ())
-         (body content))
+    Lwt.return (make_page content)
 
   let connected_page
       ?allow ?deny
@@ -123,10 +125,7 @@ module Make(C : PAGE) = struct
           f_wrapped gp pp
       with Eba_session.Not_connected as exc -> fallback None gp pp exc
     in
-    Lwt.return
-      (html
-         (Eliom_tools.F.head ~title:C.title ~css ~js ~other:C.other_head ())
-         (body content))
+    Lwt.return (make_page content)
 
 
   module Opt = struct
@@ -151,11 +150,9 @@ module Make(C : PAGE) = struct
         ?allow ?deny
         ~deny_fun:(fun uid_o ->
           fallback uid_o gp pp Eba_session.Permission_denied)
-        f_wrapped gp pp in
-      Lwt.return
-        (html
-           (Eliom_tools.F.head ~title:C.title ~css ~js ~other:C.other_head ())
-           (body content))
+        f_wrapped gp pp
+      in
+      Lwt.return (make_page content)
 
   end
 end

@@ -68,6 +68,12 @@ module Default_config : PAGE
 
 module Make (C : PAGE) : sig
 
+  (** Builds a valid html page from body content by adding headers
+      for this app *)
+  val make_page :
+    [< Html5_types.body_content ] Eliom_content.Html5.elt list ->
+    [> Html5_types.html ] Eliom_content.Html5.elt
+
   (** Default wrapper for service handler generating pages.
       It takes as parameter a function generating page content
       (body content) and transforms it into a function generating
