@@ -27,14 +27,14 @@
   open Eliom_content.Html5.F
 }}
 
-let set_personal_data_handler' uid ()
+let set_personal_data_handler' userid ()
     (((firstname, lastname), (pwd, pwd2)) as pd) =
   if firstname = "" || lastname = "" || pwd <> pwd2
   then
     (Eliom_reference.Volatile.set Eba_msg.wrong_pdata (Some pd);
      Lwt.return ())
   else (
-    lwt user = Eba_user.user_of_uid uid in
+    lwt user = Eba_user.user_of_userid userid in
     let open Eba_user in
     let record = {
       user with
@@ -43,13 +43,13 @@ let set_personal_data_handler' uid ()
     } in
     Eba_user.update' ~password:pwd record)
 
-let set_password_handler' uid () (pwd, pwd2) =
+let set_password_handler' userid () (pwd, pwd2) =
   if pwd <> pwd2
   then
     (Eba_msg.msg ~level:`Err "Passwords do not match";
      Lwt.return ())
   else (
-    lwt user = Eba_user.user_of_uid uid in
+    lwt user = Eba_user.user_of_userid userid in
     Eba_user.update' ~password:pwd user)
 
 let generate_act_key
@@ -86,19 +86,19 @@ let sign_up_handler' () email =
   end else begin
     let act_key =
       generate_act_key ~service:Eba_services.main_service email in
-    lwt uid = Eba_user.create ~firstname:"" ~lastname:"" email in
+    lwt userid = Eba_user.create ~firstname:"" ~lastname:"" email in
     Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
-    lwt () = Eba_user.add_activationkey ~act_key uid in
+    lwt () = Eba_user.add_activationkey ~act_key userid in
     Lwt.return ()
   end
 
 let forgot_password_handler () email =
   try_lwt
-    lwt uid = Eba_user.uid_of_email email in
+    lwt userid = Eba_user.userid_of_email email in
     let act_key =
       generate_act_key ~service:Eba_services.main_service email in
     Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
-    Eba_user.add_activationkey ~act_key uid
+    Eba_user.add_activationkey ~act_key userid
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
       Eba_userbox.user_does_not_exist true;
@@ -115,8 +115,8 @@ let connect_handler () (login, pwd) =
      to be connected with the new account if the password is wrong. *)
   lwt () = disconnect_handler () () in
   try_lwt
-    lwt uid = Eba_user.verify_password login pwd in
-    Eba_session.connect uid
+    lwt userid = Eba_user.verify_password login pwd in
+    Eba_session.connect userid
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set Eba_userbox.wrong_password true;
     Lwt.return ()
@@ -127,8 +127,8 @@ let activation_handler akey () =
      we're going to disconnect him even if the activation key outdated. *)
   lwt () = Eba_session.disconnect () in
   try_lwt
-    lwt uid = Eba_user.uid_of_activationkey akey in
-    lwt () = Eba_session.connect uid in
+    lwt userid = Eba_user.userid_of_activationkey akey in
+    lwt () = Eba_session.connect userid in
     Eliom_registration.Redirection.send Eliom_service.void_coservice'
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
@@ -139,9 +139,9 @@ let activation_handler akey () =
     Eliom_registration.Action.send ()
 
           (*
-let admin_service_handler uid gp pp =
-  lwt user = Eba_user.user_of_uid uid in
-  (*lwt cnt = Ebapp.Admin.admin_page_content user in*)
+let admin_service_handler userid gp pp =
+  lwt user = Eba_user.user_of_userid userid in
+  (*lwt cnt = Admin.admin_page_content user in*)
   %%%MODULE_NAME%%%_container.page [
   ] (*@ cnt*)
            *)

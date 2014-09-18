@@ -42,14 +42,14 @@ module Opt = struct
 
   let get_current_userid () =
     Eliom_lib.Option.map
-      Eba_user.uid_of_user
+      Eba_user.userid_of_user
       (get_current_user_option ())
 
 end
  }}
 
-let set_user_server uid =
-  lwt u = Eba_user.user_of_uid uid in
+let set_user_server userid =
+  lwt u = Eba_user.user_of_userid userid in
   Eliom_reference.Volatile.set me (Some u);
   Lwt.return ()
 

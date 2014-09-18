@@ -297,15 +297,15 @@ module User = struct
                     t2.email = $string:email$;
             >>
       in
-      let (uid, password') = (r#!userid, r#?password) in
+      let (userid, password') = (r#!userid, r#?password) in
       match password' with
       | None -> Lwt.fail No_such_resource
       | Some password' ->
           if Bcrypt.verify password (Bcrypt.hash_of_string password')
-          then Lwt.return uid
+          then Lwt.return userid
           else Lwt.fail No_such_resource)
 
-  let user_of_uid userid =
+  let user_of_userid userid =
     full_transaction_block (fun dbh ->
       lwt r = Lwt_Query.view_one dbh
           <:view< t |
@@ -315,7 +315,7 @@ module User = struct
       in
       Lwt.return (r#!userid, r#!firstname, r#!lastname, r#?avatar))
 
-  let uid_of_activationkey act_key =
+  let userid_of_activationkey act_key =
     full_transaction_block (fun dbh ->
       lwt r = Lwt_Query.view_opt dbh
           <:view< t |
@@ -333,7 +333,7 @@ module User = struct
         in
         Lwt.return userid)
 
-  let email_of_uid userid =
+  let email_of_userid userid =
     full_transaction_block (fun dbh ->
       lwt r = Lwt_Query.view_one dbh
           <:view< { t2.email } |
@@ -345,7 +345,7 @@ module User = struct
       in
       Lwt.return (r#!email))
 
-  let uid_of_email email =
+  let userid_of_email email =
     full_transaction_block (fun dbh ->
       select_user_from_email_q dbh email)
 

@@ -10,7 +10,7 @@ exception No_such_user
 {shared{
   (** The type which represents a user. *)
   type t = {
-    uid : int64;
+    userid : int64;
     fn : string;
     ln : string;
     avatar : string option;
@@ -18,8 +18,8 @@ exception No_such_user
 }}
 
 (** Create a user of type [t] using db informations. *)
-let create_user_from_db (uid, fn, ln, avatar) = {
-  uid = uid;
+let create_user_from_db (userid, fn, ln, avatar) = {
+  userid = userid;
   fn = fn;
   ln = ln;
   avatar = avatar;
@@ -28,7 +28,7 @@ let create_user_from_db (uid, fn, ln, avatar) = {
 
 {shared{
 (** Getters functions. *)
-let uid_of_user u = u.uid
+let userid_of_user u = u.userid
 let firstname_of_user u = u.fn
 let lastname_of_user u = u.ln
 let avatar_of_user u = u.avatar
@@ -40,7 +40,7 @@ let avatar_uri_of_avatar avatar =
 let avatar_uri_of_user user =
   Eliom_lib.Option.map avatar_uri_of_avatar (avatar_of_user user)
  }}
-let email_of_user user = Eba_db.User.email_of_uid user.uid
+let email_of_user user = Eba_db.User.email_of_userid user.userid
 
 let is_complete u =
   not (u.fn = "" && u.ln = "")
@@ -58,16 +58,16 @@ struct
   let compare = compare
   let get key =
     try_lwt
-      lwt g = Eba_db.User.user_of_uid key in
+      lwt g = Eba_db.User.user_of_userid key in
       Eliom_lib.debug "reset value";
       Lwt.return (create_user_from_db g)
     with Eba_db.No_such_resource -> Lwt.fail No_such_user
 end)
 
-(** Overwrite the function [user_of_uid] of [Eba_db.User] and use
+(** Overwrite the function [user_of_userid] of [Eba_db.User] and use
   * the [get] function of the cache module. *)
-let user_of_uid uid =
-  lwt u = MCache.get uid in
+let user_of_userid userid =
+  lwt u = MCache.get userid in
   Eliom_lib.debug "fn[%s]" u.fn;
   Lwt.return u
 
@@ -80,7 +80,7 @@ let user_of_uid uid =
  * *)
 
 let empty = {
-  uid = 0L;
+  userid = 0L;
   fn = "";
   ln = "";
   avatar = None;
@@ -90,31 +90,31 @@ let empty = {
  * a record of type [t]. May raise [Already_exists] *)
 let create' ?password ?avatar ~firstname ~lastname email =
   try_lwt
-    lwt _ = Eba_db.User.uid_of_email email in
+    lwt _ = Eba_db.User.userid_of_email email in
     Lwt.fail Already_exists
   with Eba_db.No_such_resource ->
-    lwt uid =
+    lwt userid =
       Eba_db.User.create
         ~firstname ~lastname ?password ?avatar email
     in
-    lwt u = Eba_db.User.user_of_uid uid in
+    lwt u = Eba_db.User.user_of_userid userid in
     Lwt.return (create_user_from_db u)
 
 (* Overwrites the function [update] of [Eba_db.User]
    to reset the cache *)
-let update ?password ?avatar ~firstname ~lastname uid =
+let update ?password ?avatar ~firstname ~lastname userid =
   lwt () = Eba_db.User.update
-             ?password ?avatar ~firstname ~lastname uid
+             ?password ?avatar ~firstname ~lastname userid
   in
-  MCache.reset uid;
+  MCache.reset userid;
   Lwt.return ()
 
 let update' ?password t =
-  update ?password ?avatar:t.avatar ~firstname:t.fn ~lastname:t.ln t.uid
+  update ?password ?avatar:t.avatar ~firstname:t.fn ~lastname:t.ln t.userid
 
-let update_avatar avatar uid =
-  lwt () = Eba_db.User.update_avatar avatar uid in
-  MCache.reset uid;
+let update_avatar avatar userid =
+  lwt () = Eba_db.User.update_avatar avatar userid in
+  MCache.reset userid;
   Lwt.return ()
 
 let get_users ?pattern () =

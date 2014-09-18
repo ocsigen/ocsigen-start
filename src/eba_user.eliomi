@@ -5,13 +5,13 @@ exception No_such_user
 {shared{
   (** The type which represents a user. *)
   type t = {
-    uid : int64;
+    userid : int64;
     fn : string;
     ln : string;
     avatar : string option;
   } deriving (Json)
 
-val uid_of_user : t -> int64
+val userid_of_user : t -> int64
 val firstname_of_user : t -> string
 val lastname_of_user : t -> string
 val avatar_of_user : t -> string option
@@ -28,16 +28,16 @@ val is_complete : t -> bool
 val add_activationkey : act_key:string -> int64 -> unit Lwt.t
 val verify_password : email:string -> password:string -> int64 Lwt.t
 
-val user_of_uid : int64 -> t Lwt.t
+val user_of_userid : int64 -> t Lwt.t
 
-val uid_of_activationkey : string -> int64 Lwt.t
-(** Retrieve an uid from an activation key. May raise [No_such_resource] if
+val userid_of_activationkey : string -> int64 Lwt.t
+(** Retrieve an userid from an activation key. May raise [No_such_resource] if
   * the activation key is not found (or outdated). *)
 
-val uid_of_email : string -> int64 Lwt.t
+val userid_of_email : string -> int64 Lwt.t
 
 (** Retrieve the main e-mail of the corresponding user id. *)
-val email_of_uid : int64 -> string Lwt.t
+val email_of_userid : int64 -> string Lwt.t
 
 (** Retrieve the main e-mail of the corresponding user. *)
 val email_of_user : t -> string Lwt.t
@@ -45,11 +45,11 @@ val email_of_user : t -> string Lwt.t
 (** Get users who match the [pattern] (useful for completion) *)
 val get_users : ?pattern:string -> unit -> t list Lwt.t
 
-(** Create a new user and returns his uid. *)
+(** Create a new user and returns his userid. *)
 val create :
   ?password:string -> ?avatar:string -> firstname:string -> lastname:string -> string -> int64 Lwt.t
 
-(** Same as above, but instead of returning the uid, it returns a user of type
+(** Same as above, but instead of returning the userid, it returns a user of type
   * [t] *)
 val create' :
   ?password:string -> ?avatar:string -> firstname:string -> lastname:string -> string -> t Lwt.t
