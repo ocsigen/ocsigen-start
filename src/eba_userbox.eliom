@@ -35,8 +35,19 @@ module Make(A : sig
       ~service_wrapper:(fun f -> Eba_session.connected_rpc (fun userid -> f))
       ~crop_wrapper:(fun f -> Eba_session.connected_rpc
                         (fun userid p ->
+                           (* cropping and getting filename of new avatar: *)
                            lwt fname = f p in
-                           Eba_user.update_avatar fname userid))
+                           (* Setting new avatar in db: *)
+                           lwt () = Eba_user.update_avatar fname userid in
+                           (* Removing old avatar file: *)
+                           lwt user = Eba_user.user_of_userid userid in
+                           let old_avatar = Eba_user.avatar_of_user user in
+                           match old_avatar with
+                             | None -> Lwt.return ()
+                             | Some old_avatar ->
+                               Lwt_unix.unlink
+                                 (String.concat "/"
+                                    (A.avatar_directory@[old_avatar]))))
       ()
 
 
@@ -48,16 +59,16 @@ module Make(A : sig
           (fun _ _ ->
              try_lwt
                match_lwt Ow_pic_uploader.upload_pic_popup
-                         %uploader
+                           %uploader
                            ~url_path:["avatars"]
                            ~text:"Upload new picture"
                            ()
                with
                | None -> Lwt.return ()
-                      | _ ->
-                        (* For now I don't update in place, but reload *)
-                        Eliom_client.change_page
-                          ~service:Eliom_service.void_coservice' () ()
+               | _ ->
+                 (* For now I don't update in place, but reload *)
+                 Eliom_client.change_page
+                   ~service:Eliom_service.void_coservice' () ()
              with e ->
                Eba_msg.msg ~level:`Err "Error while uploading the picture";
                Eliom_lib.debug_exn "%s" e "→ ";
