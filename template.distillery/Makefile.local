@@ -88,7 +88,6 @@ endif
 
 db-create:
 	createdb $(PSQL_PARAMS) $(DATABASE)
-	psql $(PSQL_PARAMS) -d $(DATABASE) -f $(PSQL_FILE)
 
 db-update:
 	psql $(PSQL_PARAMS) -d $(DATABASE) -f $(PSQL_FILE)

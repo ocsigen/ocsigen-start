@@ -8,6 +8,7 @@ project "%%%PROJECT_NAME%%%".
 Generally, you can compile it and run ocsigenserver on it by
   $ make db-init
   $ make db-create
+  $ make db-update
   $ make test.byte (or test.opt)
 Then connect to http://localhost:8080 to see the running app skeleton.
 Registration will work only if sendmail if configured on your system.
