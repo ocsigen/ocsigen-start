@@ -60,6 +60,7 @@ module Make(A : sig
                           ~service:Eliom_service.void_coservice' () ()
              with e ->
                Eba_msg.msg ~level:`Err "Error while uploading the picture";
+               Eliom_lib.debug_exn "%s" e "→ ";
                Lwt.return ()
 
           ))
