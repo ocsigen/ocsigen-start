@@ -87,7 +87,7 @@ db-stop:
 endif
 
 db-create:
-	createdb $(PSQL_PARAMS) $(DATABASE)
+	createdb $(PSQL_PARAMS) --encoding UNICODE $(DATABASE)
 
 db-update:
 	psql $(PSQL_PARAMS) -d $(DATABASE) -f $(PSQL_FILE)
