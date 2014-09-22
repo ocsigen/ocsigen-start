@@ -33,6 +33,11 @@
 *)
 
 {shared{
+
+   let longago = CalendarLib.Calendar.lmake ~year:1 ()
+
+   let to_gmt (t, tz) = CalendarLib.(Time_Zone.on Calendar.to_gmt tz t)
+
    (* SSS:
        do not support a connection during the daylight saving times changes *)
 
