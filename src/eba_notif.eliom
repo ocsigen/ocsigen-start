@@ -66,7 +66,8 @@ module Make (A : sig type key type notification end) = struct
           Notif_hastbl.add tbl key wt;
           wt
       in
-      Weak_tbl.add wt v
+      if not (Weak_tbl.mem wt v)
+      then Weak_tbl.add wt v
 
     let fold f key beg =
       try let wt = Notif_hastbl.find tbl key in
