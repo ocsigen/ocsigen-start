@@ -17,3 +17,6 @@ depends: [
   "eliom"         {>= "dev"}
   "ocsigen-widgets" {>= "dev"}
 ]
+conflicts: [
+  "batteries" {="2.3.0"}
+]
