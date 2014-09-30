@@ -37,17 +37,19 @@ module Make(A : sig
                         (fun userid p ->
                            (* cropping and getting filename of new avatar: *)
                            lwt fname = f p in
+                           lwt user = Eba_user.user_of_userid userid in
+                           let old_avatar = Eba_user.avatar_of_user user in
                            (* Setting new avatar in db: *)
                            lwt () = Eba_user.update_avatar fname userid in
                            (* Removing old avatar file: *)
-                           lwt user = Eba_user.user_of_userid userid in
-                           let old_avatar = Eba_user.avatar_of_user user in
                            match old_avatar with
                              | None -> Lwt.return ()
                              | Some old_avatar ->
-                               Lwt_unix.unlink
-                                 (String.concat "/"
-                                    (A.avatar_directory@[old_avatar]))))
+                               try_lwt
+                                 Lwt_unix.unlink
+                                   (String.concat "/"
+                                      (A.avatar_directory@[old_avatar]))
+                               with Unix.Unix_error _ -> Lwt.return ()))
       ()
 
 
