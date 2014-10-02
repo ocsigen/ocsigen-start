@@ -42,8 +42,7 @@ let avatar_uri_of_user user =
  }}
 let email_of_user user = Eba_db.User.email_of_userid user.userid
 
-let is_complete u =
-  not (u.fn = "" && u.ln = "")
+let is_complete u = not (u.fn = "" && u.ln = "")
 
 
 include Eba_db.User
@@ -59,7 +58,6 @@ struct
   let get key =
     try_lwt
       lwt g = Eba_db.User.user_of_userid key in
-      Eliom_lib.debug "reset value";
       Lwt.return (create_user_from_db g)
     with Eba_db.No_such_resource -> Lwt.fail No_such_user
 end)
@@ -68,7 +66,6 @@ end)
   * the [get] function of the cache module. *)
 let user_of_userid userid =
   lwt u = MCache.get userid in
-  Eliom_lib.debug "fn[%s]" u.fn;
   Lwt.return u
 
 (* -----------------------------------------------------------------

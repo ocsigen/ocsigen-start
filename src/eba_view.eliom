@@ -107,6 +107,7 @@ let home_button () =
         ();
     ])
 
+{shared{
 let avatar user =
   match Eba_user.avatar_uri_of_user user with
   | Some src ->
@@ -116,8 +117,8 @@ let avatar user =
 let username user =
   lwt n = match Eba_user.firstname_of_user user with
     | "" ->
-      lwt email = Eba_user.email_of_user user in
-      Lwt.return [pcdata email]
+      let userid = Eba_user.userid_of_user user in
+      Lwt.return [pcdata ("User "^Int64.to_string userid)]
     | s ->
       Lwt.return [pcdata s;
                   pcdata " ";
@@ -125,6 +126,7 @@ let username user =
                  ]
   in
   Lwt.return (div ~a:[a_class ["eba_username"]] n)
+}}
 
 {shared{
 let password_form () =

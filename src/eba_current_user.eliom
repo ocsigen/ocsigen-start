@@ -36,6 +36,8 @@ let get_current_user_option () =
   Eliom_reference.Volatile.get me
 
 {shared{
+let get_current_userid () = Eba_user.userid_of_user (get_current_user ())
+
 module Opt = struct
 
   let get_current_user = get_current_user_option
