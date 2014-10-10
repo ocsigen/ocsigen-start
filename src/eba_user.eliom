@@ -39,6 +39,9 @@ let avatar_uri_of_avatar avatar =
 
 let avatar_uri_of_user user =
   Eliom_lib.Option.map avatar_uri_of_avatar (avatar_of_user user)
+
+let fullname_of_user user = String.concat " " [user.fn; user.ln]
+
  }}
 let email_of_user user = Eba_db.User.email_of_userid user.userid
 

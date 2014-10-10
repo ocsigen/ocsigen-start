@@ -17,6 +17,9 @@ val lastname_of_user : t -> string
 val avatar_of_user : t -> string option
 val avatar_uri_of_avatar : string -> Eliom_content.Xml.uri
 val avatar_uri_of_user : t -> Eliom_content.Xml.uri option
+
+(** Retrieve the full name of user. *)
+val fullname_of_user : t -> string
 }}
 
 val email_of_user : t -> string Lwt.t
@@ -36,10 +39,10 @@ val userid_of_activationkey : string -> int64 Lwt.t
 
 val userid_of_email : string -> int64 Lwt.t
 
-(** Retrieve the main e-mail of the corresponding user id. *)
+(** Retrieve the main e-mail from user id. *)
 val email_of_userid : int64 -> string Lwt.t
 
-(** Retrieve the main e-mail of the corresponding user. *)
+(** Retrieve the main e-mail of a user. *)
 val email_of_user : t -> string Lwt.t
 
 (** Get users who match the [pattern] (useful for completion) *)
