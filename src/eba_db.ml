@@ -359,7 +359,6 @@ module User = struct
                       l)
       | Some pattern ->
         let pattern = "(^"^pattern^")|(.* "^pattern^")" in
-(*VVV CHECK! *)
         (* Here I'm using the low-level pgocaml interface
            because macaque is missing some features
            and I canot use pgocaml syntax extension because
@@ -369,7 +368,7 @@ module User = struct
              FROM users
              WHERE
                firstname <> '' -- avoids email addresses
-             AND CONCAT_WS(' ', firstname, lastname) ~* ?
+             AND CONCAT_WS(' ', firstname, lastname) ~* $1
          "
         in
         lwt () = PGOCaml.prepare dbh ~query () in
