@@ -57,7 +57,7 @@ let sign_up_service' =
 let connect_service =
   Eliom_service.Http.post_coservice'
     ~name:"connect"
-    ~post_params:(string "login" ** string "password") ()
+    ~post_params:(string "username" ** string "password") ()
 
 let disconnect_service =
   Eliom_service.Http.post_coservice'
