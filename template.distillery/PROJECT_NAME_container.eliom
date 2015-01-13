@@ -8,27 +8,26 @@
   open Eliom_content.Html5.F
 }}
 
-module Userbox = Eba_userbox.Make(struct
-  let avatar_directory = !%%%MODULE_NAME%%%_config.avatar_dir
-end)
+let uploader = Eba_userbox.uploader !%%%MODULE_NAME%%%_config.avatar_dir
 
-let user_menu user =
+{client{
+let user_menu user uploader =
   [
     p [pcdata "Change your password:"];
     Eba_view.password_form ();
     hr ();
-    Userbox.upload_pic_link ();
+    Eba_userbox.upload_pic_link uploader;
     hr ();
-    Userbox.reset_tips_link ();
+    Eba_userbox.reset_tips_link ();
     hr ();
     Eba_view.disconnect_button ();
   ]
 
-let _ = Userbox.set_user_menu user_menu
-
+let _ = Eba_userbox.set_user_menu user_menu
+ }}
 
 let header ?user () =
-  lwt user_box = Userbox.userbox user in
+  lwt user_box = Eba_userbox.userbox user uploader in
   lwt () = %%%MODULE_NAME%%%_tips.example_tip () in
   Lwt.return
     (div ~a:[a_id "%%%PROJECT_NAME%%%-header"] [
