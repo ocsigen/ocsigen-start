@@ -1,7 +1,6 @@
 {shared{
   open Eliom_content.Html5
   open Eliom_content.Html5.F
-}}
 
 let generic_email_form ?label ~service () =
   D.post_form ~service
@@ -24,7 +23,7 @@ let generic_email_form ?label ~service () =
         | Some lab -> F.label [pcdata lab]::l) ()
 
 let connect_form () =
-  D.post_form ~xhr:false ~service:Eba_services.connect_service
+  D.post_form ~xhr:false ~service:%Eba_services.connect_service
     (fun (login, password) -> [
       string_input
         ~a:[a_placeholder "Your email"]
@@ -43,21 +42,23 @@ let connect_form () =
         ();
     ]) ()
 
+}}
+
 {shared{
 let disconnect_button () =
-  post_form ~service:%(Eba_services.disconnect_service)
+  post_form ~service:%Eba_services.disconnect_service
     (fun _ -> [
          button ~button_type:`Submit
            [Ow_icons.F.signout (); pcdata "Logout"]
        ]) ()
- }}
 
 let sign_up_form () =
-  generic_email_form ~service:Eba_services.sign_up_service' ()
+  generic_email_form ~service:%Eba_services.sign_up_service' ()
 
 let forgot_password_form () =
   generic_email_form
-    ~service:Eba_services.forgot_password_service ()
+    ~service:%Eba_services.forgot_password_service ()
+ }}
 
 let information_form
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
@@ -95,8 +96,11 @@ let information_form
            ();
        ]) ()
 
+
+{shared{
 let preregister_form label =
-  generic_email_form ~service:Eba_services.preregister_service' ~label ()
+  generic_email_form ~service:%Eba_services.preregister_service' ~label ()
+ }}
 
 let home_button () =
   form ~service:Eba_services.main_service

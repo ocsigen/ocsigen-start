@@ -5,6 +5,8 @@
 {shared{
 open Eliom_content.Html5
 open Eliom_content.Html5.F
+
+type uploader = Ow_pic_uploader.t
 }}
 
 let wrong_password =
@@ -23,37 +25,35 @@ let activation_key_outdated =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
 
-module Make(A : sig
-              val avatar_directory : string list
-            end) = struct
-
-  let uploader = Ow_pic_uploader.make
-      ~directory:A.avatar_directory
-      ~name:"uppic"
-      ~crop_ratio:(Some 1.)
-      ~max_width:500
-      ~service_wrapper:(fun f -> Eba_session.connected_rpc (fun userid -> f))
-      ~crop_wrapper:(fun f -> Eba_session.connected_rpc
-                        (fun userid p ->
-                           (* cropping and getting filename of new avatar: *)
-                           lwt fname = f p in
-                           lwt user = Eba_user.user_of_userid userid in
-                           let old_avatar = Eba_user.avatar_of_user user in
-                           (* Setting new avatar in db: *)
-                           lwt () = Eba_user.update_avatar fname userid in
-                           (* Removing old avatar file: *)
-                           match old_avatar with
-                             | None -> Lwt.return ()
-                             | Some old_avatar ->
-                               try_lwt
-                                 Lwt_unix.unlink
-                                   (String.concat "/"
-                                      (A.avatar_directory@[old_avatar]))
-                               with Unix.Unix_error _ -> Lwt.return ()))
-      ()
+let uploader avatar_directory = Ow_pic_uploader.make
+    ~directory:avatar_directory
+    ~name:"uppic"
+    ~crop_ratio:(Some 1.)
+    ~max_width:500
+    ~service_wrapper:(fun f -> Eba_session.connected_rpc (fun userid -> f))
+    ~crop_wrapper:(fun f -> Eba_session.connected_rpc
+                      (fun userid p ->
+                         (* cropping and getting filename of new avatar: *)
+                         lwt fname = f p in
+                         lwt user = Eba_user.user_of_userid userid in
+                         let old_avatar = Eba_user.avatar_of_user user in
+                         (* Setting new avatar in db: *)
+                         lwt () = Eba_user.update_avatar fname userid in
+                         (* Removing old avatar file: *)
+                         match old_avatar with
+                         | None -> Lwt.return ()
+                         | Some old_avatar ->
+                           try_lwt
+                             Lwt_unix.unlink
+                               (String.concat "/"
+                                  (avatar_directory@[old_avatar]))
+                           with Unix.Unix_error _ -> Lwt.return ()))
+    ()
 
 
-  let upload_pic_link () =
+{shared{
+
+  let upload_pic_link uploader =
     let link = D.Raw.a [pcdata "Upload picture"] in
     ignore {unit{
       Lwt_js_events.async (fun () ->
@@ -80,6 +80,7 @@ module Make(A : sig
     }};
     link
 
+let reset_tips_service = %Eba_tips.reset_tips_service
 
   let reset_tips_link () =
     let l = D.Raw.a [pcdata "See help again from beginning"] in
@@ -88,7 +89,7 @@ module Make(A : sig
         clicks (To_dom.of_element %l)
           (fun _ _ ->
              Eliom_client.exit_to
-               ~service:%Eba_tips.reset_tips_service
+               ~service:%reset_tips_service
                () ();
              Lwt.return ()
           )));
@@ -96,54 +97,67 @@ module Make(A : sig
     l
 
 
-  let user_menu_ user =
+  let user_menu_ user uploader =
   [
     p [pcdata "Change your password:"];
     Eba_view.password_form ();
     hr ();
-    upload_pic_link ();
+    upload_pic_link uploader;
     hr ();
     reset_tips_link ();
     hr ();
     Eba_view.disconnect_button ();
   ]
 
+}}
+{client{
   let user_menu_fun =
     ref (user_menu_
-         : 'a -> Html5_types.div_content Eliom_content.Html5.elt list)
+         : 'a -> 'b -> Html5_types.div_content Eliom_content.Html5.elt list)
+}}
+{shared{
 
-  let user_menu user =
+  let user_menu user uploader =
     let but = D.div ~a:[a_class ["eba_usermenu_button"]]
         [Ow_icons.F.config ~class_:["fa-large"] ()]
     in
-    let menu = D.div (!user_menu_fun user) in
-    ignore (Ow_button.button_alert but menu);
+    let menu = D.div [] in
+    ignore
+      (Ow_button.button_dyn_alert but menu
+         {'a -> 'b{fun _ _ -> Lwt.return (!user_menu_fun %user %uploader)}});
     div ~a:[a_class ["eba_usermenu"]] [but; menu]
 
+}}
+{client{
   let set_user_menu f = user_menu_fun := f
+}}
+{shared{
 
-  let connected_user_box user =
+  let connected_user_box user uploader =
     lwt username = Eba_view.username user in
     Lwt.return (D.div ~a:[a_id "eba-user-box"] [
       Eba_view.avatar user;
       username;
-      user_menu user;
+      user_menu user uploader;
     ])
-
-
-  let connection_box () =
-    let id = "eba_login_signup_box" in
-    if Eliom_reference.Volatile.get Eba_msg.activation_key_created
-    then
-      Lwt.return
-        (D.div ~a:[a_id id]
-           [p [pcdata "An email has been sent to this address. ";
-               pcdata "Click on the link it contains to log in."]])
-    else
-      let set = {Ow_active_set.t'{
+}}
+{server{
+   (* Module Ow_active_set is to be rewritten completely and simplified.
+      Then we can rtemove this. *)
+   let make_set () =
+      {Ow_active_set.t'{
         Ow_active_set.to_server_set
           (Ow_active_set.set ~at_least_one:true ())
-      }} in
+      }}
+}}
+{client{
+   let make_set () =
+     Ow_active_set.set ~at_least_one:true ()
+}}
+{shared{
+  let connection_box_id = "eba_login_signup_box"
+  let connection_box_ () =
+      let set = make_set () in
       let button1 = D.h2 [pcdata "Login"] in
       let form1 = Eba_view.connect_form () in
       let o1,_ =
@@ -181,6 +195,36 @@ module Make(A : sig
           button4
           form4
       in
+      (* Here we will return the div correponding to the current
+       * website state, and also a function to handle specific
+       * flash messages *)
+      let d =
+        (* If the registration is not open (pre-registration only): *)
+        (* D.div ~a:[a_id id] *)
+        (*   [button1; button3; button2; form1; form3; form2] *)
+        (* and handle_rmsg is display_error o3 *)
+        (* otherwise *)
+        D.div ~a:[a_id connection_box_id]
+          [button1; button2; button4; form1; form2; form4]
+      in
+      Lwt.return (d, o1, o2, o3, o4)
+
+}}
+{client{
+   let connection_box () =
+     lwt a, _, _, _, _ = connection_box_ () in
+     Lwt.return a
+}}
+{server{
+  let connection_box () =
+    if Eliom_reference.Volatile.get Eba_msg.activation_key_created
+    then
+      Lwt.return
+        (D.div ~a:[a_id connection_box_id]
+           [p [pcdata "An email has been sent to this address. ";
+               pcdata "Click on the link it contains to log in."]])
+    else
+      lwt d, o1, o2, o3, o4 = connection_box_ () in
       (* function to press the corresponding button and display
        * the flash message error. *)
       let press but msg =
@@ -190,8 +234,8 @@ module Make(A : sig
         }};
         Lwt.return ()
       in
+      (* Function to display flash message error *)
       let display_error o34 () =
-        (* Function to display flash message error *)
         let wrong_password = Eliom_reference.Volatile.get wrong_password in
         let user_already_exists = Eliom_reference.Volatile.get user_already_exists
         in
@@ -217,25 +261,16 @@ module Make(A : sig
         else Lwt.return ()
       in
 
-      (* Here we will return the div correponding to the current
-       * website state, and also a function to handle specific
-       * flash messages *)
-      let d, handle_rmsg =
-        (* If the registration is not open (pre-registration only): *)
-        (* (D.div ~a:[a_id id] *)
-        (*    [button1; button3; button2; form1; form3; form2]), *)
-        (* display_error o3 *)
-        (* otherwise *)
-        (D.div ~a:[a_id id]
-           [button1; button2; button4; form1; form2; form4]),
-        display_error o4
-      in
+      (* function to handle specific flash messages *)
+      let handle_rmsg = display_error o4 in
       lwt () = handle_rmsg () in
       Lwt.return d
-
-  let userbox user =
+}}
+{shared{
+  let userbox user uploader =
     match user with
-    | Some user -> connected_user_box user
+    | Some user -> connected_user_box user uploader
     | None -> connection_box ()
 
-end
+
+}}
