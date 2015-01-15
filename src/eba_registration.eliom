@@ -66,15 +66,18 @@ let generate_act_key
      to make possible to connect even if the mail transport is not
      configured. REMOVE! *)
   print_endline act_link;
-  (if send_email then try
-       Eba_email.send
-         ~to_addrs:[(email, "")]
-         ~subject:"creation"
-         [
-           "To confirm your e-mail address, please click on this link: ";
-           act_link;
-         ]
-     with _ -> ());
+  if send_email
+  then
+    Lwt.async (fun () ->
+      try_lwt
+        Eba_email.send
+          ~to_addrs:[(email, "")]
+          ~subject:"creation"
+          [
+            "To confirm your e-mail address, please click on this link: ";
+            act_link;
+          ]
+      with _ -> Lwt.return ());
   act_key
 
 let sign_up_handler' () email =

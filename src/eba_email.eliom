@@ -62,13 +62,16 @@ let send ?(from_addr = !from_addr) ~to_addrs ~subject content =
     List.iter print_tuple to_addrs;
     echo "]";
     printf "[content]:\n%s\n" content;
-    Netsendmail.sendmail ~mailer:!mailer
-      (Netsendmail.compose ~from_addr ~to_addrs ~subject content);
-    echo "[SUCCESS]: e-mail has been sent!"
+    lwt () = Lwt_preemptive.detach
+        (Netsendmail.sendmail ~mailer:!mailer)
+        (Netsendmail.compose ~from_addr ~to_addrs ~subject content)
+    in
+    echo "[SUCCESS]: e-mail has been sent!";
+    Lwt.return ()
   with Netchannels.Command_failure (Unix.WEXITED 127) ->
     echo "[FAIL]: e-mail has not been sent!";
     flush ();
-    raise (Invalid_mailer (!mailer^" not found"))
+    Lwt.fail (Invalid_mailer (!mailer^" not found"))
 
 
 {client{

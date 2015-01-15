@@ -92,6 +92,9 @@ div#eba_login_signup_box h2.pressed {
   cursor: pointer;
   width: 50px;
 }
+.ojw_alert {
+  display: none;
+}
 #eba-user-box div.ojw_alert {
   position: absolute;
   right: 0;

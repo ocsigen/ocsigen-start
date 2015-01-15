@@ -46,4 +46,4 @@ val send :
   to_addrs:((string * string) list) ->
   subject:string ->
   string list ->
-  unit
+  unit Lwt.t
