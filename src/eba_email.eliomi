@@ -30,6 +30,9 @@ val set_from_addr : (string * string) -> unit
 (** Set the name of the external [sendmail] program on your system *)
 val set_mailer : string -> unit
 
+(** Get the name of mailer program *)
+val get_mailer : unit -> string
+
 exception Invalid_mailer of string
 
 (** The pattern used to check the validity of an e-mail address *)

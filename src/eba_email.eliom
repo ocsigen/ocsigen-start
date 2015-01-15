@@ -31,6 +31,7 @@ let mailer = ref "/usr/bin/sendmail"
 
 let set_from_addr s = from_addr := s
 let set_mailer s = mailer := s
+let get_mailer () = !mailer
 
 exception Invalid_mailer of string
 
