@@ -45,7 +45,7 @@ let fullname_of_user user = String.concat " " [user.fn; user.ln]
  }}
 let email_of_user user = Eba_db.User.email_of_userid user.userid
 
-let is_complete u = not (u.fn = "" && u.ln = "")
+let is_complete u = not (u.fn = "" || u.ln = "")
 
 
 include Eba_db.User
