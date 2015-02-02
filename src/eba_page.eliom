@@ -22,10 +22,8 @@
 {shared{
   open Eliom_content.Html5
   open Eliom_content.Html5.F
-}}
 
 exception Predicate_failed of (exn option)
-
 
 module type PAGE = sig
   val title : string
@@ -50,7 +48,7 @@ module Default_config = struct
     = []
 
   let err_page exn =
-    let de = if Ocsigen_config.get_debugmode ()
+    let de = if %(Ocsigen_config.get_debugmode ())
              then [p [pcdata "Debug info: ";
                       em [pcdata (Printexc.to_string exn)]]]
              else []
@@ -156,3 +154,4 @@ module Make(C : PAGE) = struct
 
   end
 end
+}}

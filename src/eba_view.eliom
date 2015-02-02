@@ -58,12 +58,11 @@ let sign_up_form () =
 let forgot_password_form () =
   generic_email_form
     ~service:%Eba_services.forgot_password_service ()
- }}
 
 let information_form
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
     () =
-  D.post_form ~service:Eba_services.set_personal_data_service'
+  D.post_form ~service:%Eba_services.set_personal_data_service'
     (fun ((fname, lname), (passwordn1, passwordn2)) -> [
          string_input
            ~a:[a_placeholder "Your firstname"]
@@ -97,13 +96,11 @@ let information_form
        ]) ()
 
 
-{shared{
 let preregister_form label =
   generic_email_form ~service:%Eba_services.preregister_service' ~label ()
- }}
 
 let home_button () =
-  form ~service:Eba_services.main_service
+  form ~service:%Eba_services.main_service
     (fun _ -> [
       string_input
         ~input_type:`Submit
@@ -111,7 +108,6 @@ let home_button () =
         ();
     ])
 
-{shared{
 let avatar user =
   match Eba_user.avatar_uri_of_user user with
   | Some src ->
@@ -130,9 +126,7 @@ let username user =
                  ]
   in
   Lwt.return (div ~a:[a_class ["eba_username"]] n)
-}}
 
-{shared{
 let password_form () =
   D.post_form
     ~service:%(Eba_services.set_password_service')

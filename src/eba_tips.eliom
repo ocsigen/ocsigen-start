@@ -61,17 +61,18 @@ let reset_tips_rpc =
   server_function Json.t<unit>
     (Eba_session.connected_rpc (fun userid -> reset_tips userid ()))
 
-    {client{
+{client{
 
-       let reset_tips () = %reset_tips_rpc ()
+   let reset_tips () = %reset_tips_rpc ()
 
-        (* This thread is used to display only one tip at a time: *)
-        let waiter = ref (lwt _ = Lwt_js_events.onload () in Lwt.return ())
+   (* This thread is used to display only one tip at a time: *)
+   let waiter = ref (lwt _ = Lwt_js_events.onload () in Lwt.return ())
 
 (* actually display a tip *)
 let display ?(class_=[])
     ?arrow ?top ?left ?right ?bottom ?height ?width
-    ?(parent_node = Manip.Elt.body) ~name ~content ()
+    ?(parent_node : _ elt option)
+    ~name ~content ()
   =
   let current_waiter = !waiter in
   let new_waiter, new_wakener = Lwt.wait () in
@@ -91,7 +92,11 @@ let display ?(class_=[])
          Lwt.wakeup new_wakener ();
          Lwt.return ()
       )));
-  Manip.appendToBody box;
+  let parent_node = match parent_node with
+    | None -> Dom_html.document##body
+    | Some p -> To_dom.of_element p
+  in
+  Dom.appendChild parent_node (To_dom.of_element box);
   let box = To_dom.of_element box in
   Eliom_lib.Option.iter
     (fun v -> box##style##top <- Js.string (Printf.sprintf "%ipx" v))
@@ -142,13 +147,13 @@ let display ?(class_=[])
 }}
 
 (* Function to be called on server to display a tip *)
-let display ?arrow ?top ?left ?right ?bottom ?height ?width
+let display ?class_ ?arrow ?top ?left ?right ?bottom ?height ?width
     ?parent_node ~(name : string) ~content () =
   lwt seen = Eliom_reference.Volatile.get seen_by_user in
   if Stringset.mem name seen
   then Lwt.return ()
   else let _ = {unit{ Lwt.async (fun () ->
-      display ?arrow:%arrow
+      display ?class_:%class_ ?arrow:%arrow
         ?top:%top ?left:%left ?right:%right ?bottom:%bottom
         ?height:%height ?width:%width
         ?parent_node:%parent_node ~name:(%name : string) ~content:%content ())

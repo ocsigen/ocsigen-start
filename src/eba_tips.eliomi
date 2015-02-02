@@ -21,7 +21,8 @@
 
 (** Tips for new users and new features. *)
 
-(** Display tips for beginners in pages.
+{shared{
+(** Display tips in pages.
     Tips can be inserted in page using function [display],
     that may be called anywhere during the generation of a page.
     The tip will be actually sent and displayed on client side
@@ -35,6 +36,7 @@
 *)
 
 val display :
+  ?class_:string list ->
   ?arrow: [< `left of int
           | `right of int
           | `top of int
@@ -45,12 +47,13 @@ val display :
   ?bottom:int ->
   ?height:int ->
   ?width:int ->
-  ?parent_node:'a Eliom_content.Html5.elt ->
+  ?parent_node:[< `Body | Html5_types.body_content ] Eliom_content.Html5.elt ->
   name:string ->
   content: Html5_types.div_content Eliom_content.Html5.elt list ->
   unit ->
   unit Lwt.t
 
+}}
 
 
 (** Call this function to reset tips for one user.
@@ -58,6 +61,7 @@ val display :
     Tips will be shown again from the beginning.
 *)
 val reset_tips : int64 -> unit -> unit -> unit Lwt.t
+
 
 (** A non-attached service that will reset tips.
     Call it with [Eliom_client.exit_to] to restart the application and

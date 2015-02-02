@@ -20,8 +20,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(** Functor defining wrappers for services handlers returning pages.
- *)
+{shared{
+(** Functor defining wrappers for services handlers returning pages. *)
 
 exception Predicate_failed of (exn option)
 
@@ -127,3 +127,4 @@ module Make (C : PAGE) : sig
     -> [ Html5_types.html ] Eliom_content.Html5.elt Lwt.t
 
 end
+}}

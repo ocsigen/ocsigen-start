@@ -20,13 +20,14 @@ val avatar_uri_of_user : t -> Eliom_content.Xml.uri option
 
 (** Retrieve the full name of user. *)
 val fullname_of_user : t -> string
-}}
-
-val email_of_user : t -> string Lwt.t
 
 (** Returns true if the firstname and the lastname of [t] has not
   * been completed yet. *)
 val is_complete : t -> bool
+}}
+
+val email_of_user : t -> string Lwt.t
+
 
 val add_activationkey : act_key:string -> int64 -> unit Lwt.t
 val verify_password : email:string -> password:string -> int64 Lwt.t

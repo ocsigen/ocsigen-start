@@ -117,7 +117,7 @@ CLIENT_OBJS := $(patsubst %.ml,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
 
 $(LIBDIR)/$(PKG_NAME).client.cma: $(call objs,$(ELIOM_CLIENT_DIR),cmo,$(CLIENT_FILES)) | $(LIBDIR)
 	${JS_OF_ELIOM} -a -o $@ $(GENERATE_DEBUG) \
-          $(call depsort,$(ELIOM_CLIENT_DIR),cmo,-server,$(CLIENT_INC),$(CLIENT_FILES))
+          $(call depsort,$(ELIOM_CLIENT_DIR),cmo,-client,$(CLIENT_INC),$(CLIENT_FILES))
 
 ${ELIOM_CLIENT_DIR}/%.cmi: %.mli
 	${JS_OF_ELIOM} -c ${CLIENT_INC} ${CLIENT_INC_DIRS} $(GENERATE_DEBUG) $<

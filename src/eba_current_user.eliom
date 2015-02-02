@@ -49,6 +49,9 @@ module Opt = struct
 
 end
  }}
+{client{
+   let _ = Eba_session.get_current_userid_o := Opt.get_current_userid
+}}
 
 let set_user_server userid =
   lwt u = Eba_user.user_of_userid userid in

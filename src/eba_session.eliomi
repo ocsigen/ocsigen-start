@@ -81,6 +81,7 @@ val connect : int64 -> unit Lwt.t
 *)
 val disconnect : unit -> unit Lwt.t
 
+{shared{
 (** Wrapper for service handlers that fetches automatically connection
     information.
     Register [(connected_fun f)] as handler for your services,
@@ -93,6 +94,8 @@ val disconnect : unit -> unit Lwt.t
     Arguments [?allow] and [?deny] make possible to restrict access to some
     user groups. If access is denied, function [?deny_fun] will be called.
     By default, it raises {!Permission denied}.
+
+    When called on client side, no security check is done.
 *)
 val connected_fun :
   ?allow:Eba_group.t list ->
@@ -134,3 +137,10 @@ module Opt : sig
     ('a -> 'b Lwt.t)
 
 end
+}}
+
+(**/**)
+{client{
+   (** internal. Do not use *)
+val get_current_userid_o : (unit -> int64 option) ref
+ }}

@@ -260,6 +260,23 @@ let gen_wrapper ~allow ~deny
       connected id gp pp
     with Permission_denied -> deny_fun uid
 
+{client{
+
+   let get_current_userid_o = ref (fun () -> assert false)
+
+(* On client-side, we do no security check.
+   They are done by the server. *)
+let gen_wrapper ~allow ~deny
+    ?(deny_fun = fun _ -> Lwt.fail Permission_denied)
+    connected not_connected gp pp =
+  let userid_o = !get_current_userid_o () in
+  match userid_o with
+  | None -> not_connected gp pp
+  | Some userid -> connected userid gp pp
+
+}}
+
+{shared{
 let connected_fun ?allow ?deny ?deny_fun f gp pp =
   gen_wrapper
     ~allow ~deny ?deny_fun
@@ -291,3 +308,5 @@ module Opt = struct
       () pp
 
 end
+
+}}
