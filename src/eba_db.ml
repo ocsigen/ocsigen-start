@@ -60,7 +60,7 @@ let transaction_block db f =
     Lwt.fail e
 
 let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Lwt_pool.t =
-  Lwt_pool.create 128 ~validate connect
+  Lwt_pool.create 16 ~validate connect
 
 let full_transaction_block f =
   Lwt_pool.use pool (fun db -> transaction_block db (fun () -> f db))

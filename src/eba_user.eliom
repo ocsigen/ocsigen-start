@@ -48,7 +48,6 @@ let is_complete u = not (u.fn = "" || u.ln = "")
 let email_of_user user = Eba_db.User.email_of_userid user.userid
 
 
-
 include Eba_db.User
 
 (* Using cache tools to prevent multiple same database queries

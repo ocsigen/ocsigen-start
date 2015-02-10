@@ -71,7 +71,7 @@ let generate_act_key
     Lwt.async (fun () ->
       try_lwt
         Eba_email.send
-          ~to_addrs:[("", email)]
+          ~to_addrs:[(email, email)]
           ~subject:"creation"
           [
             "To confirm your e-mail address, please click on this link: ";
