@@ -45,7 +45,7 @@ body {
   padding: 0 20px;
 }
 
-#%%%PROJECT_NAME%%%-header {
+header#main {
   position: relative;
   height: 50px;
   background-color: #ddeeff;

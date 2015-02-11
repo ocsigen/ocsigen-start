@@ -30,7 +30,7 @@ let header ?user () =
   lwt user_box = Eba_userbox.userbox user uploader in
   lwt () = %%%MODULE_NAME%%%_tips.example_tip () in
   Lwt.return
-    (div ~a:[a_id "%%%PROJECT_NAME%%%-header"] [
+    (header ~a:[a_id "main"] [
       a ~a:[a_id "%%%PROJECT_NAME%%%-logo"]
         ~service:Eba_services.main_service [
           pcdata %%%MODULE_NAME%%%_base.App.application_name;
