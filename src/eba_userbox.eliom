@@ -53,12 +53,13 @@ let uploader avatar_directory = Ow_pic_uploader.make
 
 {shared{
 
-  let upload_pic_link uploader =
+  let upload_pic_link close uploader =
     let link = D.Raw.a [pcdata "Upload picture"] in
     ignore {unit{
       Lwt_js_events.async (fun () ->
         Lwt_js_events.clicks (To_dom.of_element %link)
           (fun _ _ ->
+             %close ();
              try_lwt
                match_lwt Ow_pic_uploader.upload_pic_popup
                            %uploader
@@ -82,12 +83,13 @@ let uploader avatar_directory = Ow_pic_uploader.make
 
 let reset_tips_service = %Eba_tips.reset_tips_service
 
-  let reset_tips_link () =
+  let reset_tips_link close =
     let l = D.Raw.a [pcdata "See help again from beginning"] in
     ignore {unit{
       Lwt_js_events.(async (fun () ->
         clicks (To_dom.of_element %l)
           (fun _ _ ->
+             %close ();
              Eliom_client.exit_to
                ~service:%reset_tips_service
                () ();
@@ -97,14 +99,14 @@ let reset_tips_service = %Eba_tips.reset_tips_service
     l
 
 
-  let user_menu_ user uploader =
+  let user_menu_ close user uploader =
   [
     p [pcdata "Change your password:"];
     Eba_view.password_form ();
     hr ();
-    upload_pic_link uploader;
+    upload_pic_link close uploader;
     hr ();
-    reset_tips_link ();
+    reset_tips_link close;
     hr ();
     Eba_view.disconnect_button ();
   ]
@@ -113,7 +115,8 @@ let reset_tips_service = %Eba_tips.reset_tips_service
 {client{
   let user_menu_fun =
     ref (user_menu_
-         : 'a -> 'b -> Html5_types.div_content Eliom_content.Html5.elt list)
+         : (unit -> unit) ->
+         'a -> 'b -> Html5_types.div_content Eliom_content.Html5.elt list)
 }}
 {shared{
 
@@ -124,7 +127,12 @@ let reset_tips_service = %Eba_tips.reset_tips_service
     let menu = D.div [] in
     ignore
       (Ow_button.button_dyn_alert but menu
-         {'a -> 'b{fun _ _ -> Lwt.return (!user_menu_fun %user %uploader)}});
+         {'a -> 'b{fun _ _ ->
+            let close () =
+              let o = Ow_button.to_button_dyn_alert %but in
+              o##unpress()
+            in
+            Lwt.return (!user_menu_fun close %user %uploader)}});
     div ~a:[a_class ["eba_usermenu"]] [but; menu]
 
 }}

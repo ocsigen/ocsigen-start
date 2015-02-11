@@ -31,13 +31,19 @@ val userbox :
   uploader ->
   [> Html5_types.div ] Eliom_content.Html5.D.elt Lwt.t
 
-(** Link to upload a picture *)
+(** Link to upload a picture.
+    The client function given as first parameter will be called first,
+    for example to close the menu containing the link. *)
 val upload_pic_link :
+  (unit -> unit) client_value ->
   uploader -> [> `A of [> `PCDATA ] ] Eliom_content.Html5.D.Raw.elt
 
-(** Link to start to see the help from the begining *)
+(** Link to start to see the help from the begining.
+    The client function given as first parameter will be called first,
+    for example to close the menu containing the link. *)
 val reset_tips_link :
-  unit -> [> `A of [> `PCDATA ] ] Eliom_content.Html5.D.Raw.elt
+  (unit -> unit) client_value ->
+  [> `A of [> `PCDATA ] ] Eliom_content.Html5.D.Raw.elt
 
 (** Display user menu *)
 val user_menu :
@@ -49,7 +55,8 @@ val user_menu :
 
 (** Personnalize user menu *)
 val set_user_menu :
-  (Eba_user.t ->
+  ((unit -> unit) ->
+   Eba_user.t ->
    uploader ->
    Html5_types.div_content Eliom_content.Html5.D.elt
      Eliom_content.Html5.D.list_wrap) ->
