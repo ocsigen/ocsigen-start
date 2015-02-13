@@ -198,7 +198,10 @@ module User = struct
   let create ?password ?avatar ~firstname ~lastname email =
     full_transaction_block (fun dbh ->
       let password_o =
-        Eliom_lib.Option.map (fun x -> <:value< $string:x$ >>) password
+        Eliom_lib.Option.map (fun password ->
+          let password = Bcrypt.string_of_hash (Bcrypt.hash password) in
+          <:value< $string:password$ >>)
+          password
       in
       lwt () =
         Lwt_Query.query dbh

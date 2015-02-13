@@ -151,7 +151,7 @@ let reset_tips_service = %Eba_tips.reset_tips_service
 }}
 {server{
    (* Module Ow_active_set is to be rewritten completely and simplified.
-      Then we can rtemove this. *)
+      Then we can remove this. *)
    let make_set () =
       {Ow_active_set.t'{
         Ow_active_set.to_server_set
