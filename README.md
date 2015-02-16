@@ -4,13 +4,14 @@
 
 ##<a id="getting-started"></a>Getting started
 1. [Introduction](#introduction)
-2. [Create your project](#create-your-project)
-3. [Create your database](#create-your-database)
+2. [Installation](#install)
+3. [Create your project](#create-your-project)
+4. [Create your database](#create-your-database)
 
 ###<a id="introduction"></a>Introduction
 Eliom base app is a set of higer level libraries for building client-server Web application with Ocsigen (Js_of_ocaml and Eliom). It contains modules for
 * user management (session management, registration, activation keys, ...),
-* managing groups of users, 
+* managing groups of users,
 * displaying tips
 * Sending notifications to users very easily
 
@@ -21,6 +22,13 @@ This template is intended to serve as a basis for quickly building Minimum Viabl
 
 If it corresponds to your need, it will probably help you a lot.
 If not, start with a simpler template (but you can still use the modules from Eliom-base-app).
+
+###<a id="install"></a>Installation
+
+Eliom-base-app depends on dev version of Eliom (branch shared react),
+and dev version of js_of_ocaml. Use opam to install it,
+after pinning the github repositories (or use Ocsigen's opam repository:
+```opam repo add ocsigen-dev git://github.com/ocsigen/opam-ocsigen```)
 
 ###<a id="create-your-project"></a>Create your project
 ```
