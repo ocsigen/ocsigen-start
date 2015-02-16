@@ -35,7 +35,8 @@ let user_indep_session_scope = `Session user_indep_state_hierarchy
     let d =
       D.div ~a:[a_class ["eba_process_closed"]] [
         img ~alt:("Ocsigen Logo")
-          ~src:(Xml.uri_of_string ("http://ocsigen.org/resources/logos/ocsigen_with_shadow.png"))
+          ~src:(Xml.uri_of_string
+                  "http://ocsigen.org/resources/logos/ocsigen_with_shadow.png")
           ();
         p [
           pcdata "Ocsigen process closed.";
@@ -310,3 +311,5 @@ module Opt = struct
 end
 
 }}
+
+let set_pwd_crypt_fun a = Eba_db.pwd_crypt_ref := a

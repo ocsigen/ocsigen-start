@@ -129,7 +129,7 @@ div#eba_msg p.eba_err {
 }
 
 .ow_background {
-  position: fixed;
+  position: absolute;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
@@ -137,6 +137,8 @@ div#eba_msg p.eba_err {
   left: 0;
   text-align: center;
   padding-top: 80px;
+  padding-bottom: 80px;
+  overflow: auto;
 }
 
 div.ow_popup {

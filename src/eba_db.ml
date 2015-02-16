@@ -143,6 +143,11 @@ let preregister_table =
 
 (*****************************************************************************)
 
+let pwd_crypt_ref = ref
+    ((fun password -> Bcrypt.string_of_hash (Bcrypt.hash password)),
+     (fun password1 password2 ->
+        Bcrypt.verify password1 (Bcrypt.hash_of_string password2)))
+
 module User = struct
 
   let select_user_from_email_q dbh email =
@@ -199,7 +204,7 @@ module User = struct
     full_transaction_block (fun dbh ->
       let password_o =
         Eliom_lib.Option.map (fun password ->
-          let password = Bcrypt.string_of_hash (Bcrypt.hash password) in
+          let password = (fst !pwd_crypt_ref) password in
           <:value< $string:password$ >>)
           password
       in
@@ -248,7 +253,7 @@ module User = struct
                        d.userid = $int64:userid$
              >>
         | Some password, None ->
-          let password = Bcrypt.string_of_hash (Bcrypt.hash password) in
+          let password = (fst !pwd_crypt_ref) password in
           let password = Some <:value< $string:password$ >> in
           Lwt_Query.query dbh
              <:update< d in $users_table$ :=
@@ -258,7 +263,7 @@ module User = struct
                        d.userid = $int64:userid$
              >>
         | Some password, Some avatar ->
-          let password = Bcrypt.string_of_hash (Bcrypt.hash password) in
+          let password = (fst !pwd_crypt_ref) password in
           let password = Some <:value< $string:password$ >> in
           let avatar = Some <:value< $string:avatar$ >> in
           Lwt_Query.query dbh
@@ -304,7 +309,7 @@ module User = struct
       match password' with
       | None -> Lwt.fail No_such_resource
       | Some password' ->
-          if Bcrypt.verify password (Bcrypt.hash_of_string password')
+          if (snd !pwd_crypt_ref) password password'
           then Lwt.return userid
           else Lwt.fail No_such_resource)
 
