@@ -111,6 +111,11 @@ let update ?password ?avatar ~firstname ~lastname userid =
 let update' ?password t =
   update ?password ?avatar:t.avatar ~firstname:t.fn ~lastname:t.ln t.userid
 
+let update_password password userid =
+  lwt () = Eba_db.User.update_password password userid in
+  MCache.reset userid;
+  Lwt.return ()
+
 let update_avatar avatar userid =
   lwt () = Eba_db.User.update_avatar avatar userid in
   MCache.reset userid;
@@ -119,3 +124,5 @@ let update_avatar avatar userid =
 let get_users ?pattern () =
   lwt users = Eba_db.User.get_users ?pattern () in
   Lwt.return (List.map create_user_from_db users)
+
+let set_pwd_crypt_fun a = Eba_db.pwd_crypt_ref := a

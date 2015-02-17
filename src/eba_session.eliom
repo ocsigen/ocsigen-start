@@ -311,5 +311,3 @@ module Opt = struct
 end
 
 }}
-
-let set_pwd_crypt_fun a = Eba_db.pwd_crypt_ref := a

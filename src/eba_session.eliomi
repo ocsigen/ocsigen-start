@@ -139,14 +139,6 @@ module Opt : sig
 end
 }}
 
-(** By default, passwords are encrypted using Bcrypt.
-    You can customize this by calling this function
-    with a pair of function (crypt and check password).
-    The second function takes as first parameter the password given
-    by user, and as second parameter the encrypted password found in database.
-*)
-val set_pwd_crypt_fun : (string -> string) * (string -> string -> bool) -> unit
-
 (**/**)
 {client{
    (** internal. Do not use *)

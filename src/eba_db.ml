@@ -144,8 +144,8 @@ let preregister_table =
 (*****************************************************************************)
 
 let pwd_crypt_ref = ref
-    ((fun password -> Bcrypt.string_of_hash (Bcrypt.hash password)),
-     (fun password1 password2 ->
+    ((fun _ password -> Bcrypt.string_of_hash (Bcrypt.hash password)),
+     (fun _ password1 password2 ->
         Bcrypt.verify password1 (Bcrypt.hash_of_string password2)))
 
 module User = struct
@@ -202,9 +202,14 @@ module User = struct
 
   let create ?password ?avatar ~firstname ~lastname email =
     full_transaction_block (fun dbh ->
+      lwt userid =
+        Lwt_Query.view_one dbh <:view< {x = currval $users_userid_seq$} >>
+      in
+      let userid = userid#!x in
+      let userid = Int64.succ userid in
       let password_o =
         Eliom_lib.Option.map (fun password ->
-          let password = (fst !pwd_crypt_ref) password in
+          let password = (fst !pwd_crypt_ref) userid password in
           <:value< $string:password$ >>)
           password
       in
@@ -218,10 +223,6 @@ module User = struct
                       avatar    = null
                     } >>
       in
-      lwt userid =
-        Lwt_Query.view_one dbh <:view< {x = currval $users_userid_seq$} >>
-      in
-      let userid = userid#!x in
       lwt () =
         Lwt_Query.query dbh
           <:insert< $emails_table$ :=
@@ -253,7 +254,7 @@ module User = struct
                        d.userid = $int64:userid$
              >>
         | Some password, None ->
-          let password = (fst !pwd_crypt_ref) password in
+          let password = (fst !pwd_crypt_ref) userid password in
           let password = Some <:value< $string:password$ >> in
           Lwt_Query.query dbh
              <:update< d in $users_table$ :=
@@ -263,7 +264,7 @@ module User = struct
                        d.userid = $int64:userid$
              >>
         | Some password, Some avatar ->
-          let password = (fst !pwd_crypt_ref) password in
+          let password = (fst !pwd_crypt_ref) userid password in
           let password = Some <:value< $string:password$ >> in
           let avatar = Some <:value< $string:avatar$ >> in
           Lwt_Query.query dbh
@@ -276,6 +277,17 @@ module User = struct
                        d.userid = $int64:userid$
              >>
       ))
+
+  let update_password password userid =
+    full_transaction_block (fun dbh ->
+      let password = (fst !pwd_crypt_ref) userid password in
+      let password = Some <:value< $string:password$ >> in
+      Lwt_Query.query dbh
+        <:update< d in $users_table$ :=
+                      { password = of_option $password$ }
+                  | d.userid = $int64:userid$
+        >>
+    )
 
   let update_avatar avatar userid =
     full_transaction_block (fun dbh ->
@@ -309,7 +321,7 @@ module User = struct
       match password' with
       | None -> Lwt.fail No_such_resource
       | Some password' ->
-          if (snd !pwd_crypt_ref) password password'
+          if (snd !pwd_crypt_ref) userid password password'
           then Lwt.return userid
           else Lwt.fail No_such_resource)
 

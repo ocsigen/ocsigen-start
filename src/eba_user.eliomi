@@ -51,19 +51,25 @@ val get_users : ?pattern:string -> unit -> t list Lwt.t
 
 (** Create a new user and returns his userid. *)
 val create :
-  ?password:string -> ?avatar:string -> firstname:string -> lastname:string -> string -> int64 Lwt.t
+  ?password:string -> ?avatar:string ->
+  firstname:string -> lastname:string -> string -> int64 Lwt.t
 
-(** Same as above, but instead of returning the userid, it returns a user of type
-  * [t] *)
+(** Same as above, but instead of returning the userid,
+    it returns a user of type [t] *)
 val create' :
-  ?password:string -> ?avatar:string -> firstname:string -> lastname:string -> string -> t Lwt.t
+  ?password:string -> ?avatar:string ->
+  firstname:string -> lastname:string -> string -> t Lwt.t
 
 (** Update the informations of a user. *)
 val update :
-  ?password:string -> ?avatar:string -> firstname:string -> lastname:string -> int64 -> unit Lwt.t
+  ?password:string -> ?avatar:string ->
+  firstname:string -> lastname:string -> int64 -> unit Lwt.t
 
 (** Another version of [update] using a type [t] instead of labels. *)
 val update' : ?password:string -> t -> unit Lwt.t
+
+(** Update the password only *)
+val update_password : string -> int64 -> unit Lwt.t
 
 (** Update the avatar only *)
 val update_avatar : string -> int64 -> unit Lwt.t
@@ -82,3 +88,13 @@ val remove_preregister : string -> unit Lwt.t
 
 (** Get [limit] (default: 10) emails from the preregister collections. *)
 val all : ?limit:int64 -> unit -> string list Lwt.t
+
+(** By default, passwords are encrypted using Bcrypt.
+    You can customize this by calling this function
+    with a pair of function (crypt and check password).
+    The first parameter of both functions is he user id (in case you need it).
+    The second function takes as second parameter the password given
+    by user, and as third parameter the encrypted password found in database.
+*)
+val set_pwd_crypt_fun : (int64 -> string -> string) *
+                        (int64 -> string -> string -> bool) -> unit
