@@ -72,7 +72,7 @@ let user_tz_gr =
 *)
 
 let user_tz () =
-  (* We take by default the timezone of the browser (session), if alreday set *)
+  (* We take by default the timezone of the browser (session), if already set *)
   let tz = Eliom_reference.Volatile.get user_tz_sr in
   if tz = CalendarLib.Time_Zone.UTC (* not set *)
   then Eliom_reference.Volatile.get user_tz_gr

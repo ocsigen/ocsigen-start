@@ -92,9 +92,10 @@ val all : ?limit:int64 -> unit -> string list Lwt.t
 (** By default, passwords are encrypted using Bcrypt.
     You can customize this by calling this function
     with a pair of function (crypt and check password).
-    The first parameter of both functions is he user id (in case you need it).
-    The second function takes as second parameter the password given
-    by user, and as third parameter the encrypted password found in database.
+    The first parameter of the second function is the user id
+    (in case you need it).
+    Then it takes as second parameter the password given
+    by user, and as third parameter the hash found in database.
 *)
-val set_pwd_crypt_fun : (int64 -> string -> string) *
+val set_pwd_crypt_fun : (string -> string) *
                         (int64 -> string -> string -> bool) -> unit
