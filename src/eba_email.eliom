@@ -43,7 +43,7 @@ let email_regexp =
 let is_valid email =
   Str.string_match email_regexp email 0
 
-let send ?(from_addr = !from_addr) ~to_addrs ~subject content =
+let default_send ~from_addr ~to_addrs ~subject content =
   (* TODO with fork ou mieux en utilisant l'event loop de ocamlnet *)
   let echo = printf "%s\n" in
   let flush () = printf "%!" in
@@ -74,6 +74,12 @@ let send ?(from_addr = !from_addr) ~to_addrs ~subject content =
     flush ();
     Lwt.fail (Invalid_mailer (!mailer^" not found"))
 
+let send_ref = ref default_send
+
+let send ?(from_addr = !from_addr) ~to_addrs ~subject content =
+  !send_ref ~from_addr ~to_addrs ~subject content
+
+let set_send s = send_ref := s
 
 {client{
 let email_pattern = email_pattern

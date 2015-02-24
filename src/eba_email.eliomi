@@ -27,7 +27,8 @@
 (** Set the email address used to send mail *)
 val set_from_addr : (string * string) -> unit
 
-(** Set the name of the external [sendmail] program on your system *)
+(** Set the name of the external [sendmail] program on your system,
+    used by the default send function *)
 val set_mailer : string -> unit
 
 (** Get the name of mailer program *)
@@ -50,3 +51,11 @@ val send :
   subject:string ->
   string list ->
   unit Lwt.t
+
+(** Customize email sending function: *)
+val set_send :
+  (from_addr:(string * string) ->
+   to_addrs:((string * string) list) ->
+   subject:string ->
+   string list ->
+   unit Lwt.t) -> unit
