@@ -20,7 +20,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-
 open Eliom_parameter
 
 let main_service =
@@ -44,8 +43,8 @@ let set_personal_data_service' =
   Eliom_service.Http.post_coservice'
     ~name:"set_data"
     ~post_params:(
-      (string "firstname" ** string "lastname")
-      ** (string "password" ** string "password2"))
+      (string "firstname" ** string "lastname") **
+      (string "password"  ** string "password2"))
     ()
 
 let sign_up_service' =

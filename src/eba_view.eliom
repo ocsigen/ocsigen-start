@@ -1,3 +1,8 @@
+(* Copyright University paris Diderot *)
+(* Do not hesitate to copy paste part of this code, modify it,
+   and integrate it in your app to customize the behaviour according to
+   your needs. *)
+
 {shared{
   open Eliom_content.Html5
   open Eliom_content.Html5.F
@@ -65,13 +70,13 @@ let information_form
   D.post_form ~service:%Eba_services.set_personal_data_service'
     (fun ((fname, lname), (passwordn1, passwordn2)) -> [
          string_input
-           ~a:[a_placeholder "Your firstname"]
+           ~a:[a_placeholder "Your first name"]
            ~name:fname
            ~value:firstname
            ~input_type:`Text
            ();
          string_input
-           ~a:[a_placeholder "Your lastname"]
+           ~a:[a_placeholder "Your last name"]
            ~name:lname
            ~value:lastname
            ~input_type:`Text
@@ -127,9 +132,9 @@ let username user =
   in
   Lwt.return (div ~a:[a_class ["eba_username"]] n)
 
-let password_form () =
+let password_form ~service () =
   D.post_form
-    ~service:%(Eba_services.set_password_service')
+    ~service
     (fun (pwdn, pwd2n) ->
        let pass1 =
          D.string_input

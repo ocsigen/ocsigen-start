@@ -64,8 +64,8 @@ let generate_act_key
   let act_link = F.make_string_uri ~absolute:true ~service act_key in
   (* For debugging we print the activation link on standard output
      to make possible to connect even if the mail transport is not
-     configured. REMOVE! *)
-  print_endline act_link;
+     configured. *)
+  if Ocsigen_config.get_debugmode () then print_endline act_link;
   if send_email
   then
     Lwt.async (fun () ->
@@ -95,11 +95,10 @@ let sign_up_handler' () email =
     Lwt.return ()
   end
 
-let forgot_password_handler () email =
+let forgot_password_handler service () email =
   try_lwt
     lwt userid = Eba_user.userid_of_email email in
-    let act_key =
-      generate_act_key ~service:Eba_services.main_service email in
+    let act_key = generate_act_key ~service email in
     Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
     Eba_user.add_activationkey ~act_key userid
   with Eba_db.No_such_resource ->
@@ -172,7 +171,7 @@ let () =
 
   Eliom_registration.Action.register
     Eba_services.forgot_password_service
-    forgot_password_handler;
+    (forgot_password_handler Eba_services.main_service);
 
   Eliom_registration.Action.register
     Eba_services.preregister_service'
