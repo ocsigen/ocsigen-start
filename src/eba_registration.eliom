@@ -56,6 +56,7 @@ let generate_act_key
     ?(act_key = Ocsigen_lib.make_cryptographic_safe_string ())
     ?(send_email = true)
     ~service
+    ~text
     email =
   let service =
     Eliom_service.attach_coservice' ~fallback:service
@@ -74,7 +75,7 @@ let generate_act_key
           ~to_addrs:[("", email)]
           ~subject:"creation"
           [
-            "To confirm your e-mail address, please click on this link: ";
+            text;
             act_link;
           ]
       with _ -> Lwt.return ());
@@ -88,7 +89,11 @@ let sign_up_handler' () email =
     Lwt.return ()
   end else begin
     let act_key =
-      generate_act_key ~service:Eba_services.main_service email in
+      generate_act_key
+        ~service:Eba_services.main_service
+        ~text:"Welcome!\r\nTo confirm your e-mail address, please click on this link: "
+        email
+    in
     lwt userid = Eba_user.create ~firstname:"" ~lastname:"" email in
     Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
     lwt () = Eba_user.add_activationkey ~act_key userid in
@@ -98,7 +103,8 @@ let sign_up_handler' () email =
 let forgot_password_handler service () email =
   try_lwt
     lwt userid = Eba_user.userid_of_email email in
-    let act_key = generate_act_key ~service email in
+    let text = "Hi,\r\nTo set a new password, please click on this link: " in
+    let act_key = generate_act_key ~service ~text email in
     Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
     Eba_user.add_activationkey ~act_key userid
   with Eba_db.No_such_resource ->
