@@ -68,7 +68,34 @@ let information_form
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
     () =
   D.post_form ~service:%Eba_services.set_personal_data_service'
-    (fun ((fname, lname), (passwordn1, passwordn2)) -> [
+    (fun ((fname, lname), (passwordn1, passwordn2)) ->
+       let pass1 = D.string_input
+           ~a:[a_placeholder "Your password"]
+           ~name:passwordn1
+           ~value:password1
+           ~input_type:`Password
+           ()
+       in
+       let pass2 = D.string_input
+           ~a:[a_placeholder "Re-enter password"]
+           ~name:passwordn2
+           ~value:password2
+           ~input_type:`Password
+           ()
+       in
+       let _ = {unit{
+         let pass1 = To_dom.of_input %pass1 in
+         let pass2 = To_dom.of_input %pass2 in
+         Lwt_js_events.(async (fun () ->
+           inputs pass2 (fun _ _ ->
+             if (Js.to_string pass1##value <> Js.to_string pass2##value)
+             then (Js.Unsafe.coerce pass2)##setCustomValidity
+                 ("Passwords do not match")
+             else (Js.Unsafe.coerce pass2)##setCustomValidity("");
+             Lwt.return ())))
+       }}
+       in
+       [
          string_input
            ~a:[a_placeholder "Your first name"]
            ~name:fname
@@ -81,18 +108,8 @@ let information_form
            ~value:lastname
            ~input_type:`Text
            ();
-         string_input
-           ~a:[a_placeholder "Your password"]
-           ~name:passwordn1
-           ~value:password1
-           ~input_type:`Password
-           ();
-         string_input
-           ~a:[a_placeholder "Re-enter password"]
-           ~name:passwordn2
-           ~value:password2
-           ~input_type:`Password
-           ();
+         pass1;
+         pass2;
          string_input
            ~a:[a_class ["button"]]
            ~input_type:`Submit
