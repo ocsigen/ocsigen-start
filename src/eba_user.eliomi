@@ -1,4 +1,4 @@
-exception Already_exists
+exception Already_exists of int64
 exception No_such_user
 
 

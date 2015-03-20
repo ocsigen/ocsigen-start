@@ -4,7 +4,7 @@
 
 open Eliom_content.Html5.F
 
-exception Already_exists
+exception Already_exists of int64
 exception No_such_user
 
 {shared{
@@ -87,11 +87,11 @@ let empty = {
 }
 
 (** Helper function which creates a new user and return it as
- * a record of type [t]. May raise [Already_exists] *)
+    a record of type [t]. May raise [Already_exists] *)
 let create' ?password ?avatar ~firstname ~lastname email =
   try_lwt
-    lwt _ = Eba_db.User.userid_of_email email in
-    Lwt.fail Already_exists
+    lwt userid = Eba_db.User.userid_of_email email in
+    Lwt.fail (Already_exists userid)
   with Eba_db.No_such_resource ->
     lwt userid =
       Eba_db.User.create ~firstname ~lastname ?password ?avatar email
