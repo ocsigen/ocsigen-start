@@ -49,14 +49,8 @@ val email_of_user : t -> string Lwt.t
 (** Get users who match the [pattern] (useful for completion) *)
 val get_users : ?pattern:string -> unit -> t list Lwt.t
 
-(** Create a new user and returns his userid. *)
+(** Create a new user *)
 val create :
-  ?password:string -> ?avatar:string ->
-  firstname:string -> lastname:string -> string -> int64 Lwt.t
-
-(** Same as above, but instead of returning the userid,
-    it returns a user of type [t] *)
-val create' :
   ?password:string -> ?avatar:string ->
   firstname:string -> lastname:string -> string -> t Lwt.t
 

@@ -86,9 +86,8 @@ let empty = {
   avatar = None;
 }
 
-(** Helper function which creates a new user and return it as
-    a record of type [t]. May raise [Already_exists] *)
-let create' ?password ?avatar ~firstname ~lastname email =
+(** Create new user. May raise [Already_exists] *)
+let create ?password ?avatar ~firstname ~lastname email =
   try_lwt
     lwt userid = Eba_db.User.userid_of_email email in
     Lwt.fail (Already_exists userid)
