@@ -18,13 +18,16 @@ exception No_such_user
 }}
 
 (** Create a user of type [t] using db informations. *)
-let create_user_from_db (userid, fn, ln, avatar) = {
-  userid = userid;
-  fn = fn;
-  ln = ln;
-  avatar = avatar;
-}
+let create_user_from_db0 (userid, fn, ln, avatar, pwdset) =
+  {
+    userid = userid;
+    fn = fn;
+    ln = ln;
+    avatar = avatar;
+  },
+  pwdset
 
+let create_user_from_db d = fst (create_user_from_db0 d)
 
 {shared{
 (** Getters functions. *)
@@ -51,33 +54,40 @@ let email_of_user user = Eba_db.User.email_of_userid user.userid
 include Eba_db.User
 
 (* Using cache tools to prevent multiple same database queries
- * during the request. *)
+   during the request. *)
 module MCache = Eba_request_cache.Make(
 struct
   type key = int64
-  type value = t
+  type value = t * bool
 
   let compare = compare
   let get key =
     try_lwt
       lwt g = Eba_db.User.user_of_userid key in
-      Lwt.return (create_user_from_db g)
+      Lwt.return (create_user_from_db0 g)
     with Eba_db.No_such_resource -> Lwt.fail No_such_user
 end)
 
-(** Overwrite the function [user_of_userid] of [Eba_db.User] and use
-  * the [get] function of the cache module. *)
+(* Overwrite the function [user_of_userid] of [Eba_db.User] and use
+   the [get] function of the cache module. *)
 let user_of_userid userid =
-  lwt u = MCache.get userid in
+  lwt u, _ = MCache.get userid in
   Lwt.return u
 
+let password_set userid =
+  lwt _, s = MCache.get userid in
+  Lwt.return s
+
+
+
+
 (* -----------------------------------------------------------------
- *
- * All the followings functions are only helpers/wrappers around db
- * functions ones. They generally use the type [t] of the module
- * and get rid of the part of picking each field of the record [t].
- *
- * *)
+
+   All the followings functions are only helpers/wrappers around db
+   functions ones. They generally use the type [t] of the module
+   and get rid of the part of picking each field of the record [t].
+
+*)
 
 let empty = {
   userid = 0L;

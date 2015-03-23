@@ -66,7 +66,8 @@ let generate_act_key
   (* For debugging we print the activation link on standard output
      to make possible to connect even if the mail transport is not
      configured. *)
-  if Ocsigen_config.get_debugmode () then print_endline act_link;
+  if Ocsigen_config.get_debugmode ()
+  then print_endline ("Debug: activation link created: "^act_link);
   if send_email
   then
     Lwt.async (fun () ->
@@ -81,22 +82,32 @@ let generate_act_key
       with _ -> Lwt.return ());
   act_key
 
+let send_act email userid =
+  let act_key =
+    generate_act_key
+      ~service:Eba_services.main_service
+      ~text:"Welcome!\r\nTo confirm your e-mail address, please click on this link: "
+      email
+  in
+  Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
+  lwt () = Eba_user.add_activationkey ~act_key userid in
+  Lwt.return ()
+
 let sign_up_handler' () email =
   try_lwt
     lwt user = Eba_user.create ~firstname:"" ~lastname:"" email in
-    let act_key =
-      generate_act_key
-        ~service:Eba_services.main_service
-        ~text:"Welcome!\r\nTo confirm your e-mail address, please click on this link: "
-        email
-    in
     let userid = Eba_user.userid_of_user user in
-    Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
-    lwt () = Eba_user.add_activationkey ~act_key userid in
-    Lwt.return ()
+    send_act email userid
   with Eba_user.Already_exists userid ->
-    Eliom_reference.Volatile.set Eba_userbox.user_already_exists true;
-    Lwt.return ()
+    (* If password is not set, the user probably never logged in,
+       I send an activation link, as if it were a new user. *)
+    lwt pwdset = Eba_user.password_set userid in
+    if not pwdset
+    then send_act email userid
+    else begin
+      Eliom_reference.Volatile.set Eba_userbox.user_already_exists true;
+      Lwt.return ()
+    end
 
 let forgot_password_handler service () email =
   try_lwt

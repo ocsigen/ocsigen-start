@@ -331,7 +331,8 @@ module User = struct
                   t.userid = $int64:userid$
             >>
       in
-      Lwt.return (r#!userid, r#!firstname, r#!lastname, r#?avatar))
+      Lwt.return (r#!userid, r#!firstname, r#!lastname, r#?avatar,
+                  r#?password <> None))
 
   let userid_of_activationkey act_key =
     full_transaction_block (fun dbh ->
@@ -373,7 +374,8 @@ module User = struct
       | None ->
         lwt l = Lwt_Query.view dbh <:view< r | r in $users_table$ >> in
         Lwt.return (List.map
-                      (fun a -> a#!userid, a#!firstname, a#!lastname, a#?avatar)
+                      (fun a -> a#!userid, a#!firstname, a#!lastname, a#?avatar,
+                                a#?password <> None)
                       l)
       | Some pattern ->
         let pattern = "(^"^pattern^")|(.* "^pattern^")" in
@@ -382,7 +384,7 @@ module User = struct
            and I canot use pgocaml syntax extension because
            it requires the db to be created (which is impossible in a lib). *)
         let query = "
-             SELECT userid, firstname, lastname, avatar
+             SELECT userid, firstname, lastname, avatar, password
              FROM users
              WHERE
                firstname <> '' -- avoids email addresses
@@ -394,10 +396,11 @@ module User = struct
         lwt () = PGOCaml.close_statement dbh () in
         Lwt.return (List.map
                       (function
-                        | [Some userid; Some firstname; Some lastname; avatar]
+                        | [Some userid; Some firstname; Some lastname; avatar;
+                           password]
                           ->
                           (PGOCaml.int64_of_string userid,
-                           firstname, lastname, avatar)
+                           firstname, lastname, avatar, password <> None)
                         | _ -> failwith "Eba_db.get_users")
                       l))
 

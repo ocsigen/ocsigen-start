@@ -1,10 +1,12 @@
 exception Already_exists of int64
 exception No_such_user
 
+(** Has user set its password? *)
+val password_set : int64 -> bool Lwt.t
 
 {shared{
   (** The type which represents a user. *)
-  type t = {
+type t = {
     userid : int64;
     fn : string;
     ln : string;
@@ -32,11 +34,13 @@ val email_of_user : t -> string Lwt.t
 val add_activationkey : act_key:string -> int64 -> unit Lwt.t
 val verify_password : email:string -> password:string -> int64 Lwt.t
 
+(** returns user information.
+    Results are cached in memory during page generation. *)
 val user_of_userid : int64 -> t Lwt.t
 
 val userid_of_activationkey : string -> int64 Lwt.t
 (** Retrieve an userid from an activation key. May raise [No_such_resource] if
-  * the activation key is not found (or outdated). *)
+    the activation key is not found (or outdated). *)
 
 val userid_of_email : string -> int64 Lwt.t
 
