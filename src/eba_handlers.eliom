@@ -174,36 +174,3 @@ let preregister_handler' () email =
        Eba_userbox.user_already_preregistered true;
      Lwt.return ()
    end
-
-let () =
-  Eliom_registration.Action.register
-    Eba_services.set_personal_data_service'
-    (Eba_session.connected_fun set_personal_data_handler');
-
-  Eliom_registration.Action.register
-    Eba_services.set_password_service'
-    (Eba_session.connected_fun set_password_handler');
-
-  Eliom_registration.Action.register
-    Eba_services.forgot_password_service
-    (forgot_password_handler Eba_services.main_service);
-
-  Eliom_registration.Action.register
-    Eba_services.preregister_service'
-    preregister_handler';
-
-  Eliom_registration.Action.register
-    Eba_services.sign_up_service'
-    sign_up_handler';
-
-  Eliom_registration.Action.register
-    Eba_services.connect_service
-    connect_handler;
-
-  Eliom_registration.Action.register
-    Eba_services.disconnect_service
-    disconnect_handler;
-
-  Eliom_registration.Any.register
-    Eba_services.activation_service
-    activation_handler

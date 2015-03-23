@@ -26,6 +26,39 @@ let about_handler userid_o () () =
 
 
 let () =
+  (* Registering services. Feel free to customize handlers. *)
+  Eliom_registration.Action.register
+    Eba_services.set_personal_data_service'
+    (Eba_session.connected_fun Eba_handlers.set_personal_data_handler');
+
+  Eliom_registration.Action.register
+    Eba_services.set_password_service'
+    (Eba_session.connected_fun Eba_handlers.set_password_handler');
+
+  Eliom_registration.Action.register
+    Eba_services.forgot_password_service
+    (Eba_handlers.forgot_password_handler Eba_services.main_service);
+
+  Eliom_registration.Action.register
+    Eba_services.preregister_service'
+    Eba_handlers.preregister_handler';
+
+  Eliom_registration.Action.register
+    Eba_services.sign_up_service'
+    Eba_handlers.sign_up_handler';
+
+  Eliom_registration.Action.register
+    Eba_services.connect_service
+    Eba_handlers.connect_handler;
+
+  Eliom_registration.Action.register
+    Eba_services.disconnect_service
+    Eba_handlers.disconnect_handler;
+
+  Eliom_registration.Any.register
+    Eba_services.activation_service
+    Eba_handlers.activation_handler;
+
   %%%MODULE_NAME%%%_base.App.register
     Eba_services.main_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page main_service_handler);
