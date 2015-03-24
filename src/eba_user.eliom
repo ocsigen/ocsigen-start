@@ -105,8 +105,7 @@ let create ?password ?avatar ~firstname ~lastname email =
     lwt userid =
       Eba_db.User.create ~firstname ~lastname ?password ?avatar email
     in
-    lwt u = Eba_db.User.user_of_userid userid in
-    Lwt.return (create_user_from_db u)
+    user_of_userid userid
 
 (* Overwrites the function [update] of [Eba_db.User]
    to reset the cache *)
