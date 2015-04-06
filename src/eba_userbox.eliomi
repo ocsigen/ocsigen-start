@@ -18,7 +18,7 @@
 
  (** Box for connected users, with picture, name, and menu *)
 val connected_user_box :
-  Eba_user.t -> uploader -> [> Html5_types.div ] Eliom_content.Html5.D.elt Lwt.t
+  Eba_user.t -> uploader -> [> Html5_types.div ] Eliom_content.Html5.D.elt
 
 (** Connection box *)
 val connection_box :

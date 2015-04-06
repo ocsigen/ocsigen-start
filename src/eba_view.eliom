@@ -137,17 +137,17 @@ let avatar user =
   | None -> Ow_icons.F.user ()
 
 let username user =
-  lwt n = match Eba_user.firstname_of_user user with
+  let n = match Eba_user.firstname_of_user user with
     | "" ->
       let userid = Eba_user.userid_of_user user in
-      Lwt.return [pcdata ("User "^Int64.to_string userid)]
+      [pcdata ("User "^Int64.to_string userid)]
     | s ->
-      Lwt.return [pcdata s;
-                  pcdata " ";
-                  pcdata (Eba_user.lastname_of_user user);
-                 ]
+      [pcdata s;
+       pcdata " ";
+       pcdata (Eba_user.lastname_of_user user);
+      ]
   in
-  Lwt.return (div ~a:[a_class ["eba_username"]] n)
+  div ~a:[a_class ["eba_username"]] n
 
 let password_form ~service () =
   D.post_form

@@ -54,7 +54,7 @@ let uploader avatar_directory = Ow_pic_uploader.make
 {shared{
 
   let upload_pic_link close uploader =
-    let link = D.Raw.a [pcdata "Upload picture"] in
+    let link = D.Raw.a [pcdata "Change profile picture"] in
     ignore {unit{
       Lwt_js_events.async (fun () ->
         Lwt_js_events.clicks (To_dom.of_element %link)
@@ -142,12 +142,12 @@ let reset_tips_service = %Eba_tips.reset_tips_service
 {shared{
 
   let connected_user_box user uploader =
-    lwt username = Eba_view.username user in
-    Lwt.return (D.div ~a:[a_id "eba-user-box"] [
+    let username = Eba_view.username user in
+    D.div ~a:[a_id "eba-user-box"] [
       Eba_view.avatar user;
       username;
       user_menu user uploader;
-    ])
+    ]
 }}
 {server{
    (* Module Ow_active_set is to be rewritten completely and simplified.
@@ -277,7 +277,7 @@ let reset_tips_service = %Eba_tips.reset_tips_service
 {shared{
   let userbox user uploader =
     match user with
-    | Some user -> connected_user_box user uploader
+    | Some user -> Lwt.return (connected_user_box user uploader)
     | None -> connection_box ()
 
 
