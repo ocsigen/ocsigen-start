@@ -203,9 +203,6 @@ let reset_tips_service = %Eba_tips.reset_tips_service
           button4
           form4
       in
-      (* Here we will return the div correponding to the current
-       * website state, and also a function to handle specific
-       * flash messages *)
       let d =
         (* If the registration is not open (pre-registration only): *)
         (* D.div ~a:[a_id id] *)

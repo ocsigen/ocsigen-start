@@ -7,7 +7,7 @@
   open Eliom_content.Html5
   open Eliom_content.Html5.F
 
-let generic_email_form ?label ~service () =
+let generic_email_form ?label ?(text="Send") ~service () =
   D.post_form ~service
     (fun name ->
       let l = [
@@ -19,7 +19,7 @@ let generic_email_form ?label ~service () =
         string_input
           ~a:[a_class ["button"]]
           ~input_type:`Submit
-          ~value:"Send"
+          ~value:text
           ();
       ]
       in
