@@ -35,8 +35,10 @@ val userbox :
     The client function given as first parameter will be called first,
     for example to close the menu containing the link. *)
 val upload_pic_link :
+  ?a:[< Html5_types.a_attrib ] Eliom_content.Html5.D.Raw.attrib list ->
+  ?content:Html5_types.a_content Eliom_content.Html5.D.Raw.elt list ->
   (unit -> unit) client_value ->
-  uploader -> [> `A of [> `PCDATA ] ] Eliom_content.Html5.D.Raw.elt
+  uploader -> [> `A of Html5_types.a_content ] Eliom_content.Html5.D.Raw.elt
 
 (** Link to start to see the help from the begining.
     The client function given as first parameter will be called first,

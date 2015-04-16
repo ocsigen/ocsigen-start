@@ -53,8 +53,9 @@ let uploader avatar_directory = Ow_pic_uploader.make
 
 {shared{
 
-  let upload_pic_link close uploader =
-    let link = D.Raw.a [pcdata "Change profile picture"] in
+let upload_pic_link ?a ?(content=[pcdata "Change profile picture"])
+    close uploader =
+    let link = D.Raw.a ?a content in
     ignore {unit{
       Lwt_js_events.async (fun () ->
         Lwt_js_events.clicks (To_dom.of_element %link)
