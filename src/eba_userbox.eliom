@@ -29,7 +29,7 @@ let uploader avatar_directory = Ow_pic_uploader.make
     ~directory:avatar_directory
     ~name:"uppic"
     ~crop_ratio:(Some 1.)
-    ~max_width:500
+    ~max_width:256 ~max_height:256
     ~service_wrapper:(fun f -> Eba_session.connected_rpc (fun userid -> f))
     ~crop_wrapper:(fun f -> Eba_session.connected_rpc
                       (fun userid p ->
