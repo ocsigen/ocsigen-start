@@ -7,8 +7,8 @@
   open Eliom_content.Html5
   open Eliom_content.Html5.F
 
-let generic_email_form ?label ?(text="Send") ~service () =
-  D.post_form ~service
+let generic_email_form ?a ?label ?(text="Send") ~service () =
+  D.post_form ?a ~service
     (fun name ->
       let l = [
         string_input
@@ -27,8 +27,8 @@ let generic_email_form ?label ?(text="Send") ~service () =
         | None -> l
         | Some lab -> F.label [pcdata lab]::l) ()
 
-let connect_form () =
-  D.post_form ~xhr:false ~service:%Eba_services.connect_service
+let connect_form ?a () =
+  D.post_form ?a ~xhr:false ~service:%Eba_services.connect_service
     (fun (login, password) -> [
       string_input
         ~a:[a_placeholder "Your email"]
@@ -50,24 +50,24 @@ let connect_form () =
 }}
 
 {shared{
-let disconnect_button () =
-  post_form ~service:%Eba_services.disconnect_service
+let disconnect_button ?a () =
+  post_form ?a ~service:%Eba_services.disconnect_service
     (fun _ -> [
          button ~button_type:`Submit
            [Ow_icons.F.signout (); pcdata "Logout"]
        ]) ()
 
-let sign_up_form () =
-  generic_email_form ~service:%Eba_services.sign_up_service' ()
+let sign_up_form ?a () =
+  generic_email_form ?a ~service:%Eba_services.sign_up_service' ()
 
-let forgot_password_form () =
-  generic_email_form
+let forgot_password_form ?a () =
+  generic_email_form ?a
     ~service:%Eba_services.forgot_password_service ()
 
-let information_form
+let information_form ?a
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
     () =
-  D.post_form ~service:%Eba_services.set_personal_data_service'
+  D.post_form ?a ~service:%Eba_services.set_personal_data_service'
     (fun ((fname, lname), (passwordn1, passwordn2)) ->
        let pass1 = D.string_input
            ~a:[a_placeholder "Your password"]
@@ -118,11 +118,11 @@ let information_form
        ]) ()
 
 
-let preregister_form label =
-  generic_email_form ~service:%Eba_services.preregister_service' ~label ()
+let preregister_form ?a label =
+  generic_email_form ?a ~service:%Eba_services.preregister_service' ~label ()
 
-let home_button () =
-  form ~service:%Eba_services.main_service
+let home_button ?a () =
+  form ?a ~service:%Eba_services.main_service
     (fun _ -> [
       string_input
         ~input_type:`Submit
@@ -149,8 +149,9 @@ let username user =
   in
   div ~a:[a_class ["eba_username"]] n
 
-let password_form ~service () =
+let password_form ?a ~service () =
   D.post_form
+    ?a
     ~service
     (fun (pwdn, pwd2n) ->
        let pass1 =
