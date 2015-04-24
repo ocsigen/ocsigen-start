@@ -81,7 +81,7 @@ let _ = Lwt.async (fun () ->
 {shared{
 open CalendarLib
 
-type local_date = CalendarLib.Calendar.t
+type local_calendar = CalendarLib.Calendar.t
 
 let to_local date =
   let user_tz = user_tz () in
@@ -95,14 +95,16 @@ let now () = to_local (CalendarLib.Calendar.now ())
 
 let to_local_time = CalendarLib.Calendar.to_time
 let to_local_date = CalendarLib.Calendar.to_date
+let local_to_calendar x = x
+let local_from_calendar x = x
 
 let smart_date ?(now = now()) local_date =
   let local_date = Calendar.to_date local_date in
   let today = Calendar.to_date now in
   let p = Date.Period.safe_nb_days (Date.sub local_date today) in
   match p with
-    0  -> "Today"
-  | 1  -> "Tomorrow"
+  |  0 -> "Today"
+  |  1 -> "Tomorrow"
   | -1 -> "Yesterday"
   | _  ->
       let format =
