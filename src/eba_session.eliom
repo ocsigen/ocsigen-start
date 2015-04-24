@@ -30,8 +30,9 @@ let user_indep_process_scope = `Client_process user_indep_state_hierarchy
 let user_indep_session_scope = `Session user_indep_state_hierarchy
 
 {client{
-  (* This will close the client process *)
-  let close_client_process () =
+  (* This will show a message saying that client process is closed *)
+  let close_client_process ?exn () =
+    Eliom_lib.Option.iter (Eliom_lib.debug_exn "Process closed - ") exn;
     let d =
       D.div ~a:[a_class ["eba_process_closed"]] [
         img ~alt:("Ocsigen Logo")
@@ -52,16 +53,23 @@ let user_indep_session_scope = `Session user_indep_state_hierarchy
     let d = To_dom.of_div d in
     Dom.appendChild (Dom_html.document##body) d;
     lwt () = Lwt_js_events.request_animation_frame () in
-    d##style##backgroundColor <- Js.string "rgba(255, 255, 255, 0.9)";
-    (* Lwt.async (fun () -> *)
-    (*   lwt _ = Lwt_js_events.click Dom_html.document in *)
-    (*   Eliom_client.change_page ~service:Eliom_service.void_coservice' () () *)
-    (* ); *)
+    d##style##backgroundColor <- Js.string "rgba(255, 255, 255, 0.8)";
+    (* I put both a handler on click and not focus.
+       Sometimes the window hasn't lost focus, thus focus is not enough.
+    *)
     Lwt.async (fun () ->
-      lwt _ = Lwt_js_events.focus Dom_html.window in
-      Eliom_client.change_page ~service:Eliom_service.void_coservice' () ()
+      lwt _ = Lwt_js_events.click Dom_html.document in
+      Eliom_client.exit_to ~service:Eliom_service.void_coservice' () ();
+      Lwt.return ()
     );
+    (* Lwt.async (fun () -> *)
+    (*   lwt _ = Lwt_js_events.focus Dom_html.window in *)
+    (*   Eliom_client.exit_to ~service:Eliom_service.void_coservice' () (); *)
+    (*   Lwt.return () *)
+    (* ); *)
     Lwt.return ()
+
+let _ = Eliom_comet.set_close_process_function close_client_process
 }}
 
 
@@ -132,21 +140,21 @@ exception Permission_denied
 let start_connected_process uid =
   (* We want to warn the client when the server side process state is closed.
      To do that, we listen on a channel and wait for exception. *)
-  let c : unit Eliom_comet.Channel.t =
-    Eliom_comet.Channel.create (fst (Lwt_stream.create ()))
-  in
-  ignore {unit{
-    Lwt.async
-      (fun () ->
-         Lwt.catch
-           (fun () -> Lwt_stream.iter_s (fun () -> Lwt.return ()) %c)
-           (function
-             | Eliom_comet.Process_closed ->
-               close_client_process ()
-             | e ->
-               Eliom_lib.debug_exn "comet exception: " e;
-               Lwt.fail e))
-  }};
+  (* let c : unit Eliom_comet.Channel.t = *)
+  (*   Eliom_comet.Channel.create (fst (Lwt_stream.create ())) *)
+  (* in *)
+  (* ignore {unit{ *)
+  (*   Lwt.async *)
+  (*     (fun () -> *)
+  (*        Lwt.catch *)
+  (*          (fun () -> Lwt_stream.iter_s (fun () -> Lwt.return ()) %c) *)
+  (*          (function *)
+  (*            | Eliom_comet.Process_closed -> close_client_process () *)
+  (*            | e -> *)
+  (*              Eliom_lib.debug_exn "comet exception: " e; *)
+  (*              close_client_process () *)
+  (*              (\* Lwt.fail e *\))) *)
+  (* }}; *)
   start_connected_process_action uid
 
 let connect_volatile uid =
