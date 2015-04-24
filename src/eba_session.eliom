@@ -52,7 +52,15 @@ let user_indep_session_scope = `Session user_indep_state_hierarchy
     let d = To_dom.of_div d in
     Dom.appendChild (Dom_html.document##body) d;
     lwt () = Lwt_js_events.request_animation_frame () in
-    d##style##backgroundColor <- Js.string "rgba(255, 255, 255, 0.7)";
+    d##style##backgroundColor <- Js.string "rgba(255, 255, 255, 0.9)";
+    (* Lwt.async (fun () -> *)
+    (*   lwt _ = Lwt_js_events.click Dom_html.document in *)
+    (*   Eliom_client.change_page ~service:Eliom_service.void_coservice' () () *)
+    (* ); *)
+    Lwt.async (fun () ->
+      lwt _ = Lwt_js_events.focus Dom_html.window in
+      Eliom_client.change_page ~service:Eliom_service.void_coservice' () ()
+    );
     Lwt.return ()
 }}
 
