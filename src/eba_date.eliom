@@ -34,7 +34,7 @@
 
 {client{
    let timezone_offset =
-     truncate (float (jsnew Js.date_now() ##getTimezoneOffset()) /. 60.)
+     truncate (-. float (jsnew Js.date_now() ##getTimezoneOffset()) /. 60.)
    let tz = CalendarLib.Time_Zone.UTC_Plus timezone_offset
    let user_tz () = tz
 }}
