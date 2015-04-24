@@ -93,6 +93,9 @@ let to_utc date =
 
 let now () = to_local (CalendarLib.Calendar.now ())
 
+let to_local_time = CalendarLib.Calendar.to_time
+let to_local_date = CalendarLib.Calendar.to_date
+
 let smart_date ?(now = now()) local_date =
   let local_date = Calendar.to_date local_date in
   let today = Calendar.to_date now in
