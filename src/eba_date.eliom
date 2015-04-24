@@ -32,31 +32,11 @@
   etc.
 *)
 
-{shared{
-
-   let longago = CalendarLib.Calendar.lmake ~year:1 ()
-
-   let to_gmt (t, tz) = CalendarLib.(Time_Zone.on Calendar.to_gmt tz t)
-
-   (* SSS:
-       do not support a connection during the daylight saving times changes *)
-
-   let tz =
-     let open CalendarLib in
-     let t = Unix.gettimeofday () in
-     let gap = (Unix.localtime t).Unix.tm_hour - (Unix.gmtime t).Unix.tm_hour in
-     if gap < -12 then gap + 24 else if gap > 11 then gap - 24 else gap
-
-let _ = CalendarLib.Time_Zone.(change (UTC_Plus tz))
-
-let gmtnow () = CalendarLib.Calendar.to_gmt (CalendarLib.Calendar.now ())
-
-}}
-
 {client{
-
-    let user_tz () = CalendarLib.Time_Zone.UTC_Plus tz
-  }}
+   let timezone_offset = jsnew Js.date_now() ##getTimezoneOffset()
+   let tz = CalendarLib.Time_Zone.UTC_Plus timezone_offset
+   let user_tz () = tz
+}}
 
 let user_tz_sr =
   Eliom_reference.Volatile.eref
@@ -80,87 +60,106 @@ let user_tz () =
 
 
 (* This function is called once by each client process to record on server
-   the time zone of the client, and to get in return the gmt time of the server
-   (to compensate a little bit the gap between server and client clock) *)
+   the time zone of the client *)
 let init_client_process_time tz =
   let tz = CalendarLib.Time_Zone.UTC_Plus tz in
   let () = Eliom_reference.Volatile.set user_tz_gr tz in
   let () = Eliom_reference.Volatile.set user_tz_sr tz in
-  Lwt.return (gmtnow ())
+  Lwt.return ()
 
-let init_time_rpc =
-  server_function
-    Json.t<int>
-  init_client_process_time
-
+let init_time_rpc = server_function Json.t<int> init_client_process_time
 
 {client{
-
-let gmtnow_client = gmtnow ()
-
-let timediff : CalendarLib.Calendar.Period.t ref =
-  ref CalendarLib.Calendar.Period.empty
 
 let _ = Lwt.async (fun () ->
   (* We wait for the client process to be fully loaded: *)
   lwt _ = Lwt_js_events.onload () in
-  lwt gmtnow_server = %init_time_rpc tz in
-  timediff := CalendarLib.Calendar.sub gmtnow_client gmtnow_server;
-  Lwt.return ())
-
-(* The reference is server date: we fix local date to match server date *)
-let now () =
-  CalendarLib.Calendar.rem
-    (CalendarLib.Calendar.now ())
-    !timediff
-
-let gmtnow () =
-  CalendarLib.Calendar.rem
-    (gmtnow ())
-    !timediff
-
-let time_now () = CalendarLib.Calendar.to_time (now ())
+  %init_time_rpc timezone_offset)
 
 }}
-
-let now = CalendarLib.Calendar.now
 
 {shared{
 open CalendarLib
 
-let smart_date gmtdate =
+type local_date = CalendarLib.Calendar.t
+
+let to_local date =
   let user_tz = user_tz () in
-  if user_tz = CalendarLib.Time_Zone.UTC (* means: not set *)
-  then Printer.Calendar.sprint "%A %d %B %Y" gmtdate
-  else
-    let date =
-      CalendarLib.(Time_Zone.on Calendar.from_gmt user_tz gmtdate) in
-    let date = Calendar.to_date date in
-    let today =
-      CalendarLib.(Time_Zone.on Calendar.from_gmt user_tz (gmtnow ())) in
-    let today = Calendar.to_date today in
-    let p = Date.Period.safe_nb_days (Date.sub date today) in
-    if p  = 0 then "Today" else
-    if p = 1 || p = -1
-    then "Yesterday"
-    else let format =
-      if (Date.year date = Date.year today)
-      then "%A %d %B" else "%A %d %B %Y"
+  CalendarLib.(Time_Zone.on Calendar.from_gmt user_tz date)
+
+let to_utc date =
+  let user_tz = user_tz () in
+  CalendarLib.(Time_Zone.on Calendar.to_gmt user_tz date)
+
+let now () = to_local (CalendarLib.Calendar.now ())
+
+let smart_date ?(now = now()) local_date =
+  let local_date = Calendar.to_date local_date in
+  let today = Calendar.to_date now in
+  let p = Date.Period.safe_nb_days (Date.sub local_date today) in
+  match p with
+    0  -> "Today"
+  | 1  -> "Tomorrow"
+  | -1 -> "Yesterday"
+  | _  ->
+      let format =
+        if Date.year local_date = Date.year today then
+          "%A %B %d "
+        else
+          "%A %B %d, %Y"
       in
-      Printer.Date.sprint format date
+      Printer.Date.sprint format local_date
 
-let hours_minutes gmtdate =
-  let user_tz = user_tz () in
-  if user_tz = CalendarLib.Time_Zone.UTC (* means: not set *)
-  then Printer.Calendar.sprint "%-H:%M GMT" gmtdate
+let smart_hours_minutes local_date =
+  Printer.Calendar.sprint "%-I:%M%P" local_date
+
+let smart_hours_minutes_fixed local_date =
+  Printer.Calendar.sprint "%I:%M%P" local_date
+
+let unknown_timezone () = user_tz () = CalendarLib.Time_Zone.UTC
+
+let smart_hours_minutes date =
+  if unknown_timezone () then
+    smart_hours_minutes date ^ " GMT"
   else
-    let date =
-      CalendarLib.(Time_Zone.on Calendar.from_gmt user_tz gmtdate) in
-    Printer.Calendar.sprint "%-H:%M" date
+    smart_hours_minutes date
 
-let smart_time gmtdate =
-  let d = smart_date gmtdate in
-  let h = hours_minutes gmtdate in
-  d^" at "^h
+let smart_time ?now date =
+  let d = smart_date ?now date in
+  let h = smart_hours_minutes date in
+  d ^ " at " ^ h
+
+let smart_date_interval ?(now = now ()) start_date end_date =
+  let need_year =
+    Calendar.year start_date <> Calendar.year end_date
+      ||
+    Calendar.year start_date <> Calendar.year now
+  in
+  let format = if need_year then "%B %d, %Y" else "%B %d" in
+  let module Printer = CalendarLib.Printer.Calendar in
+  let s = Printer.sprint format start_date in
+  let e = Printer.sprint format (Calendar.prev end_date `Second) in
+  if s = e then smart_date ~now start_date else s ^ "–" ^ e
+
+let smart_interval ?(now = now ()) start_date end_date =
+  let need_year =
+    Calendar.year start_date <> Calendar.year end_date
+      ||
+    Calendar.year start_date <> Calendar.year now
+  in
+  let need_both_days =
+    Date.compare (Calendar.to_date start_date) (Calendar.to_date end_date) <> 0
+  in
+  let format1 =
+    if need_year then
+      "%B %d, %Y, %I:%M%P"
+    else
+      "%B %d, %I:%M%P"
+  in
+  let format2 = if need_both_days then format1 else "%I:%M%P" in
+  let module Printer = CalendarLib.Printer.Calendar in
+  let s = Printer.sprint format1 start_date in
+  let e = Printer.sprint format2 end_date in
+  s ^ "–" ^ e
 
 }}

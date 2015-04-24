@@ -84,7 +84,7 @@ let () =
     Lwt.return ());
   Eba_session.on_connected_request (fun userid ->
     lwt () = set_user_server userid in
-    let now = Eba_date.gmtnow () in
+    let now = CalendarLib.Calendar.now () in
     Eliom_reference.set last_activity (Some now));
   Eba_session.on_close_session (fun () ->
     unset_user_client (); (*VVV!!! will affect only current tab!! *)
