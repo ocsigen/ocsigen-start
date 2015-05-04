@@ -28,7 +28,7 @@ val fullname_of_user : t -> string
 val is_complete : t -> bool
 }}
 
-val email_of_user : t -> string Lwt.t
+val emails_of_user : t -> string Lwt.t
 
 
 val add_activationkey : act_key:string -> int64 -> unit Lwt.t
@@ -44,11 +44,17 @@ val userid_of_activationkey : string -> int64 Lwt.t
 
 val userid_of_email : string -> int64 Lwt.t
 
-(** Retrieve the main e-mail from user id. *)
+(** Retrieve e-mails from user id. *)
+val emails_of_userid : int64 -> string list Lwt.t
+
+(** Retrieve one of the e-mails of a user. *)
+val email_of_user : t -> string Lwt.t
+
+(** Retrieve one of the e-mails from user id. *)
 val email_of_userid : int64 -> string Lwt.t
 
-(** Retrieve the main e-mail of a user. *)
-val email_of_user : t -> string Lwt.t
+(** Retrieve e-mails of a user. *)
+val emails_of_user : t -> string list Lwt.t
 
 (** Get users who match the [pattern] (useful for completion) *)
 val get_users : ?pattern:string -> unit -> t list Lwt.t

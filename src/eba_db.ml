@@ -352,9 +352,9 @@ module User = struct
         in
         Lwt.return userid)
 
-  let email_of_userid userid =
+  let emails_of_userid userid =
     full_transaction_block (fun dbh ->
-      lwt r = Lwt_Query.view_one dbh
+      lwt r = Lwt_Query.view dbh
           <:view< { t2.email } |
                     t1 in $users_table$;
                     t2 in $emails_table$;
@@ -362,7 +362,21 @@ module User = struct
                     t1.userid = $int64:userid$;
             >>
       in
-      Lwt.return (r#!email))
+      Lwt.return (List.map (fun a -> a#!email) r))
+
+  let email_of_userid userid =
+    full_transaction_block (fun dbh ->
+      lwt r = Lwt_Query.view dbh
+          <:view< { t2.email } limit 1 |
+                    t1 in $users_table$;
+                    t2 in $emails_table$;
+                    t1.userid = t2.userid;
+                    t1.userid = $int64:userid$;
+            >>
+      in
+      match r with
+      | [a] -> Lwt.return a#!email
+      | _ -> Lwt.fail No_such_resource)
 
   let userid_of_email email =
     full_transaction_block (fun dbh ->
