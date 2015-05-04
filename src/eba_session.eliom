@@ -29,50 +29,6 @@ let user_indep_state_hierarchy = Eliom_common.create_scope_hierarchy "userindep"
 let user_indep_process_scope = `Client_process user_indep_state_hierarchy
 let user_indep_session_scope = `Session user_indep_state_hierarchy
 
-{client{
-  (* This will show a message saying that client process is closed *)
-  let close_client_process ?exn () =
-    Eliom_lib.Option.iter (Eliom_lib.debug_exn "Process closed - ") exn;
-    let d =
-      D.div ~a:[a_class ["eba_process_closed"]] [
-        img ~alt:("Ocsigen Logo")
-          ~src:(Xml.uri_of_string
-                  "http://ocsigen.org/resources/logos/ocsigen_with_shadow.png")
-          ();
-        p [
-          pcdata "Ocsigen process closed.";
-          br ();
-          a ~xhr:false
-            ~service:Eliom_service.void_coservice'
-            [pcdata "Click"]
-            ();
-          pcdata " to restart."
-        ];
-      ]
-    in
-    let d = To_dom.of_div d in
-    Dom.appendChild (Dom_html.document##body) d;
-    lwt () = Lwt_js_events.request_animation_frame () in
-    d##style##backgroundColor <- Js.string "rgba(255, 255, 255, 0.8)";
-    (* I put both a handler on click and not focus.
-       Sometimes the window hasn't lost focus, thus focus is not enough.
-    *)
-    Lwt.async (fun () ->
-      lwt _ = Lwt_js_events.click Dom_html.document in
-      Eliom_client.exit_to ~service:Eliom_service.void_coservice' () ();
-      Lwt.return ()
-    );
-    (* Lwt.async (fun () -> *)
-    (*   lwt _ = Lwt_js_events.focus Dom_html.window in *)
-    (*   Eliom_client.exit_to ~service:Eliom_service.void_coservice' () (); *)
-    (*   Lwt.return () *)
-    (* ); *)
-    Lwt.return ()
-
-let _ = Eliom_comet.set_close_process_function close_client_process
-}}
-
-
 (* Call this to add an action to be done on server side
    when the process starts *)
 let (on_start_process, start_process_action) =
@@ -107,8 +63,16 @@ let (on_open_session, open_session_action) =
       r := (fun userid -> lwt () = oldf userid in f userid)),
    (fun userid -> !r userid))
 
+(* Call this to add an action to be done just after closing the session *)
+let (on_post_close_session, post_close_session_action) =
+  let r = ref (fun _ -> Lwt.return ()) in
+  ((fun f ->
+      let oldf = !r in
+      r := (fun () -> lwt () = oldf () in f ())),
+   (fun () -> !r ()))
+
 (* Call this to add an action to be done just before closing the session *)
-let (on_close_session, close_session_action) =
+let (on_pre_close_session, pre_close_session_action) =
   let r = ref (fun _ -> Lwt.return ()) in
   ((fun f ->
       let oldf = !r in
@@ -174,11 +138,11 @@ let connect userid =
   connect_string (Int64.to_string userid)
 
 let disconnect () =
-  lwt () = close_session_action () in
+  lwt () = pre_close_session_action () in
   lwt () = Eliom_state.discard ~scope:Eliom_common.default_session_scope () in
   lwt () = Eliom_state.discard ~scope:Eliom_common.default_process_scope () in
   lwt () = Eliom_state.discard ~scope:Eliom_common.request_scope () in
-  Lwt.return ()
+  post_close_session_action ()
 
 let check_allow_deny userid allow deny =
   lwt b = match allow with

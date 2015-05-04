@@ -21,7 +21,7 @@
 
 
 (*****************************************************************************)
-(* We use a hashtable associating boxid to a weak set of
+(* We use a hashtable associating resourceid to a weak set of
    (userid option, notif_ev) corresponding to each tab that want to
    get updates of this box.
    We keep a strong reference on these data in process state.
@@ -116,7 +116,7 @@ VVV See if it is still needed
   let set_userchannel_ userid_o =
     (* For each tab connected to the app,
        we keep a pointer to (userid_o, notif_ev) option in process state,
-       because the table boxid -> (userid_o, notif_ev) option
+       because the table resourceid -> (userid_o, notif_ev) option
        is weak.
     *)
     let a = Some (userid_o, Eliom_reference.Volatile.get notif_e) in
@@ -130,9 +130,12 @@ VVV See if it is still needed
 
   let set_userchannel_u userid = set_userchannel_ (Some userid)
 
+  let set_userchannel_none () = set_userchannel_ None
+
   let _ =
     Eba_session.on_start_process set_userchannel;
-    Eba_session.on_start_connected_process set_userchannel_u
+    Eba_session.on_start_connected_process set_userchannel_u;
+    Eba_session.on_post_close_session set_userchannel_none
 
 
   let listen (id : A.key) =

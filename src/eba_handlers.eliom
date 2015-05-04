@@ -174,3 +174,8 @@ let preregister_handler' () email =
        Eba_userbox.user_already_preregistered true;
      Lwt.return ()
    end
+
+
+{shared{
+   let _ = Eba_comet.__link (* to make sure eba_comet is linked *)
+}}

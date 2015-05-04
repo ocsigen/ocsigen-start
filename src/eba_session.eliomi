@@ -36,12 +36,15 @@ val on_start_connected_process : (int64 -> unit Lwt.t) -> unit
     The function takes the user id as parameter. *)
 val on_connected_request : (int64 -> unit Lwt.t) -> unit
 
-(** Call this to add an action to be done just after openning a session
+(** Call this to add an action to be done just after opening a session
     The function takes the user id as parameter. *)
 val on_open_session : (int64 -> unit Lwt.t) -> unit
 
 (** Call this to add an action to be done just before closing the session *)
-val on_close_session : (unit -> unit Lwt.t) -> unit
+val on_pre_close_session : (unit -> unit Lwt.t) -> unit
+
+(** Call this to add an action to be done just after closing the session *)
+val on_post_close_session : (unit -> unit Lwt.t) -> unit
 
 (** Call this to add an action to be done just before handling a request *)
 val on_request : (unit -> unit Lwt.t) -> unit
