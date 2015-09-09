@@ -72,10 +72,10 @@ let init_time_rpc = server_function Json.t<int> init_client_process_time
 
 {client{
 
-let _ = Lwt.async (fun () ->
-  (* We wait for the client process to be fully loaded: *)
-  lwt _ = Lwt_js_events.onload () in
-  %init_time_rpc timezone_offset)
+let _ =
+(* We wait for the client process to be fully loaded: *)
+Eliom_client.onload (fun () ->
+  Lwt.async (fun () -> %init_time_rpc timezone_offset))
 
 }}
 
