@@ -38,13 +38,13 @@
                   "http://ocsigen.org/resources/logos/ocsigen_with_shadow.png")
           ();
         p [
-          pcdata "Ocsigen process closed.";
+          pcdata "Ocsigen process in eco-friendly mode.";
           br ();
           a ~xhr:false
             ~service:Eliom_service.void_coservice'
             [pcdata "Click"]
             ();
-          pcdata " to restart."
+          pcdata " to wake up."
         ];
       ]
     in
