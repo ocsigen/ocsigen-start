@@ -123,7 +123,7 @@ let reset_tips_service = %Eba_tips.reset_tips_service
 
   let user_menu user uploader =
     let but = D.div ~a:[a_class ["eba_usermenu_button"]]
-        [Ow_icons.F.config ~class_:["fa-large"] ()]
+        [Ow_icons.F.config ~a:[a_class ["fa-large"]] ()]
     in
     let menu = D.div [] in
     ignore
