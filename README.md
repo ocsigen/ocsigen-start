@@ -26,7 +26,7 @@ If not, start with a simpler template (but you can still use the modules from El
 ###<a id="install"></a>Installation
 
 Eliom-base-app depends on dev version of Eliom (branch shared react),
-and dev version of js_of_ocaml, ojquery, macaque, ocsigen-widgets and reactiveData.
+and dev version of tyxml, js_of_ocaml, ojquery, macaque, ocsigen-widgets and reactiveData.
 Use opam to install it, after pinning the github repositories.
 
 ###<a id="create-your-project"></a>Create your project
