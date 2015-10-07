@@ -12,12 +12,14 @@ CREATE TABLE users ( -- DEFAULT
 
 CREATE TABLE emails ( -- DEFAULT
        email text primary key, -- DEFAULT
-       userid bigint NOT NULL references users(userid) -- DEFAULT
+       userid bigint NOT NULL references users(userid), -- DEFAULT
+       is_primary boolean NOT NULL,
+       is_activated boolean NOT NULL
 );
 
 CREATE TABLE activation ( -- DEFAULT
        activationkey text primary key, -- DEFAULT
-       userid bigint NOT NULL references users(userid), -- DEFAULT
+       email text NOT NULL references emails(email), -- DEFAULT
        creationdate timestamptz NOT NULL default now()
 );
 

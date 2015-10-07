@@ -82,7 +82,7 @@ let generate_act_key
       with _ -> Lwt.return ());
   act_key
 
-let send_act msg service email userid =
+let send_act msg service email =
   let act_key =
     generate_act_key
       ~service:service
@@ -90,26 +90,25 @@ let send_act msg service email userid =
       email
   in
   Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
-  lwt () = Eba_user.add_activationkey ~act_key userid in
+  lwt () = Eba_user.add_activationkey ~act_key email in
   Lwt.return ()
 
 let sign_up_handler' () email =
-  let send_act email userid =
+  let send_act () =
     let msg =
       "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: " in
     send_act msg Eba_services.main_service email userid
   in
   try_lwt
-    lwt user = Eba_user.create ~firstname:"" ~lastname:"" email in
-    let userid = Eba_user.userid_of_user user in
-    send_act email userid
+    lwt _ = Eba_user.create ~firstname:"" ~lastname:"" email in
+    send_act ()
   with Eba_user.Already_exists userid ->
     (* If password is not set, the user probably never logged in,
        I send an activation link, as if it were a new user. *)
     lwt pwdset = Eba_user.password_set userid in
     if not pwdset
-    then send_act email userid
+    then send_act ()
     else begin
       Eliom_reference.Volatile.set Eba_userbox.user_already_exists true;
       Lwt.return ()

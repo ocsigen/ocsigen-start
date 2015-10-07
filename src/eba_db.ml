@@ -108,7 +108,9 @@ let users_table =
 let emails_table =
   <:table< emails (
        email text NOT NULL,
-       userid bigint NOT NULL
+       userid bigint NOT NULL,
+       is_primary boolean NOT NULL,
+       is_activated boolean NOT NULL
           ) >>
 
 let activation_table :
@@ -117,7 +119,7 @@ let activation_table :
     Sql.view =
   <:table< activation (
        activationkey text NOT NULL,
-       userid bigint NOT NULL,
+       email text NOT NULL,
        creationdate timestamptz NOT NULL DEFAULT(current_timestamp ())
            ) >>
 
@@ -228,7 +230,9 @@ module User = struct
         Lwt_Query.query dbh
           <:insert< $emails_table$ :=
                       { email = $string:email$;
-                        userid  = $int64:userid$}
+                        userid  = $int64:userid$;
+                        is_primary = $bool:true$;
+                        is_activated = $bool:true$}
             >>
       in
       lwt () = remove_preregister email in
@@ -298,11 +302,11 @@ module User = struct
         >>
     )
 
-   let add_activationkey ~act_key userid =
+  let add_activationkey ~act_key email =
     full_transaction_block (fun dbh ->
        Lwt_Query.query dbh
          <:insert< $activation_table$ :=
-                      { userid = $int64:userid$;
+                      { email = $string:email$;
                         activationkey  = $string:act_key$;
                         creationdate = activation_table?creationdate }
          >>)
@@ -347,7 +351,7 @@ module User = struct
       match r with
       | None -> Lwt.fail No_such_resource
       | Some r ->
-        let userid = r#!userid in
+        lwt userid = select_user_from_email_q dbh r#!email in
         lwt () = Lwt_Query.query dbh
             <:delete< r in $activation_table$ |
                       r.activationkey = $string:act_key$ >>
