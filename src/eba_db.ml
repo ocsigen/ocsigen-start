@@ -34,13 +34,15 @@ module PGOCaml = Lwt_PGOCaml
 
 let port = ref 3000
 let db = ref "eba"
+let host = ref "localhost"
 
-let init ~port:p ~database () =
+let init ~port:p ~database ~db_host () =
   port := p;
-  db := database
+  db := database;
+  host := db_host
 
 let connect () =
-  Lwt_PGOCaml.connect ~port:!port ~database:!db ()
+  Lwt_PGOCaml.connect ~host:!host ~port:!port ~database:!db ()
 
 let validate db =
   try_lwt
