@@ -27,6 +27,8 @@ let header ?user () =
         [
           li [a ~service:Eba_services.main_service
                 [pcdata "Home"] ()];
+          li [a ~service:Eba_services.manage_email_service
+                [pcdata "Manage emails"] ()];
           li [a ~service:%%%MODULE_NAME%%%_services.about_service
                 [pcdata "About"] ()]
         ];

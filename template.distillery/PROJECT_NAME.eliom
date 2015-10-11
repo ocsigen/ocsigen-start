@@ -13,6 +13,13 @@ let main_service_handler userid_o () () =
     ]
   )
 
+let manage_email_service_handler userid_o () () =
+  %%%MODULE_NAME%%%_container.page userid_o (
+    [
+     p [em [pcdata "Handle your emails here"]]
+    ]
+  )
+
 let about_handler userid_o () () =
   %%%MODULE_NAME%%%_container.page userid_o [
     div [
@@ -62,6 +69,10 @@ let () =
   %%%MODULE_NAME%%%_base.App.register
     Eba_services.main_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page main_service_handler);
+
+  %%%MODULE_NAME%%%_base.App.register
+    Eba_services.manage_email_service
+    (%%%MODULE_NAME%%%_page.Opt.connected_page manage_email_service_handler);
 
   %%%MODULE_NAME%%%_base.App.register
     %%%MODULE_NAME%%%_services.about_service
