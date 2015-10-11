@@ -201,7 +201,10 @@ let rpc_add_email_to_user =
   let add_email (user, email) =
       Eba_user.add_email_to_user user email
   in
-    server_function Json.t<int64 * string> add_email
+  server_function Json.t<int64 * string> add_email
+
+let rpc_update_users_primary_email =
+  server_function Json.t<string> Eba_user.update_users_primary_email
 }}
 
 {client{
@@ -215,10 +218,10 @@ module ReactList = struct
 end
 
 module Model = struct
+    type activation_state = [`Unit | `Act_key_sent | `Activated]
     type non_primary_mail = {
         email: string;
-        is_activated: bool;
-        act_key_sent: bool;
+        activation_state: activation_state;
       }
     type mails = {userid: int64;
                   add_mail_error: string option;
@@ -238,9 +241,12 @@ module Model = struct
       let add_mail_error = None in
       let others = List.map
                      (fun (email, is_activated, _) ->
+                      let activation_state =
+                        if is_activated then `Activated
+                        else `Unit
+                      in
                       {email;
-                       is_activated;
-                       act_key_sent})
+                       activation_state})
                      others in
       Lwt.return {userid;add_mail_error;
                   primary; others}
@@ -299,6 +305,40 @@ let add_email_error emails f =
      in
      [msg; create_button "Clear msg" onclick]
 
+let show_one_other emails other f =
+  let open Tyxml_js in
+  let msg = Html5.pcdata other.Model.email in
+
+  let after_msg =
+    match other.Model.activation_state with
+    | `Unit ->
+       let onclick () =
+         let this, new_others = Model.(List.partition
+                                         (fun x -> x.email = other.email)
+                                         emails.others) in
+         let this = List.hd this in
+         let this = Model.({this with activation_state=`Act_key_sent}) in
+         let others = this :: new_others in
+         let newm = {emails with others = others} in
+         let () = f (`Connected newm) in
+         Lwt.return_unit
+       in
+       create_button "Activate" onclick
+    | `Activated ->
+       let onclick () =
+         lwt () = Model.(%rpc_update_users_primary_email other.email) in
+         lwt newf = Model.create_connected emails.userid in
+         let () = f (`Connected newf) in
+         Lwt.return_unit
+       in
+       create_button "Set as primary mail" onclick
+   | `Act_key_sent -> Html5.pcdata ", Activation key sent"
+  in
+  Html5.(div [msg; after_msg])
+
+let show_others emails f =
+  List.map (fun x -> show_one_other emails x f) emails.Model.others
+
 let multiple_emails_content f model =
   let open Tyxml_js in
   match model with
@@ -307,7 +347,8 @@ let multiple_emails_content f model =
      let p_mail = Html5.pcdata ("Primary email: " ^ emails.Model.primary) in
      let add_ui = create_add_email_div emails f in
      let add_error_ui = add_email_error emails f in
-     Html5.([p [em [p_mail]]] @ add_error_ui @ [add_ui])
+     let others = show_others emails f in
+     Html5.([p [em [p_mail]]] @ add_error_ui @ [add_ui] @ others)
 
 let view_multiple_emails ((r, f): Model.rp) =
     let new_elements = React.S.map (multiple_emails_content f) r in
@@ -324,5 +365,4 @@ let setup_multiple_emails userid_o =
     let new_div = Tyxml_js.To_dom.of_div (view_multiple_emails rp) in
     let () = Dom.appendChild parent new_div in
     Lwt.return_unit
-
- }}
+}}

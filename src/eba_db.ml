@@ -233,7 +233,7 @@ module User = struct
                 t.email = $string:email$
          >>
   (* Does not check whether the email is activated *)
-  let update_users_primary_email dbh email =
+  let update_users_primary_email email =
     full_transaction_block (fun dbh ->
        lwt userid = select_user_from_email_q dbh email in
        lwt emails = emails_and_params_of_userid_q userid dbh in
