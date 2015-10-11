@@ -11,19 +11,7 @@
 let uploader = Eba_userbox.uploader !%%%MODULE_NAME%%%_config.avatar_dir
 
 {client{
-let user_menu close user uploader =
-  [
-    p [pcdata "Change your password:"];
-    Eba_view.password_form ~service:%Eba_services.set_password_service' ();
-    hr ();
-    Eba_userbox.upload_pic_link close uploader;
-    hr ();
-    Eba_userbox.reset_tips_link close;
-    hr ();
-    Eba_view.disconnect_button ();
-  ]
-
-let _ = Eba_userbox.set_user_menu user_menu
+let _ = Eba_userbox.set_user_menu Eba_userbox.default_user_menu
  }}
 
 let header ?user () =

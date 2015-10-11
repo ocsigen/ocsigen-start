@@ -100,7 +100,8 @@ let reset_tips_service = %Eba_tips.reset_tips_service
     l
 
 
-  let user_menu_ close user uploader =
+
+  let default_user_menu close user uploader =
   [
     p [pcdata "Change your password:"];
     Eba_view.password_form ~service:%Eba_services.set_password_service' ();
@@ -115,7 +116,7 @@ let reset_tips_service = %Eba_tips.reset_tips_service
 }}
 {client{
   let user_menu_fun =
-    ref (user_menu_
+    ref (default_user_menu
          : (unit -> unit) ->
          'a -> 'b -> Html5_types.div_content Eliom_content.Html5.elt list)
 }}
