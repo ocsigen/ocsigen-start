@@ -99,6 +99,20 @@ let reset_tips_service = %Eba_tips.reset_tips_service
     }};
     l
 
+  let manage_notification_emails close =
+    let l = D.Raw.a [pcdata "Manage emails"] in
+    ignore {unit{
+      Lwt_js_events.(async (fun () ->
+        clicks (To_dom.of_element %l)
+          (fun _ _ ->
+             %close ();
+             Eliom_client.exit_to
+               ~service:%reset_tips_service
+               () ();
+             Lwt.return ()
+          )));
+    }};
+    l
 
 
   let default_user_menu close user uploader =
@@ -107,6 +121,8 @@ let reset_tips_service = %Eba_tips.reset_tips_service
     Eba_view.password_form ~service:%Eba_services.set_password_service' ();
     hr ();
     upload_pic_link close uploader;
+    hr ();
+    manage_notification_emails close;
     hr ();
     reset_tips_link close;
     hr ();
