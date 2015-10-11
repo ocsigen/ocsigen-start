@@ -14,9 +14,10 @@ let main_service_handler userid_o () () =
   )
 
 let manage_email_service_handler userid_o () () =
+  let _ = {unit Lwt.t{Eba_view.setup_multiple_emails ()}} in
   %%%MODULE_NAME%%%_container.page userid_o (
     [
-     p [em [pcdata "Handle your emails here"]]
+     div ~a:[a_id Eba_view.multiple_email_div_id] []
     ]
   )
 

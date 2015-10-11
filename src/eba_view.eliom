@@ -190,4 +190,44 @@ let password_form ?a ~service () =
          string_input ~input_type:`Submit ~value:"Send" ()
        ])
     ()
+
+let multiple_email_div_id = "multiple_email"
+}}
+
+{client{
+
+module ReactList = struct
+    let list t =
+      let open ReactiveData.RList in
+      make_from
+        (React.S.value t)
+        (React.E.map (fun e -> Set e) (React.S.changes t))
+end
+
+module Model = struct
+    type state = unit
+    type rs = state React.signal
+    type rf = ?step:React.step -> state -> unit
+    type rp = rs * rf
+end
+
+let multiple_emails_content f model =
+    Tyxml_js.([Html5.(em [pcdata "Manage your emails."])])
+
+let view_multiple_emails ((r, f): Model.rp) =
+    let new_elements = React.S.map (multiple_emails_content f) r in
+    Tyxml_js.R.Html5.(div (ReactList.list new_elements))
+
+let setup_multiple_emails () =
+    let doc = Dom_html.document in
+    let parent =
+      Js.Opt.get (doc##getElementById(Js.string multiple_email_div_id))
+        (fun () -> assert false)
+    in
+    let model = () in
+    let rp = React.S.create model in
+    let new_div = Tyxml_js.To_dom.of_div (view_multiple_emails rp) in
+    let () = Dom.appendChild parent new_div in
+    Lwt.return_unit
+
  }}
