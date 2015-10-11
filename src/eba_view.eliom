@@ -265,42 +265,49 @@ let create_button name onclick =
                                              (fun _ _ -> onclick ()))) in
   b
 
+let create_add_email_div emails f =
+  let open Tyxml_js in
+  let add_input = create_input "New email" in
+  let onclick () =
+    let value = input_value add_input in
+    let userid = emails.Model.userid in
+    lwt newmodel =
+      try_lwt
+        lwt () = %rpc_add_email_to_user (userid, value) in
+        Model.create (Some userid)
+      with _ ->
+        let newmodel = {emails with Model.add_mail_error = Some value} in
+        Lwt.return (`Connected newmodel)
+    in
+    let () = f newmodel in
+    Lwt.return_unit
+  in
+  let button = create_button "Add" onclick in
+  let div_content = [add_input; button] in
+  Html5.(div div_content)
+
+let add_email_error emails f =
+  let open Tyxml_js in
+  match emails.Model.add_mail_error with
+  | None -> []
+  | Some error ->
+     let msg = Html5.pcdata (error ^ " already exists") in
+     let onclick () =
+       let newm = {emails with Model.add_mail_error = None} in
+       let () = f (`Connected newm) in
+       Lwt.return_unit
+     in
+     [msg; create_button "Clear msg" onclick]
 
 let multiple_emails_content f model =
   let open Tyxml_js in
   match model with
   | `NotConnected ->  [Html5.(em [pcdata "Please sign-in."])]
   | `Connected emails ->
-     let add_input = create_input "New email" in
-     let onclick () =
-       let value = input_value add_input in
-       let userid = emails.Model.userid in
-       lwt newmodel =
-         try_lwt
-           lwt () = %rpc_add_email_to_user (userid, value) in
-           Model.create (Some userid)
-         with _ ->
-           let newmodel = {emails with Model.add_mail_error = Some value} in
-           Lwt.return (`Connected newmodel)
-       in
-       let () = f newmodel in
-       Lwt.return_unit
-     in
-     let button = create_button "Add" onclick in
-     let div_content = [add_input; button] in
      let p_mail = Html5.pcdata ("Primary email: " ^ emails.Model.primary) in
-     let mail_error = match emails.Model.add_mail_error with
-       | None -> []
-       | Some error ->
-          let msg = Html5.pcdata (error ^ " already exists") in
-          let onclick () =
-            let newm = {emails with Model.add_mail_error = None} in
-            let () = f (`Connected newm) in
-            Lwt.return_unit
-          in
-          [msg; create_button "Clear msg" onclick]
-     in
-     Html5.([p [em [p_mail]]] @ mail_error @ [div div_content])
+     let add_ui = create_add_email_div emails f in
+     let add_error_ui = add_email_error emails f in
+     Html5.([p [em [p_mail]]] @ add_error_ui @ [add_ui])
 
 let view_multiple_emails ((r, f): Model.rp) =
     let new_elements = React.S.map (multiple_emails_content f) r in
