@@ -221,6 +221,7 @@ module Model = struct
         act_key_sent: bool;
       }
     type mails = {userid: int64;
+                  add_mail_error: string option;
                   primary: string;
                   others: non_primary_mail list}
     type state = [`NotConnected | `Connected of mails]
@@ -234,13 +235,15 @@ module Model = struct
       let primary, others =  List.partition f mails in
       let (primary, _, _) = List.hd primary in
       let act_key_sent = false in
+      let add_mail_error = None in
       let others = List.map
                      (fun (email, is_activated, _) ->
                       {email;
                        is_activated;
                        act_key_sent})
                      others in
-      Lwt.return {userid; primary; others}
+      Lwt.return {userid;add_mail_error;
+                  primary; others}
 
     let create userido =
       match userido with
@@ -272,16 +275,32 @@ let multiple_emails_content f model =
      let onclick () =
        let value = input_value add_input in
        let userid = emails.Model.userid in
-       lwt () = %rpc_add_email_to_user (userid, value) in
-       lwt newmodel = Model.create (Some userid) in
+       lwt newmodel =
+         try_lwt
+           lwt () = %rpc_add_email_to_user (userid, value) in
+           Model.create (Some userid)
+         with _ ->
+           let newmodel = {emails with Model.add_mail_error = Some value} in
+           Lwt.return (`Connected newmodel)
+       in
        let () = f newmodel in
        Lwt.return_unit
      in
      let button = create_button "Add" onclick in
      let div_content = [add_input; button] in
      let p_mail = Html5.pcdata ("Primary email: " ^ emails.Model.primary) in
-     Html5.([p [em [p_mail]];
-             div div_content])
+     let mail_error = match emails.Model.add_mail_error with
+       | None -> []
+       | Some error ->
+          let msg = Html5.pcdata (error ^ " already exists") in
+          let onclick () =
+            let newm = {emails with Model.add_mail_error = None} in
+            let () = f (`Connected newm) in
+            Lwt.return_unit
+          in
+          [msg; create_button "Clear msg" onclick]
+     in
+     Html5.([p [em [p_mail]]] @ mail_error @ [div div_content])
 
 let view_multiple_emails ((r, f): Model.rp) =
     let new_elements = React.S.map (multiple_emails_content f) r in
