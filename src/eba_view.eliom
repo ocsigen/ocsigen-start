@@ -195,7 +195,13 @@ let multiple_email_div_id = "multiple_email"
 }}
 {server{
 let rpc_emails_and_params_of_userid =
-    server_function Json.t<int64> Eba_user.emails_and_params_of_userid
+  server_function Json.t<int64> Eba_user.emails_and_params_of_userid
+
+let rpc_add_email_to_user =
+  let add_email (user, email) =
+      Eba_user.add_email_to_user user email
+  in
+    server_function Json.t<int64 * string> add_email
 }}
 
 {client{
@@ -214,7 +220,8 @@ module Model = struct
         is_activated: bool;
         act_key_sent: bool;
       }
-    type mails = {primary: string;
+    type mails = {userid: int64;
+                  primary: string;
                   others: non_primary_mail list}
     type state = [`NotConnected | `Connected of mails]
     type rs = state React.signal
@@ -233,7 +240,7 @@ module Model = struct
                        is_activated;
                        act_key_sent})
                      others in
-      Lwt.return {primary; others}
+      Lwt.return {userid; primary; others}
 
     let create userido =
       match userido with
@@ -243,12 +250,38 @@ module Model = struct
          Lwt.return (`Connected res)
 end
 
+let create_input name =
+  Tyxml_js.Html5.(input ~a:[a_input_type `Text; a_placeholder name]) ()
+
+let input_value i = Js.to_string (Tyxml_js.To_dom.of_input i) ## value
+
+let create_button name onclick =
+  let b = Tyxml_js.Html5.(button [pcdata name]) in
+  let () = Lwt_js_events.(async (fun () -> clicks
+                                             (Tyxml_js.To_dom.of_button b)
+                                             (fun _ _ -> onclick ()))) in
+  b
+
+
 let multiple_emails_content f model =
   let open Tyxml_js in
   match model with
   | `NotConnected ->  [Html5.(em [pcdata "Please sign-in."])]
   | `Connected emails ->
-     [Html5.(p [em [pcdata ("Primary email: " ^ emails.Model.primary)]])]
+     let add_input = create_input "New email" in
+     let onclick () =
+       let value = input_value add_input in
+       let userid = emails.Model.userid in
+       lwt () = %rpc_add_email_to_user (userid, value) in
+       lwt newmodel = Model.create (Some userid) in
+       let () = f newmodel in
+       Lwt.return_unit
+     in
+     let button = create_button "Add" onclick in
+     let div_content = [add_input; button] in
+     let p_mail = Html5.pcdata ("Primary email: " ^ emails.Model.primary) in
+     Html5.([p [em [p_mail]];
+             div div_content])
 
 let view_multiple_emails ((r, f): Model.rp) =
     let new_elements = React.S.map (multiple_emails_content f) r in

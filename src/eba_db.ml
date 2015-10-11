@@ -216,6 +216,16 @@ module User = struct
                     t.email = $string:email$
              >>)
 
+  let add_email_to_user userid email =
+    full_transaction_block (fun dbh ->
+        Lwt_Query.query dbh
+            <:insert< $emails_table$ :=
+                 { email = $string:email$;
+                   userid  = $int64:userid$;
+                   is_primary = $bool:false$;
+                   is_activated = $bool:false$}
+            >>)
+
   let set_email_is_primary_q is_primary email dbh =
     Lwt_Query.query dbh
       <:update< t in $emails_table$ :=

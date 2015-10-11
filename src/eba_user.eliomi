@@ -46,8 +46,10 @@ val userid_of_email : string -> int64 Lwt.t
 
 (** Retrieve e-mails from user id. *)
 val emails_of_userid : int64 -> string list Lwt.t
+
 (** Retrieve (email, is_primary, is_activated) list from user id. *)
 val emails_and_params_of_userid: int64 -> (string * bool * bool) list Lwt.t
+
 (** Retrieve one of the e-mails of a user. *)
 val email_of_user : t -> string Lwt.t
 
@@ -56,6 +58,9 @@ val email_of_userid : int64 -> string Lwt.t
 
 (** Retrieve e-mails of a user. *)
 val emails_of_user : t -> string list Lwt.t
+
+(** Add additional email to user. *)
+val add_email_to_user: int64 -> string -> unit Lwt.t
 
 (** Get users who match the [pattern] (useful for completion) *)
 val get_users : ?pattern:string -> unit -> t list Lwt.t
