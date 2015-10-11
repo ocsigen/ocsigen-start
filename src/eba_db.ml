@@ -21,6 +21,7 @@
  *)
 
 exception No_such_resource
+exception Cannot_delete_primary_mail
 
 let (>>=) = Lwt.bind
 
@@ -194,6 +195,61 @@ module User = struct
             >>
         in Lwt.return true
       with No_such_resource -> Lwt.return false)
+
+  let get_users_emails_q userid dbh =
+    Lwt_Query.view dbh
+      <:view< { t.email; t.is_primary; t.is_activated } |
+                t in $emails_table$;
+                t.userid = $int64:userid$;
+      >>
+
+  let get_users_emails userid =
+    full_transaction_block (get_users_emails_q userid)
+
+  let activate_email email =
+    full_transaction_block (fun dbh ->
+        Lwt_Query.query dbh
+          <:update< t in $emails_table$ :=
+                   { is_activated = $bool:true$ } |
+                    t.email = $string:email$
+             >>)
+
+  let set_email_is_primary_q is_primary email dbh =
+    Lwt_Query.query dbh
+      <:update< t in $emails_table$ :=
+               { is_primary = $bool:is_primary$ } |
+                t.email = $string:email$
+         >>
+  (* Does not check whether the email is activated *)
+  let update_users_primary_email dbh email =
+    full_transaction_block (fun dbh ->
+       lwt userid = select_user_from_email_q dbh email in
+       lwt emails = get_users_emails_q userid dbh in
+       let primary = List.filter (fun x -> x#!is_primary) emails in
+       lwt () =
+           match primary with
+           | [hd] -> set_email_is_primary_q false hd#!email dbh
+           | _ -> Lwt.return_unit
+       in
+       set_email_is_primary_q true email dbh)
+
+  let get_email_q dbh email =
+    Lwt_Query.view_opt dbh
+          <:view< t |
+                  t in $emails_table$;
+                  t.email = $string: email$;
+          >>
+
+  let delete_email email =
+    full_transaction_block (fun dbh ->
+        match_lwt (get_email_q dbh email) with
+        | None -> Lwt.return_unit
+        | Some r ->
+           if r#!is_primary then Lwt.fail Cannot_delete_primary_mail
+           else
+            Lwt_Query.query dbh
+            <:delete< t in $emails_table$ |
+                      t.email = $string:email$ >>)
 
   let all ?(limit = 10L) () =
     full_transaction_block (fun dbh ->
