@@ -46,7 +46,8 @@ val userid_of_email : string -> int64 Lwt.t
 
 (** Retrieve e-mails from user id. *)
 val emails_of_userid : int64 -> string list Lwt.t
-
+(** Retrieve (email, is_primary, is_activated) list from user id. *)
+val emails_and_params_of_userid: int64 -> (string * bool * bool) list Lwt.t
 (** Retrieve one of the e-mails of a user. *)
 val email_of_user : t -> string Lwt.t
 

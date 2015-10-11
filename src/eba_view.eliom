@@ -193,6 +193,10 @@ let password_form ?a ~service () =
 
 let multiple_email_div_id = "multiple_email"
 }}
+{server{
+let rpc_emails_and_params_of_userid =
+    server_function Json.t<int64> Eba_user.emails_and_params_of_userid
+}}
 
 {client{
 
@@ -205,26 +209,58 @@ module ReactList = struct
 end
 
 module Model = struct
-    type state = unit
+    type non_primary_mail = {
+        email: string;
+        is_activated: bool;
+        act_key_sent: bool;
+      }
+    type mails = {primary: string;
+                  others: non_primary_mail list}
+    type state = [`NotConnected | `Connected of mails]
     type rs = state React.signal
     type rf = ?step:React.step -> state -> unit
     type rp = rs * rf
+
+    let create_connected userid =
+      lwt mails = %rpc_emails_and_params_of_userid userid in
+      let f (_, primary, _) = primary in
+      let primary, others =  List.partition f mails in
+      let (primary, _, _) = List.hd primary in
+      let act_key_sent = false in
+      let others = List.map
+                     (fun (email, is_activated, _) ->
+                      {email;
+                       is_activated;
+                       act_key_sent})
+                     others in
+      Lwt.return {primary; others}
+
+    let create userido =
+      match userido with
+      | None -> Lwt.return `NotConnected
+      | Some userid ->
+         lwt res = (create_connected userid) in
+         Lwt.return (`Connected res)
 end
 
 let multiple_emails_content f model =
-    Tyxml_js.([Html5.(em [pcdata "Manage your emails."])])
+  let open Tyxml_js in
+  match model with
+  | `NotConnected ->  [Html5.(em [pcdata "Please sign-in."])]
+  | `Connected emails ->
+     [Html5.(p [em [pcdata ("Primary email: " ^ emails.Model.primary)]])]
 
 let view_multiple_emails ((r, f): Model.rp) =
     let new_elements = React.S.map (multiple_emails_content f) r in
     Tyxml_js.R.Html5.(div (ReactList.list new_elements))
 
-let setup_multiple_emails () =
+let setup_multiple_emails userid_o =
     let doc = Dom_html.document in
     let parent =
       Js.Opt.get (doc##getElementById(Js.string multiple_email_div_id))
         (fun () -> assert false)
     in
-    let model = () in
+    lwt model = Model.create userid_o in
     let rp = React.S.create model in
     let new_div = Tyxml_js.To_dom.of_div (view_multiple_emails rp) in
     let () = Dom.appendChild parent new_div in

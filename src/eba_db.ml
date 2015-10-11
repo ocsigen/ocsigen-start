@@ -196,15 +196,17 @@ module User = struct
         in Lwt.return true
       with No_such_resource -> Lwt.return false)
 
-  let get_users_emails_q userid dbh =
+  let emails_and_params_of_userid_q userid dbh =
     Lwt_Query.view dbh
       <:view< { t.email; t.is_primary; t.is_activated } |
                 t in $emails_table$;
                 t.userid = $int64:userid$;
       >>
 
-  let get_users_emails userid =
-    full_transaction_block (get_users_emails_q userid)
+  let emails_and_params_of_userid userid =
+    lwt res = full_transaction_block (emails_and_params_of_userid_q userid) in
+    let fmt_res x = x#!email, x#!is_primary, x#!is_activated in
+    Lwt.return (List.map fmt_res res)
 
   let activate_email email =
     full_transaction_block (fun dbh ->
@@ -224,7 +226,7 @@ module User = struct
   let update_users_primary_email dbh email =
     full_transaction_block (fun dbh ->
        lwt userid = select_user_from_email_q dbh email in
-       lwt emails = get_users_emails_q userid dbh in
+       lwt emails = emails_and_params_of_userid_q userid dbh in
        let primary = List.filter (fun x -> x#!is_primary) emails in
        lwt () =
            match primary with
