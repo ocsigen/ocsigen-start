@@ -205,6 +205,9 @@ let rpc_add_email_to_user =
 
 let rpc_update_users_primary_email =
   server_function Json.t<string> Eba_user.update_users_primary_email
+
+let rpc_delete_email =
+  server_function Json.t<string> Eba_user.delete_email
 }}
 
 {client{
@@ -334,7 +337,14 @@ let show_one_other emails other f =
        create_button "Set as primary mail" onclick
    | `Act_key_sent -> Html5.pcdata ", Activation key sent"
   in
-  Html5.(div [msg; after_msg])
+  let ondeleteclick () =
+    lwt () = %rpc_delete_email other.Model.email in
+    lwt newf = Model.create_connected emails.userid in
+    let () = f (`Connected newf) in
+    Lwt.return_unit
+  in
+  let delete = create_button "Delete" ondeleteclick in
+  Html5.(div [msg; after_msg; delete])
 
 let show_others emails f =
   List.map (fun x -> show_one_other emails x f) emails.Model.others

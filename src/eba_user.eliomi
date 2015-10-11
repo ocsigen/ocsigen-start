@@ -65,6 +65,9 @@ val add_email_to_user: int64 -> string -> unit Lwt.t
 (** Set email has primary email of the user it is belonging too. *)
 val update_users_primary_email: string -> unit Lwt.t
 
+(** Delete email *)
+val delete_email: string -> unit Lwt.t
+
 (** Get users who match the [pattern] (useful for completion) *)
 val get_users : ?pattern:string -> unit -> t list Lwt.t
 
