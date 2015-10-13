@@ -252,6 +252,13 @@ module User = struct
                   t.email = $string: email$;
           >>
 
+  let must_get_email_q dbh email =
+    Lwt_Query.view_one dbh
+          <:view< t |
+                  t in $emails_table$;
+                  t.email = $string: email$;
+          >>
+
   let delete_email email =
     full_transaction_block (fun dbh ->
         match_lwt (get_email_q dbh email) with
@@ -409,7 +416,7 @@ module User = struct
       Lwt.return (r#!userid, r#!firstname, r#!lastname, r#?avatar,
                   r#?password <> None))
 
-  let userid_of_activationkey act_key =
+  let email_of_activationkey act_key =
     full_transaction_block (fun dbh ->
       lwt r = Lwt_Query.view_opt dbh
           <:view< t |
@@ -420,12 +427,12 @@ module User = struct
       match r with
       | None -> Lwt.fail No_such_resource
       | Some r ->
-        lwt userid = select_user_from_email_q dbh r#!email in
+        lwt mail = must_get_email_q dbh r#!email in
         lwt () = Lwt_Query.query dbh
             <:delete< r in $activation_table$ |
                       r.activationkey = $string:act_key$ >>
         in
-        Lwt.return userid)
+        Lwt.return (mail#!email, mail#!is_primary))
 
   let emails_of_userid userid =
     full_transaction_block (fun dbh ->

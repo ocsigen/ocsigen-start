@@ -52,54 +52,8 @@ let set_password_handler' userid () (pwd, pwd2) =
     lwt user = Eba_user.user_of_userid userid in
     Eba_user.update' ~password:pwd user)
 
-let generate_act_key
-    ?(act_key = Ocsigen_lib.make_cryptographic_safe_string ())
-    ?(send_email = true)
-    ~service
-    ~text
-    email =
-  let service =
-    Eliom_service.attach_coservice' ~fallback:service
-      ~service:Eba_services.activation_service
-  in
-  let act_link = F.make_string_uri ~absolute:true ~service act_key in
-  (* For debugging we print the activation link on standard output
-     to make possible to connect even if the mail transport is not
-     configured. *)
-  if Ocsigen_config.get_debugmode ()
-  then print_endline ("Debug: activation link created: "^act_link);
-  if send_email
-  then
-    Lwt.async (fun () ->
-      try_lwt
-        Eba_email.send
-          ~to_addrs:[("", email)]
-          ~subject:"creation"
-          [
-            text;
-            act_link;
-          ]
-      with _ -> Lwt.return ());
-  act_key
-
-let send_act msg service email =
-  let act_key =
-    generate_act_key
-      ~service:service
-      ~text:msg
-      email
-  in
-  Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
-  lwt () = Eba_user.add_activationkey ~act_key email in
-  Lwt.return ()
-
 let sign_up_handler' () email =
-  let send_act () =
-    let msg =
-      "Welcome!\r\nTo confirm your e-mail address, \
-       please click on this link: " in
-    send_act msg Eba_services.main_service email userid
-  in
+  let send_act () = Eba_user.send_mail_confirmation email in
   try_lwt
     lwt _ = Eba_user.create ~firstname:"" ~lastname:"" email in
     send_act ()
@@ -116,10 +70,9 @@ let sign_up_handler' () email =
 
 let forgot_password_handler service () email =
   try_lwt
-    lwt userid = Eba_user.userid_of_email email in
     let msg = "Hi,\r\nTo set a new password, \
                please click on this link: " in
-    send_act msg service email userid
+    Eba_user.send_act msg service email
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
       Eba_userbox.user_does_not_exist true;
@@ -146,10 +99,18 @@ let activation_handler akey () =
   (* SECURITY: we disconnect the user before doing anything. *)
   (* If the user is already connected,
      we're going to disconnect him even if the activation key outdated. *)
-  lwt () = Eba_session.disconnect () in
   try_lwt
-    lwt userid = Eba_user.userid_of_activationkey akey in
-    lwt () = Eba_session.connect userid in
+    lwt email, is_primary = Eba_user.email_of_activationkey akey in
+    lwt () =
+      if not is_primary then
+        (* in that case we activate the mail *)
+        Eba_user.activate_email email
+      else
+        (* else we connect the user *)
+        lwt userid = Eba_user.userid_of_email email in
+        lwt () = Eba_session.disconnect () in
+        Eba_session.connect userid
+    in
     Eliom_registration.Redirection.send Eliom_service.void_coservice'
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set

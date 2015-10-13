@@ -208,6 +208,9 @@ let rpc_update_users_primary_email =
 
 let rpc_delete_email =
   server_function Json.t<string> Eba_user.delete_email
+
+let rpc_send_mail_confirmation =
+  server_function Json.t<string> Eba_user.send_mail_confirmation
 }}
 
 {client{
@@ -240,10 +243,9 @@ module Model = struct
       let f (_, primary, _) = primary in
       let primary, others =  List.partition f mails in
       let (primary, _, _) = List.hd primary in
-      let act_key_sent = false in
       let add_mail_error = None in
       let others = List.map
-                     (fun (email, is_activated, _) ->
+                     (fun (email, _, is_activated) ->
                       let activation_state =
                         if is_activated then `Activated
                         else `Unit
@@ -311,7 +313,6 @@ let add_email_error emails f =
 let show_one_other emails other f =
   let open Tyxml_js in
   let msg = Html5.pcdata other.Model.email in
-
   let after_msg =
     match other.Model.activation_state with
     | `Unit ->
@@ -320,9 +321,10 @@ let show_one_other emails other f =
                                          (fun x -> x.email = other.email)
                                          emails.others) in
          let this = List.hd this in
+         lwt () = %rpc_send_mail_confirmation this.Model.email in
          let this = Model.({this with activation_state=`Act_key_sent}) in
          let others = this :: new_others in
-         let newm = {emails with others = others} in
+         let newm = Model.({emails with others = others}) in
          let () = f (`Connected newm) in
          Lwt.return_unit
        in
@@ -330,16 +332,16 @@ let show_one_other emails other f =
     | `Activated ->
        let onclick () =
          lwt () = Model.(%rpc_update_users_primary_email other.email) in
-         lwt newf = Model.create_connected emails.userid in
+         lwt newf = Model.(create_connected emails.userid) in
          let () = f (`Connected newf) in
          Lwt.return_unit
        in
        create_button "Set as primary mail" onclick
-   | `Act_key_sent -> Html5.pcdata ", Activation key sent"
+  | `Act_key_sent -> Html5.pcdata ", Activation key sent"
   in
   let ondeleteclick () =
     lwt () = %rpc_delete_email other.Model.email in
-    lwt newf = Model.create_connected emails.userid in
+    lwt newf = Model.(create_connected emails.userid) in
     let () = f (`Connected newf) in
     Lwt.return_unit
   in

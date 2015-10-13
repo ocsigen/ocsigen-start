@@ -135,3 +135,50 @@ let get_users ?pattern () =
   Lwt.return (List.map create_user_from_db users)
 
 let set_pwd_crypt_fun a = Eba_db.pwd_crypt_ref := a
+
+let generate_act_key
+    ?(act_key = Ocsigen_lib.make_cryptographic_safe_string ())
+    ?(send_email = true)
+    ~service
+    ~text
+    email =
+  let service =
+    Eliom_service.attach_coservice' ~fallback:service
+      ~service:Eba_services.activation_service
+  in
+  let act_link = Eliom_content.Html5.F.make_string_uri ~absolute:true ~service act_key in
+  (* For debugging we print the activation link on standard output
+     to make possible to connect even if the mail transport is not
+     configured. *)
+  if Ocsigen_config.get_debugmode ()
+  then print_endline ("Debug: activation link created: "^act_link);
+  if send_email
+  then
+    Lwt.async (fun () ->
+      try_lwt
+        Eba_email.send
+          ~to_addrs:[("", email)]
+          ~subject:"creation"
+          [
+            text;
+            act_link;
+          ]
+      with _ -> Lwt.return ());
+  act_key
+
+let send_act msg service email =
+  let act_key =
+    generate_act_key
+      ~service:service
+      ~text:msg
+      email
+  in
+  Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
+  lwt () = add_activationkey ~act_key email in
+  Lwt.return ()
+
+let send_mail_confirmation email =
+  let msg =
+    "Welcome!\r\nTo confirm your e-mail address, \
+     please click on this link: " in
+  send_act msg Eba_services.main_service email

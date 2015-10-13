@@ -38,9 +38,11 @@ val verify_password : email:string -> password:string -> int64 Lwt.t
     Results are cached in memory during page generation. *)
 val user_of_userid : int64 -> t Lwt.t
 
-val userid_of_activationkey : string -> int64 Lwt.t
-(** Retrieve an userid from an activation key. May raise [No_such_resource] if
+val email_of_activationkey : string -> (string * bool) Lwt.t
+(** Retrieve (email, is_primary) couple from an activation key. May raise [No_such_resource] if
     the activation key is not found (or outdated). *)
+
+val activate_email: string -> unit Lwt.t
 
 val userid_of_email : string -> int64 Lwt.t
 
@@ -53,7 +55,7 @@ val emails_and_params_of_userid: int64 -> (string * bool * bool) list Lwt.t
 (** Retrieve one of the e-mails of a user. *)
 val email_of_user : t -> string Lwt.t
 
-(** Retrieve one of the e-mails from user id. *)
+(** Retrieve one of the e-mails from userid. *)
 val email_of_userid : int64 -> string Lwt.t
 
 (** Retrieve e-mails of a user. *)
@@ -115,3 +117,23 @@ val all : ?limit:int64 -> unit -> string list Lwt.t
 *)
 val set_pwd_crypt_fun : (string -> string) *
                         (int64 -> string -> string -> bool) -> unit
+
+(** send_mail_confirmation email,
+    sends a mail to email,
+    asking the recipient to click on the link to activate the mail *)
+val send_mail_confirmation: string -> unit Lwt.t
+
+(** send_act msg service mail,
+    sends an activation link with the message msg to the recipient mail,
+    asking the user to click on the link pointing to the activation key
+    generated for this purpose.
+    This click will be processed by service. *)
+(* XXX there might be a cleaner way to write down that type.
+   Even though I read the related type in eba_tips.eliomi I did not manage
+   to translate this one *)
+val send_act: string ->
+              (unit, unit, [< `Get ], [< Eliom_service.attached_kind ],
+               [< `AttachedCoservice | `Service ], [< Eliom_service.suff ],
+               unit, unit, [< Eliom_service.registrable ], 'a)
+                Eliom_service.service ->
+              string -> unit Lwt.t
