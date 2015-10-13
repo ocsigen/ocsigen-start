@@ -387,6 +387,7 @@ module User = struct
                     t2 in $emails_table$;
                     t1.userid = t2.userid;
                     t2.email = $string:email$;
+                    t2.is_primary = $bool:true$;
             >>
       in
       let (userid, password') = (r#!userid, r#?password) in
