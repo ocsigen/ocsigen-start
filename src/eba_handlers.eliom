@@ -96,8 +96,8 @@ let send_act msg service email userid =
 let sign_up_handler' () email =
   let send_act email userid =
     let msg =
-      String.concat ", " ["Welcome!\r\nTo confirm your e-mail address";
-                          "please click on this link: "] in
+      "Welcome!\r\nTo confirm your e-mail address, \
+       please click on this link: " in
     send_act msg Eba_services.main_service email userid
   in
   try_lwt
@@ -118,9 +118,8 @@ let sign_up_handler' () email =
 let forgot_password_handler service () email =
   try_lwt
     lwt userid = Eba_user.userid_of_email email in
-    let msg = String.concat "," ["Hi";
-                                 "\r\nTo set a new password";
-                                 " please click on this link: "] in
+    let msg = "Hi,\r\nTo set a new password, \
+               please click on this link: " in
     send_act msg service email userid
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
