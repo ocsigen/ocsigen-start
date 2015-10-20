@@ -82,11 +82,11 @@ let generate_act_key
       with _ -> Lwt.return ());
   act_key
 
-let send_act email userid =
+let send_act msg service email userid =
   let act_key =
     generate_act_key
-      ~service:Eba_services.main_service
-      ~text:"Welcome!\r\nTo confirm your e-mail address, please click on this link: "
+      ~service:service
+      ~text:msg
       email
   in
   Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
@@ -94,6 +94,12 @@ let send_act email userid =
   Lwt.return ()
 
 let sign_up_handler' () email =
+  let send_act email userid =
+    let msg =
+      "Welcome!\r\nTo confirm your e-mail address, \
+       please click on this link: " in
+    send_act msg Eba_services.main_service email userid
+  in
   try_lwt
     lwt user = Eba_user.create ~firstname:"" ~lastname:"" email in
     let userid = Eba_user.userid_of_user user in
@@ -112,10 +118,9 @@ let sign_up_handler' () email =
 let forgot_password_handler service () email =
   try_lwt
     lwt userid = Eba_user.userid_of_email email in
-    let text = "Hi,\r\nTo set a new password, please click on this link: " in
-    let act_key = generate_act_key ~service ~text email in
-    Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
-    Eba_user.add_activationkey ~act_key userid
+    let msg = "Hi,\r\nTo set a new password, \
+               please click on this link: " in
+    send_act msg service email userid
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
       Eba_userbox.user_does_not_exist true;
