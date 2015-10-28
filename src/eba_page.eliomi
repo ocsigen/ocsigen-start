@@ -29,10 +29,10 @@ exception Predicate_failed of (exn option)
 type content
 
 (** Specifies a page with an optional title, some optional extra
-    headers and a given body *)
+    metadata and a given body *)
 val content :
-  ?title:string ->
-  ?headers : [< Html5_types.head_content_fun] Eliom_content.Html5.elt list ->
+  ?title : string ->
+  ?head : [< Html5_types.head_content_fun] Eliom_content.Html5.elt list ->
   [< Html5_types.body_content] Eliom_content.Html5.elt list -> content
 
 (** The signature of the module to be given as parameter to the functor.
