@@ -25,6 +25,15 @@
 
 exception Predicate_failed of (exn option)
 
+type content =
+  {title: string option; headers : Html5_types.head_content_fun elt list;
+   body : Html5_types.body_content elt list}
+
+let content ?title ?(headers = []) body =
+  { title;
+    headers = (headers :> Html5_types.head_content_fun elt list);
+    body = (body :> Html5_types.body_content elt list)}
+
 module type PAGE = sig
   val title : string
   val js : string list list
@@ -33,9 +42,12 @@ module type PAGE = sig
   val default_error_page :
     'a -> 'b -> exn ->
     [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
+  val default_error_page_full : ('a -> 'b -> exn -> content Lwt.t) option
   val default_connected_error_page :
     int64 option -> 'a -> 'b -> exn ->
     [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
+  val default_connected_error_page_full :
+    (int64 option -> 'a -> 'b -> exn -> content Lwt.t) option
   val default_predicate : 'a -> 'b -> bool Lwt.t
   val default_connected_predicate : int64 option -> 'a -> 'b -> bool Lwt.t
 end
@@ -63,18 +75,11 @@ module Default_config = struct
   let default_predicate _ _ = Lwt.return true
   let default_connected_predicate _ _ _ = Lwt.return true
   let default_error_page _ _ exn = err_page exn
+  let default_error_page_full = None
   let default_connected_error_page _ _ _ exn = err_page exn
+  let default_connected_error_page_full = None
 
 end
-
-type content =
-  {title: string option; headers : Html5_types.head_content_fun elt list;
-   body : Html5_types.body_content elt list}
-
-let content ?title ?(headers = []) body =
-  { title;
-    headers = (headers :> Html5_types.head_content_fun elt list);
-    body = (body :> Html5_types.body_content elt list)}
 
 module Make(C : PAGE) = struct
 
@@ -100,8 +105,12 @@ module Make(C : PAGE) = struct
   let wrap_fallback fallback gp pp exc_opt =
     lwt body = fallback gp pp exc_opt in Lwt.return (content body)
 
-  let default_error_page gp pp exc_opt =
-    wrap_fallback C.default_error_page gp pp exc_opt
+  let default_error_page =
+    match C.default_error_page_full with
+      Some default ->
+        default
+    | None ->
+        fun gp pp exc_opt -> wrap_fallback C.default_error_page gp pp exc_opt
 
   let page_full
       ?(predicate = C.default_predicate)
@@ -128,8 +137,13 @@ module Make(C : PAGE) = struct
   let wrap_fallback_2 fallback uid_opt gp pp exc_opt =
     lwt body = fallback uid_opt gp pp exc_opt in Lwt.return (content body)
 
-  let default_connected_error_page uid_opt gp pp exc_opt =
-    wrap_fallback_2 C.default_connected_error_page uid_opt gp pp exc_opt
+  let default_connected_error_page =
+    match C.default_connected_error_page_full with
+      Some default ->
+        default
+    | None ->
+        fun uid_opt gp pp exc_opt ->
+          wrap_fallback_2 C.default_connected_error_page uid_opt gp pp exc_opt
 
   let connected_page_full
       ?allow ?deny

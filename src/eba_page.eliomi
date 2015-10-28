@@ -25,6 +25,16 @@
 
 exception Predicate_failed of (exn option)
 
+(** An abstract type describing the content of a page *)
+type content
+
+(** Specifies a page with an optional title, some optional extra
+    headers and a given body *)
+val content :
+  ?title:string ->
+  ?headers : [< Html5_types.head_content_fun] Eliom_content.Html5.elt list ->
+  [< Html5_types.body_content] Eliom_content.Html5.elt list -> content
+
 (** The signature of the module to be given as parameter to the functor.
     It allows to personnalize your pages (CSS, JS, etc).
 *)
@@ -51,10 +61,18 @@ module type PAGE = sig
     'a -> 'b -> exn ->
     [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
 
+  (** Default error page (with custom headers and title). *)
+  val default_error_page_full : ('a -> 'b -> exn -> content Lwt.t) option
+
   (** Default error page for connected pages. *)
   val default_connected_error_page :
     int64 option -> 'a -> 'b -> exn ->
     [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
+
+  (** Default error page for connected pages (with custom headers and
+      title). *)
+  val default_connected_error_page_full :
+    (int64 option -> 'a -> 'b -> exn -> content Lwt.t) option
 
   (** Default predicate. *)
   val default_predicate : 'a -> 'b -> bool Lwt.t
@@ -65,16 +83,6 @@ module type PAGE = sig
 end
 
 module Default_config : PAGE
-
-(** An abstract type describing the content of a page *)
-type content
-
-(** Specifies a page with an optional title, some optional extra
-    headers and a given body *)
-val content :
-  ?title:string ->
-  ?headers : [< Html5_types.head_content_fun] Eliom_content.Html5.elt list ->
-  [< Html5_types.body_content] Eliom_content.Html5.elt list -> content
 
 module Make (C : PAGE) : sig
 
