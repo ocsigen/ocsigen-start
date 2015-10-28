@@ -215,14 +215,6 @@ let rpc_send_mail_confirmation =
 
 {client{
 
-module ReactList = struct
-    let list t =
-      let open ReactiveData.RList in
-      make_from
-        (React.S.value t)
-        (React.E.map (fun e -> Set e) (React.S.changes t))
-end
-
 module Model = struct
     type activation_state = [`Unit | `Act_key_sent | `Activated]
     type non_primary_mail = {
@@ -364,7 +356,7 @@ let multiple_emails_content f model =
 
 let view_multiple_emails ((r, f): Model.rp) =
     let new_elements = React.S.map (multiple_emails_content f) r in
-    Tyxml_js.R.Html5.(div (ReactList.list new_elements))
+    Tyxml_js.R.Html5.(div (ReactiveData.RList.make_from_s new_elements))
 
 let setup_multiple_emails userid_o =
     let doc = Dom_html.document in
