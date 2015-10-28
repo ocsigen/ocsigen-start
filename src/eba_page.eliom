@@ -67,6 +67,15 @@ module Default_config = struct
 
 end
 
+type content =
+  {title: string option; headers : Html5_types.head_content_fun elt list;
+   body : Html5_types.body_content elt list}
+
+let content ?title ?(headers = []) body =
+  { title;
+    headers = (headers :> Html5_types.head_content_fun elt list);
+    body = (body :> Html5_types.body_content elt list)}
+
 module Make(C : PAGE) = struct
 
   let css =
@@ -79,14 +88,24 @@ module Make(C : PAGE) = struct
       (fun jsname -> ("js"::jsname))
       C.js
 
-  let make_page content =
+  let make_page_full content =
+    let title = match content.title with Some t -> t | None -> C.title in
     html
-      (Eliom_tools.F.head ~title:C.title ~css ~js ~other:C.other_head ())
-      (body content)
+      (Eliom_tools.F.head ~title ~css ~js
+         ~other:(content.headers @ C.other_head) ())
+      (body content.body)
 
-  let page
+  let make_page body = make_page_full (content body)
+
+  let wrap_fallback fallback gp pp exc_opt =
+    lwt body = fallback gp pp exc_opt in Lwt.return (content body)
+
+  let default_error_page gp pp exc_opt =
+    wrap_fallback C.default_error_page gp pp exc_opt
+
+  let page_full
       ?(predicate = C.default_predicate)
-      ?(fallback = C.default_error_page)
+      ?(fallback = default_error_page)
       f gp pp =
     lwt content =
       try_lwt
@@ -97,12 +116,25 @@ module Make(C : PAGE) = struct
         else fallback gp pp (Predicate_failed None)
       with exc -> fallback gp pp (Predicate_failed (Some exc))
     in
-    Lwt.return (make_page content)
+    Lwt.return (make_page_full content)
 
-  let connected_page
+  let page ?predicate ?fallback f =
+    page_full ?predicate
+      ?fallback:(match fallback with
+                   None          -> None
+                 | Some fallback -> Some (wrap_fallback fallback))
+      (fun gp pp -> lwt body = f gp pp in Lwt.return (content body))
+
+  let wrap_fallback_2 fallback uid_opt gp pp exc_opt =
+    lwt body = fallback uid_opt gp pp exc_opt in Lwt.return (content body)
+
+  let default_connected_error_page uid_opt gp pp exc_opt =
+    wrap_fallback_2 C.default_connected_error_page uid_opt gp pp exc_opt
+
+  let connected_page_full
       ?allow ?deny
       ?(predicate = C.default_connected_predicate)
-      ?(fallback = C.default_connected_error_page)
+      ?(fallback = default_connected_error_page)
       f gp pp =
     let f_wrapped uid gp pp =
       try_lwt
@@ -123,15 +155,25 @@ module Make(C : PAGE) = struct
           f_wrapped gp pp
       with Eba_session.Not_connected as exc -> fallback None gp pp exc
     in
-    Lwt.return (make_page content)
+    Lwt.return (make_page_full content)
 
+  let connected_page ?allow ?deny ?predicate ?fallback f gp pp =
+    connected_page_full
+      ?allow ?deny
+      ?predicate
+      ?fallback:(match fallback with
+                   None          -> None
+                 | Some fallback -> Some (wrap_fallback_2 fallback))
+      (fun uid_opt gpp pp ->
+         lwt body = f uid_opt gp pp in Lwt.return (content body))
+      gp pp
 
   module Opt = struct
 
-    let connected_page
+    let connected_page_full
         ?allow ?deny
         ?(predicate = C.default_connected_predicate)
-        ?(fallback = C.default_connected_error_page)
+        ?(fallback = default_connected_error_page)
         f gp pp =
       let f_wrapped (uid_o : int64 option) gp pp =
         try_lwt
@@ -150,7 +192,18 @@ module Make(C : PAGE) = struct
           fallback uid_o gp pp Eba_session.Permission_denied)
         f_wrapped gp pp
       in
-      Lwt.return (make_page content)
+      Lwt.return (make_page_full content)
+
+    let connected_page ?allow ?deny ?predicate ?fallback f gp pp =
+      connected_page_full
+        ?allow ?deny
+        ?predicate
+        ?fallback:(match fallback with
+                     None          -> None
+                   | Some fallback -> Some (wrap_fallback_2 fallback))
+        (fun uid_opt gpp pp ->
+           lwt body = f uid_opt gp pp in Lwt.return (content body))
+        gp pp
 
   end
 end

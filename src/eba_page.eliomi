@@ -66,6 +66,16 @@ end
 
 module Default_config : PAGE
 
+(** An abstract type describing the content of a page *)
+type content
+
+(** Specifies a page with an optional title, some optional extra
+    headers and a given body *)
+val content :
+  ?title:string ->
+  ?headers : [< Html5_types.head_content_fun] Eliom_content.Html5.elt list ->
+  [< Html5_types.body_content] Eliom_content.Html5.elt list -> content
+
 module Make (C : PAGE) : sig
 
   (** Builds a valid html page from body content by adding headers
@@ -95,7 +105,7 @@ module Make (C : PAGE) : sig
 
 
   module Opt : sig
-  (** Wrapper for page that first checks if user is connected.
+  (** Wrapper for pages that first checks if the user is connected.
       See {!Eliom_session.Opt.connected_fun}.
   *)
     val connected_page :
@@ -109,9 +119,19 @@ module Make (C : PAGE) : sig
        [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t) ->
       ('a -> 'b -> [ Html5_types.html ] Eliom_content.Html5.elt Lwt.t)
 
+    (** More flexible wrapper than {!connected_page} for pages that
+        first checks if the user is connected.
+    *)
+    val connected_page_full :
+      ?allow:Eba_group.t list ->
+      ?deny:Eba_group.t list ->
+      ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t) ->
+      ?fallback:(int64 option -> 'a -> 'b -> exn -> content Lwt.t) ->
+      (int64 option -> 'a -> 'b -> content Lwt.t) ->
+      ('a -> 'b -> [ Html5_types.html ] Eliom_content.Html5.elt Lwt.t)
   end
 
-  (** Wrapper for page that first checks if user is connected.
+  (** Wrapper for pages that first checks if the user is connected.
       See {!Eliom_session.connected_fun}.
   *)
   val connected_page :
@@ -126,5 +146,16 @@ module Make (C : PAGE) : sig
     -> 'a -> 'b
     -> [ Html5_types.html ] Eliom_content.Html5.elt Lwt.t
 
+
+  (** More flexible wrapper than {!connected_page} for pages that
+      first checks if user is connected.
+  *)
+  val connected_page_full :
+    ?allow:Eba_group.t list ->
+    ?deny:Eba_group.t list ->
+    ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t) ->
+    ?fallback:(int64 option -> 'a -> 'b -> exn -> content Lwt.t) ->
+    (int64 -> 'a -> 'b -> content Lwt.t) ->
+    ('a -> 'b -> [ Html5_types.html ] Eliom_content.Html5.elt Lwt.t)
 end
 }}
