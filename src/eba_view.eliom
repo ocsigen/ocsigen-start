@@ -61,8 +61,23 @@ let sign_up_form ?a () =
   generic_email_form ?a ~service:%Eba_services.sign_up_service' ()
 
 let forgot_password_form ?a () =
-  generic_email_form ?a
-    ~service:%Eba_services.forgot_password_service ()
+  D.post_form ?a ~service:%Eba_services.forgot_password_service
+    (fun (email, primary_email) ->
+      [string_input
+         ~a:[a_placeholder "e-mail address"]
+         ~input_type:`Email
+         ~name:email
+         ();
+       string_input
+         ~a:[a_placeholder "(optional) primary e-mail address"]
+         ~input_type:`Email
+         ~name:primary_email
+         ();
+       string_input
+         ~a:[a_class ["button"]]
+         ~input_type:`Submit
+         ~value:"Send"
+         ()]) ()
 
 let information_form ?a
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
@@ -204,13 +219,22 @@ let rpc_add_email_to_user =
   server_function Json.t<int64 * string> add_email
 
 let rpc_update_users_primary_email =
-  server_function Json.t<string> Eba_user.update_users_primary_email
+  let update_primary_email (user, email) =
+    Eba_user.update_users_primary_email user email
+  in
+  server_function Json.t<int64 * string> update_primary_email
 
 let rpc_delete_email =
-  server_function Json.t<string> Eba_user.delete_email
+  let delete_email (user, email) =
+    Eba_user.delete_email user email
+  in
+  server_function Json.t<int64 * string> delete_email
 
 let rpc_send_mail_confirmation =
-  server_function Json.t<string> Eba_user.send_mail_confirmation
+  let send_mail_confirmation (user, email) =
+    Eba_user.send_mail_confirmation user email
+  in
+  server_function Json.t<int64 * string> send_mail_confirmation
 }}
 
 {client{
@@ -313,7 +337,8 @@ let show_one_other emails other f =
                                          (fun x -> x.email = other.email)
                                          emails.others) in
          let this = List.hd this in
-         lwt () = %rpc_send_mail_confirmation this.Model.email in
+         lwt () = %rpc_send_mail_confirmation (emails.Model.userid,
+                                               this.Model.email) in
          let this = Model.({this with activation_state=`Act_key_sent}) in
          let others = this :: new_others in
          let newm = Model.({emails with others = others}) in
@@ -323,16 +348,20 @@ let show_one_other emails other f =
        create_button "Activate" onclick
     | `Activated ->
        let onclick () =
-         lwt () = Model.(%rpc_update_users_primary_email other.email) in
+         lwt () = Model.(%rpc_update_users_primary_email
+                            (emails.userid,
+                             other.email)) in
          lwt newf = Model.(create_connected emails.userid) in
          let () = f (`Connected newf) in
          Lwt.return_unit
        in
+       (* we ensure here that an activated mail only
+          can be set as primary *)
        create_button "Set as primary mail" onclick
   | `Act_key_sent -> Html5.pcdata ", Activation key sent"
   in
   let ondeleteclick () =
-    lwt () = %rpc_delete_email other.Model.email in
+    lwt () = %rpc_delete_email Model.(emails.userid, other.email) in
     lwt newf = Model.(create_connected emails.userid) in
     let () = f (`Connected newf) in
     Lwt.return_unit

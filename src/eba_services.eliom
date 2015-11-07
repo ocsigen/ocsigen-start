@@ -36,7 +36,7 @@ let preregister_service' =
 let forgot_password_service =
   Eliom_service.Http.post_coservice'
     ~name:"lost_password"
-    ~post_params:(string "email")
+    ~post_params:(string "email" ** string "primary_email")
     ()
 
 let set_personal_data_service' =

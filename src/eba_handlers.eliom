@@ -53,26 +53,64 @@ let set_password_handler' userid () (pwd, pwd2) =
     Eba_user.update' ~password:pwd user)
 
 let sign_up_handler' () email =
-  let send_act () = Eba_user.send_mail_confirmation email in
+  let send_act userid = Eba_user.send_mail_confirmation userid email in
   try_lwt
-    lwt _ = Eba_user.create ~firstname:"" ~lastname:"" email in
-    send_act ()
+    lwt u = Eba_user.create ~firstname:"" ~lastname:"" email in
+    send_act u.Eba_user.userid
   with Eba_user.Already_exists userid ->
     (* If password is not set, the user probably never logged in,
        I send an activation link, as if it were a new user. *)
     lwt pwdset = Eba_user.password_set userid in
     if not pwdset
-    then send_act ()
+    then send_act userid
     else begin
       Eliom_reference.Volatile.set Eba_userbox.user_already_exists true;
       Lwt.return ()
     end
 
-let forgot_password_handler service () email =
+let forgot_password_handler service () (email, primary_email) =
+  (* First we need to find the user that tries to
+     reset its password.
+     To do so, we try to find the user with 'email':
+     - if there is a unique user that activated 'email',
+       we're done (we still check that the primary_email
+       of that user is 'primary_email', if 'primary_email' was
+       set by the user asking to reset the password).
+     - else, we choose among these users, the one that has
+       'primary_email' as primary_email. *)
+  let find_userid () =
+    lwt userids = Eba_user.userids_that_activated_email email in
+    lwt primary_userid =
+      if primary_email = "" then Lwt.return None
+      else
+        lwt userid = Eba_user.userid_of_primary_email primary_email in
+        Lwt.return (Some userid)
+    in
+    match userids with
+    | [] -> raise Eba_db.No_such_resource
+    | hd :: tl ->
+       match tl with
+       | [] -> begin
+          match primary_userid with
+          | None -> Lwt.return hd
+          | Some userid ->
+             if userid = hd then Lwt.return hd
+             else Lwt.fail (Eba_db.No_such_resource)
+         end
+       | _ ->
+          match primary_userid with
+          | None -> Lwt.fail (Eba_db.No_such_resource)
+          | Some userid ->
+             try
+               let res = List.find (fun x -> x = userid) userids in
+               Lwt.return res
+             with Not_found -> Lwt.fail (Eba_db.No_such_resource)
+  in
   try_lwt
+    lwt userid = find_userid () in
     let msg = "Hi,\r\nTo set a new password, \
                please click on this link: " in
-    Eba_user.send_act msg service email
+    Eba_user.send_act msg service userid email
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
       Eba_userbox.user_does_not_exist true;
@@ -100,16 +138,18 @@ let activation_handler akey () =
   (* If the user is already connected,
      we're going to disconnect him even if the activation key outdated. *)
   try_lwt
-    lwt email, is_primary = Eba_user.email_of_activationkey akey in
+    lwt userid, email, is_primary =
+                         Eba_user.userid_email_is_primary_of_activationkey
+                           akey in
     lwt () =
-      if not is_primary then
-        (* in that case we activate the mail *)
-        Eba_user.activate_email email
-      else
-        (* else we connect the user *)
-        lwt userid = Eba_user.userid_of_email email in
-        lwt () = Eba_session.disconnect () in
-        Eba_session.connect userid
+      lwt () =
+        if not is_primary then
+           (* in that case we activate the mail *)
+          Eba_user.activate_email userid email
+        else Lwt.return_unit
+      in
+      lwt () = Eba_session.disconnect () in
+      Eba_session.connect userid
     in
     Eliom_registration.Redirection.send Eliom_service.void_coservice'
   with Eba_db.No_such_resource ->

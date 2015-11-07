@@ -31,20 +31,23 @@ val is_complete : t -> bool
 val emails_of_user : t -> string Lwt.t
 
 
-val add_activationkey : act_key:string -> string -> unit Lwt.t
+val add_activationkey : act_key:string -> int64 -> string -> unit Lwt.t
 val verify_password : email:string -> password:string -> int64 Lwt.t
 
 (** returns user information.
     Results are cached in memory during page generation. *)
 val user_of_userid : int64 -> t Lwt.t
 
-val email_of_activationkey : string -> (string * bool) Lwt.t
-(** Retrieve (email, is_primary) couple from an activation key. May raise [No_such_resource] if
+val userid_email_is_primary_of_activationkey : string ->
+                                               (int64 * string * bool) Lwt.t
+(** Retrieve (userid, email, is_primary) tuple
+    from an activation key. May raise [No_such_resource] if
     the activation key is not found (or outdated). *)
 
-val activate_email: string -> unit Lwt.t
+(** activate the email associated to a given user *)
+val activate_email: int64 -> string -> unit Lwt.t
 
-val userid_of_email : string -> int64 Lwt.t
+val userid_of_primary_email : string -> int64 Lwt.t
 
 (** Retrieve e-mails from user id. *)
 val emails_of_userid : int64 -> string list Lwt.t
@@ -52,11 +55,14 @@ val emails_of_userid : int64 -> string list Lwt.t
 (** Retrieve (email, is_primary, is_activated) list from user id. *)
 val emails_and_params_of_userid: int64 -> (string * bool * bool) list Lwt.t
 
-(** Retrieve one of the e-mails of a user. *)
-val email_of_user : t -> string Lwt.t
+(** Retrieve the primary e-mail of a user. *)
+val primary_email_of_user : t -> string Lwt.t
 
-(** Retrieve one of the e-mails from userid. *)
-val email_of_userid : int64 -> string Lwt.t
+(** Retrieve the primary e-emailfrom userid. *)
+val primary_email_of_userid : int64 -> string Lwt.t
+
+(** Retrieve (userid) list that activated a given email. *)
+val userids_that_activated_email: string -> int64 list Lwt.t
 
 (** Retrieve e-mails of a user. *)
 val emails_of_user : t -> string list Lwt.t
@@ -65,10 +71,10 @@ val emails_of_user : t -> string list Lwt.t
 val add_email_to_user: int64 -> string -> unit Lwt.t
 
 (** Set email has primary email of the user it is belonging too. *)
-val update_users_primary_email: string -> unit Lwt.t
+val update_users_primary_email: int64 -> string -> unit Lwt.t
 
 (** Delete email *)
-val delete_email: string -> unit Lwt.t
+val delete_email: int64 -> string -> unit Lwt.t
 
 (** Get users who match the [pattern] (useful for completion) *)
 val get_users : ?pattern:string -> unit -> t list Lwt.t
@@ -119,11 +125,11 @@ val set_pwd_crypt_fun : (string -> string) *
                         (int64 -> string -> string -> bool) -> unit
 
 (** send_mail_confirmation email,
-    sends a mail to email,
+    sends a mail to email, associated to the userid
     asking the recipient to click on the link to activate the mail *)
-val send_mail_confirmation: string -> unit Lwt.t
+val send_mail_confirmation: int64 -> string -> unit Lwt.t
 
-(** send_act msg service mail,
+(** send_act msg service userid mail,
     sends an activation link with the message msg to the recipient mail,
     asking the user to click on the link pointing to the activation key
     generated for this purpose.
@@ -136,4 +142,4 @@ val send_act: string ->
                [< `AttachedCoservice | `Service ], [< Eliom_service.suff ],
                unit, unit, [< Eliom_service.registrable ], 'a)
                 Eliom_service.service ->
-              string -> unit Lwt.t
+              int64 -> string -> unit Lwt.t
