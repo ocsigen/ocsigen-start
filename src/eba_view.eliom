@@ -257,18 +257,19 @@ module Model = struct
 end
 
 let create_input name =
-  F.(input ~input_type:`Text ~a:[a_placeholder name]) ()
+  Tyxml_js.Html5.(input ~a:[a_input_type `Text; a_placeholder name]) ()
 
-let input_value i = Js.to_string (To_dom.of_input i) ## value
+let input_value i = Js.to_string (Tyxml_js.To_dom.of_input i) ## value
 
 let create_button name onclick =
-  let b = F.(button ~button_type:`Button [pcdata name]) in
+  let b = Tyxml_js.Html5.(button [pcdata name]) in
   let () = Lwt_js_events.(async (fun () -> clicks
-                                             (To_dom.of_button b)
+                                             (Tyxml_js.To_dom.of_button b)
                                              (fun _ _ -> onclick ()))) in
   b
 
 let create_add_email_div emails f =
+  let open Tyxml_js in
   let add_input = create_input "New email" in
   let onclick () =
     let value = input_value add_input in
@@ -286,13 +287,14 @@ let create_add_email_div emails f =
   in
   let button = create_button "Add" onclick in
   let div_content = [add_input; button] in
-  F.(div div_content)
+  Html5.(div div_content)
 
 let add_email_error emails f =
+  let open Tyxml_js in
   match emails.Model.add_mail_error with
   | None -> []
   | Some error ->
-     let msg = F.pcdata (error ^ " already exists") in
+     let msg = Html5.pcdata (error ^ " already exists") in
      let onclick () =
        let newm = {emails with Model.add_mail_error = None} in
        let () = f (`Connected newm) in
@@ -301,7 +303,8 @@ let add_email_error emails f =
      [msg; create_button "Clear msg" onclick]
 
 let show_one_other emails other f =
-  let msg = F.pcdata other.Model.email in
+  let open Tyxml_js in
+  let msg = Html5.pcdata other.Model.email in
   let after_msg =
     match other.Model.activation_state with
     | `Unit ->
@@ -326,7 +329,7 @@ let show_one_other emails other f =
          Lwt.return_unit
        in
        create_button "Set as primary mail" onclick
-  | `Act_key_sent -> F.pcdata ", Activation key sent"
+  | `Act_key_sent -> Html5.pcdata ", Activation key sent"
   in
   let ondeleteclick () =
     lwt () = %rpc_delete_email other.Model.email in
@@ -335,24 +338,25 @@ let show_one_other emails other f =
     Lwt.return_unit
   in
   let delete = create_button "Delete" ondeleteclick in
-  F.(div [msg; after_msg; delete])
+  Html5.(div [msg; after_msg; delete])
 
 let show_others emails f =
   List.map (fun x -> show_one_other emails x f) emails.Model.others
 
 let multiple_emails_content f model =
+  let open Tyxml_js in
   match model with
-  | `NotConnected ->  [F.(em [pcdata "Please sign-in."])]
+  | `NotConnected ->  [Html5.(em [pcdata "Please sign-in."])]
   | `Connected emails ->
-     let p_mail = F.pcdata ("Primary email: " ^ emails.Model.primary) in
+     let p_mail = Html5.pcdata ("Primary email: " ^ emails.Model.primary) in
      let add_ui = create_add_email_div emails f in
      let add_error_ui = add_email_error emails f in
      let others = show_others emails f in
-     F.([p [em [p_mail]]] @ add_error_ui @ [add_ui] @ others)
+     Html5.([p [em [p_mail]]] @ add_error_ui @ [add_ui] @ others)
 
 let view_multiple_emails ((r, f): Model.rp) =
     let new_elements = React.S.map (multiple_emails_content f) r in
-    Eliom_content.Html5.R.(div (ReactiveData.RList.make_from_s new_elements))
+    Tyxml_js.R.Html5.(div (ReactiveData.RList.make_from_s new_elements))
 
 let setup_multiple_emails userid_o =
     let doc = Dom_html.document in
@@ -362,7 +366,7 @@ let setup_multiple_emails userid_o =
     in
     lwt model = Model.create userid_o in
     let rp = React.S.create model in
-    let new_div = To_dom.of_div (view_multiple_emails rp) in
+    let new_div = Tyxml_js.To_dom.of_div (view_multiple_emails rp) in
     let () = Dom.appendChild parent new_div in
     Lwt.return_unit
 }}
