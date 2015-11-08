@@ -85,8 +85,3 @@ let set_password_service' =
     ~name:"set_password"
     ~post_params:(string "password" ** string "password2")
     ()
-
-let manage_email_service =
-  Eliom_service.App.service
-    ~path:["manage_emails"]
-    ~get_params:unit ()

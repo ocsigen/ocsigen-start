@@ -99,30 +99,19 @@ let reset_tips_service = %Eba_tips.reset_tips_service
     }};
     l
 
-  let manage_notification_emails close =
-    let l = D.Raw.a [pcdata "Manage emails"] in
-    ignore {unit{
-      Lwt_js_events.(async (fun () ->
-        clicks (To_dom.of_element %l)
-          (fun _ _ ->
-             %close ();
-             Eliom_client.exit_to
-               ~service:%reset_tips_service
-               () ();
-             Lwt.return ()
-          )));
-    }};
-    l
-
+  let manage_multiple_mail user =
+    let userid = user.Eba_user.userid in
+    let _ = {unit Lwt.t{Eba_view.setup_multiple_emails %userid}} in
+    div ~a:[a_id Eba_view.multiple_email_div_id] []
 
   let default_user_menu close user uploader =
   [
     p [pcdata "Change your password:"];
     Eba_view.password_form ~service:%Eba_services.set_password_service' ();
     hr ();
-    upload_pic_link close uploader;
+    manage_multiple_mail user;
     hr ();
-    manage_notification_emails close;
+    upload_pic_link close uploader;
     hr ();
     reset_tips_link close;
     hr ();

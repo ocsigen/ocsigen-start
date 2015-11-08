@@ -13,14 +13,6 @@ let main_service_handler userid_o () () =
     ]
   )
 
-let manage_email_service_handler userid_o () () =
-  let _ = {unit Lwt.t{Eba_view.setup_multiple_emails %userid_o}} in
-  %%%MODULE_NAME%%%_container.page userid_o (
-    [
-     div ~a:[a_id Eba_view.multiple_email_div_id] []
-    ]
-  )
-
 let about_handler userid_o () () =
   %%%MODULE_NAME%%%_container.page userid_o [
     div [
@@ -70,10 +62,6 @@ let () =
   %%%MODULE_NAME%%%_base.App.register
     Eba_services.main_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page main_service_handler);
-
-  %%%MODULE_NAME%%%_base.App.register
-    Eba_services.manage_email_service
-    (%%%MODULE_NAME%%%_page.Opt.connected_page manage_email_service_handler);
 
   %%%MODULE_NAME%%%_base.App.register
     %%%MODULE_NAME%%%_services.about_service
