@@ -240,43 +240,51 @@ let rpc_send_mail_confirmation =
 {client{
 
 module Model = struct
-    type activation_state = [`Unit | `Act_key_sent | `Activated]
+    type activation_state = [`Act_key_sent | `Activated]
     type non_primary_mail = {
         email: string;
         activation_state: activation_state;
       }
+
+    type message_type = [`Error | `Info]
+    type message_to_user = {
+        msg_type: message_type;
+        msg: string;
+    }
     type mails = {userid: int64;
-                  add_mail_error: string option;
+                  message: message_to_user option;
                   primary: string;
                   others: non_primary_mail list}
     type state = [`NotConnected | `Connected of mails]
     type rs = state React.signal
     type rf = ?step:React.step -> state -> unit
     type rp = rs * rf
-
+    let activation_key_sent_msg = {msg_type=`Info;
+                                   msg="Activation key sent"}
     let create_connected userid =
       lwt mails = %rpc_emails_and_params_of_userid userid in
       let f (_, primary, _) = primary in
       let primary, others =  List.partition f mails in
       let (primary, _, _) = List.hd primary in
-      let add_mail_error = None in
+      let message = None in
       let others = List.map
                      (fun (email, _, is_activated) ->
                       let activation_state =
                         if is_activated then `Activated
-                        else `Unit
+                        else `Act_key_sent
                       in
                       {email;
                        activation_state})
                      others in
-      Lwt.return {userid;add_mail_error;
+      Lwt.return {userid; message;
                   primary; others}
 
-    let create userido =
+    let create ?msg userido =
       match userido with
       | None -> Lwt.return `NotConnected
       | Some userid ->
          lwt res = (create_connected userid) in
+         let res = {res with message=msg} in
          Lwt.return (`Connected res)
 end
 
@@ -301,9 +309,15 @@ let create_add_email_div emails f =
     lwt newmodel =
       try_lwt
         lwt () = %rpc_add_email_to_user (userid, value) in
-        Model.create (Some userid)
+        (* we send the activation key straight away *)
+        lwt () = %rpc_send_mail_confirmation (emails.Model.userid,
+                                              value) in
+        Model.(create ~msg:activation_key_sent_msg (Some userid))
       with _ ->
-        let newmodel = {emails with Model.add_mail_error = Some value} in
+        let msg = value in
+        let msg_type = `Error in
+        let new_msg = Model.(Some {msg; msg_type}) in
+        let newmodel = Model.({emails with message=new_msg}) in
         Lwt.return (`Connected newmodel)
     in
     let () = f newmodel in
@@ -313,14 +327,19 @@ let create_add_email_div emails f =
   let div_content = [add_input; button] in
   Html5.(div div_content)
 
-let add_email_error emails f =
+let add_message emails f =
   let open Tyxml_js in
-  match emails.Model.add_mail_error with
+  match emails.Model.message with
   | None -> []
-  | Some error ->
-     let msg = Html5.pcdata (error ^ " already exists") in
+  | Some msg_to_display ->
+     let msg =
+       Model.(match msg_to_display.msg_type with
+              | `Error -> (msg_to_display.msg ^ " already exists")
+              | `Info -> (msg_to_display.msg))
+     in
+     let msg = Html5.pcdata msg in
      let onclick () =
-       let newm = {emails with Model.add_mail_error = None} in
+       let newm = {emails with Model.message = None} in
        let () = f (`Connected newm) in
        Lwt.return_unit
      in
@@ -331,7 +350,7 @@ let show_one_other emails other f =
   let msg = Html5.pcdata other.Model.email in
   let after_msg =
     match other.Model.activation_state with
-    | `Unit ->
+    | `Act_key_sent ->
        let onclick () =
          let this, new_others = Model.(List.partition
                                          (fun x -> x.email = other.email)
@@ -341,11 +360,13 @@ let show_one_other emails other f =
                                                this.Model.email) in
          let this = Model.({this with activation_state=`Act_key_sent}) in
          let others = this :: new_others in
-         let newm = Model.({emails with others = others}) in
+         let msg = Some (Model.activation_key_sent_msg) in
+         let newm = Model.({emails with others = others;
+                                        message = msg}) in
          let () = f (`Connected newm) in
          Lwt.return_unit
        in
-       create_button "Activate" onclick
+       create_button "Resend activation link" onclick
     | `Activated ->
        let onclick () =
          lwt () = Model.(%rpc_update_users_primary_email
@@ -358,7 +379,6 @@ let show_one_other emails other f =
        (* we ensure here that an activated mail only
           can be set as primary *)
        create_button "Set as primary mail" onclick
-  | `Act_key_sent -> Html5.pcdata ", Activation key sent"
   in
   let ondeleteclick () =
     lwt () = %rpc_delete_email Model.(emails.userid, other.email) in
@@ -379,7 +399,7 @@ let multiple_emails_content f model =
   | `Connected emails ->
      let p_mail = Html5.pcdata ("Primary email: " ^ emails.Model.primary) in
      let add_ui = create_add_email_div emails f in
-     let add_error_ui = add_email_error emails f in
+     let add_error_ui = add_message emails f in
      let others = show_others emails f in
      Html5.([p [em [p_mail]]] @ add_error_ui @ [add_ui] @ others)
 
