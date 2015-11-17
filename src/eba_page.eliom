@@ -26,12 +26,15 @@
 exception Predicate_failed of (exn option)
 
 type content =
-  {title: string option; head : Html5_types.head_content_fun elt list;
+  {title: string option;
+   head : Html5_types.head_content_fun elt list;
+   body_attrs : Html5_types.body_attrib Eliom_content.Html5.attrib list;
    body : Html5_types.body_content elt list}
 
-let content ?title ?(head = []) body =
+let content ?(a=[]) ?title ?(head = []) body =
   { title;
     head = (head :> Html5_types.head_content_fun elt list);
+    body_attrs = a;
     body = (body :> Html5_types.body_content elt list)}
 
 module type PAGE = sig
@@ -98,7 +101,7 @@ module Make(C : PAGE) = struct
     html
       (Eliom_tools.F.head ~title ~css ~js
          ~other:(content.head @ C.other_head) ())
-      (body content.body)
+      (body ~a:content.body_attrs content.body)
 
   let make_page body = make_page_full (content body)
 
