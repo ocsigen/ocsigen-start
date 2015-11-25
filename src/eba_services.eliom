@@ -56,7 +56,8 @@ let sign_up_service' =
 let connect_service =
   Eliom_service.Http.post_coservice'
     ~name:"connect"
-    ~post_params:(string "username" ** string "password") ()
+    ~post_params:((string "username" ** string "password")
+                  ** bool "keepmeloggedin")()
 
 let disconnect_service =
   Eliom_service.Http.post_coservice'

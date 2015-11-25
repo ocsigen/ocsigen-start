@@ -29,7 +29,7 @@ let generic_email_form ?a ?label ?(text="Send") ~service () =
 
 let connect_form ?a () =
   D.post_form ?a ~xhr:false ~service:%Eba_services.connect_service
-    (fun (login, password) -> [
+    (fun ((login, password), keepmeloggedin) -> [
       string_input
         ~a:[a_placeholder "Your email"]
         ~name:login
@@ -40,6 +40,11 @@ let connect_form ?a () =
         ~name:password
         ~input_type:`Password
         ();
+      bool_checkbox
+        ~a:[a_checked `Checked]
+        ~name:keepmeloggedin
+        ();
+      span [pcdata "keep me logged in"];
       string_input
         ~a:[a_class ["button"]]
         ~input_type:`Submit

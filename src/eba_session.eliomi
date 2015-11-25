@@ -73,7 +73,7 @@ exception Permission_denied
     Eliom base app is using both persistent and volatile session groups.
     The volatile groups is recreated from persistent group if absent.
 *)
-val connect : int64 -> unit Lwt.t
+val connect : ?expire:float -> int64 -> unit Lwt.t
 
 (** Close a session by discarding server side states for current browser
     (session and session group), current client process (tab) and current

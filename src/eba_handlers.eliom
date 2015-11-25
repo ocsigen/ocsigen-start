@@ -131,14 +131,18 @@ let disconnect_handler () () =
   (* SECURITY: no check here because we disconnect the session cookie owner. *)
   Eba_session.disconnect ()
 
-let connect_handler () (login, pwd) =
+let connect_handler () ((login, pwd), keepmeloggedin) =
   (* SECURITY: no check here.
      We disconnect the user in any case, so that he does not believe
      to be connected with the new account if the password is wrong. *)
   lwt () = disconnect_handler () () in
   try_lwt
     lwt userid = Eba_user.verify_password login pwd in
-    Eba_session.connect userid
+    let expire =
+      if keepmeloggedin then
+        Some (Unix.time() +. 315532800.)
+      else None in
+    Eba_session.connect ?expire userid
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set Eba_userbox.wrong_password true;
     Lwt.return ()
