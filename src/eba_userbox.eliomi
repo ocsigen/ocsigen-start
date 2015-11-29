@@ -5,7 +5,7 @@
 
 {shared{
 
-  type uploader
+  type uploader = Ow_pic_uploader.t
 
 }}
 
