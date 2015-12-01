@@ -8,19 +8,19 @@
   open Eliom_content.Html5.F
 
 let generic_email_form ?a ?label ?(text="Send") ~service () =
-  D.post_form ?a ~service
+  D.Form.post_form ?a ~service
     (fun name ->
       let l = [
-        string_input
+        Form.input
           ~a:[a_placeholder "e-mail address"]
           ~input_type:`Email
           ~name
-          ();
-        string_input
+          Form.string;
+        Form.input
           ~a:[a_class ["button"]]
           ~input_type:`Submit
           ~value:text
-          ();
+          Form.string;
       ]
       in
       match label with
@@ -28,37 +28,37 @@ let generic_email_form ?a ?label ?(text="Send") ~service () =
         | Some lab -> F.label [pcdata lab]::l) ()
 
 let connect_form ?a () =
-  D.post_form ?a ~xhr:false ~service:%Eba_services.connect_service
+  D.Form.post_form ?a ~xhr:false ~service:%Eba_services.connect_service
     (fun ((login, password), keepmeloggedin) -> [
-      string_input
+      Form.input
         ~a:[a_placeholder "Your email"]
         ~name:login
         ~input_type:`Email
-        ();
-      string_input
+        Form.string;
+      Form.input
         ~a:[a_placeholder "Your password"]
         ~name:password
         ~input_type:`Password
-        ();
-      bool_checkbox
+        Form.string;
+      Form.bool_checkbox
         ~a:[a_checked `Checked]
         ~name:keepmeloggedin
         ();
       span [pcdata "keep me logged in"];
-      string_input
+      Form.input
         ~a:[a_class ["button"]]
         ~input_type:`Submit
         ~value:"Sign in"
-        ();
+        Form.string;
     ]) ()
 
 }}
 
 {shared{
 let disconnect_button ?a () =
-  post_form ?a ~service:%Eba_services.disconnect_service
+  Form.post_form ?a ~service:%Eba_services.disconnect_service
     (fun _ -> [
-         button ~button_type:`Submit
+         Form.button_no_value ~button_type:`Submit
            [Ow_icons.F.signout (); pcdata "Logout"]
        ]) ()
 
@@ -72,21 +72,21 @@ let forgot_password_form ?a () =
 let information_form ?a
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
     () =
-  D.post_form ?a ~service:%Eba_services.set_personal_data_service'
+  D.Form.post_form ?a ~service:%Eba_services.set_personal_data_service'
     (fun ((fname, lname), (passwordn1, passwordn2)) ->
-       let pass1 = D.string_input
+       let pass1 = D.Form.input
            ~a:[a_placeholder "Your password"]
            ~name:passwordn1
            ~value:password1
            ~input_type:`Password
-           ()
+           Form.string
        in
-       let pass2 = D.string_input
+       let pass2 = D.Form.input
            ~a:[a_placeholder "Re-enter password"]
            ~name:passwordn2
            ~value:password2
            ~input_type:`Password
-           ()
+           Form.string
        in
        let _ = {unit{
          let pass1 = To_dom.of_input %pass1 in
@@ -101,25 +101,25 @@ let information_form ?a
        }}
        in
        [
-         string_input
+         Form.input
            ~a:[a_placeholder "Your first name"]
            ~name:fname
            ~value:firstname
            ~input_type:`Text
-           ();
-         string_input
+           Form.string;
+         Form.input
            ~a:[a_placeholder "Your last name"]
            ~name:lname
            ~value:lastname
            ~input_type:`Text
-           ();
+           Form.string;
          pass1;
          pass2;
-         string_input
+         Form.input
            ~a:[a_class ["button"]]
            ~input_type:`Submit
            ~value:"Submit"
-           ();
+           Form.string;
        ]) ()
 
 
@@ -127,12 +127,12 @@ let preregister_form ?a label =
   generic_email_form ?a ~service:%Eba_services.preregister_service' ~label ()
 
 let home_button ?a () =
-  form ?a ~service:%Eba_services.main_service
+  Form.get_form ?a ~service:%Eba_services.main_service
     (fun _ -> [
-      string_input
+      Form.input
         ~input_type:`Submit
         ~value:"home"
-        ();
+        Form.string;
     ])
 
 let avatar user =
@@ -155,21 +155,23 @@ let username user =
   div ~a:[a_class ["eba_username"]] n
 
 let password_form ?a ~service () =
-  D.post_form
+  D.Form.post_form
     ?a
     ~service
     (fun (pwdn, pwd2n) ->
        let pass1 =
-         D.string_input
+         D.Form.input
            ~a:[a_required `Required;
                a_autocomplete `Off]
-           ~input_type:`Password ~name:pwdn ()
+           ~input_type:`Password ~name:pwdn
+           Form.string
        in
        let pass2 =
-         D.string_input
+         D.Form.input
            ~a:[a_required `Required;
                a_autocomplete `Off]
-           ~input_type:`Password ~name:pwd2n ()
+           ~input_type:`Password ~name:pwd2n
+           Form.string
        in
        ignore {unit{
          let pass1 = To_dom.of_input %pass1 in
@@ -192,7 +194,7 @@ let password_form ?a ~service () =
              tr [td [label [pcdata "Password:"]]; td [pass1]];
              tr [td [label [pcdata "Retype password:"]]; td [pass2]];
            ];
-         string_input ~input_type:`Submit ~value:"Send" ()
+         Form.input ~input_type:`Submit ~value:"Send" Form.string
        ])
     ()
  }}

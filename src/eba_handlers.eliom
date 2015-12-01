@@ -62,7 +62,7 @@ let generate_act_key
     Eliom_service.attach_coservice' ~fallback:service
       ~service:Eba_services.activation_service
   in
-  let act_link = F.make_string_uri ~absolute:true ~service act_key in
+  let act_link = Eliom_uri.make_string_uri ~absolute:true ~service act_key in
   (* For debugging we print the activation link on standard output
      to make possible to connect even if the mail transport is not
      configured. *)
