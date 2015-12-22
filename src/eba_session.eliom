@@ -122,14 +122,18 @@ let start_connected_process uid =
   start_connected_process_action uid
 
 let connect_volatile uid =
-  Eliom_state.set_volatile_data_session_group
-    ~scope:Eliom_common.default_session_scope uid;
+  lwt _ =
+    Eliom_state.Group.set
+      ~scope:Eliom_common.default_session_scope ~kind:`Data uid
+  in
   let uid = Int64.of_string uid in
   open_session_action uid
 
 let connect_string uid =
-  lwt () = Eliom_state.set_persistent_data_session_group
-    ~scope:Eliom_common.default_session_scope uid in
+  lwt () =
+    Eliom_state.Group.set
+      ~scope:Eliom_common.default_session_scope ~kind:`Persistent uid
+  in
   lwt () = connect_volatile uid in
   let uid = Int64.of_string uid in
   start_connected_process uid
@@ -138,9 +142,16 @@ let connect ?expire userid =
   lwt () =
     let open Eliom_common in
     let cookie_scope = (default_session_scope :> cookie_scope) in
-    Eliom_state.set_service_cookie_exp_date ~cookie_scope expire;
-    Eliom_state.set_volatile_data_cookie_exp_date ~cookie_scope expire;
-    Eliom_state.set_persistent_data_cookie_exp_date ~cookie_scope expire
+    lwt _ =
+      Eliom_state.set_cookie_exp_date
+        ~cookie_scope ~kind:`Service expire
+    in
+    lwt _ =
+      Eliom_state.set_cookie_exp_date
+        ~cookie_scope ~kind:`Data expire
+    in
+    Eliom_state.set_cookie_exp_date
+      ~cookie_scope ~kind:`Persistent expire;
   in
   connect_string (Int64.to_string userid)
 
@@ -200,15 +211,16 @@ let gen_wrapper ~allow ~deny
     ?(deny_fun = fun _ -> Lwt.fail Permission_denied)
     connected not_connected gp pp =
   let new_process = Eliom_request_info.get_sp_client_appl_name () = None in
-  let uids = Eliom_state.get_volatile_data_session_group () in
+  lwt uids = Eliom_state.Group.get `Data in
   let get_uid uid =
     try Eliom_lib.Option.map Int64.of_string uid
     with Failure _ -> None
   in
-  lwt uid = match get_uid uids with
+  lwt uid =
+    match get_uid uids with
     | None ->
-      lwt uids = Eliom_state.get_persistent_data_session_group () in
-      (match get_uid uids  with
+      lwt uids = Eliom_state.Group.get `Persistent in
+      (match get_uid uids with
        | Some uid ->
          (* A persistent session exists, but the volatile session has gone.
             It may be due to a timeout or may be the server has been
@@ -218,7 +230,8 @@ let gen_wrapper ~allow ~deny
          lwt () = connect_volatile (Int64.to_string uid) in
          Lwt.return (Some uid)
        | None -> Lwt.return None)
-    | Some uid -> Lwt.return (Some uid)
+    | Some uid ->
+      Lwt.return (Some uid)
   in
   lwt () =
     if new_process
