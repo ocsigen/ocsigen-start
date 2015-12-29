@@ -40,7 +40,7 @@ open Eliom_content.Html5.F
 
 [%%shared
 
-  let msg ?(level = `Err) msg =
+  let msg ?(level = `Err) ?(duration = 2.) msg =
     ignore [%client (
       let c = if ~%level = `Msg then [] else ["eba_err"] in
       Eliom_lib.debug "%s" ~%msg;
@@ -48,7 +48,7 @@ open Eliom_content.Html5.F
       let msgbox = msgbox () in
       Dom.appendChild msgbox msg;
       Lwt.async (fun () ->
-        (let%lwt () = Lwt_js.sleep 2. in
+        (let%lwt () = Lwt_js.sleep ~%duration in
          Dom.removeChild msgbox msg;
          Lwt.return ()))
     : unit)]

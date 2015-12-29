@@ -29,10 +29,9 @@
     The two levels correspond to different classes that you can
     personalize in CSS.
 *)
-val msg : ?level:[`Err | `Msg] -> string -> unit
+val msg : ?level:[`Err | `Msg] -> ?duration:float -> string -> unit
 
 [%%server.start]
-
 val activation_key_created : bool Eliom_reference.Volatile.eref
 val wrong_pdata
   : ((string * string) * (string * string)) option Eliom_reference.Volatile.eref

@@ -113,9 +113,6 @@ div#eba_msg {
   right:0;
   width: 600px;
   margin: 0;
-  background-color: white;
-  color: #444;
-  font-weight: bold;
 }
 div#eba_msg p {
   min-height: 22px;
@@ -128,6 +125,7 @@ div#eba_msg p {
 div#eba_msg p.eba_err {
   background-color: #db6573;
   color: white;
+  font-weight: bold;
 }
 
 .ow_background {
