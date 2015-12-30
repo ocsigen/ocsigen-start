@@ -17,8 +17,10 @@ val userid_of_user : t -> int64
 val firstname_of_user : t -> string
 val lastname_of_user : t -> string
 val avatar_of_user : t -> string option
-val avatar_uri_of_avatar : string -> Eliom_content.Xml.uri
-val avatar_uri_of_user : t -> Eliom_content.Xml.uri option
+val avatar_uri_of_avatar :
+  ?absolute_path:bool -> string -> Eliom_content.Xml.uri
+val avatar_uri_of_user :
+  ?absolute_path:bool -> t -> Eliom_content.Xml.uri option
 
 (** Retrieve the full name of user. *)
 val fullname_of_user : t -> string

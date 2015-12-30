@@ -36,12 +36,13 @@ let firstname_of_user u = u.fn
 let lastname_of_user u = u.ln
 let avatar_of_user u = u.avatar
 
-let avatar_uri_of_avatar avatar =
-  Eliom_content.Html5.F.make_uri
+let avatar_uri_of_avatar ?absolute_path avatar =
+  Eliom_content.Html5.F.make_uri ?absolute_path
     ~service:(Eliom_service.static_dir ()) ["avatars"; avatar]
 
-let avatar_uri_of_user user =
-  Eliom_lib.Option.map avatar_uri_of_avatar (avatar_of_user user)
+let avatar_uri_of_user ?absolute_path user =
+  Eliom_lib.Option.map
+    (avatar_uri_of_avatar ?absolute_path) (avatar_of_user user)
 
 let fullname_of_user user = String.concat " " [user.fn; user.ln]
 
