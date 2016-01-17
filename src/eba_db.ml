@@ -21,6 +21,7 @@
  *)
 
 exception No_such_resource
+exception Cannot_delete_primary_mail
 
 let (>>=) = Lwt.bind
 
@@ -108,7 +109,9 @@ let users_table =
 let emails_table =
   <:table< emails (
        email text NOT NULL,
-       userid bigint NOT NULL
+       userid bigint NOT NULL,
+       is_primary boolean NOT NULL,
+       is_activated boolean NOT NULL
           ) >>
 
 let activation_table :
@@ -117,6 +120,7 @@ let activation_table :
     Sql.view =
   <:table< activation (
        activationkey text NOT NULL,
+       email text NOT NULL,
        userid bigint NOT NULL,
        creationdate timestamptz NOT NULL DEFAULT(current_timestamp ())
            ) >>
@@ -152,8 +156,8 @@ let pwd_crypt_ref = ref
 
 module User = struct
 
-  let select_user_from_email_q dbh email =
-    lwt r = Lwt_Query.view_one dbh
+  let select_users_from_email_q dbh email =
+    lwt r = Lwt_Query.view dbh
       <:view< { t1.userid } |
               t1 in $users_table$;
               t2 in $emails_table$;
@@ -161,14 +165,24 @@ module User = struct
               t2.email = $string:email$;
       >>
     in
+    Lwt.return r
+
+  let select_user_from_primary_email_q dbh email =
+    lwt r = Lwt_Query.view_one dbh
+      <:view< { t1.userid } |
+              t1 in $users_table$;
+              t2 in $emails_table$;
+              t1.userid = t2.userid;
+              t2.email = $string:email$;
+              t2.is_primary = $bool:true$;
+      >>
+    in
     Lwt.return (r#!userid)
 
   let is_registered email =
     full_transaction_block (fun dbh ->
-      try_lwt
-        lwt _ = select_user_from_email_q dbh email in
-        Lwt.return true
-      with No_such_resource -> Lwt.return false)
+      lwt r = select_users_from_email_q dbh email in
+      Lwt.return (List.length r > 0))
 
   let add_preregister email =
     full_transaction_block (fun dbh ->
@@ -192,6 +206,125 @@ module User = struct
             >>
         in Lwt.return true
       with No_such_resource -> Lwt.return false)
+
+  let emails_and_params_of_userid_q userid dbh =
+    Lwt_Query.view dbh
+      <:view< { t.email; t.is_primary; t.is_activated } |
+                t in $emails_table$;
+                t.userid = $int64:userid$;
+      >>
+
+  let emails_and_params_of_userid userid =
+    lwt res = full_transaction_block (emails_and_params_of_userid_q userid) in
+    let fmt_res x = x#!email, x#!is_primary, x#!is_activated in
+    Lwt.return (List.map fmt_res res)
+
+  (* needed by the forgot_password_handler in eba_handlers.eliom *)
+  let userids_that_activated_email email =
+    full_transaction_block (fun dbh ->
+        lwt res = Lwt_Query.view dbh
+          <:view< { t.userid } |
+                    t in $emails_table$;
+                    t.is_activated = $bool:true$;
+                    t.email = $string:email$
+          >> in
+        Lwt.return (List.map (fun x -> x#!userid) res))
+
+  let activate_email userid email =
+    full_transaction_block (fun dbh ->
+        Lwt_Query.query dbh
+          <:update< t in $emails_table$ :=
+                   { is_activated = $bool:true$ } |
+                     t.email = $string:email$;
+                     t.userid = $int64:userid$
+             >>)
+
+  let get_users_email_q dbh userid email =
+    Lwt_Query.view_opt dbh
+          <:view< t |
+                  t in $emails_table$;
+                  t.email = $string: email$;
+                  t.userid = $int64: userid$
+          >>
+
+  let must_get_users_email_q dbh userid email =
+    Lwt_Query.view_one dbh
+          <:view< t |
+                  t in $emails_table$;
+                  t.email = $string: email$;
+                  t.userid = $int64: userid$
+          >>
+
+  let user_has_email_q dbh userid email =
+    lwt res = Lwt_Query.view_opt dbh
+          <:view< t |
+                  t in $emails_table$;
+                  t.email = $string: email$;
+                  t.userid = $int64: userid$
+          >> in
+    match res with
+      | None -> Lwt.return false
+      | Some _ -> Lwt.return true
+
+  let add_email_to_user userid email =
+    full_transaction_block (fun dbh ->
+        Lwt_Query.query dbh
+            <:insert< $emails_table$ :=
+                 { email = $string:email$;
+                   userid  = $int64:userid$;
+                   is_primary = $bool:false$;
+                   is_activated = $bool:false$}
+            >>)
+
+  let set_email_is_primary_q userid is_primary email dbh =
+    Lwt_Query.query dbh
+      <:update< t in $emails_table$ :=
+               { is_primary = $bool:is_primary$ } |
+                t.email = $string:email$;
+                t.userid = $int64:userid$
+         >>
+
+  (* Does not check whether the email is activated *)
+  let update_users_primary_email userid email =
+    full_transaction_block (fun dbh ->
+       lwt emails = emails_and_params_of_userid_q userid dbh in
+       let primary = List.filter (fun x -> x#!is_primary) emails in
+       lwt () =
+           match primary with
+           | [hd] -> set_email_is_primary_q userid false hd#!email dbh
+           | _ -> Lwt.return_unit
+       in
+       set_email_is_primary_q userid true email dbh)
+
+  let get_email_q dbh email =
+    Lwt_Query.view_opt dbh
+          <:view< t |
+                  t in $emails_table$;
+                  t.email = $string: email$;
+          >>
+
+  let email_exists_q dbh email =
+    lwt res =
+      Lwt_Query.view dbh
+          <:view< t |
+                  t in $emails_table$;
+                  t.email = $string: email$;
+          >> in
+    match res with
+      | [] -> Lwt.return false
+      | _ -> Lwt.return true
+
+  let delete_email userid email =
+    full_transaction_block (fun dbh ->
+        match_lwt (get_users_email_q dbh userid email) with
+        | None -> Lwt.return_unit
+        | Some r ->
+           if r#!is_primary then Lwt.fail Cannot_delete_primary_mail
+           else
+            Lwt_Query.query dbh
+            <:delete< t in $emails_table$ |
+                      t.email = $string:email$;
+                      t.userid = $int64:userid$ >>)
 
   let all ?(limit = 10L) () =
     full_transaction_block (fun dbh ->
@@ -228,7 +361,9 @@ module User = struct
         Lwt_Query.query dbh
           <:insert< $emails_table$ :=
                       { email = $string:email$;
-                        userid  = $int64:userid$}
+                        userid  = $int64:userid$;
+                        is_primary = $bool:true$;
+                        is_activated = $bool:true$}
             >>
       in
       lwt () = remove_preregister email in
@@ -298,14 +433,23 @@ module User = struct
         >>
     )
 
-   let add_activationkey ~act_key userid =
+  let add_activationkey ~act_key userid email =
     full_transaction_block (fun dbh ->
-       Lwt_Query.query dbh
-         <:insert< $activation_table$ :=
-                      { userid = $int64:userid$;
-                        activationkey  = $string:act_key$;
-                        creationdate = activation_table?creationdate }
-         >>)
+       (* first we must ensure the email exists
+          as we could not put the constraint in the database *)
+       lwt res = email_exists_q dbh email in
+       match res with
+         | false -> Lwt.fail No_such_resource
+         | true ->
+           (* now that we know the email exists we add the
+              activation key *)
+           Lwt_Query.query dbh
+             <:insert< $activation_table$ :=
+                          { email = $string:email$;
+                            activationkey  = $string:act_key$;
+                            userid = $int64:userid$;
+                            creationdate = activation_table?creationdate }
+             >>)
 
   let verify_password ~email ~password =
     full_transaction_block (fun dbh ->
@@ -315,6 +459,7 @@ module User = struct
                     t2 in $emails_table$;
                     t1.userid = t2.userid;
                     t2.email = $string:email$;
+                    t2.is_primary = $bool:true$;
             >>
       in
       let (userid, password') = (r#!userid, r#?password) in
@@ -336,7 +481,7 @@ module User = struct
       Lwt.return (r#!userid, r#!firstname, r#!lastname, r#?avatar,
                   r#?password <> None))
 
-  let userid_of_activationkey act_key =
+  let userid_email_is_primary_of_activationkey act_key =
     full_transaction_block (fun dbh ->
       lwt r = Lwt_Query.view_opt dbh
           <:view< t |
@@ -347,12 +492,12 @@ module User = struct
       match r with
       | None -> Lwt.fail No_such_resource
       | Some r ->
-        let userid = r#!userid in
+        lwt mail = must_get_users_email_q dbh r#!userid r#!email in
         lwt () = Lwt_Query.query dbh
             <:delete< r in $activation_table$ |
                       r.activationkey = $string:act_key$ >>
         in
-        Lwt.return userid)
+        Lwt.return (r#!userid, mail#!email, mail#!is_primary))
 
   let emails_of_userid userid =
     full_transaction_block (fun dbh ->
@@ -366,7 +511,7 @@ module User = struct
       in
       Lwt.return (List.map (fun a -> a#!email) r))
 
-  let email_of_userid userid =
+  let primary_email_of_userid userid =
     full_transaction_block (fun dbh ->
       lwt r = Lwt_Query.view dbh
           <:view< { t2.email } limit 1 |
@@ -374,15 +519,16 @@ module User = struct
                     t2 in $emails_table$;
                     t1.userid = t2.userid;
                     t1.userid = $int64:userid$;
+                    t2.is_primary = $bool:true$;
             >>
       in
       match r with
       | [a] -> Lwt.return a#!email
       | _ -> Lwt.fail No_such_resource)
 
-  let userid_of_email email =
+  let userid_of_primary_email email =
     full_transaction_block (fun dbh ->
-      select_user_from_email_q dbh email)
+      select_user_from_primary_email_q dbh email)
 
   let get_users ?pattern () =
     full_transaction_block (fun dbh ->

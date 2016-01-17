@@ -64,6 +64,13 @@ val set_user_menu :
      Eliom_content.Html5.D.list_wrap) ->
   unit
 
+val default_user_menu :
+  (unit -> unit) ->
+    Eba_user.t ->
+   uploader ->
+   Html5_types.div_content Eliom_content.Html5.D.elt
+     Eliom_content.Html5.D.list_wrap
+
 }}
 
 {server{
