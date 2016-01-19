@@ -40,7 +40,7 @@ let connect_form ?a () =
         ~name:password
         ~input_type:`Password
         Form.string;
-      Form.bool_checkbox
+      Form.bool_checkbox_one
         ~a:[a_checked `Checked]
         ~name:keepmeloggedin
         ();
