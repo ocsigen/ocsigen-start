@@ -134,13 +134,16 @@ let connect_string uid =
   let uid = Int64.of_string uid in
   start_connected_process uid
 
-let connect ?expire userid =
+let connect ?(expire = false) userid =
   lwt () =
-    let open Eliom_common in
-    let cookie_scope = (default_session_scope :> cookie_scope) in
-    Eliom_state.set_service_cookie_exp_date ~cookie_scope expire;
-    Eliom_state.set_volatile_data_cookie_exp_date ~cookie_scope expire;
-    Eliom_state.set_persistent_data_cookie_exp_date ~cookie_scope expire
+    if expire then begin
+      let open Eliom_common in
+      let cookie_scope = (default_session_scope :> cookie_scope) in
+      Eliom_state.set_service_cookie_exp_date ~cookie_scope None;
+      Eliom_state.set_volatile_data_cookie_exp_date ~cookie_scope None;
+      Eliom_state.set_persistent_data_cookie_exp_date ~cookie_scope None
+    end else
+      Lwt.return ()
   in
   connect_string (Int64.to_string userid)
 

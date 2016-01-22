@@ -138,11 +138,7 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
   lwt () = disconnect_handler () () in
   try_lwt
     lwt userid = Eba_user.verify_password login pwd in
-    let expire =
-      if keepmeloggedin then
-        Some (Unix.time() +. 315532800.)
-      else None in
-    Eba_session.connect ?expire userid
+    Eba_session.connect ~expire:(not keepmeloggedin) userid
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set Eba_userbox.wrong_password true;
     Lwt.return ()

@@ -72,8 +72,11 @@ exception Permission_denied
     which initiated the current request.
     Eliom base app is using both persistent and volatile session groups.
     The volatile groups is recreated from persistent group if absent.
+    By default, the connection does not expire; by setting the optional
+    argument [expire] to true, the session will expire when the browser
+    exits.
 *)
-val connect : ?expire:float -> int64 -> unit Lwt.t
+val connect : ?expire:bool -> int64 -> unit Lwt.t
 
 (** Close a session by discarding server side states for current browser
     (session and session group), current client process (tab) and current
