@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-{shared{
+[%%shared
   open Eliom_content.Html5
   open Eliom_content.Html5.F
 
@@ -41,14 +41,14 @@ module type PAGE = sig
   val title : string
   val js : string list list
   val css : string list list
-  val other_head : [ Html5_types.head_content_fun ] Eliom_content.Html5.elt list
+  val other_head : Html5_types.head_content_fun Eliom_content.Html5.elt list
   val default_error_page :
     'a -> 'b -> exn ->
-    [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
+    Html5_types.body_content Eliom_content.Html5.elt list Lwt.t
   val default_error_page_full : ('a -> 'b -> exn -> content Lwt.t) option
   val default_connected_error_page :
     int64 option -> 'a -> 'b -> exn ->
-    [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
+    Html5_types.body_content Eliom_content.Html5.elt list Lwt.t
   val default_connected_error_page_full :
     (int64 option -> 'a -> 'b -> exn -> content Lwt.t) option
   val default_predicate : 'a -> 'b -> bool Lwt.t
@@ -59,11 +59,11 @@ module Default_config = struct
   let title = ""
   let js : string list list = []
   let css : string list list = []
-  let other_head : [ Html5_types.head_content_fun ] Eliom_content.Html5.elt list
+  let other_head : Html5_types.head_content_fun Eliom_content.Html5.elt list
     = []
 
   let err_page exn =
-    let de = if %(Ocsigen_config.get_debugmode ())
+    let de = if ~%(Ocsigen_config.get_debugmode ())
              then [p [pcdata "Debug info: ";
                       em [pcdata (Printexc.to_string exn)]]]
              else []
@@ -106,7 +106,7 @@ module Make(C : PAGE) = struct
   let make_page body = make_page_full (content body)
 
   let wrap_fallback fallback gp pp exc_opt =
-    lwt body = fallback gp pp exc_opt in Lwt.return (content body)
+    let%lwt body = fallback gp pp exc_opt in Lwt.return (content body)
 
   let default_error_page =
     match C.default_error_page_full with
@@ -119,11 +119,11 @@ module Make(C : PAGE) = struct
       ?(predicate = C.default_predicate)
       ?(fallback = default_error_page)
       f gp pp =
-    lwt content =
-      try_lwt
-        lwt b = predicate gp pp in
+    let%lwt content =
+      try%lwt
+        let%lwt b = predicate gp pp in
         if b then
-          try_lwt f gp pp
+          try%lwt f gp pp
           with exc -> fallback gp pp exc
         else fallback gp pp (Predicate_failed None)
       with exc -> fallback gp pp (Predicate_failed (Some exc))
@@ -135,10 +135,10 @@ module Make(C : PAGE) = struct
       ?fallback:(match fallback with
                    None          -> None
                  | Some fallback -> Some (wrap_fallback fallback))
-      (fun gp pp -> lwt body = f gp pp in Lwt.return (content body))
+      (fun gp pp -> let%lwt body = f gp pp in Lwt.return (content body))
 
   let wrap_fallback_2 fallback uid_opt gp pp exc_opt =
-    lwt body = fallback uid_opt gp pp exc_opt in Lwt.return (content body)
+    let%lwt body = fallback uid_opt gp pp exc_opt in Lwt.return (content body)
 
   let default_connected_error_page =
     match C.default_connected_error_page_full with
@@ -154,18 +154,18 @@ module Make(C : PAGE) = struct
       ?(fallback = default_connected_error_page)
       f gp pp =
     let f_wrapped uid gp pp =
-      try_lwt
-        lwt b = predicate (Some uid) gp pp in
+      try%lwt
+        let%lwt b = predicate (Some uid) gp pp in
         if b then
-          try_lwt f uid gp pp
+          try%lwt f uid gp pp
           with exc -> fallback (Some uid) gp pp exc
         else Lwt.fail (Predicate_failed None)
       with
         | (Predicate_failed _) as exc -> fallback (Some uid) gp pp exc
         | exc -> fallback (Some uid) gp pp (Predicate_failed (Some exc))
     in
-    lwt content =
-      try_lwt
+    let%lwt content =
+      try%lwt
         Eba_session.connected_fun ?allow ?deny
           ~deny_fun:(fun uid_o ->
             fallback uid_o gp pp Eba_session.Permission_denied)
@@ -182,7 +182,7 @@ module Make(C : PAGE) = struct
                    None          -> None
                  | Some fallback -> Some (wrap_fallback_2 fallback))
       (fun uid_opt gpp pp ->
-         lwt body = f uid_opt gp pp in Lwt.return (content body))
+         let%lwt body = f uid_opt gp pp in Lwt.return (content body))
       gp pp
 
   module Opt = struct
@@ -193,17 +193,17 @@ module Make(C : PAGE) = struct
         ?(fallback = default_connected_error_page)
         f gp pp =
       let f_wrapped (uid_o : int64 option) gp pp =
-        try_lwt
-          lwt b = predicate uid_o gp pp in
+        try%lwt
+          let%lwt b = predicate uid_o gp pp in
           if b then
-            try_lwt f uid_o gp pp
+            try%lwt f uid_o gp pp
             with exc -> fallback uid_o gp pp exc
           else Lwt.fail (Predicate_failed None)
         with
           | (Predicate_failed _) as exc -> fallback uid_o gp pp exc
           | exc -> fallback uid_o gp pp (Predicate_failed (Some exc))
       in
-      lwt content = Eba_session.Opt.connected_fun
+      let%lwt content = Eba_session.Opt.connected_fun
         ?allow ?deny
         ~deny_fun:(fun uid_o ->
           fallback uid_o gp pp Eba_session.Permission_denied)
@@ -219,9 +219,9 @@ module Make(C : PAGE) = struct
                      None          -> None
                    | Some fallback -> Some (wrap_fallback_2 fallback))
         (fun uid_opt gpp pp ->
-           lwt body = f uid_opt gp pp in Lwt.return (content body))
+           let%lwt body = f uid_opt gp pp in Lwt.return (content body))
         gp pp
 
   end
 end
-}}
+]

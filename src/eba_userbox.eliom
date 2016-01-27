@@ -2,12 +2,12 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 
-{shared{
+[%%shared
 open Eliom_content.Html5
 open Eliom_content.Html5.F
 
-type uploader = Ow_pic_uploader.t
-}}
+type uploader = unit Ow_pic_uploader.t
+]
 
 let wrong_password =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
@@ -34,36 +34,37 @@ let uploader avatar_directory = Ow_pic_uploader.make
     ~crop_wrapper:(fun f -> Eba_session.connected_rpc
                       (fun userid p ->
                          (* cropping and getting filename of new avatar: *)
-                         lwt fname = f p in
-                         lwt user = Eba_user.user_of_userid userid in
+                         let%lwt fname = f p in
+                         let%lwt user = Eba_user.user_of_userid userid in
                          let old_avatar = Eba_user.avatar_of_user user in
                          (* Setting new avatar in db: *)
-                         lwt () = Eba_user.update_avatar fname userid in
+                         let%lwt () = Eba_user.update_avatar fname userid in
                          (* Removing old avatar file: *)
                          match old_avatar with
                          | None -> Lwt.return ()
                          | Some old_avatar ->
-                           try_lwt
+                           try%lwt
                              Lwt_unix.unlink
                                (String.concat "/"
                                   (avatar_directory@[old_avatar]))
                            with Unix.Unix_error _ -> Lwt.return ()))
+    ~data_deriver:[%derive.json: Ow_pic_uploader.crop_type * unit]
     ()
 
 
-{shared{
+[%%shared
 
 let upload_pic_link ?a ?(content=[pcdata "Change profile picture"])
     close uploader =
     let link = D.Raw.a ?a content in
-    ignore {unit{
+    ignore [%client (
       Lwt_js_events.async (fun () ->
-        Lwt_js_events.clicks (To_dom.of_element %link)
+        Lwt_js_events.clicks (To_dom.of_element ~%link)
           (fun _ _ ->
-             %close ();
-             try_lwt
-               match_lwt Ow_pic_uploader.upload_pic_popup
-                           %uploader
+             ~%close ();
+             try%lwt
+               match%lwt Ow_pic_uploader.upload_pic_popup
+                           ~%uploader
                            ~url_path:["avatars"]
                            ~text:"Upload new picture"
                            ()
@@ -79,31 +80,31 @@ let upload_pic_link ?a ?(content=[pcdata "Change profile picture"])
                Lwt.return ()
 
           ))
-    }};
+    : unit)];
     link
 
-let reset_tips_service = %Eba_tips.reset_tips_service
+let reset_tips_service = ~%Eba_tips.reset_tips_service
 
   let reset_tips_link close =
     let l = D.Raw.a [pcdata "See help again from beginning"] in
-    ignore {unit{
+    ignore [%client (
       Lwt_js_events.(async (fun () ->
-        clicks (To_dom.of_element %l)
+        clicks (To_dom.of_element ~%l)
           (fun _ _ ->
-             %close ();
+             ~%close ();
              Eliom_client.exit_to
-               ~service:%reset_tips_service
+               ~service:~%reset_tips_service
                () ();
              Lwt.return ()
           )));
-    }};
+    : unit)];
     l
 
 
   let user_menu_ close user uploader =
   [
     p [pcdata "Change your password:"];
-    Eba_view.password_form ~service:%Eba_services.set_password_service' ();
+    Eba_view.password_form ~service:~%Eba_services.set_password_service' ();
     hr ();
     upload_pic_link close uploader;
     hr ();
@@ -112,14 +113,14 @@ let reset_tips_service = %Eba_tips.reset_tips_service
     Eba_view.disconnect_button ();
   ]
 
-}}
-{client{
+]
+[%%client
   let user_menu_fun =
     ref (user_menu_
          : (unit -> unit) ->
          'a -> 'b -> Html5_types.div_content Eliom_content.Html5.elt list)
-}}
-{shared{
+]
+[%%shared
 
   let user_menu user uploader =
     let but = D.div ~a:[a_class ["eba_usermenu_button"]]
@@ -128,19 +129,19 @@ let reset_tips_service = %Eba_tips.reset_tips_service
     let menu = D.div [] in
     ignore
       (Ow_button.button_dyn_alert but menu
-         {'a -> 'b{fun _ _ ->
+         [%client (fun _ _ ->
             let close () =
-              let o = Ow_button.to_button_dyn_alert %but in
-              o##unpress()
+              let o = Ow_button.to_button_dyn_alert ~%but in
+              o##unpress
             in
-            Lwt.return (!user_menu_fun close %user %uploader)}});
+            Lwt.return (!user_menu_fun close ~%user ~%uploader): 'a -> 'b)]);
     div ~a:[a_class ["eba_usermenu"]] [but; menu]
 
-}}
-{client{
+]
+[%%client
   let set_user_menu f = user_menu_fun := f
-}}
-{shared{
+]
+[%%shared
 
   let connected_user_box user uploader =
     let username = Eba_view.username user in
@@ -149,21 +150,21 @@ let reset_tips_service = %Eba_tips.reset_tips_service
       username;
       user_menu user uploader;
     ]
-}}
-{server{
+]
+[%%server
    (* Module Ow_active_set is to be rewritten completely and simplified.
       Then we can remove this. *)
    let make_set () =
-      {Ow_active_set.t'{
+      [%client (
         Ow_active_set.to_server_set
           (Ow_active_set.set ~at_least_one:true ())
-      }}
-}}
-{client{
+      : Ow_active_set.t')]
+]
+[%%client
    let make_set () =
      Ow_active_set.set ~at_least_one:true ()
-}}
-{shared{
+]
+[%%shared
   let connection_box_id = "eba_login_signup_box"
   let connection_box_ () =
       let set = make_set () in
@@ -215,13 +216,13 @@ let reset_tips_service = %Eba_tips.reset_tips_service
       in
       Lwt.return (d, o1, o2, o3, o4)
 
-}}
-{client{
+]
+[%%client
    let connection_box () =
-     lwt a, _, _, _, _ = connection_box_ () in
+     let%lwt a, _, _, _, _ = connection_box_ () in
      Lwt.return a
-}}
-{server{
+]
+[%%server
   let connection_box () =
     if Eliom_reference.Volatile.get Eba_msg.activation_key_created
     then
@@ -230,14 +231,14 @@ let reset_tips_service = %Eba_tips.reset_tips_service
            [p [pcdata "An email has been sent to this address. ";
                pcdata "Click on the link it contains to log in."]])
     else
-      lwt d, o1, o2, o3, o4 = connection_box_ () in
+      let%lwt d, o1, o2, o3, o4 = connection_box_ () in
       (* function to press the corresponding button and display
        * the flash message error. *)
       let press but msg =
-        ignore {unit{
-          (Ow_button.to_button_alert %but)##press();
-          Eba_msg.msg ~level:`Err %msg
-        }};
+        ignore [%client (
+          ((Ow_button.to_button_alert ~%but))##press;
+          Eba_msg.msg ~level:`Err ~%msg
+        : unit)];
         Lwt.return ()
       in
       (* Function to display flash message error *)
@@ -269,14 +270,14 @@ let reset_tips_service = %Eba_tips.reset_tips_service
 
       (* function to handle specific flash messages *)
       let handle_rmsg = display_error o4 in
-      lwt () = handle_rmsg () in
+      let%lwt () = handle_rmsg () in
       Lwt.return d
-}}
-{shared{
+]
+[%%shared
   let userbox user uploader =
     match user with
     | Some user -> Lwt.return (connected_user_box user uploader)
     | None -> connection_box ()
 
 
-}}
+]

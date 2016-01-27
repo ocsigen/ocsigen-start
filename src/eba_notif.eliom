@@ -153,8 +153,8 @@ VVV See if it is still needed
            if notforme && nn == Eliom_reference.Volatile.get notif_e
            then Lwt.return ()
            else
-             lwt () = beg in
-             lwt content = content_gen userid_o in
+             let%lwt () = beg in
+             let%lwt content = content_gen userid_o in
              match content with
              | Some content -> send_e (id, content); Lwt.return ()
              | None -> Lwt.return ())

@@ -63,11 +63,11 @@ val user_indep_state_hierarchy : Eliom_common.scope_hierarchy
 val user_indep_process_scope : Eliom_common.client_process_scope
 val user_indep_session_scope : Eliom_common.session_scope
 
-{shared{
+[%%shared.start]
 exception Not_connected
 exception Permission_denied
-}}
 
+[%%server.start]
 (** Open a session for a user by setting a session group for the browser
     which initiated the current request.
     Eliom base app is using both persistent and volatile session groups.
@@ -87,7 +87,7 @@ val connect : ?expire:bool -> int64 -> unit Lwt.t
 *)
 val disconnect : unit -> unit Lwt.t
 
-{shared{
+[%%shared.start]
 (** Wrapper for service handlers that fetches automatically connection
     information.
     Register [(connected_fun f)] as handler for your services,
@@ -143,10 +143,9 @@ module Opt : sig
     ('a -> 'b Lwt.t)
 
 end
-}}
+
 
 (**/**)
-{client{
+[%%client.start]
    (** internal. Do not use *)
 val get_current_userid_o : (unit -> int64 option) ref
- }}

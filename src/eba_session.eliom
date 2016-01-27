@@ -20,10 +20,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-{shared{
+[%%shared
   open Eliom_content.Html5
   open Eliom_content.Html5.F
-}}
+]
 
 let user_indep_state_hierarchy = Eliom_common.create_scope_hierarchy "userindep"
 let user_indep_process_scope = `Client_process user_indep_state_hierarchy
@@ -35,7 +35,7 @@ let (on_start_process, start_process_action) =
   let r = ref Lwt.return in
   ((fun f ->
       let oldf = !r in
-      r := (fun () -> lwt () = oldf () in f ())),
+      r := (fun () -> let%lwt () = oldf () in f ())),
    (fun () -> !r ()))
 
 (* Call this to add an action to be done
@@ -44,7 +44,7 @@ let (on_start_connected_process, start_connected_process_action) =
   let r = ref (fun _ -> Lwt.return ()) in
   ((fun f ->
       let oldf = !r in
-      r := (fun userid -> lwt () = oldf userid in f userid)),
+      r := (fun userid -> let%lwt () = oldf userid in f userid)),
    (fun userid -> !r userid))
 
 (* Call this to add an action to be done at each connected request *)
@@ -52,7 +52,7 @@ let (on_connected_request, connected_request_action) =
   let r = ref (fun _ -> Lwt.return ()) in
   ((fun f ->
       let oldf = !r in
-      r := (fun userid -> lwt () = oldf userid in f userid)),
+      r := (fun userid -> let%lwt () = oldf userid in f userid)),
    (fun userid -> !r userid))
 
 (* Call this to add an action to be done just after openning a session *)
@@ -60,7 +60,7 @@ let (on_open_session, open_session_action) =
   let r = ref (fun _ -> Lwt.return ()) in
   ((fun f ->
       let oldf = !r in
-      r := (fun userid -> lwt () = oldf userid in f userid)),
+      r := (fun userid -> let%lwt () = oldf userid in f userid)),
    (fun userid -> !r userid))
 
 (* Call this to add an action to be done just after closing the session *)
@@ -68,7 +68,7 @@ let (on_post_close_session, post_close_session_action) =
   let r = ref (fun _ -> Lwt.return ()) in
   ((fun f ->
       let oldf = !r in
-      r := (fun () -> lwt () = oldf () in f ())),
+      r := (fun () -> let%lwt () = oldf () in f ())),
    (fun () -> !r ()))
 
 (* Call this to add an action to be done just before closing the session *)
@@ -76,7 +76,7 @@ let (on_pre_close_session, pre_close_session_action) =
   let r = ref (fun _ -> Lwt.return ()) in
   ((fun f ->
       let oldf = !r in
-      r := (fun () -> lwt () = oldf () in f ())),
+      r := (fun () -> let%lwt () = oldf () in f ())),
    (fun () -> !r ()))
 
 (* Call this to add an action to be done just before handling a request *)
@@ -84,7 +84,7 @@ let (on_request, request_action) =
   let r = ref (fun _ -> Lwt.return ()) in
   ((fun f ->
       let oldf = !r in
-      r := (fun () -> lwt () = oldf () in f ())),
+      r := (fun () -> let%lwt () = oldf () in f ())),
    (fun () -> !r ()))
 
 (* Call this to add an action to be done just for each denied request *)
@@ -92,14 +92,14 @@ let (on_denied_request, denied_request_action) =
   let r = ref (fun _ -> Lwt.return ()) in
   ((fun f ->
       let oldf = !r in
-      r := (fun userido -> lwt () = oldf userido in f userido)),
+      r := (fun userido -> let%lwt () = oldf userido in f userido)),
    (fun userido -> !r userido))
 
 
-{shared{
+[%%shared
 exception Not_connected
 exception Permission_denied
-}}
+]
 
 let start_connected_process uid =
   (* We want to warn the client when the server side process state is closed.
@@ -128,14 +128,14 @@ let connect_volatile uid =
   open_session_action uid
 
 let connect_string uid =
-  lwt () = Eliom_state.set_persistent_data_session_group
+  let%lwt () = Eliom_state.set_persistent_data_session_group
     ~scope:Eliom_common.default_session_scope uid in
-  lwt () = connect_volatile uid in
+  let%lwt () = connect_volatile uid in
   let uid = Int64.of_string uid in
   start_connected_process uid
 
 let connect ?(expire = false) userid =
-  lwt () =
+  let%lwt () =
     if expire then begin
       let open Eliom_common in
       let cookie_scope = (default_session_scope :> cookie_scope) in
@@ -148,33 +148,33 @@ let connect ?(expire = false) userid =
   connect_string (Int64.to_string userid)
 
 let disconnect () =
-  lwt () = pre_close_session_action () in
-  lwt () = Eliom_state.discard ~scope:Eliom_common.default_session_scope () in
-  lwt () = Eliom_state.discard ~scope:Eliom_common.default_process_scope () in
-  lwt () = Eliom_state.discard ~scope:Eliom_common.request_scope () in
+  let%lwt () = pre_close_session_action () in
+  let%lwt () = Eliom_state.discard ~scope:Eliom_common.default_session_scope () in
+  let%lwt () = Eliom_state.discard ~scope:Eliom_common.default_process_scope () in
+  let%lwt () = Eliom_state.discard ~scope:Eliom_common.request_scope () in
   post_close_session_action ()
 
 let check_allow_deny userid allow deny =
-  lwt b = match allow with
+  let%lwt b = match allow with
     | None -> Lwt.return true (* By default allow all *)
     | Some l -> (* allow only users from one of the groups of list l *)
       Lwt_list.fold_left_s
         (fun b group ->
-           lwt b2 = Eba_group.in_group ~userid ~group in
+           let%lwt b2 = Eba_group.in_group ~userid ~group in
            Lwt.return (b || b2)) false l
   in
-  lwt b = match deny with
+  let%lwt b = match deny with
     | None -> Lwt.return b (* By default deny nobody *)
     | Some l -> (* allow only users that are not
                      in one of the groups of list l *)
       Lwt_list.fold_left_s
         (fun b group ->
-           lwt b2 = Eba_group.in_group ~userid ~group in
+           let%lwt b2 = Eba_group.in_group ~userid ~group in
            Lwt.return (b && (not b2))) b l
   in
   if b then Lwt.return ()
   else begin
-    lwt () = denied_request_action (Some userid) in
+    let%lwt () = denied_request_action (Some userid) in
     Lwt.fail Permission_denied
   end
 
@@ -208,9 +208,9 @@ let gen_wrapper ~allow ~deny
     try Eliom_lib.Option.map Int64.of_string uid
     with Failure _ -> None
   in
-  lwt uid = match get_uid uids with
+  let%lwt uid = match get_uid uids with
     | None ->
-      lwt uids = Eliom_state.get_persistent_data_session_group () in
+      let%lwt uids = Eliom_state.get_persistent_data_session_group () in
       (match get_uid uids  with
        | Some uid ->
          (* A persistent session exists, but the volatile session has gone.
@@ -218,18 +218,18 @@ let gen_wrapper ~allow ~deny
             relaunched.
             We restart the volatile session silently
             (comme si de rien n'était, pom pom pom). *)
-         lwt () = connect_volatile (Int64.to_string uid) in
+         let%lwt () = connect_volatile (Int64.to_string uid) in
          Lwt.return (Some uid)
        | None -> Lwt.return None)
     | Some uid -> Lwt.return (Some uid)
   in
-  lwt () =
+  let%lwt () =
     if new_process
     then begin
       (* client side process:
          Now we want to do some computation only when we start a
          client side process. *)
-      lwt () = start_process_action () in
+      let%lwt () = start_process_action () in
       match uid with
       | None -> Lwt.return ()
       | Some id -> (* new client process, but already connected *)
@@ -237,21 +237,21 @@ let gen_wrapper ~allow ~deny
     end
     else Lwt.return ()
   in
-  lwt () = request_action () in
+  let%lwt () = request_action () in
   match uid with
   | None ->
     if allow = None
     then not_connected gp pp
-    else lwt () = denied_request_action None in
+    else let%lwt () = denied_request_action None in
       deny_fun None
   | Some id ->
-    try_lwt
-      lwt () = check_allow_deny id allow deny in
-      lwt () = connected_request_action id in
+    try%lwt
+      let%lwt () = check_allow_deny id allow deny in
+      let%lwt () = connected_request_action id in
       connected id gp pp
     with Permission_denied -> deny_fun uid
 
-{client{
+[%%client
 
    let get_current_userid_o = ref (fun () -> assert false)
 
@@ -265,9 +265,9 @@ let gen_wrapper ~allow ~deny
   | None -> not_connected gp pp
   | Some userid -> connected userid gp pp
 
-}}
+]
 
-{shared{
+[%%shared
 let connected_fun ?allow ?deny ?deny_fun f gp pp =
   gen_wrapper
     ~allow ~deny ?deny_fun
@@ -300,4 +300,4 @@ module Opt = struct
 
 end
 
-}}
+]

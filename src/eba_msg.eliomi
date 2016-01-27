@@ -19,7 +19,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-{shared{
+[%%shared.start]
 
 (** Call this function either from client or server side
     to display an error message in the page.
@@ -30,7 +30,8 @@
     personalize in CSS.
 *)
 val msg : ?level:[`Err | `Msg] -> string -> unit
- }}
+
+[%%server.start]
 
 val activation_key_created : bool Eliom_reference.Volatile.eref
 val wrong_pdata

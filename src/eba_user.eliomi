@@ -4,14 +4,14 @@ exception No_such_user
 (** Has user set its password? *)
 val password_set : int64 -> bool Lwt.t
 
-{shared{
+[%%shared.start]
   (** The type which represents a user. *)
 type t = {
     userid : int64;
     fn : string;
     ln : string;
     avatar : string option;
-  } deriving (Json)
+  } [@@deriving json]
 
 val userid_of_user : t -> int64
 val firstname_of_user : t -> string
@@ -28,10 +28,10 @@ val fullname_of_user : t -> string
 (** Returns true if the firstname and the lastname of [t] has not
   * been completed yet. *)
 val is_complete : t -> bool
-}}
+
+[%%server.start]
 
 val emails_of_user : t -> string Lwt.t
-
 
 val add_activationkey : act_key:string -> int64 -> unit Lwt.t
 val verify_password : email:string -> password:string -> int64 Lwt.t

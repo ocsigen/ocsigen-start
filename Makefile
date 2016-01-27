@@ -14,7 +14,7 @@ include Makefile.options
 ## Required binaries
 ELIOMC            := eliomc
 ELIOMOPT          := eliomopt
-JS_OF_ELIOM       := js_of_eliom
+JS_OF_ELIOM       := js_of_eliom -ppx
 ELIOMDEP          := eliomdep
 OCAMLFIND         := ocamlfind
 
@@ -48,13 +48,15 @@ opt:: $(LIBDIR)/${PKG_NAME}.server.cmxs
 ## Aux
 
 # Use `eliomdep -sort' only in OCaml>4
-ifeq ($(shell ocamlc -version|cut -c1),4)
-eliomdep=$(shell $(ELIOMDEP) $(1) -sort $(2) $(filter %.eliom %.ml,$(3))))
-else
+# Removing this to make it work with mixed ppx/camlp4:
+# ifeq ($(shell ocamlc -version|cut -c1),4)
+# eliomdep=$(shell $(ELIOMDEP) $(1) -ppx -sort $(2) $(filter %.eliom %.ml,$(3))))
+# else
 eliomdep=$(3)
-endif
+# endif
 objs=$(patsubst %.ml,$(1)/%.$(2),$(patsubst %.eliom,$(1)/%.$(2),$(filter %.eliom %.ml,$(3))))
-depsort=$(call objs,$(1),$(2),$(call eliomdep,$(3),$(4),$(5)))
+#depsort=$(call objs,$(1),$(2),$(call eliomdep,$(3),$(4),$(5)))
+depsort=$(shell ocaml tools/sort_deps.ml .depend $(patsubst %.ml,$(1)/%.$(2),$(patsubst %.eliom,$(1)/%.$(2),$(filter %.eliom %.ml,$(5)))))
 
 $(LIBDIR):
 	mkdir $(LIBDIR)
@@ -68,9 +70,10 @@ SERVER_DEP_DIRS := ${addprefix -eliom-inc ,${SERVER_DIRS}}
 SERVER_INC_DIRS := ${addprefix -I $(ELIOM_SERVER_DIR)/, ${SERVER_DIRS}}
 
 SERVER_INC  := ${addprefix -package ,${SERVER_PACKAGES}}
+SERVER_DB_INC  := ${addprefix -package ,${SERVER_DB_PACKAGES}}
 
 ${ELIOM_TYPE_DIR}/%.type_mli: %.eliom
-	${ELIOMC} -infer ${SERVER_INC} ${SERVER_INC_DIRS} $<
+	${ELIOMC} -ppx -infer ${SERVER_INC} ${SERVER_INC_DIRS} $<
 
 $(LIBDIR)/$(PKG_NAME).server.cma: $(call objs,$(ELIOM_SERVER_DIR),cmo,$(SERVER_FILES)) | $(LIBDIR)
 	${ELIOMC} -a -o $@ $(GENERATE_DEBUG) \
@@ -81,23 +84,29 @@ $(LIBDIR)/$(PKG_NAME).server.cmxa: $(call objs,$(ELIOM_SERVER_DIR),cmx,$(SERVER_
           $(call depsort,$(ELIOM_SERVER_DIR),cmx,-server,$(SERVER_INC),$(SERVER_FILES))
 
 %.cmxs: %.cmxa
-	$(ELIOMOPT) -shared -linkall -o $@ $(GENERATE_DEBUG) $<
+	$(ELIOMOPT) -ppx -shared -linkall -o $@ $(GENERATE_DEBUG) $<
 
+${ELIOM_SERVER_DIR}/%_db.cmi: %_db.mli
+	${ELIOMC} -c ${SERVER_DB_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmi: %.mli
-	${ELIOMC} -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
+	${ELIOMC} -ppx -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%.cmi: %.eliomi
-	${ELIOMC} -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
+	${ELIOMC} -ppx -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 
+${ELIOM_SERVER_DIR}/%_db.cmo: %_db.ml
+	${ELIOMC} -c ${SERVER_DB_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmo: %.ml
-	${ELIOMC} -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
+	${ELIOMC} -ppx -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmo: %.eliom
-	${ELIOMC} -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
+	${ELIOMC} -ppx -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 
+${ELIOM_SERVER_DIR}/%_db.cmx: %_db.ml
+	${ELIOMOPT} -c ${SERVER_DB_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmx: %.ml
-	${ELIOMOPT} -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
+	${ELIOMOPT} -ppx -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmx: %.eliom
-	${ELIOMOPT} -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
+	${ELIOMOPT} -ppx -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 
 
 ##----------------------------------------------------------------------
@@ -141,7 +150,7 @@ META: META.in
 		-e 's#@@PKG_DESC@@#$(PKG_DESC)#g' \
 		-e 's#@@CLIENT_REQUIRES@@#$(CLIENT_PACKAGES)#g' \
 		-e 's#@@CLIENT_ARCHIVES_BYTE@@#$(CLIENT_CMO_FILENAMES)#g' \
-		-e 's#@@SERVER_REQUIRES@@#$(SERVER_PACKAGES)#g' \
+		-e 's#@@SERVER_REQUIRES@@#$(SERVER_PACKAGES) $(SERVER_DB_PACKAGES)#g' \
 		-e 's#@@SERVER_ARCHIVES_BYTE@@#$(PKG_NAME).server.cma#g' \
 		-e 's#@@SERVER_ARCHIVES_NATIVE@@#$(PKG_NAME).server.cmxa#g' \
 		-e 's#@@SERVER_ARCHIVES_NATIVE_PLUGIN@@#$(PKG_NAME).server.cmxs#g' \
@@ -184,11 +193,14 @@ endif
 .depend: $(patsubst %,$(DEPSDIR)/%.server,$(SERVER_FILES)) $(patsubst %,$(DEPSDIR)/%.client,$(CLIENT_FILES))
 	cat $^ > $@
 
+$(DEPSDIR)/%_db.ml.server: %_db.ml | $(DEPSDIR)
+	$(ELIOMDEP) -server $(SERVER_DB_INC) $(SERVER_DEP_DIRS) $< > $@
+
 $(DEPSDIR)/%.server: % | $(DEPSDIR)
-	$(ELIOMDEP) -server $(SERVER_INC) $(SERVER_DEP_DIRS) $< > $@
+	$(ELIOMDEP) -server -ppx $(SERVER_INC) $(SERVER_DEP_DIRS) $< > $@
 
 $(DEPSDIR)/%.client: % | $(DEPSDIR)
-	$(ELIOMDEP) -client $(CLIENT_INC) $(CLIENT_DEP_DIRS) $< > $@
+	$(ELIOMDEP) -client -ppx $(CLIENT_INC) $(CLIENT_DEP_DIRS) $< > $@
 
 $(DEPSDIR):
 	mkdir -p $@

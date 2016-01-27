@@ -21,9 +21,9 @@
  *)
 open Printf
 
-{shared{
+[%%shared
   let email_pattern = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]+$"
-}}
+]
 
 let from_addr = ref ("team DEFAULT", "noreply@DEFAULT.DEFAULT")
 
@@ -63,7 +63,7 @@ let default_send ~from_addr ~to_addrs ~subject content =
     List.iter print_tuple to_addrs;
     echo "]";
     printf "[content]:\n%s\n" content;
-    lwt () = Lwt_preemptive.detach
+    let%lwt () = Lwt_preemptive.detach
         (Netsendmail.sendmail ~mailer:!mailer)
         (Netsendmail.compose ~from_addr ~to_addrs ~subject content)
     in
@@ -81,7 +81,7 @@ let send ?(from_addr = !from_addr) ~to_addrs ~subject content =
 
 let set_send s = send_ref := s
 
-{client{
+[%%client
 let email_pattern = email_pattern
 let regexp_email =
   Regexp.regexp_with_flag email_pattern "i"
@@ -90,4 +90,4 @@ let is_valid email =
   match Regexp.string_match regexp_email email 0 with
   | None -> false
   | Some _ -> true
-}}
+]

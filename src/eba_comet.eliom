@@ -19,14 +19,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-{shared{
+[%%shared
   open Eliom_content.Html5
   open Eliom_content.Html5.F
 
   let __link = () (* to make sure eba_comet is linked *)
-}}
+]
 
-{client{
+[%%client
   (* This will show a message saying that client process is closed *)
   let close_client_process ?exn () =
     Eliom_lib.Option.iter
@@ -49,14 +49,14 @@
       ]
     in
     let d = To_dom.of_div d in
-    Dom.appendChild (Dom_html.document##body) d;
-    lwt () = Lwt_js_events.request_animation_frame () in
-    d##style##backgroundColor <- Js.string "rgba(255, 255, 255, 0.8)";
+    Dom.appendChild (Dom_html.document##.body) d;
+    let%lwt () = Lwt_js_events.request_animation_frame () in
+    d##.style##.backgroundColor := Js.string "rgba(255, 255, 255, 0.8)";
     (* I put both a handler on click and not focus.
        Sometimes the window hasn't lost focus, thus focus is not enough.
     *)
     Lwt.async (fun () ->
-      lwt _ = Lwt_js_events.click Dom_html.document in
+      let%lwt _ = Lwt_js_events.click Dom_html.document in
       Eliom_client.exit_to ~service:Eliom_service.void_coservice' () ();
       Lwt.return ()
     );
@@ -69,7 +69,7 @@
 
 let _ = Eliom_comet.set_handle_exn_function close_client_process
 
-}}
+]
 
 
 
@@ -78,9 +78,9 @@ let _ = Eliom_comet.set_handle_exn_function close_client_process
    If this channel is closed or fails, it means that something went wrong.
 *)
 
-{shared{
+[%%shared
 type msg = Connection_changed | Heartbeat
- }}
+ ]
 
 let create_monitor_channel () =
   let monitor_stream, monitor_send = Lwt_stream.create () in
@@ -105,7 +105,7 @@ let monitor_channel_ref =
 let already_send_ref =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
-{client{
+[%%client
 
    let handle_message = function
      | Lwt_stream.Error exn ->
@@ -118,21 +118,21 @@ let already_send_ref =
      | Lwt_stream.Value Connection_changed ->
        Eba_msg.msg ~level:`Err
          "Connection has changed from outside. Program will restart.";
-       lwt () = Lwt_js.sleep 2. in
+       let%lwt () = Lwt_js.sleep 2. in
        Eliom_client.exit_to ~service:Eliom_service.void_coservice' () ();
        Lwt.return ()
 
-}}
+]
 
 let _ =
   Eba_session.on_start_process
     (fun () ->
        let channel = create_monitor_channel () in
        Eliom_reference.Volatile.set monitor_channel_ref (Some channel);
-       ignore {unit{ Lwt.async (fun () ->
+       ignore [%client ( Lwt.async (fun () ->
          Lwt_stream.iter_s
            handle_message
-           (Lwt_stream.map_exn %(fst channel))) }};
+           (Lwt_stream.map_exn ~%(fst channel))) : unit)];
        Lwt.return ());
   let warn c =
     (* User connected or disconnected.

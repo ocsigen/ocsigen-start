@@ -19,10 +19,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-{shared{
+[%%shared
 open Eliom_content.Html5
 open Eliom_content.Html5.F
-}}
+]
 
 module Stringset = Ocsigen_lib.String.Set
 
@@ -42,11 +42,11 @@ let seen_by_user =
 
 (* notice the server that a user has seen a tip *)
 let tip_seen userid (name : string) =
-  lwt prev = Eliom_reference.Volatile.get seen_by_user in
+  let%lwt prev = Eliom_reference.Volatile.get seen_by_user in
   Eliom_reference.set tips_seen (Stringset.add (name : string) prev)
 
 let tip_seen_rpc =
-  server_function Json.t<string> (Eba_session.connected_rpc tip_seen)
+  server_function [%derive.json: string] (Eba_session.connected_rpc tip_seen)
 
 (* I want to see the tips again *)
 let reset_tips userid () () = Eliom_reference.set tips_seen (Stringset.empty)
@@ -58,15 +58,15 @@ let reset_tips_service =
     (Eba_session.connected_fun reset_tips)
 
 let reset_tips_rpc =
-  server_function Json.t<unit>
+  server_function [%derive.json: unit]
     (Eba_session.connected_rpc (fun userid -> reset_tips userid ()))
 
-{client{
+[%%client
 
-   let reset_tips () = %reset_tips_rpc ()
+   let reset_tips () = ~%reset_tips_rpc ()
 
    (* This thread is used to display only one tip at a time: *)
-   let waiter = ref (lwt _ = Lwt_js_events.onload () in Lwt.return ())
+   let waiter = ref (let%lwt _ = Lwt_js_events.onload () in Lwt.return ())
 
 (* actually display a tip *)
 let display ?(class_=[])
@@ -77,7 +77,7 @@ let display ?(class_=[])
   let current_waiter = !waiter in
   let new_waiter, new_wakener = Lwt.wait () in
   waiter := new_waiter;
-  lwt () = current_waiter in
+  let%lwt () = current_waiter in
   let bec = D.div ~a:[a_class ["bec"]] [] in
   let close_button = Ow_icons.D.close () in
   let box =
@@ -88,75 +88,75 @@ let display ?(class_=[])
     clicks (To_dom.of_element close_button)
       (fun ev _ ->
          let () = Manip.removeSelf box in
-         Lwt.async (fun () -> %tip_seen_rpc (name : string));
+         Lwt.async (fun () -> ~%tip_seen_rpc (name : string));
          Lwt.wakeup new_wakener ();
          Lwt.return ()
       )));
   let parent_node = match parent_node with
-    | None -> Dom_html.document##body
+    | None -> Dom_html.document##.body
     | Some p -> To_dom.of_element p
   in
   Dom.appendChild parent_node (To_dom.of_element box);
   let box = To_dom.of_element box in
   Eliom_lib.Option.iter
-    (fun v -> box##style##top <- Js.string (Printf.sprintf "%ipx" v))
+    (fun v -> box##.style##.top := Js.string (Printf.sprintf "%ipx" v))
     top;
   Eliom_lib.Option.iter
-    (fun v -> box##style##left <- Js.string (Printf.sprintf "%ipx" v))
+    (fun v -> box##.style##.left := Js.string (Printf.sprintf "%ipx" v))
     left;
   Eliom_lib.Option.iter
-    (fun v -> box##style##right <- Js.string (Printf.sprintf "%ipx" v))
+    (fun v -> box##.style##.right := Js.string (Printf.sprintf "%ipx" v))
     right;
   Eliom_lib.Option.iter
-    (fun v -> box##style##bottom <- Js.string (Printf.sprintf "%ipx" v))
+    (fun v -> box##.style##.bottom := Js.string (Printf.sprintf "%ipx" v))
     bottom;
   Eliom_lib.Option.iter
-    (fun v -> box##style##width <- Js.string (Printf.sprintf "%ipx" v))
+    (fun v -> box##.style##.width := Js.string (Printf.sprintf "%ipx" v))
     width;
   Eliom_lib.Option.iter
-    (fun v -> box##style##height <- Js.string (Printf.sprintf "%ipx" v))
+    (fun v -> box##.style##.height := Js.string (Printf.sprintf "%ipx" v))
     height;
   Eliom_lib.Option.iter
     (fun a ->
        let bec = To_dom.of_element bec in
        match a with
        | `top i ->
-         bec##style##top <- Js.string "-11px";
-         bec##style##left <- Js.string (Printf.sprintf "%ipx" i);
-         bec##style##borderBottom <- Js.string "none";
-         bec##style##borderRight <- Js.string "none"
+         bec##.style##.top := Js.string "-11px";
+         bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
+         bec##.style##.borderBottom := Js.string "none";
+         bec##.style##.borderRight := Js.string "none"
        | `left i ->
-         bec##style##left <- Js.string "-11px";
-         bec##style##top <- Js.string (Printf.sprintf "%ipx" i);
-         bec##style##borderTop <- Js.string "none";
-         bec##style##borderRight <- Js.string "none"
+         bec##.style##.left := Js.string "-11px";
+         bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
+         bec##.style##.borderTop := Js.string "none";
+         bec##.style##.borderRight := Js.string "none"
        | `bottom i ->
-         bec##style##bottom <- Js.string "-11px";
-         bec##style##left <- Js.string (Printf.sprintf "%ipx" i);
-         bec##style##borderTop <- Js.string "none";
-         bec##style##borderLeft <- Js.string "none"
+         bec##.style##.bottom := Js.string "-11px";
+         bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
+         bec##.style##.borderTop := Js.string "none";
+         bec##.style##.borderLeft := Js.string "none"
        | `right i ->
-         bec##style##right <- Js.string "-11px";
-         bec##style##top <- Js.string (Printf.sprintf "%ipx" i);
-         bec##style##borderBottom <- Js.string "none";
-         bec##style##borderLeft <- Js.string "none"
+         bec##.style##.right := Js.string "-11px";
+         bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
+         bec##.style##.borderBottom := Js.string "none";
+         bec##.style##.borderLeft := Js.string "none"
     )
     arrow;
   Lwt.return ()
 
-}}
+]
 
 (* Function to be called on server to display a tip *)
 let display ?class_ ?arrow ?top ?left ?right ?bottom ?height ?width
     ?parent_node ~(name : string) ~content () =
-  lwt seen = Eliom_reference.Volatile.get seen_by_user in
+  let%lwt seen = Eliom_reference.Volatile.get seen_by_user in
   if Stringset.mem name seen
   then Lwt.return ()
-  else let _ = {unit{ Lwt.async (fun () ->
-      display ?class_:%class_ ?arrow:%arrow
-        ?top:%top ?left:%left ?right:%right ?bottom:%bottom
-        ?height:%height ?width:%width
-        ?parent_node:%parent_node ~name:(%name : string) ~content:%content ())
-    }}
+  else let _ = [%client ( Lwt.async (fun () ->
+      display ?class_:~%class_ ?arrow:~%arrow
+        ?top:~%top ?left:~%left ?right:~%right ?bottom:~%bottom
+        ?height:~%height ?width:~%width
+        ?parent_node:~%parent_node ~name:(~%name : string) ~content:~%content ())
+    : unit)]
     in
     Lwt.return ()

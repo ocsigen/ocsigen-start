@@ -22,10 +22,10 @@
 
 (** Registration of default services *)
 
-{shared{
+[%%shared
   open Eliom_content.Html5
   open Eliom_content.Html5.F
-}}
+]
 
 let set_personal_data_handler' userid ()
     (((firstname, lastname), (pwd, pwd2)) as pd) =
@@ -34,7 +34,7 @@ let set_personal_data_handler' userid ()
     (Eliom_reference.Volatile.set Eba_msg.wrong_pdata (Some pd);
      Lwt.return ())
   else (
-    lwt user = Eba_user.user_of_userid userid in
+    let%lwt user = Eba_user.user_of_userid userid in
     let open Eba_user in
     let record = {
       user with
@@ -49,7 +49,7 @@ let set_password_handler' userid () (pwd, pwd2) =
     (Eba_msg.msg ~level:`Err "Passwords do not match";
      Lwt.return ())
   else (
-    lwt user = Eba_user.user_of_userid userid in
+    let%lwt user = Eba_user.user_of_userid userid in
     Eba_user.update' ~password:pwd user)
 
 let generate_act_key
@@ -71,7 +71,7 @@ let generate_act_key
   if send_email
   then
     Lwt.async (fun () ->
-      try_lwt
+      try%lwt
         Eba_email.send
           ~to_addrs:[("", email)]
           ~subject:"creation"
@@ -90,7 +90,7 @@ let send_act msg service email userid =
       email
   in
   Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
-  lwt () = Eba_user.add_activationkey ~act_key userid in
+  let%lwt () = Eba_user.add_activationkey ~act_key userid in
   Lwt.return ()
 
 let sign_up_handler' () email =
@@ -100,14 +100,14 @@ let sign_up_handler' () email =
        please click on this link: " in
     send_act msg Eba_services.main_service email userid
   in
-  try_lwt
-    lwt user = Eba_user.create ~firstname:"" ~lastname:"" email in
+  try%lwt
+    let%lwt user = Eba_user.create ~firstname:"" ~lastname:"" email in
     let userid = Eba_user.userid_of_user user in
     send_act email userid
   with Eba_user.Already_exists userid ->
     (* If password is not set, the user probably never logged in,
        I send an activation link, as if it were a new user. *)
-    lwt pwdset = Eba_user.password_set userid in
+    let%lwt pwdset = Eba_user.password_set userid in
     if not pwdset
     then send_act email userid
     else begin
@@ -116,8 +116,8 @@ let sign_up_handler' () email =
     end
 
 let forgot_password_handler service () email =
-  try_lwt
-    lwt userid = Eba_user.userid_of_email email in
+  try%lwt
+    let%lwt userid = Eba_user.userid_of_email email in
     let msg = "Hi,\r\nTo set a new password, \
                please click on this link: " in
     send_act msg service email userid
@@ -135,9 +135,9 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
   (* SECURITY: no check here.
      We disconnect the user in any case, so that he does not believe
      to be connected with the new account if the password is wrong. *)
-  lwt () = disconnect_handler () () in
-  try_lwt
-    lwt userid = Eba_user.verify_password login pwd in
+  let%lwt () = disconnect_handler () () in
+  try%lwt
+    let%lwt userid = Eba_user.verify_password login pwd in
     Eba_session.connect ~expire:(not keepmeloggedin) userid
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set Eba_userbox.wrong_password true;
@@ -147,10 +147,10 @@ let activation_handler akey () =
   (* SECURITY: we disconnect the user before doing anything. *)
   (* If the user is already connected,
      we're going to disconnect him even if the activation key outdated. *)
-  lwt () = Eba_session.disconnect () in
-  try_lwt
-    lwt userid = Eba_user.userid_of_activationkey akey in
-    lwt () = Eba_session.connect userid in
+  let%lwt () = Eba_session.disconnect () in
+  try%lwt
+    let%lwt userid = Eba_user.userid_of_activationkey akey in
+    let%lwt () = Eba_session.connect userid in
     Eliom_registration.Redirection.send Eliom_service.void_coservice'
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
@@ -169,8 +169,8 @@ let admin_service_handler userid gp pp =
            *)
 
 let preregister_handler' () email =
-  lwt is_preregistered = Eba_user.is_preregistered email in
-  lwt is_registered = Eba_user.is_registered email in
+  let%lwt is_preregistered = Eba_user.is_preregistered email in
+  let%lwt is_registered = Eba_user.is_registered email in
   Printf.printf "%b:%b%!\n" is_preregistered is_registered;
   if not (is_preregistered || is_registered)
    then Eba_user.add_preregister email
@@ -181,6 +181,6 @@ let preregister_handler' () email =
    end
 
 
-{shared{
+[%%shared
    let _ = Eba_comet.__link (* to make sure eba_comet is linked *)
-}}
+]

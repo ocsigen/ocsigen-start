@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-{shared{
+[%%shared.start]
 (** Functor defining wrappers for services handlers returning pages. *)
 
 exception Predicate_failed of (exn option)
@@ -55,12 +55,12 @@ module type PAGE = sig
 
   (** [other_head] is a list of custom elements to add in the head section.
       It can be used to add <meta> elements, for example. *)
-  val other_head : [ Html5_types.head_content_fun ] Eliom_content.Html5.elt list
+  val other_head : Html5_types.head_content_fun Eliom_content.Html5.elt list
 
   (** Default error page. *)
   val default_error_page :
     'a -> 'b -> exn ->
-    [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
+    Html5_types.body_content Eliom_content.Html5.elt list Lwt.t
 
   (** Default error page (with custom headers and title). *)
   val default_error_page_full : ('a -> 'b -> exn -> content Lwt.t) option
@@ -68,7 +68,7 @@ module type PAGE = sig
   (** Default error page for connected pages. *)
   val default_connected_error_page :
     int64 option -> 'a -> 'b -> exn ->
-    [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t
+    Html5_types.body_content Eliom_content.Html5.elt list Lwt.t
 
   (** Default error page for connected pages (with custom headers and
       title). *)
@@ -106,11 +106,11 @@ module Make (C : PAGE) : sig
   val page :
     ?predicate:('a -> 'b -> bool Lwt.t) ->
     ?fallback:('a -> 'b -> exn ->
-               [ Html5_types.body_content ] Eliom_content.Html5.elt
+               Html5_types.body_content Eliom_content.Html5.elt
                  list Lwt.t) ->
     ('a -> 'b ->
-     [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t) ->
-    ('a -> 'b -> [ Html5_types.html ] Eliom_content.Html5.elt Lwt.t)
+     Html5_types.body_content Eliom_content.Html5.elt list Lwt.t) ->
+    ('a -> 'b -> Html5_types.html Eliom_content.Html5.elt Lwt.t)
 
 
   module Opt : sig
@@ -122,11 +122,11 @@ module Make (C : PAGE) : sig
       ?deny:Eba_group.t list ->
       ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t) ->
       ?fallback:(int64 option -> 'a -> 'b -> exn ->
-                 [ Html5_types.body_content ] Eliom_content.Html5.elt
+                 Html5_types.body_content Eliom_content.Html5.elt
                    list Lwt.t) ->
       (int64 option -> 'a -> 'b ->
-       [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t) ->
-      ('a -> 'b -> [ Html5_types.html ] Eliom_content.Html5.elt Lwt.t)
+       Html5_types.body_content Eliom_content.Html5.elt list Lwt.t) ->
+      ('a -> 'b -> Html5_types.html Eliom_content.Html5.elt Lwt.t)
 
     (** More flexible wrapper than {!connected_page} for pages that
         first checks if the user is connected.
@@ -137,7 +137,7 @@ module Make (C : PAGE) : sig
       ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t) ->
       ?fallback:(int64 option -> 'a -> 'b -> exn -> content Lwt.t) ->
       (int64 option -> 'a -> 'b -> content Lwt.t) ->
-      ('a -> 'b -> [ Html5_types.html ] Eliom_content.Html5.elt Lwt.t)
+      ('a -> 'b -> Html5_types.html Eliom_content.Html5.elt Lwt.t)
   end
 
   (** Wrapper for pages that first checks if the user is connected.
@@ -148,12 +148,12 @@ module Make (C : PAGE) : sig
     -> ?deny:Eba_group.t list
     -> ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t)
     -> ?fallback:(int64 option -> 'a -> 'b -> exn ->
-                  [ Html5_types.body_content ] Eliom_content.Html5.elt list
+                  Html5_types.body_content Eliom_content.Html5.elt list
                     Lwt.t)
     -> (int64 -> 'a -> 'b ->
-        [ Html5_types.body_content ] Eliom_content.Html5.elt list Lwt.t)
+        Html5_types.body_content Eliom_content.Html5.elt list Lwt.t)
     -> 'a -> 'b
-    -> [ Html5_types.html ] Eliom_content.Html5.elt Lwt.t
+    -> Html5_types.html Eliom_content.Html5.elt Lwt.t
 
 
   (** More flexible wrapper than {!connected_page} for pages that
@@ -165,6 +165,5 @@ module Make (C : PAGE) : sig
     ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t) ->
     ?fallback:(int64 option -> 'a -> 'b -> exn -> content Lwt.t) ->
     (int64 -> 'a -> 'b -> content Lwt.t) ->
-    ('a -> 'b -> [ Html5_types.html ] Eliom_content.Html5.elt Lwt.t)
+    ('a -> 'b -> Html5_types.html Eliom_content.Html5.elt Lwt.t)
 end
-}}

@@ -1,4 +1,4 @@
-{shared{
+[%%shared.start]
 
 type local_calendar
 
@@ -23,4 +23,4 @@ val smart_interval :
 val smart_date_interval :
   ?now:local_calendar -> local_calendar -> local_calendar -> string
 
-}}
+

@@ -3,7 +3,7 @@
    and integrate it in your app to customize the behaviour according to
    your needs. *)
 
-{shared{
+[%%shared
   open Eliom_content.Html5
   open Eliom_content.Html5.F
 
@@ -28,7 +28,7 @@ let generic_email_form ?a ?label ?(text="Send") ~service () =
         | Some lab -> F.label [pcdata lab]::l) ()
 
 let connect_form ?a () =
-  D.Form.post_form ?a ~xhr:false ~service:%Eba_services.connect_service
+  D.Form.post_form ?a ~xhr:false ~service:~%Eba_services.connect_service
     (fun ((login, password), keepmeloggedin) -> [
       Form.input
         ~a:[a_placeholder "Your email"]
@@ -52,27 +52,27 @@ let connect_form ?a () =
         Form.string;
     ]) ()
 
-}}
+]
 
-{shared{
+[%%shared
 let disconnect_button ?a () =
-  Form.post_form ?a ~service:%Eba_services.disconnect_service
+  Form.post_form ?a ~service:~%Eba_services.disconnect_service
     (fun _ -> [
          Form.button_no_value ~button_type:`Submit
            [Ow_icons.F.signout (); pcdata "Logout"]
        ]) ()
 
 let sign_up_form ?a () =
-  generic_email_form ?a ~service:%Eba_services.sign_up_service' ()
+  generic_email_form ?a ~service:~%Eba_services.sign_up_service' ()
 
 let forgot_password_form ?a () =
   generic_email_form ?a
-    ~service:%Eba_services.forgot_password_service ()
+    ~service:~%Eba_services.forgot_password_service ()
 
 let information_form ?a
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
     () =
-  D.Form.post_form ?a ~service:%Eba_services.set_personal_data_service'
+  D.Form.post_form ?a ~service:~%Eba_services.set_personal_data_service'
     (fun ((fname, lname), (passwordn1, passwordn2)) ->
        let pass1 = D.Form.input
            ~a:[a_placeholder "Your password"]
@@ -88,17 +88,17 @@ let information_form ?a
            ~input_type:`Password
            Form.string
        in
-       let _ = {unit{
-         let pass1 = To_dom.of_input %pass1 in
-         let pass2 = To_dom.of_input %pass2 in
+       let _ = [%client (
+         let pass1 = To_dom.of_input ~%pass1 in
+         let pass2 = To_dom.of_input ~%pass2 in
          Lwt_js_events.(async (fun () ->
            inputs pass2 (fun _ _ ->
-             if (Js.to_string pass1##value <> Js.to_string pass2##value)
-             then (Js.Unsafe.coerce pass2)##setCustomValidity
-                 ("Passwords do not match")
-             else (Js.Unsafe.coerce pass2)##setCustomValidity("");
+             if (Js.to_string pass1##.value <> Js.to_string pass2##.value)
+             then (Js.Unsafe.coerce pass2)##(setCustomValidity
+                 ("Passwords do not match"))
+             else (Js.Unsafe.coerce pass2)##(setCustomValidity (""));
              Lwt.return ())))
-       }}
+       : unit)]
        in
        [
          Form.input
@@ -124,10 +124,10 @@ let information_form ?a
 
 
 let preregister_form ?a label =
-  generic_email_form ?a ~service:%Eba_services.preregister_service' ~label ()
+  generic_email_form ?a ~service:~%Eba_services.preregister_service' ~label ()
 
 let home_button ?a () =
-  Form.get_form ?a ~service:%Eba_services.main_service
+  Form.get_form ?a ~service:~%Eba_services.main_service
     (fun _ -> [
       Form.input
         ~input_type:`Submit
@@ -173,21 +173,21 @@ let password_form ?a ~service () =
            ~input_type:`Password ~name:pwd2n
            Form.string
        in
-       ignore {unit{
-         let pass1 = To_dom.of_input %pass1 in
-         let pass2 = To_dom.of_input %pass2 in
+       ignore [%client (
+         let pass1 = To_dom.of_input ~%pass1 in
+         let pass2 = To_dom.of_input ~%pass2 in
          Lwt_js_events.async
            (fun () ->
               Lwt_js_events.inputs pass2
                 (fun _ _ ->
                    ignore
-                     (if Js.to_string pass1##value <> Js.to_string pass2##value
+                     (if Js.to_string pass1##.value <> Js.to_string pass2##.value
                       then
                         (Js.Unsafe.coerce
-                           pass2)##setCustomValidity("Passwords do not match")
-                      else (Js.Unsafe.coerce pass2)##setCustomValidity(""));
+                           pass2)##(setCustomValidity ("Passwords do not match"))
+                      else (Js.Unsafe.coerce pass2)##(setCustomValidity ("")));
                    Lwt.return ()))
-       }};
+       : unit)];
        [
          table
            [
@@ -197,4 +197,4 @@ let password_form ?a ~service () =
          Form.input ~input_type:`Submit ~value:"Send" Form.string
        ])
     ()
- }}
+ ]

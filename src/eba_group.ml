@@ -50,8 +50,8 @@ struct
 
   let compare = compare
   let get key =
-    try_lwt
-      lwt g = Eba_db.Groups.group_of_name key in
+    try%lwt
+      let%lwt g = Eba_db.Groups.group_of_name key in
       Lwt.return (create_group_from_db g)
     with Eba_db.No_such_resource -> Lwt.fail No_such_group
 end)
@@ -60,14 +60,14 @@ end)
   * a record of type [t]. *)
 let create ?description name =
   let group_of_name name =
-    lwt g = Eba_db.Groups.group_of_name name in
+    let%lwt g = Eba_db.Groups.group_of_name name in
     Lwt.return (create_group_from_db g)
   in
-  try_lwt group_of_name name with
+  try%lwt group_of_name name with
   | Eba_db.No_such_resource ->
-    lwt () = Eba_db.Groups.create ?description name in
-    try_lwt
-      lwt g = group_of_name name in
+    let%lwt () = Eba_db.Groups.create ?description name in
+    try%lwt
+      let%lwt g = group_of_name name in
       Lwt.return g
     with Eba_db.No_such_resource ->
       Lwt.fail No_such_group (* Should never happen *)
@@ -93,5 +93,5 @@ let in_group ~group =
 
 (** Returns all the groups of the database. *)
 let all () =
-  lwt groups = Eba_db.Groups.all () in
+  let%lwt groups = Eba_db.Groups.all () in
   Lwt.return (List.map (create_group_from_db) groups)

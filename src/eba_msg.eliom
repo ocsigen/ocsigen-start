@@ -19,12 +19,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-{shared{
+[%%shared
 open Eliom_content.Html5
 open Eliom_content.Html5.F
-}}
+]
 
-{client{
+[%%client
 
    let msgbox () =
      let id = "eba_msg" in
@@ -33,27 +33,27 @@ open Eliom_content.Html5.F
      with
      | Not_found ->
        let b = To_dom.of_element (D.div ~a:[a_id id] []) in
-       Dom.appendChild Dom_html.document##body b;
+       Dom.appendChild Dom_html.document##.body b;
        b
 
-}}
+]
 
-{shared{
+[%%shared
 
   let msg ?(level = `Err) msg =
-    ignore {unit{
-      let c = if %level = `Msg then [] else ["eba_err"] in
-      Eliom_lib.debug "%s" %msg;
-      let msg = To_dom.of_p (D.p ~a:[a_class c] [pcdata %msg]) in
+    ignore [%client (
+      let c = if ~%level = `Msg then [] else ["eba_err"] in
+      Eliom_lib.debug "%s" ~%msg;
+      let msg = To_dom.of_p (D.p ~a:[a_class c] [pcdata ~%msg]) in
       let msgbox = msgbox () in
       Dom.appendChild msgbox msg;
       Lwt.async (fun () ->
-        (lwt () = Lwt_js.sleep 2. in
+        (let%lwt () = Lwt_js.sleep 2. in
          Dom.removeChild msgbox msg;
          Lwt.return ()))
-    }}
+    : unit)]
 
-}}
+]
 
 
 

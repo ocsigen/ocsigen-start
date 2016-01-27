@@ -69,8 +69,8 @@ end) = struct
     try Lwt.return (MMap.find k table)
     with
       | Not_found ->
-          try_lwt
-            lwt ret = M.get k in
+          try%lwt
+            let%lwt ret = M.get k in
             Eliom_reference.Volatile.set cache (MMap.add k ret table);
             Lwt.return ret
           with _ -> Lwt.fail Not_found

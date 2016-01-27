@@ -32,12 +32,12 @@
   etc.
 *)
 
-{client{
+[%%client
    let timezone_offset =
-     truncate (-. float (jsnew Js.date_now() ##getTimezoneOffset()) /. 60.)
+     truncate (-. float ((new%js Js.date_now) ##getTimezoneOffset) /. 60.)
    let tz = CalendarLib.Time_Zone.UTC_Plus timezone_offset
    let user_tz () = tz
-}}
+]
 
 let user_tz_sr =
   Eliom_reference.Volatile.eref
@@ -68,18 +68,18 @@ let init_client_process_time tz =
   let () = Eliom_reference.Volatile.set user_tz_sr tz in
   Lwt.return ()
 
-let init_time_rpc = server_function Json.t<int> init_client_process_time
+let init_time_rpc = server_function [%derive.json: int] init_client_process_time
 
-{client{
+[%%client
 
 let _ =
 (* We wait for the client process to be fully loaded: *)
 Eliom_client.onload (fun () ->
-  Lwt.async (fun () -> %init_time_rpc timezone_offset))
+  Lwt.async (fun () -> ~%init_time_rpc timezone_offset))
 
-}}
+]
 
-{shared{
+[%%shared
 open CalendarLib
 
 type local_calendar = CalendarLib.Calendar.t
@@ -168,4 +168,4 @@ let smart_interval ?(now = now ()) start_date end_date =
   let e = Printer.sprint format2 end_date in
   s ^ "–" ^ e
 
-}}
+]

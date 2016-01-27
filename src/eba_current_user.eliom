@@ -7,7 +7,7 @@ let me : Eba_user.t option Eliom_reference.Volatile.eref =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope None
 
 
-{client{
+[%%client
 
 let me : Eba_user.t option ref = ref None
 
@@ -20,7 +20,7 @@ let get_current_user () =
     Ow_log.log "Not connected error in Eba_current_user";
     raise Eba_session.Not_connected
 
-}}
+]
 
 
 (* SECURITY: We can trust these functions on server side,
@@ -35,7 +35,7 @@ let get_current_user () =
 let get_current_user_option () =
   Eliom_reference.Volatile.get me
 
-{shared{
+[%%shared
 let get_current_userid () = Eba_user.userid_of_user (get_current_user ())
 
 module Opt = struct
@@ -48,13 +48,13 @@ module Opt = struct
       (get_current_user_option ())
 
 end
- }}
-{client{
+ ]
+[%%client
    let _ = Eba_session.get_current_userid_o := Opt.get_current_userid
-}}
+]
 
 let set_user_server userid =
-  lwt u = Eba_user.user_of_userid userid in
+  let%lwt u = Eba_user.user_of_userid userid in
   Eliom_reference.Volatile.set me (Some u);
   Lwt.return ()
 
@@ -63,10 +63,10 @@ let unset_user_server () =
 
 let set_user_client () =
   let u = Eliom_reference.Volatile.get me in
-  ignore {unit{ me := %u }}
+  ignore [%client ( me := ~%u : unit)]
 
 let unset_user_client () =
-  ignore {unit{ me := None }}
+  ignore [%client ( me := None : unit)]
 
 
 
@@ -79,11 +79,11 @@ let last_activity : CalendarLib.Calendar.t option Eliom_reference.eref =
 
 let () =
   Eba_session.on_start_connected_process (fun userid ->
-    lwt () = set_user_server userid in
+    let%lwt () = set_user_server userid in
     set_user_client ();
     Lwt.return ());
   Eba_session.on_connected_request (fun userid ->
-    lwt () = set_user_server userid in
+    let%lwt () = set_user_server userid in
     let now = CalendarLib.Calendar.now () in
     Eliom_reference.set last_activity (Some now));
   Eba_session.on_pre_close_session (fun () ->

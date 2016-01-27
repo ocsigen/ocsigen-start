@@ -21,7 +21,7 @@
 
 (** Tips for new users and new features. *)
 
-{shared{
+[%%shared.start]
 (** Display tips in pages.
     Tips can be inserted in page using function [display],
     that may be called anywhere during the generation of a page.
@@ -53,7 +53,7 @@ val display :
   unit ->
   unit Lwt.t
 
-}}
+
 
 
 (** Call this function to reset tips for one user.
@@ -62,7 +62,7 @@ val display :
 *)
 val reset_tips : int64 -> unit -> unit -> unit Lwt.t
 
-
+[%%server.start]
 (** A non-attached service that will reset tips.
     Call it with [Eliom_client.exit_to] to restart the application and
     see tips again. *)
@@ -76,9 +76,8 @@ val reset_tips_service :
          Eliom_service.service
 
 
-{client{
+[%%client.start]
 (** Call this function to reset tips for current users.
     Tips will be shown again from the beginning.
 *)
 val reset_tips : unit -> unit Lwt.t
-}}
