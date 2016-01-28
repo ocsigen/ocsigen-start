@@ -203,37 +203,40 @@ module User = struct
       Lwt.return (List.map (fun a -> a#!email) l))
 
   let create ?password ?avatar ~firstname ~lastname email =
-    full_transaction_block (fun dbh ->
-      let password_o =
-        Eliom_lib.Option.map (fun password ->
-          let password = (fst !pwd_crypt_ref) password in
-          <:value< $string:password$ >>)
-          password
-      in
-      lwt () =
-        Lwt_Query.query dbh
-          <:insert< $users_table$ :=
-                    { userid    = users_table?userid;
-                      firstname = $string:firstname$;
-                      lastname  = $string:lastname$;
-                      password  = of_option $password_o$;
-                      avatar    = null
-                    } >>
-      in
-      lwt userid =
-        Lwt_Query.view_one dbh <:view< {x = currval $users_userid_seq$} >>
-      in
-      let userid = userid#!x in
-      lwt () =
-        Lwt_Query.query dbh
-          <:insert< $emails_table$ :=
-                      { email = $string:email$;
-                        userid  = $int64:userid$}
+    if password = Some ""
+    then Lwt.fail (Failure "empty password")
+    else
+      full_transaction_block (fun dbh ->
+        let password_o =
+          Eliom_lib.Option.map (fun password ->
+            let password = (fst !pwd_crypt_ref) password in
+            <:value< $string:password$ >>)
+            password
+        in
+        lwt () =
+          Lwt_Query.query dbh
+            <:insert< $users_table$ :=
+                      { userid    = users_table?userid;
+                        firstname = $string:firstname$;
+                        lastname  = $string:lastname$;
+                        password  = of_option $password_o$;
+                        avatar    = null
+                      } >>
+        in
+        lwt userid =
+          Lwt_Query.view_one dbh <:view< {x = currval $users_userid_seq$} >>
+        in
+        let userid = userid#!x in
+        lwt () =
+          Lwt_Query.query dbh
+            <:insert< $emails_table$ :=
+                        { email = $string:email$;
+                          userid  = $int64:userid$}
             >>
-      in
-      lwt () = remove_preregister email in
-      Lwt.return userid
-    )
+        in
+        lwt () = remove_preregister email in
+        Lwt.return userid
+      )
 
   let update ?password ?avatar ~firstname ~lastname userid =
     full_transaction_block (fun dbh ->
@@ -254,6 +257,7 @@ module User = struct
                         avatar = of_option $avatar$ } |
                        d.userid = $int64:userid$
              >>
+        | Some "", _ -> Lwt.fail (Failure "empty password")
         | Some password, None ->
           let password = (fst !pwd_crypt_ref) password in
           let password = Some <:value< $string:password$ >> in
@@ -280,14 +284,17 @@ module User = struct
       ))
 
   let update_password password userid =
-    full_transaction_block (fun dbh ->
-      let password = (fst !pwd_crypt_ref) password in
-      let password = Some <:value< $string:password$ >> in
-      Lwt_Query.query dbh
-        <:update< d in $users_table$ := { password = of_option $password$ }
-                  | d.userid = $int64:userid$
-        >>
-    )
+    if password = ""
+    then Lwt.fail (Failure "empty password")
+    else
+      full_transaction_block (fun dbh ->
+        let password = (fst !pwd_crypt_ref) password in
+        let password = Some <:value< $string:password$ >> in
+        Lwt_Query.query dbh
+          <:update< d in $users_table$ := { password = of_option $password$ }
+                    | d.userid = $int64:userid$
+          >>
+      )
 
   let update_avatar avatar userid =
     full_transaction_block (fun dbh ->
@@ -307,23 +314,26 @@ module User = struct
                         creationdate = activation_table?creationdate }
          >>)
 
-  let verify_password ~email ~password =
-    full_transaction_block (fun dbh ->
-      lwt r = Lwt_Query.view_one dbh
-          <:view< { t1.userid; t1.password } |
-                    t1 in $users_table$;
-                    t2 in $emails_table$;
-                    t1.userid = t2.userid;
-                    t2.email = $string:email$;
-            >>
-      in
-      let (userid, password') = (r#!userid, r#?password) in
-      match password' with
-      | None -> Lwt.fail No_such_resource
-      | Some password' ->
-          if (snd !pwd_crypt_ref) userid password password'
-          then Lwt.return userid
-          else Lwt.fail No_such_resource)
+   let verify_password ~email ~password =
+     if password = ""
+     then Lwt.fail No_such_resource
+     else
+       full_transaction_block (fun dbh ->
+         lwt r = Lwt_Query.view_one dbh
+             <:view< { t1.userid; t1.password } |
+                     t1 in $users_table$;
+                     t2 in $emails_table$;
+                     t1.userid = t2.userid;
+                     t2.email = $string:email$;
+             >>
+         in
+         let (userid, password') = (r#!userid, r#?password) in
+         match password' with
+         | None -> Lwt.fail No_such_resource
+         | Some password' ->
+           if (snd !pwd_crypt_ref) userid password password'
+           then Lwt.return userid
+           else Lwt.fail No_such_resource)
 
   let user_of_userid userid =
     full_transaction_block (fun dbh ->
