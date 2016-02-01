@@ -6,7 +6,6 @@
     configuration file, as shown below.
 *)
 
-
 let avatar_dir = ref []
 
 let avatars = Ocsigen_extensions.Configuration.(

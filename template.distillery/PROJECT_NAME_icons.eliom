@@ -1,5 +1,4 @@
-
-{shared{
+[%%shared.start]
 
 module Make(A : module type of Eliom_content.Html5.F) = struct
 
@@ -23,7 +22,3 @@ module D = struct
   include Ow_icons.D
   include Make(Eliom_content.Html5.D)
 end
-
-
-
-}}

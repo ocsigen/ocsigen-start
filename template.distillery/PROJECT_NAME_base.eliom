@@ -1,7 +1,7 @@
-{shared{
-  open Eliom_content.Html5.F
-  open Eliom_content.Html5
-}}
+[%%shared
+    open Eliom_content.Html5.F
+    open Eliom_content.Html5
+]
 
 let application_name = "%%%PROJECT_NAME%%%"
 
@@ -13,15 +13,16 @@ let getenv name default_value =
 
 let () =
   let int_of_pgport s =
-    try int_of_string s
+    try
+      int_of_string s
     with Failure _ ->
-      failwith(Printf.sprintf
-                 "PGPORT environment variable must be an integer not '%s'."
-                 s)
+      failwith @@ Printf.sprintf
+        "PGPORT environment variable must be an integer, not '%s'" s
   in
-  Eba_db.init ~db_host:(getenv "PGHOST" "localhost")
-              ~port:(int_of_pgport (getenv "PGPORT" "3000"))
-              ~database:"%%%PROJECT_NAME%%%" ()
+  Eba_db.init ()
+    ~db_host:(getenv "PGHOST" "localhost")
+    ~port:(int_of_pgport (getenv "PGPORT" "3000"))
+    ~database:"%%%PROJECT_NAME%%%"
 
 let () = Eba_email.set_mailer "/usr/sbin/sendmail"
 

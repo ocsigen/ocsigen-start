@@ -3,47 +3,44 @@
 
 (** This module defines the default template for application pages *)
 
-{shared{
-  open Eliom_content.Html5
-  open Eliom_content.Html5.F
-}}
+[%%shared
+    open Eliom_content.Html5
+    open Eliom_content.Html5.F
+]
 
 let uploader = Eba_userbox.uploader !%%%MODULE_NAME%%%_config.avatar_dir
 
-{client{
-let user_menu close user uploader =
-  [
-    p [pcdata "Change your password:"];
-    Eba_view.password_form ~service:%Eba_services.set_password_service' ();
-    hr ();
-    Eba_userbox.upload_pic_link close uploader;
-    hr ();
-    Eba_userbox.reset_tips_link close;
-    hr ();
-    Eba_view.disconnect_button ();
-  ]
+let%client user_menu close user uploader = [
+  p [pcdata "Change your password:"];
+  Eba_view.password_form ~service:~%Eba_services.set_password_service' ();
+  hr ();
+  Eba_userbox.upload_pic_link close uploader;
+  hr ();
+  Eba_userbox.reset_tips_link close;
+  hr ();
+  Eba_view.disconnect_button ();
+]
 
-let _ = Eba_userbox.set_user_menu user_menu
- }}
+let%client _ = Eba_userbox.set_user_menu user_menu
 
 let header ?user () =
-  lwt user_box = Eba_userbox.userbox user uploader in
-  lwt () = %%%MODULE_NAME%%%_tips.example_tip () in
+  let%lwt user_box = Eba_userbox.userbox user uploader in
+  let%lwt () = %%%MODULE_NAME%%%_tips.example_tip () in
   Lwt.return
     (header ~a:[a_id "main"] [
-      a ~a:[a_id "%%%PROJECT_NAME%%%-logo"]
-        ~service:Eba_services.main_service [
-          pcdata %%%MODULE_NAME%%%_base.App.application_name;
-        ] ();
-      ul ~a:[a_id "%%%PROJECT_NAME%%%-navbar"]
-        [
-          li [a ~service:Eba_services.main_service
-                [pcdata "Home"] ()];
-          li [a ~service:%%%MODULE_NAME%%%_services.about_service
-                [pcdata "About"] ()]
-        ];
-      user_box;
-    ])
+       a ~a:[a_id "%%%PROJECT_NAME%%%-logo"]
+         ~service:Eba_services.main_service [
+         pcdata %%%MODULE_NAME%%%_base.App.application_name;
+       ] ();
+       ul ~a:[a_id "%%%PROJECT_NAME%%%-navbar"]
+         [
+           li [a ~service:Eba_services.main_service
+                 [pcdata "Home"] ()];
+           li [a ~service:%%%MODULE_NAME%%%_services.about_service
+                 [pcdata "About"] ()]
+         ];
+       user_box;
+     ])
 
 let footer ?user () =
   div ~a:[a_id "%%%PROJECT_NAME%%%-footer"] [
@@ -69,30 +66,29 @@ let connected_welcome_box () =
       ], (("", ""), ("", ""))
     | Some wpd -> p [pcdata "Wrong data. Please fix."], wpd
   in
-  (div ~a:[a_id "eba_welcome_box"]
-     [
-       div [h2 [pcdata ("Welcome!")];
-            info];
-       Eba_view.information_form
-         ~firstname:fn ~lastname:ln
-         ~password1:p1 ~password2:p2
-         ()
-     ])
+  (div ~a:[a_id "eba_welcome_box"] [
+     div [h2 [pcdata ("Welcome!")]; info];
+     Eba_view.information_form
+       ~firstname:fn ~lastname:ln
+       ~password1:p1 ~password2:p2
+       ()
+   ])
 
 let page userid_o content =
-  lwt user = match userid_o with None -> Lwt.return None
-    | Some userid -> lwt u = Eba_user.user_of_userid userid in
-                  Lwt.return (Some u)
+  let%lwt user =
+    match userid_o with
+    | None ->
+      Lwt.return None
+    | Some userid ->
+      let%lwt u = Eba_user.user_of_userid userid in
+      Lwt.return (Some u)
   in
-  let l =
-    [ div ~a:[a_id "%%%PROJECT_NAME%%%-body"] content;
-      footer ?user ();
-    ]
-  in
-  lwt h = header ?user () in
-  Lwt.return
-    (h
-     ::match user with
-       | Some user when (not (Eba_user.is_complete user)) ->
-         connected_welcome_box () :: l
-       | _ -> l)
+  let l = [
+    div ~a:[a_id "%%%PROJECT_NAME%%%-body"] content;
+    footer ?user ();
+  ] in
+  let%lwt h = header ?user () in
+  Lwt.return @@ h :: match user with
+  | Some user when not (Eba_user.is_complete user) ->
+    connected_welcome_box () :: l
+  | _ -> l
