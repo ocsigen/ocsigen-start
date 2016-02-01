@@ -14,7 +14,7 @@ depends: [
   "pgocaml" {>= "1.7.1"}
   "macaque" {>= "0.7.2"}
   "safepass"
-  "eliom"         {>= "dev"}
+  "eliom" {>= "5.0"}
   "ocsigen-widgets" {>= "dev"}
 ]
 

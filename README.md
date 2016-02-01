@@ -1,4 +1,4 @@
-#Eliom-Base-App
+#Eliom-base-app
 
 1. [Getting started](#getting-started)
 
@@ -9,25 +9,34 @@
 4. [Create your database](#create-your-database)
 
 ###<a id="introduction"></a>Introduction
-Eliom base app is a set of higer level libraries for building client-server Web application with Ocsigen (Js_of_ocaml and Eliom). It contains modules for
+Eliom-base-app is a set of higher-level libraries for building
+client-server web applications with Ocsigen (Js_of_ocaml and
+Eliom). It provides modules for
 * user management (session management, registration, activation keys, ...),
 * managing groups of users,
-* displaying tips
-* Sending notifications to users very easily
+* displaying tips, and
+* easily sending notifications to the users.
 
-Eliom-base-app is in early stage of developement. More modules will be added and more customizability.
+Eliom-base-app is in an early stage of development. More modules will
+be added and more customizability.
 
-Eliom-base-app comes with an Eliom-distillery template which creates a full app with a database, and user and session management.
-This template is intended to serve as a basis for quickly building Minimum Viable Product of Web applications with users. The goal is to make it possible for the programmer to concentrate on the core of the app, and not user management.
+Eliom-base-app comes with an `eliom-distillery` template for an app
+with a database, user management, and session management.  This
+template is intended to serve as a basis for quickly building the
+Minimum Viable Product for web applications with users. The goal is to
+enable the programmer to concentrate on the core of the app, and not
+on user management.
 
-If it corresponds to your need, it will probably help you a lot.
-If not, start with a simpler template (but you can still use the modules from Eliom-base-app).
+If Eliom-base-app corresponds to your needs, it will probably help you
+a lot. If not, start with a simpler template. You can still use the
+modules from Eliom-base-app.
 
 ###<a id="install"></a>Installation
 
-Eliom-base-app depends on dev version of Eliom (branch shared react),
-and dev version of tyxml, js_of_ocaml, ojquery, macaque, ocsigen-widgets and reactiveData.
-Use opam to install it, after pinning the github repositories.
+Eliom-base-app depends on Eliom >= 5.0, ojquery (development version),
+Macaque, ocsigen-widgets and reactiveData. You can use OPAM to install
+everything; you need to pin the repositories for ocsigen-widgets,
+ojquery, and Eliom-base-app itself.
 
 ###<a id="create-your-project"></a>Create your project
 ```
@@ -35,7 +44,7 @@ eliom-distillery -name myproject -template eba.pgocaml
 ```
 
 ###<a id="create-your-database"></a>Create your database
-Have look at file README in your directory.
+Have look at the file README in your directory.
 It explains how to configure your database.
 
 ###<a id="configure-your-project"></a>Configure your project
