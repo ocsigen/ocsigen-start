@@ -17,4 +17,4 @@ depends: [
   "eliom" {>= "5.0"}
   "ocsigen-widgets" {>= "dev"}
 ]
-
+available: [ ocaml-version >= "4.02" ]
