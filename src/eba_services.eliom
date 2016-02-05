@@ -20,6 +20,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+[%%shared
 open Eliom_parameter
 
 let main_service =
@@ -86,3 +87,4 @@ let set_password_service' =
     ~name:"set_password"
     ~post_params:(string "password" ** string "password2")
     ()
+]

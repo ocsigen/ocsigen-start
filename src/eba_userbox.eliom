@@ -104,7 +104,7 @@ let reset_tips_service = ~%Eba_tips.reset_tips_service
   let user_menu_ close user uploader =
   [
     p [pcdata "Change your password:"];
-    Eba_view.password_form ~service:~%Eba_services.set_password_service' ();
+    Eba_view.password_form ~service:Eba_services.set_password_service' ();
     hr ();
     upload_pic_link close uploader;
     hr ();

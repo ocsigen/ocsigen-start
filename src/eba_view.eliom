@@ -28,7 +28,7 @@ let generic_email_form ?a ?label ?(text="Send") ~service () =
         | Some lab -> F.label [pcdata lab]::l) ()
 
 let connect_form ?a () =
-  D.Form.post_form ?a ~xhr:false ~service:~%Eba_services.connect_service
+  D.Form.post_form ?a ~xhr:false ~service:Eba_services.connect_service
     (fun ((login, password), keepmeloggedin) -> [
       Form.input
         ~a:[a_placeholder "Your email"]
@@ -56,23 +56,23 @@ let connect_form ?a () =
 
 [%%shared
 let disconnect_button ?a () =
-  Form.post_form ?a ~service:~%Eba_services.disconnect_service
+  Form.post_form ?a ~service:Eba_services.disconnect_service
     (fun _ -> [
          Form.button_no_value ~button_type:`Submit
            [Ow_icons.F.signout (); pcdata "Logout"]
        ]) ()
 
 let sign_up_form ?a () =
-  generic_email_form ?a ~service:~%Eba_services.sign_up_service' ()
+  generic_email_form ?a ~service:Eba_services.sign_up_service' ()
 
 let forgot_password_form ?a () =
   generic_email_form ?a
-    ~service:~%Eba_services.forgot_password_service ()
+    ~service:Eba_services.forgot_password_service ()
 
 let information_form ?a
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
     () =
-  D.Form.post_form ?a ~service:~%Eba_services.set_personal_data_service'
+  D.Form.post_form ?a ~service:Eba_services.set_personal_data_service'
     (fun ((fname, lname), (passwordn1, passwordn2)) ->
        let pass1 = D.Form.input
            ~a:[a_placeholder "Your password"]
@@ -124,10 +124,10 @@ let information_form ?a
 
 
 let preregister_form ?a label =
-  generic_email_form ?a ~service:~%Eba_services.preregister_service' ~label ()
+  generic_email_form ?a ~service:Eba_services.preregister_service' ~label ()
 
 let home_button ?a () =
-  Form.get_form ?a ~service:~%Eba_services.main_service
+  Form.get_form ?a ~service:Eba_services.main_service
     (fun _ -> [
       Form.input
         ~input_type:`Submit
