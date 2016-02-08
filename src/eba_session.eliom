@@ -223,6 +223,19 @@ let gen_wrapper ~allow ~deny
        | None -> Lwt.return None)
     | Some uid -> Lwt.return (Some uid)
   in
+  (* Check if the user exists in the DB *)
+  let%lwt uid = match uid with
+    | None -> Lwt.return None
+    | Some uid ->
+      try%lwt
+        let%lwt _user = Eba_user.user_of_userid uid in
+        Lwt.return (Some uid)
+      with
+      | Eba_user.No_such_user ->
+        (* If session exists and no user in DB, close the session *)
+        let%lwt () = disconnect () in
+        Lwt.return None
+  in
   let%lwt () =
     if new_process
     then begin
