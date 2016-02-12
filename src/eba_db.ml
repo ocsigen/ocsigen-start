@@ -107,7 +107,7 @@ let users_table =
 
 let emails_table =
   <:table< emails (
-       email text NOT NULL,
+       email citext NOT NULL,
        userid bigint NOT NULL
           ) >>
 
@@ -138,7 +138,7 @@ let user_groups_table =
 
 let preregister_table =
   <:table< preregister (
-       email text NOT NULL
+       email citext NOT NULL
           ) >>
 
 
