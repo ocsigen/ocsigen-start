@@ -10,8 +10,11 @@ CREATE TABLE users ( -- DEFAULT
        avatar text
 );
 
+CREATE EXTENSION citext; --DEFAULT
+-- You may remove the above line if you use the type TEXT for emails instead of CITEXT
+
 CREATE TABLE emails ( -- DEFAULT
-       email text primary key, -- DEFAULT
+       email citext primary key, -- DEFAULT
        userid bigint NOT NULL references users(userid) -- DEFAULT
 );
 
@@ -33,5 +36,5 @@ CREATE TABLE user_groups ( -- DEFAULT
 );
 
 CREATE TABLE preregister (
-       email text NOT NULL
+       email citext NOT NULL
 );
