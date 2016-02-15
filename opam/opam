@@ -1,20 +1,20 @@
-opam-version: "1"
+opam-version: "1.2"
+authors: "dev@ocsigen.org"
 maintainer: "dev@ocsigen.org"
+homepage: "https://ocsigen.org/eliom-base-app/"
+bug-reports: "https://github.com/ocsigen/eliom-base-app/issues"
+dev-repo: "https://github.com/ocsigen/eliom-base-app.git"
 version: "dev"
-build: [
-  ["%{make}%"]
-  ["%{make}%" "install"]
-]
-remove: [
-  ["%{make}%" "uninstall"]
-]
+build: [ make ]
+install: [ make "install" ]
+remove: [ make "uninstall" ]
 depends: [
-  "ocamlfind"
   "imagemagick"
-  "pgocaml" {>= "1.7.1"}
-  "macaque" {>= "0.7.2"}
+  "pgocaml" {>= "dev"}
+  "macaque" {>= "dev"}
   "safepass"
   "eliom" {>= "5.0"}
   "ocsigen-widgets" {>= "dev"}
+  "ppx_deriving"
 ]
 available: [ ocaml-version >= "4.02" ]
