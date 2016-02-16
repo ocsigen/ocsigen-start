@@ -83,7 +83,7 @@ let upload_pic_link ?a ?(content=[pcdata "Change profile picture"])
     : unit)];
     link
 
-let reset_tips_service = ~%Eba_tips.reset_tips_service
+let reset_tips_service = Eba_tips.reset_tips_service
 
   let reset_tips_link close =
     let l = D.Raw.a [pcdata "See help again from beginning"] in
@@ -93,7 +93,7 @@ let reset_tips_service = ~%Eba_tips.reset_tips_service
           (fun _ _ ->
              ~%close ();
              Eliom_client.exit_to
-               ~service:~%reset_tips_service
+               ~service:reset_tips_service
                () ();
              Lwt.return ()
           )));
