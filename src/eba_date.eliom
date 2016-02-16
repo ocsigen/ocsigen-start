@@ -80,7 +80,7 @@ let%shared init_time_rpc : (_, unit) server_function =
 let _ =
 (* We wait for the client process to be fully loaded: *)
 Eliom_client.onload (fun () ->
-  Lwt.async (fun () -> ~%init_time_rpc timezone_offset))
+  Lwt.async (fun () -> init_time_rpc timezone_offset))
 
 ]
 
