@@ -62,7 +62,6 @@ val display :
 *)
 val reset_tips : int64 -> unit -> unit -> unit Lwt.t
 
-[%%server.start]
 (** A non-attached service that will reset tips.
     Call it with [Eliom_client.exit_to] to restart the application and
     see tips again. *)
