@@ -55,14 +55,6 @@ let%shared tip_seen_rpc : (_, unit) server_function =
 (* I want to see the tips again *)
 let reset_tips userid () () = Eliom_reference.set tips_seen (Stringset.empty)
 
-(*
-let%shared reset_tips_service =
-  Eliom_registration.Action.register_post_coservice'
-    ~name:"resettips"
-    ~post_params:Eliom_parameter.unit
-    (Eba_session.connected_fun reset_tips)
-*)
-
 let%shared reset_tips_service =
   Eliom_service.Http.post_coservice'
     ~name:"resettips"
