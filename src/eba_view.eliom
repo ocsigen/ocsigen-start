@@ -41,7 +41,7 @@ let connect_form ?a () =
         ~input_type:`Password
         Form.string;
       Form.bool_checkbox_one
-        ~a:[a_checked `Checked]
+        ~a:[a_checked]
         ~name:keepmeloggedin
         ();
       span [pcdata "keep me logged in"];
@@ -161,15 +161,13 @@ let password_form ?a ~service () =
     (fun (pwdn, pwd2n) ->
        let pass1 =
          D.Form.input
-           ~a:[a_required `Required;
-               a_autocomplete `Off]
+           ~a:[a_required; a_autocomplete false]
            ~input_type:`Password ~name:pwdn
            Form.string
        in
        let pass2 =
          D.Form.input
-           ~a:[a_required `Required;
-               a_autocomplete `Off]
+           ~a:[a_required; a_autocomplete false]
            ~input_type:`Password ~name:pwd2n
            Form.string
        in
