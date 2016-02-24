@@ -40,7 +40,9 @@ let content ?(a=[]) ?title ?(head = []) body =
 module type PAGE = sig
   val title : string
   val js : string list list
+  val local_js : string list list
   val css : string list list
+  val local_css : string list list
   val other_head : Html5_types.head_content_fun Eliom_content.Html5.elt list
   val default_error_page :
     'a -> 'b -> exn ->
@@ -59,6 +61,8 @@ module Default_config = struct
   let title = ""
   let js : string list list = []
   let css : string list list = []
+  let local_js : string list list = []
+  let local_css : string list list = []
   let other_head : Html5_types.head_content_fun Eliom_content.Html5.elt list
     = []
 
@@ -96,11 +100,32 @@ module Make(C : PAGE) = struct
       (fun jsname -> ("js"::jsname))
       C.js
 
+  (* Local assets always have relative links. *)
+  let local_css =
+    List.map
+      (fun cssname ->
+         Eliom_content.Html5.F.css_link
+           ~uri:(make_uri
+                   ~absolute:false
+                   ~service:(Eliom_service.static_dir ())
+                   ("css"::cssname)) () )
+      C.local_css
+
+  let local_js =
+    List.map
+      (fun cssname ->
+         Eliom_content.Html5.F.js_script
+           ~uri:(make_uri
+                   ~absolute:false
+                   ~service:(Eliom_service.static_dir ())
+                   ("js"::cssname)) () )
+      C.local_js
+
   let make_page_full content =
     let title = match content.title with Some t -> t | None -> C.title in
     html
       (Eliom_tools.F.head ~title ~css ~js
-         ~other:(content.head @ C.other_head) ())
+         ~other:(local_css @ local_js @ content.head @ C.other_head) ())
       (body ~a:content.body_attrs content.body)
 
   let make_page body = make_page_full (content body)

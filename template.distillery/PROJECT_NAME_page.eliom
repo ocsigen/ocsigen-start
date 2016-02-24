@@ -12,14 +12,17 @@ module Page_config = struct
 
   let title = "%%%PROJECT_NAME%%%"
 
-  let css = [
+  let css = []
+  let js = []
+
+  let local_css = [
     ["font-awesome.css"];
     ["jquery.Jcrop.css"];
     ["eba.css"];
     ["%%%PROJECT_NAME%%%.css"];
   ]
 
-  let js = [
+  let local_js = [
     ["onload.js"];
     ["jquery.js"];
     ["jquery.Jcrop.js"]

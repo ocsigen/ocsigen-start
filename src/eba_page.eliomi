@@ -49,9 +49,19 @@ module type PAGE = sig
       Eba will automatically preprend the suffix "js/" as directory.  *)
   val js : string list list
 
-  (** [css] (same as [js] but for style sheet files),
+  (** Use [local_js] instead of [js] for local scripts if you are building
+      a mobile application.
+      Eba will automatically preprend the suffix "js/" as directory.  *)
+  val local_js : string list list
+
+  (** [css] (same as [js] but for style sheet files).
       Eba will automatically prepend the suffix "css/" as directory.  *)
   val css : string list list
+
+  (** Use [local_css] instead of [css] for local stylesheets if you are building
+      a mobile application.
+      Eba will automatically prepend the suffix "css/" as directory.  *)
+  val local_css : string list list
 
   (** [other_head] is a list of custom elements to add in the head section.
       It can be used to add <meta> elements, for example. *)
