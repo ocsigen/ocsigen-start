@@ -48,8 +48,8 @@ let tip_seen userid (name : string) =
 let%server tip_seen_rpc' = Eba_session.connected_rpc tip_seen
 let%client tip_seen_rpc' = ()
 
-let%shared tip_seen_rpc : (_, unit) server_function =
-  server_function ~name:"eba_tips.tip_seen_rpc" [%derive.json: string]
+let%shared tip_seen_rpc : (_, unit) Eliom_client.server_function =
+  Eliom_client.server_function ~name:"eba_tips.tip_seen_rpc" [%derive.json: string]
     tip_seen_rpc'
 
 (* I want to see the tips again *)
@@ -72,7 +72,7 @@ let%server reset_tips_rpc' =
 let%client reset_tips_rpc' = ()
 
 let%shared reset_tips_rpc =
-  server_function ~name:"eba_tips.reset_tips_rpc" [%derive.json: unit]
+  Eliom_client.server_function ~name:"eba_tips.reset_tips_rpc" [%derive.json: unit]
     reset_tips_rpc'
 
 [%%client
