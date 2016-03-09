@@ -143,6 +143,16 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
     Eliom_reference.Volatile.set Eba_userbox.wrong_password true;
     Lwt.return ()
 
+let%server connect_handler_rpc' v = connect_handler () v
+let%client connect_handler_rpc' = ()
+let%shared connect_handler_rpc : (_, unit) Eliom_client.server_function =
+  Eliom_client.server_function
+    ~name:"Eba_handlers.connect_handler"
+    [%derive.json: (string * string) * bool]
+    connect_handler_rpc'
+
+let%client connect_handler () v = connect_handler_rpc v
+
 let activation_handler akey () =
   (* SECURITY: we disconnect the user before doing anything. *)
   (* If the user is already connected,
