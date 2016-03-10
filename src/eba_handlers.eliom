@@ -129,7 +129,20 @@ let forgot_password_handler service () email =
 
 let disconnect_handler () () =
   (* SECURITY: no check here because we disconnect the session cookie owner. *)
-  Eba_session.disconnect ()
+  let%lwt () = Eba_session.disconnect () in
+  ignore [%client (Eba_current_user.me := None : unit)];
+  Lwt.return ()
+
+let%server disconnect_handler_rpc' v = disconnect_handler () v
+let%client disconnect_handler_rpc' = ()
+let%shared disconnect_handler_rpc : (_, unit) Eliom_client.server_function =
+  Eliom_client.server_function
+    ~name:"Eba_handlers.disconnect_handler"
+    [%derive.json: unit]
+    disconnect_handler_rpc'
+
+let%client disconnect_handler () v = disconnect_handler_rpc v
+
 
 let connect_handler () ((login, pwd), keepmeloggedin) =
   (* SECURITY: no check here.
