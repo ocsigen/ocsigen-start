@@ -6,6 +6,14 @@
     open Eliom_content.Html5
 ]
 
+[%%client
+    module Ocsigen_config = struct
+      let get_debugmode () = false
+    end
+]
+
+[%%shared.start]
+
 module Page_config = struct
 
   include Eba_page.Default_config

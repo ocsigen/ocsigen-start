@@ -1,0 +1,11 @@
+local_db
+pg_ctl
+.depend
+_client
+_deps
+_server
+local
+cordova
+scripts/*.byte
+scripts/*.cmi
+scripts/*.cmo

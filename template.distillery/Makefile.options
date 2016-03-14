@@ -17,6 +17,9 @@ SERVER_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx ocsigen-widgets.server
 CLIENT_PACKAGES := lwt.ppx js_of_ocaml.ppx js_of_ocaml.deriving.ppx \
                        eliom-base-app.client
 
+# server for mobile app
+APP_SERVER := http://192.168.1.1:8080
+
 # Directory with files to be statically served
 LOCAL_STATIC = static
 

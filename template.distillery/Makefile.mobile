@@ -1,0 +1,94 @@
+# Install npm, then sudo npm install -g cordova
+# install JDK 7 or higher (openjdk-7-jdk in Debian)
+# install qemu-kvm
+# Download Android SDK http://developer.android.com/sdk
+# Untar
+# Run tools/android
+# Install SDK platform tools and SDK build tools (last versions)
+# Install Android API 23 : SDK platform and a x86-64 system image
+# Install Extra/android support repository
+# Add directories platform-tools and tools to your PATH
+# Configure an emulator: tools/Manage AVDs/Device definition (e.g.,
+# Nexus 6 no skin)
+
+CORDOVAPATH := cordova
+STATICPATH := mobile
+WWW_PATH := local/var/www/$(PROJECT_NAME)
+
+mobile-all: mobile-create android browser # ios
+
+.PHONY: assets mobile-create
+
+mobile-create: $(CORDOVAPATH) assets $(CORDOVAPATH)/www/index.html
+
+$(CORDOVAPATH):
+	cordova create $(CORDOVAPATH) com.%%%PROJECT_NAME%%%.mobile %%%MODULE_NAME%%%
+	cd $(CORDOVAPATH) ;\
+	cordova platforms add android ;\
+	cordova platforms add browser --usegit
+	rm -f $(CORDOVAPATH)/www/index.html
+
+$(CORDOVAPATH)/www/index.html: $(JS_PREFIX).js mobile/index.html.in
+	sed s/%%APPNAME%%/$(shell basename `readlink $(JS_PREFIX).js` .js)/g mobile/index.html.in | \
+	sed s,%%APPSERVER%%,$(APP_SERVER),g > \
+	$(CORDOVAPATH)/www/index.html
+
+$(CORDOVAPATH)/www/eliom.html: $(JS_PREFIX).js mobile/eliom.html.in
+	sed s/%%APPNAME%%/$(shell basename `readlink $(JS_PREFIX).js` .js)/g mobile/eliom.html.in | \
+	sed s,%%APPSERVER%%,$(APP_SERVER),g > \
+	$(CORDOVAPATH)/www/eliom.html
+
+scripts/eliom_loader.byte: scripts/eliom_loader.ml
+	ocamlfind ocamlc \
+	    -package js_of_ocaml,js_of_ocaml.ppx,lwt.ppx \
+	    -linkpkg -o scripts/eliom_loader.byte \
+	    $<
+
+$(CORDOVAPATH)/www/eliom_loader.js: scripts/eliom_loader.byte
+	js_of_ocaml $< -o $(CORDOVAPATH)/www/eliom_loader.js
+
+mobile-create: $(CORDOVAPATH) $(CORDOVAPATH)/www/index.html \
+	    $(CORDOVAPATH)/www/eliom.html \
+	    $(WWW_PATH)/$(PROJECT_NAME).js \
+	    $(CORDOVAPATH)/www/eliom_loader.js
+	cp -rf $(STATICPATH)/* $(CORDOVAPATH)/
+	cp -f $(WWW_PATH)/$(shell readlink $(JS_PREFIX).js) $(CORDOVAPATH)/www/
+	cp -f static/css/*.css $(CORDOVAPATH)/www/css/
+	cp -f $(LOCAL_STATIC)/js/*.js $(CORDOVAPATH)/www/js/
+	mkdir -p $(CORDOVAPATH)/www/fonts/
+	cp -f $(LOCAL_STATIC)/fonts/* $(CORDOVAPATH)/www/fonts/
+
+android: $(CORDOVAPATH) mobile-create
+	cd $(CORDOVAPATH) ;\
+	cordova build android
+
+ios: $(CORDOVAPATH) mobile-create
+	cd $(CORDOVAPATH) ;\
+	cordova build ios
+
+browser: $(CORDOVAPATH) mobile-create
+	cd $(CORDOVAPATH) ;\
+	cordova build browser
+
+emulate-android: $(CORDOVAPATH) android
+	cd $(CORDOVAPATH) ;\
+	cordova emulate android
+
+emulate-ios: $(CORDOVAPATH) ios
+	cd $(CORDOVAPATH) ;\
+	cordova emulate ios
+
+run-android: $(CORDOVAPATH) android
+	cd $(CORDOVAPATH) ;\
+	cordova run --device android
+
+run-browser: $(CORDOVAPATH) browser
+	cd $(CORDOVAPATH) ;\
+	cordova run browser
+
+run-ios: $(CORDOVAPATH) ios
+	cd $(CORDOVAPATH) ;\
+	cordova run --device ios
+
+mobile-clean:
+	rm -rf $(CORDOVAPATH)

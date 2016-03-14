@@ -13,6 +13,8 @@
     <uploaddir>/tmp</uploaddir> <!-- Customize this -->
     %%% Only set when debugging
     %%DEBUGMODE%%
+    <extension findlib-package="ocsigenserver.ext.accesscontrol"/>
+    <extension findlib-package="ocsigenserver.ext.cors"/>
     <commandpipe>%%CMDPIPE%%</commandpipe>
     <extension findlib-package="ocsigenserver.ext.staticmod"/>
     <extension findlib-package="ocsigenserver.ext.ocsipersist-%%PERSISTENT_DATA_BACKEND%%"/>
@@ -27,6 +29,18 @@
         <avatars dir="%%FILESDIR%%/avatars" />
       </eliommodule>
       <eliom/>
+      <if>
+        <header name="origin" regexp="http://localhost:8000"/>
+        <then>
+          <cors max_age="86400"
+            credentials="true"
+            methods="POST,GET,HEAD"
+            exposed_headers="
+              x-eliom-application,
+              x-eliom-location,
+              x-eliom-set-process-cookies"/>
+        </then>
+      </if>
     </host>
   </server>
 </ocsigen>

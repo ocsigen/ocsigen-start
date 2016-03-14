@@ -8,9 +8,17 @@
     open Eliom_content.Html5.F
 ]
 
-let uploader = Eba_userbox.uploader !%%%MODULE_NAME%%%_config.avatar_dir
+let%server uploader () = Eba_userbox.uploader !%%%MODULE_NAME%%%_config.avatar_dir
 
-let%client user_menu close user uploader = [
+let%client uploader () =
+  Ow_pic_uploader.make
+    ~name:"uppic_" ~crop_ratio:(Some 1.)
+    ~data_deriver:[%derive.json: Ow_pic_uploader.crop_type * unit]
+    ()
+
+[%%shared.start]
+
+let user_menu close user uploader = [
   p [pcdata "Change your password:"];
   Eba_view.password_form ~service:~%Eba_services.set_password_service' ();
   hr ();
@@ -24,13 +32,12 @@ let%client user_menu close user uploader = [
 let%client _ = Eba_userbox.set_user_menu user_menu
 
 let header ?user () =
-  let%lwt user_box = Eba_userbox.userbox user uploader in
-  let%lwt () = %%%MODULE_NAME%%%_tips.example_tip () in
+  let%lwt user_box = Eba_userbox.userbox user (uploader ()) in
   Lwt.return
     (header ~a:[a_id "main"] [
        a ~a:[a_id "%%%PROJECT_NAME%%%-logo"]
          ~service:Eba_services.main_service [
-         pcdata %%%MODULE_NAME%%%_base.App.application_name;
+         pcdata %%%MODULE_NAME%%%_base.application_name;
        ] ();
        ul ~a:[a_id "%%%PROJECT_NAME%%%-navbar"]
          [
@@ -55,7 +62,7 @@ let footer ?user () =
     pcdata " technology.";
   ]
 
-let connected_welcome_box () =
+let%server connected_welcome_box () =
   let info, ((fn, ln), (p1, p2)) =
     match Eliom_reference.Volatile.get Eba_msg.wrong_pdata with
     | None ->
@@ -66,29 +73,45 @@ let connected_welcome_box () =
       ], (("", ""), ("", ""))
     | Some wpd -> p [pcdata "Wrong data. Please fix."], wpd
   in
-  (div ~a:[a_id "eba_welcome_box"] [
-     div [h2 [pcdata ("Welcome!")]; info];
-     Eba_view.information_form
-       ~firstname:fn ~lastname:ln
-       ~password1:p1 ~password2:p2
-       ()
-   ])
+  div ~a:[a_id "eba_welcome_box"] [
+    div [h2 [pcdata ("Welcome!")]; info];
+    Eba_view.information_form
+      ~firstname:fn ~lastname:ln
+      ~password1:p1 ~password2:p2
+      ()
+  ]
 
-let page userid_o content =
+let%server page userid_o content =
   let%lwt user =
     match userid_o with
     | None ->
       Lwt.return None
     | Some userid ->
-      let%lwt u = Eba_user.user_of_userid userid in
+      let%lwt u = Eba_user_proxy.get_data userid in
       Lwt.return (Some u)
   in
   let l = [
     div ~a:[a_id "%%%PROJECT_NAME%%%-body"] content;
-    footer ?user ();
+    footer ();
   ] in
   let%lwt h = header ?user () in
-  Lwt.return @@ h :: match user with
+  Lwt.return @@ match user with
   | Some user when not (Eba_user.is_complete user) ->
-    connected_welcome_box () :: l
-  | _ -> l
+    h :: connected_welcome_box () :: l
+  | _ ->
+    h :: l
+
+let%client page userid_o content =
+  let%lwt user =
+    match userid_o with
+    | None ->
+      Lwt.return None
+    | Some userid ->
+      let%lwt u = Eba_user_proxy.get_data userid in
+      Lwt.return (Some u)
+  in
+  let l = [
+    div ~a:[a_id "%%%PROJECT_NAME%%%-body"] content;
+    footer ();
+  ] in
+  let%lwt h = header () in Lwt.return (h :: l)
