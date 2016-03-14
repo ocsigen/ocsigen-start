@@ -39,9 +39,12 @@ endif
 ##----------------------------------------------------------------------
 ## General
 
+JS_PREFIX=$(TEST_PREFIX)$(ELIOMSTATICDIR)/${PROJECT_NAME}
+CSS_DIR=static/css/
+
 .PHONY: all byte opt
 all: byte opt
-byte opt:: $(TEST_PREFIX)$(ELIOMSTATICDIR)/${PROJECT_NAME}.js
+byte opt:: ${JS_PREFIX}.js
 byte opt:: $(TEST_PREFIX)$(ETCDIR)/$(PROJECT_NAME).conf
 byte opt:: $(TEST_PREFIX)$(ETCDIR)/$(PROJECT_NAME)-test.conf
 byte:: $(TEST_PREFIX)$(LIBDIR)/${PROJECT_NAME}.cma
@@ -56,6 +59,7 @@ DIST_DIRS = $(ETCDIR) $(DATADIR) $(LIBDIR) $(LOGDIR) $(STATICDIR) $(FILESDIR)/av
 ## DO NOT MOVE IT ON TOP OF THE `all` RULE!
 
 include Makefile.local
+include Makefile.mobile
 
 ## end of `include Makefile.local`
 ##----------------------------------------------------------------------
@@ -218,9 +222,12 @@ CLIENT_OBJS := $(filter %.eliom %.ml, $(CLIENT_FILES))
 CLIENT_OBJS := $(patsubst %.eliom,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
 CLIENT_OBJS := $(patsubst %.ml,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
 
-$(TEST_PREFIX)$(ELIOMSTATICDIR)/$(PROJECT_NAME).js: $(call objs,$(ELIOM_CLIENT_DIR),cmo,$(CLIENT_FILES)) | $(TEST_PREFIX)$(ELIOMSTATICDIR)
-	${JS_OF_ELIOM} -ppx -o $@ $(GENERATE_DEBUG) $(CLIENT_INC) $(DEBUG_JS) \
+$(JS_PREFIX).js: $(call objs,$(ELIOM_CLIENT_DIR),cmo,$(CLIENT_FILES)) | $(TEST_PREFIX)$(ELIOMSTATICDIR)
+	${JS_OF_ELIOM} -ppx -o $(JS_PREFIX)_tmp.js $(GENERATE_DEBUG) $(CLIENT_INC) $(DEBUG_JS) \
 	    $(shell sh ./scripts/depsort.sh .depend client cmo)
+	HASH=`md5sum $(JS_PREFIX)_tmp.js | cut -d ' ' -f 1` && \
+	mv $(JS_PREFIX)_tmp.js $(JS_PREFIX)_$$HASH.js && \
+	ln -sf $(PROJECT_NAME)_$$HASH.js $@
 
 ${ELIOM_CLIENT_DIR}/%.cmi: %.mli
 	${JS_OF_ELIOM} -ppx -c ${CLIENT_INC} $(GENERATE_DEBUG) $<

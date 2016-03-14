@@ -1,0 +1,32 @@
+<html>
+  <head>
+        <meta http-equiv="Content-Security-Policy"
+              content="default-src 'self' data: gap:
+                       %%APPSERVER%%
+                       'unsafe-eval'
+                       'unsafe-inline';
+                       style-src 'self' 'unsafe-inline'; media-src *">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <link rel="stylesheet" type="text/css" href="css/mobile.css">
+    <script>
+      //<![CDATA[
+      var __eliom_server = '%%APPSERVER%%';
+      var __eliom_html_url = 'eliom.html';
+      //]]>
+    </script>
+    <script src="cordova.js"></script>
+    <script src="eliom_loader.js"></script>
+    <script src="js/index.js"></script>
+  </head>
+  <body>
+    <div class="app" id="app-container">
+      <h1>%%APPNAME%%</h1>
+      <div id="deviceready" class="blink">
+        <p class="event listening">Connecting to Device</p>
+        <p class="event received">Device is Ready</p>
+      </div>
+    </div>
+  </body>
+</html>

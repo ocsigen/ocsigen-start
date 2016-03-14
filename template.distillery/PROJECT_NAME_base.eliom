@@ -3,7 +3,9 @@
     open Eliom_content.Html5
 ]
 
-let application_name = "%%%PROJECT_NAME%%%"
+let%server application_name = "%%%PROJECT_NAME%%%"
+
+let%client application_name = Eliom_client.get_application_name ()
 
 let getenv name default_value =
   try

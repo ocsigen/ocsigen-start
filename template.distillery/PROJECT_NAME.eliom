@@ -3,17 +3,17 @@
 
 [%%shared
     open Eliom_content.Html5
-    open Eliom_content.Html5.F
+    open Eliom_content.Html5.D
 ]
 
-let main_service_handler userid_o () () =
+let%shared main_service_handler userid_o () () =
   %%%MODULE_NAME%%%_container.page userid_o (
     [
       p [em [pcdata "Eliom base app: Put app content here."]]
     ]
   )
 
-let about_handler userid_o () () =
+let%shared about_handler userid_o () () =
   %%%MODULE_NAME%%%_container.page userid_o [
     div [
       p [pcdata "This template provides a skeleton \
@@ -23,7 +23,6 @@ let about_handler userid_o () () =
                  or redistribute it as you want."]
     ]
   ]
-
 
 let () =
   (* Registering services. Feel free to customize handlers. *)
@@ -64,5 +63,26 @@ let () =
     (%%%MODULE_NAME%%%_page.Opt.connected_page main_service_handler);
 
   %%%MODULE_NAME%%%_base.App.register
-  %%%MODULE_NAME%%%_services.about_service
+    %%%MODULE_NAME%%%_services.about_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page about_handler)
+
+let%client set_client_fun ~app ~service f : unit =
+  Eliom_content.set_client_fun ~app ~service
+    (fun get post ->
+       let%lwt content = f get post in
+       Eliom_client.set_content_local
+         (Eliom_content.Html5.To_dom.of_element content))
+
+let%client init_client_app () =
+  Lwt.async @@ fun () ->
+  let app = Eliom_client.get_application_name () in
+  set_client_fun ~app ~service:%%%MODULE_NAME%%%_services.about_service
+    (%%%MODULE_NAME%%%_page.Opt.connected_page about_handler);
+  set_client_fun ~app ~service:Eba_services.main_service
+    (%%%MODULE_NAME%%%_page.Opt.connected_page main_service_handler);
+  let%lwt _ = Lwt_js.sleep 0.5 in
+  Eliom_client.change_page ~service:Eba_services.main_service () ()
+
+let%client _ =
+  Eliom_client.onload @@ fun () ->
+  if Eliom_client.is_client_app () then init_client_app ()
