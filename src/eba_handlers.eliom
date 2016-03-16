@@ -130,7 +130,7 @@ let forgot_password_handler service () email =
 let disconnect_handler () () =
   (* SECURITY: no check here because we disconnect the session cookie owner. *)
   let%lwt () = Eba_session.disconnect () in
-  ignore [%client (Eba_current_user.me := None : unit)];
+  ignore [%client (Eba_current_user.me := CU_notconnected : unit)];
   Lwt.return ()
 
 let%server disconnect_handler_rpc' v = disconnect_handler () v

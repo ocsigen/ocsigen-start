@@ -179,6 +179,40 @@ let check_allow_deny userid allow deny =
   end
 
 
+let get_session () =
+  let uids = Eliom_state.get_volatile_data_session_group () in
+  let get_uid uid =
+    try Eliom_lib.Option.map Int64.of_string uid
+    with Failure _ -> None
+  in
+  let%lwt uid = match get_uid uids with
+    | None ->
+      let%lwt uids = Eliom_state.get_persistent_data_session_group () in
+      (match get_uid uids  with
+       | Some uid ->
+         (* A persistent session exists, but the volatile session has gone.
+            It may be due to a timeout or may be the server has been
+            relaunched.
+            We restart the volatile session silently
+            (comme si de rien n'était, pom pom pom). *)
+         let%lwt () = connect_volatile (Int64.to_string uid) in
+         Lwt.return (Some uid)
+       | None -> Lwt.return None)
+    | Some uid -> Lwt.return (Some uid)
+  in
+  (* Check if the user exists in the DB *)
+  match uid with
+  | None -> Lwt.return None
+  | Some uid ->
+    try%lwt
+      let%lwt _user = Eba_user.user_of_userid uid in
+      Lwt.return (Some uid)
+    with
+    | Eba_user.No_such_user ->
+      (* If session exists and no user in DB, close the session *)
+      let%lwt () = disconnect () in
+      Lwt.return None
+
 (** The connection wrapper checks whether the user is connected,
     and calls the page generator accordingly.
     It is usually recommended to have both a connected and non-connected
@@ -203,39 +237,7 @@ let gen_wrapper ~allow ~deny
     ?(deny_fun = fun _ -> Lwt.fail Permission_denied)
     connected not_connected gp pp =
   let new_process = Eliom_request_info.get_sp_client_appl_name () = None in
-  let uids = Eliom_state.get_volatile_data_session_group () in
-  let get_uid uid =
-    try Eliom_lib.Option.map Int64.of_string uid
-    with Failure _ -> None
-  in
-  let%lwt uid = match get_uid uids with
-    | None ->
-      let%lwt uids = Eliom_state.get_persistent_data_session_group () in
-      (match get_uid uids  with
-       | Some uid ->
-         (* A persistent session exists, but the volatile session has gone.
-            It may be due to a timeout or may be the server has been
-            relaunched.
-            We restart the volatile session silently
-            (comme si de rien n'était, pom pom pom). *)
-         let%lwt () = connect_volatile (Int64.to_string uid) in
-         Lwt.return (Some uid)
-       | None -> Lwt.return None)
-    | Some uid -> Lwt.return (Some uid)
-  in
-  (* Check if the user exists in the DB *)
-  let%lwt uid = match uid with
-    | None -> Lwt.return None
-    | Some uid ->
-      try%lwt
-        let%lwt _user = Eba_user.user_of_userid uid in
-        Lwt.return (Some uid)
-      with
-      | Eba_user.No_such_user ->
-        (* If session exists and no user in DB, close the session *)
-        let%lwt () = disconnect () in
-        Lwt.return None
-  in
+  let%lwt uid = get_session () in
   let%lwt () =
     if new_process
     then begin
