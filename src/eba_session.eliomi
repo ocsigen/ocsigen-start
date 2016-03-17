@@ -118,6 +118,14 @@ val connected_rpc :
   (int64 -> 'a -> 'b Lwt.t) ->
   ('a -> 'b Lwt.t)
 
+(** Wrapper for server functions when you do not not need userid. *)
+val connected_wrapper :
+  ?allow:Eba_group.t list ->
+  ?deny:Eba_group.t list ->
+  ?deny_fun:(int64 option -> 'b Lwt.t) ->
+  ('a -> 'b Lwt.t) ->
+  ('a -> 'b Lwt.t)
+
 module Opt : sig
 
   (** Same as {!connected_fun} but instead of failing in case the user is
