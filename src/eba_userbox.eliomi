@@ -5,18 +5,9 @@
 
 [%%shared.start]
 
-  type uploader = unit Ow_pic_uploader.t
+type uploader = unit Ot_picture_uploader.service
 
-
-
-[%%server.start]
-  val uploader : string list -> uploader
-
-
-
-[%%shared.start]
-
- (** Box for connected users, with picture, name, and menu *)
+(** Box for connected users, with picture, name, and menu *)
 val connected_user_box :
   Eba_user.t -> uploader -> [> Html5_types.div ] Eliom_content.Html5.D.elt
 
@@ -35,10 +26,15 @@ val userbox :
     The client function given as first parameter will be called first,
     for example to close the menu containing the link. *)
 val upload_pic_link :
-  ?a:[< Html5_types.a_attrib ] Eliom_content.Html5.D.Raw.attrib list ->
-  ?content:Html5_types.a_content Eliom_content.Html5.D.Raw.elt list ->
-  (unit -> unit) Eliom_client_value.t ->
-  uploader -> [> `A of Html5_types.a_content ] Eliom_content.Html5.D.Raw.elt
+  ?a:[< Html5_types.a_attrib > `OnClick ] Eliom_content.Html5.D.Raw.attrib list
+  -> ?content:Html5_types.a_content Eliom_content.Html5.D.Raw.elt list
+  -> ?crop:float option
+  -> ?input:Html5_types.label_content_fun Eliom_content.Html5.D.Raw.elt list
+  -> ?submit:Html5_types.button_content_fun Eliom_content.Html5.D.Raw.elt list
+  -> (unit -> unit) Eliom_client_value.t
+  -> uploader
+  -> int64
+  -> [> `A of Html5_types.a_content ] Eliom_content.Html5.D.Raw.elt
 
 (** Link to start to see the help from the begining.
     The client function given as first parameter will be called first,

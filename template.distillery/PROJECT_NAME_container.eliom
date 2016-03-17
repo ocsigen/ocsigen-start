@@ -7,21 +7,13 @@
   open Eliom_content.Html5.F
 ]
 
-let%server uploader () = Eba_userbox.uploader !%%%MODULE_NAME%%%_config.avatar_dir
-
-let%client uploader () =
-  Ow_pic_uploader.make
-    ~name:"uppic_" ~crop_ratio:(Some 1.)
-    ~data_deriver:[%derive.json: Ow_pic_uploader.crop_type * unit]
-    ()
-
 [%%shared.start]
 
-let user_menu close _ uploader = [
+let user_menu close user uploader = [
   p [pcdata "Change your password:"];
   Eba_view.password_form ~service:~%Eba_services.set_password_service' ();
   hr ();
-  Eba_userbox.upload_pic_link close uploader;
+  Eba_userbox.upload_pic_link close uploader (Eba_user.userid_of_user user);
   hr ();
   Eba_userbox.reset_tips_link close;
   hr ();
@@ -32,7 +24,9 @@ let%client _ = Eba_userbox.set_user_menu user_menu
 
 let header ?user () =
   ignore user;
-  let%lwt user_box = Eba_userbox.userbox user (uploader ()) in
+  let%lwt user_box =
+    Eba_userbox.userbox user
+    %%%MODULE_NAME%%%_services.upload_user_avatar_service in
   Lwt.return
     (header ~a:[a_id "main"] [
        a ~a:[a_id "%%%PROJECT_NAME%%%-logo"]

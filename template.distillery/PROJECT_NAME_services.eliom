@@ -5,3 +5,8 @@ let%shared about_service =
   Eliom_service.App.service
     ~path:["about"]
     ~get_params:Eliom_parameter.unit ()
+
+let%shared upload_user_avatar_service =
+  Ot_picture_uploader.mk_service
+    "upload_user_avatar_service"
+    [%derive.json: unit]

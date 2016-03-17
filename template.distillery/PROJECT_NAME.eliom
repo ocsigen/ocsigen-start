@@ -23,6 +23,17 @@ let%shared about_handler userid_o () () =
     ]
   ]
 
+let%server upload_user_avatar_handler myid () ((), (cropping, photo)) =
+  let%lwt avatar = Eba_uploader.record_image
+      (String.concat "/" !%%%MODULE_NAME%%%_config.avatar_dir)
+      ~ratio:1. ?cropping photo in
+  let%lwt user = Eba_user.user_of_userid myid in
+  let old_avatar = Eba_user.avatar_of_user user in
+  let%lwt () = Eba_user.update_avatar avatar myid in
+  match old_avatar with
+  | None -> Lwt.return ()
+  | Some old_avatar -> Lwt.return () (* FIXME Lwt_unix.unlink old_avatar *)
+
 let () =
   (* Registering services. Feel free to customize handlers. *)
   Eliom_registration.Action.register
@@ -63,7 +74,11 @@ let () =
 
   %%%MODULE_NAME%%%_base.App.register
     ~service:%%%MODULE_NAME%%%_services.about_service
-    (%%%MODULE_NAME%%%_page.Opt.connected_page about_handler)
+    (%%%MODULE_NAME%%%_page.Opt.connected_page about_handler) ;
+
+  Eliom_registration.Ocaml.register
+    ~service:%%%MODULE_NAME%%%_services.upload_user_avatar_service
+    (Eba_session.connected_fun upload_user_avatar_handler)
 
 let%client set_client_fun ~app ~service f : unit =
   Eliom_content.set_client_fun ~app ~service

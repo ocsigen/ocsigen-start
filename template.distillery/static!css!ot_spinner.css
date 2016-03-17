@@ -1,0 +1,30 @@
+@keyframes ot-spin-animation {
+    0% { transform: rotate(0deg) ; }
+    100% { transform: rotate(359deg) ; }
+}
+.ot-spn-error,
+.ot-spn-spinning {
+    display: flex ;
+    justify-content: center ;
+    align-items: center ;
+}
+.ot-spn-error::before {
+    content: '?' ;
+    display: block ;
+    width: 1em ;
+    height: 1em ;
+    border-radius: 50% ;
+    background-color: rgb(0, 0, 0) ;
+    color: rgb(255, 255, 255) ;
+    text-align: center ;
+}
+.ot-spn-spinning::before {
+    content: '' ;
+    display: block ;
+    width: 1em ;
+    height: 1em ;
+    border: 1px solid rgb(127, 127, 127) ;
+    border-left: 1px solid rgb(0, 0, 0) ;
+    border-radius: 50% ;
+    animation: ot-spin-animation 1.5s linear infinite ;
+}
