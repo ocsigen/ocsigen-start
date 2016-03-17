@@ -16,6 +16,7 @@
       //<![CDATA[
       var __eliom_server = '%%APPSERVER%%';
       var __eliom_app_name = '%%APPNAME%%';
+      var __eliom_debug_mode = true;
       //]]>
     </script>
     <script src="cordova.js"></script>
