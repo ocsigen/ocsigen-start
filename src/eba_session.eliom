@@ -238,6 +238,7 @@ let gen_wrapper ~allow ~deny
     connected not_connected gp pp =
   let new_process = Eliom_request_info.get_sp_client_appl_name () = None in
   let%lwt uid = get_session () in
+  let%lwt () = request_action () in
   let%lwt () =
     if new_process
     then begin
@@ -252,7 +253,6 @@ let gen_wrapper ~allow ~deny
     end
     else Lwt.return ()
   in
-  let%lwt () = request_action () in
   match uid with
   | None ->
     if allow = None
@@ -295,6 +295,13 @@ let connected_rpc ?allow ?deny ?deny_fun f pp =
     ~allow ~deny ?deny_fun
     (fun userid _ p -> f userid p)
     (fun _ _ -> Lwt.fail Not_connected)
+    () pp
+
+let connected_wrapper ?allow ?deny ?deny_fun f pp =
+  gen_wrapper
+    ~allow ~deny ?deny_fun
+    (fun userid _ p -> f p)
+    (fun _ p -> f p)
     () pp
 
 module Opt = struct
