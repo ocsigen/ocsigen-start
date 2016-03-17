@@ -7,10 +7,8 @@
     type userid = int64 [@@deriving json]
 ]
 
-let%shared cache' : (userid, Eba_user.t) Eliom_cscache.local_t =
-  Eliom_cscache.local_create ()
-
-let%shared cache = [%shared cache']
+let%server cache : (userid, Eba_user.t) Eliom_cscache.t =
+  Eliom_cscache.create ()
 
 
 [%%server
@@ -40,5 +38,5 @@ let%client get_data id  = get_data_rpc id
 
 [%%shared
    let get_data_from_cache userid =
-     Eliom_cscache.find cache get_data userid
+     Eliom_cscache.find ~%cache get_data userid
 ]
