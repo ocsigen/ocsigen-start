@@ -11,6 +11,11 @@
 # - Add directories platform-tools and tools to your PATH
 # - Configure an emulator: tools/Manage AVDs/Device definition (e.g.,
 # Nexus 6 no skin)
+#
+# If Android emulator take 100 CPU, try:
+# hw.audioInput=no
+# hw.audioOutput=no
+# in ~/.android/avd/<your avd>/config.ini
 
 CORDOVAPATH := cordova
 MOBILESTATICPATH := mobile
