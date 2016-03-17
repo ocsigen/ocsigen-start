@@ -45,6 +45,9 @@ eliom-distillery:
    rules and the configuration files are synchronized with respect to
    the different folders.
 
+ - mobile
+   The files needed by Cordova mobile apps
+
  - Makefile
    This contains all rules necessary to build, test, and run your
    Eliom application. See below for the relevant targets.
@@ -85,6 +88,10 @@ Here's some help on how to work with this basic distillery project:
  - If you need a findlib package in your project, add it to the
    variables SERVER_PACKAGES and/or CLIENT_PACKAGES. The configuration
    file will be automatically updated.
+
+ - Mobile app: Have a look in Makefile.mobile to see how to install
+   the requested packages to build a mobile application,
+   and the makefile rules to build and test it.
 
 Use Camlp4 syntax
 -----------------
