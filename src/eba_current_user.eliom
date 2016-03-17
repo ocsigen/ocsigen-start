@@ -1,8 +1,9 @@
 (* Feel free to modify and/or redistribute this file as you wish. *)
 
-[%%shared
 
 let section = Lwt_log.Section.make "eba:current_user"
+
+[%%shared
 
 type current_user =
   | CU_idontknown
