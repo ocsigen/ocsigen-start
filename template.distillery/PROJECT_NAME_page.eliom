@@ -30,7 +30,6 @@ let%client app_js = []
 
 let%server the_local_js = [
   ["onload.js"];
-  ["jquery.js"];
 ]
 
 let%client the_local_js = [] (* in index.html *)
