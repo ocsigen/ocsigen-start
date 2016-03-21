@@ -29,6 +29,11 @@ let user_indep_state_hierarchy = Eliom_common.create_scope_hierarchy "userindep"
 let user_indep_process_scope = `Client_process user_indep_state_hierarchy
 let user_indep_session_scope = `Session user_indep_state_hierarchy
 
+let new_process_eref =
+  Eliom_reference.Volatile.eref
+    ~scope:user_indep_process_scope
+    true
+
 (* Call this to add an action to be done on server side
    when the process starts *)
 let (on_start_process, start_process_action) =
@@ -236,12 +241,13 @@ let get_session () =
 let gen_wrapper ~allow ~deny
     ?(deny_fun = fun _ -> Lwt.fail Permission_denied)
     connected not_connected gp pp =
-  let new_process = Eliom_request_info.get_sp_client_appl_name () = None in
+  let new_process = Eliom_reference.Volatile.get new_process_eref in
   let%lwt uid = get_session () in
   let%lwt () = request_action () in
   let%lwt () =
     if new_process
     then begin
+      Eliom_reference.Volatile.set new_process_eref false;
       (* client side process:
          Now we want to do some computation only when we start a
          client side process. *)
