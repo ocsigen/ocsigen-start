@@ -22,22 +22,72 @@ let me : current_user Eliom_reference.Volatile.eref =
 
 [%%client
 
-let me : current_user ref = ref CU_notconnected
-  (*on client side the default is not connected *)
+let set_myself, get_current_user_option =
+  let me : current_user ref = ref CU_notconnected in
+  (* on client side the default is not connected *)
 
-let get_current_user_option () =
-  match !me with
-  | CU_idontknown -> assert false
-  | CU_notconnected -> None
-  | CU_user u -> Some u
+  (* Also save the status in browser local storage, so that mobile apps
+     know sooner if they are connected. *)
+  (fun x ->
+     me := x;
+     match x with
+     | CU_idontknown | CU_notconnected ->
+       Js.Optdef.case (Dom_html.window##.localStorage)
+         (fun () -> failwith "Browser storage not supported")
+         (fun ls ->
+            ls##setItem(Js.string "eba_current_user_myself_userid")
+              (Js.string "");
+            ls##setItem(Js.string "eba_current_user_myself_fn")
+              (Js.string "");
+            ls##setItem(Js.string "eba_current_user_myself_ln")
+              (Js.string "");
+            ls##setItem(Js.string "eba_current_user_myself_avatar")
+              (Js.string ""))
+     | CU_user { userid; fn; ln; avatar; } ->
+       Js.Optdef.case (Dom_html.window##.localStorage)
+         (fun () -> failwith "Browser storage not supported")
+         (fun ls ->
+            ls##setItem(Js.string "eba_current_user_myself_userid")
+              (Js.string (Int64.to_string userid));
+            ls##setItem(Js.string "eba_current_user_myself_fn")
+              (Js.string fn);
+            ls##setItem(Js.string "eba_current_user_myself_ln")
+              (Js.string ln);
+            ls##setItem(Js.string "eba_current_user_myself_avatar")
+              (Js.string(match avatar with None -> "" | Some a -> a)))),
+  (fun () ->
+     match !me with
+     | CU_user u -> Some u
+     | CU_idontknown
+     | CU_notconnected ->
+       Js.Optdef.case (Dom_html.window##.localStorage)
+         (fun () -> failwith "Browser storage not supported")
+         (fun ls ->
+            let to_string e = Js.Opt.case e (fun () -> "")
+                (fun s -> Js.to_string s) in
+            match
+              to_string(ls##getItem(Js.string "eba_current_user_myself_userid"))
+            , to_string(ls##getItem(Js.string "eba_current_user_myself_fn"))
+            , to_string(ls##getItem(Js.string "eba_current_user_myself_ln"))
+            , to_string(ls##getItem(Js.string "eba_current_user_myself_avatar"))
+            with
+            | "", _, _, _ -> None
+            | userid, fn, ln, avatar ->
+             try
+               Some Eba_user.{
+                 userid = Int64.of_string userid; fn; ln;
+                 avatar = (match avatar with "" -> None | _ -> Some avatar)
+               }
+             with _ -> None
+         )
+  )
 
 let get_current_user () =
-  match !me with
-  | CU_user a -> a
-  | CU_idontknown -> (* Should never happen *) failwith please_use_connected_fun
-  | _ ->
-    Ow_log.log "Not connected error in Eba_current_user";
-    raise Eba_session.Not_connected
+  match get_current_user_option () with
+  | Some u -> u
+  | None   -> Ow_log.log "Not connected error in Eba_current_user";
+              raise Eba_session.Not_connected
+
 
 ]
 
@@ -87,10 +137,10 @@ let unset_user_server () =
 
 let set_user_client () =
   let u = Eliom_reference.Volatile.get me in
-  ignore [%client ( me := ~%u : unit)]
+  ignore [%client ( set_myself ~%u : unit)]
 
 let unset_user_client () =
-  ignore [%client ( me := CU_notconnected : unit)]
+  ignore [%client ( set_myself CU_notconnected : unit)]
 
 
 
