@@ -40,10 +40,17 @@
         p [
           pcdata "Ocsigen process in eco-friendly mode.";
           br ();
-          a ~xhr:false
+          begin if Eliom_client.is_client_app () then
+            a ~xhr:false ~absolute:false
+            ~service:(Eliom_service.static_dir ())
+            [pcdata "Click"]
+            ["eliom.html"]
+          else
+            a ~xhr:false
             ~service:Eliom_service.void_coservice'
             [pcdata "Click"]
-            ();
+            ()
+          end;
           pcdata " to wake up."
         ];
       ]
@@ -57,7 +64,12 @@
     *)
     Lwt.async (fun () ->
       let%lwt _ = Lwt_js_events.click Dom_html.document in
-      Eliom_client.exit_to ~service:Eliom_service.void_coservice' () ();
+      if Eliom_client.is_client_app () then
+        Eliom_client.exit_to ~absolute:false
+          ~service:(Eliom_service.static_dir ())
+          ["eliom.html"] ()
+      else
+        Eliom_client.exit_to ~service:Eliom_service.void_coservice' () ();
       Lwt.return ()
     );
     (* Lwt.async (fun () -> *)
