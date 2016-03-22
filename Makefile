@@ -175,7 +175,9 @@ uninstall:
 	scripts/uninstall.sh $(TEMPLATE_NAME)
 	$(OCAMLFIND) remove $(PKG_NAME)
 
-reinstall: uninstall install
+reinstall:
+	$(MAKE) uninstall
+	$(MAKE) install
 
 ##----------------------------------------------------------------------
 ## Dependencies
