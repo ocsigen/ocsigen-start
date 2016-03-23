@@ -33,27 +33,44 @@ $(CORDOVAPATH):
 	cordova platforms add android ;\
 	cordova platforms add ios ;\
 	cordova platforms add windows ;\
-	cordova platforms add browser --usegit
+	cordova platforms add browser --usegit ;\
+	cordova plugin add cordova-hot-code-push-plugin
 	rm -f $(CORDOVAPATH)/www/index.html
+	rm -f $(CORDOVAPATH)/config.xml
+	rm -rf $(CORDOVAPATH)/www/img
 
 assets:  $(CORDOVAPATH) $(CORDOVAPATH)/www/index.html \
 	 $(CORDOVAPATH)/www/eliom.html \
 	 $(WWW_PATH)/$(PROJECT_NAME).js \
-	 $(CORDOVAPATH)/www/eliom_loader.js
-	cp -f $(MOBILESTATICPATH)/config.xml $(CORDOVAPATH)/
-	cp -f $(WWW_PATH)/$(shell readlink $(JS_PREFIX).js) $(CORDOVAPATH)/www/
+	 $(CORDOVAPATH)/www/eliom_loader.js \
+	 $(CORDOVAPATH)/config.xml \
+	 $(CORDOVAPATH)/www/chcp.manifest
+	cp -f $(MOBILESTATICPATH)/.chcpignore $(CORDOVAPATH)/
 	cp -f $(LOCAL_STATIC)/css/*.css $(CORDOVAPATH)/www/css/
 	cp -f $(LOCAL_STATIC)/js/*.js $(CORDOVAPATH)/www/js/
 	mkdir -p $(CORDOVAPATH)/www/fonts/
 	cp -f $(LOCAL_STATIC)/fonts/* $(CORDOVAPATH)/www/fonts/
+	rm -rf $(WWW_PATH)/update
+	cp -rf $(CORDOVAPATH)/www $(WWW_PATH)/update
 
-$(CORDOVAPATH)/www/index.html: $(JS_PREFIX).js mobile/index.html.in
-	sed s/%%APPNAME%%/$(shell basename `readlink $(JS_PREFIX).js` .js)/g mobile/index.html.in | \
+$(CORDOVAPATH)/www/chcp.manifest: $(CORDOVAPATH) $(JS_PREFIX).js
+	cp -f $(JS_PREFIX).js $(CORDOVAPATH)/www/
+	cd $(CORDOVAPATH) ; cordova-hcp build
+	sed s,%%APPSERVER%%,$(APP_SERVER),g mobile/chcp.json.in | \
+	sed s,%%DATE%%,$(shell date +%y%m%d-%H%M%S),g > \
+	$(CORDOVAPATH)/www/chcp.json
+
+$(CORDOVAPATH)/config.xml: mobile/config.xml.in
+	sed s,%%APPSERVER%%,$(APP_SERVER),g $< > $@
+
+$(CORDOVAPATH)/www/index.html: $(CORDOVAPATH) $(JS_PREFIX).js mobile/index.html.in
+	sed s/%%APPNAME%%/$(shell echo `basename $(JS_PREFIX).js .js`_`md5sum $(JS_PREFIX).js | cut -d ' ' -f 1`)/g mobile/index.html.in | \
 	sed s,%%APPSERVER%%,$(APP_SERVER),g > \
 	$(CORDOVAPATH)/www/index.html
 
-$(CORDOVAPATH)/www/eliom.html: $(JS_PREFIX).js mobile/eliom.html.in
-	sed s/%%APPNAME%%/$(shell basename `readlink $(JS_PREFIX).js` .js)/g mobile/eliom.html.in | \
+$(CORDOVAPATH)/www/eliom.html: $(CORDOVAPATH) $(JS_PREFIX).js mobile/eliom.html.in
+	sed s/%%APPNAME%%/$(shell echo `basename $(JS_PREFIX).js .js`_`md5sum $(JS_PREFIX).js | cut -d ' ' -f 1`)/g mobile/eliom.html.in | \
+	sed s/%%APPNAME_NO_HASH%%/$(shell basename $(JS_PREFIX).js .js)/g | \
 	sed s,%%APPSERVER%%,$(APP_SERVER),g > \
 	$(CORDOVAPATH)/www/eliom.html
 
@@ -68,7 +85,6 @@ $(CORDOVAPATH)/www/eliom_loader.js: scripts/eliom_loader.byte
 
 android: $(CORDOVAPATH) mobile-create
 	cd $(CORDOVAPATH) ;\
-	cordova plugin add cordova-plugin-crosswalk-webview ;\
 	cordova build android
 
 ios: $(CORDOVAPATH) mobile-create
@@ -81,7 +97,6 @@ browser: $(CORDOVAPATH) mobile-create
 
 emulate-android: $(CORDOVAPATH) android
 	cd $(CORDOVAPATH) ;\
-	cordova plugin add cordova-plugin-crosswalk-webview ;\
 	cordova emulate android
 
 emulate-ios: $(CORDOVAPATH) ios
@@ -90,7 +105,6 @@ emulate-ios: $(CORDOVAPATH) ios
 
 run-android: $(CORDOVAPATH) android
 	cd $(CORDOVAPATH) ;\
-	cordova plugin add cordova-plugin-crosswalk-webview ;\
 	cordova run --device android
 
 run-browser: $(CORDOVAPATH) browser

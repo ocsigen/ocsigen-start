@@ -22,7 +22,7 @@
     <script src="cordova.js"></script>
     <script src="js/index.js"></script>
     <script src="js/jquery.js"></script>
-    <script src="%%APPNAME%%.js"></script>
+    <script src="%%APPNAME_NO_HASH%%.js"></script>
   </head>
   <body>
     <div class="app" id="app-container">

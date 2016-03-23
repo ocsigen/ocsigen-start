@@ -223,11 +223,8 @@ CLIENT_OBJS := $(patsubst %.eliom,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
 CLIENT_OBJS := $(patsubst %.ml,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
 
 $(JS_PREFIX).js: $(call objs,$(ELIOM_CLIENT_DIR),cmo,$(CLIENT_FILES)) | $(TEST_PREFIX)$(ELIOMSTATICDIR)
-	${JS_OF_ELIOM} -ppx -o $(JS_PREFIX)_tmp.js $(GENERATE_DEBUG) $(CLIENT_INC) $(DEBUG_JS) \
+	${JS_OF_ELIOM} -ppx -o $@ $(GENERATE_DEBUG) $(CLIENT_INC) $(DEBUG_JS) \
 	    $(shell sh ./scripts/depsort.sh .depend client cmo)
-	HASH=`md5sum $(JS_PREFIX)_tmp.js | cut -d ' ' -f 1` && \
-	mv $(JS_PREFIX)_tmp.js $(JS_PREFIX)_$$HASH.js && \
-	ln -sf $(PROJECT_NAME)_$$HASH.js $@
 
 ${ELIOM_CLIENT_DIR}/%.cmi: %.mli
 	${JS_OF_ELIOM} -ppx -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
