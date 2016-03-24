@@ -55,10 +55,13 @@ let connect_form ?a () =
 ]
 
 [%%shared
+
 let disconnect_button ?a () =
   Form.post_form ?a ~service:Eba_services.disconnect_service
     (fun _ -> [
-         Form.button_no_value ~button_type:`Submit
+         Form.button_no_value
+           ~a:[ a_class ["button"] ]
+           ~button_type:`Submit
            [Ot_icons.F.signout (); pcdata "Logout"]
        ]) ()
 
@@ -194,7 +197,8 @@ let password_form ?a ~service () =
              tr [td [label [pcdata "Password:"]]; td [pass1]];
              tr [td [label [pcdata "Retype password:"]]; td [pass2]];
            ];
-         Form.input ~input_type:`Submit ~value:"Send" Form.string
+         Form.input ~input_type:`Submit
+           ~a:[ a_class [ "button" ] ] ~value:"Send" Form.string
        ])
     ()
  ]

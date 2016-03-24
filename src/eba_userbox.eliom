@@ -39,6 +39,7 @@ let%shared upload_pic_link
     ~%close () ;
     try%lwt ignore @@
       Ot_popup.popup
+        ~close_button:[ Ot_icons.F.close () ]
         ~onclose:(fun () -> Eliom_client.change_page
                      ~service:Eliom_service.void_coservice' () () )
         (fun close -> Ot_picture_uploader.mk_form
