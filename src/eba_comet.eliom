@@ -35,7 +35,7 @@
       D.div ~a:[a_class ["eba_process_closed"]] [
         img ~alt:("Ocsigen Logo")
           ~src:(Xml.uri_of_string
-                  "//ocsigen.org/resources/logos/ocsigen_with_shadow.png")
+                  "https://ocsigen.org/resources/logos/ocsigen_with_shadow.png")
           ();
         p [
           pcdata "Ocsigen process in eco-friendly mode.";
