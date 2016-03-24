@@ -24,7 +24,6 @@ let user_already_preregistered =
 let activation_key_outdated =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
-(* FIXME: Page reloading seems to be called to early *)
 let%shared upload_pic_link
     ?(a = [])
     ?(content=[pcdata "Change profile picture"])
@@ -42,8 +41,10 @@ let%shared upload_pic_link
       Ot_popup.popup
         ~onclose:(fun () -> Eliom_client.change_page
                      ~service:Eliom_service.void_coservice' () () )
-        (fun _ -> Ot_picture_uploader.mk_form
-            ~crop:~%crop ~input:~%input ~submit:~%submit ~%service ()) ;
+        (fun close -> Ot_picture_uploader.mk_form
+            ~crop:~%crop ~input:~%input ~submit:~%submit ~%service
+            ~after_submit:close
+            () ) ;
       Lwt.return ()
     with e ->
       Eba_msg.msg ~level:`Err "Error while uploading the picture";
