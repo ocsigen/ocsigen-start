@@ -115,6 +115,7 @@ module Make(C : PAGE) = struct
     List.map
       (fun cssname ->
          Eliom_content.Html5.F.js_script
+           ~a:[a_defer `Defer]
            ~uri:(make_uri
                    ~absolute:false
                    ~service:(Eliom_service.static_dir ())
