@@ -37,14 +37,14 @@ val userbox :
 val upload_pic_link :
   ?a:[< Html5_types.a_attrib ] Eliom_content.Html5.D.Raw.attrib list ->
   ?content:Html5_types.a_content Eliom_content.Html5.D.Raw.elt list ->
-  (unit -> unit) Eliom_client_common.client_value ->
+  (unit -> unit) Eliom_client_value.t ->
   uploader -> [> `A of Html5_types.a_content ] Eliom_content.Html5.D.Raw.elt
 
 (** Link to start to see the help from the begining.
     The client function given as first parameter will be called first,
     for example to close the menu containing the link. *)
 val reset_tips_link :
-  (unit -> unit) Eliom_client_common.client_value ->
+  (unit -> unit) Eliom_client_value.t ->
   [> `A of [> `PCDATA ] ] Eliom_content.Html5.D.Raw.elt
 
 (** Display user menu *)
