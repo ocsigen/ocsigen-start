@@ -16,7 +16,7 @@ let%server crop_image ~src ?(dst = src) ?ratio ~top ~right ~bottom ~left =
     ()
 
 let%server record_image directory ?ratio ?cropping file =
-  let make_file_saver ?(cp = Lwt_unix.link) () =
+  let make_file_saver cp () =
     let new_filename () =
       Ocsigen_lib.make_cryptographic_safe_string ()
       |> String.map (function '+' -> '-' | '/' -> '_' | c -> c) in
@@ -29,5 +29,5 @@ let%server record_image directory ?ratio ?cropping file =
     | Some (top, right, bottom, left) ->
       fun src dst -> crop_image ~src ~dst ?ratio ~top ~right ~bottom ~left
     | None -> Lwt_unix.link in
-  let file_saver = make_file_saver ~cp () in
+  let file_saver = make_file_saver cp () in
   file_saver file

@@ -24,17 +24,19 @@ let%shared about_handler userid_o () () =
   ]
 
 let%server upload_user_avatar_handler myid () ((), (cropping, photo)) =
-  let%lwt avatar = Eba_uploader.record_image
-      (List.fold_left Filename.concat
-         (List.hd !%%%MODULE_NAME%%%_config.avatar_dir)
-         (List.tl !%%%MODULE_NAME%%%_config.avatar_dir) )
-      ~ratio:1. ?cropping photo in
+  let avatar_dir =
+    List.fold_left Filename.concat
+      (List.hd !%%%MODULE_NAME%%%_config.avatar_dir)
+      (List.tl !%%%MODULE_NAME%%%_config.avatar_dir) in
+  let%lwt avatar =
+    Eba_uploader.record_image avatar_dir ~ratio:1. ?cropping photo in
   let%lwt user = Eba_user.user_of_userid myid in
   let old_avatar = Eba_user.avatar_of_user user in
   let%lwt () = Eba_user.update_avatar avatar myid in
   match old_avatar with
   | None -> Lwt.return ()
-  | Some old_avatar -> Lwt_unix.unlink old_avatar
+  | Some old_avatar ->
+    Lwt_unix.unlink (Filename.concat avatar_dir old_avatar )
 
 let () =
   (* Registering services. Feel free to customize handlers. *)
