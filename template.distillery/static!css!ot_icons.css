@@ -21,6 +21,7 @@
 .ot-icon-animation-once { animation-iteration-count: 1 ; }
 
 .ot-icon {
+    display: inline-block ;
     width: 1em ;
     height: 1em ;
     overflow: hidden ;
@@ -173,13 +174,13 @@
     width: .2em ;
     height: 1em ;
     background: #000 ;
-    transform: rotate(45deg) ;
+    transform: rotate(-45deg);
 }
 .ot-icon-close::after {
     position: absolute ;
-    width: 1em ;
-    height: .2em ;
-    bottom: .4em ;
+    width: .2em ;
+    height: 1em ;
+    left: .4em ;
     background: #000 ;
     transform: rotate(45deg) ;
 }
