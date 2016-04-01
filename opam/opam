@@ -10,10 +10,10 @@ install: [ make "install" ]
 remove: [ make "uninstall" ]
 depends: [
   "imagemagick"
-  "pgocaml" {>= "2.2+dev"}
-  "macaque" {>= "dev"}
+  "pgocaml" {>= "2.3"}
+  "macaque" {>= "0.7.4"}
   "safepass"
-  "eliom" {>= "5.0"}
+  "eliom" {>= "dev"}
   "ocsigen-widgets" {>= "dev"}
   "ppx_deriving"
 ]
