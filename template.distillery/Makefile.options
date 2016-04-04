@@ -64,3 +64,5 @@ STATICDIR := var/www/${PROJECT_NAME}/static
 FILESDIR := var/www/${PROJECT_NAME}
 # Project's JavaScript file directory
 ELIOMSTATICDIR := var/www/${PROJECT_NAME}
+# Project's temporary files directory
+ELIOMTMPDIR := tmp
