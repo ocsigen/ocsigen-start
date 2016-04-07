@@ -1,8 +1,7 @@
 <html>
   <head>
         <meta http-equiv="Content-Security-Policy"
-              content="default-src 'self' data: gap:
-                       %%APPSERVER%%
+              content="script-src 'self'
                        'unsafe-eval'
                        'unsafe-inline';
                        style-src 'self' 'unsafe-inline';
