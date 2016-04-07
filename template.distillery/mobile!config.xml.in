@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.%%%PROJECT_NAME%%%.mobile" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>%%%PROJECT_NAME%%%</name>
+<widget id="%%APPID%%" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>%%APP_DISPLAY_NAME%%</name>
     <description>
-      Eliom-base-app mobile application
+      %%APP_DISPLAY_NAME%% mobile application
     </description>
     <author email="developer@domain.com" href="http://domain.com">
-        %%%PROJECT_NAME%%% team
+      %%APP_DISPLAY_NAME%% team
     </author>
     <content src="index.html" />
     <plugin name="cordova-plugin-whitelist" spec="1" />
@@ -16,13 +16,72 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
+
+    <!-- Android settings -->
     <platform name="android">
         <allow-intent href="market:*" />
+        <preference name="android-minSdkVersion" value="15" />
+
+        <!-- <icon src="res/android/ldpi.png" density="ldpi" /> -->
+        <!-- <icon src="res/android/mdpi.png" density="mdpi" /> -->
+        <!-- <icon src="res/android/hdpi.png" density="hdpi" /> -->
+        <!-- <icon src="res/android/xhdpi.png" density="xhdpi" /> -->
     </platform>
+
+    <!-- iOS settings -->
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
+
+        <!-- iOS 8.0+ -->
+        <!-- iPhone 6 Plus  -->
+        <!-- <icon src="res/ios/icon&#45;60@3x.png" width="180" height="180" /> -->
+        <!-- iOS 7.0+ -->
+        <!-- iPhone / iPod Touch  -->
+        <!-- <icon src="res/ios/icon&#45;60.png" width="60" height="60" /> -->
+        <!-- <icon src="res/ios/icon&#45;60@2x.png" width="120" height="120" /> -->
+        <!-- iPad -->
+        <!-- <icon src="res/ios/icon&#45;76.png" width="76" height="76" /> -->
+        <!-- <icon src="res/ios/icon&#45;76@2x.png" width="152" height="152" /> -->
+        <!-- iOS 6.1 -->
+        <!-- Spotlight Icon -->
+        <!-- <icon src="res/ios/icon&#45;40.png" width="40" height="40" /> -->
+        <!-- <icon src="res/ios/icon&#45;40@2x.png" width="80" height="80" /> -->
+        <!-- iPhone / iPod Touch -->
+        <!-- <icon src="res/ios/icon.png" width="57" height="57" /> -->
+        <!-- <icon src="res/ios/icon@2x.png" width="114" height="114" /> -->
+        <!-- iPad -->
+        <!-- <icon src="res/ios/icon&#45;72.png" width="72" height="72" /> -->
+        <!-- <icon src="res/ios/icon&#45;72@2x.png" width="144" height="144" /> -->
+        <!-- <icon src="res/ios/icon&#45;83.5@2x.png" width="167" height="167" /> -->
+        <!-- iPhone Spotlight and Settings Icon -->
+        <!-- <icon src="res/ios/icon&#45;small.png" width="29" height="29" /> -->
+        <!-- <icon src="res/ios/icon&#45;small@2x.png" width="58" height="58" /> -->
+        <!-- <icon src="res/ios/icon&#45;small@3x.png" width="87" height="87" /> -->
+        <!-- iPad Spotlight and Settings Icon -->
+        <!-- <icon src="res/ios/icon&#45;50.png" width="50" height="50" /> -->
+        <!-- <icon src="res/ios/icon&#45;50@2x.png" width="100" height="100" /> -->
     </platform>
+
+    <!-- Plugins -->
+    <plugin name="cordova-plugin-whitelist" spec="1" />
+    <plugin name="cordova-plugin-crosswalk-webview" spec="~1.6.0" />
+    <plugin name="cordova-hot-code-push-plugin" spec="~1.2.5" />
+    <!-- <plugin name="cordova&#45;plugin&#45;facebook4" spec="~1.7.0"> -->
+    <!--     <variable name="APP_ID" value="%%FACEBOOK_ID%%" /> -->
+    <!--     <variable name="APP_NAME" value="besport" /> -->
+    <!-- </plugin> -->
+    <plugin name="cordova-plugin-network-information" spec="~1.2.0" />
+    <plugin name="cordova-plugin-globalization" spec="~1.0.3" />
+
+    <!-- CrossWalk settings -->
+    <preference name="xwalkVersion" value="15+" />
+    <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
+    <preference name="xwalkMode" value="embedded" />
+    <preference name="xwalkMultipleApk" value="false" />
+    <preference name="BackgroundColor" value="0xED393900" />
+
+    <!-- Hot Code Push settings -->
     <chcp>
         <config-file url="%%APPSERVER%%/update/chcp.json"/>
     </chcp>

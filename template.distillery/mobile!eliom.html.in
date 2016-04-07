@@ -5,31 +5,30 @@
                        %%APPSERVER%%
                        'unsafe-eval'
                        'unsafe-inline';
-                       style-src 'self' 'unsafe-inline'; media-src *">
+                       style-src 'self' 'unsafe-inline';
+                       img-src *; media-src *">
     <meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="viewport" content="user-scalable=no, initial-scale=1,
                        maximum-scale=1, minimum-scale=1,
                        width=device-width">
-    <link rel="stylesheet" type="text/css" href="css/%%%PROJECT_NAME%%%.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" type="text/css" href="css/%%CSSNAME%%.css">
     <script>
       //<![CDATA[
       var __eliom_server = '%%APPSERVER%%';
       var __eliom_app_name = '%%APPNAME%%';
-      var __eliom_debug_mode = true;
+      // var __eliom_debug_mode = true;
+      var __css_name = '%%PROJECTNAME%%.css';
       //]]>
     </script>
     <script src="cordova.js"></script>
     <script src="js/index.js"></script>
     <script src="js/jquery.js"></script>
-    <script src="%%APPNAME_NO_HASH%%.js"></script>
+    <script src="%%PROJECTNAME%%.js"></script>
   </head>
   <body>
-    <div class="app" id="app-container">
-      <div id="deviceready" class="blink">
-        <p class="event listening">Connecting to Device</p>
-        <p class="event received">Device is Ready</p>
-      </div>
+    <div class="app blink" id="app-container">
     </div>
   </body>
 </html>

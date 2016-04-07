@@ -157,6 +157,7 @@ endif
 $(CORDOVAPATH)/config.xml: mobile/config.xml.in $(CORDOVAPATH)
 	sed s,%%APPSERVER%%,$(APP_SERVER),g $< \
 	| sed s,%%APPID%%,$(MOBILE_APP_ID),g \
+	| sed s,%%APP_DISPLAY_NAME%%,$(APP_DISPLAY_NAME),g \
 	> $@
 
 $(CORDOVAPATH)/www/chcp.manifest: $(APPJS) $(APPCSS) \
@@ -197,6 +198,7 @@ $(CORDOVAPATH)/www/index.html: $(CORDOVAPATH) \
 	$(APPJS) mobile/index.html.in
 	HASH=$$(md5sum $(APPJS) | cut -d ' ' -f 1) && \
 	sed s,%%APPNAME%%,$(PROJECT_NAME)_$$HASH,g mobile/index.html.in | \
+	sed s,%%APP_DISPLAY_NAME%%,$(APP_DISPLAY_NAME),g mobile/index.html.in | \
 	sed s,%%APPSERVER%%,$(APP_SERVER),g > \
 	$(CORDOVAPATH)/www/index.html
 
