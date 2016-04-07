@@ -10,10 +10,9 @@
 *)
 
 let url =
-  if Js.Unsafe.global##.___eliom_server_ = Js.undefined then
-    "127.0.0.1:8080/__global_data__"
-  else
-    Js.to_string (Js.Unsafe.global##.___eliom_server_) ^ "/__global_data__"
+  Js.Optdef.case (Js.Unsafe.global##.___eliom_server_)
+    (fun ()     -> "127.0.0.1:8080/__global_data__")
+    (fun server -> Js.to_string server ^ "/__global_data__")
 
 let storage () =
   Js.Optdef.case (Dom_html.window##.localStorage)
@@ -22,13 +21,24 @@ let storage () =
 
 let rec retry_button wake =
   let p = Dom_html.createP Dom_html.document in
+  let btn = Dom_html.createButton Dom_html.document in
+  (* Set error class *)
+  (Dom_html.getElementById "app-container")##.className :=
+    Js.string "app-error";
+  (* Error message paragraph *)
   Dom.appendChild p
-    (Dom_html.document##createTextNode(Js.string "click to retry"));
-  p##.onclick := Dom_html.handler
+    (Dom_html.document##createTextNode
+      (Js.string "No connection available. Please try again later."));
+  p##.id := Js.string "retry-message";
+  (* Retry button *)
+  Dom.appendChild btn
+    (Dom_html.document##createTextNode(Js.string "Retry"));
+  btn##.onclick := Dom_html.handler
       (fun _ ->
          Lwt.async (fun () -> get_data wake);
          Js._false);
-  p##.id := Js.string "retry-button";
+  btn##.id := Js.string "retry-button";
+  Dom.appendChild p btn;
   p
 
 and add_retry_button wake : unit =
@@ -49,11 +59,8 @@ and get_data wake =
   Lwt.return ()
 
 let redirect () =
-  if Js.Unsafe.global##.___eliom_html_url_ = Js.undefined then
-    ()
-  else
-    (Js.Unsafe.coerce Dom_html.window)##.location :=
-      (Js.Unsafe.global ##.___eliom_html_url_)
+  Js.Optdef.iter (Js.Unsafe.global##.___eliom_html_url_)
+    (fun url -> Dom_html.window##.location##replace (url))
 
 let _ =
   Lwt.async @@ fun () ->
