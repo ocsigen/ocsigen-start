@@ -13,7 +13,7 @@
                        maximum-scale=1, minimum-scale=1,
                        width=device-width">
     <link rel="stylesheet" type="text/css" href="css/index.css">
-    <link rel="stylesheet" type="text/css" href="css/%%CSSNAME%%.css">
+    <link rel="stylesheet" type="text/css" href="css/%%CSSNAME%%">
     <script>
       //<![CDATA[
       var __eliom_server = '%%APPSERVER%%';
