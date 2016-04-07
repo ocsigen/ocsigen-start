@@ -10,10 +10,8 @@
 include Makefile.options
 
 # Eliom-base-app makefile
+# Makefile.PROJECT_NAME is also included in this makefile
 include Makefile.eba
-
-# Project specific makefile
-include Makefile.$(PROJECT_NAME)
 
 # Mobile app makefile
 include Makefile.mobile

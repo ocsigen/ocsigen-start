@@ -2,6 +2,8 @@
 #           SETTINGS FOR THE ELIOM PROJECT %%%PROJECT_NAME%%%
 #----------------------------------------------------------------------
 
+APP_DISPLAY_NAME := %%%PROJECT_NAME%%%
+MOBILE_APP_ID := mobile.%%%PROJECT_NAME%%%.com
 
 ##----------------------------------------------------------------------
 ## The following part is only used for PGOcaml
