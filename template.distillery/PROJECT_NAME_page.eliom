@@ -12,6 +12,10 @@
     end
 ]
 
+let all_files_in_dir path =
+  let css_files = Sys.readdir path in
+  Array.to_list @@ Array.map (fun x -> [x]) css_files
+
 [%%shared.start]
 
 module Page_config = struct
@@ -23,18 +27,8 @@ module Page_config = struct
   let css = []
   let js = []
 
-  let local_css = [
-    ["font-awesome.css"];
-    ["jquery.Jcrop.css"];
-    ["eba.css"];
-    ["%%%PROJECT_NAME%%%.css"];
-  ]
-
-  let local_js = [
-    ["onload.js"];
-    ["jquery.js"];
-    ["jquery.Jcrop.js"]
-  ]
+  let local_css = ~%(all_files_in_dir "./static/css/")
+  let local_js  = ~%(all_files_in_dir "./static/js/")
 
   let default_predicate _ _ = Lwt.return true
 

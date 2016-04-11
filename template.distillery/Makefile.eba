@@ -20,6 +20,7 @@ JS_OF_ELIOM       := js_of_eliom
 ELIOMDEP          := eliomdep
 OCSIGENSERVER     := ocsigenserver
 OCSIGENSERVER.OPT := ocsigenserver.opt
+OPAM              := opam
 
 ## Where to put intermediate object files.
 ## - ELIOM_{SERVER,CLIENT}_DIR must be distinct
@@ -42,6 +43,7 @@ endif
 
 JS_PREFIX=$(TEST_PREFIX)$(ELIOMSTATICDIR)/${PROJECT_NAME}
 CSS_DIR=static/css/
+JS_DIR=static/js/
 
 .PHONY: all byte opt
 all: byte opt
@@ -70,7 +72,7 @@ include Makefile.$(PROJECT_NAME)
 DIST_FILES = $(ELIOMSTATICDIR)/$(PROJECT_NAME).js $(LIBDIR)/$(PROJECT_NAME).cma
 
 .PHONY: test.byte test.opt
-test.byte: $(addprefix $(TEST_PREFIX),$(ETCDIR)/$(PROJECT_NAME)-test.conf $(DIST_DIRS) $(DIST_FILES))
+test.byte: $(addprefix $(TEST_PREFIX),$(ETCDIR)/$(PROJECT_NAME)-test.conf $(DIST_DIRS) $(DIST_FILES)) import-external-files
 	$(OCSIGENSERVER) $(RUN_DEBUG) -c $<
 test.opt: $(addprefix $(TEST_PREFIX),$(ETCDIR)/$(PROJECT_NAME)-test.conf $(DIST_DIRS) $(patsubst %.cma,%.cmxs, $(DIST_FILES)))
 	$(OCSIGENSERVER.OPT) $(RUN_DEBUG) -c $<
@@ -86,6 +88,26 @@ $(addprefix $(TEST_PREFIX), $(DIST_DIRS)):
 #	$(shell find $(shell ocamlfind query $(pkg))/css ))\
 #	)
 
+# Copy files from other projects into the working directory.
+#
+# Note: The -n switch ensures that user modifications to these files are never
+# overwritten, not even if the source file is newer.
+
+.PHONY: import-external-files import-css-files import-js-files
+
+import-external-files: import-css-files import-js-files
+
+import-css-files:
+ifneq "$(EXTERNAL_CSS_FILES)" ""
+	cp -n $(EXTERNAL_CSS_FILES) $(CSS_DIR)
+endif
+
+import-js-files:
+ifneq "$(EXTERNAL_JS_FILES)" ""
+	cp -n $(EXTERNAL_JS_FILES) $(JS_DIR)
+endif
+
+
 ##----------------------------------------------------------------------
 ## Installing & Running
 
@@ -98,7 +120,7 @@ install.lib.byte: $(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cma | $(PREFIX)$(LIBDI
 	install $< $(PREFIX)$(LIBDIR)
 install.lib.opt: $(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cmxs | $(PREFIX)$(LIBDIR)
 	install $< $(PREFIX)$(LIBDIR)
-install.static: $(TEST_PREFIX)$(ELIOMSTATICDIR)/$(PROJECT_NAME).js | $(PREFIX)$(STATICDIR) $(PREFIX)$(ELIOMSTATICDIR)
+install.static: $(TEST_PREFIX)$(ELIOMSTATICDIR)/$(PROJECT_NAME).js | $(PREFIX)$(STATICDIR) $(PREFIX)$(ELIOMSTATICDIR) import-external-files
 	cp -r $(LOCAL_STATIC)/* $(PREFIX)$(STATICDIR)
 	[ -z $(WWWUSER) ] || chown -R $(WWWUSER) $(PREFIX)$(STATICDIR)
 	install $(addprefix -o ,$(WWWUSER)) $< $(PREFIX)$(ELIOMSTATICDIR)

@@ -17,6 +17,10 @@ SERVER_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx ocsigen-widgets.server
 CLIENT_PACKAGES := lwt.ppx js_of_ocaml.ppx js_of_ocaml.deriving.ppx \
                        eliom-base-app.client
 
+# CSS and JS files to copy from other projects into the working directory
+EXTERNAL_CSS_FILES= $(shell $(OPAM) config var share)/ocsigen-toolkit/css/*.css
+EXTERNAL_JS_FILES=
+
 # Directory with files to be statically served
 LOCAL_STATIC = static
 
