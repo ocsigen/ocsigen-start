@@ -1,0 +1,36 @@
+# Main CSS file
+LOCAL_CSS = $(LOCAL_STATIC)/css/$(PROJECT_NAME).css
+
+# CSS destination
+CSSDIR=$(TEST_PREFIX)$(ELIOMSTATICDIR)/css
+CSS_PREFIX=$(CSSDIR)/$(PROJECT_NAME)
+DEST = $(CSS_PREFIX).css
+
+css: $(DEST)
+
+# SASS related variables
+SASSDIR=sass
+SRC = $(SASSDIR)/$(PROJECT_NAME).scss
+FILES = $(SASSDIR)/lib/*.scss
+
+# If you want to compile the CSS file from SASS files, uncomment the following
+# recipe and place your SASS files into the 'sass' directory.
+
+# $(LOCAL_CSS): $(SRC) $(FILES)
+# 	[ -d $(SASSDIR) ] && \
+# 	SASS_PATH=sass/lib:static/css sass --style compressed $< $@ && \
+# 	postcss --use autoprefixer --replace $@
+
+$(CSSDIR):
+	mkdir -p $@
+
+$(DEST): $(LOCAL_CSS) | $(CSSDIR)
+	HASH=`cat %< | md5sum | cut -d ' ' -f 1` && \
+	cp $< $(CSS_PREFIX)_$$HASH.css && \
+	sed -i '1s/^/@charset "UTF-8";/' $(CSS_PREFIX)_$$HASH.css && \
+	ln -sf $(PROJECT_NAME)_$$HASH.css $@
+# Charset is necessary for iOS.
+# Including it in scss does not work because sass removes it.
+
+# Only works with recent version of sass: --sourcemap=inline
+# Needs autoprefixer: https://github.com/postcss/autoprefixer#cli

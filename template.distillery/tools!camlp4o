@@ -1,0 +1,22 @@
+#!/usr/bin/env ocaml
+#load "unix.cma";;
+
+try
+let a =
+  Array.map
+    (fun f ->
+       if f = "pa_pgsql.cma" then raise Exit;
+       if Filename.check_suffix f ".cma" then
+         Filename.chop_suffix f ".cma" ^ ".cmxs"
+       else if Filename.check_suffix f ".cmo" then
+         Filename.chop_suffix f ".cmo" ^ ".cmxs"
+       else
+         f)
+    Sys.argv
+in
+Unix.execvp "camlp4o.opt" a
+with Exit ->
+  let p = Unix.getenv "PATH" in
+  let i = String.index p ':' + 1 in
+  Unix.putenv "PATH" (String.sub p i (String.length p - i));
+  Unix.execvp "camlp4o" Sys.argv
