@@ -9,6 +9,9 @@
 # Eliom settings
 include Makefile.options
 
+# Styles (CSS, SASS...)
+include Makefile.style
+
 # Eliom-base-app makefile
 # Makefile.PROJECT_NAME is also included in this makefile
 include Makefile.eba

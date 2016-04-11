@@ -73,16 +73,9 @@ let%client set_client_fun ~app ~service f : unit =
        Eliom_client.set_content_local
          (Eliom_content.Html5.To_dom.of_element content))
 
-let%client init_client_app () =
-  Lwt.async @@ fun () ->
+let%client () =
   let app = Eliom_client.get_application_name () in
   set_client_fun ~app ~service:%%%MODULE_NAME%%%_services.about_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page about_handler);
   set_client_fun ~app ~service:Eba_services.main_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page main_service_handler);
-  let%lwt _ = Lwt_js.sleep 0.5 in
-  Eliom_client.change_page ~service:Eba_services.main_service () ()
-
-let%client _ =
-  Eliom_client.onload @@ fun () ->
-  if Eliom_client.is_client_app () then init_client_app ()

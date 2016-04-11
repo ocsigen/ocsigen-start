@@ -12,6 +12,38 @@
     end
 ]
 
+(* FIXME MOBILE *)
+let%server css_name = !%%%MODULE_NAME%%%_config.css_name
+let%client css_name = try Js.to_string (Js.Unsafe.global##.___css_name_)
+  with _ -> ""
+
+let%server css_name_script =
+  [script (cdata_script (Printf.sprintf "var __css_name = '%s';" css_name))]
+let%client css_name_script = []
+
+(* FIXME MOBILE *)
+let%server app_js = [%%%MODULE_NAME%%%_base.App.application_script ~defer:true ()]
+let%client app_js = []
+(* VVV Warning: either we use exactly the same global node
+   (and make sure global nodes work properly on client side),
+   or we do not add the script on client side.
+   I chose the second solution. *)
+
+let%server the_local_js = [
+  ["onload.js"];
+  ["jquery.js"];
+  ["jquery.Jcrop.js"]
+]
+
+let%client the_local_js = [] (* in index.html *)
+
+let%shared the_local_css = [
+  ["font-awesome.css"];
+  ["jquery.Jcrop.css"];
+  ["eba.css"];
+  [ css_name ];
+]
+
 [%%shared.start]
 
 module Page_config = struct
@@ -20,21 +52,10 @@ module Page_config = struct
 
   let title = "%%%PROJECT_NAME%%%"
 
-  let css = []
-  let js = []
+  let local_js = the_local_js
+  let local_css = the_local_css
 
-  let local_css = [
-    ["font-awesome.css"];
-    ["jquery.Jcrop.css"];
-    ["eba.css"];
-    ["%%%PROJECT_NAME%%%.css"];
-  ]
-
-  let local_js = [
-    ["onload.js"];
-    ["jquery.js"];
-    ["jquery.Jcrop.js"]
-  ]
+  let other_head = css_name_script@app_js
 
   let default_predicate _ _ = Lwt.return true
 

@@ -26,6 +26,7 @@
       <static dir="%%FILESDIR%%" />
       %%ELIOM_MODULES%%
       <eliommodule module="%%LIBDIR%%/%%PROJECT_NAME%%.cma">
+        <app name="%%APPNAME%%" css="%%CSSNAME%%" />
         <avatars dir="%%FILESDIR%%/avatars" />
       </eliommodule>
       <eliom/>

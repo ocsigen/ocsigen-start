@@ -6,7 +6,20 @@
     configuration file, as shown below.
 *)
 
+let app_name = ref ""
+let css_name = ref ""
 let avatar_dir = ref []
+
+let app = Ocsigen_extensions.Configuration.(
+  let attributes = [
+    attribute ~name:"name" ~obligatory:true
+      (fun h -> app_name := h);
+    attribute ~name:"css" ~obligatory:true
+      (fun h -> css_name := h);
+  ]
+  in
+  element ~name:"app" ~obligatory:true ~attributes ()
+)
 
 let avatars = Ocsigen_extensions.Configuration.(
   let attributes = [
@@ -17,4 +30,4 @@ let avatars = Ocsigen_extensions.Configuration.(
   element ~name:"avatars" ~obligatory:true ~attributes ()
 )
 
-let _ = Eliom_config.parse_config [avatars]
+let _ = Eliom_config.parse_config [app; avatars]
