@@ -44,7 +44,7 @@
             a ~xhr:false ~absolute:false
             ~service:(Eliom_service.static_dir ())
             [pcdata "Click"]
-            ["eliom.html"]
+            ["index.html"]
           else
             a ~xhr:false
             ~service:Eliom_service.void_coservice'
@@ -67,7 +67,7 @@
       if Eliom_client.is_client_app () then
         Eliom_client.exit_to ~absolute:false
           ~service:(Eliom_service.static_dir ())
-          ["eliom.html"] ()
+          ["index.html"] ()
       else
         Eliom_client.exit_to ~service:Eliom_service.void_coservice' () ();
       Lwt.return ()
