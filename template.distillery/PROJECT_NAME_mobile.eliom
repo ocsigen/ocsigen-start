@@ -32,7 +32,11 @@ let%client _ =
   if Eliom_client.is_client_app ()
   then begin
     (* Initialize the application server-side;
-       there should be a single initial request for that. *)
+       there should be a single initial request for that,
+       to a connected_rpc.
+       (Otherwise the application may start concurrent
+       requests without tab cookies)
+    *)
     let%lwt _ = Lwt_js_events.onload () in
     let%lwt _ = ~%init_request_rpc () in
     Eliom_client.change_page ~service:Eba_services.main_service () ()
