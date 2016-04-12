@@ -1,6 +1,8 @@
 #----------------------------------------------------------------------
 #           SETTINGS FOR THE ELIOM PROJECT %%%PROJECT_NAME%%%
 #----------------------------------------------------------------------
+# Required binaries
+OPAM         := opam
 
 PROJECT_NAME := %%%PROJECT_NAME%%%
 
@@ -17,8 +19,13 @@ SERVER_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx ocsigen-widgets.server
 CLIENT_PACKAGES := lwt.ppx js_of_ocaml.ppx js_of_ocaml.deriving.ppx \
                        eliom-base-app.client
 
+# CSS files to copy from other projects into the working directory
+SHAREDIR=$(shell $(OPAM) config var share)
+EXTERNAL_CSS_FILES=$(SHAREDIR)/ocsigen-toolkit/css/*.css
+
 # Directory with files to be statically served
 LOCAL_STATIC = static
+LOCAL_STATIC_CSS = $(LOCAL_STATIC)/css
 
 # The backend for persistent data. Can be dbm or sqlite.
 PERSISTENT_DATA_BACKEND = dbm

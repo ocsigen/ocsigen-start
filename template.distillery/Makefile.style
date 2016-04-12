@@ -6,7 +6,7 @@ CSSDIR=$(TEST_PREFIX)$(ELIOMSTATICDIR)/css
 CSS_PREFIX=$(CSSDIR)/$(PROJECT_NAME)
 DEST = $(CSS_PREFIX).css
 
-css: $(DEST)
+css: $(DEST) import-external-css
 
 # SASS related variables
 SASSDIR=sass
@@ -34,3 +34,15 @@ $(DEST): $(LOCAL_CSS) | $(CSSDIR)
 
 # Only works with recent version of sass: --sourcemap=inline
 # Needs autoprefixer: https://github.com/postcss/autoprefixer#cli
+
+
+# Copy files from other projects into the working directory.
+# The -n switch ensures that user modifications to these files are never overwritten.
+# TODO: This should be part of eliom-distillery and not be executed with every run of make.
+
+.PHONY: import-external-css
+
+import-external-css:
+ifneq "$(EXTERNAL_CSS_FILES)" ""
+	cp -n $(EXTERNAL_CSS_FILES) $(LOCAL_STATIC_CSS)
+endif

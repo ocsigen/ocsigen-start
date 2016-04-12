@@ -37,12 +37,12 @@ let%server the_local_js = [
 
 let%client the_local_js = [] (* in index.html *)
 
-let%shared the_local_css = [
-  ["font-awesome.css"];
-  ["jquery.Jcrop.css"];
-  ["eba.css"];
-  [ css_name ];
-]
+let%server include_files_from dir =
+  let css_files = Sys.readdir dir in
+  Array.to_list @@ Array.map (fun x -> [x]) css_files
+
+
+let%shared the_local_css = [css_name] :: ~%(include_files_from "static/css/")
 
 [%%shared.start]
 
