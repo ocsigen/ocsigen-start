@@ -55,11 +55,14 @@ let connect_form ?a () =
 ]
 
 [%%shared
+
 let disconnect_button ?a () =
   Form.post_form ?a ~service:Eba_services.disconnect_service
     (fun _ -> [
-         Form.button_no_value ~button_type:`Submit
-           [Ow_icons.F.signout (); pcdata "Logout"]
+         Form.button_no_value
+           ~a:[ a_class ["button"] ]
+           ~button_type:`Submit
+           [Ot_icons.F.signout (); pcdata "Logout"]
        ]) ()
 
 let sign_up_form ?a () =
@@ -139,7 +142,7 @@ let avatar user =
   match Eba_user.avatar_uri_of_user user with
   | Some src ->
     img ~alt:"picture" ~a:[a_class ["eba_avatar"]] ~src ()
-  | None -> Ow_icons.F.user ()
+  | None -> Ot_icons.F.user ()
 
 let username user =
   let n = match Eba_user.firstname_of_user user with
@@ -194,7 +197,8 @@ let password_form ?a ~service () =
              tr [td [label [pcdata "Password:"]]; td [pass1]];
              tr [td [label [pcdata "Retype password:"]]; td [pass2]];
            ];
-         Form.input ~input_type:`Submit ~value:"Send" Form.string
+         Form.input ~input_type:`Submit
+           ~a:[ a_class [ "button" ] ] ~value:"Send" Form.string
        ])
     ()
  ]

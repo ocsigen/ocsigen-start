@@ -5,9 +5,9 @@
 [%%shared
 open Eliom_content.Html5
 open Eliom_content.Html5.F
-
-type uploader = unit Ow_pic_uploader.t
 ]
+
+[%%shared type uploader = unit Ot_picture_uploader.service ]
 
 let wrong_password =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
@@ -24,64 +24,35 @@ let user_already_preregistered =
 let activation_key_outdated =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
-
-let uploader avatar_directory = Ow_pic_uploader.make
-    ~directory:avatar_directory
-    ~name:"uppic"
-    ~crop_ratio:(Some 1.)
-    ~max_width:256 ~max_height:256
-    ~service_wrapper:(fun f -> Eba_session.connected_rpc (fun userid -> f))
-    ~crop_wrapper:(fun f -> Eba_session.connected_rpc
-                      (fun userid p ->
-                         (* cropping and getting filename of new avatar: *)
-                         let%lwt fname = f p in
-                         let%lwt user = Eba_user.user_of_userid userid in
-                         let old_avatar = Eba_user.avatar_of_user user in
-                         (* Setting new avatar in db: *)
-                         let%lwt () = Eba_user.update_avatar fname userid in
-                         (* Removing old avatar file: *)
-                         match old_avatar with
-                         | None -> Lwt.return ()
-                         | Some old_avatar ->
-                           try%lwt
-                             Lwt_unix.unlink
-                               (String.concat "/"
-                                  (avatar_directory@[old_avatar]))
-                           with Unix.Unix_error _ -> Lwt.return ()))
-    ~data_deriver:[%derive.json: Ow_pic_uploader.crop_type * unit]
-    ()
-
+let%shared upload_pic_link
+    ?(a = [])
+    ?(content=[pcdata "Change profile picture"])
+    ?(crop = Some 1.)
+    ?(input=[])
+    ?(submit=[pcdata "Submit"])
+    close
+    service
+    userid =
+  let content = (content
+                 : Html5_types.a_content Eliom_content.Html5.D.Raw.elt list) in
+  D.Raw.a ~a:( a_onclick [%client (fun ev -> Lwt.async (fun () ->
+    ~%close () ;
+    try%lwt ignore @@
+      Ot_popup.popup
+        ~close_button:[ Ot_icons.F.close () ]
+        ~onclose:(fun () -> Eliom_client.change_page
+                     ~service:Eliom_service.void_coservice' () () )
+        (fun close -> Ot_picture_uploader.mk_form
+            ~crop:~%crop ~input:~%input ~submit:~%submit ~%service
+            ~after_submit:close
+            () ) ;
+      Lwt.return ()
+    with e ->
+      Eba_msg.msg ~level:`Err "Error while uploading the picture";
+      Eliom_lib.debug_exn "%s" e "→ ";
+      Lwt.return () ) : _ ) ] :: a) content
 
 [%%shared
-
-let upload_pic_link ?a ?(content=[pcdata "Change profile picture"])
-    close uploader =
-    let link = D.Raw.a ?a content in
-    ignore [%client (
-      Lwt_js_events.async (fun () ->
-        Lwt_js_events.clicks (To_dom.of_element ~%link)
-          (fun _ _ ->
-             ~%close ();
-             try%lwt
-               match%lwt Ow_pic_uploader.upload_pic_popup
-                           ~%uploader
-                           ~url_path:["avatars"]
-                           ~text:"Upload new picture"
-                           ()
-               with
-               | None -> Lwt.return ()
-               | _ ->
-                 (* For now I don't update in place, but reload *)
-                 Eliom_client.change_page
-                   ~service:Eliom_service.void_coservice' () ()
-             with e ->
-               Eba_msg.msg ~level:`Err "Error while uploading the picture";
-               Eliom_lib.debug_exn "%s" e "→ ";
-               Lwt.return ()
-
-          ))
-    : unit)];
-    link
 
 let reset_tips_service = Eba_tips.reset_tips_service
 
@@ -101,12 +72,12 @@ let reset_tips_service = Eba_tips.reset_tips_service
     l
 
 
-  let user_menu_ close user uploader =
+  let user_menu_ close user service =
   [
     p [pcdata "Change your password:"];
     Eba_view.password_form ~service:Eba_services.set_password_service' ();
     hr ();
-    upload_pic_link close uploader;
+    upload_pic_link close service (Eba_user.userid_of_user user);
     hr ();
     reset_tips_link close;
     hr ();
@@ -122,7 +93,7 @@ let reset_tips_service = Eba_tips.reset_tips_service
 ]
 [%%shared
 
-  let user_menu user uploader =
+  let user_menu user service =
     let but = D.div ~a:[a_class ["eba_usermenu_button"]]
         [Ow_icons.F.config ~a:[a_class ["fa-large"]] ()]
     in
@@ -134,7 +105,7 @@ let reset_tips_service = Eba_tips.reset_tips_service
               let o = Ow_button.to_button_dyn_alert ~%but in
               o##unpress
             in
-            Lwt.return (!user_menu_fun close ~%user ~%uploader): 'a -> 'b)]);
+            Lwt.return (!user_menu_fun close ~%user ~%service): 'a -> 'b)]);
     div ~a:[a_class ["eba_usermenu"]] [but; menu]
 
 ]
@@ -143,12 +114,12 @@ let reset_tips_service = Eba_tips.reset_tips_service
 ]
 [%%shared
 
-  let connected_user_box user uploader =
+  let connected_user_box user service =
     let username = Eba_view.username user in
     D.div ~a:[a_id "eba-user-box"] [
       Eba_view.avatar user;
       username;
-      user_menu user uploader;
+      user_menu user service;
     ]
 ]
 [%%server
@@ -274,9 +245,9 @@ let reset_tips_service = Eba_tips.reset_tips_service
       Lwt.return d
 ]
 [%%shared
-  let userbox user uploader =
+  let userbox user service =
     match user with
-    | Some user -> Lwt.return (connected_user_box user uploader)
+    | Some user -> Lwt.return (connected_user_box user service)
     | None -> connection_box ()
 
 
