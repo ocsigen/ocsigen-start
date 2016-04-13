@@ -1,8 +1,3 @@
-[%%shared
-    open Eliom_content.Html5.F
-    open Eliom_content.Html5
-]
-
 let%server application_name = !%%%MODULE_NAME%%%_config.app_name
 
 let%client application_name = Eliom_client.get_application_name ()

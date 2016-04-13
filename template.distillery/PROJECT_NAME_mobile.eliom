@@ -4,11 +4,6 @@ open %%%MODULE_NAME%%% (* for dependency reasons *)
 [@@@ocaml.warning "+33"]
 ]
 
-[%%client
-open Eliom_content.Html5
-open Eliom_content.Html5.F
-]
-
 (*****************************************************************************)
 (* MOBILE APP COOKIES FIX *)
 (*****************************************************************************)
@@ -72,4 +67,3 @@ let%client _ =
 (* let%client () = Eliom_config.debug_timings := true *)
 (* let%client () = Lwt_log_core.add_rule "eliom:client*" Lwt_log.Debug *)
 (* let%client () = Lwt_log_core.add_rule "eba*" Lwt_log.Debug *)
-

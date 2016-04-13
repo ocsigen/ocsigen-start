@@ -3,7 +3,6 @@
 
 [%%shared
     open Eliom_content.Html5.F
-    open Eliom_content.Html5
 ]
 
 [%%client

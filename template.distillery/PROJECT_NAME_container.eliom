@@ -4,8 +4,7 @@
 (** This module defines the default template for application pages *)
 
 [%%shared
-    open Eliom_content.Html5
-    open Eliom_content.Html5.F
+  open Eliom_content.Html5.F
 ]
 
 let%server uploader () = Eba_userbox.uploader !%%%MODULE_NAME%%%_config.avatar_dir
@@ -18,7 +17,7 @@ let%client uploader () =
 
 [%%shared.start]
 
-let user_menu close user uploader = [
+let user_menu close _ uploader = [
   p [pcdata "Change your password:"];
   Eba_view.password_form ~service:~%Eba_services.set_password_service' ();
   hr ();
@@ -32,6 +31,7 @@ let user_menu close user uploader = [
 let%client _ = Eba_userbox.set_user_menu user_menu
 
 let header ?user () =
+  ignore user;
   let%lwt user_box = Eba_userbox.userbox user (uploader ()) in
   Lwt.return
     (header ~a:[a_id "main"] [
@@ -49,7 +49,7 @@ let header ?user () =
        user_box;
      ])
 
-let footer ?user () =
+let footer () =
   div ~a:[a_id "%%%PROJECT_NAME%%%-footer"] [
     pcdata "This application has been generated using the ";
     a ~service:Eba_services.eba_github_service [
@@ -101,15 +101,7 @@ let%server page userid_o content =
   | _ ->
     h :: l
 
-let%client page userid_o content =
-  let%lwt user =
-    match userid_o with
-    | None ->
-      Lwt.return None
-    | Some userid ->
-      let%lwt u = Eba_user_proxy.get_data userid in
-      Lwt.return (Some u)
-  in
+let%client page _ content =
   let l = [
     div ~a:[a_id "%%%PROJECT_NAME%%%-body"] content;
     footer ();
