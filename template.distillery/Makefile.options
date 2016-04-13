@@ -14,10 +14,10 @@ CLIENT_FILES := $(wildcard *.eliomi *.eliom)
 # OCamlfind packages for the server (for modules which defines services)
 SERVER_ELIOM_PACKAGES := eliom-base-app.server
 # OCamlfind packages for the server
-SERVER_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx ocsigen-widgets.server
+SERVER_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx ocsigen-toolkit.server
 # OCamlfind packages for the client
 CLIENT_PACKAGES := lwt.ppx js_of_ocaml.ppx js_of_ocaml.deriving.ppx \
-                       eliom-base-app.client
+                       eliom-base-app.client ocsigen-toolkit.client
 
 # CSS files to copy from other projects into the working directory
 SHAREDIR=$(shell $(OPAM) config var share)
