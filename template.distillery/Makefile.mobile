@@ -142,7 +142,7 @@ CORDOVA_DIRS := www www/css www/fonts www/images www/img www/js
 # Hot Code Push).
 $(CORDOVAPATH):
 ifdef CORDOVA_VERSION
-	cordova create $(CORDOVAPATH) $(MOBILE_APP_ID) $(APP_DISPLAY_NAME)
+	cordova create $(CORDOVAPATH) $(MOBILE_APP_ID) "$(MOBILE_APP_NAME)"
 	rm -f $(CORDOVAPATH)/www/css/index.css
 	rm -f $(CORDOVAPATH)/www/img/logo.png
 	rm -f $(CORDOVAPATH)/www/index.html
@@ -155,9 +155,9 @@ else
 endif
 
 $(CORDOVAPATH)/config.xml: mobile/config.xml.in $(CORDOVAPATH)
-	sed s,%%APPSERVER%%,$(APP_SERVER),g $< \
-	| sed s,%%APPID%%,$(MOBILE_APP_ID),g \
-	| sed s,%%APP_DISPLAY_NAME%%,$(APP_DISPLAY_NAME),g \
+	sed "s,%%APPSERVER%%,$(APP_SERVER),g" $< \
+	| sed "s,%%APPID%%,$(MOBILE_APP_ID),g" \
+	| sed "s,%%MOBILE_APP_NAME%%,$(MOBILE_APP_NAME),g" \
 	> $@
 
 $(CORDOVAPATH)/www/chcp.manifest: $(APPJS) $(APPCSS) \
@@ -167,8 +167,8 @@ $(CORDOVAPATH)/www/chcp.manifest: $(APPJS) $(APPCSS) \
 
 $(CORDOVAPATH)/www/chcp.json: mobile/chcp.json.in \
 	$(CORDOVAPATH)/www/chcp.manifest
-	sed s,%%APPSERVER%%,$(APP_SERVER),g $< \
-	| sed s,%%DATE%%,$(shell date +%y%m%d-%H%M%S),g \
+	sed "s,%%APPSERVER%%,$(APP_SERVER),g" $< \
+	| sed "s,%%DATE%%,$(shell date +%y%m%d-%H%M%S),g" \
 	> $@
 
 # Function to list files in a given directory $(1), and change prefix directory
@@ -195,22 +195,21 @@ $(LOCAL_STATIC_FILES): $(CORDOVAPATH)/www/%: $(LOCAL_STATIC)/%
 
 # Cordova config files
 
-$(CORDOVAPATH)/www/index.html: $(CORDOVAPATH) \
-	$(APPJS) mobile/index.html.in
+$(CORDOVAPATH)/www/index.html: mobile/index.html.in $(APPJS) $(CORDOVAPATH)
 	HASH=$$(md5sum $(APPJS) | cut -d ' ' -f 1) && \
-	sed s,%%APPNAME%%,$(PROJECT_NAME)_$$HASH,g mobile/index.html.in | \
-	sed s,%%APP_DISPLAY_NAME%%,$(APP_DISPLAY_NAME),g mobile/index.html.in | \
-	sed s,%%APPSERVER%%,$(APP_SERVER),g > \
+	sed "s,%%APPNAME%%,$(PROJECT_NAME)_$$HASH,g" $< | \
+	sed "s,%%MOBILE_APP_NAME%%,$(MOBILE_APP_NAME),g" | \
+	sed "s,%%APPSERVER%%,$(APP_SERVER),g" > \
 	$(CORDOVAPATH)/www/index.html
 
 $(CORDOVAPATH)/www/eliom.html: $(CORDOVAPATH) \
 	$(APPJS) $(APPCSS) mobile/eliom.html.in
 	JS_HASH=$$(md5sum $(APPJS) | cut -d ' ' -f 1) && \
 	CSS_HASH=$$(md5sum $(APPCSS) | cut -d ' ' -f 1) && \
-	sed s,%%APPNAME%%,$(PROJECT_NAME)_$$JS_HASH,g mobile/eliom.html.in | \
-	sed s,%%PROJECTNAME%%,$(PROJECT_NAME),g | \
-	sed s,%%CSSNAME%%,$(PROJECT_NAME).css,g | \
-	sed s,%%APPSERVER%%,$(APP_SERVER),g > \
+	sed "s,%%APPNAME%%,$(PROJECT_NAME)_$$JS_HASH,g" mobile/eliom.html.in | \
+	sed "s,%%PROJECTNAME%%,$(PROJECT_NAME),g" | \
+	sed "s,%%CSSNAME%%,$(PROJECT_NAME).css,g" | \
+	sed "s,%%APPSERVER%%,$(APP_SERVER),g" > \
 	$(CORDOVAPATH)/www/eliom.html
 
 scripts/eliom_loader.byte: scripts/eliom_loader.ml
