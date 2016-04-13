@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="%%APPID%%" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>%%APP_DISPLAY_NAME%%</name>
+    <name>%%MOBILE_APP_NAME%%</name>
     <description>
-      %%APP_DISPLAY_NAME%% mobile application
+      %%MOBILE_APP_NAME%% mobile application
     </description>
     <author email="developer@domain.com" href="http://domain.com">
-      %%APP_DISPLAY_NAME%% team
+      %%MOBILE_APP_NAME%% team
     </author>
     <content src="index.html" />
     <plugin name="cordova-plugin-whitelist" spec="1" />
