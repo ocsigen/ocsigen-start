@@ -29,7 +29,7 @@ let%client app_js = []
    I chose the second solution. *)
 
 let%server the_local_js = [
-  ["onload.js"];
+  ["onload.js"]
 ]
 
 let%client the_local_js = [] (* in index.html *)
