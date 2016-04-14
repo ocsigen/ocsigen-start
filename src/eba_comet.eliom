@@ -26,62 +26,18 @@
   let __link = () (* to make sure eba_comet is linked *)
 ]
 
-[%%client
-  (* This will show a message saying that client process is closed *)
-  let close_client_process ?exn () =
-    Eliom_lib.Option.iter
-      (Eliom_lib.debug_exn "EBA: Exception on channel - ") exn;
-    let d =
-      D.div ~a:[a_class ["eba_process_closed"]] [
-        img ~alt:("Ocsigen Logo")
-          ~src:(Xml.uri_of_string
-                  "https://ocsigen.org/resources/logos/ocsigen_with_shadow.png")
-          ();
-        p [
-          pcdata "Ocsigen process in eco-friendly mode.";
-          br ();
-          begin if Eliom_client.is_client_app () then
-            a ~xhr:false ~absolute:false
-            ~service:(Eliom_service.static_dir ())
-            [pcdata "Click"]
-            ["index.html"]
-          else
-            a ~xhr:false
-            ~service:Eliom_service.void_coservice'
-            [pcdata "Click"]
-            ()
-          end;
-          pcdata " to wake up."
-        ];
-      ]
-    in
-    let d = To_dom.of_div d in
-    Dom.appendChild (Dom_html.document##.body) d;
-    let%lwt () = Lwt_js_events.request_animation_frame () in
-    d##.style##.backgroundColor := Js.string "rgba(255, 255, 255, 0.8)";
-    (* I put both a handler on click and not focus.
-       Sometimes the window hasn't lost focus, thus focus is not enough.
-    *)
-    Lwt.async (fun () ->
-      let%lwt _ = Lwt_js_events.click Dom_html.document in
-      if Eliom_client.is_client_app () then
-        Eliom_client.exit_to ~absolute:false
-          ~service:(Eliom_service.static_dir ())
-          ["index.html"] ()
-      else
-        Eliom_client.exit_to ~service:Eliom_service.void_coservice' () ();
-      Lwt.return ()
-    );
-    (* Lwt.async (fun () -> *)
-    (*   lwt _ = Lwt_js_events.focus Dom_html.window in *)
-    (*   Eliom_client.exit_to ~service:Eliom_service.void_coservice' () (); *)
-    (*   Lwt.return () *)
-    (* ); *)
-    Lwt.return ()
+let%client restart_process () =
+  if Eliom_client.is_client_app () then
+    Eliom_client.exit_to ~absolute:false
+      ~service:(Eliom_service.static_dir ())
+      ["index.html"] ()
+  else
+    Eliom_client.exit_to ~service:Eliom_service.void_coservice' () ()
 
-let _ = Eliom_comet.set_handle_exn_function close_client_process
 
-]
+let%client _ = Eliom_comet.set_handle_exn_function
+    (fun ?exn () -> restart_process (); Lwt.return ())
+
 
 
 
@@ -123,7 +79,8 @@ let already_send_ref =
      | Lwt_stream.Error exn ->
        Eliom_lib.debug_exn
          "Exception received on Eba_comet's monitor channel: " exn;
-       close_client_process () (* or exit_to? *)
+       restart_process ();
+       Lwt.return ()
      | Lwt_stream.Value Heartbeat ->
        Eliom_lib.debug "poum";
        Lwt.return ()
