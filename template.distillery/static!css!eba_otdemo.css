@@ -1,0 +1,44 @@
+.eba-drawer {
+  background-color: #ddeeff;
+  overflow: hidden;
+}
+
+.eba-drawer-button {
+  position: absolute;
+  margin: 0;
+  background-color: #ddeeff;
+}
+
+div.otdemo-carousel {
+  width: 4cm;
+  overflow: visible;
+  margin: auto;
+  border: 2px;
+  border-style: solid;
+}
+
+div.otdemo-carousel-page {
+  font-size: 4cm;
+  margin: 1mm;
+  background-color: #ddeeff;
+}
+
+button.dr-toggle-button {
+  border: 0;
+  background-color: transparent;
+}
+
+button.dr-toggle-button::before {
+  font-family: 'FontAwesome';
+  font-size: 1cm;
+  content: '\f013';
+}
+
+div.ot-popup {
+  background-color: #ddeeff;
+  padding: 7mm;
+}
+
+div.ot-popup-content {
+  background-color: white;
+}
