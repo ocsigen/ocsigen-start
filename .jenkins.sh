@@ -6,6 +6,7 @@ opam pin add --no-action js_of_ocaml 'https://github.com/ocsigen/js_of_ocaml.git
 opam pin add --no-action eliom 'https://github.com/ocsigen/eliom.git#master'
 opam pin add --no-action ojquery 'https://github.com/ocsigen/ojquery.git#master'
 opam pin add --no-action ocsigen-widgets 'https://github.com/ocsigen/ocsigen-widgets.git#master'
+opam pin add --no-action ocsigen-toolkit 'https://github.com/ocsigen/ocsigen-toolkit.git#master'
 opam pin add --no-action reactiveData 'https://github.com/ocsigen/reactiveData.git#master'
 
 opam install --deps-only eliom-base-app

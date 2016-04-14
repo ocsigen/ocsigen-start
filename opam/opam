@@ -15,6 +15,7 @@ depends: [
   "safepass"
   "eliom" {>= "dev"}
   "ocsigen-widgets" {>= "dev"}
+  "ocsigen-toolkit" {>= "dev"}
   "ppx_deriving"
 ]
 available: [ ocaml-version >= "4.02" ]
