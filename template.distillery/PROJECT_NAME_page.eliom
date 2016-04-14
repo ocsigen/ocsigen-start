@@ -29,17 +29,23 @@ let%client app_js = []
    I chose the second solution. *)
 
 let%server the_local_js = [
-  ["onload.js"];
+  ["onload.js"]
 ]
 
 let%client the_local_js = [] (* in index.html *)
 
-let%server include_files_from dir =
-  let css_files = Sys.readdir dir in
-  Array.to_list @@ Array.map (fun x -> [x]) css_files
-
-
-let%shared the_local_css = [css_name] :: ~%(include_files_from "static/css/")
+let%shared the_local_css = [
+  ["font-awesome.css"];
+  ["ot_defaults.css"];
+  ["ot_carousel.css"];
+  ["ot_drawer.css"];
+  ["ot_icons.css"];
+  ["ot_picture_uploader.css"];
+  ["ot_popup.css"];
+  ["ot_spinner.css"];
+  ["eba.css"];
+  [ css_name ]
+]
 
 [%%shared.start]
 
