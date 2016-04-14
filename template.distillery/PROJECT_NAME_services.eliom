@@ -10,3 +10,8 @@ let%shared upload_user_avatar_service =
   Ot_picture_uploader.mk_service
     "upload_user_avatar_service"
     [%derive.json: unit]
+
+let%shared otdemo_service =
+  Eliom_service.App.service
+    ~path:["otdemo"]
+    ~get_params:Eliom_parameter.unit ()

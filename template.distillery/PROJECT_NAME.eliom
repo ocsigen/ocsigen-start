@@ -95,5 +95,7 @@ let%client () =
   let app = Eliom_client.get_application_name () in
   set_client_fun ~app ~service:%%%MODULE_NAME%%%_services.about_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page about_handler);
+  set_client_fun ~app ~service:%%%MODULE_NAME%%%_services.otdemo_service
+    (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_otdemo.handler);
   set_client_fun ~app ~service:Eba_services.main_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page main_service_handler);
