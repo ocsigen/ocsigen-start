@@ -56,9 +56,13 @@ let%shared tip_seen_rpc : (_, unit) Eliom_client.server_function =
 let reset_tips userid () () = Eliom_reference.set tips_seen (Stringset.empty)
 
 let%shared reset_tips_service =
-  Eliom_service.Http.post_coservice'
+  Eliom_service.create
     ~name:"resettips"
-    ~post_params:Eliom_parameter.unit
+    ~ret:Eliom_service.Ret.Non_ocaml
+    ~id:Eliom_service.Id.Global
+    ~meth:
+      (Eliom_service.Meth.Post
+         (Eliom_parameter.unit, Eliom_parameter.unit))
     ()
 
 let _ =

@@ -6,12 +6,17 @@
 [%%shared
 module type DemoPage = sig
   val name : string
-  val service : (unit, unit, [< Eliom_service.service_method > `Get ],
-                             [< Eliom_service.attached > `Attached ],
-                             [< Eliom_service.service_kind > `Service ], [ `WithoutSuffix ],
-                             unit, unit, [< Eliom_service.registrable > `Registrable ],
-                             [> Eliom_service.appl_service ])
-                           Eliom_service.service
+  val service :
+    (unit, unit,
+     Eliom_service.get,
+     Eliom_service.att,
+     Eliom_service.non_co,
+     Eliom_service.non_ext,
+     Eliom_service.reg,
+     [ `WithoutSuffix ],
+     unit, unit,
+     Eliom_service.non_ocaml)
+      Eliom_service.t
   val page : unit -> ([> `Input | `P | `Div] Eliom_content.Html5.D.elt) list
 end
 ]
@@ -21,14 +26,19 @@ end
 [%%shared
 module PopupPage : DemoPage = struct
   let name = "Popup Button"
-  let service = Eliom_service.App.service ~path:["otdemo-popup"] ~get_params:Eliom_parameter.unit ()
+  let service =
+    Eliom_service.create
+      ~id:(Eliom_service.Id.Path ["otdemo-popup"])
+      ~meth:(Eliom_service.Meth.Get Eliom_parameter.unit)
+      ~ret:Eliom_service.Ret.Non_ocaml
+      ()
   let page () =
     let button = D.Form.input ~a:[a_class ["button"]] ~input_type:`Submit ~value:"Click for a popup!" (Form.string) in
     ignore [%client (Lwt.async (fun () ->
       Lwt_js_events.clicks
         (To_dom.of_element ~%button)
-        (fun ev _ ->
-          Ot_popup.popup
+        (fun _ _ ->
+           Ot_popup.popup
             ~close_button:[pcdata "close"]
             (fun _ -> Lwt.return @@ p [pcdata "Popup message"]);
           Lwt.return ())
@@ -47,7 +57,12 @@ let%client (carousel_update, carousel_change) = React.E.create ()
 [%%shared
 module CarouselPage : DemoPage = struct
   let name = "Carousel"
-  let service = Eliom_service.App.service ~path:["otdemo-carousel"] ~get_params:Eliom_parameter.unit ()
+  let service =
+    Eliom_service.create
+      ~id:(Eliom_service.Id.Path ["otdemo-carousel"])
+      ~meth:(Eliom_service.Meth.Get Eliom_parameter.unit)
+      ~ret:Eliom_service.Ret.Non_ocaml
+      ()
   let page () =
     let make_page content = div ~a:[a_class ["otdemo-carousel-page"]] [pcdata content] in
     let carousel_pages = ["1"; "2"; "3"] in

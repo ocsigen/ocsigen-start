@@ -66,14 +66,11 @@ val reset_tips : int64 -> unit -> unit -> unit Lwt.t
     Call it with [Eliom_client.exit_to] to restart the application and
     see tips again. *)
 val reset_tips_service :
-  (unit, unit, [< Eliom_service.service_method > `Post ],
-   [< Eliom_service.attached > `Nonattached ],
-   [< Eliom_service.service_kind > `NonattachedCoservice ],
+  (unit, unit, Eliom_service.post, Eliom_service.non_att,
+   Eliom_service.co, Eliom_service.non_ext, Eliom_service.reg,
    [ `WithoutSuffix ], unit, unit,
-   [< Eliom_service.registrable > `Registrable ],
-   [> Eliom_service.http_service ])
-         Eliom_service.service
-
+   Eliom_service.non_ocaml)
+    Eliom_service.t
 
 [%%client.start]
 (** Call this function to reset tips for current users.

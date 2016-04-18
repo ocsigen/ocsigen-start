@@ -12,10 +12,10 @@ val activation_handler :
   Eliom_registration.browser_content Eliom_registration.kind Lwt.t
 
 val forgot_password_handler :
-  (unit, unit, [< `Get ], [< Eliom_service.attached_kind ],
-   [< `AttachedCoservice | `Service ], [< Eliom_service.suff ],
-   unit, unit, [< Eliom_service.registrable ], 'a)
-    Eliom_service.service -> unit -> string -> unit Lwt.t
+  (unit, unit, Eliom_service.get, Eliom_service.att, _,
+   Eliom_service.non_ext, _, _, unit, unit, 'c)
+    Eliom_service.t ->
+  unit -> string -> unit Lwt.t
 
 val preregister_handler' :
   unit -> string -> unit Lwt.t

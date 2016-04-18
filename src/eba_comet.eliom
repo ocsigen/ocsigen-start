@@ -32,7 +32,7 @@ let%client restart_process () =
       ~service:(Eliom_service.static_dir ())
       ["index.html"] ()
   else
-    Eliom_client.exit_to ~service:Eliom_service.void_coservice' () ()
+    Eliom_client.exit_to ~service:Eliom_service.reload_action () ()
 
 
 let%client _ = Eliom_comet.set_handle_exn_function
@@ -88,7 +88,7 @@ let already_send_ref =
        Eba_msg.msg ~level:`Err
          "Connection has changed from outside. Program will restart.";
        let%lwt () = Lwt_js.sleep 2. in
-       Eliom_client.exit_to ~service:Eliom_service.void_coservice' () ();
+       Eliom_client.exit_to ~service:Eliom_service.reload_action () ();
        Lwt.return ()
 
 ]

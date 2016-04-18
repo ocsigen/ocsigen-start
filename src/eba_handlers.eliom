@@ -59,7 +59,8 @@ let generate_act_key
     ~text
     email =
   let service =
-    Eliom_service.attach_coservice' ~fallback:service
+    Eliom_service.attach_global_to_fallback
+      ~fallback:service
       ~service:Eba_services.activation_service
   in
   let act_link = Eliom_uri.make_string_uri ~absolute:true ~service act_key in
@@ -175,7 +176,8 @@ let activation_handler akey () =
   try%lwt
     let%lwt userid = Eba_user.userid_of_activationkey akey in
     let%lwt () = Eba_session.connect userid in
-    Eliom_registration.Redirection.send Eliom_service.void_coservice'
+    Eliom_registration.Redirection.send
+      (Eliom_registration.Service Eliom_service.reload_action)
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
       Eba_userbox.activation_key_outdated true;

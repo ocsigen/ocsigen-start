@@ -2,9 +2,11 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 let%shared about_service =
-  Eliom_service.App.service
-    ~path:["about"]
-    ~get_params:Eliom_parameter.unit ()
+  Eliom_service.create
+    ~id:(Eliom_service.Id.Path ["about"])
+    ~meth:(Eliom_service.Meth.Get Eliom_parameter.unit)
+    ~ret:Eliom_service.Ret.Non_ocaml
+    ()
 
 let%shared upload_user_avatar_service =
   Ot_picture_uploader.mk_service
@@ -12,6 +14,8 @@ let%shared upload_user_avatar_service =
     [%derive.json: unit]
 
 let%shared otdemo_service =
-  Eliom_service.App.service
-    ~path:["otdemo"]
-    ~get_params:Eliom_parameter.unit ()
+  Eliom_service.create
+    ~id:(Eliom_service.Id.Path ["otdemo"])
+    ~meth:(Eliom_service.Meth.Get Eliom_parameter.unit)
+    ~ret:Eliom_service.Ret.Non_ocaml
+    ()

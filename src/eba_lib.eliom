@@ -21,5 +21,5 @@
 
 [%%client
 let reload () =
-  Eliom_client.change_page ~service:Eliom_service.void_hidden_coservice' () ()
+  Eliom_client.change_page ~service:Eliom_service.reload_action_hidden () ()
 ]
