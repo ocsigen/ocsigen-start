@@ -60,10 +60,10 @@ ifeq ($(LOCAL),yes)
 db-init: $(PSQL_DIR)
 	$(pg_ctl) initdb -D $(PSQL_DIR)
 	echo unix_socket_directories = \'/tmp\' >> $(PSQL_DIR)/postgresql.conf
-	$(pg_ctl) -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
+	$(pg_ctl) -o "-p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
 
 db-start:
-	$(pg_ctl) -o "-F -p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
+	$(pg_ctl) -o "-p $(PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
 
 db-stop:
 	$(pg_ctl) -D $(PSQL_DIR) -l $(PSQL_LOG) stop
@@ -78,7 +78,7 @@ db-delete:
 else
 
 db-start:
-	$(pg_ctl) -o "-F -p $(PORT)" start
+	$(pg_ctl) -o "-p $(PORT)" start
 
 db-status:
 	$(pg_ctl) status
