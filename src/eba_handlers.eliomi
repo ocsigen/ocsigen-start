@@ -10,6 +10,9 @@ val forgot_password_handler :
    unit, unit, [< Eliom_service.registrable ], 'a)
     Eliom_service.service -> unit -> string -> unit Lwt.t
 
+val preregister_handler' :
+  unit -> string -> unit Lwt.t
+
 val set_password_handler' : int64 -> unit -> string * string -> unit Lwt.t
 val set_personal_data_handler' :
   int64 -> unit -> (string * string) * (string * string) -> unit Lwt.t
