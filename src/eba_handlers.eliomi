@@ -1,6 +1,11 @@
+
+[%%shared.start]
+
 val connect_handler : unit -> (string * string) * bool -> unit Lwt.t
 
 val disconnect_handler : unit -> unit -> unit Lwt.t
+
+[%%server.start]
 
 val activation_handler :
   string -> unit ->
