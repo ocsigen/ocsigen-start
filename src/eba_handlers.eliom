@@ -177,13 +177,13 @@ let activation_handler akey () =
     let%lwt userid = Eba_user.userid_of_activationkey akey in
     let%lwt () = Eba_session.connect userid in
     Eliom_registration.Redirection.send
-      (Eliom_registration.Service Eliom_service.reload_action)
+      (Eliom_registration.Redirection Eliom_service.reload_action)
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
       Eba_userbox.activation_key_outdated true;
-    (*VVV This should be a redirection, in order to erase the outdated URL.
-      But we do not have a simple way of
-      writing an error message after a redirection for now.*)
+    (* VVV This should be a redirection, in order to erase the
+       outdated URL. But we do not have a simple way of writing an
+       error message after a redirection for now.*)
     Eliom_registration.Action.send ()
 
           (*

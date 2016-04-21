@@ -25,4 +25,5 @@ let () = Eba_email.set_mailer "/usr/sbin/sendmail"
 
 module App = Eliom_registration.App(struct
     let application_name = application_name
+    let global_data_path = Some ["__global_data__"]
   end)

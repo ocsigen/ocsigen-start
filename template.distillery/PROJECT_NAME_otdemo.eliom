@@ -28,9 +28,8 @@ module PopupPage : DemoPage = struct
   let name = "Popup Button"
   let service =
     Eliom_service.create
-      ~id:(Eliom_service.Id.Path ["otdemo-popup"])
-      ~meth:(Eliom_service.Meth.Get Eliom_parameter.unit)
-      ~ret:Eliom_service.Ret.Non_ocaml
+      ~id:(Eliom_service.Path ["otdemo-popup"])
+      ~meth:(Eliom_service.Get Eliom_parameter.unit)
       ()
   let page () =
     let button = D.Form.input ~a:[a_class ["button"]] ~input_type:`Submit ~value:"Click for a popup!" (Form.string) in
@@ -59,9 +58,8 @@ module CarouselPage : DemoPage = struct
   let name = "Carousel"
   let service =
     Eliom_service.create
-      ~id:(Eliom_service.Id.Path ["otdemo-carousel"])
-      ~meth:(Eliom_service.Meth.Get Eliom_parameter.unit)
-      ~ret:Eliom_service.Ret.Non_ocaml
+      ~id:(Eliom_service.Path ["otdemo-carousel"])
+      ~meth:(Eliom_service.Get Eliom_parameter.unit)
       ()
   let page () =
     let make_page content = div ~a:[a_class ["otdemo-carousel-page"]] [pcdata content] in

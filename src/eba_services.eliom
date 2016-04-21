@@ -25,18 +25,16 @@ open Eliom_parameter
 
 let main_service =
   Eliom_service.create
-    ~ret:Eliom_service.Ret.Non_ocaml
-    ~id:(Eliom_service.Id.Path [])
-    ~meth:(Eliom_service.Meth.Get Eliom_parameter.unit)
+    ~id:(Eliom_service.Path [])
+    ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
 let preregister_service' =
   Eliom_service.create
     ~name:"preregister_service"
-    ~ret:Eliom_service.Ret.Non_ocaml
-    ~id:Eliom_service.Id.Global
+    ~id:Eliom_service.Global
     ~meth:
-      (Eliom_service.Meth.Post
+      (Eliom_service.Post
          (Eliom_parameter.unit,
           Eliom_parameter.string "email"))
     ()
@@ -44,10 +42,9 @@ let preregister_service' =
 let forgot_password_service =
   Eliom_service.create
     ~name:"lost_password"
-    ~ret:Eliom_service.Ret.Non_ocaml
-    ~id:Eliom_service.Id.Global
+    ~id:Eliom_service.Global
     ~meth:
-      (Eliom_service.Meth.Post
+      (Eliom_service.Post
          (Eliom_parameter.unit,
           Eliom_parameter.string "email"))
     ()
@@ -55,10 +52,9 @@ let forgot_password_service =
 let set_personal_data_service' =
   Eliom_service.create
     ~name:"set_data"
-    ~ret:Eliom_service.Ret.Non_ocaml
-    ~id:Eliom_service.Id.Global
+    ~id:Eliom_service.Global
     ~meth:
-      (Eliom_service.Meth.Post
+      (Eliom_service.Post
          (Eliom_parameter.unit,
           (string "firstname" ** string "lastname") **
           (string "password"  ** string "password2")))
@@ -67,10 +63,9 @@ let set_personal_data_service' =
 let sign_up_service' =
   Eliom_service.create
     ~name:"sign_up"
-    ~ret:Eliom_service.Ret.Non_ocaml
-    ~id:Eliom_service.Id.Global
+    ~id:Eliom_service.Global
     ~meth:
-      (Eliom_service.Meth.Post
+      (Eliom_service.Post
          (Eliom_parameter.unit,
           Eliom_parameter.string "email"))
     ()
@@ -78,10 +73,9 @@ let sign_up_service' =
 let connect_service =
   Eliom_service.create
     ~name:"connect"
-    ~ret:Eliom_service.Ret.Non_ocaml
-    ~id:Eliom_service.Id.Global
+    ~id:Eliom_service.Global
     ~meth:
-      (Eliom_service.Meth.Post
+      (Eliom_service.Post
          (Eliom_parameter.unit,
           ((string "username" ** string "password") **
            bool "keepmeloggedin")))
@@ -90,44 +84,40 @@ let connect_service =
 let disconnect_service =
   Eliom_service.create
     ~name:"disconnect"
-    ~ret:Eliom_service.Ret.Non_ocaml
-    ~id:Eliom_service.Id.Global
+    ~id:Eliom_service.Global
     ~meth:
-      (Eliom_service.Meth.Post
+      (Eliom_service.Post
          (Eliom_parameter.unit, Eliom_parameter.unit))
     ()
 
 let activation_service =
   Eliom_service.create
     ~name:"activation"
-    ~ret:Eliom_service.Ret.Non_ocaml
-    ~id:Eliom_service.Id.Global
-    ~meth:(Eliom_service.Meth.Get (Eliom_parameter.string "activationkey"))
+    ~id:Eliom_service.Global
+    ~meth:(Eliom_service.Get (Eliom_parameter.string "activationkey"))
     ()
 
 let eba_github_service =
-  Eliom_service.create_external
-    ~prefix:"http://github.com"
-    ~ret:Eliom_service.Ret.Non_ocaml
-    ~path:["ocsigen"; "eliom-base-app"]
-    ~meth:(Eliom_service.Meth.Get Eliom_parameter.unit)
+  Eliom_service.create
+    ~id:
+      (Eliom_service.External
+         ("http://github.com",
+          ["ocsigen"; "eliom-base-app"]))
+    ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
 let ocsigen_service =
-  Eliom_service.create_external
-    ~prefix:"http://ocsigen.org"
-    ~ret:Eliom_service.Ret.Non_ocaml
-    ~path:[]
-    ~meth:(Eliom_service.Meth.Get Eliom_parameter.unit)
+  Eliom_service.create
+    ~id:(Eliom_service.External ("http://ocsigen.org", []))
+    ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
 let set_password_service' =
   Eliom_service.create
     ~name:"set_password"
-    ~ret:Eliom_service.Ret.Non_ocaml
-    ~id:Eliom_service.Id.Global
+    ~id:Eliom_service.Global
     ~meth:
-      (Eliom_service.Meth.Post
+      (Eliom_service.Post
          (Eliom_parameter.unit,
           string "password" ** string "password2"))
     ()

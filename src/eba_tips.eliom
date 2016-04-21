@@ -58,11 +58,9 @@ let reset_tips userid () () = Eliom_reference.set tips_seen (Stringset.empty)
 let%shared reset_tips_service =
   Eliom_service.create
     ~name:"resettips"
-    ~ret:Eliom_service.Ret.Non_ocaml
-    ~id:Eliom_service.Id.Global
+    ~id:Eliom_service.Global
     ~meth:
-      (Eliom_service.Meth.Post
-         (Eliom_parameter.unit, Eliom_parameter.unit))
+      (Eliom_service.Post (Eliom_parameter.unit, Eliom_parameter.unit))
     ()
 
 let _ =

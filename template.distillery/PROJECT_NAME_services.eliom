@@ -3,9 +3,8 @@
 
 let%shared about_service =
   Eliom_service.create
-    ~id:(Eliom_service.Id.Path ["about"])
-    ~meth:(Eliom_service.Meth.Get Eliom_parameter.unit)
-    ~ret:Eliom_service.Ret.Non_ocaml
+    ~id:(Eliom_service.Path ["about"])
+    ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
 let%shared upload_user_avatar_service =
@@ -15,7 +14,6 @@ let%shared upload_user_avatar_service =
 
 let%shared otdemo_service =
   Eliom_service.create
-    ~id:(Eliom_service.Id.Path ["otdemo"])
-    ~meth:(Eliom_service.Meth.Get Eliom_parameter.unit)
-    ~ret:Eliom_service.Ret.Non_ocaml
+    ~id:(Eliom_service.Path ["otdemo"])
+    ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
