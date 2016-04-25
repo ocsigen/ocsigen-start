@@ -73,7 +73,8 @@
     <!-- </plugin> -->
     <plugin name="cordova-plugin-network-information" spec="~1.2.0" />
     <plugin name="cordova-plugin-globalization" spec="~1.0.3" />
-
+    <plugin name="https://github.com/apache/cordova-plugin-wkwebview-engine.git#master" spec="wkwebview" />    
+    
     <!-- CrossWalk settings -->
     <preference name="xwalkVersion" value="15+" />
     <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
