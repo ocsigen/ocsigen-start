@@ -99,3 +99,30 @@ let%client () =
     (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_otdemo.handler);
   set_client_fun ~app ~service:Eba_services.main_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page main_service_handler);
+
+
+
+
+
+(* Print more debugging information when <debugmode/> is in config file
+   (DEBUG = yes in Makefile.options).
+   Example of use:
+   let section = Lwt_log.Section.make "%%%MODULE_NAME%%%:sectionname"
+   ...
+   Lwt_log.ign_info ~section "This is an information";
+   (or ign_debug, ign_warning, ign_error etc.)
+ *)
+let _ =
+  if Eliom_config.get_debugmode ()
+  then begin
+    ignore
+      [%client (
+        Eliom_config.debug_timings := true;
+        (* Lwt_log_core.add_rule "eliom:client*" Lwt_log.Debug; *)
+        (* Lwt_log_core.add_rule "eba*" Lwt_log.Debug; *)
+        (* Lwt_log_core.add_rule "%%%MODULE_NAME%%%*" Lwt_log.Debug *)
+        Lwt_log_core.add_rule "*" Lwt_log.Debug
+        : unit ) ];
+    Lwt_log_core.add_rule "*" Lwt_log.Debug
+(* Lwt_log_core.add_rule "bs*" Lwt_log.Debug *)
+  end
