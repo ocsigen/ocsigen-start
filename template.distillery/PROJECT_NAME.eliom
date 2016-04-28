@@ -117,12 +117,12 @@ let _ =
   then begin
     ignore
       [%client (
-        Eliom_config.debug_timings := true;
+        (* Eliom_config.debug_timings := true; *)
         (* Lwt_log_core.add_rule "eliom:client*" Lwt_log.Debug; *)
         (* Lwt_log_core.add_rule "eba*" Lwt_log.Debug; *)
-        (* Lwt_log_core.add_rule "%%%MODULE_NAME%%%*" Lwt_log.Debug *)
-        Lwt_log_core.add_rule "*" Lwt_log.Debug
+        Lwt_log_core.add_rule "%%%MODULE_NAME%%%*" Lwt_log.Debug
+        (* Lwt_log_core.add_rule "*" Lwt_log.Debug *)
         : unit ) ];
-    Lwt_log_core.add_rule "*" Lwt_log.Debug
-(* Lwt_log_core.add_rule "bs*" Lwt_log.Debug *)
+    (* Lwt_log_core.add_rule "*" Lwt_log.Debug *)
+    Lwt_log_core.add_rule "%%%MODULE_NAME%%%*" Lwt_log.Debug
   end
