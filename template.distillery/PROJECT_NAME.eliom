@@ -98,7 +98,7 @@ let%client () =
   set_client_fun ~app ~service:%%%MODULE_NAME%%%_services.otdemo_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_otdemo.handler);
   set_client_fun ~app ~service:Eba_services.main_service
-    (%%%MODULE_NAME%%%_page.Opt.connected_page main_service_handler);
+    (%%%MODULE_NAME%%%_page.Opt.connected_page main_service_handler)
 
 
 

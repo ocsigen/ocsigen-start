@@ -33,15 +33,20 @@ module PopupPage : DemoPage = struct
       ()
   let page () =
     let button = D.Form.input ~a:[a_class ["button"]] ~input_type:`Submit ~value:"Click for a popup!" (Form.string) in
-    ignore [%client (Lwt.async (fun () ->
-      Lwt_js_events.clicks
-        (To_dom.of_element ~%button)
-        (fun _ _ ->
-           Ot_popup.popup
-            ~close_button:[pcdata "close"]
-            (fun _ -> Lwt.return @@ p [pcdata "Popup message"]);
-          Lwt.return ())
-    ) : _)];
+    ignore
+      [%client
+        (Lwt.async (fun () ->
+           Lwt_js_events.clicks
+             (To_dom.of_element ~%button)
+             (fun _ _ ->
+                let%lwt _ =
+                  Ot_popup.popup
+                    ~close_button:[pcdata "close"]
+                    (fun _ -> Lwt.return @@ p [pcdata "Popup message"])
+                in
+                Lwt.return ()))
+         : _)
+      ];
     [
       p [pcdata "Here is a button showing a simple popup window when clicked:"];
       p [button]
@@ -136,7 +141,7 @@ let%shared handler userid_o () () = make_page userid_o @@
 let%server () =
   let demo_page content userid_o () () = make_page userid_o content in
   let registerDemo (module D : DemoPage) =  %%%MODULE_NAME%%%_base.App.register
-    D.service
+    ~service:D.service
     (%%%MODULE_NAME%%%_page.Opt.connected_page @@ demo_page D.page)
   in List.iter registerDemo demos;
   %%%MODULE_NAME%%%_base.App.register
