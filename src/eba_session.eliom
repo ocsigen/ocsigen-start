@@ -21,8 +21,8 @@
  *)
 
 [%%shared
-  open Eliom_content.Html5
-  open Eliom_content.Html5.F
+  open Eliom_content.Html
+  open Eliom_content.Html.F
 ]
 
 let user_indep_state_hierarchy = Eliom_common.create_scope_hierarchy "userindep"

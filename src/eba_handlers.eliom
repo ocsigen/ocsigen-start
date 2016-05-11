@@ -23,8 +23,8 @@
 (** Registration of default services *)
 
 [%%shared
-  open Eliom_content.Html5
-  open Eliom_content.Html5.F
+  open Eliom_content.Html
+  open Eliom_content.Html.F
 ]
 
 let set_personal_data_handler' userid ()

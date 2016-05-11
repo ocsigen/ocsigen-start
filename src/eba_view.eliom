@@ -4,8 +4,8 @@
    your needs. *)
 
 [%%shared
-  open Eliom_content.Html5
-  open Eliom_content.Html5.F
+  open Eliom_content.Html
+  open Eliom_content.Html.F
 
 let generic_email_form ?a ?label ?(text="Send") ~service () =
   D.Form.post_form ?a ~service
@@ -41,7 +41,7 @@ let connect_form ?a () =
         ~input_type:`Password
         Form.string;
       Form.bool_checkbox_one
-        ~a:[a_checked `Checked]
+        ~a:[a_checked ()]
         ~name:keepmeloggedin
         ();
       span [pcdata "keep me logged in"];
@@ -164,15 +164,15 @@ let password_form ?a ~service () =
     (fun (pwdn, pwd2n) ->
        let pass1 =
          D.Form.input
-           ~a:[a_required `Required;
-               a_autocomplete `Off]
+           ~a:[a_required ();
+               a_autocomplete false]
            ~input_type:`Password ~name:pwdn
            Form.string
        in
        let pass2 =
          D.Form.input
-           ~a:[a_required `Required;
-               a_autocomplete `Off]
+           ~a:[a_required ();
+               a_autocomplete false]
            ~input_type:`Password ~name:pwd2n
            Form.string
        in

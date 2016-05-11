@@ -47,9 +47,9 @@ val display :
   ?bottom:int ->
   ?height:int ->
   ?width:int ->
-  ?parent_node:[< `Body | Html5_types.body_content ] Eliom_content.Html5.elt ->
+  ?parent_node:[< `Body | Html_types.body_content ] Eliom_content.Html.elt ->
   name:string ->
-  content: Html5_types.div_content Eliom_content.Html5.elt list ->
+  content: Html_types.div_content Eliom_content.Html.elt list ->
   unit ->
   unit Lwt.t
 

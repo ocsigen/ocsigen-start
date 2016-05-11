@@ -9,44 +9,44 @@ type uploader = unit Ot_picture_uploader.service
 
 (** Box for connected users, with picture, name, and menu *)
 val connected_user_box :
-  Eba_user.t -> uploader -> [> Html5_types.div ] Eliom_content.Html5.D.elt
+  Eba_user.t -> uploader -> [> Html_types.div ] Eliom_content.Html.D.elt
 
 (** Connection box *)
 val connection_box :
-  unit -> [> Html5_types.div ] Eliom_content.Html5.D.elt Lwt.t
+  unit -> [> Html_types.div ] Eliom_content.Html.D.elt Lwt.t
 
 (** Connected user box or connexion box, depending whether user
     is connected or not *)
 val userbox :
   Eba_user.t option ->
   uploader ->
-  [> Html5_types.div ] Eliom_content.Html5.D.elt Lwt.t
+  [> Html_types.div ] Eliom_content.Html.D.elt Lwt.t
 
 (** Link to upload a picture.
     The client function given as first parameter will be called first,
     for example to close the menu containing the link. *)
 val upload_pic_link :
-  ?a:[< Html5_types.a_attrib > `OnClick ] Eliom_content.Html5.D.Raw.attrib list
-  -> ?content:Html5_types.a_content Eliom_content.Html5.D.Raw.elt list
+  ?a:[< Html_types.a_attrib > `OnClick ] Eliom_content.Html.D.Raw.attrib list
+  -> ?content:Html_types.a_content Eliom_content.Html.D.Raw.elt list
   -> ?crop:float option
-  -> ?input:Html5_types.label_content_fun Eliom_content.Html5.D.Raw.elt list
-  -> ?submit:Html5_types.button_content_fun Eliom_content.Html5.D.Raw.elt list
+  -> ?input:Html_types.label_content_fun Eliom_content.Html.D.Raw.elt list
+  -> ?submit:Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list
   -> (unit -> unit) Eliom_client_value.t
   -> uploader
   -> int64
-  -> [> `A of Html5_types.a_content ] Eliom_content.Html5.D.Raw.elt
+  -> [> `A of Html_types.a_content ] Eliom_content.Html.D.Raw.elt
 
 (** Link to start to see the help from the begining.
     The client function given as first parameter will be called first,
     for example to close the menu containing the link. *)
 val reset_tips_link :
   (unit -> unit) Eliom_client_value.t ->
-  [> `A of [> `PCDATA ] ] Eliom_content.Html5.D.Raw.elt
+  [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
 
 (** Display user menu *)
 val user_menu :
   Eba_user.t ->
-  uploader -> [> Html5_types.div ] Eliom_content.Html5.F.elt
+  uploader -> [> Html_types.div ] Eliom_content.Html.F.elt
 
 
 [%%client.start]
@@ -56,8 +56,8 @@ val set_user_menu :
   ((unit -> unit) ->
    Eba_user.t ->
    uploader ->
-   Html5_types.div_content Eliom_content.Html5.D.elt
-     Eliom_content.Html5.D.list_wrap) ->
+   Html_types.div_content Eliom_content.Html.D.elt
+     Eliom_content.Html.D.list_wrap) ->
   unit
 
 

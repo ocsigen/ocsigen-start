@@ -2,7 +2,7 @@
    Feel free to use it, modify it according to your needs,
    and redistribute it as you wish. *)
 
-open Eliom_content.Html5.F
+open Eliom_content.Html.F
 
 exception Already_exists of int64
 exception No_such_user
@@ -37,7 +37,7 @@ let lastname_of_user u = u.ln
 let avatar_of_user u = u.avatar
 
 let avatar_uri_of_avatar ?absolute_path avatar =
-  Eliom_content.Html5.F.make_uri ?absolute_path
+  Eliom_content.Html.F.make_uri ?absolute_path
     ~service:(Eliom_service.static_dir ()) ["avatars"; avatar]
 
 let avatar_uri_of_user ?absolute_path user =

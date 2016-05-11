@@ -3,8 +3,8 @@
 
 
 [%%shared
-open Eliom_content.Html5
-open Eliom_content.Html5.F
+open Eliom_content.Html
+open Eliom_content.Html.F
 ]
 
 [%%shared type uploader = unit Ot_picture_uploader.service ]
@@ -34,7 +34,7 @@ let%shared upload_pic_link
     service
     userid =
   let content = (content
-                 : Html5_types.a_content Eliom_content.Html5.D.Raw.elt list) in
+                 : Html_types.a_content Eliom_content.Html.D.Raw.elt list) in
   D.Raw.a ~a:( a_onclick [%client (fun ev -> Lwt.async (fun () ->
     ~%close () ;
     try%lwt ignore @@
@@ -90,7 +90,7 @@ let reset_tips_service = Eba_tips.reset_tips_service
   let user_menu_fun =
     ref (user_menu_
          : (unit -> unit) ->
-         'a -> 'b -> Html5_types.div_content Eliom_content.Html5.elt list)
+         'a -> 'b -> Html_types.div_content Eliom_content.Html.elt list)
 ]
 [%%shared
 

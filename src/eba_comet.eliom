@@ -20,8 +20,8 @@
  *)
 
 [%%shared
-  open Eliom_content.Html5
-  open Eliom_content.Html5.F
+  open Eliom_content.Html
+  open Eliom_content.Html.F
 
   let __link = () (* to make sure eba_comet is linked *)
 ]

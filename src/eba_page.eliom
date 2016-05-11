@@ -20,22 +20,22 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 [%%shared
-  open Eliom_content.Html5
-  open Eliom_content.Html5.F
+  open Eliom_content.Html
+  open Eliom_content.Html.F
 
 exception Predicate_failed of (exn option)
 
 type content =
   {title: string option;
-   head : Html5_types.head_content_fun elt list;
-   body_attrs : Html5_types.body_attrib Eliom_content.Html5.attrib list;
-   body : Html5_types.body_content elt list}
+   head : Html_types.head_content_fun elt list;
+   body_attrs : Html_types.body_attrib Eliom_content.Html.attrib list;
+   body : Html_types.body_content elt list}
 
 let content ?(a=[]) ?title ?(head = []) body =
   { title;
-    head = (head :> Html5_types.head_content_fun elt list);
+    head = (head :> Html_types.head_content_fun elt list);
     body_attrs = a;
-    body = (body :> Html5_types.body_content elt list)}
+    body = (body :> Html_types.body_content elt list)}
 
 module type PAGE = sig
   val title : string
@@ -43,14 +43,14 @@ module type PAGE = sig
   val local_js : string list list
   val css : string list list
   val local_css : string list list
-  val other_head : Html5_types.head_content_fun Eliom_content.Html5.elt list
+  val other_head : Html_types.head_content_fun Eliom_content.Html.elt list
   val default_error_page :
     'a -> 'b -> exn ->
-    Html5_types.body_content Eliom_content.Html5.elt list Lwt.t
+    Html_types.body_content Eliom_content.Html.elt list Lwt.t
   val default_error_page_full : ('a -> 'b -> exn -> content Lwt.t) option
   val default_connected_error_page :
     int64 option -> 'a -> 'b -> exn ->
-    Html5_types.body_content Eliom_content.Html5.elt list Lwt.t
+    Html_types.body_content Eliom_content.Html.elt list Lwt.t
   val default_connected_error_page_full :
     (int64 option -> 'a -> 'b -> exn -> content Lwt.t) option
   val default_predicate : 'a -> 'b -> bool Lwt.t
@@ -63,7 +63,7 @@ module Default_config = struct
   let css : string list list = []
   let local_js : string list list = []
   let local_css : string list list = []
-  let other_head : Html5_types.head_content_fun Eliom_content.Html5.elt list
+  let other_head : Html_types.head_content_fun Eliom_content.Html.elt list
     = []
 
   let err_page exn =
@@ -104,7 +104,7 @@ module Make(C : PAGE) = struct
   let local_css =
     List.map
       (fun cssname ->
-         Eliom_content.Html5.F.css_link
+         Eliom_content.Html.F.css_link
            ~uri:(make_uri
                    ~absolute:false
                    ~service:(Eliom_service.static_dir ())
@@ -114,8 +114,8 @@ module Make(C : PAGE) = struct
   let local_js =
     List.map
       (fun cssname ->
-         Eliom_content.Html5.F.js_script
-           ~a:[a_defer `Defer]
+         Eliom_content.Html.F.js_script
+           ~a:[a_defer ()]
            ~uri:(make_uri
                    ~absolute:false
                    ~service:(Eliom_service.static_dir ())
