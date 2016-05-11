@@ -2,7 +2,7 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 [%%shared
-    open Eliom_content.Html5.F
+    open Eliom_content.Html.F
 ]
 
 [%%client

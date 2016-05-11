@@ -1,6 +1,6 @@
 [%%shared
-    open Eliom_content.Html5
-    open Eliom_content.Html5.D
+    open Eliom_content.Html
+    open Eliom_content.Html.D
 ]
 
 [%%shared
@@ -17,7 +17,7 @@ module type DemoPage = sig
      unit, unit,
      Eliom_service.non_ocaml)
       Eliom_service.t
-  val page : unit -> ([> `Input | `P | `Div] Eliom_content.Html5.D.elt) list
+  val page : unit -> ([> `Input | `P | `Div] Eliom_content.Html.D.elt) list
 end
 ]
 
@@ -115,7 +115,7 @@ let%shared make_drawer_menu () =
     [div ~a:[a_class ["eba-drawer"]] [h3 [pcdata "otdemo: drawer menu"]; menu]]
   in
   let (drawer, open_drawer, close_drawer) = Ot_drawer.drawer menu in
-  ignore [%client (Eliom_content.Html5.Manip.appendToBody ~%drawer : _)];
+  ignore [%client (Eliom_content.Html.Manip.appendToBody ~%drawer : _)];
   (open_drawer, close_drawer)
   (* let button = D.Form.input ~a:[a_class ["button"]] ~input_type:`Submit ~value:"Menu→" (Form.string) in *)
   (* ignore [%client (Lwt.async (fun () -> Lwt_js_events.clicks (To_dom.of_element ~%button) *)

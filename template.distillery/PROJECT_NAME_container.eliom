@@ -4,7 +4,7 @@
 (** This module defines the default template for application pages *)
 
 [%%shared
-  open Eliom_content.Html5.F
+  open Eliom_content.Html.F
 ]
 
 [%%shared.start]

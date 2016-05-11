@@ -1,6 +1,6 @@
 [%%shared.start]
 
-module Make(A : module type of Eliom_content.Html5.F) = struct
+module Make(A : module type of Eliom_content.Html.F) = struct
 
   let icon classes ?(class_=[]) () =
     A.i ~a:[A.a_class ("fa"::classes@class_)] []
@@ -15,10 +15,10 @@ end
 
 module F = struct
   include Ow_icons.F
-  include Make(Eliom_content.Html5.F)
+  include Make(Eliom_content.Html.F)
 end
 
 module D = struct
   include Ow_icons.D
-  include Make(Eliom_content.Html5.D)
+  include Make(Eliom_content.Html.D)
 end

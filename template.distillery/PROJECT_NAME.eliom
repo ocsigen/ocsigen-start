@@ -2,7 +2,7 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 [%%shared
-    open Eliom_content.Html5.D
+    open Eliom_content.Html.D
 ]
 
 let%shared main_service_handler userid_o () () =
@@ -89,7 +89,7 @@ let%client set_client_fun ~app ~service f : unit =
     (fun get post ->
        let%lwt content = f get post in
        Eliom_client.set_content_local
-         (Eliom_content.Html5.To_dom.of_element content))
+         (Eliom_content.Html.To_dom.of_element content))
 
 let%client () =
   let app = Eliom_client.get_application_name () in
