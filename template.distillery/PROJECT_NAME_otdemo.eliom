@@ -69,7 +69,7 @@ module CarouselPage : DemoPage = struct
   let page () =
     let make_page content = div ~a:[a_class ["otdemo-carousel-page"]] [pcdata content] in
     let carousel_pages = ["1"; "2"; "3"] in
-    let (carousel, pos, size) = Ot_carousel.make
+    let carousel, pos, size, _ = Ot_carousel.make
       ~a:[a_class ["otdemo-carousel"]]
       ~update:[%client carousel_update]
       (List.map make_page carousel_pages)
