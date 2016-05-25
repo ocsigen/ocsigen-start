@@ -94,7 +94,7 @@ let send_act msg service email userid =
   let%lwt () = Eba_user.add_activationkey ~act_key userid in
   Lwt.return ()
 
-let sign_up_handler' () email =
+let sign_up_handler () email =
   let send_act email userid =
     let msg =
       "Welcome!\r\nTo confirm your e-mail address, \
@@ -116,6 +116,15 @@ let sign_up_handler' () email =
       Lwt.return ()
     end
 
+let%server sign_up_handler_rpc v =
+  (Eba_session.connected_wrapper (sign_up_handler ())) v
+let%client sign_up_handler_rpc =
+  ~%(Eliom_client.server_function
+       ~name:"Bs.sign_up_handler"
+       [%derive.json: string]
+       sign_up_handler_rpc)
+let%client sign_up_handler () v = sign_up_handler_rpc v
+
 let forgot_password_handler service () email =
   try%lwt
     let%lwt userid = Eba_user.userid_of_email email in
@@ -136,14 +145,12 @@ let disconnect_handler () () =
   Lwt.return ()
 
 let%server disconnect_handler_rpc' v = disconnect_handler () v
-let%client disconnect_handler_rpc' = ()
-let%shared disconnect_handler_rpc : (_, unit) Eliom_client.server_function =
-  Eliom_client.server_function
-    ~name:"Eba_handlers.disconnect_handler"
-    [%derive.json: unit]
-    disconnect_handler_rpc'
-
-let%client disconnect_handler () v = disconnect_handler_rpc v
+let%client disconnect_handler_rpc' =
+  ~%(Eliom_client.server_function
+       ~name:"Eba_handlers.disconnect_handler"
+       [%derive.json: unit]
+       disconnect_handler_rpc')
+let%client disconnect_handler () v = disconnect_handler_rpc' v
 
 
 let connect_handler () ((login, pwd), keepmeloggedin) =
@@ -159,13 +166,11 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
     Lwt.return ()
 
 let%server connect_handler_rpc' v = connect_handler () v
-let%client connect_handler_rpc' = ()
-let%shared connect_handler_rpc : (_, unit) Eliom_client.server_function =
-  Eliom_client.server_function
-    ~name:"Eba_handlers.connect_handler"
-    [%derive.json: (string * string) * bool]
-    connect_handler_rpc'
-
+let%client connect_handler_rpc =
+  ~%(Eliom_client.server_function
+       ~name:"Eba_handlers.connect_handler"
+       [%derive.json: (string * string) * bool]
+       connect_handler_rpc')
 let%client connect_handler () v = connect_handler_rpc v
 
 let activation_handler akey () =
