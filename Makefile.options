@@ -44,7 +44,7 @@ SERVER_DB_PACKAGES := pgocaml pgocaml.syntax macaque.syntax calendar safepass
 CLIENT_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx js_of_ocaml.ppx calendar ocsigen-widgets.client ocsigen-toolkit.client
 
 # Debug package (yes/no): Debugging info in compilation
-DEBUG := no
+DEBUG := yes
 
 # Native mode (yes/no): Compile also with native mode (it will always compile with byte mode)
 NATIVE := yes
