@@ -120,7 +120,7 @@ let%server sign_up_handler_rpc v =
   (Eba_session.connected_wrapper (sign_up_handler ())) v
 let%client sign_up_handler_rpc =
   ~%(Eliom_client.server_function
-       ~name:"Bs.sign_up_handler"
+       ~name:"Eba_handlers.sign_up_handler"
        [%derive.json: string]
        sign_up_handler_rpc)
 let%client sign_up_handler () v = sign_up_handler_rpc v
