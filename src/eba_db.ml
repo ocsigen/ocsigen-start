@@ -108,7 +108,8 @@ let users_table =
 let emails_table =
   <:table< emails (
        email citext NOT NULL,
-       userid bigint NOT NULL
+       userid bigint NOT NULL,
+       validated boolean NOT NULL DEFAULT(false)
           ) >>
 
 let activation_table :
@@ -231,7 +232,8 @@ module User = struct
           Lwt_Query.query dbh
             <:insert< $emails_table$ :=
                         { email = $string:email$;
-                          userid  = $int64:userid$}
+                          userid  = $int64:userid$;
+                          validated = emails_table?validated}
             >>
         in
         lwt () = remove_preregister email in
