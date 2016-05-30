@@ -151,6 +151,17 @@ let pwd_crypt_ref = ref
      (fun _ password1 password2 ->
         Bcrypt.verify password1 (Bcrypt.hash_of_string password2)))
 
+module Email = struct
+  let available email = full_transaction_block @@ fun dbh ->
+      lwt l = Lwt_Query.query dbh
+          <:select< row | row in $emails_table$;
+                    row.email = $string:email$;
+                    row.validated = $bool:true$ >>
+      in match l with
+      | [] -> Lwt.return true
+      | x::_ -> Lwt.return false
+end
+
 module User = struct
 
   let select_user_from_email_q dbh email =
@@ -174,8 +185,7 @@ module User = struct
   let get_email_validated userid = full_transaction_block @@ fun dbh ->
       lwt l = Lwt_Query.query dbh
         <:select< row | row in $emails_table$; row.userid = $int64:userid$ >>
-      in
-      match l with
+      in match l with
       | [] -> Lwt.return false
       | x::_ -> Lwt.return x#!validated
 
