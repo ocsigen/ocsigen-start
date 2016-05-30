@@ -108,7 +108,8 @@ let users_table =
 let emails_table =
   <:table< emails (
        email citext NOT NULL,
-       userid bigint NOT NULL
+       userid bigint NOT NULL,
+       validated boolean NOT NULL DEFAULT(false)
           ) >>
 
 let activation_table :
@@ -169,6 +170,20 @@ module User = struct
         lwt _ = select_user_from_email_q dbh email in
         Lwt.return true
       with No_such_resource -> Lwt.return false)
+
+  let get_email_validated userid = full_transaction_block @@ fun dbh ->
+      lwt l = Lwt_Query.query dbh
+        <:select< row | row in $emails_table$; row.userid = $int64:userid$ >>
+      in
+      match l with
+      | [] -> Lwt.return false
+      | x::_ -> Lwt.return x#!validated
+
+  let set_email_validated userid = full_transaction_block @@ fun dbh ->
+      Lwt_Query.query dbh
+          <:update< e in $emails_table$ := {validated = $bool:true$}
+                    | e.userid = $int64:userid$
+                    >>
 
   let add_preregister email =
     full_transaction_block (fun dbh ->
@@ -231,7 +246,8 @@ module User = struct
           Lwt_Query.query dbh
             <:insert< $emails_table$ :=
                         { email = $string:email$;
-                          userid  = $int64:userid$}
+                          userid  = $int64:userid$;
+                          validated = emails_table?validated}
             >>
         in
         lwt () = remove_preregister email in
