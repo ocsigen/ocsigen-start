@@ -106,10 +106,10 @@ let sign_up_handler () email =
     let userid = Eba_user.userid_of_user user in
     send_act email userid
   with Eba_user.Already_exists userid ->
-    (* If password is not set, the user probably never logged in,
+    (* If email is not validated, the user never logged in,
        I send an activation link, as if it were a new user. *)
-    let%lwt pwdset = Eba_user.password_set userid in
-    if not pwdset
+    let%lwt validated = Eba_db.User.get_email_validated userid in
+    if not validated
     then send_act email userid
     else begin
       Eliom_reference.Volatile.set Eba_userbox.user_already_exists true;
@@ -180,6 +180,7 @@ let activation_handler akey () =
   let%lwt () = Eba_session.disconnect () in
   try%lwt
     let%lwt userid = Eba_user.userid_of_activationkey akey in
+    let%lwt () = Eba_db.User.set_email_validated userid in
     let%lwt () = Eba_session.connect userid in
     Eliom_registration.Redirection.send
       (Eliom_registration.Redirection Eliom_service.reload_action)
