@@ -68,6 +68,7 @@
 
     <!-- Plugins -->
     <plugin name="cordova-plugin-whitelist" spec="1" />
+    <!-- <allow-navigation href="*" /> --><!-- this seems to be necessary for outside resources, e.g., outside videos in iframes -->
     <plugin name="cordova-plugin-crosswalk-webview" spec="~1.6.0" />
     <plugin name="cordova-hot-code-push-plugin" spec="~1.2.5" />
     <!-- <plugin name="cordova&#45;plugin&#45;facebook4" spec="~1.7.0"> -->
