@@ -81,6 +81,18 @@
     <plugin name="cordova-plugin-network-information" spec="~1.2.0" />
     <plugin name="cordova-plugin-globalization" spec="~1.0.3" />
     <plugin name="cordova-plugin-wkwebview-engine" spec="https://github.com/apache/cordova-plugin-wkwebview-engine.git" />
+
+    <!-- To be able to reduce the webview instead of having the keyboard push it up -->
+    <!-- <plugin name="cordova-plugin-keyboard" spec="cordova-plugin-keyboard" /> -->
+    <!-- <preference name="KeyboardDisplayRequiresUserAction" value="false" /> -->
+    <!-- <preference name="KeyboardShrinksView" value="false" /> -->
+    <!-- Status bar colors and other adjustments -->
+    <!-- <plugin name="com.phonegap.plugin.statusbar" spec="https://github.com/phonegap-build/StatusBarPlugin" /> -->
+    <!-- <preference name="StatusBarBackgroundColor" value="#000000" /> -->
+    <!-- <preference name="StatusBarOverlaysWebView" value="false" /> -->
+    
+
+
     
     <!-- CrossWalk settings -->
     <preference name="xwalkVersion" value="15+" />
