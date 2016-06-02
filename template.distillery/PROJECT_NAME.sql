@@ -15,7 +15,8 @@ CREATE EXTENSION citext; --DEFAULT
 
 CREATE TABLE emails ( -- DEFAULT
        email citext primary key, -- DEFAULT
-       userid bigint NOT NULL references users(userid) -- DEFAULT
+       userid bigint NOT NULL references users(userid), -- DEFAULT
+       validated boolean NOT NULL DEFAULT(false)
 );
 
 CREATE TABLE activation ( -- DEFAULT
