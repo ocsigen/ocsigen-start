@@ -58,7 +58,7 @@ let () =
 
   Eliom_registration.Action.register
     ~service:Eba_services.sign_up_service'
-    Eba_handlers.sign_up_handler';
+    Eba_handlers.sign_up_handler;
 
   Eliom_registration.Action.register
     ~service:Eba_services.connect_service
