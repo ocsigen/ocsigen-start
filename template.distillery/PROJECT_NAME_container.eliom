@@ -11,7 +11,7 @@
 
 let user_menu close user uploader = [
   p [pcdata "Change your password:"];
-  Eba_view.password_form ~service:~%Eba_services.set_password_service' ();
+  Eba_view.password_form ~service:Eba_services.set_password_service' ();
   hr ();
   Eba_userbox.upload_pic_link close uploader (Eba_user.userid_of_user user);
   hr ();

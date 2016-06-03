@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared
+[%%server
 open Eliom_parameter
 
 let main_service =
@@ -121,4 +121,20 @@ let set_password_service' =
          (Eliom_parameter.unit,
           string "password" ** string "password2"))
     ()
+]
+
+[%%client
+
+let main_service = ~%main_service
+let preregister_service' = ~%preregister_service'
+let forgot_password_service = ~%forgot_password_service
+let set_personal_data_service' = ~%set_personal_data_service'
+let sign_up_service' = ~%sign_up_service'
+let connect_service = ~%connect_service
+let disconnect_service = ~%disconnect_service
+let activation_service = ~%activation_service
+let eba_github_service = ~%eba_github_service
+let ocsigen_service = ~%ocsigen_service
+let set_password_service' = ~%set_password_service'
+
 ]
