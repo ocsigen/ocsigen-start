@@ -36,10 +36,7 @@
           <cors max_age="86400"
             credentials="true"
             methods="POST,GET,HEAD"
-            exposed_headers="
-              x-eliom-application,
-              x-eliom-location,
-              x-eliom-set-process-cookies"/>
+            exposed_headers="x-eliom-application,x-eliom-location,x-eliom-set-process-cookies,x-eliom-set-cookie-substitutes"/>
         </then>
       </if>
     </host>

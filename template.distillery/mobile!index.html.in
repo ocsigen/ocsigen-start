@@ -46,6 +46,7 @@
           var __eliom_server = '%%APPSERVER%%';
           var __eliom_html_url = 'eliom.html';
           var __eliom_app_name = '%%APPNAME%%';
+          // var __eliom_use_cookie_substitutes = true; // activate if you need cookies and you're using iOS WkWebView
           //]]>
         </script>
     </head>
