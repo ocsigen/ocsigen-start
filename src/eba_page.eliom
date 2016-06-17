@@ -26,13 +26,21 @@
 exception Predicate_failed of (exn option)
 
 type content =
-  {title: string option;
+  {html_attrs: Html_types.html_attrib Eliom_content.Html.attrib list;
+   title: string option;
    head : Html_types.head_content_fun elt list;
    body_attrs : Html_types.body_attrib Eliom_content.Html.attrib list;
    body : Html_types.body_content elt list}
 
-let content ?(a=[]) ?title ?(head = []) body =
-  { title;
+let content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
+  let html_attrs =
+    if Eliom_client.is_client_app () then
+      a_class ["eba-client-app"] :: html_a
+    else
+      html_a
+  in
+  { html_attrs;
+    title;
     head = (head :> Html_types.head_content_fun elt list);
     body_attrs = a;
     body = (body :> Html_types.body_content elt list)}
@@ -124,7 +132,7 @@ module Make(C : PAGE) = struct
 
   let make_page_full content =
     let title = match content.title with Some t -> t | None -> C.title in
-    html
+    html ~a:content.html_attrs
       (Eliom_tools.F.head ~title ~css ~js
          ~other:(local_css @ local_js @ content.head @ C.other_head) ())
       (body ~a:content.body_attrs content.body)

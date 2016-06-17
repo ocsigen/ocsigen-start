@@ -31,6 +31,7 @@ type content
 (** Specifies a page with an optional title, some optional extra
     metadata and a given body *)
 val content :
+  ?html_a: Html_types.html_attrib Eliom_content.Html.attrib list ->
   ?a : Html_types.body_attrib Eliom_content.Html.attrib list ->
   ?title : string ->
   ?head : [< Html_types.head_content_fun] Eliom_content.Html.elt list ->
