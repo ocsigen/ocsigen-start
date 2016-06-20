@@ -1,4 +1,4 @@
-<html>
+<html class="eba-client-app">
   <head>
         <meta http-equiv="Content-Security-Policy"
               content="script-src 'self'
