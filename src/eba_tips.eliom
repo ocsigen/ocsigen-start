@@ -22,12 +22,11 @@
 [%%shared
 open Eliom_content.Html
 open Eliom_content.Html.F
+module Stringset = Set.Make(String)
 ]
 
-module Stringset = Ocsigen_lib.String.Set
-
 (* tips_seen is a group persistent reference recording which tips have
-   ealready been seen by user *)
+   already been seen by user *)
 let tips_seen =
   Eliom_reference.eref
     ~persistent:"tips_seen1"
@@ -40,22 +39,43 @@ let seen_by_user =
     ~scope:Eliom_common.request_scope
     (fun () -> Eliom_reference.get tips_seen)
 
-(* notice the server that a user has seen a tip *)
-let tip_seen userid (name : string) =
+(* notify the server that a user has seen a tip *)
+let set_tip_seen (name : string) =
   let%lwt prev = Eliom_reference.Volatile.get seen_by_user in
   Eliom_reference.set tips_seen (Stringset.add (name : string) prev)
 
-let%server tip_seen_rpc' = Eba_session.connected_rpc tip_seen
-let%client tip_seen_rpc' = ()
+let%client set_tip_seen =
+  ~%(Eliom_client.server_function
+       ~name:"Eba_tips.set_tip_seen"
+       [%derive.json: string]
+       (Eba_session.connected_wrapper set_tip_seen))
 
-let%shared tip_seen_rpc : (_, unit) Eliom_client.server_function =
-  Eliom_client.server_function ~name:"eba_tips.tip_seen_rpc" [%derive.json: string]
-    tip_seen_rpc'
+(* Get the set of seen tips *)
+let%server get_tips_seen () =
+  Eliom_reference.Volatile.get seen_by_user
+
+let%client get_tips_seen_rpc =
+  ~%(Eliom_client.server_function
+       ~name:"Eba_tips.get_tips_seen"
+       [%derive.json: unit]
+       (Eba_session.connected_wrapper get_tips_seen))
+
+(* We cache the set of seen tips to avoid doing the request several times.
+   Warning: it is not updated if the user is using several devices or
+   tabs at a time which means that the user may see the same tip several
+   times in that case. *)
+let%client get_tips_seen = Eba_lib.memoizator get_tips_seen_rpc
 
 (* I want to see the tips again *)
-let reset_tips userid () () = Eliom_reference.set tips_seen (Stringset.empty)
+let%server reset_tips_user userid =
+  Eliom_reference.set tips_seen (Stringset.empty)
 
-let%shared reset_tips_service =
+let reset_tips () =
+  Eliom_lib.Option.Lwt.iter
+    reset_tips_user
+    (Eba_current_user.Opt.get_current_userid ())
+
+let%server reset_tips_service =
   Eliom_service.create
     ~name:"resettips"
     ~id:Eliom_service.Global
@@ -63,29 +83,47 @@ let%shared reset_tips_service =
       (Eliom_service.Post (Eliom_parameter.unit, Eliom_parameter.unit))
     ()
 
-let _ =
+let%client reset_tips_service = ~%reset_tips_service
+
+let%server _ =
   Eliom_registration.Action.register
     ~service:reset_tips_service
-    (Eba_session.connected_fun reset_tips)
+    (Eba_session.connected_fun (fun myid () () -> reset_tips_user myid))
 
-let%server reset_tips_rpc' =
-  Eba_session.connected_rpc (fun userid -> reset_tips userid ())
+let%client reset_tips =
+  ~%(Eliom_client.server_function
+       ~name:"Eba_tips.reset_tips"
+       [%derive.json: unit]
+       (Eba_session.connected_wrapper reset_tips))
 
-let%client reset_tips_rpc' = ()
+(* Returns a block containing a tip,
+   if it has not already been seen by the user. *)
+let%shared block ?(a = []) ~name ~content () =
+  let%lwt seen = get_tips_seen () in
+  if Stringset.mem name seen
+  then Lwt.return None
+  else begin
+    let close_button = Ot_icons.D.close () in
+    let box =
+      D.div ~a:(a_class [ "tip" ; "block" ]::a) (close_button :: content)
+    in
+    ignore [%client
+      (Lwt_js_events.(async (fun () ->
+         clicks (To_dom.of_element ~%close_button)
+           (fun ev _ ->
+              let () = Manip.removeSelf ~%box in
+              Lwt.async (fun () -> set_tip_seen ~%name);
+              Lwt.return ()
+           )))
+       : unit)];
+    Lwt.return (Some box)
+  end
 
-let%shared reset_tips_rpc =
-  Eliom_client.server_function ~name:"eba_tips.reset_tips_rpc" [%derive.json: unit]
-    reset_tips_rpc'
+(* This thread is used to display only one tip at a time: *)
+let%client waiter = ref (let%lwt _ = Lwt_js_events.onload () in Lwt.return ())
 
-[%%client
-
-   let reset_tips () = reset_tips_rpc ()
-
-   (* This thread is used to display only one tip at a time: *)
-   let waiter = ref (let%lwt _ = Lwt_js_events.onload () in Lwt.return ())
-
-(* actually display a tip *)
-let display ?(class_=[])
+(* Display a tip bubble *)
+let%client display_bubble ?(a = [])
     ?arrow ?top ?left ?right ?bottom ?height ?width
     ?(parent_node : _ elt option)
     ~name ~content ()
@@ -95,16 +133,16 @@ let display ?(class_=[])
   waiter := new_waiter;
   let%lwt () = current_waiter in
   let bec = D.div ~a:[a_class ["bec"]] [] in
-  let close_button = Ow_icons.D.close () in
+  let close_button = Ot_icons.D.close () in
   let box =
-    D.div ~a:[a_class ("tip"::class_)]
+    D.div ~a:(a_class [ "tip" ; "bubble" ]::a)
       (close_button::match arrow with None -> content | _ -> bec::content)
   in
   Lwt_js_events.(async (fun () ->
     clicks (To_dom.of_element close_button)
       (fun ev _ ->
          let () = Manip.removeSelf box in
-         Lwt.async (fun () -> ~%tip_seen_rpc (name : string));
+         Lwt.async (fun () -> set_tip_seen (name : string));
          Lwt.wakeup new_wakener ();
          Lwt.return ()
       )));
@@ -160,19 +198,18 @@ let display ?(class_=[])
     arrow;
   Lwt.return ()
 
-]
-
 (* Function to be called on server to display a tip *)
-let display ?class_ ?arrow ?top ?left ?right ?bottom ?height ?width
+let%shared bubble ?a ?arrow ?top ?left ?right ?bottom ?height ?width
     ?parent_node ~(name : string) ~content () =
-  let%lwt seen = Eliom_reference.Volatile.get seen_by_user in
+  let%lwt seen = get_tips_seen () in
   if Stringset.mem name seen
   then Lwt.return ()
   else let _ = [%client ( Lwt.async (fun () ->
-      display ?class_:~%class_ ?arrow:~%arrow
+      display_bubble ?a:~%a ?arrow:~%arrow
         ?top:~%top ?left:~%left ?right:~%right ?bottom:~%bottom
         ?height:~%height ?width:~%width
-        ?parent_node:~%parent_node ~name:(~%name : string) ~content:~%content ())
+        ?parent_node:~%parent_node ~name:(~%name : string) ~content:~%content
+        ())
     : unit)]
     in
     Lwt.return ()

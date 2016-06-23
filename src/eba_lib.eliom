@@ -23,3 +23,13 @@
 let reload () =
   Eliom_client.change_page ~service:Eliom_service.reload_action_hidden () ()
 ]
+
+let%shared memoizator f =
+  let value_ref = ref None in
+  fun () ->
+    match !value_ref with
+    | Some value -> Lwt.return value
+    | None ->
+      let%lwt value = f () in
+      value_ref := Some value;
+      Lwt.return value

@@ -149,7 +149,8 @@ div.ow_popup {
   padding-top: 20px;
 }
 
-i.fa-close {
+i.fa-close,
+i.ot-icon-close {
   position: absolute;
   right: 2px;
   top: 2px;
@@ -170,7 +171,7 @@ div.ow_pic_uploader img {
 
 
 /* Tips */
-div.tip {
+div.tip.bubble {
   position: absolute;
   margin: 20px;
   padding: 30px 20px 30px 20px;
@@ -179,7 +180,7 @@ div.tip {
   background-color: white;
   z-index: 1111;
 }
-div.tip div.bec {
+div.tip.bubble div.bec {
   background-color: white;
   width: 20px;
   height: 20px;
@@ -190,8 +191,8 @@ div.tip div.bec {
   border: 1px solid #aaa;
   z-index: -1;
 }
-div.tip li,
-div.tip p {
+div.tip.bubble li,
+div.tip.bubble p {
   padding-bottom: 10px;
 }
 div.coltip {

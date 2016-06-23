@@ -22,7 +22,10 @@
 (** Tips for new users and new features. *)
 
 [%%shared.start]
-(** Display tips in pages.
+(** Display tips in pages, as a speech bubble.
+
+    One tip is displayed at a time.
+
     Tips can be inserted in page using function [display],
     that may be called anywhere during the generation of a page.
     The tip will be actually sent and displayed on client side
@@ -34,9 +37,8 @@
     to the eponymous CSS properties.
 
 *)
-
-val display :
-  ?class_:string list ->
+val bubble :
+  ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.D.attrib list ->
   ?arrow: [< `left of int
           | `right of int
           | `top of int
@@ -53,15 +55,26 @@ val display :
   unit ->
   unit Lwt.t
 
+(** Return a box containing a tip, to be inserted where you want in a page.
+    The box contains a close button. Once it is closed, it is never displayed
+    again for this user. In that case the function returns [None].
+ *)
+val block :
+  ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.D.attrib list ->
+  name:string ->
+  content: Html_types.div_content Eliom_content.Html.elt list ->
+  unit ->
+  [> `Div ] Eliom_content.Html.elt option Lwt.t
 
 
 
-(** Call this function to reset tips for one user.
-    The parameter is the user id.
+
+(** Call this function to reset tips for current user.
     Tips will be shown again from the beginning.
 *)
-val reset_tips : int64 -> unit -> unit -> unit Lwt.t
+val reset_tips : unit -> unit Lwt.t
 
+[%%shared.start]
 (** A non-attached service that will reset tips.
     Call it with [Eliom_client.exit_to] to restart the application and
     see tips again. *)
