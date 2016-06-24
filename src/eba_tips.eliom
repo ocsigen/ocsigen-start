@@ -39,17 +39,6 @@ let seen_by_user =
     ~scope:Eliom_common.request_scope
     (fun () -> Eliom_reference.get tips_seen)
 
-(* notify the server that a user has seen a tip *)
-let set_tip_seen (name : string) =
-  let%lwt prev = Eliom_reference.Volatile.get seen_by_user in
-  Eliom_reference.set tips_seen (Stringset.add (name : string) prev)
-
-let%client set_tip_seen =
-  ~%(Eliom_client.server_function
-       ~name:"Eba_tips.set_tip_seen"
-       [%derive.json: string]
-       (Eba_session.connected_wrapper set_tip_seen))
-
 (* Get the set of seen tips *)
 let%server get_tips_seen () =
   Eliom_reference.Volatile.get seen_by_user
@@ -64,7 +53,30 @@ let%client get_tips_seen_rpc =
    Warning: it is not updated if the user is using several devices or
    tabs at a time which means that the user may see the same tip several
    times in that case. *)
-let%client get_tips_seen = Eba_lib.memoizator get_tips_seen_rpc
+let%client tips_seen_client_ref = ref None
+let%client get_tips_seen =
+  fun () ->
+    match !tips_seen_client_ref with
+    | Some value -> Lwt.return value
+    | None ->
+      let%lwt value = get_tips_seen_rpc () in
+      tips_seen_client_ref := Some value;
+      Lwt.return value
+
+(* notify the server that a user has seen a tip *)
+let set_tip_seen (name : string) =
+  let%lwt prev = Eliom_reference.Volatile.get seen_by_user in
+  Eliom_reference.set tips_seen (Stringset.add (name : string) prev)
+
+let%client set_tip_seen name =
+  (match !tips_seen_client_ref with
+   | None -> ()
+   | Some set -> tips_seen_client_ref := Some (Stringset.add name set));
+  ~%(Eliom_client.server_function
+       ~name:"Eba_tips.set_tip_seen"
+       [%derive.json: string]
+       (Eba_session.connected_wrapper set_tip_seen))
+  name
 
 (* I want to see the tips again *)
 let%server reset_tips_user userid =
@@ -90,11 +102,13 @@ let%server _ =
     ~service:reset_tips_service
     (Eba_session.connected_fun (fun myid () () -> reset_tips_user myid))
 
-let%client reset_tips =
+let%client reset_tips () =
+  tips_seen_client_ref := Some Stringset.empty;
   ~%(Eliom_client.server_function
        ~name:"Eba_tips.reset_tips"
        [%derive.json: unit]
        (Eba_session.connected_wrapper reset_tips))
+    ()
 
 (* Returns a block containing a tip,
    if it has not already been seen by the user. *)
