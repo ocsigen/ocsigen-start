@@ -5,7 +5,7 @@ homepage: "https://ocsigen.org/eliom-base-app/"
 bug-reports: "https://github.com/ocsigen/eliom-base-app/issues"
 dev-repo: "https://github.com/ocsigen/eliom-base-app.git"
 version: "dev"
-build: [ make ]
+build: [ make "-j%{jobs}%" ]
 install: [ make "install" ]
 remove: [ make "uninstall" ]
 depends: [
