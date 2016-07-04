@@ -70,13 +70,18 @@ sig
       to notifications from the server.
       For example:
 
-  let%server _ =
-      let _ = Eba_session.on_start_process
-      (fun () ->
-         ignore {unit{ ignore (React.E.map handle_notif %(N.client_ev ())) }};
-         Lwt.return ()
-     )
-]
+      let%client handle_notification some_stuff ev =
+         let (_, msgid) = ev in
+         ...
+
+      let%server something some_stuff =
+         ignore
+           [%client
+              (ignore (React.E.map
+		        (handle_notification ~%some_stuff)
+		        ~%(Notif_module.client_ev ())
+	      ) : unit)
+           ]
 
   *)
   val client_ev : unit -> (A.key * A.notification) Eliom_react.Down.t
