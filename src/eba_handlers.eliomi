@@ -26,3 +26,7 @@ val set_password_handler' : int64 -> unit -> string * string -> unit Lwt.t
 
 val set_personal_data_handler' :
   int64 -> unit -> (string * string) * (string * string) -> unit Lwt.t
+
+[%%client.start]
+
+val activation_handler : string -> unit Lwt.t

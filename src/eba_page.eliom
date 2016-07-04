@@ -132,7 +132,25 @@ module Make(C : PAGE) = struct
 
   let make_page_full content =
     let title = match content.title with Some t -> t | None -> C.title in
-    html ~a:content.html_attrs
+    html ~a:(a_onload [%client fun ev -> (
+      let platform () =
+        let uA = Dom_html.window##.navigator##.userAgent in
+        let has s = uA##indexOf(Js.string s) <> -1 in
+        if has "Android" then
+          "eba-android"
+        else if has "iPhone" || has "iPad" || has "iPod" || has "iWatch" then
+          "eba-ios"
+        else if has "Windows" then
+          "eba-windows"
+        else if has "BlackBerry" then
+          "eba-blackberry"
+        else
+          "eba-unknown-platform"
+      in
+      let p = Js.string @@ platform () in
+      Js.Opt.case (ev##.currentTarget) (fun () -> ())
+        (fun e -> e##.classList##add(p))
+      : unit) ] :: content.html_attrs)
       (Eliom_tools.F.head ~title ~css ~js
          ~other:(local_css @ local_js @ content.head @ C.other_head) ())
       (body ~a:content.body_attrs content.body)

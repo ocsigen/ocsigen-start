@@ -192,6 +192,23 @@ let activation_handler akey () =
        error message after a redirection for now.*)
     Eliom_registration.Action.send ()
 
+let simple_activation_handler akey =
+  (* SECURITY: we disconnect the user before doing anything. *)
+  (* If the user is already connected,
+     we're going to disconnect him even if the activation key outdated. *)
+  let%lwt () = Eba_session.disconnect () in
+  try%lwt
+    let%lwt userid = Eba_user.userid_of_activationkey akey in
+    let%lwt () = Eba_db.User.set_email_validated userid in
+    let%lwt () = Eba_session.connect userid in
+    Lwt.return ()
+  with Eba_db.No_such_resource ->
+    Lwt.return ()
+
+let%client activation_handler =
+  ~%(Eliom_client.server_function ~name:"Eba_handlers.activation_handler"
+       [%derive.json: string] simple_activation_handler)
+
           (*
 let admin_service_handler userid gp pp =
   lwt user = Eba_user.user_of_userid userid in

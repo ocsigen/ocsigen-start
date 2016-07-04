@@ -35,7 +35,7 @@
 
         <!-- Workaround for a bug in Cordova that prevents iframes with external URLs -->
         <allow-navigation href="*" />
-        
+
         <!-- iOS 8.0+ -->
         <!-- iPhone 6 Plus  -->
         <!-- <icon src="res/ios/icon&#45;60@3x.png" width="180" height="180" /> -->
@@ -82,18 +82,21 @@
     <plugin name="cordova-plugin-globalization" spec="~1.0.3" />
     <plugin name="cordova-plugin-wkwebview-engine" spec="https://github.com/apache/cordova-plugin-wkwebview-engine.git" />
 
-    <!-- To be able to reduce the webview instead of having the keyboard push it up -->
-    <!-- <plugin name="cordova-plugin-keyboard" spec="cordova-plugin-keyboard" /> -->
-    <!-- <preference name="KeyboardDisplayRequiresUserAction" value="false" /> -->
-    <!-- <preference name="KeyboardShrinksView" value="false" /> -->
     <!-- Status bar colors and other adjustments -->
-    <!-- <plugin name="com.phonegap.plugin.statusbar" spec="https://github.com/phonegap-build/StatusBarPlugin" /> -->
-    <!-- <preference name="StatusBarBackgroundColor" value="#000000" /> -->
-    <!-- <preference name="StatusBarOverlaysWebView" value="false" /> -->
-    
+    <plugin name="cordova-plugin-statusbar" spec="https://github.com/apache/cordova-plugin-statusbar" />
+    <!-- use this alternative if you need tap on status bar to scroll up the page: 
+         <plugin name="cordova-plugin-statusbar" spec="https://github.com/besport/cordova-plugin-statusbar" /> -->
+    <preference name="StatusBarBackgroundColor" value="#FFFFFF" />
+    <preference name="StatusBarStyle" value="default" />
+    <preference name="StatusBarOverlaysWebView" value="false" />
+    <!-- To be able to reduce the webview instead of having the keyboard push it up -->
+    <plugin name="cordova-plugin-keyboard" spec="~1.1.4" />
+    <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <preference name="KeyboardShrinksView" value="false" />
 
 
-    
+
+
     <!-- CrossWalk settings -->
     <preference name="xwalkVersion" value="15+" />
     <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />

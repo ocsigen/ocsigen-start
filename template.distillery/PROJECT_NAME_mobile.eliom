@@ -34,7 +34,8 @@ let%client _ =
     *)
     let%lwt _ = Lwt_js_events.onload () in
     let%lwt _ = ~%init_request_rpc () in
-    Eliom_client.change_page ~service:Eba_services.main_service () ()
+    Eliom_client.change_page ~replace:true
+      ~service:Eba_services.main_service () ()
   end
   else Lwt.return ()
 
