@@ -81,4 +81,8 @@ sig
   *)
   val client_ev : unit -> (A.key * A.notification) Eliom_react.Down.t
 
+  val unlisten_wrapper : key:A.key -> handler:'a -> 'a
+
+  val listen_wrapper : key:A.key -> handler:'a -> 'a
+
 end
