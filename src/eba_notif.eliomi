@@ -69,13 +69,13 @@ sig
   (** Returns the client react event. Map a function on this event to react
       to notifications from the server.
       For example:
-[{server{
-  let _ = Eba_session.on_start_process
-    (fun () ->
-       ignore {unit{ ignore (React.E.map handle_notif %(N.client_ev ())) }};
-       Lwt.return ()
+
+  let%server _ =
+      let _ = Eba_session.on_start_process
+      (fun () ->
+         ignore {unit{ ignore (React.E.map handle_notif %(N.client_ev ())) }};
+         Lwt.return ()
      )
-}}
 ]
 
   *)
