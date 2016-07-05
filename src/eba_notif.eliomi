@@ -71,7 +71,6 @@ sig
       For example:
 
       let%client handle_notification some_stuff ev =
-         let (_, msgid) = ev in
          ...
 
       let%server something some_stuff =
@@ -84,10 +83,7 @@ sig
            ]
 
   *)
+
   val client_ev : unit -> (A.key * A.notification) Eliom_react.Down.t
-
-  val unlisten_wrapper : key:A.key -> handler:'a -> 'a
-
-  val listen_wrapper : key:A.key -> handler:'a -> 'a
 
 end
