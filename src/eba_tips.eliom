@@ -43,25 +43,20 @@ let seen_by_user =
 let%server get_tips_seen () =
   Eliom_reference.Volatile.get seen_by_user
 
-let%client get_tips_seen_rpc =
-  ~%(Eliom_client.server_function
-       ~name:"Eba_tips.get_tips_seen"
-       [%derive.json: unit]
-       (Eba_session.connected_wrapper get_tips_seen))
-
 (* We cache the set of seen tips to avoid doing the request several times.
    Warning: it is not updated if the user is using several devices or
    tabs at a time which means that the user may see the same tip several
    times in that case. *)
-let%client tips_seen_client_ref = ref None
-let%client get_tips_seen =
-  fun () ->
-    match !tips_seen_client_ref with
-    | Some value -> Lwt.return value
-    | None ->
-      let%lwt value = get_tips_seen_rpc () in
-      tips_seen_client_ref := Some value;
-      Lwt.return value
+let%client tips_seen_client_ref = ref Stringset.empty
+let%client get_tips_seen () = Lwt.return !tips_seen_client_ref
+
+let%server () = Eba_session.on_start_connected_process
+    (fun _ ->
+       let%lwt tips = get_tips_seen () in
+       ignore [%client (
+         tips_seen_client_ref := ~%tips
+       : unit)];
+       Lwt.return ())
 
 (* notify the server that a user has seen a tip *)
 let set_tip_seen (name : string) =
@@ -69,9 +64,7 @@ let set_tip_seen (name : string) =
   Eliom_reference.set tips_seen (Stringset.add (name : string) prev)
 
 let%client set_tip_seen name =
-  (match !tips_seen_client_ref with
-   | None -> ()
-   | Some set -> tips_seen_client_ref := Some (Stringset.add name set));
+  tips_seen_client_ref := Stringset.add name !tips_seen_client_ref;
   ~%(Eliom_client.server_function
        ~name:"Eba_tips.set_tip_seen"
        [%derive.json: string]
@@ -103,7 +96,7 @@ let%server _ =
     (Eba_session.connected_fun (fun myid () () -> reset_tips_user myid))
 
 let%client reset_tips () =
-  tips_seen_client_ref := Some Stringset.empty;
+  tips_seen_client_ref := Stringset.empty;
   ~%(Eliom_client.server_function
        ~name:"Eba_tips.reset_tips"
        [%derive.json: unit]
