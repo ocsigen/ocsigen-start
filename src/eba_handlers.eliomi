@@ -30,3 +30,4 @@ val set_personal_data_handler' :
 [%%client.start]
 
 val activation_handler : string -> unit Lwt.t
+val set_password_rpc : string * string -> unit Lwt.t
