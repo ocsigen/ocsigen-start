@@ -41,7 +41,13 @@
     be updated every time the client is notified.
 *)
 
-module Make(A : sig type key type notification end) :
+module type S = sig
+  type key
+  type notification
+  val equal_key : key -> key -> bool
+end
+
+module Make(A : S) :
 sig
 
   (** Make client process listen on data whose index is [key] *)
