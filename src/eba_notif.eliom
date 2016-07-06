@@ -1,6 +1,5 @@
 
 module Make (A : sig type key type notification end) = Eliom_notif.Make (struct
-  include A
   type identity = int64 option
   [@@deriving eq]
   type key = A.key
