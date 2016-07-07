@@ -131,24 +131,3 @@ ul#%%%PROJECT_NAME%%%-navbar {
   display: inline-block;
   padding-right: 15px;
 }
-
-#eba-user-box {
-  position: absolute;
-  right: 0;
-  top: 0;
-  line-height: 50px ;
-  width: 500px;
-}
-
-.ot-pup-submit,
-.eba_usermenu .button {
-    display: block ;
-    padding: 8px ;
-    width: 100% ;
-    font-weight: bold ;
-}
-.eba_usermenu .ot-icon-sign-out { margin-right: 8px ; }
-.eba_usermenu .ot-icon-sign-out::before,
-.eba_usermenu .ot-icon-sign-out::after {
-    border-color: white ;
-}

@@ -88,7 +88,19 @@ div#eba_login_signup_box h2.pressed {
 /******************************************************************************/
 
 #eba-user-box {
-  position: relative;
+  position: fixed;
+  right: 0;
+  top: 15px;
+  width: 500px;
+  height: 45px;
+}
+@media only screen and (max-width: 1750px){
+    #eba-user-box {
+	top: 80px;
+	background-color: var(--bg-color);
+	width: 100%;
+	left: 0;
+    }
 }
 
 #eba-user-box img,
@@ -137,6 +149,19 @@ div#eba_login_signup_box h2.pressed {
   border: 1px #ddd solid;
   padding: 10px;
   display: none;
+}
+
+.ot-pup-submit,
+.eba_usermenu .button {
+    display: block ;
+    padding: 8px ;
+    width: 100% ;
+    font-weight: bold ;
+}
+.eba_usermenu .ot-icon-sign-out { margin-right: 8px ; }
+.eba_usermenu .ot-icon-sign-out::before,
+.eba_usermenu .ot-icon-sign-out::after {
+    border-color: white ;
 }
 
 /******************************************************************************/
