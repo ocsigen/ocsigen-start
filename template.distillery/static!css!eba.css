@@ -33,6 +33,8 @@ div#eba_login_signup_box {
     height: auto;
     width: 560px;
     padding: 0 20px;
+    top: 0;
+    right: 0;
 }
 @media only screen and (max-width: 480px){
     div#eba_login_signup_box {
@@ -44,13 +46,7 @@ div#eba_login_signup_box {
 	top: 80px;
 	left: 0;
 	width: 100%;
-	background-color: #ddeeff;
-    }
-}
-@media only screen and (min-width: 1750px){
-    div#eba_login_signup_box {
-	top: 0;
-	right: 0;
+	background-color: var(--bg-color);
     }
 }
 

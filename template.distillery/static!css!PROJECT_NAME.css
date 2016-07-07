@@ -59,7 +59,7 @@ header#main {
 }
 @media only screen and (max-width: 768px){
     header#main {
-	padding: 0 10px;
+	padding: 0 30px;
     }
 }
 
@@ -81,7 +81,12 @@ header#main {
 }
 @media only screen and (max-width: 1750px){
     #%%%PROJECT_NAME%%%-body {
-	margin-top: 175px;
+	margin-top: 140px;
+    }
+}
+@media only screen and (max-width: 590px){
+    #%%%PROJECT_NAME%%%-body {
+	margin-top: 180px;
     }
 }
 
