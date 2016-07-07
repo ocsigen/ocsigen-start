@@ -36,14 +36,15 @@ div#eba_login_signup_box {
 }
 @media only screen and (max-width: 480px){
     div#eba_login_signup_box {
-	top: 80px;
-	left: 0;
+	padding: 0 0;
     }
 }
-@media only screen and (min-width: 480px) and (max-width: 1750px){
+@media only screen and (max-width: 1750px){
     div#eba_login_signup_box {
 	top: 80px;
 	left: 0;
+	width: 100%;
+	background-color: #ddeeff;
     }
 }
 @media only screen and (min-width: 1750px){
@@ -66,6 +67,10 @@ div#eba_login_signup_box input {
 
 div#eba_login_signup_box input[type="checkbox"] {
   width: 10px;
+}
+
+div#eba_login_signup_box span {
+    margin-right: 10px
 }
 
 div#eba_login_signup_box label {

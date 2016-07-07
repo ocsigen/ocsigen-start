@@ -1,3 +1,8 @@
+:root {
+    --bg-color: #ddeeff;
+    --button-bg-color: #4183c4;
+}
+
 /*****************************************************************************
 /* Default tag style */
 
@@ -14,12 +19,12 @@ input {
   background-color: #eef8ff;
 }
 input[type="submit"] {
-  background-color: #4183c4;
+  background-color: var(--button-bg-color);
 }
 
 .button {
   border: none;
-  background-color: #4183c4;
+  background-color: var(--button-bg-color);
   color: white;
 }
 
@@ -43,9 +48,10 @@ body {
 }
 
 header#main {
-  position: relative;
+  position: fixed;
   height: 80px;
-  background-color: #ddeeff;
+  width: 100%;
+  background-color: var(--bg-color);
   color: white;
   padding: 0 50px;
   margin-left: auto;
@@ -58,13 +64,25 @@ header#main {
 }
 
 #%%%PROJECT_NAME%%%-body {
-  margin-top: 40px;
+  margin-top: 80px;
   margin-bottom: 40px;
   width: 980px;
   min-height: 500px;
   text-align: center;
   margin-left: auto;
   margin-right: auto;
+}
+@media only screen and (max-width: 980px){
+    #%%%PROJECT_NAME%%%-body {
+	margin-left: 0;
+	margin-right: 0;
+	width: 100%;
+    }
+}
+@media only screen and (max-width: 1750px){
+    #%%%PROJECT_NAME%%%-body {
+	margin-top: 175px;
+    }
 }
 
 #%%%PROJECT_NAME%%%-footer {
@@ -73,7 +91,7 @@ header#main {
   height: 30px;
   margin-left: auto;
   margin-right: auto;
-  background-color: #ddeeff;
+  background-color: var(--bg-color);
   color: #445588;
 }
 
