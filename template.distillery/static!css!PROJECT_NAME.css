@@ -49,7 +49,7 @@ body {
 
 header#main {
   position: fixed;
-  height: 80px;
+  height: auto;
   width: 100%;
   background-color: var(--bg-color);
   color: white;
@@ -57,6 +57,12 @@ header#main {
   margin-left: auto;
   margin-right: auto;
   z-index: 2;
+  display: flex;
+}
+@media only screen and (max-width: 1750px){
+    header#main {
+	display: inline-block;
+    }
 }
 @media only screen and (max-width: 768px){
     header#main {
@@ -128,6 +134,7 @@ ul#%%%PROJECT_NAME%%%-navbar {
   margin-bottom: 10px;
   bottom: 0;
   display: inline-block;
+  padding: 0 0;
 }
 #%%%PROJECT_NAME%%%-navbar li {
   display: inline-block;
