@@ -2,6 +2,8 @@ let%server application_name = !%%%MODULE_NAME%%%_config.app_name
 
 let%client application_name = Eliom_client.get_application_name ()
 
+let%shared displayed_app_name = "%%%PROJECT_NAME%%%"
+
 let () =
   let int_of_pgport s =
     try
@@ -21,7 +23,9 @@ let () =
 
 let () = Eba_email.set_mailer "/usr/sbin/sendmail"
 
+[%%shared
 module App = Eliom_registration.App(struct
     let application_name = application_name
     let global_data_path = Some ["__global_data__"]
   end)
+]

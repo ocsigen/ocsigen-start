@@ -1,6 +1,16 @@
+
+/* drawer */
 .eba-drawer {
-  background-color: #ddeeff;
+  background-color: #222;
+  color: white;
   overflow: hidden;
+  text-align: left;
+}
+.eba-drawer ul {
+    list-style-type: none;
+}
+.eba-drawer a {
+  color: white;
 }
 
 .eba-drawer-button {
@@ -9,9 +19,9 @@
   background-color: #ddeeff;
 }
 
+/* Carousel */
 div.otdemo-carousel {
   width: 4cm;
-  overflow: visible;
   margin: auto;
   border: 2px;
   border-style: solid;
@@ -20,8 +30,20 @@ div.otdemo-carousel {
 div.otdemo-carousel-page {
   font-size: 4cm;
   margin: 1mm;
-  background-color: #ddeeff;
+  background-color: #222;
+  color: white;
 }
+.otdemo-bullets {
+    margin: auto;
+    width: 100px;
+}
+
+/*time picker*/
+.ot-tp-container {
+    margin: auto !important;
+}
+
+
 
 button.dr-toggle-button {
   border: 0;
@@ -34,11 +56,18 @@ button.dr-toggle-button::before {
   content: '\f013';
 }
 
+
+/* popup */
 div.ot-popup {
-  background-color: #ddeeff;
+  background-color: #222;
   padding: 7mm;
 }
 
 div.ot-popup-content {
   background-color: white;
+  color: black;
+}
+
+.ot-popup-close {
+    color: white;
 }
