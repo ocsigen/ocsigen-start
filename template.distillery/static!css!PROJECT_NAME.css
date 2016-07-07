@@ -102,6 +102,7 @@ header#main {
   text-align: center;
   padding: 20px;
   height: auto;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
   background-color: var(--bg-color);
