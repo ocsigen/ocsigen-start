@@ -56,6 +56,7 @@ header#main {
   padding: 0 50px;
   margin-left: auto;
   margin-right: auto;
+  z-index: 2;
 }
 @media only screen and (max-width: 768px){
     header#main {
@@ -71,6 +72,7 @@ header#main {
   text-align: center;
   margin-left: auto;
   margin-right: auto;
+  z-index: 1;
 }
 @media only screen and (max-width: 980px){
     #%%%PROJECT_NAME%%%-body {
@@ -93,7 +95,7 @@ header#main {
 #%%%PROJECT_NAME%%%-footer {
   text-align: center;
   padding: 20px;
-  height: 30px;
+  height: auto;
   margin-left: auto;
   margin-right: auto;
   background-color: var(--bg-color);
