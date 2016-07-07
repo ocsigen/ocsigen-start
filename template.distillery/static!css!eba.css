@@ -1,6 +1,8 @@
 /* Default CSS for eba and OW */
 
-/* Default style for some basic elements */
+/******************************************************************************/
+/*********************Default style for some basic elements********************/
+/******************************************************************************/
 
 a {
   text-decoration: none;
@@ -21,31 +23,61 @@ input[type="submit"]:focus {
   outline: 2px solid #ddd;
 }
 
-/* Login box */
+/******************************************************************************/
+/**********************************Login box***********************************/
+/******************************************************************************/
+
 div#eba_login_signup_box {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: auto;
-  width: 560px;
-  padding: 0 20px;
+    position: fixed;
+    color: #4183c4;
+    height: auto;
+    width: 560px;
+    padding: 0 20px;
 }
+
+@media only screen and (max-width: 480px){
+    div#eba_login_signup_box {
+	top: 80px;
+	left: 0;
+    }
+}
+
+@media only screen and (min-width: 480px) and (max-width: 1750px){
+    div#eba_login_signup_box {
+	top: 80px;
+	left: 0;
+    }
+}
+
+@media only screen and (min-width: 1750px){
+    div#eba_login_signup_box {
+	top: 0;
+	right: 0;
+    }
+}
+
 div#eba_login_signup_box form {
   text-align: left;
   height: auto;
 }
+
 div#eba_login_signup_box input {
   display: inline-block;
   margin: 0 10px 10px 0;
   width: 120px;
 }
+
+div#eba_login_signup_box input[type="checkbox"] {
+  width: 10px;
+}
+
 div#eba_login_signup_box label {
   margin: 0 10px 0 0;
 }
+
 div#eba_login_signup_box h2 {
   display: inline;
   margin: 0 10px 0 0;
-  color: #ddd;
   cursor: pointer;
   font-size: 12px;
 }
@@ -53,7 +85,10 @@ div#eba_login_signup_box h2.pressed {
   color: black;
 }
 
-/* User box */
+/******************************************************************************/
+/**********************************User box************************************/
+/******************************************************************************/
+
 #eba-user-box {
   position: relative;
 }
@@ -106,7 +141,10 @@ div#eba_login_signup_box h2.pressed {
   display: none;
 }
 
-/* Messages */
+/******************************************************************************/
+/********************************Messages**************************************/
+/******************************************************************************/
+
 div#eba_msg {
   position: fixed;
   top: 0;
@@ -169,8 +207,10 @@ div.ow_pic_uploader img {
   width: 800px;
 }
 
+/******************************************************************************/
+/**********************************Tips****************************************/
+/******************************************************************************/
 
-/* Tips */
 div.tip.bubble {
   position: absolute;
   margin: 20px;
@@ -199,8 +239,10 @@ div.coltip {
   width: 300px;
 }
 
+/******************************************************************************/
+/******************************Closed process**********************************/
+/******************************************************************************/
 
-/* Closed process */
 div.eba_process_closed {
   position: fixed;
   height: 100%;

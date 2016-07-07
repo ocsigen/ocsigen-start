@@ -51,6 +51,11 @@ header#main {
   margin-left: auto;
   margin-right: auto;
 }
+@media only screen and (max-width: 768px){
+    header#main {
+	padding: 0 10px;
+    }
+}
 
 #%%%PROJECT_NAME%%%-body {
   margin-top: 40px;
