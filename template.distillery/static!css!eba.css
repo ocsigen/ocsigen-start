@@ -34,21 +34,18 @@ div#eba_login_signup_box {
     width: 560px;
     padding: 0 20px;
 }
-
 @media only screen and (max-width: 480px){
     div#eba_login_signup_box {
 	top: 80px;
 	left: 0;
     }
 }
-
 @media only screen and (min-width: 480px) and (max-width: 1750px){
     div#eba_login_signup_box {
 	top: 80px;
 	left: 0;
     }
 }
-
 @media only screen and (min-width: 1750px){
     div#eba_login_signup_box {
 	top: 0;
