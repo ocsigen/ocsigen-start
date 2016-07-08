@@ -4,6 +4,14 @@
 /*********************Default style for some basic elements********************/
 /******************************************************************************/
 
+.caml_c.caml_c.caml_c {
+    height: 100%;
+}
+
+body {
+    height: inherit;
+}
+
 a {
   text-decoration: none;
   cursor: pointer;
@@ -28,14 +36,15 @@ input[type="submit"]:focus {
 /******************************************************************************/
 
 div#eba_login_signup_box {
+    position: absolute;
     color: #4183c4;
     height: auto;
     width: auto;
-    position: fixed;
-    right: 0;
+    right: 100px;
 }
 @media only screen and (max-width : 1750px){
     div#eba_login_signup_box{
+	position: unset;
 	width: 100%;
 	background-color: var(--bg-color);
     }
@@ -78,13 +87,13 @@ div#eba_login_signup_box h2.pressed {
 /******************************************************************************/
 
 #eba-user-box {
-  position: fixed;
+  position: absolute;
   right: 0;
   width: 500px;
-  height: 45px;
 }
 @media only screen and (max-width: 1750px){
     #eba-user-box {
+	position: unset;
 	background-color: var(--bg-color);
 	width: 100%;
     }
@@ -104,7 +113,7 @@ div#eba_login_signup_box h2.pressed {
 }
 
 #eba-user-box div.eba_username {
-  padding: 0px 8px;
+  padding: 8px 8px;
 }
 
 #eba-user-box i.fa {
@@ -115,12 +124,10 @@ div#eba_login_signup_box h2.pressed {
 }
 #eba-user-box div.eba_usermenu {
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 10px;
+  top: 0px;
 }
 #eba-user-box div.eba_usermenu_button {
-  position: relative;
-  right: 0;
   cursor: pointer;
   width: 50px;
 }

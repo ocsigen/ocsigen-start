@@ -33,7 +33,7 @@ input[type="submit"] {
 /* Main layout */
 
 body {
-  margin: 0px;
+  margin: 0;
   min-height: 500px;
   font-family: Droid Sans, sans-serif;
   font-weight: 500;
@@ -44,18 +44,16 @@ body {
   text-decoration: none;
   font-size: 25pt;
   font-weight: 700;
-  padding: 0 20px;
+  padding: 0 50px;
 }
 
 header#main {
-  position: fixed;
+  position: absolute;
+  top: 0;
   height: auto;
   width: 100%;
   background-color: var(--bg-color);
   color: white;
-  padding: 0 50px;
-  margin-left: auto;
-  margin-right: auto;
   z-index: 2;
   display: flex;
 }
@@ -79,6 +77,7 @@ header#main {
   margin-left: auto;
   margin-right: auto;
   z-index: 1;
+  height: inherit;
 }
 @media only screen and (max-width: 980px){
     #%%%PROJECT_NAME%%%-body {
@@ -92,21 +91,23 @@ header#main {
 	margin-top: 140px;
     }
 }
-@media only screen and (max-width: 590px){
+@media only screen and (max-width: 588px){
     #%%%PROJECT_NAME%%%-body {
 	margin-top: 180px;
     }
 }
 
 #%%%PROJECT_NAME%%%-footer {
-  text-align: center;
-  padding: 20px;
-  height: auto;
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  background-color: var(--bg-color);
-  color: #445588;
+    position: relative;
+    bottom: 0;
+    text-align: center;
+    padding: 20px 0;
+    height: auto;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: var(--bg-color);
+    color: #445588;
 }
 
 div#eba_welcome_box {
