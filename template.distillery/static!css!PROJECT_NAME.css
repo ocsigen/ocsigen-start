@@ -62,11 +62,6 @@ header#main {
 	display: inline-block;
     }
 }
-@media only screen and (max-width: 768px){
-    header#main {
-	padding: 0 30px;
-    }
-}
 
 #%%%PROJECT_NAME%%%-body {
   margin-top: 80px;
