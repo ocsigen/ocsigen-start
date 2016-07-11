@@ -32,6 +32,10 @@ let tips_seen =
     ~persistent:"tips_seen1"
     ~scope:Eliom_common.default_group_scope
     Stringset.empty
+(*VVV TODO: What if not connected? We don't want to keep the eref
+  for all non-connected users. This is a weakness of persistent
+  group eref. Use posgresql instead? *)
+
 
 (* We cache the set during a request *)
 let seen_by_user =
@@ -40,8 +44,7 @@ let seen_by_user =
     (fun () -> Eliom_reference.get tips_seen)
 
 (* Get the set of seen tips *)
-let%server get_tips_seen () =
-  Eliom_reference.Volatile.get seen_by_user
+let%server get_tips_seen () = Eliom_reference.Volatile.get seen_by_user
 
 (* We cache the set of seen tips to avoid doing the request several times.
    Warning: it is not updated if the user is using several devices or
@@ -106,25 +109,29 @@ let%client reset_tips () =
 (* Returns a block containing a tip,
    if it has not already been seen by the user. *)
 let%shared block ?(a = []) ~name ~content () =
-  let%lwt seen = get_tips_seen () in
-  if Stringset.mem name seen
+  let myid_o = Eba_current_user.Opt.get_current_userid () in
+  if myid_o = None
   then Lwt.return None
-  else begin
-    let close_button = Ot_icons.D.close () in
-    let box =
-      D.div ~a:(a_class [ "tip" ; "block" ]::a) (close_button :: content)
-    in
-    ignore [%client
-      (Lwt_js_events.(async (fun () ->
-         clicks (To_dom.of_element ~%close_button)
-           (fun ev _ ->
-              let () = Manip.removeSelf ~%box in
-              Lwt.async (fun () -> set_tip_seen ~%name);
-              Lwt.return ()
-           )))
-       : unit)];
-    Lwt.return (Some box)
-  end
+  else
+    let%lwt seen = get_tips_seen () in
+    if Stringset.mem name seen
+    then Lwt.return None
+    else begin
+      let close_button = Ot_icons.D.close () in
+      let box =
+        D.div ~a:(a_class [ "tip" ; "block" ]::a) (close_button :: content)
+      in
+      ignore [%client
+        (Lwt_js_events.(async (fun () ->
+           clicks (To_dom.of_element ~%close_button)
+             (fun ev _ ->
+                let () = Manip.removeSelf ~%box in
+                Lwt.async (fun () -> set_tip_seen ~%name);
+                Lwt.return ()
+             )))
+         : unit)];
+      Lwt.return (Some box)
+    end
 
 (* This thread is used to display only one tip at a time: *)
 let%client waiter = ref (let%lwt _ = Lwt_js_events.onload () in Lwt.return ())
@@ -208,15 +215,21 @@ let%client display_bubble ?(a = [])
 (* Function to be called on server to display a tip *)
 let%shared bubble ?a ?arrow ?top ?left ?right ?bottom ?height ?width
     ?parent_node ~(name : string) ~content () =
-  let%lwt seen = get_tips_seen () in
-  if Stringset.mem name seen
+  let myid_o = Eba_current_user.Opt.get_current_userid () in
+  if myid_o = None
   then Lwt.return ()
-  else let _ = [%client ( Lwt.async (fun () ->
-      display_bubble ?a:~%a ?arrow:~%arrow
-        ?top:~%top ?left:~%left ?right:~%right ?bottom:~%bottom
-        ?height:~%height ?width:~%width
-        ?parent_node:~%parent_node ~name:(~%name : string) ~content:~%content
-        ())
-    : unit)]
-    in
-    Lwt.return ()
+  else
+    let%lwt seen = get_tips_seen () in
+    if Stringset.mem name seen
+    then Lwt.return ()
+    else let _ = [%client ( Lwt.async (fun () ->
+              display_bubble ?a:~%a ?arrow:~%arrow
+                ?top:~%top ?left:~%left ?right:~%right ?bottom:~%bottom
+                ?height:~%height ?width:~%width
+                ?parent_node:~%parent_node
+                ~name:(~%name : string)
+                ~content:~%content
+                ())
+                            : unit)]
+      in
+      Lwt.return ()
