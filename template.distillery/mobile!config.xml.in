@@ -80,6 +80,10 @@
     <!-- </plugin> -->
     <plugin name="cordova-plugin-network-information" spec="~1.2.0" />
     <plugin name="cordova-plugin-globalization" spec="~1.0.3" />
+    
+    <!-- BEWARE OF ALL PLUGINS IN DEV VERSION: THEY ARE, BY DEFINITION, "UNSTABLE"! 
+         ALSO, IF YOU START A NEW PROJECT, YOU MIGHT WANT TO CHECK FOR THE LATEST VERSIONS OF NON-DEV VERSIONS! -->
+    
     <plugin name="cordova-plugin-wkwebview-engine" spec="https://github.com/apache/cordova-plugin-wkwebview-engine.git" />
 
     <!-- Status bar colors and other adjustments -->
