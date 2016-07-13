@@ -6,6 +6,10 @@
 /*****************************************************************************
 /* Default tag style */
 
+#%%%PROJECT_NAME%%%-logo {
+    font-size: 25px;
+}
+
 a, a:visited {
   color: #4183c4;
 }
@@ -42,7 +46,6 @@ body {
 #%%%PROJECT_NAME%%%-logo {
   color: white;
   text-decoration: none;
-  font-size: 25pt;
   font-weight: 700;
   padding: 0 50px;
 }
