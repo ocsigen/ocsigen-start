@@ -44,8 +44,7 @@ let%shared the_local_css = [
   ["ot_popup.css"];
   ["ot_spinner.css"];
   ["eba_otdemo.css"];
-  ["eba.css"];
-  [ css_name ]
+  ["eba.css"]
 ]
 
 [%%shared.start]
