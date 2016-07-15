@@ -1,4 +1,5 @@
 
+[%%shared.start]
 
 val popup_button:
   button_name:string ->
