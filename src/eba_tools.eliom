@@ -5,7 +5,7 @@ let%shared popup_button button_name popup_content = Eliom_content.Html.D.(
       ~a:[a_class ["eba_popup_button"]]
       ~input_type:`Submit
       ~value:button_name
-      (Form.string)
+      Form.string
   in
   ignore
     [%client
@@ -21,5 +21,5 @@ let%shared popup_button button_name popup_content = Eliom_content.Html.D.(
               Lwt.return ()))
            : _)
     ];
-  Lwt.return button
+  button
 )
