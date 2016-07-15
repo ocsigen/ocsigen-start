@@ -1,9 +1,11 @@
 [%%shared.start]
 
 let popup_button
-    ~button_name
-    ?(button_class = ["eba_popup_button"])
-    popup_content = Eliom_content.Html.D.(
+    ~(button_name:string)
+    ?(button_class = (["eba_popup_button"]: Html_types.nmtokens Eliom_content.Html.D.wrap))
+    (popup_content: 'a Eliom_content.Html.elt)
+    : [> Html_types.button] Eliom_content.Html.D.elt
+    = Eliom_content.Html.D.(
       let button =
 	button ~a:[a_class button_class] [pcdata button_name]
       in
