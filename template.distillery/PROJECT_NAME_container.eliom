@@ -7,15 +7,6 @@ let%shared eba_header ?user () = Eliom_content.Html.F.(
   ignore user;
   let%lwt user_box = 
     %%%MODULE_NAME%%%_userbox.userbox user %%%MODULE_NAME%%%_services.upload_user_avatar_service in
-  let%lwt loginbox_button = match user with
-    | None ->
-      let%lwt connection_box = %%%MODULE_NAME%%%_userbox.connection_box () in
-      div ~a:[a_class ["collapsed";"navbar-right";"btn"]] [connection_box]
-      |> Lwt.return
-    | _ ->
-      div []
-      |> Lwt.return
-  in
   let%lwt navigation_bar = %%%MODULE_NAME%%%_navigationbar.navigationbar () in
   Lwt.return (
     nav ~a:[a_class ["navbar";"navbar-inverse";"navbar-relative-top"]] [
@@ -25,10 +16,7 @@ let%shared eba_header ?user () = Eliom_content.Html.F.(
             ~service:Eba_services.main_service [
 	      pcdata %%%MODULE_NAME%%%_base.application_name;
 	    ] ();
-	  user_box;
-	  div ~a:[a_class ["navbar-right"]] [
-	    loginbox_button;
-	  ]
+	  user_box
 	];
 	navigation_bar
       ]
