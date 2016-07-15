@@ -1,5 +1,6 @@
+{%%shared.start]
 
-let%shared popup_button
+let popup_button
     ~button_name
     ?(button_class = ["eba_popup_button"])
     popup_content = Eliom_content.Html.D.(
