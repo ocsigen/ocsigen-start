@@ -1,5 +1,5 @@
 
-let%shared popup_button button_name popup_content = Eliom_content.Html.D.(
+let%shared popup_button ~button_name ~popup_content = Eliom_content.Html.D.(
   let button =
     Form.input
       ~a:[a_class ["eba_popup_button"]]
