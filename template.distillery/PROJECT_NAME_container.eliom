@@ -9,7 +9,7 @@ let%shared eba_header ?user () = Eliom_content.Html.F.(
     %%%MODULE_NAME%%%_userbox.userbox user %%%MODULE_NAME%%%_services.upload_user_avatar_service in
   let%lwt loginbox_button = match user with
     | None ->
-      let%lwt connection_box = %%%MODULE_NAME%%%_userbox.connection_box' () in
+      let%lwt connection_box = %%%MODULE_NAME%%%_userbox.connection_box () in
       div ~a:[a_class ["collapsed";"navbar-right";"btn"]] [connection_box]
       |> Lwt.return
     | _ ->

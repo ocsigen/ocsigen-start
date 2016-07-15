@@ -8,7 +8,7 @@ let%shared connected_user_box user service = Eliom_content.Html.D.(
   ]
 )
 
-let%shared connection_box' () = Eliom_content.Html.D.(
+let%shared connection_box () = Eliom_content.Html.D.(
   let but = div ~a:[a_class ["eba_login_button"]]
     [pcdata "Login"]
   in
