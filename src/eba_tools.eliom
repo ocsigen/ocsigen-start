@@ -3,7 +3,6 @@ let%shared popup_button
     ~button_name
     ?(button_class = ["eba_popup_button"])
     ~popup_content
-    ()
     = Eliom_content.Html.D.(
       let button =
 	button ~a:[a_class button_class] [pcdata button_name]
