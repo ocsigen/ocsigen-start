@@ -1,4 +1,4 @@
-{%%shared.start]
+[%%shared.start]
 
 let popup_button
     ~button_name
