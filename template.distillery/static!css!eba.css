@@ -132,6 +132,15 @@ form input{
     font-size: 120%;
     margin-left: 10px;
 }
+.eba_login_menu input {
+    border-radius: 5px;
+    margin: 5px;
+    font-size: 150%;
+    padding: 5px;
+}
+.eba_login_menu form {
+    display: table-caption;
+}
 
 
 /* Display classes */
