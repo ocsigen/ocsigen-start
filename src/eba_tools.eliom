@@ -20,7 +20,7 @@ type service = (
    type elt = string * service
 
    val of_elt_list :
-     ?ul_class:string list -> elt list -> [>`Ul] Eliom_content.Html.F.elt Lwt.t
+     ?elt_class:string list -> elt list -> [>`Ul] Eliom_content.Html.F.elt Lwt.t
 
  end = struct
 
@@ -31,9 +31,9 @@ type service = (
      li [a ~service [pcdata text] ()]
    )
 
-   let of_elt_list ?(ul_class = []) elt_list = Eliom_content.Html.F.(
+   let of_elt_list ?(elt_class = []) elt_list = Eliom_content.Html.F.(
      Lwt.return
-     @@ ul ~a:[a_class ul_class]
+     @@ ul ~a:[a_class elt_class]
      @@ List.map li_of_elt elt_list
    )
 

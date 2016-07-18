@@ -3,11 +3,23 @@
 
 (** This module defines the default template for application pages *)
 
+
+let%shared navigation_bar =
+  let nav_elts = [
+    ("Home",Eba_services.main_service);
+    ("About",%%%MODULE_NAME%%%_services.about_service);
+    ("Demo",%%%MODULE_NAME%%%_services.otdemo_service)
+  ] in
+  fun () ->
+    Eba_tools.NavigationBar.of_elt_list
+      ~elt_class:["nav";"navbar-nav"]
+      nav_elts
+
 let%shared eba_header ?user () = Eliom_content.Html.F.(
   ignore user;
   let%lwt user_box = 
     %%%MODULE_NAME%%%_userbox.userbox user %%%MODULE_NAME%%%_services.upload_user_avatar_service in
-  let%lwt navigation_bar = %%%MODULE_NAME%%%_navigationbar.navigationbar () in
+  let%lwt navigation_bar = navigation_bar () in
   Lwt.return (
     nav ~a:[a_class ["navbar";"navbar-inverse";"navbar-relative-top"]] [
       div ~a:[a_class ["container-fluid"]] [
