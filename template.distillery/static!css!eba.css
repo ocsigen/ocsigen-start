@@ -143,6 +143,16 @@ form input{
     text-align: center;
 }
 
+/* Welcome box */
+.eba_welcome_box {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    display: inline-block;
+}
+.eba_welcome_box .button {
+    color: black;
+}
 
 /* Display classes */
 .navbar a {

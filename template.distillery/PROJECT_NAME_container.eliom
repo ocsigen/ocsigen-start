@@ -63,7 +63,6 @@ let%server connected_welcome_box () = Eliom_content.Html.F.(
 )
 
 
-
 let%server page userid_o content = Eliom_content.Html.F.(
   let%lwt user =
     match userid_o with
@@ -73,16 +72,18 @@ let%server page userid_o content = Eliom_content.Html.F.(
       let%lwt u = Eba_user_proxy.get_data userid in
       Lwt.return (Some u)
   in
+  let content = match user with
+    | Some user when not (Eba_user.is_complete user) ->
+      %%%MODULE_NAME%%%_welcomebox.connected_welcome_box () :: content
+    | _ ->
+      content
+  in
   let l = [
     div ~a:[a_class ["eba_body"]] content;
     eba_footer ();
   ] in
   let%lwt h = eba_header ?user () in
-  Lwt.return @@ match user with
-  | Some user when not (Eba_user.is_complete user) ->
-    h :: connected_welcome_box () :: l
-  | _ ->
-    h :: l
+  Lwt.return @@ h :: l
 )
 
 let%client page _ content = Eliom_content.Html.F.(
