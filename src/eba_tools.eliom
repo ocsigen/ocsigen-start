@@ -7,6 +7,7 @@ let%shared popup_button
       let button =
 	button ~a:[a_class button_class] [pcdata button_name]
       in
+      let%lwt popup_content = popup_content () in
       ignore
 	[%client
             (Lwt.async (fun () ->
@@ -21,5 +22,5 @@ let%shared popup_button
 		  Lwt.return ()))
                : _)
 	];
-      button
+      Lwt.return button
     )
