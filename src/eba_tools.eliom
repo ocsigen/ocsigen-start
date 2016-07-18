@@ -21,7 +21,7 @@
 
    val of_elt_list :
      ?elt_class:string list ->
-     ('a, 'b, 'c) elt list ->
+     ('a, [< `WithSuffix | `WithoutSuffix ] as 'b, 'c) elt list ->
      [>`Ul] Eliom_content.Html.F.elt Lwt.t
 
  end = struct
