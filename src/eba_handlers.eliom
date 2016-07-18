@@ -52,6 +52,14 @@ let set_password_handler' userid () (pwd, pwd2) =
     let%lwt user = Eba_user.user_of_userid userid in
     Eba_user.update' ~password:pwd user)
 
+let%client set_password_rpc =
+  ~%(Eliom_client.server_function
+       ~name:"Eba_handlers.set_password_rpc"
+       [%derive.json: string * string]
+       (Eba_session.connected_rpc
+          (fun myid p -> set_password_handler' myid () p))
+    )
+
 let generate_act_key
     ?(act_key = Ocsigen_lib.make_cryptographic_safe_string ())
     ?(send_email = true)

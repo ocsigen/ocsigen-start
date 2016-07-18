@@ -29,8 +29,12 @@ val upload_pic_link :
   ?a:[< Html_types.a_attrib > `OnClick ] Eliom_content.Html.D.Raw.attrib list
   -> ?content:Html_types.a_content Eliom_content.Html.D.Raw.elt list
   -> ?crop:float option
-  -> ?input:Html_types.label_content_fun Eliom_content.Html.D.Raw.elt list
-  -> ?submit:Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list
+  -> ?input:
+    Html_types.label_attrib Eliom_content.Html.D.Raw.attrib list
+     * Html_types.label_content_fun Eliom_content.Html.D.Raw.elt list
+  -> ?submit:
+    Html_types.button_attrib Eliom_content.Html.D.Raw.attrib list
+     * Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list
   -> (unit -> unit) Eliom_client_value.t
   -> uploader
   -> int64

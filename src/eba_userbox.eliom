@@ -28,8 +28,8 @@ let%shared upload_pic_link
     ?(a = [])
     ?(content=[pcdata "Change profile picture"])
     ?(crop = Some 1.)
-    ?(input=[])
-    ?(submit=[pcdata "Submit"])
+    ?(input= [], [])
+    ?(submit= [], [pcdata "Submit"])
     close
     service
     userid =
