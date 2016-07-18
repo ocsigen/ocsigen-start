@@ -8,6 +8,7 @@ let%shared generic_email_form ~service = Eliom_content.Html.F.(
             ~input_type:`Email
             ~name
             Form.string;
+	  hr ();
           Form.input
             ~a:[a_class ["button"]]
             ~input_type:`Submit

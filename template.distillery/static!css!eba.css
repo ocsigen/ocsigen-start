@@ -140,6 +140,7 @@ form input{
 }
 .eba_login_menu form {
     display: table-caption;
+    text-align: center;
 }
 
 
