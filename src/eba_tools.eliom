@@ -2,8 +2,8 @@
 [%%shared
  module NavigationBar : sig
 
-   type ('get, 'gn) service = (
-     'get,
+   type service = (
+     unit,
      unit,
      Eliom_service.get,
      Eliom_service.att,
@@ -11,22 +11,20 @@
      Eliom_service.non_ext,
      Eliom_service.reg,
      [ `WithoutSuffix ],
-     'gn,
+     unit,
      unit,
      Eliom_service.non_ocaml
    ) Eliom_service.t
 
-   type ('a, 'b) elt = string * ('a, 'b) service
+   type elt = string * service
 
    val of_elt_list :
-     ?elt_class:string list ->
-     ('a, 'b) elt list ->
-     [>`Ul] Eliom_content.Html.F.elt Lwt.t
+     ?elt_class:string list -> elt list -> [>`Ul] Eliom_content.Html.F.elt Lwt.t
 
  end = struct
 
-   type ('get, 'gn) service = (
-     'get,
+   type service = (
+     unit,
      unit,
      Eliom_service.get,
      Eliom_service.att,
@@ -34,12 +32,12 @@
      Eliom_service.non_ext,
      Eliom_service.reg,
      [ `WithoutSuffix ],
-     'gn,
+     unit,
      unit,
      Eliom_service.non_ocaml
    ) Eliom_service.t
 
-   type ('a, 'b) elt = string * ('a, 'b) service
+   type elt = string * service
 
    let li_of_elt elt = Eliom_content.Html.F.(
      let text, service = elt in
