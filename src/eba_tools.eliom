@@ -2,7 +2,7 @@
 [%%shared
  module NavigationBar : sig
 
-   type ('get, 'tipo, 'gn) service = (
+   type ('get, 'gn) service = (
      'get,
      unit,
      Eliom_service.get,
@@ -10,23 +10,22 @@
      Eliom_service.non_co,
      Eliom_service.non_ext,
      Eliom_service.reg,
-     'tipo,
+     [ `WithoutSuffix ],
      'gn,
      unit,
      Eliom_service.non_ocaml
    ) Eliom_service.t
-   constraint 'tipo = [< `WithSuffix | `WithoutSuffix ]
 
-   type ('a, 'b, 'c) elt = string * ('a, 'b, 'c) service
+   type ('a, 'b) elt = string * ('a, 'b) service
 
    val of_elt_list :
      ?elt_class:string list ->
-     ('a, [< `WithSuffix | `WithoutSuffix ] as 'b, 'c) elt list ->
+     ('a, 'b) elt list ->
      [>`Ul] Eliom_content.Html.F.elt Lwt.t
 
  end = struct
 
-   type ('get, 'tipo, 'gn) service = (
+   type ('get, 'gn) service = (
      'get,
      unit,
      Eliom_service.get,
@@ -34,14 +33,13 @@
      Eliom_service.non_co,
      Eliom_service.non_ext,
      Eliom_service.reg,
-     'tipo,
+     [ `WithoutSuffix ],
      'gn,
      unit,
      Eliom_service.non_ocaml
    ) Eliom_service.t
-   constraint 'tipo = [< `WithSuffix | `WithoutSuffix ]
 
-   type ('a, 'b, 'c) elt = string * ('a, 'b, 'c) service
+   type ('a, 'b) elt = string * ('a, 'b) service
 
    let li_of_elt elt = Eliom_content.Html.F.(
      let text, service = elt in
