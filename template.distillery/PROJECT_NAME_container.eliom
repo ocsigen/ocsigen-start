@@ -65,7 +65,7 @@ let%server connected_welcome_box () = Eliom_content.Html.F.(
       ], (("", ""), ("", ""))
     | Some wpd -> p [pcdata "Wrong data. Please fix."], wpd
   in
-  div ~a:[a_id "eba_welcome_box"] [
+  div ~a:[a_class ["eba_login_menu";"eba_welcome_box"]] [
     div [h2 [pcdata ("Welcome!")]; info];
     Eba_view.information_form
       ~firstname:fn ~lastname:ln
@@ -86,7 +86,7 @@ let%server page userid_o content = Eliom_content.Html.F.(
   in
   let content = match user with
     | Some user when not (Eba_user.is_complete user) ->
-      %%%MODULE_NAME%%%_welcomebox.connected_welcome_box () :: content
+      connected_welcome_box () :: content
     | _ ->
       content
   in
