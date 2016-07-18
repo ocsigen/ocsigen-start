@@ -25,27 +25,36 @@ end
 
 [%%shared
 module PopupPage : DemoPage = struct
+
   let name = "Popup Button"
+
   let service =
     Eliom_service.create
       ~id:(Eliom_service.Path ["otdemo-popup"])
       ~meth:(Eliom_service.Get Eliom_parameter.unit)
       ()
+
   let page () =
-    let button = D.Form.input ~a:[a_class ["button"]] ~input_type:`Submit ~value:"Click for a popup!" (Form.string) in
+    let button =
+      D.Form.input 
+	~a:[a_class ["button"]]
+	~input_type:`Submit
+	~value:"Click for a popup!"
+	(Form.string)
+    in
     ignore
       [%client
-        (Lwt.async (fun () ->
-           Lwt_js_events.clicks
-             (To_dom.of_element ~%button)
-             (fun _ _ ->
+          (Lwt.async (fun () ->
+            Lwt_js_events.clicks
+              (To_dom.of_element ~%button)
+              (fun _ _ ->
                 let%lwt _ =
                   Ot_popup.popup
                     ~close_button:[pcdata "close"]
                     (fun _ -> Lwt.return @@ p [pcdata "Popup message"])
                 in
                 Lwt.return ()))
-         : _)
+             : _)
       ];
     [
       p [pcdata "Here is a button showing a simple popup window when clicked:"];
@@ -60,14 +69,19 @@ let%client (carousel_update, carousel_change) = React.E.create ()
 
 [%%shared
 module CarouselPage : DemoPage = struct
+
   let name = "Carousel"
+
   let service =
     Eliom_service.create
       ~id:(Eliom_service.Path ["otdemo-carousel"])
       ~meth:(Eliom_service.Get Eliom_parameter.unit)
       ()
+
   let page () =
-    let make_page content = div ~a:[a_class ["otdemo-carousel-page"]] [pcdata content] in
+    let make_page content =
+      div ~a:[a_class ["otdemo-carousel-page"]] [pcdata content]
+    in
     let carousel_pages = ["1"; "2"; "3"] in
     let carousel, pos, size, _ = Ot_carousel.make
       ~a:[a_class ["otdemo-carousel"]]
@@ -110,17 +124,15 @@ let%shared demos = [(module PopupPage : DemoPage); (module CarouselPage)]
 (* adds a drawer menu to the document body *)
 let%shared make_drawer_menu () =
   let menu =
-    let make_link (module D : DemoPage) = li [a ~service:D.service [pcdata @@ D.name] ()] in
+    let make_link (module D : DemoPage) =
+      li [a ~service:D.service [pcdata @@ D.name] ()]
+    in
     let menu = ul (List.map make_link demos) in
     [div ~a:[a_class ["eba-drawer"]] [h3 [pcdata "otdemo: drawer menu"]; menu]]
   in
   let (drawer, open_drawer, close_drawer) = Ot_drawer.drawer menu in
   ignore [%client (Eliom_content.Html.Manip.appendToBody ~%drawer : _)];
   (open_drawer, close_drawer)
-  (* let button = D.Form.input ~a:[a_class ["button"]] ~input_type:`Submit ~value:"Menu→" (Form.string) in *)
-  (* ignore [%client (Lwt.async (fun () -> Lwt_js_events.clicks (To_dom.of_element ~%button) *)
-  (*                        (fun ev _ -> ~%open_drawer (); Lwt.return ())) : _)]; *)
-  (* div ~a:[a_class ["eba-drawer-button"]] [ *)
 
 let%shared make_page userid_o content =
   %%%MODULE_NAME%%%_container.page userid_o (
