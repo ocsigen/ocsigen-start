@@ -74,16 +74,15 @@ let%server connected_welcome_box () = Eliom_content.Html.F.(
   ]
 )
 
+let%shared get_user_data = function
+  | None ->
+    Lwt.return None
+  | Some userid ->
+    let%lwt u = Eba_user_proxy.get_data userid in
+    Lwt.return (Some u)
 
 let%server page userid_o content = Eliom_content.Html.F.(
-  let%lwt user =
-    match userid_o with
-    | None ->
-      Lwt.return None
-    | Some userid ->
-      let%lwt u = Eba_user_proxy.get_data userid in
-      Lwt.return (Some u)
-  in
+  let%lwt user = get_user_data userid_o in
   let content = match user with
     | Some user when not (Eba_user.is_complete user) ->
       connected_welcome_box () :: content
@@ -98,10 +97,12 @@ let%server page userid_o content = Eliom_content.Html.F.(
   Lwt.return @@ h :: l
 )
 
-let%client page _ content = Eliom_content.Html.F.(
+let%client page userid_o content = Eliom_content.Html.F.(
+  let%lwt user = get_user_data userid_o in
   let l = [
     div ~a:[a_class ["eba_body"]] content;
     eba_footer ();
   ] in
-  let%lwt h = eba_header () in Lwt.return (h :: l)
+  let%lwt h = eba_header ?user () in Lwt.return (h :: l)
 )
+
