@@ -9,6 +9,12 @@
 let app_name = ref ""
 let css_name = ref ""
 let avatar_dir = ref []
+let eba_db_host = ref None
+let eba_db_port = ref None
+let eba_db_user = ref None
+let eba_db_password = ref None
+let eba_db_database = ref None
+let eba_db_unix_domain_socket_dir = ref None
 
 let app = Ocsigen_extensions.Configuration.(
   let attributes = [
@@ -30,4 +36,22 @@ let avatars = Ocsigen_extensions.Configuration.(
   element ~name:"avatars" ~obligatory:true ~attributes ()
 )
 
-let _ = Eliom_config.parse_config [app; avatars]
+let eba_db = Ocsigen_extensions.Configuration.(
+  let attributes = [
+    attribute ~name:"host" (fun h -> eba_db_host := Some h);
+    attribute ~name:"port" (fun h -> eba_db_port := begin
+      try Some (int_of_string h)
+      with Failure _ -> raise @@ Ocsigen_extensions.Error_in_config_file
+                                   "port is not an integer"
+    end);
+    attribute ~name:"user" (fun h -> eba_db_user := Some h);
+    attribute ~name:"password" (fun h -> eba_db_password := Some h);
+    attribute ~name:"database" (fun h -> eba_db_database := Some h);
+    attribute ~name:"unix_domain_socket_dir"
+      (fun h -> eba_db_unix_domain_socket_dir := Some h);
+  ]
+  in
+  element ~name:"eba-db" ~attributes ()
+)
+
+let _ = Eliom_config.parse_config [app; avatars; eba_db]

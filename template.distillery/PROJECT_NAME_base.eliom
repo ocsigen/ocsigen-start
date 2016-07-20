@@ -17,7 +17,7 @@ let () =
         "PGPORT environment variable must be an integer, not '%s'" s
   in
   Eba_db.init ()
-    ~db_host:(getenv "PGHOST" "localhost")
+    ~host:(getenv "PGHOST" "localhost")
     ~port:(int_of_pgport (getenv "PGPORT" "3000"))
     ~database:"%%%PROJECT_NAME%%%"
 
