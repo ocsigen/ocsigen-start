@@ -149,6 +149,7 @@ EDIT_WARNING=DON\'T EDIT THIS FILE! It is generated from $(PROJECT_NAME).conf.in
 SED_ARGS = -e "/^ *%%%/d"
 SED_ARGS += -e "s|%%PROJECT_NAME%%|$(PROJECT_NAME)|g"
 SED_ARGS += -e "s|%%DB_NAME%%|$(DB_NAME)|g"
+SED_ARGS += -e "s|%%DB_HOST%%|$(DB_HOST)|g"
 SED_ARGS += -e "s|%%DB_PORT%%|$(DB_PORT)|g"
 SED_ARGS += -e "s|%%DB_USER%%|$(DB_USER)|g"
 SED_ARGS += -e "s|%%DB_PASSWORD%%|$(DB_PASSWORD)|g"
