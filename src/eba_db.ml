@@ -351,7 +351,12 @@ module User = struct
                      t2 in $emails_table$;
                      t1.userid = t2.userid;
                      t2.email = $string:email$;
+                     t2.validated
              >>
+             (* We fail for non-validated e-mails,
+                because we don't want the user to log in with a non-validated
+                email address. For example if the sign-up form contains
+                a password field. *)
          in
          let (userid, password') = (r#!userid, r#?password) in
          match password' with
