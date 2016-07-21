@@ -46,7 +46,7 @@ let set_personal_data_handler' userid ()
 let set_password_handler' userid () (pwd, pwd2) =
   if pwd <> pwd2
   then
-    (Eba_msg.msg ~level:`Err "Passwords do not match";
+    (Eba_msg.msg ~level:`Err ~onload:true "Passwords do not match";
      Lwt.return ())
   else (
     let%lwt user = Eba_user.user_of_userid userid in
@@ -121,7 +121,7 @@ let sign_up_handler () email =
     then send_act email userid
     else begin
       Eliom_reference.Volatile.set Eba_userbox.user_already_exists true;
-      Eba_msg.msg ~level:`Err "E-mail already exists";
+      Eba_msg.msg ~level:`Err ~onload:true "E-mail already exists";
       Lwt.return ()
     end
 
@@ -142,7 +142,7 @@ let forgot_password_handler service () email =
     send_act msg service email userid
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set Eba_userbox.user_does_not_exist true;
-    Eba_msg.msg ~level:`Err "User does not exist";
+    Eba_msg.msg ~level:`Err ~onload:true "User does not exist";
     Lwt.return ()
 
 
@@ -172,7 +172,7 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
     Eba_session.connect ~expire:(not keepmeloggedin) userid
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set Eba_userbox.wrong_password true;
-    Eba_msg.msg ~level:`Err "Wrong password";
+    Eba_msg.msg ~level:`Err ~onload:true "Wrong password";
     Lwt.return ()
 
 let%server connect_handler_rpc' v = connect_handler () v
@@ -197,7 +197,8 @@ let activation_handler akey () =
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
       Eba_userbox.activation_key_outdated true;
-    Eba_msg.msg ~level:`Err "Invalid activation key, ask for a new one.";
+    Eba_msg.msg ~level:`Err ~onload:true
+      "Invalid activation key, ask for a new one.";
     (* VVV This should be a redirection, in order to erase the
        outdated URL. But we do not have a simple way of writing an
        error message after a redirection for now.*)
@@ -236,7 +237,7 @@ let preregister_handler' () email =
    then Eba_user.add_preregister email
    else begin
      Eliom_reference.Volatile.set Eba_userbox.user_already_preregistered true;
-     Eba_msg.msg ~level:`Err "E-mail already preregistered";
+     Eba_msg.msg ~level:`Err ~onload:true "E-mail already preregistered";
      Lwt.return ()
    end
 

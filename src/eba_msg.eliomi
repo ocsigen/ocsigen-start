@@ -28,8 +28,13 @@
     It is displayed during a short amount of time then disappears.
     The two levels correspond to different classes that you can
     personalize in CSS.
+
+    If [~onload] is [true], the message is displayed after the next page
+    is displayed (default [false]). When called on server side, this is
+    always the case.
 *)
-val msg : ?level:[`Err | `Msg] -> ?duration:float -> string -> unit
+val msg :
+  ?level:[`Err | `Msg] -> ?duration:float -> ?onload:bool -> string -> unit
 
 [%%server.start]
 val activation_key_created : bool Eliom_reference.Volatile.eref

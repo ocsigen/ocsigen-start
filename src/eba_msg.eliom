@@ -40,18 +40,21 @@ open Eliom_content.Html.F
 
 [%%shared
 
-  let msg ?(level = `Err) ?(duration = 2.) msg =
+  let msg ?(level = `Err) ?(duration = 2.) ?(onload=false) msg =
     ignore [%client (
       let c = if ~%level = `Msg then [] else ["eba_err"] in
       Eliom_lib.debug "%s" ~%msg;
       let msg = To_dom.of_p (D.p ~a:[a_class c] [pcdata ~%msg]) in
       let msgbox = msgbox () in
-      Dom.appendChild msgbox msg;
       Lwt.async (fun () ->
-        (let%lwt () = Lwt_js.sleep ~%duration in
-         Dom.removeChild msgbox msg;
-         Lwt.return ()))
-    : unit)]
+        let%lwt () =
+          if ~%onload then Eliom_client.lwt_onload () else Lwt.return ()
+        in
+        Dom.appendChild msgbox msg;
+        let%lwt () = Lwt_js.sleep ~%duration in
+        Dom.removeChild msgbox msg;
+        Lwt.return ())
+      : unit)]
 
 ]
 
