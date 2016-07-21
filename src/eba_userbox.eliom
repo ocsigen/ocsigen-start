@@ -206,10 +206,9 @@ let reset_tips_service = Eba_tips.reset_tips_service
       let%lwt d, o1, o2, o3, o4 = connection_box_ () in
       (* function to press the corresponding button and display
        * the flash message error. *)
-      let press but msg =
+      let press but =
         ignore [%client (
           ((Ow_button.to_button_alert ~%but))##press;
-          Eba_msg.msg ~level:`Err ~%msg
         : unit)];
         Lwt.return ()
       in
@@ -228,15 +227,15 @@ let reset_tips_service = Eba_tips.reset_tips_service
         in
 
         if wrong_password
-        then press o1 "Wrong password"
+        then press o1
         else if activation_key_outdated
-        then press o2 "Invalid activation key, ask for a new one."
+        then press o2
         else if user_already_exists
-        then press o34 "E-mail already exists"
+        then press o34
         else if user_does_not_exist
-        then press o2 "User does not exist"
+        then press o2
         else if user_already_preregistered
-        then press o3 "E-mail already preregistered"
+        then press o3
         else Lwt.return ()
       in
 

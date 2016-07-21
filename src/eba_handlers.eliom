@@ -121,6 +121,7 @@ let sign_up_handler () email =
     then send_act email userid
     else begin
       Eliom_reference.Volatile.set Eba_userbox.user_already_exists true;
+      Eba_msg.msg ~level:`Err "E-mail already exists";
       Lwt.return ()
     end
 
@@ -140,8 +141,8 @@ let forgot_password_handler service () email =
                please click on this link: " in
     send_act msg service email userid
   with Eba_db.No_such_resource ->
-    Eliom_reference.Volatile.set
-      Eba_userbox.user_does_not_exist true;
+    Eliom_reference.Volatile.set Eba_userbox.user_does_not_exist true;
+    Eba_msg.msg ~level:`Err "User does not exist";
     Lwt.return ()
 
 
@@ -171,6 +172,7 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
     Eba_session.connect ~expire:(not keepmeloggedin) userid
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set Eba_userbox.wrong_password true;
+    Eba_msg.msg ~level:`Err "Wrong password";
     Lwt.return ()
 
 let%server connect_handler_rpc' v = connect_handler () v
@@ -195,6 +197,7 @@ let activation_handler akey () =
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
       Eba_userbox.activation_key_outdated true;
+    Eba_msg.msg ~level:`Err "Invalid activation key, ask for a new one.";
     (* VVV This should be a redirection, in order to erase the
        outdated URL. But we do not have a simple way of writing an
        error message after a redirection for now.*)
@@ -232,8 +235,8 @@ let preregister_handler' () email =
   if not (is_preregistered || is_registered)
    then Eba_user.add_preregister email
    else begin
-     Eliom_reference.Volatile.set
-       Eba_userbox.user_already_preregistered true;
+     Eliom_reference.Volatile.set Eba_userbox.user_already_preregistered true;
+     Eba_msg.msg ~level:`Err "E-mail already preregistered";
      Lwt.return ()
    end
 
