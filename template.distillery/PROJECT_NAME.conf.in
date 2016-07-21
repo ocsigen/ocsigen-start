@@ -29,9 +29,11 @@
         <app name="%%APPNAME%%" css="%%CSSNAME%%" />
         <avatars dir="%%FILESDIR%%/avatars" />
         <eba-db
-          host="localhost"
-          port="3000"
-          database="%%PROJECT_NAME%%"
+          host="%%DB_HOST%%"
+          port="%%DB_PORT%%"
+          user="%%DB_USER%%"
+          password="%%DB_PASSWORD%%"
+          database="%%DB_NAME%%"
         />
       </eliommodule>
       <eliom/>
