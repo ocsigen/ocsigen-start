@@ -34,7 +34,6 @@ LOCAL := yes
 PSQL_DIR := local_db
 PSQL_LOG := $(PSQL_DIR)/log
 PSQL_FILE := $(DB_NAME).sql
-PSQL_PARAMS := -p $(DB_PORT) -h $(DB_HOST)
 
 $(PSQL_DIR):
 	-mkdir -p $@
@@ -81,15 +80,15 @@ db-stop:
 endif
 
 db-create:
-	createdb $(PSQL_PARAMS) --encoding UNICODE $(DB_NAME)
+	$(ENV_PGOCAML) createdb --encoding UNICODE $(DB_NAME)
 
 db-update:
-	psql $(PSQL_PARAMS) -d $(DB_NAME) -f $(PSQL_FILE)
+	$(ENV_PGOCAML) psql -d $(DB_NAME) -f $(PSQL_FILE)
 
 db-drop:
-	dropdb $(PSQL_PARAMS) $(DB_NAME)
+	$(ENV_PGOCAML) dropdb $(DB_NAME)
 
 db-psql:
-	psql $(PSQL_PARAMS) $(DB_NAME)
+	$(ENV_PGOCAML) psql $(DB_NAME)
 
 ##----------------------------------------------------------------------
