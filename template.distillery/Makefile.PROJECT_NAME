@@ -14,16 +14,15 @@ DB_NAME := %%%PROJECT_NAME%%%
 DB_USER := $(USER)
 DB_PASSWORD := ""
 
-# DO NOT EDIT
-ENV_PGOCAML := PGHOST=$(DB_HOST) PGDATABASE=$(DB_NAME) PGPORT=$(DB_PORT) PGUSER=$(USER_DB) PGPASSWORD=$(DB_PASSWORD)
+ENV_PSQL := PGHOST=$(DB_HOST) PGDATABASE=$(DB_NAME) PGPORT=$(DB_PORT) PGUSER=$(USER_DB) PGPASSWORD=$(DB_PASSWORD)
 
 ## OVERLOAD Required binaries
-ELIOMC            := $(ENV_PGOCAML) $(ELIOMC)
-ELIOMOPT          := $(ENV_PGOCAML) $(ELIOMOPT)
-JS_OF_ELIOM       := $(ENV_PGOCAML) $(JS_OF_ELIOM)
-ELIOMDEP          := $(ENV_PGOCAML) $(ELIOMDEP)
-OCSIGENSERVER     := $(ENV_PGOCAML) $(OCSIGENSERVER)
-OCSIGENSERVER.OPT := $(ENV_PGOCAML) $(OCSIGENSERVER.OPT)
+ELIOMC            := $(ENV_PSQL) $(ELIOMC)
+ELIOMOPT          := $(ENV_PSQL) $(ELIOMOPT)
+JS_OF_ELIOM       := $(ENV_PSQL) $(JS_OF_ELIOM)
+ELIOMDEP          := $(ENV_PSQL) $(ELIOMDEP)
+OCSIGENSERVER     := $(ENV_PSQL) $(OCSIGENSERVER)
+OCSIGENSERVER.OPT := $(ENV_PSQL) $(OCSIGENSERVER.OPT)
 
 ## Here are some extra rules to help you to manage your database
 
@@ -80,15 +79,15 @@ db-stop:
 endif
 
 db-create:
-	$(ENV_PGOCAML) createdb --encoding UNICODE $(DB_NAME)
+	$(ENV_PSQL) createdb --encoding UNICODE $(DB_NAME)
 
 db-update:
-	$(ENV_PGOCAML) psql -d $(DB_NAME) -f $(PSQL_FILE)
+	$(ENV_PSQL) psql -d $(DB_NAME) -f $(PSQL_FILE)
 
 db-drop:
-	$(ENV_PGOCAML) dropdb $(DB_NAME)
+	$(ENV_PSQL) dropdb $(DB_NAME)
 
 db-psql:
-	$(ENV_PGOCAML) psql $(DB_NAME)
+	$(ENV_PSQL) psql $(DB_NAME)
 
 ##----------------------------------------------------------------------
