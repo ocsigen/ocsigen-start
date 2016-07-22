@@ -17,12 +17,13 @@ DB_PASSWORD := ""
 ENV_PSQL := PGHOST=$(DB_HOST) PGDATABASE=$(DB_NAME) PGPORT=$(DB_PORT) PGUSER=$(USER_DB) PGPASSWORD=$(DB_PASSWORD)
 
 ## OVERLOAD Required binaries
+JS_OF_ELIOM       := $(JS_OF_ELIOM)
 ELIOMC            := $(ENV_PSQL) $(ELIOMC)
 ELIOMOPT          := $(ENV_PSQL) $(ELIOMOPT)
-JS_OF_ELIOM       := $(ENV_PSQL) $(JS_OF_ELIOM)
 ELIOMDEP          := $(ENV_PSQL) $(ELIOMDEP)
-OCSIGENSERVER     := $(ENV_PSQL) $(OCSIGENSERVER)
-OCSIGENSERVER.OPT := $(ENV_PSQL) $(OCSIGENSERVER.OPT)
+# ocsigenserver uses the DB settings from %%%PROJECT_NAME%%%.conf.in (which should be the same as ENV_PSQL)
+OCSIGENSERVER     := $(OCSIGENSERVER)
+OCSIGENSERVER.OPT := $(OCSIGENSERVER.OPT)
 
 ## Here are some extra rules to help you to manage your database
 
