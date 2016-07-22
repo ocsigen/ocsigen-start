@@ -27,9 +27,6 @@ EXTERNAL_CSS_FILES=$(SHAREDIR)/ocsigen-toolkit/css/*.css
 LOCAL_STATIC = static
 LOCAL_STATIC_CSS = $(LOCAL_STATIC)/css
 
-# The backend for persistent data. Can be dbm, pgsql or sqlite.
-PERSISTENT_DATA_BACKEND = dbm
-
 # Debug application (yes/no): Debugging info in compilation,
 # JavaScript, ocsigenserver
 DEBUG := yes
