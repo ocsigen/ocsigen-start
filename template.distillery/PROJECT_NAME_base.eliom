@@ -2,12 +2,6 @@ let%server application_name = !%%%MODULE_NAME%%%_config.app_name
 
 let%client application_name = Eliom_client.get_application_name ()
 
-let getenv name default_value =
-  try
-    Sys.getenv name
-  with Not_found ->
-    default_value
-
 let () =
   let int_of_pgport s =
     try
@@ -16,10 +10,14 @@ let () =
       failwith @@ Printf.sprintf
         "PGPORT environment variable must be an integer, not '%s'" s
   in
-  Eba_db.init ()
-    ~db_host:(getenv "PGHOST" "localhost")
-    ~port:(int_of_pgport (getenv "PGPORT" "3000"))
-    ~database:"%%%PROJECT_NAME%%%"
+  Eba_db.init
+    ?host:!%%%MODULE_NAME%%%_config.eba_db_host
+    ?port:!%%%MODULE_NAME%%%_config.eba_db_port
+    ?user:!%%%MODULE_NAME%%%_config.eba_db_user
+    ?password:!%%%MODULE_NAME%%%_config.eba_db_password
+    ?database:!%%%MODULE_NAME%%%_config.eba_db_database
+    ?unix_domain_socket_dir:!%%%MODULE_NAME%%%_config.eba_db_unix_domain_socket_dir
+    ()
 
 let () = Eba_email.set_mailer "/usr/sbin/sendmail"
 

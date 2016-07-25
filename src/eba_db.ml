@@ -32,17 +32,29 @@ module Lwt_PGOCaml = PGOCaml_generic.Make(Lwt_thread)
 module Lwt_Query_ = Query.Make_with_Db(Lwt_thread)(Lwt_PGOCaml)
 module PGOCaml = Lwt_PGOCaml
 
-let port = ref 3000
-let db = ref "eba"
-let host = ref "localhost"
+let host_r = ref None
+let port_r = ref None
+let user_r = ref None
+let password_r = ref None
+let database_r = ref None
+let unix_domain_socket_dir_r = ref None
 
-let init ~port:p ~database ~db_host () =
-  port := p;
-  db := database;
-  host := db_host
+let init ?host ?port ?user ?password ?database ?unix_domain_socket_dir () =
+  host_r := host;
+  port_r := port;
+  user_r := user;
+  password_r := password;
+  database_r := database;
+  unix_domain_socket_dir_r := unix_domain_socket_dir
 
-let connect () =
-  Lwt_PGOCaml.connect ~host:!host ~port:!port ~database:!db ()
+let connect () = Lwt_PGOCaml.connect
+  ?host:!host_r
+  ?port:!port_r
+  ?user:!user_r
+  ?password:!password_r
+  ?database:!database_r
+  ?unix_domain_socket_dir:!unix_domain_socket_dir_r
+  ()
 
 let validate db =
   try_lwt

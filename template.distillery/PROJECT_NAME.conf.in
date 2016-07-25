@@ -17,7 +17,16 @@
     <extension findlib-package="ocsigenserver.ext.cors"/>
     <commandpipe>%%CMDPIPE%%</commandpipe>
     <extension findlib-package="ocsigenserver.ext.staticmod"/>
-    <extension findlib-package="ocsigenserver.ext.ocsipersist-%%PERSISTENT_DATA_BACKEND%%"/>
+    <!-- we use the PostgreSQL backend for ocsipersist,
+         but there is also a DBM and an SQLite backend -->
+    <!-- <extension findlib-package="ocsigenserver.ext.ocsipersist-dbm"> -->
+    <!-- <extension findlib-package="ocsigenserver.ext.ocsipersist-sqlite"> -->
+    <extension findlib-package="ocsigenserver.ext.ocsipersist-pgsql"
+      host="%%DB_HOST%%"
+      port="%%DB_PORT%%"
+      user="%%DB_USER%%"
+      password="%%DB_PASSWORD%%"
+    />
     <extension findlib-package="eliom.server"/>
     %%% This will include the packages defined as SERVER_PACKAGES in your Makefile:
     %%PACKAGES%%
@@ -28,6 +37,13 @@
       <eliommodule module="%%LIBDIR%%/%%PROJECT_NAME%%.cma">
         <app name="%%APPNAME%%" css="%%CSSNAME%%" />
         <avatars dir="%%FILESDIR%%/avatars" />
+        <eba-db
+          host="%%DB_HOST%%"
+          port="%%DB_PORT%%"
+          user="%%DB_USER%%"
+          password="%%DB_PASSWORD%%"
+          database="%%DB_NAME%%"
+        />
       </eliommodule>
       <eliom/>
       <if>
