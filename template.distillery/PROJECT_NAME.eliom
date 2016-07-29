@@ -60,11 +60,11 @@ let () =
     ~service:Eba_services.sign_up_service'
     Eba_handlers.sign_up_handler;
 
-  Eliom_registration.Action.register
+  Eliom_registration.Unit.register
     ~service:Eba_services.connect_service
     Eba_handlers.connect_handler;
 
-  Eliom_registration.Action.register
+  Eliom_registration.Unit.register
     ~service:Eba_services.disconnect_service
     Eba_handlers.disconnect_handler;
 
