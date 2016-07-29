@@ -1,228 +1,288 @@
 /* Default CSS for eba and OW */
 
-/* Default style for some basic elements */
+/******************************************************************************/
+/*********************Default style for some basic elements********************/
+/******************************************************************************/
+
+hr {
+    color: transparent;
+}
+
+br {
+    colot: transparent;
+}
 
 a {
-  text-decoration: none;
-  cursor: pointer;
+    text-decoration: none;
+}
+a:hover {
+    cursor: pointer;
 }
 
-input {
-  border: none;
-  padding: 2px 4px;
-}
-input:focus {
-  outline: none;
-}
-input[type="submit"]:hover {
-  cursor: pointer;
-}
-input[type="submit"]:focus {
-  outline: 2px solid #ddd;
+html {
+    box-sizing: border-box;
+    font-familiy: sans-serif;
 }
 
-/* Login box */
+body {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #333;
+    background-color: #fff;
+    margin: 0;
+}
+
+nav {
+    display: block;
+}
+
+form input{
+    font-size: 100%;
+}
+
+/* footer */
+.footer {
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.footer a {
+    font-size: 110% !important;
+    color: #8fbc8f !important;
+}
+
+
+/* Buttons */
+.btn {
+    border: solid 1px;
+    border-radius: 10px;
+    border-width: 2px;
+    background-color: transparent;
+    font-size: 120%;
+    padding: 5px 5px;
+}
+
+.btn:hover {
+    cursor: pointer;
+}
+.button:hover {
+    cursor: pointer;
+}
+
+/* Connected userbox and user settings */
+.connected_user_box {
+    width: auto;
+    display: flex;
+}
+.connected_user_box i {
+    height: auto;
+    width: auto;
+}
+
+.eba_username {
+    margin-left: 20px;
+    margin-right: 20px;
+    color: white;
+    font-size: 120%;
+}
+
+.eba_usermenu {
+    position: relative;
+    width: 90px;
+    padding: 5px 5px;
+    text-align: center;
+}
+
+.usermenu_pop {
+    position: absolute;
+    top: 80px;
+    right: 15px;
+    border: 2px solid white !important;
+    font-size: 100%;
+    padding: 5px 5px !important;
+    border-radius: 10px;
+    border-width: 2px !important;
+    text-align: initial;
+    width: auto;
+}
+
+.usermenu_pop .button {
+    border: solid 1px;
+    border-radius: 10px;
+    border-width: 2px;
+    color: white;
+    background-color: transparent;
+    font-size: 100%;
+}
+
+/* Body */
+.eba_body {
+    text-align: center;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 920px;
+}
+
+/*Login Menu*/
+.eba_login_menu .button {
+    border: solid 1px;
+    border-radius: 10px;
+    border-width: 2px;
+    color: white;
+    background-color: transparent;
+    font-size: 120%;
+    margin-left: 10px;
+}
+.eba_login_menu input {
+    border-radius: 5px;
+    margin: 5px;
+    font-size: 150%;
+    padding: 5px;
+}
+.eba_login_menu form {
+    display: table-caption;
+    text-align: center;
+}
+
+/* Welcome box */
+.eba_welcome_box {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    display: inline-block;
+}
+.eba_welcome_box .button {
+    color: black;
+}
+
+/* Display classes */
+.navbar a {
+    color: white;
+}
+
+.navbar-nav {
+    list-style-type: none;
+    display: flex !important;
+}
+.navbar-nav li {
+    font-size: 150%;
+    margin: auto;
+    padding: 10px 10px;
+}
+
+.navbar-brand {
+    font-size: 200%;
+    margin-left: 30px;
+}
+
+.navbar-inverse {
+    background-color: #222;
+    border-color: #080808;
+    color: #fff;
+}
+
+.navbar {
+    border-radius: 4px;
+    position: relative;
+    min-height: 50px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+}
+
+.navbar-right {
+    float: right !important;
+    margin-right: 5px;
+    margin-top: 10px;
+}
+
+.navbar-header {
+    margin-right: 0;
+    margin-left: 0;
+    float: left;
+    width: 100%;
+}
+
+.container-fluid {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/* Width relative display */
+.collapse {
+    display: initial;
+}
+@media only screen and (max-width: 1300px){
+    .collapse {
+	display: none;
+    }
+}
+
+.collapsed {
+    display: none;
+}
+@media only screen and (max-width: 1300px){
+    .collapsed {
+	display: initial;
+    }
+}
+
+/* Smartphone */
+@media only screen and (min-device-width : 320px) and (max-device-width: 480px) {
+    body {
+	font-size: 20px;
+    }
+}
+
+
+/**/
+.fa-large {
+    color: #ddd;
+    font-size: 38px;
+    vertical-align: middle;
+    padding: 6px;
+}
+
+/******************************************************************************/
+/**********************************Login box***********************************/
+/******************************************************************************/
+
 div#eba_login_signup_box {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: auto;
-  width: 560px;
-  padding: 0 20px;
+    height: auto;
+    width: 560px;
+    right: 100px;
 }
 div#eba_login_signup_box form {
   text-align: left;
   height: auto;
 }
+
 div#eba_login_signup_box input {
   display: inline-block;
   margin: 0 10px 10px 0;
   width: 120px;
 }
-div#eba_login_signup_box label {
-  margin: 0 10px 0 0;
+
+div#eba_login_signup_box input[type="checkbox"] {
+  width: 10px;
 }
+
+div#eba_login_signup_box span {
+    margin-right: 10px
+}
+
+div#eba_login_signup_box label {
+    margin: 0 10px 0 0;
+}
+
 div#eba_login_signup_box h2 {
   display: inline;
   margin: 0 10px 0 0;
-  color: #ddd;
   cursor: pointer;
-  font-size: 12px;
 }
 div#eba_login_signup_box h2.pressed {
-  color: black;
-}
-
-/* User box */
-#eba-user-box {
-  position: relative;
-}
-
-#eba-user-box img,
-#eba-user-box div.eba_username,
-#eba-user-box i {
-  display: inline-block;
-  vertical-align: middle;
-  padding: 0;
-}
-
-#eba-user-box img {
-  height: 50px;
-  width: 50px;
-}
-
-#eba-user-box div.eba_username {
-  padding: 0px 8px;
-}
-
-#eba-user-box i.fa {
-  color: #ddd;
-  font-size: 38px;
-  vertical-align: middle;
-  padding: 6px;
-}
-#eba-user-box div.eba_usermenu {
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-#eba-user-box div.eba_usermenu_button {
-  position: relative;
-  right: 0;
-  cursor: pointer;
-  width: 50px;
-}
-.ojw_alert {
-  display: none;
-}
-#eba-user-box div.ojw_alert {
-  position: absolute;
-  right: 0;
-  top: 50px;
-  color: black;
-  background-color: white;
-  border: 1px #ddd solid;
-  padding: 10px;
-  display: none;
-}
-
-/* Messages */
-div#eba_msg {
-  position: fixed;
-  top: 0;
-  right:0;
-  width: 600px;
-  margin: 0;
-}
-div#eba_msg p {
-  min-height: 22px;
-  padding: 14px 10px;
-  margin: 0;
-  text-align: left;
-  background-color: white;
-  color: #445588;
-}
-div#eba_msg p.eba_err {
-  background-color: #db6573;
-  color: white;
-  font-weight: bold;
-}
-
-.ow_background {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  top: 0;
-  left: 0;
-  text-align: center;
-  padding-top: 80px;
-  padding-bottom: 80px;
-  overflow: auto;
-}
-
-div.ow_popup {
-  position: relative;
-  display: inline-block;
-  background-color: white;
-  box-shadow: 0px 0px 5px 1px black;
-  padding-top: 20px;
-}
-
-i.fa-close,
-i.ot-icon-close {
-  position: absolute;
-  right: 2px;
-  top: 2px;
-  cursor: pointer;
-}
-
-/* Pic upload */
-div.ow_pic_uploader {
-  position: relative;
-  background-color: white;
-  width: 800px;
-  padding: 40px;
-}
-
-div.ow_pic_uploader img {
-  width: 800px;
-}
-
-
-/* Tips */
-div.tip.bubble {
-  position: absolute;
-  margin: 20px;
-  padding: 30px 20px 30px 20px;
-  -webkit-box-shadow: 0px 2px 4px 4px rgba(0, 0, 0, 0.4);
-  box-shadow: 0px 2px 4px 4px rgba(0, 0, 0, 0.4);
-  background-color: white;
-  z-index: 1111;
-}
-div.tip.bubble div.bec {
-  background-color: white;
-  width: 20px;
-  height: 20px;
-  position: absolute;
-  transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
-  border: 1px solid #aaa;
-  z-index: -1;
-}
-div.tip.bubble li,
-div.tip.bubble p {
-  padding-bottom: 10px;
-}
-div.coltip {
-  width: 300px;
-}
-
-
-/* Closed process */
-div.eba_process_closed {
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0);
-  top: 0;
-  left: 0;
-  z-index: 10000000;
-  transition: background-color 2s;
-  -moz-transition: background-color 2s;
-  -webkit-transition: background-color 2s;
-  -o-transition: background-color 2s;
-}
-
-div.eba_process_closed img {
-  position: fixed;
-  right: 33%;
-  top: 55%;
-}
-div.eba_process_closed p {
-  position: fixed;
-  left: 66%;
-  top: 55%;
-  padding: 80px 0 0 15px;
+  color: red;
 }

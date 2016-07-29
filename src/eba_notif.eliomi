@@ -41,7 +41,13 @@
     be updated every time the client is notified.
 *)
 
-module Make(A : sig type key type notification end) :
+module type S = sig
+  type key
+  type notification
+  val equal_key : key -> key -> bool
+end
+
+module Make(A : S) :
 sig
 
   (** Make client process listen on data whose index is [key] *)
@@ -69,16 +75,21 @@ sig
   (** Returns the client react event. Map a function on this event to react
       to notifications from the server.
       For example:
-[{server{
-  let _ = Eba_session.on_start_process
-    (fun () ->
-       ignore {unit{ ignore (React.E.map handle_notif %(N.client_ev ())) }};
-       Lwt.return ()
-     )
-}}
-]
+
+      let%client handle_notification some_stuff ev =
+         ...
+
+      let%server something some_stuff =
+         ignore
+           [%client
+              (ignore (React.E.map
+		        (handle_notification ~%some_stuff)
+		        ~%(Notif_module.client_ev ())
+	      ) : unit)
+           ]
 
   *)
+
   val client_ev : unit -> (A.key * A.notification) Eliom_react.Down.t
 
 end

@@ -3,62 +3,58 @@
 
 (** This module defines the default template for application pages *)
 
-[%%shared
-  open Eliom_content.Html.F
-]
 
-[%%shared.start]
+let%shared navigation_bar =
+  let nav_elts = [
+    ("Home",Eba_services.main_service);
+    ("About",%%%MODULE_NAME%%%_services.about_service);
+    ("Demo",%%%MODULE_NAME%%%_services.otdemo_service)
+  ] in
+  fun () ->
+    Eba_tools.NavigationBar.of_elt_list
+      ~elt_class:["nav";"navbar-nav"]
+      nav_elts
 
-let user_menu close user uploader = [
-  p [pcdata "Change your password:"];
-  Eba_view.password_form ~service:Eba_services.set_password_service' ();
-  hr ();
-  Eba_userbox.upload_pic_link close uploader (Eba_user.userid_of_user user);
-  hr ();
-  Eba_userbox.reset_tips_link close;
-  hr ();
-  Eba_view.disconnect_button ();
-]
-
-let%client _ = Eba_userbox.set_user_menu user_menu
-
-let header ?user () =
+let%shared eba_header ?user () = Eliom_content.Html.F.(
   ignore user;
-  let%lwt user_box =
-    Eba_userbox.userbox user
-    %%%MODULE_NAME%%%_services.upload_user_avatar_service in
-  Lwt.return
-    (header ~a:[a_id "main"] [
-       a ~a:[a_id "%%%PROJECT_NAME%%%-logo"]
-         ~service:Eba_services.main_service [
-         pcdata %%%MODULE_NAME%%%_base.application_name;
-       ] ();
-       ul ~a:[a_id "%%%PROJECT_NAME%%%-navbar"]
-         [
-           li [a ~service:Eba_services.main_service
-                 [pcdata "Home"] ()];
-           li [a ~service:%%%MODULE_NAME%%%_services.about_service
-                 [pcdata "About"] ()];
-           li [a ~service:%%%MODULE_NAME%%%_services.otdemo_service
-                 [pcdata "ocsigen-toolkit demo"] ()]
-         ];
-       user_box;
-     ])
+  let%lwt user_box = 
+    %%%MODULE_NAME%%%_userbox.userbox user %%%MODULE_NAME%%%_services.upload_user_avatar_service in
+  let%lwt navigation_bar = navigation_bar () in
+  Lwt.return (
+    nav ~a:[a_class ["navbar";"navbar-inverse";"navbar-relative-top"]] [
+      div ~a:[a_class ["container-fluid"]] [
+	div ~a:[a_class ["navbar-header"]][
+	  a ~a:[a_class ["navbar-brand"]]
+            ~service:Eba_services.main_service [
+	      pcdata %%%MODULE_NAME%%%_base.application_name;
+	    ] ();
+	  user_box
+	];
+	navigation_bar
+      ]
+    ]
+  )
+)
 
-let footer () =
-  div ~a:[a_id "%%%PROJECT_NAME%%%-footer"] [
-    pcdata "This application has been generated using the ";
-    a ~service:Eba_services.eba_github_service [
-      pcdata "Eliom-base-app"
-    ] ();
-    pcdata " template for Eliom-distillery and uses the ";
-    a ~service:Eba_services.ocsigen_service [
-      pcdata "Ocsigen"
-    ] ();
-    pcdata " technology.";
+let%shared eba_footer () = Eliom_content.Html.F.(
+  footer ~a:[a_class ["footer";"navbar";"navbar-inverse"]] [
+    div ~a:[a_class ["container"]] [
+      p [
+	pcdata "This application has been generated using the ";
+	a ~service:Eba_services.eba_github_service [
+	  pcdata "Eliom-base-app"
+	] ();
+	pcdata " template for Eliom-distillery and uses the ";
+	a ~service:Eba_services.ocsigen_service [
+	  pcdata "Ocsigen"
+	] ();
+	pcdata " technology.";
+      ]
+    ]
   ]
+)
 
-let%server connected_welcome_box () =
+let%server connected_welcome_box () = Eliom_content.Html.F.(
   let info, ((fn, ln), (p1, p2)) =
     match Eliom_reference.Volatile.get Eba_msg.wrong_pdata with
     | None ->
@@ -69,37 +65,44 @@ let%server connected_welcome_box () =
       ], (("", ""), ("", ""))
     | Some wpd -> p [pcdata "Wrong data. Please fix."], wpd
   in
-  div ~a:[a_id "eba_welcome_box"] [
+  div ~a:[a_class ["eba_login_menu";"eba_welcome_box"]] [
     div [h2 [pcdata ("Welcome!")]; info];
     Eba_view.information_form
       ~firstname:fn ~lastname:ln
       ~password1:p1 ~password2:p2
       ()
   ]
+)
 
-let%server page userid_o content =
-  let%lwt user =
-    match userid_o with
-    | None ->
-      Lwt.return None
-    | Some userid ->
-      let%lwt u = Eba_user_proxy.get_data userid in
-      Lwt.return (Some u)
+let%shared get_user_data = function
+  | None ->
+    Lwt.return None
+  | Some userid ->
+    let%lwt u = Eba_user_proxy.get_data userid in
+    Lwt.return (Some u)
+
+let%server page userid_o content = Eliom_content.Html.F.(
+  let%lwt user = get_user_data userid_o in
+  let content = match user with
+    | Some user when not (Eba_user.is_complete user) ->
+      connected_welcome_box () :: content
+    | _ ->
+      content
   in
   let l = [
-    div ~a:[a_id "%%%PROJECT_NAME%%%-body"] content;
-    footer ();
+    div ~a:[a_class ["eba_body"]] content;
+    eba_footer ();
   ] in
-  let%lwt h = header ?user () in
-  Lwt.return @@ match user with
-  | Some user when not (Eba_user.is_complete user) ->
-    h :: connected_welcome_box () :: l
-  | _ ->
-    h :: l
+  let%lwt h = eba_header ?user () in
+  Lwt.return @@ h :: l
+)
 
-let%client page _ content =
+let%client page userid_o content = Eliom_content.Html.F.(
+  let%lwt user = get_user_data userid_o in
   let l = [
-    div ~a:[a_id "%%%PROJECT_NAME%%%-body"] content;
-    footer ();
+    div ~a:[a_class ["eba_body"]] content;
+    eba_footer ();
   ] in
-  let%lwt h = header () in Lwt.return (h :: l)
+  let%lwt h = eba_header ?user () in Lwt.return (h :: l)
+)
+

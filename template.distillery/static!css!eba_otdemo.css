@@ -1,6 +1,10 @@
 .eba-drawer {
-  background-color: #ddeeff;
+  background-color: #222;
+  color: white;
   overflow: hidden;
+}
+.eba-drawer a {
+  color: white;
 }
 
 .eba-drawer-button {
@@ -20,7 +24,8 @@ div.otdemo-carousel {
 div.otdemo-carousel-page {
   font-size: 4cm;
   margin: 1mm;
-  background-color: #ddeeff;
+  background-color: #222;
+  color: white;
 }
 
 button.dr-toggle-button {
@@ -35,10 +40,15 @@ button.dr-toggle-button::before {
 }
 
 div.ot-popup {
-  background-color: #ddeeff;
+  background-color: #222;
   padding: 7mm;
 }
 
 div.ot-popup-content {
   background-color: white;
+  color: black;
+}
+
+.ot-popup-close {
+    color: white;
 }
