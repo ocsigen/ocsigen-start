@@ -158,6 +158,7 @@ META: META.in
 
 CLIENT_CMI=$(wildcard $(addsuffix /eba_*.cmi,$(addprefix $(ELIOM_CLIENT_DIR)/,$(CLIENT_DIRS))))
 SERVER_CMI=$(wildcard $(addsuffix /eba_*.cmi,$(addprefix $(ELIOM_SERVER_DIR)/,$(SERVER_DIRS))))
+SERVER_CMX=$(wildcard $(addsuffix /eba_*.cmx,$(addprefix $(ELIOM_SERVER_DIR)/,$(SERVER_DIRS))))
 install: all META
 	$(OCAMLFIND) install $(PKG_NAME) META
 	mkdir -p $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
@@ -165,6 +166,7 @@ install: all META
 	cp $(CLIENT_CMO) $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
 	cp $(CLIENT_CMI) $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
 	cp $(SERVER_CMI) $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
+	cp $(SERVER_CMX) $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
 	cp $(LIBDIR)/$(PKG_NAME).client.cma $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
 	cp $(LIBDIR)/$(PKG_NAME).server.cm* $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
 	scripts/install.sh $(TEMPLATE_DIR) $(TEMPLATE_NAME)
