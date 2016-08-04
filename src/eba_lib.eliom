@@ -33,3 +33,26 @@ let%shared memoizator f =
       let%lwt value = f () in
       value_ref := Some value;
       Lwt.return value
+
+(**
+ * base_and_path_of_url "http://ocsigen.org:80/tuto/manual" returns
+ * (base, path) where base is "http://ocsigen.org:80" and path is
+ * ["tuto", "manual"]
+ *)
+let base_and_path_of_url url =
+  let (https, host, port, _, path, _, _) = Ocsigen_lib.Url.parse url in
+  let https_str = match https with
+  | None -> ""
+  | Some x -> if x then "https://" else "http://"
+  in
+  let host_str = match host with
+  | None -> ""
+  | Some x -> x
+  in
+  let port_str = match port with
+  | None -> ""
+  | Some x -> string_of_int x
+  in
+  (https_str ^ host_str ^ ":" ^ port_str, path)
+
+
