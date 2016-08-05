@@ -2,6 +2,8 @@
 -- Do not remove the field with a `-- DEFAULT` suffix.
 -- That's the default tables/fields needed by Eliom-base-app
 
+CREATE DATABASE ocsipersist;
+
 CREATE TABLE users ( -- DEFAULT
        userid bigserial primary key, -- DEFAULT
        firstname text NOT NULL,
