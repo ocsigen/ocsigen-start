@@ -60,7 +60,7 @@ let () =
     ~service:Eba_services.sign_up_service'
     Eba_handlers.sign_up_handler;
 
-  Eliom_registration.Action.register
+  Eliom_registration.Any.register
     ~service:Eba_services.connect_service
     Eba_handlers.connect_handler;
 
@@ -101,6 +101,11 @@ let%client () =
     (%%%MODULE_NAME%%%_page.Opt.connected_page main_service_handler)
 
 
+let%client () =
+  (*VVV Unit.register *)
+  Eliom_registration.Action.register
+    ~service:Eba_services.connect_service
+    Eba_handlers.connect_handler
 
 
 

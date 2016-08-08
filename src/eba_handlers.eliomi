@@ -1,7 +1,13 @@
+[%%server.start]
 
-[%%shared.start]
+val connect_handler : unit -> (string * string) * bool ->
+  Eliom_registration.browser_content Eliom_registration.kind Lwt.t
+
+[%%client.start]
 
 val connect_handler : unit -> (string * string) * bool -> unit Lwt.t
+
+[%%shared.start]
 
 val disconnect_handler : unit -> unit -> unit Lwt.t
 

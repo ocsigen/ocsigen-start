@@ -161,27 +161,61 @@ let%client disconnect_handler_rpc' =
        disconnect_handler_rpc')
 let%client disconnect_handler () v = disconnect_handler_rpc' v
 
+let%shared restart () =
+  (* We ask the client to restart.
+     On a Web app, it is just reloading the page.
+     On a mobile app, we want to restart from eliom.html.
+  *)
+  ignore [%client
+    (print_endline "restarting";
+     if Eliom_client.is_client_app ()
+     then Eliom_client.exit_to ~absolute:false
+         ~service:(Eliom_service.static_dir ())
+         ["eliom.html"] ()
+         (* How to do that without changing page? *)
+     else Eliom_client.exit_to ~absolute:false
+         ~service:Eliom_service.reload_action_hidden
+         () ();
+    : unit) ]
 
-let connect_handler () ((login, pwd), keepmeloggedin) =
+let%server connect_handler () ((login, pwd), keepmeloggedin) =
   (* SECURITY: no check here.
      We disconnect the user in any case, so that he does not believe
      to be connected with the new account if the password is wrong. *)
   let%lwt () = disconnect_handler () () in
   try%lwt
     let%lwt userid = Eba_user.verify_password login pwd in
-    Eba_session.connect ~expire:(not keepmeloggedin) userid
+    let%lwt () = Eba_session.connect ~expire:(not keepmeloggedin) userid in
+    (* We send nothing, but we ask the client process to restart
+       to be sure that any memory state is deleted. *)
+    restart ();
+    Eliom_registration.Unit.send ()
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set Eba_userbox.wrong_password true;
     Eba_msg.msg ~level:`Err ~onload:true "Wrong password";
-    Lwt.return ()
+    Eliom_registration.Action.send ()
 
-let%server connect_handler_rpc' v = connect_handler () v
+
+let%server connect_handler_rpc' ((login, pwd), keepmeloggedin) =
+  let%lwt () = disconnect_handler () () in
+  let%lwt userid = Eba_user.verify_password login pwd in
+  Eba_session.connect ~expire:(not keepmeloggedin) userid
+
 let%client connect_handler_rpc =
   ~%(Eliom_client.server_function
        ~name:"Eba_handlers.connect_handler"
        [%derive.json: (string * string) * bool]
        connect_handler_rpc')
-let%client connect_handler () v = connect_handler_rpc v
+
+let%client connect_handler () v =
+  try%lwt
+    let%lwt () = connect_handler_rpc v in
+    restart ();
+    Lwt.return ()
+  with e ->
+    Printf.printf "%s\n" (Printexc.to_string e);
+    Eba_msg.msg ~level:`Err ~onload:true "Wrong password";
+    Lwt.return ()
 
 let activation_handler akey () =
   (* SECURITY: we disconnect the user before doing anything. *)
