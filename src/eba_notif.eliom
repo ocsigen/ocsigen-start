@@ -11,6 +11,6 @@ module Make (A : S) = Eliom_notif.Make (struct
   [@@deriving eq]
   let get_identity = fun () ->
     Eba_current_user.Opt.get_current_userid () |> Lwt.return
-  let max_ressource = 1000
-  let max_identity_per_ressource = 10
+  let max_resource = 1000
+  let max_identity_per_resource = 10
 end)

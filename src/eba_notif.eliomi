@@ -90,6 +90,11 @@ sig
 
   *)
 
-  val client_ev : unit -> (A.key * A.notification) Eliom_react.Down.t
+  val client_ev : unit -> (A.key * A.notification) Eliom_react.Down.t Lwt.t
+
+  (** Call [clean freq] to launch an asynchronous thread clearing the tables
+      from empty data every [freq] seconds
+  *)
+  val clean : float -> unit Lwt.t
 
 end
