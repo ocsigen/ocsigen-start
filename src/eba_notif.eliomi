@@ -41,9 +41,14 @@
     be updated every time the client is notified.
 *)
 
+(** Input signature of the functor [Eba_notif.Make]. *)
 module type S = sig
+  (** [key] is the type of values designating a given resource. *)
   type key
+  (** [notification] is the type of values to notifiy clients with. *)
   type notification
+  (** [equal_key] is a function testing the equality between two values
+      of type [key].*)
   val equal_key : key -> key -> bool
 end
 
@@ -89,12 +94,10 @@ sig
            ]
 
   *)
-
   val client_ev : unit -> (A.key * A.notification) Eliom_react.Down.t Lwt.t
 
   (** Call [clean freq] to launch an asynchronous thread clearing the tables
-      from empty data every [freq] seconds
-  *)
-  val clean : float -> unit Lwt.t
+      from empty data. *)
+  val clean : unit -> unit Lwt.t
 
 end
