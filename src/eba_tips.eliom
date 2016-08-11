@@ -119,7 +119,7 @@ let%shared block ?(a = []) ~name ~content () =
     else begin
       let close_button = Ot_icons.D.close () in
       let box =
-        D.div ~a:(a_class [ "tip" ; "block" ]::a) (close_button :: content)
+        D.div ~a:(a_class [ "tip" ; "block" ]::a) (close_button :: content ())
       in
       ignore [%client
         (Lwt_js_events.(async (fun () ->
@@ -150,7 +150,8 @@ let%client display_bubble ?(a = [])
   let close_button = Ot_icons.D.close () in
   let box =
     D.div ~a:(a_class [ "tip" ; "bubble" ]::a)
-      (close_button::match arrow with None -> content | _ -> bec::content)
+      (close_button::match arrow with None -> content ()
+                                    | _ -> bec::content ())
   in
   Lwt_js_events.(async (fun () ->
     clicks (To_dom.of_element close_button)
