@@ -7,11 +7,10 @@ val disconnect_handler : unit -> unit -> unit Lwt.t
 
 val sign_up_handler : unit -> string -> unit Lwt.t
 
-[%%server.start]
-
 val activation_handler :
-  string -> unit ->
-  Eliom_registration.browser_content Eliom_registration.kind Lwt.t
+  string -> unit -> Eliom_registration.Action.result Lwt.t
+
+[%%server.start]
 
 val forgot_password_handler :
   (unit, unit, Eliom_service.get, Eliom_service.att, _,
@@ -29,5 +28,4 @@ val set_personal_data_handler' :
 
 [%%client.start]
 
-val activation_handler : string -> unit Lwt.t
 val set_password_rpc : string * string -> unit Lwt.t

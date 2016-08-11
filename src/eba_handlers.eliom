@@ -145,21 +145,34 @@ let forgot_password_handler service () email =
     Eba_msg.msg ~level:`Err ~onload:true "User does not exist";
     Lwt.return ()
 
+let%client restart () =
+  (* Restart the client.
+     On a Web app, it is just reloading the page.
+     On a mobile app, we want to restart from eliom.html.
+  *)
+  print_endline "restarting";
+  if Eliom_client.is_client_app ()
+  then Eliom_client.exit_to ~absolute:false
+      ~service:(Eliom_service.static_dir ())
+      ["eliom.html"] ()
+      (* How to do that without changing page? *)
+  else Eliom_client.exit_to ~absolute:false
+      ~service:Eliom_service.reload_action_hidden
+      () ()
 
 let disconnect_handler () () =
   (* SECURITY: no check here because we disconnect the session cookie owner. *)
   let%lwt () = Eba_session.disconnect () in
-  ignore
-    [%client (Eba_current_user.me := Eba_current_user.CU_notconnected : unit)];
+  ignore [%client (restart () : unit)];
   Lwt.return ()
 
-let%server disconnect_handler_rpc' v = disconnect_handler () v
+let%server disconnect_handler_rpc' () = disconnect_handler () ()
 let%client disconnect_handler_rpc' =
   ~%(Eliom_client.server_function
        ~name:"Eba_handlers.disconnect_handler"
        [%derive.json: unit]
        disconnect_handler_rpc')
-let%client disconnect_handler () v = disconnect_handler_rpc' v
+let%client disconnect_handler () () = disconnect_handler_rpc' ()
 
 
 let connect_handler () ((login, pwd), keepmeloggedin) =
@@ -183,7 +196,7 @@ let%client connect_handler_rpc =
        connect_handler_rpc')
 let%client connect_handler () v = connect_handler_rpc v
 
-let activation_handler akey () =
+let activation_handler_common ~restart ~akey =
   (* SECURITY: we disconnect the user before doing anything. *)
   (* If the user is already connected,
      we're going to disconnect him even if the activation key outdated. *)
@@ -192,34 +205,27 @@ let activation_handler akey () =
     let%lwt userid = Eba_user.userid_of_activationkey akey in
     let%lwt () = Eba_db.User.set_email_validated userid in
     let%lwt () = Eba_session.connect userid in
-    Eliom_registration.Redirection.send
-      (Eliom_registration.Redirection Eliom_service.reload_action)
+    Lwt.return ()
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set
       Eba_userbox.activation_key_outdated true;
     Eba_msg.msg ~level:`Err ~onload:true
       "Invalid activation key, ask for a new one.";
-    (* VVV This should be a redirection, in order to erase the
-       outdated URL. But we do not have a simple way of writing an
-       error message after a redirection for now.*)
-    Eliom_registration.Action.send ()
-
-let simple_activation_handler akey =
-  (* SECURITY: we disconnect the user before doing anything. *)
-  (* If the user is already connected,
-     we're going to disconnect him even if the activation key outdated. *)
-  let%lwt () = Eba_session.disconnect () in
-  try%lwt
-    let%lwt userid = Eba_user.userid_of_activationkey akey in
-    let%lwt () = Eba_db.User.set_email_validated userid in
-    let%lwt () = Eba_session.connect userid in
-    Lwt.return ()
-  with Eba_db.No_such_resource ->
     Lwt.return ()
 
-let%client activation_handler =
+let%server activation_handler akey () =
+  let%lwt () = activation_handler_common ~restart:false ~akey in
+  Eliom_registration.Action.send ()
+
+let%client activation_handler_rpc =
   ~%(Eliom_client.server_function ~name:"Eba_handlers.activation_handler"
-       [%derive.json: string] simple_activation_handler)
+       [%derive.json: string]
+       (fun akey -> activation_handler_common ~restart:true ~akey))
+
+let%client activation_handler akey () =
+  let%lwt () = activation_handler_rpc akey in
+  restart ();
+  Eliom_registration.Unit.send ()
 
           (*
 let admin_service_handler userid gp pp =
