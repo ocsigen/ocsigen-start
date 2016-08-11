@@ -37,6 +37,8 @@ let%shared upload_pic_link
                  : Html_types.a_content Eliom_content.Html.D.Raw.elt list) in
   D.Raw.a ~a:( a_onclick [%client (fun ev -> Lwt.async (fun () ->
     ~%close () ;
+    let upload =
+      Ot_picture_uploader.ocaml_service_upload ~service:~%service ~arg:() in
     try%lwt ignore @@
       Ot_popup.popup
         ~close_button:[ Ot_icons.F.close () ]
@@ -44,9 +46,8 @@ let%shared upload_pic_link
           Eliom_client.change_page
             ~service:Eliom_service.reload_action () ())
         (fun close -> Ot_picture_uploader.mk_form
-            ~crop:~%crop ~input:~%input ~submit:~%submit ~%service
-            ~after_submit:close
-            () ) ;
+            ~crop:~%crop ~input:~%input ~submit:~%submit
+            ~after_submit:close upload) ;
       Lwt.return ()
     with e ->
       Eba_msg.msg ~level:`Err "Error while uploading the picture";
