@@ -176,12 +176,10 @@ let%client disconnect_handler () () = disconnect_handler_rpc' ()
 
 
 let connect_handler () ((login, pwd), keepmeloggedin) =
-  (* SECURITY: no check here.
-     We disconnect the user in any case, so that he does not believe
-     to be connected with the new account if the password is wrong. *)
-  let%lwt () = disconnect_handler () () in
+  (* SECURITY: no check here. *)
   try%lwt
     let%lwt userid = Eba_user.verify_password login pwd in
+    let%lwt () = disconnect_handler () () in
     Eba_session.connect ~expire:(not keepmeloggedin) userid
   with Eba_db.No_such_resource ->
     Eliom_reference.Volatile.set Eba_userbox.wrong_password true;
