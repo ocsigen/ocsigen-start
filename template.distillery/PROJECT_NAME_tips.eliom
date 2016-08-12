@@ -9,7 +9,7 @@ let example_tip () =
     ~top:40 ~right:0 ~width:300 ~height:120
     ~arrow:(`top 300)
     ~name:"example"
-    ~content:(fun () -> Eliom_content.Html.F.[
+    ~content:(fun _ -> Eliom_content.Html.F.[
       p [pcdata "This is an example of tip."];
       p [pcdata
            "Look at module %%%MODULE_NAME%%%_tips to see how it is defined."]
