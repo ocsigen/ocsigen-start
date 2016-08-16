@@ -18,7 +18,7 @@ FILES = $(SASSDIR)/lib/*.scss
 
 # $(LOCAL_CSS): $(SRC) $(FILES)
 # 	[ -d $(SASSDIR) ] && \
-# 	SASS_PATH=sass/lib:static/css sass --style compressed $< $@ && \
+# 	SASS_PATH=$(SASSDIR)/lib:static/css sass --style compressed $< $@ && \
 # 	postcss --use autoprefixer --replace $@
 
 $(CSSDIR):
