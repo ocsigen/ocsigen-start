@@ -35,6 +35,8 @@
     - [?arrow] is the position of the arrow if you want one
     - [?top], [?bottom], [?left], [?right], [?width], [?right] correspond
     to the eponymous CSS properties.
+    - [~content] takes the function closing the tip as parameter
+    and return the content of the tip div.
 
 *)
 val bubble :
@@ -51,7 +53,8 @@ val bubble :
   ?width:int ->
   ?parent_node:[< `Body | Html_types.body_content ] Eliom_content.Html.elt ->
   name:string ->
-  content: Html_types.div_content Eliom_content.Html.elt list ->
+  content:((unit -> unit Lwt.t) Eliom_client_value.t
+           -> Html_types.div_content Eliom_content.Html.elt list) ->
   unit ->
   unit Lwt.t
 
@@ -62,12 +65,10 @@ val bubble :
 val block :
   ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.D.attrib list ->
   name:string ->
-  content: Html_types.div_content Eliom_content.Html.elt list ->
+  content:((unit -> unit Lwt.t) Eliom_client_value.t
+           -> Html_types.div_content Eliom_content.Html.elt list) ->
   unit ->
   [> `Div ] Eliom_content.Html.elt option Lwt.t
-
-
-
 
 (** Call this function to reset tips for current user.
     Tips will be shown again from the beginning.

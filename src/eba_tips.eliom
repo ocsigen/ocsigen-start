@@ -117,19 +117,19 @@ let%shared block ?(a = []) ~name ~content () =
     if Stringset.mem name seen
     then Lwt.return None
     else begin
-      let close_button = Ot_icons.D.close () in
+      let box_ref = ref None in
+      let close = [%client (fun () ->
+        let () = match !(~%box_ref) with
+          | Some x -> Manip.removeSelf x
+          | None -> () in
+        set_tip_seen ~%name : _ -> _) ] in
       let box =
-        D.div ~a:(a_class [ "tip" ; "block" ]::a) (close_button :: content)
+        D.div ~a:(a_class [ "tip" ; "block" ]::a)
+          (Ot_icons.D.close ~a:[ a_onclick [%client fun _ ->
+             Lwt.async ~%close ] ] ()
+           :: content close)
       in
-      ignore [%client
-        (Lwt_js_events.(async (fun () ->
-           clicks (To_dom.of_element ~%close_button)
-             (fun ev _ ->
-                let () = Manip.removeSelf ~%box in
-                Lwt.async (fun () -> set_tip_seen ~%name);
-                Lwt.return ()
-             )))
-         : unit)];
+      box_ref := Some box ;
       Lwt.return (Some box)
     end
 
@@ -147,19 +147,20 @@ let%client display_bubble ?(a = [])
   waiter := new_waiter;
   let%lwt () = current_waiter in
   let bec = D.div ~a:[a_class ["bec"]] [] in
-  let close_button = Ot_icons.D.close () in
+  let box_ref = ref None in
+  let close = fun () ->
+    let () = match !box_ref with
+      | Some x -> Manip.removeSelf x
+      | None -> () in
+    Lwt.wakeup new_wakener ();
+    set_tip_seen (name : string) in
   let box =
     D.div ~a:(a_class [ "tip" ; "bubble" ]::a)
-      (close_button::match arrow with None -> content | _ -> bec::content)
+      (Ot_icons.D.close ~a:[ a_onclick (fun _ -> Lwt.async close) ] ()
+       :: match arrow with None -> content close
+                         | _    -> bec :: content close)
   in
-  Lwt_js_events.(async (fun () ->
-    clicks (To_dom.of_element close_button)
-      (fun ev _ ->
-         let () = Manip.removeSelf box in
-         Lwt.async (fun () -> set_tip_seen (name : string));
-         Lwt.wakeup new_wakener ();
-         Lwt.return ()
-      )));
+  box_ref := Some box ;
   let parent_node = match parent_node with
     | None -> Dom_html.document##.body
     | Some p -> To_dom.of_element p
