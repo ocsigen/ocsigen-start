@@ -35,6 +35,8 @@
     - [?arrow] is the position of the arrow if you want one
     - [?top], [?bottom], [?left], [?right], [?width], [?right] correspond
     to the eponymous CSS properties.
+    - [~content] takes the function closing the tip as parameter
+    and return the content of the tip div.
 
 *)
 val bubble :
