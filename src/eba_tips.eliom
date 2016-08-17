@@ -122,8 +122,7 @@ let%shared block ?(a = []) ~name ~content () =
         let () = match !(~%box_ref) with
           | Some x -> Manip.removeSelf x
           | None -> () in
-        Lwt.async (fun () -> set_tip_seen ~%name);
-        Lwt.return () : _ -> _) ] in
+        set_tip_seen ~%name : _ -> _) ] in
       let box =
         D.div ~a:(a_class [ "tip" ; "block" ]::a)
           (Ot_icons.D.close ~a:[ a_onclick [%client fun _ ->
@@ -153,9 +152,8 @@ let%client display_bubble ?(a = [])
     let () = match !box_ref with
       | Some x -> Manip.removeSelf x
       | None -> () in
-    Lwt.async (fun () -> set_tip_seen (name : string));
     Lwt.wakeup new_wakener ();
-    Lwt.return () in
+    set_tip_seen (name : string) in
   let box =
     D.div ~a:(a_class [ "tip" ; "bubble" ]::a)
       (Ot_icons.D.close ~a:[ a_onclick (fun _ -> Lwt.async close) ] ()
