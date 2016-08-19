@@ -230,7 +230,7 @@ module CalendarPage : DemoPage = struct
     Lwt.return
       [
 	p [pcdata "This page shows the calendar."];
-	div ~a:[a_class ["eba-calendar"]] [calendar];
+	div ~a:[a_class ["os-calendar"]] [calendar];
 	p [Eliom_content.Html.R.pcdata dr]
       ]
 end
@@ -313,7 +313,7 @@ let%shared make_drawer_menu () =
       li [a ~service:D.service [pcdata @@ D.name] ()]
     in
     let menu = ul (List.map make_link demos) in
-    [div ~a:[a_class ["eba-drawer"]] [h3 [pcdata "otdemo: drawer menu"]; menu]]
+    [div ~a:[a_class ["os-drawer"]] [h3 [pcdata "otdemo: drawer menu"]; menu]]
   in
   let drawer, _,_ = Ot_drawer.drawer menu in
   drawer

@@ -33,7 +33,7 @@ let%shared forgot_password_form () =
 
 let%shared forgotpwd_button () = Eliom_content.Html.D.(
   let popup_content = fun () -> Lwt.return @@
-    div ~a:[a_class ["navbar-inverse";"eba-login-menu"]]
+    div ~a:[a_class ["navbar-inverse";"os-login-menu"]]
     [forgot_password_form ()] in
   let button_name = "forgot your password?" in
   Os_tools.popup_button
@@ -44,7 +44,7 @@ let%shared forgotpwd_button () = Eliom_content.Html.D.(
 
 let%shared sign_in_button () = Eliom_content.Html.D.(
   let popup_content = fun () -> Lwt.return @@
-    div ~a:[a_class ["navbar-inverse";"eba-login-menu"]]
+    div ~a:[a_class ["navbar-inverse";"os-login-menu"]]
     [connect_form ()] in
   let button_name = "Sign In" in
   Os_tools.popup_button
@@ -55,7 +55,7 @@ let%shared sign_in_button () = Eliom_content.Html.D.(
 
 let%shared sign_up_button () = Eliom_content.Html.D.(
   let popup_content = fun () -> Lwt.return @@
-    div ~a:[a_class ["navbar-inverse";"eba-login-menu"]]
+    div ~a:[a_class ["navbar-inverse";"os-login-menu"]]
     [sign_up_form ()] in
   let button_name = "Sign Up" in
   Os_tools.popup_button

@@ -46,7 +46,7 @@ let%shared connection_box () = Eliom_content.Html.D.(
   let%lwt sign_in    = %%%MODULE_NAME%%%_loginpopup.sign_in_button () in
   let%lwt sign_up    = %%%MODULE_NAME%%%_loginpopup.sign_up_button () in
   let%lwt forgot_pwd = %%%MODULE_NAME%%%_loginpopup.forgotpwd_button () in
-  Lwt.return @@ div ~a:[a_class ["eba-login-menu"]] [
+  Lwt.return @@ div ~a:[a_class ["os-login-menu"]] [
     sign_in;
     sign_up;
     forgot_pwd

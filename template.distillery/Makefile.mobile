@@ -187,7 +187,7 @@ CORDOVA_STATIC_FILES = \
 $(CORDOVA_STATIC_FILES): $(CORDOVAPATH)/%: $(MOBILESTATICPATH)/%
 	cp -rf $< $@
 
-# FIXME: duplicate rule warning for 'cordova/www/css/eba_test.css'
+# FIXME: duplicate rule warning for 'cordova/www/css/os_test.css'
 LOCAL_STATIC_FILES = $(call static_targets,$(LOCAL_STATIC),$(CORDOVAPATH)/www)
 
 $(LOCAL_STATIC_FILES): $(CORDOVAPATH)/www/%: $(LOCAL_STATIC)/%

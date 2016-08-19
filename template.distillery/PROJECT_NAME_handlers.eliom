@@ -144,7 +144,7 @@ let%shared password_form ~service () = Eliom_content.Html.D.(
      fun user ->
        Eliom_content.Html.D.(
 	 [
-	   div ~a:[a_class ["eba-welcome-box"]] [
+	   div ~a:[a_class ["os-welcome-box"]] [
 	     p [pcdata "Change your password:"];
 	     password_form ~service:Os_services.set_password_service' ();
 	     br ();

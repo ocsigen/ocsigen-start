@@ -15,7 +15,7 @@ let%shared navigation_bar =
       ~ul_class:["nav";"navbar-nav"]
       nav_elts
 
-let%shared eba_header ?user () = Eliom_content.Html.F.(
+let%shared os_header ?user () = Eliom_content.Html.F.(
   ignore user;
   let%lwt user_box = 
     %%%MODULE_NAME%%%_userbox.userbox user in
@@ -36,12 +36,12 @@ let%shared eba_header ?user () = Eliom_content.Html.F.(
   )
 )
 
-let%shared eba_footer () = Eliom_content.Html.F.(
+let%shared os_footer () = Eliom_content.Html.F.(
   footer ~a:[a_class ["footer";"navbar";"navbar-inverse"]] [
     div ~a:[a_class ["container"]] [
       p [
 	pcdata "This application has been generated using the ";
-	a ~service:Os_services.eba_github_service [
+	a ~service:Os_services.os_github_service [
 	  pcdata "Eliom-base-app"
 	] ();
 	pcdata " template for Eliom-distillery and uses the ";
@@ -73,7 +73,7 @@ let%shared connected_welcome_box () = Eliom_content.Html.F.(
     | Some wpd -> p [pcdata "Wrong data. Please fix."], wpd
   in
   Lwt.return @@
-    div ~a:[a_class ["eba-login-menu";"eba-welcome-box"]] [
+    div ~a:[a_class ["os-login-menu";"os-welcome-box"]] [
       div [h2 [pcdata ("Welcome!")]; info];
       Os_view.information_form
 	~firstname:fn ~lastname:ln
@@ -99,10 +99,10 @@ let%shared page userid_o content = Eliom_content.Html.F.(
       Lwt.return @@ content
   in
   let l = [
-    div ~a:[a_class ["eba-body"]] content;
-    eba_footer ();
+    div ~a:[a_class ["os-body"]] content;
+    os_footer ();
   ] in
-  let%lwt h = eba_header ?user () in
+  let%lwt h = os_header ?user () in
   Lwt.return @@ h :: l
 )
 

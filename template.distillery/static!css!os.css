@@ -1,4 +1,4 @@
-/* Default CSS for eba and OW */
+/* Default CSS for os and OW */
 
 /******************************************************************************/
 /*********************Default style for some basic elements********************/
@@ -97,14 +97,14 @@ form input{
     margin-left: 10px;
 }
 
-.eba_username {
+.os_username {
     margin-left: 20px;
     margin-right: 20px;
     color: white;
     font-size: 120%;
 }
 
-.eba-usermenu {
+.os-usermenu {
     position: relative;
     width: 90px;
     padding: 5px 5px;
@@ -134,7 +134,7 @@ form input{
 }
 
 /* Body */
-.eba-body {
+.os-body {
     text-align: center;
     width: 80%;
     margin-left: auto;
@@ -143,7 +143,7 @@ form input{
 }
 
 /*Login Menu*/
-.eba-login-menu .button {
+.os-login-menu .button {
     border: solid 1px;
     border-radius: 10px;
     border-width: 2px;
@@ -152,31 +152,31 @@ form input{
     font-size: 120%;
     margin-left: 10px;
 }
-.eba-login-menu input {
+.os-login-menu input {
     border-radius: 5px;
     margin: 5px;
     font-size: 150%;
     padding: 5px;
 }
-.eba-login-menu form {
+.os-login-menu form {
     display: table-caption;
     text-align: center;
 }
 
 /* Welcome box */
-.eba-welcome-box {
+.os-welcome-box {
     text-align: center;
     margin-left: auto;
     margin-right: auto;
     display: inline-block;
 }
-.eba-welcome-box input{
+.os-welcome-box input{
     border-radius: 5px;
     margin: 5px;
     font-size: 100%;
     padding: 5px;
 }
-.eba-welcome-box .button {
+.os-welcome-box .button {
     color: black;
     border-radius: 10px;
 }
@@ -281,39 +281,39 @@ form input{
 /**********************************Login box***********************************/
 /******************************************************************************/
 
-div#eba_login_signup_box {
+div#os_login_signup_box {
     height: auto;
     width: 560px;
     right: 100px;
 }
-div#eba_login_signup_box form {
+div#os_login_signup_box form {
   text-align: left;
   height: auto;
 }
 
-div#eba_login_signup_box input {
+div#os_login_signup_box input {
   display: inline-block;
   margin: 0 10px 10px 0;
   width: 120px;
 }
 
-div#eba_login_signup_box input[type="checkbox"] {
+div#os_login_signup_box input[type="checkbox"] {
   width: 10px;
 }
 
-div#eba_login_signup_box span {
+div#os_login_signup_box span {
     margin-right: 10px
 }
 
-div#eba_login_signup_box label {
+div#os_login_signup_box label {
     margin: 0 10px 0 0;
 }
 
-div#eba_login_signup_box h2 {
+div#os_login_signup_box h2 {
   display: inline;
   margin: 0 10px 0 0;
   cursor: pointer;
 }
-div#eba_login_signup_box h2.pressed {
+div#os_login_signup_box h2.pressed {
   color: red;
 }

@@ -1,19 +1,19 @@
 
 /* drawer */
-.eba-drawer {
+.os-drawer {
   background-color: #222;
   color: white;
   overflow: hidden;
   text-align: left;
 }
-.eba-drawer ul {
+.os-drawer ul {
     list-style-type: none;
 }
-.eba-drawer a {
+.os-drawer a {
   color: white;
 }
 
-.eba-drawer-button {
+.os-drawer-button {
   position: absolute;
   margin: 0;
   background-color: #ddeeff;

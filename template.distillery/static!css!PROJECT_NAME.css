@@ -108,20 +108,20 @@ header#main {
     color: #445588;
 }
 
-div#eba_welcome_box {
+div#os_welcome_box {
   margin-left: auto;
   margin-right: auto;
 }
-div#eba_welcome_box {
+div#os_welcome_box {
   width: 480px;
   padding: 10px;
   margin-bottom: 16px;
   text-align: center;
 }
-div#eba_welcome_box h2 {
+div#os_welcome_box h2 {
   margin-top: 0;
 }
-div#eba_welcome_box input[type="submit"] {
+div#os_welcome_box input[type="submit"] {
   width: 246px;
   padding: 8px;
   font-weight: bold;
