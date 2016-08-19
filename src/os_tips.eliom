@@ -53,7 +53,7 @@ let%server get_tips_seen () = Eliom_reference.Volatile.get seen_by_user
 let%client tips_seen_client_ref = ref Stringset.empty
 let%client get_tips_seen () = Lwt.return !tips_seen_client_ref
 
-let%server () = Eba_session.on_start_connected_process
+let%server () = Os_session.on_start_connected_process
     (fun _ ->
        let%lwt tips = get_tips_seen () in
        ignore [%client (
@@ -69,9 +69,9 @@ let set_tip_seen (name : string) =
 let%client set_tip_seen name =
   tips_seen_client_ref := Stringset.add name !tips_seen_client_ref;
   ~%(Eliom_client.server_function
-       ~name:"Eba_tips.set_tip_seen"
+       ~name:"Os_tips.set_tip_seen"
        [%derive.json: string]
-       (Eba_session.connected_wrapper set_tip_seen))
+       (Os_session.connected_wrapper set_tip_seen))
   name
 
 (* I want to see the tips again *)
@@ -81,7 +81,7 @@ let%server reset_tips_user userid =
 let reset_tips () =
   Eliom_lib.Option.Lwt.iter
     reset_tips_user
-    (Eba_current_user.Opt.get_current_userid ())
+    (Os_current_user.Opt.get_current_userid ())
 
 let%server reset_tips_service =
   Eliom_service.create
@@ -96,20 +96,20 @@ let%client reset_tips_service = ~%reset_tips_service
 let%server _ =
   Eliom_registration.Action.register
     ~service:reset_tips_service
-    (Eba_session.connected_fun (fun myid () () -> reset_tips_user myid))
+    (Os_session.connected_fun (fun myid () () -> reset_tips_user myid))
 
 let%client reset_tips () =
   tips_seen_client_ref := Stringset.empty;
   ~%(Eliom_client.server_function
-       ~name:"Eba_tips.reset_tips"
+       ~name:"Os_tips.reset_tips"
        [%derive.json: unit]
-       (Eba_session.connected_wrapper reset_tips))
+       (Os_session.connected_wrapper reset_tips))
     ()
 
 (* Returns a block containing a tip,
    if it has not already been seen by the user. *)
 let%shared block ?(a = []) ~name ~content () =
-  let myid_o = Eba_current_user.Opt.get_current_userid () in
+  let myid_o = Os_current_user.Opt.get_current_userid () in
   if myid_o = None
   then Lwt.return None
   else
@@ -216,7 +216,7 @@ let%client display_bubble ?(a = [])
 (* Function to be called on server to display a tip *)
 let%shared bubble ?a ?arrow ?top ?left ?right ?bottom ?height ?width
     ?parent_node ~(name : string) ~content () =
-  let myid_o = Eba_current_user.Opt.get_current_userid () in
+  let myid_o = Os_current_user.Opt.get_current_userid () in
   if myid_o = None
   then Lwt.return ()
   else

@@ -48,21 +48,21 @@ module type PAGE = sig
   val title : string
 
   (** [js] corresponds to the Javascript files to include into each page.
-      Eba will automatically preprend the suffix "js/" as directory.  *)
+      Os will automatically preprend the suffix "js/" as directory.  *)
   val js : string list list
 
   (** Use [local_js] instead of [js] for local scripts if you are building
       a mobile application.
-      Eba will automatically preprend the suffix "js/" as directory.  *)
+      Os will automatically preprend the suffix "js/" as directory.  *)
   val local_js : string list list
 
   (** [css] (same as [js] but for style sheet files).
-      Eba will automatically prepend the suffix "css/" as directory.  *)
+      Os will automatically prepend the suffix "css/" as directory.  *)
   val css : string list list
 
   (** Use [local_css] instead of [css] for local stylesheets if you are building
       a mobile application.
-      Eba will automatically prepend the suffix "css/" as directory.  *)
+      Os will automatically prepend the suffix "css/" as directory.  *)
   val local_css : string list list
 
   (** [other_head] is a list of custom elements to add in the head section.
@@ -130,8 +130,8 @@ module Make (C : PAGE) : sig
       See {!Eliom_session.Opt.connected_fun}.
   *)
     val connected_page :
-      ?allow:Eba_group.t list ->
-      ?deny:Eba_group.t list ->
+      ?allow:Os_group.t list ->
+      ?deny:Os_group.t list ->
       ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t) ->
       ?fallback:(int64 option -> 'a -> 'b -> exn ->
                  Html_types.body_content Eliom_content.Html.elt
@@ -144,8 +144,8 @@ module Make (C : PAGE) : sig
         first checks if the user is connected.
     *)
     val connected_page_full :
-      ?allow:Eba_group.t list ->
-      ?deny:Eba_group.t list ->
+      ?allow:Os_group.t list ->
+      ?deny:Os_group.t list ->
       ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t) ->
       ?fallback:(int64 option -> 'a -> 'b -> exn -> content Lwt.t) ->
       (int64 option -> 'a -> 'b -> content Lwt.t) ->
@@ -156,8 +156,8 @@ module Make (C : PAGE) : sig
       See {!Eliom_session.connected_fun}.
   *)
   val connected_page :
-       ?allow:Eba_group.t list
-    -> ?deny:Eba_group.t list
+       ?allow:Os_group.t list
+    -> ?deny:Os_group.t list
     -> ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t)
     -> ?fallback:(int64 option -> 'a -> 'b -> exn ->
                   Html_types.body_content Eliom_content.Html.elt list
@@ -172,8 +172,8 @@ module Make (C : PAGE) : sig
       first checks if user is connected.
   *)
   val connected_page_full :
-    ?allow:Eba_group.t list ->
-    ?deny:Eba_group.t list ->
+    ?allow:Os_group.t list ->
+    ?deny:Os_group.t list ->
     ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t) ->
     ?fallback:(int64 option -> 'a -> 'b -> exn -> content Lwt.t) ->
     (int64 -> 'a -> 'b -> content Lwt.t) ->

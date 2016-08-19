@@ -70,7 +70,7 @@ sig
       to notifications from the server.
       For example:
 [{server{
-  let _ = Eba_session.on_start_process
+  let _ = Os_session.on_start_process
     (fun () ->
        ignore {unit{ ignore (React.E.map handle_notif %(N.client_ev ())) }};
        Lwt.return ()

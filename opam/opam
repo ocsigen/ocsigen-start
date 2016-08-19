@@ -1,9 +1,9 @@
 opam-version: "1.2"
 authors: "dev@ocsigen.org"
 maintainer: "dev@ocsigen.org"
-homepage: "https://ocsigen.org/eliom-base-app/"
-bug-reports: "https://github.com/ocsigen/eliom-base-app/issues"
-dev-repo: "https://github.com/ocsigen/eliom-base-app.git"
+homepage: "https://ocsigen.org/ocsigen-start/"
+bug-reports: "https://github.com/ocsigen/ocsigen-start/issues"
+dev-repo: "https://github.com/ocsigen/ocsigen-start.git"
 version: "dev"
 build: [ make "-j%{jobs}%" ]
 install: [ make "install" ]

@@ -1,2 +1,2 @@
-=Eliom base app
+=Ocsigen start
 ==[[intro|Introduction]]

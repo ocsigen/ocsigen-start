@@ -9,7 +9,7 @@ type uploader = unit Ot_picture_uploader.service
 
 (** Box for connected users, with picture, name, and menu *)
 val connected_user_box :
-  Eba_user.t -> uploader -> [> Html_types.div ] Eliom_content.Html.D.elt
+  Os_user.t -> uploader -> [> Html_types.div ] Eliom_content.Html.D.elt
 
 (** Connection box *)
 val connection_box :
@@ -18,7 +18,7 @@ val connection_box :
 (** Connected user box or connexion box, depending whether user
     is connected or not *)
 val userbox :
-  Eba_user.t option ->
+  Os_user.t option ->
   uploader ->
   [> Html_types.div ] Eliom_content.Html.D.elt Lwt.t
 
@@ -49,7 +49,7 @@ val reset_tips_link :
 
 (** Display user menu *)
 val user_menu :
-  Eba_user.t ->
+  Os_user.t ->
   uploader -> [> Html_types.div ] Eliom_content.Html.F.elt
 
 
@@ -58,7 +58,7 @@ val user_menu :
 (** Personnalize user menu *)
 val set_user_menu :
   ((unit -> unit) ->
-   Eba_user.t ->
+   Os_user.t ->
    uploader ->
    Html_types.div_content Eliom_content.Html.D.elt
      Eliom_content.Html.D.list_wrap) ->

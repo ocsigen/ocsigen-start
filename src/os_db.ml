@@ -470,7 +470,7 @@ module User = struct
                           ->
                           (PGOCaml.int64_of_string userid,
                            firstname, lastname, avatar, password <> None)
-                        | _ -> failwith "Eba_db.get_users")
+                        | _ -> failwith "Os_db.get_users")
                       l))
 
 end

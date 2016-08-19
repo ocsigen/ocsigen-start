@@ -41,7 +41,7 @@
 
 let user_tz_sr =
   Eliom_reference.Volatile.eref
-    ~scope:Eba_session.user_indep_session_scope
+    ~scope:Os_session.user_indep_session_scope
     CalendarLib.Time_Zone.UTC
 let user_tz_gr =
   Eliom_reference.Volatile.eref
