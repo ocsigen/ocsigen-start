@@ -134,6 +134,9 @@ let activation_table :
        activationkey text NOT NULL,
        userid bigint NOT NULL,
        email citext NOT NULL,
+       validity bigint NOT NULL,
+       action text NOT NULL,
+       data text,
        creationdate timestamptz NOT NULL DEFAULT(current_timestamp ())
            ) >>
 
@@ -171,10 +174,10 @@ module Utils = struct
 
   let run_query q = full_transaction_block (fun dbh ->
     Lwt_Query.query dbh q)
-  
+
   let run_view q = full_transaction_block (fun dbh ->
     Lwt_Query.view dbh q)
-  
+
   let run_view_opt q = full_transaction_block (fun dbh ->
     Lwt_Query.view_opt dbh q)
 
@@ -189,7 +192,7 @@ module Utils = struct
     | r -> success r
 
   let password_of d = <:value< $d$.password>>
-    
+
   let avatar_of d = <:value< $d$.avatar>>
 
   let tupple_of_user_sql u =
@@ -254,6 +257,9 @@ module User = struct
      <:insert< $activation_table$ :=
       { userid = $int64:userid$;
         email  = $string:email$;
+        action = $string:"activation"$;
+        data   = null;
+        validity = $int64:1L$;
         activationkey  = $string:act_key$;
         creationdate   = activation_table?creationdate }
       >>
@@ -294,7 +300,7 @@ module User = struct
              main_email = $string:email$;
              password   = of_option $password_o$;
              avatar     = of_option $avatar_o$
-            } >>		      
+            } >>
 	in
         lwt userid = Lwt_Query.view_one dbh
 	  <:view< {x = currval $users_userid_seq$} >>
@@ -388,15 +394,17 @@ module User = struct
     full_transaction_block (fun dbh ->
       one (Lwt_Query.view dbh)
 	~fail:(Lwt.fail No_such_resource)
-        <:view< t 
+        <:view< t
          | t in $activation_table$;
+           t.validity > 0L;
            t.activationkey = $string:act_key$ >>
 	~success:(fun t ->
 	  let userid = t#!userid in
 	  let email  = t#!email in
+   	  let v  = Int64.pred (t#!validity) in
 	  lwt () = Lwt_Query.query dbh
-	   <:delete< r in $activation_table$
-            | r.activationkey = $string:act_key$ >>
+            <:update< r in $activation_table$ := {validity = $int64:v$} |
+                      r.activationkey = $string:act_key$ >>
 	  in
 	  Lwt.return (userid, email)
        )
