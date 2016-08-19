@@ -91,7 +91,7 @@ module CarouselPage : DemoPage = struct
     let bullets_content =
       List.map (fun n -> [div [p [pcdata n]]]) carousel_pages
     in
-    let r = Eba_tools.Carousel.make
+    let r = Os_tools.Carousel.make
       ~update:[%client carousel_update]
       ~change:[%client carousel_change]
       ~carousel:([a_class ["otdemo-carousel"]], carousel_content)

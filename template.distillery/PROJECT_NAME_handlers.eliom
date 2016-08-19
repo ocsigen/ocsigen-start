@@ -1,7 +1,7 @@
 
 [%%server
 
- include Eba_handlers
+ include Os_handlers
 
  let upload_user_avatar_handler myid () ((), (cropping, photo)) =
    let avatar_dir =
@@ -9,17 +9,17 @@
        (List.hd !%%%MODULE_NAME%%%_config.avatar_dir)
        (List.tl !%%%MODULE_NAME%%%_config.avatar_dir) in
    let%lwt avatar =
-     Eba_uploader.record_image avatar_dir ~ratio:1. ?cropping photo in
-   let%lwt user = Eba_user.user_of_userid myid in
-   let old_avatar = Eba_user.avatar_of_user user in
-   let%lwt () = Eba_user.update_avatar avatar myid in
+     Os_uploader.record_image avatar_dir ~ratio:1. ?cropping photo in
+   let%lwt user = Os_user.user_of_userid myid in
+   let old_avatar = Os_user.avatar_of_user user in
+   let%lwt () = Os_user.update_avatar avatar myid in
    match old_avatar with
    | None -> Lwt.return ()
    | Some old_avatar ->
      Lwt_unix.unlink (Filename.concat avatar_dir old_avatar )
 
  let forgot_password_handler =
-   forgot_password_handler Eba_services.main_service
+   forgot_password_handler Os_services.main_service
 
 ]
 
@@ -29,19 +29,19 @@
     let set_personal_data_rpc =
       ~%(Eliom_client.server_function
 	   [%derive.json : ((string * string) * (string * string))]
-	   (Eba_session.connected_rpc
+	   (Os_session.connected_rpc
 	      (fun id s -> set_personal_data_handler' id () s)))
     in
     fun (_ : int64) () d -> set_personal_data_rpc d
 
   let set_password_handler' id () p =
-    Eba_handlers.set_password_rpc p
+    Os_handlers.set_password_rpc p
 
   let forgot_password_handler =
     let forgot_password_rpc =
       ~%(Eliom_client.server_function
 	   [%derive.json : string]
-	   (Eba_session.Opt.connected_rpc
+	   (Os_session.Opt.connected_rpc
 	      (fun _ mail ->
 		forgot_password_handler () mail)))
     in
@@ -51,7 +51,7 @@
     let preregister_rpc =
       ~%(Eliom_client.server_function
 	   [%derive.json : string]
-	   (Eba_session.Opt.connected_rpc
+	   (Os_session.Opt.connected_rpc
 	      (fun _ mail -> preregister_handler' () mail)))
     in
     fun () mail -> preregister_rpc mail
@@ -60,7 +60,7 @@
     let activation_handler_rpc =
       ~%(Eliom_client.server_function
 	   [%derive.json : string]
-	   (Eba_session.Opt.connected_rpc
+	   (Os_session.Opt.connected_rpc
 	      (fun _ akey -> activation_handler akey ())))
     in
     fun akey () -> activation_handler_rpc akey
@@ -146,14 +146,14 @@ let%shared password_form ~service () = Eliom_content.Html.D.(
 	 [
 	   div ~a:[a_class ["eba-welcome-box"]] [
 	     p [pcdata "Change your password:"];
-	     password_form ~service:Eba_services.set_password_service' ();
+	     password_form ~service:Os_services.set_password_service' ();
 	     br ();
-	     Eba_userbox.upload_pic_link
+	     Os_userbox.upload_pic_link
 	       none
 	       %%%MODULE_NAME%%%_services.upload_user_avatar_service
-	       (Eba_user.userid_of_user user);
+	       (Os_user.userid_of_user user);
 	     br ();
-	     Eba_userbox.reset_tips_link none;
+	     Os_userbox.reset_tips_link none;
 	   ]
 	 ]
        )

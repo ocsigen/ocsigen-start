@@ -21,7 +21,7 @@ let%server init_request _myid_o () =
 let%server init_request_rpc : (_, unit) Eliom_client.server_function =
   Eliom_client.server_function ~name:"%%%MODULE_NAME%%%_mobile.init_request_rpc"
     [%derive.json: unit]
-    (Eba_session.Opt.connected_rpc init_request)
+    (Os_session.Opt.connected_rpc init_request)
 
 let%client _ =
   if Eliom_client.is_client_app ()
@@ -35,7 +35,7 @@ let%client _ =
     let%lwt _ = Lwt_js_events.onload () in
     let%lwt _ = ~%init_request_rpc () in
     Eliom_client.change_page ~replace:true
-      ~service:Eba_services.main_service () ()
+      ~service:Os_services.main_service () ()
   end
   else Lwt.return ()
 

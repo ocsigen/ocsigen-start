@@ -6,12 +6,12 @@
 
 let%shared navigation_bar =
   let nav_elts = [
-    ("Home",Eba_services.main_service);
+    ("Home",Os_services.main_service);
     ("About",%%%MODULE_NAME%%%_services.about_service);
     ("Demo",%%%MODULE_NAME%%%_services.otdemo_service)
   ] in
   fun () ->
-    Eba_tools.Navigation_bar.ul_of_elts
+    Os_tools.Navigation_bar.ul_of_elts
       ~ul_class:["nav";"navbar-nav"]
       nav_elts
 
@@ -25,7 +25,7 @@ let%shared eba_header ?user () = Eliom_content.Html.F.(
       div ~a:[a_class ["container-fluid"]] [
 	div ~a:[a_class ["navbar-header"]][
 	  a ~a:[a_class ["navbar-brand"]]
-            ~service:Eba_services.main_service [
+            ~service:Os_services.main_service [
 	      pcdata %%%MODULE_NAME%%%_base.displayed_app_name;
 	    ] ();
 	  user_box
@@ -41,11 +41,11 @@ let%shared eba_footer () = Eliom_content.Html.F.(
     div ~a:[a_class ["container"]] [
       p [
 	pcdata "This application has been generated using the ";
-	a ~service:Eba_services.eba_github_service [
+	a ~service:Os_services.eba_github_service [
 	  pcdata "Eliom-base-app"
 	] ();
 	pcdata " template for Eliom-distillery and uses the ";
-	a ~service:Eba_services.ocsigen_service [
+	a ~service:Os_services.ocsigen_service [
 	  pcdata "Ocsigen"
 	] ();
 	pcdata " technology.";
@@ -55,7 +55,7 @@ let%shared eba_footer () = Eliom_content.Html.F.(
 )
 
 let%server get_wrong_pdata () =
-  Lwt.return @@ Eliom_reference.Volatile.get Eba_msg.wrong_pdata
+  Lwt.return @@ Eliom_reference.Volatile.get Os_msg.wrong_pdata
 
 let%client get_wrong_pdata =
   ~%(Eliom_client.server_function [%derive.json : unit] get_wrong_pdata)
@@ -75,7 +75,7 @@ let%shared connected_welcome_box () = Eliom_content.Html.F.(
   Lwt.return @@
     div ~a:[a_class ["eba-login-menu";"eba-welcome-box"]] [
       div [h2 [pcdata ("Welcome!")]; info];
-      Eba_view.information_form
+      Os_view.information_form
 	~firstname:fn ~lastname:ln
 	~password1:p1 ~password2:p2
 	()
@@ -86,13 +86,13 @@ let%shared get_user_data = function
   | None ->
     Lwt.return None
   | Some userid ->
-    let%lwt u = Eba_user_proxy.get_data userid in
+    let%lwt u = Os_user_proxy.get_data userid in
     Lwt.return (Some u)
 
 let%shared page userid_o content = Eliom_content.Html.F.(
   let%lwt user = get_user_data userid_o in
   let%lwt content = match user with
-    | Some user when not (Eba_user.is_complete user) ->
+    | Some user when not (Os_user.is_complete user) ->
       let%lwt cwb = connected_welcome_box () in
       Lwt.return @@ cwb :: content
     | _ ->

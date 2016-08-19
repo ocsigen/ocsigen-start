@@ -1,6 +1,6 @@
 
 let%shared connect_form () = Eliom_content.Html.D.(
-  Form.post_form ~service:Eba_services.connect_service
+  Form.post_form ~service:Os_services.connect_service
     (fun ((login, password), keepmeloggedin) -> [
       Form.input
         ~a:[a_placeholder "Your email"]
@@ -26,17 +26,17 @@ let%shared connect_form () = Eliom_content.Html.D.(
 )
 
 let%shared sign_up_form () =
-  Eba_view.generic_email_form ~service:Eba_services.sign_up_service' ()
+  Os_view.generic_email_form ~service:Os_services.sign_up_service' ()
 
 let%shared forgot_password_form () =
-  Eba_view.generic_email_form ~service:Eba_services.forgot_password_service ()
+  Os_view.generic_email_form ~service:Os_services.forgot_password_service ()
 
 let%shared forgotpwd_button () = Eliom_content.Html.D.(
   let popup_content = fun () -> Lwt.return @@
     div ~a:[a_class ["navbar-inverse";"eba-login-menu"]]
     [forgot_password_form ()] in
   let button_name = "forgot your password?" in
-  Eba_tools.popup_button
+  Os_tools.popup_button
     ~button_name
     ~button_class:["button"]
     ~popup_content
@@ -47,7 +47,7 @@ let%shared sign_in_button () = Eliom_content.Html.D.(
     div ~a:[a_class ["navbar-inverse";"eba-login-menu"]]
     [connect_form ()] in
   let button_name = "Sign In" in
-  Eba_tools.popup_button
+  Os_tools.popup_button
     ~button_name
     ~button_class:["button"]
     ~popup_content
@@ -58,7 +58,7 @@ let%shared sign_up_button () = Eliom_content.Html.D.(
     div ~a:[a_class ["navbar-inverse";"eba-login-menu"]]
     [sign_up_form ()] in
   let button_name = "Sign Up" in
-  Eba_tools.popup_button
+  Os_tools.popup_button
     ~button_name
     ~button_class:["button"]
     ~popup_content

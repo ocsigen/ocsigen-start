@@ -1,6 +1,6 @@
 
 let%shared disconnect_button () = Eliom_content.Html.D.(
-  Form.post_form ~service:Eba_services.disconnect_service
+  Form.post_form ~service:Os_services.disconnect_service
     (fun _ -> [
          Form.button_no_value
            ~a:[ a_class ["button"] ]

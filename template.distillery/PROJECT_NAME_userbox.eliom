@@ -1,7 +1,7 @@
 
-let%server msg () = Eba_userbox.(
+let%server msg () = Os_userbox.(
   let activation_key_created =
-    Eliom_reference.Volatile.get Eba_msg.activation_key_created in
+    Eliom_reference.Volatile.get Os_msg.activation_key_created in
   let wrong_password =
     Eliom_reference.Volatile.get wrong_password in
   let user_already_exists =
@@ -29,9 +29,9 @@ let%server msg () = Eba_userbox.(
 )
 
 let%shared connected_user_box user = Eliom_content.Html.D.(
-  let username = Eba_view.username user in
+  let username = Os_view.username user in
   div ~a:[a_class ["connected-user-box"]] [
-    Eba_view.avatar user;
+    Os_view.avatar user;
     div [
       username
     ];
