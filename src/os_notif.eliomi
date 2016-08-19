@@ -1,5 +1,5 @@
-(* Eliom-base-app
- * http://www.ocsigen.org/eliom-base-app
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
  *
  * Copyright (C) 2014
  *      Vincent Balat
@@ -41,7 +41,18 @@
     be updated every time the client is notified.
 *)
 
-module Make(A : sig type key type notification end) :
+(** Input signature of the functor [Eba_notif.Make]. *)
+module type S = sig
+  (** [key] is the type of values designating a given resource. *)
+  type key
+  (** [notification] is the type of values to notifiy clients with. *)
+  type notification
+  (** [equal_key] is a function testing the equality between two values
+      of type [key].*)
+  val equal_key : key -> key -> bool
+end
+
+module Make(A : S) :
 sig
 
   (** Make client process listen on data whose index is [key] *)
@@ -69,16 +80,24 @@ sig
   (** Returns the client react event. Map a function on this event to react
       to notifications from the server.
       For example:
-[{server{
-  let _ = Eba_session.on_start_process
-    (fun () ->
-       ignore {unit{ ignore (React.E.map handle_notif %(N.client_ev ())) }};
-       Lwt.return ()
-     )
-}}
-]
+
+      let%client handle_notification some_stuff ev =
+         ...
+
+      let%server something some_stuff =
+         ignore
+           [%client
+              (ignore (React.E.map
+		        (handle_notification ~%some_stuff)
+		        ~%(Notif_module.client_ev ())
+	      ) : unit)
+           ]
 
   *)
-  val client_ev : unit -> (A.key * A.notification) Eliom_react.Down.t
+  val client_ev : unit -> (A.key * A.notification) Eliom_react.Down.t Lwt.t
+
+  (** Call [clean freq] to launch an asynchronous thread clearing the tables
+      from empty data. *)
+  val clean : unit -> unit Lwt.t
 
 end
