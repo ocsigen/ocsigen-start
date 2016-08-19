@@ -223,9 +223,7 @@ let%server activation_handler akey () =
 let%client activation_handler_rpc =
   ~%(Eliom_client.server_function ~name:"Eba_handlers.activation_handler"
        [%derive.json: string]
-       (fun akey ->
-          let%lwt _ = activation_handler_common ~akey in
-          Lwt.return ()))
+       (fun akey -> activation_handler_common ~akey))
 
 let%client activation_handler akey () =
   let%lwt () = activation_handler_rpc akey in
