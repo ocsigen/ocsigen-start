@@ -133,7 +133,7 @@ let sign_up_service' = ~%sign_up_service'
 let connect_service = ~%connect_service
 let disconnect_service = ~%disconnect_service
 let activation_service = ~%activation_service
-let eba_github_service = ~%eba_github_service
+let os_github_service = ~%os_github_service
 let ocsigen_service = ~%ocsigen_service
 let set_password_service' = ~%set_password_service'
 
