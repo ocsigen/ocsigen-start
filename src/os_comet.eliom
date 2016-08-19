@@ -1,5 +1,5 @@
-(* Eliom-base-app
- * http://www.ocsigen.org/eliom-base-app
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
  *
  * Copyright 2014
  *      Vincent Balat

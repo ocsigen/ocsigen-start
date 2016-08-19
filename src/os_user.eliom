@@ -1,4 +1,4 @@
-(* This file is part of Eliom-base-app.
+(* This file is part of Ocsigen-start.
    Feel free to use it, modify it according to your needs,
    and redistribute it as you wish. *)
 
