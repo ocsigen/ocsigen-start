@@ -97,7 +97,7 @@ let activation_service =
     ~meth:(Eliom_service.Get (Eliom_parameter.string "activationkey"))
     ()
 
-let eba_github_service =
+let os_github_service =
   Eliom_service.create
     ~id:
       (Eliom_service.External
