@@ -42,7 +42,7 @@ let%shared os_footer () = Eliom_content.Html.F.(
       p [
 	pcdata "This application has been generated using the ";
 	a ~service:Os_services.os_github_service [
-	  pcdata "Eliom-base-app"
+	  pcdata "Ocsigen-start"
 	] ();
 	pcdata " template for Eliom-distillery and uses the ";
 	a ~service:Os_services.ocsigen_service [
