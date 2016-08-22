@@ -60,7 +60,7 @@ let%client set_password_rpc =
           (fun myid p -> set_password_handler' myid () p))
     )
 
-let generate_act_key
+let generate_activation_key
     ?(act_key = Ocsigen_lib.make_cryptographic_safe_string ())
     ?(send_email = true)
     ~service
@@ -93,7 +93,7 @@ let generate_act_key
 
 let send_act msg service email userid =
   let act_key =
-    generate_act_key
+    generate_activation_key
       ~service:service
       ~text:msg
       email
