@@ -252,7 +252,8 @@ let preregister_handler' () email =
      Lwt.return ()
    end
 
-let%server add_mail_handler userid email =
+
+let%server add_mail_handler userid () email =
   let send_act email userid =
     let msg =
       "Welcome!\r\nTo confirm your e-mail address, \
@@ -272,9 +273,10 @@ let%server add_mail_handler userid email =
 let%client add_mail_handler =
   let rpc =
     ~%(Eliom_client.server_function [%derive.json: string]
-	 (Os_session.connected_rpc add_mail_handler))
+	 (Os_session.connected_rpc 
+	    (fun id mail -> add_mail_handler id () mail)))
   in
-  fun (_:int64) mail -> rpc mail
+  fun (_:int64) () mail -> rpc mail
 
 [%%shared
    let _ = Os_comet.__link (* to make sure eba_comet is linked *)
