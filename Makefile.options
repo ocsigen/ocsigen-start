@@ -4,7 +4,7 @@
 #----------------------------------------------------------------------
 
 # Package name for your
-PKG_NAME := eliom-base-app
+PKG_NAME := ocsigen-start
 PKG_VERS := 0.1
 PKG_DESC := Eliom application skeleton ready to use to build your own application with users, (pre)registration, notifications, etc.
 
@@ -35,7 +35,7 @@ CLIENT_FILES_DOC := $(wildcard \
 # Template directory (used when installing template with distillery)
 TEMPLATE_DIR := template.distillery
 # Template name (name used by distillery)
-TEMPLATE_NAME := eba.pgocaml
+TEMPLATE_NAME := os.pgocaml
 
 # OCamlfind packages for the server
 SERVER_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx text calendar safepass  ocsigen-widgets.server ocsigen-toolkit.server magick

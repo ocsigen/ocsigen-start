@@ -1,5 +1,5 @@
-(* Eliom-base-app
- * http://www.ocsigen.org/eliom-base-app
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
  *
  * Copyright (C) 2014
  *      Charly Chevalier
@@ -97,7 +97,7 @@ let activation_service =
     ~meth:(Eliom_service.Get (Eliom_parameter.string "activationkey"))
     ()
 
-let eba_github_service =
+let os_github_service =
   Eliom_service.create
     ~id:
       (Eliom_service.External
@@ -142,7 +142,7 @@ let sign_up_service' = ~%sign_up_service'
 let connect_service = ~%connect_service
 let disconnect_service = ~%disconnect_service
 let activation_service = ~%activation_service
-let eba_github_service = ~%eba_github_service
+let os_github_service = ~%os_github_service
 let ocsigen_service = ~%ocsigen_service
 let set_password_service' = ~%set_password_service'
 let add_mail_service = ~%add_mail_service

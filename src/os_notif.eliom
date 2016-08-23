@@ -1,5 +1,5 @@
-(* Eliom-base-app
- * http://www.ocsigen.org/eliom-base-app
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
  *
  * Copyright (C) 2014
  *      Vincent Balat
@@ -81,7 +81,7 @@ module Make (A : sig type key type notification end) = struct
 
   let userchannel = (*VVV volatile??? *)
     Eliom_reference.Volatile.eref
-      ~scope:Eba_session.user_indep_process_scope None
+      ~scope:Os_session.user_indep_process_scope None
 
 (*VVV I duplicate the ref here because I want to be able to access
   the value when I iterate on the default hierachy (all tabs of a user).
@@ -125,7 +125,7 @@ VVV See if it is still needed
     Lwt.return ()
 
   let set_userchannel () =
-    let userid_o = Eba_current_user.Opt.get_current_userid () in
+    let userid_o = Os_current_user.Opt.get_current_userid () in
     set_userchannel_ userid_o
 
   let set_userchannel_u userid = set_userchannel_ (Some userid)
@@ -133,9 +133,9 @@ VVV See if it is still needed
   let set_userchannel_none () = set_userchannel_ None
 
   let _ =
-    Eba_session.on_start_process set_userchannel;
-    Eba_session.on_start_connected_process set_userchannel_u;
-    Eba_session.on_post_close_session set_userchannel_none
+    Os_session.on_start_process set_userchannel;
+    Os_session.on_start_connected_process set_userchannel_u;
+    Os_session.on_post_close_session set_userchannel_none
 
 
   let listen (id : A.key) =

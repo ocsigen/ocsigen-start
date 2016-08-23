@@ -28,7 +28,7 @@ let generic_email_form ?a ?label ?(text="Send") ~service () =
         | Some lab -> F.label [pcdata lab]::l) ()
 
 let connect_form ?a () =
-  D.Form.post_form ?a ~xhr:false ~service:Eba_services.connect_service
+  D.Form.post_form ?a ~xhr:false ~service:Os_services.connect_service
     (fun ((login, password), keepmeloggedin) -> [
       Form.input
         ~a:[a_placeholder "Your email"]
@@ -57,7 +57,7 @@ let connect_form ?a () =
 [%%shared
 
 let disconnect_button ?a () =
-  Form.post_form ?a ~service:Eba_services.disconnect_service
+  Form.post_form ?a ~service:Os_services.disconnect_service
     (fun _ -> [
          Form.button_no_value
            ~a:[ a_class ["button"] ]
@@ -66,16 +66,16 @@ let disconnect_button ?a () =
        ]) ()
 
 let sign_up_form ?a () =
-  generic_email_form ?a ~service:Eba_services.sign_up_service' ()
+  generic_email_form ?a ~service:Os_services.sign_up_service' ()
 
 let forgot_password_form ?a () =
   generic_email_form ?a
-    ~service:Eba_services.forgot_password_service ()
+    ~service:Os_services.forgot_password_service ()
 
 let information_form ?a
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
     () =
-  D.Form.post_form ?a ~service:Eba_services.set_personal_data_service'
+  D.Form.post_form ?a ~service:Os_services.set_personal_data_service'
     (fun ((fname, lname), (passwordn1, passwordn2)) ->
        let pass1 = D.Form.input
            ~a:[a_placeholder "Your password"]
@@ -127,10 +127,10 @@ let information_form ?a
 
 
 let preregister_form ?a label =
-  generic_email_form ?a ~service:Eba_services.preregister_service' ~label ()
+  generic_email_form ?a ~service:Os_services.preregister_service' ~label ()
 
 let home_button ?a () =
-  Form.get_form ?a ~service:Eba_services.main_service
+  Form.get_form ?a ~service:Os_services.main_service
     (fun _ -> [
       Form.input
         ~input_type:`Submit
@@ -139,20 +139,20 @@ let home_button ?a () =
     ])
 
 let avatar user =
-  match Eba_user.avatar_uri_of_user user with
+  match Os_user.avatar_uri_of_user user with
   | Some src ->
     img ~alt:"picture" ~a:[a_class ["eba_avatar"]] ~src ()
   | None -> Ot_icons.F.user ()
 
 let username user =
-  let n = match Eba_user.firstname_of_user user with
+  let n = match Os_user.firstname_of_user user with
     | "" ->
-      let userid = Eba_user.userid_of_user user in
+      let userid = Os_user.userid_of_user user in
       [pcdata ("User "^Int64.to_string userid)]
     | s ->
       [pcdata s;
        pcdata " ";
-       pcdata (Eba_user.lastname_of_user user);
+       pcdata (Os_user.lastname_of_user user);
       ]
   in
   div ~a:[a_class ["eba_username"]] n

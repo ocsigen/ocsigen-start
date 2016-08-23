@@ -1,5 +1,5 @@
-(* Eliom-base-app
- * http://www.ocsigen.org/eliom-base-app
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
  *
  * Copyright (C) 2014
  *      Vincent Balat
@@ -70,7 +70,7 @@ sig
       to notifications from the server.
       For example:
 [{server{
-  let _ = Eba_session.on_start_process
+  let _ = Os_session.on_start_process
     (fun () ->
        ignore {unit{ ignore (React.E.map handle_notif %(N.client_ev ())) }};
        Lwt.return ()

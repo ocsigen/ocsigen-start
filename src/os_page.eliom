@@ -1,5 +1,5 @@
-(* Eliom-base-app
- * http://www.ocsigen.org/eliom-base-app
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
  *
  * Copyright (C) 2014
  *      Charly Chevalier
@@ -81,7 +81,7 @@ module Default_config = struct
              else []
     in
     let l = match exn with
-      | Eba_session.Not_connected ->
+      | Os_session.Not_connected ->
         p [pcdata "You must be connected to see this page."]::de
       | _ -> de
     in
@@ -218,11 +218,11 @@ module Make(C : PAGE) = struct
     in
     let%lwt content =
       try%lwt
-        Eba_session.connected_fun ?allow ?deny
+        Os_session.connected_fun ?allow ?deny
           ~deny_fun:(fun uid_o ->
-            fallback uid_o gp pp Eba_session.Permission_denied)
+            fallback uid_o gp pp Os_session.Permission_denied)
           f_wrapped gp pp
-      with Eba_session.Not_connected as exc -> fallback None gp pp exc
+      with Os_session.Not_connected as exc -> fallback None gp pp exc
     in
     Lwt.return (make_page_full content)
 
@@ -255,10 +255,10 @@ module Make(C : PAGE) = struct
           | (Predicate_failed _) as exc -> fallback uid_o gp pp exc
           | exc -> fallback uid_o gp pp (Predicate_failed (Some exc))
       in
-      let%lwt content = Eba_session.Opt.connected_fun
+      let%lwt content = Os_session.Opt.connected_fun
         ?allow ?deny
         ~deny_fun:(fun uid_o ->
-          fallback uid_o gp pp Eba_session.Permission_denied)
+          fallback uid_o gp pp Os_session.Permission_denied)
         f_wrapped gp pp
       in
       Lwt.return (make_page_full content)
