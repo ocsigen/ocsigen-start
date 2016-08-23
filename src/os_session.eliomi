@@ -1,5 +1,5 @@
-(* Eliom-base-app
- * http://www.ocsigen.org/eliom-base-app
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
  *
  * Copyright (C) 2014
  *      Charly Chevalier
@@ -95,7 +95,7 @@ val disconnect : unit -> unit Lwt.t
     If no user is connected, the service will fail by raising [Not_connected].
     Otherwise it calls function [f].
     To provide another behaviour in case the user is not connected,
-    have a look at {!Opt.connected_fun} or module {!Eba_page}.
+    have a look at {!Opt.connected_fun} or module {!Os_page}.
 
     Arguments [?allow] and [?deny] make possible to restrict access to some
     user groups. If access is denied, function [?deny_fun] will be called.
@@ -104,24 +104,24 @@ val disconnect : unit -> unit Lwt.t
     When called on client side, no security check is done.
 *)
 val connected_fun :
-  ?allow:Eba_group.t list ->
-  ?deny:Eba_group.t list ->
+  ?allow:Os_group.t list ->
+  ?deny:Os_group.t list ->
   ?deny_fun:(int64 option -> 'c Lwt.t) ->
   (int64 -> 'a -> 'b -> 'c Lwt.t) ->
   ('a -> 'b -> 'c Lwt.t)
 
 (** Wrapper for server functions (see {!connected_fun}). *)
 val connected_rpc :
-  ?allow:Eba_group.t list ->
-  ?deny:Eba_group.t list ->
+  ?allow:Os_group.t list ->
+  ?deny:Os_group.t list ->
   ?deny_fun:(int64 option -> 'b Lwt.t) ->
   (int64 -> 'a -> 'b Lwt.t) ->
   ('a -> 'b Lwt.t)
 
 (** Wrapper for server functions when you do not not need userid. *)
 val connected_wrapper :
-  ?allow:Eba_group.t list ->
-  ?deny:Eba_group.t list ->
+  ?allow:Os_group.t list ->
+  ?deny:Os_group.t list ->
   ?deny_fun:(int64 option -> 'b Lwt.t) ->
   ('a -> 'b Lwt.t) ->
   ('a -> 'b Lwt.t)
@@ -133,8 +133,8 @@ module Opt : sig
       for user id.
   *)
   val connected_fun :
-    ?allow:Eba_group.t list ->
-    ?deny:Eba_group.t list ->
+    ?allow:Os_group.t list ->
+    ?deny:Os_group.t list ->
     ?deny_fun:(int64 option -> 'c Lwt.t) ->
     (int64 option -> 'a -> 'b -> 'c Lwt.t) ->
     ('a -> 'b -> 'c Lwt.t)
@@ -144,8 +144,8 @@ module Opt : sig
       for user id.
   *)
   val connected_rpc :
-    ?allow:Eba_group.t list ->
-    ?deny:Eba_group.t list ->
+    ?allow:Os_group.t list ->
+    ?deny:Os_group.t list ->
     ?deny_fun:(int64 option -> 'b Lwt.t) ->
     (int64 option -> 'a -> 'b Lwt.t) ->
     ('a -> 'b Lwt.t)

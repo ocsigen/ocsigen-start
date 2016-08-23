@@ -1,5 +1,5 @@
-(* Eliom-base-app
- * http://www.ocsigen.org/eliom-base-app
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
  *
  * Copyright 2014
  *      Charly Chevalier
@@ -165,7 +165,7 @@ let check_allow_deny userid allow deny =
     | Some l -> (* allow only users from one of the groups of list l *)
       Lwt_list.fold_left_s
         (fun b group ->
-           let%lwt b2 = Eba_group.in_group ~userid ~group in
+           let%lwt b2 = Os_group.in_group ~userid ~group in
            Lwt.return (b || b2)) false l
   in
   let%lwt b = match deny with
@@ -174,7 +174,7 @@ let check_allow_deny userid allow deny =
                      in one of the groups of list l *)
       Lwt_list.fold_left_s
         (fun b group ->
-           let%lwt b2 = Eba_group.in_group ~userid ~group in
+           let%lwt b2 = Os_group.in_group ~userid ~group in
            Lwt.return (b && (not b2))) b l
   in
   if b then Lwt.return ()
@@ -210,10 +210,10 @@ let get_session () =
   | None -> Lwt.return None
   | Some uid ->
     try%lwt
-      let%lwt _user = Eba_user.user_of_userid uid in
+      let%lwt _user = Os_user.user_of_userid uid in
       Lwt.return (Some uid)
     with
-    | Eba_user.No_such_user ->
+    | Os_user.No_such_user ->
       (* If session exists and no user in DB, close the session *)
       let%lwt () = disconnect () in
       Lwt.return None

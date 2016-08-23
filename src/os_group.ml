@@ -1,5 +1,5 @@
-(* Eliom-base-app
- * http://www.ocsigen.org/eliom-base-app
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
  *
  * Copyright (C) 2014
  *      Charly Chevalier
@@ -43,7 +43,7 @@ let desc_of_group g = g.desc
 
 (* Using cache tools to prevent multiple same database queries
    during the request. *)
-module MCache = Eba_request_cache.Make(
+module MCache = Os_request_cache.Make(
 struct
   type key = string
   type value = t
@@ -51,28 +51,28 @@ struct
   let compare = compare
   let get key =
     try%lwt
-      let%lwt g = Eba_db.Groups.group_of_name key in
+      let%lwt g = Os_db.Groups.group_of_name key in
       Lwt.return (create_group_from_db g)
-    with Eba_db.No_such_resource -> Lwt.fail No_such_group
+    with Os_db.No_such_resource -> Lwt.fail No_such_group
 end)
 
 (** Helper function which creates a new group and return it as
   * a record of type [t]. *)
 let create ?description name =
   let group_of_name name =
-    let%lwt g = Eba_db.Groups.group_of_name name in
+    let%lwt g = Os_db.Groups.group_of_name name in
     Lwt.return (create_group_from_db g)
   in
   try%lwt group_of_name name with
-  | Eba_db.No_such_resource ->
-    let%lwt () = Eba_db.Groups.create ?description name in
+  | Os_db.No_such_resource ->
+    let%lwt () = Os_db.Groups.create ?description name in
     try%lwt
       let%lwt g = group_of_name name in
       Lwt.return g
-    with Eba_db.No_such_resource ->
+    with Os_db.No_such_resource ->
       Lwt.fail No_such_group (* Should never happen *)
 
-(** Overwrite the function [group_of_name] of [Eba_db.User] and use
+(** Overwrite the function [group_of_name] of [Os_db.User] and use
   * the [get] function of the cache module. *)
 let group_of_name = MCache.get
 
@@ -85,13 +85,13 @@ let group_of_name = MCache.get
  * *)
 
 let add_user_in_group ~group =
-  Eba_db.Groups.add_user_in_group ~groupid:(group.id)
+  Os_db.Groups.add_user_in_group ~groupid:(group.id)
 let remove_user_in_group ~group =
-  Eba_db.Groups.remove_user_in_group ~groupid:(group.id)
+  Os_db.Groups.remove_user_in_group ~groupid:(group.id)
 let in_group ~group =
-  Eba_db.Groups.in_group ~groupid:(group.id)
+  Os_db.Groups.in_group ~groupid:(group.id)
 
 (** Returns all the groups of the database. *)
 let all () =
-  let%lwt groups = Eba_db.Groups.all () in
+  let%lwt groups = Os_db.Groups.all () in
   Lwt.return (List.map (create_group_from_db) groups)

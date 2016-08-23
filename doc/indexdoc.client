@@ -1,7 +1,7 @@
-{1 Eliom-base-app client API}
+{1 Ocsigen-start client API}
 
 {!modules:
-Eba_shared
+Os_shared
 }
 
 {2 Index}

@@ -1,5 +1,5 @@
-(* Eliom-base-app
- * http://www.ocsigen.org/eliom-base-app
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
  *
  * Copyright 2014
  *      Charly Chevalier
@@ -31,32 +31,32 @@ let set_personal_data_handler' userid ()
     (((firstname, lastname), (pwd, pwd2)) as pd) =
   if firstname = "" || lastname = "" || pwd <> pwd2
   then
-    (Eliom_reference.Volatile.set Eba_msg.wrong_pdata (Some pd);
+    (Eliom_reference.Volatile.set Os_msg.wrong_pdata (Some pd);
      Lwt.return ())
   else (
-    let%lwt user = Eba_user.user_of_userid userid in
-    let open Eba_user in
+    let%lwt user = Os_user.user_of_userid userid in
+    let open Os_user in
     let record = {
       user with
       fn = firstname;
       ln = lastname;
     } in
-    Eba_user.update' ~password:pwd record)
+    Os_user.update' ~password:pwd record)
 
 let set_password_handler' userid () (pwd, pwd2) =
   if pwd <> pwd2
   then
-    (Eba_msg.msg ~level:`Err ~onload:true "Passwords do not match";
+    (Os_msg.msg ~level:`Err ~onload:true "Passwords do not match";
      Lwt.return ())
   else (
-    let%lwt user = Eba_user.user_of_userid userid in
-    Eba_user.update' ~password:pwd user)
+    let%lwt user = Os_user.user_of_userid userid in
+    Os_user.update' ~password:pwd user)
 
 let%client set_password_rpc =
   ~%(Eliom_client.server_function
-       ~name:"Eba_handlers.set_password_rpc"
+       ~name:"Os_handlers.set_password_rpc"
        [%derive.json: string * string]
-       (Eba_session.connected_rpc
+       (Os_session.connected_rpc
           (fun myid p -> set_password_handler' myid () p))
     )
 
@@ -69,7 +69,7 @@ let generate_act_key
   let service =
     Eliom_service.attach_global_to_fallback
       ~fallback:service
-      ~service:Eba_services.activation_service
+      ~service:Os_services.activation_service
   in
   let act_link = Eliom_uri.make_string_uri ~absolute:true ~service act_key in
   (* For debugging we print the activation link on standard output
@@ -81,7 +81,7 @@ let generate_act_key
   then
     Lwt.async (fun () ->
       try%lwt
-        Eba_email.send
+        Os_email.send
           ~to_addrs:[("", email)]
           ~subject:"creation"
           [
@@ -98,8 +98,8 @@ let send_act msg service email userid =
       ~text:msg
       email
   in
-  Eliom_reference.Volatile.set Eba_msg.activation_key_created true;
-  let%lwt () = Eba_user.add_activationkey ~act_key userid in
+  Eliom_reference.Volatile.set Os_msg.activation_key_created true;
+  let%lwt () = Os_user.add_activationkey ~act_key userid in
   Lwt.return ()
 
 let sign_up_handler () email =
@@ -107,42 +107,42 @@ let sign_up_handler () email =
     let msg =
       "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: " in
-    send_act msg Eba_services.main_service email userid
+    send_act msg Os_services.main_service email userid
   in
   try%lwt
-    let%lwt user = Eba_user.create ~firstname:"" ~lastname:"" email in
-    let userid = Eba_user.userid_of_user user in
+    let%lwt user = Os_user.create ~firstname:"" ~lastname:"" email in
+    let userid = Os_user.userid_of_user user in
     send_act email userid
-  with Eba_user.Already_exists userid ->
+  with Os_user.Already_exists userid ->
     (* If email is not validated, the user never logged in,
        I send an activation link, as if it were a new user. *)
-    let%lwt validated = Eba_db.User.get_email_validated userid in
+    let%lwt validated = Os_db.User.get_email_validated userid in
     if not validated
     then send_act email userid
     else begin
-      Eliom_reference.Volatile.set Eba_userbox.user_already_exists true;
-      Eba_msg.msg ~level:`Err ~onload:true "E-mail already exists";
+      Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
+      Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
       Lwt.return ()
     end
 
 let%server sign_up_handler_rpc v =
-  (Eba_session.connected_wrapper (sign_up_handler ())) v
+  (Os_session.connected_wrapper (sign_up_handler ())) v
 let%client sign_up_handler_rpc =
   ~%(Eliom_client.server_function
-       ~name:"Eba_handlers.sign_up_handler"
+       ~name:"Os_handlers.sign_up_handler"
        [%derive.json: string]
        sign_up_handler_rpc)
 let%client sign_up_handler () v = sign_up_handler_rpc v
 
 let forgot_password_handler service () email =
   try%lwt
-    let%lwt userid = Eba_user.userid_of_email email in
+    let%lwt userid = Os_user.userid_of_email email in
     let msg = "Hi,\r\nTo set a new password, \
                please click on this link: " in
     send_act msg service email userid
-  with Eba_db.No_such_resource ->
-    Eliom_reference.Volatile.set Eba_userbox.user_does_not_exist true;
-    Eba_msg.msg ~level:`Err ~onload:true "User does not exist";
+  with Os_db.No_such_resource ->
+    Eliom_reference.Volatile.set Os_userbox.user_does_not_exist true;
+    Os_msg.msg ~level:`Err ~onload:true "User does not exist";
     Lwt.return ()
 
 let%client restart () =
@@ -162,14 +162,14 @@ let%client restart () =
 
 let disconnect_handler () () =
   (* SECURITY: no check here because we disconnect the session cookie owner. *)
-  let%lwt () = Eba_session.disconnect () in
+  let%lwt () = Os_session.disconnect () in
   ignore [%client (restart () : unit)];
   Lwt.return ()
 
 let%server disconnect_handler_rpc' () = disconnect_handler () ()
 let%client disconnect_handler_rpc' =
   ~%(Eliom_client.server_function
-       ~name:"Eba_handlers.disconnect_handler"
+       ~name:"Os_handlers.disconnect_handler"
        [%derive.json: unit]
        disconnect_handler_rpc')
 let%client disconnect_handler () () = disconnect_handler_rpc' ()
@@ -178,18 +178,18 @@ let%client disconnect_handler () () = disconnect_handler_rpc' ()
 let connect_handler () ((login, pwd), keepmeloggedin) =
   (* SECURITY: no check here. *)
   try%lwt
-    let%lwt userid = Eba_user.verify_password login pwd in
+    let%lwt userid = Os_user.verify_password login pwd in
     let%lwt () = disconnect_handler () () in
-    Eba_session.connect ~expire:(not keepmeloggedin) userid
-  with Eba_db.No_such_resource ->
-    Eliom_reference.Volatile.set Eba_userbox.wrong_password true;
-    Eba_msg.msg ~level:`Err ~onload:true "Wrong password";
+    Os_session.connect ~expire:(not keepmeloggedin) userid
+  with Os_db.No_such_resource ->
+    Eliom_reference.Volatile.set Os_userbox.wrong_password true;
+    Os_msg.msg ~level:`Err ~onload:true "Wrong password";
     Lwt.return ()
 
 let%server connect_handler_rpc' v = connect_handler () v
 let%client connect_handler_rpc =
   ~%(Eliom_client.server_function
-       ~name:"Eba_handlers.connect_handler"
+       ~name:"Os_handlers.connect_handler"
        [%derive.json: (string * string) * bool]
        connect_handler_rpc')
 let%client connect_handler () v = connect_handler_rpc v
@@ -198,16 +198,16 @@ let activation_handler_common ~restart ~akey =
   (* SECURITY: we disconnect the user before doing anything. *)
   (* If the user is already connected,
      we're going to disconnect him even if the activation key outdated. *)
-  let%lwt () = Eba_session.disconnect () in
+  let%lwt () = Os_session.disconnect () in
   try%lwt
-    let%lwt userid = Eba_user.userid_of_activationkey akey in
-    let%lwt () = Eba_db.User.set_email_validated userid in
-    let%lwt () = Eba_session.connect userid in
+    let%lwt userid = Os_user.userid_of_activationkey akey in
+    let%lwt () = Os_db.User.set_email_validated userid in
+    let%lwt () = Os_session.connect userid in
     Lwt.return ()
-  with Eba_db.No_such_resource ->
+  with Os_db.No_such_resource ->
     Eliom_reference.Volatile.set
-      Eba_userbox.activation_key_outdated true;
-    Eba_msg.msg ~level:`Err ~onload:true
+      Os_userbox.activation_key_outdated true;
+    Os_msg.msg ~level:`Err ~onload:true
       "Invalid activation key, ask for a new one.";
     Lwt.return ()
 
@@ -227,25 +227,25 @@ let%client activation_handler akey () =
 
           (*
 let admin_service_handler userid gp pp =
-  lwt user = Eba_user.user_of_userid userid in
+  lwt user = Os_user.user_of_userid userid in
   (*lwt cnt = Admin.admin_page_content user in*)
   %%%MODULE_NAME%%%_container.page [
   ] (*@ cnt*)
            *)
 
 let preregister_handler' () email =
-  let%lwt is_preregistered = Eba_user.is_preregistered email in
-  let%lwt is_registered = Eba_user.is_registered email in
+  let%lwt is_preregistered = Os_user.is_preregistered email in
+  let%lwt is_registered = Os_user.is_registered email in
   Printf.printf "%b:%b%!\n" is_preregistered is_registered;
   if not (is_preregistered || is_registered)
-   then Eba_user.add_preregister email
+   then Os_user.add_preregister email
    else begin
-     Eliom_reference.Volatile.set Eba_userbox.user_already_preregistered true;
-     Eba_msg.msg ~level:`Err ~onload:true "E-mail already preregistered";
+     Eliom_reference.Volatile.set Os_userbox.user_already_preregistered true;
+     Os_msg.msg ~level:`Err ~onload:true "E-mail already preregistered";
      Lwt.return ()
    end
 
 
 [%%shared
-   let _ = Eba_comet.__link (* to make sure eba_comet is linked *)
+   let _ = Os_comet.__link (* to make sure eba_comet is linked *)
 ]

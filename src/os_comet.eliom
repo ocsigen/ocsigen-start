@@ -1,5 +1,5 @@
-(* Eliom-base-app
- * http://www.ocsigen.org/eliom-base-app
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
  *
  * Copyright 2014
  *      Vincent Balat
@@ -53,7 +53,7 @@ type msg = Connection_changed | Heartbeat
 let create_monitor_channel () =
   let monitor_stream, monitor_send = Lwt_stream.create () in
   let channel = Eliom_comet.Channel.create
-      ~scope:Eba_session.user_indep_process_scope
+      ~scope:Os_session.user_indep_process_scope
       ~name:"monitor"
       monitor_stream
   in
@@ -67,7 +67,7 @@ let create_monitor_channel () =
  *)
 let monitor_channel_ref =
   Eliom_reference.Volatile.eref
-    ~scope:Eba_session.user_indep_process_scope
+    ~scope:Os_session.user_indep_process_scope
     None
 
 let already_send_ref =
@@ -78,14 +78,14 @@ let already_send_ref =
    let handle_message = function
      | Lwt_stream.Error exn ->
        Eliom_lib.debug_exn
-         "Exception received on Eba_comet's monitor channel: " exn;
+         "Exception received on Os_comet's monitor channel: " exn;
        restart_process ();
        Lwt.return ()
      | Lwt_stream.Value Heartbeat ->
        Eliom_lib.debug "poum";
        Lwt.return ()
      | Lwt_stream.Value Connection_changed ->
-       Eba_msg.msg ~level:`Err
+       Os_msg.msg ~level:`Err
          "Connection has changed from outside. Program will restart.";
        let%lwt () = Lwt_js.sleep 2. in
        Eliom_client.exit_to ~service:Eliom_service.reload_action () ();
@@ -94,7 +94,7 @@ let already_send_ref =
 ]
 
 let _ =
-  Eba_session.on_start_process
+  Os_session.on_start_process
     (fun () ->
        let channel = create_monitor_channel () in
        Eliom_reference.Volatile.set monitor_channel_ref (Some channel);
@@ -112,7 +112,7 @@ let _ =
       let cur = Eliom_reference.Volatile.get monitor_channel_ref in
       Eliom_state.Ext.iter_volatile_sub_states
         ~state:(Eliom_state.Ext.current_volatile_session_state
-                  ~scope:Eba_session.user_indep_session_scope ())
+                  ~scope:Os_session.user_indep_session_scope ())
         (fun state ->
            match
              Eliom_reference.Volatile.Ext.get state monitor_channel_ref with
@@ -123,5 +123,5 @@ let _ =
     Lwt.return ()
   in
   let warn_connection_change _ = warn Connection_changed in
-  Eba_session.on_open_session warn_connection_change;
-  Eba_session.on_post_close_session warn_connection_change
+  Os_session.on_open_session warn_connection_change;
+  Os_session.on_post_close_session warn_connection_change

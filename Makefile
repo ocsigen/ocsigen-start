@@ -156,9 +156,9 @@ META: META.in
 		-e 's#@@SERVER_ARCHIVES_NATIVE_PLUGIN@@#$(PKG_NAME).server.cmxs#g' \
 		$< > $@
 
-CLIENT_CMI=$(wildcard $(addsuffix /eba_*.cmi,$(addprefix $(ELIOM_CLIENT_DIR)/,$(CLIENT_DIRS))))
-SERVER_CMI=$(wildcard $(addsuffix /eba_*.cmi,$(addprefix $(ELIOM_SERVER_DIR)/,$(SERVER_DIRS))))
-SERVER_CMX=$(wildcard $(addsuffix /eba_*.cmx,$(addprefix $(ELIOM_SERVER_DIR)/,$(SERVER_DIRS))))
+CLIENT_CMI=$(wildcard $(addsuffix /os_*.cmi,$(addprefix $(ELIOM_CLIENT_DIR)/,$(CLIENT_DIRS))))
+SERVER_CMI=$(wildcard $(addsuffix /os_*.cmi,$(addprefix $(ELIOM_SERVER_DIR)/,$(SERVER_DIRS))))
+SERVER_CMX=$(wildcard $(addsuffix /os_*.cmx,$(addprefix $(ELIOM_SERVER_DIR)/,$(SERVER_DIRS))))
 install: all META
 	$(OCAMLFIND) install $(PKG_NAME) META
 	mkdir -p $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
