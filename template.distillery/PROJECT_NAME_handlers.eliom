@@ -67,54 +67,6 @@
 
 ]
 
-let%shared password_form ~service () = Eliom_content.Html.D.(
-  Form.post_form
-    ~service
-    (fun (pwdn, pwd2n) ->
-       let pass1 =
-         Form.input
-           ~a:[a_required ();
-               a_autocomplete false;
-	       a_placeholder "password"]
-           ~input_type:`Password
-	   ~name:pwdn
-           Form.string
-       in
-       let pass2 =
-         Form.input
-           ~a:[a_required ();
-               a_autocomplete false;
-	       a_placeholder "retype your password"]
-           ~input_type:`Password
-	   ~name:pwd2n
-           Form.string
-       in
-       ignore [%client (
-         let pass1 = Eliom_content.Html.To_dom.of_input ~%pass1 in
-         let pass2 = Eliom_content.Html.To_dom.of_input ~%pass2 in
-         Lwt_js_events.async
-           (fun () ->
-              Lwt_js_events.inputs pass2
-                (fun _ _ ->
-                   ignore (
-		     if Js.to_string pass1##.value <> Js.to_string pass2##.value
-                     then
-		       (Js.Unsafe.coerce pass2)##(setCustomValidity ("Passwords do not match"))
-                     else (Js.Unsafe.coerce pass2)##(setCustomValidity ("")));
-                  Lwt.return ()))
-	   : unit)];
-       [
-         table
-           [
-             tr [td [pass1]];
-             tr [td [pass2]];
-           ];
-         Form.input ~input_type:`Submit
-           ~a:[ a_class [ "button" ] ] ~value:"Send" Form.string
-       ])
-    ()
-)
-
 
 [%%shared
 
@@ -138,36 +90,13 @@ let%shared password_form ~service () = Eliom_content.Html.D.(
   ]
  )
 
- let settings_handler =
-   let settings_content =
-     let none = [%client ((fun () -> ()) : unit -> unit)] in
-     fun user ->
-       Eliom_content.Html.D.(
-	 [
-	   div ~a:[a_class ["os-welcome-box"]] [
-	     p [pcdata "Change your password:"];
-	     password_form ~service:Os_services.set_password_service' ();
-	     br ();
-	     Os_userbox.upload_pic_link
-	       none
-	       %%%MODULE_NAME%%%_services.upload_user_avatar_service
-	       (Os_user.userid_of_user user);
-	     br ();
-	     Os_userbox.reset_tips_link none;
-	     br ();
-	     p [pcdata "Link a new email to your account:"];
-	     Os_view.generic_email_form ~service:Os_services.add_mail_service ()
-	   ]
-	 ]
-       )
+ let settings_handler userid_o () () =
+   let%lwt user = %%%MODULE_NAME%%%_container.get_user_data userid_o in
+   let content = match user with
+     | Some user ->
+       %%%MODULE_NAME%%%_content.Settings.settings_content user
+     | None -> []
    in
-   fun userid_o () () ->
-     let%lwt user = %%%MODULE_NAME%%%_container.get_user_data userid_o in
-     let content = match user with
-       | Some user ->
-	 settings_content user
-       | None -> []
-     in
-     %%%MODULE_NAME%%%_container.page userid_o content
+   %%%MODULE_NAME%%%_container.page userid_o content
 
 ]

@@ -35,17 +35,17 @@ let%shared connected_user_box user = Eliom_content.Html.D.(
     div [
       username
     ];
-    %%%MODULE_NAME%%%_usermenu.settings_button ();
-    %%%MODULE_NAME%%%_usermenu.disconnect_button ();
+    %%%MODULE_NAME%%%_content.Settings.settings_button ();
+    %%%MODULE_NAME%%%_content.Connection.disconnect_button ();
   ]
 )
 
 let%client msg = ~%(Eliom_client.server_function [%derive.json: unit] msg)
 
 let%shared connection_box () = Eliom_content.Html.D.(
-  let%lwt sign_in    = %%%MODULE_NAME%%%_loginpopup.sign_in_button () in
-  let%lwt sign_up    = %%%MODULE_NAME%%%_loginpopup.sign_up_button () in
-  let%lwt forgot_pwd = %%%MODULE_NAME%%%_loginpopup.forgotpwd_button () in
+  let%lwt sign_in    = %%%MODULE_NAME%%%_content.Connection.sign_in_button () in
+  let%lwt sign_up    = %%%MODULE_NAME%%%_content.Connection.sign_up_button () in
+  let%lwt forgot_pwd = %%%MODULE_NAME%%%_content.Connection.forgotpwd_button () in
   Lwt.return @@ div ~a:[a_class ["os-login-menu"]] [
     sign_in;
     sign_up;
