@@ -200,10 +200,10 @@ let activation_handler_common ~akey =
      we're going to disconnect him even if the activation key outdated. *)
   let%lwt () = Os_session.disconnect () in
   try%lwt
-    let%lwt (userid, email) = Os_user.userdata_of_activationkey akey in
+    let%lwt (userid, email) = Os_user.userid_and_email_of_activationkey akey in
     let%lwt () = Os_db.User.set_email_validated userid email in
     let%lwt () = Os_session.connect userid in
-    Lwt.return ()
+    Lwt.return_unit
   with Os_db.No_such_resource ->
     Eliom_reference.Volatile.set
       Os_userbox.activation_key_outdated true;

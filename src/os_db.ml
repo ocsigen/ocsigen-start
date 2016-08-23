@@ -371,20 +371,23 @@ module User = struct
     ~fail:(Lwt.fail No_such_resource)
     <:view< t | t in $users_table$; t.userid = $int64:userid$ >>
 
-  let userdata_of_activationkey act_key = full_transaction_block (fun dbh ->
-    one (Lwt_Query.view dbh)
-      ~fail:(Lwt.fail No_such_resource)
-      <:view< t | t in $activation_table$; t.activationkey = $string:act_key$ >>
-      ~success:(fun t ->
-	let userid = t#!userid in
-	let email  = t#!email in
-	lwt () = Lwt_Query.query dbh
-	  <:delete< r in $activation_table$
-           | r.activationkey = $string:act_key$ >>
-	in
-	Lwt.return (userid, email)
-      )
-  )
+  let userid_and_email_of_activationkey act_key =
+    full_transaction_block (fun dbh ->
+      one (Lwt_Query.view dbh)
+	~fail:(Lwt.fail No_such_resource)
+        <:view< t 
+         | t in $activation_table$;
+           t.activationkey = $string:act_key$ >>
+	~success:(fun t ->
+	  let userid = t#!userid in
+	  let email  = t#!email in
+	  lwt () = Lwt_Query.query dbh
+	   <:delete< r in $activation_table$
+            | r.activationkey = $string:act_key$ >>
+	  in
+	  Lwt.return (userid, email)
+       )
+    )
 
   let emails_of_userid userid = Utils.all run_view
     ~success:(fun r -> Lwt.return @@ List.map (fun a -> a#!email) r)
