@@ -36,6 +36,10 @@ let () =
     ~service:Os_services.activation_service
     %%%MODULE_NAME%%%_handlers.activation_handler;
 
+  Eliom_registration.Action.register
+    ~service:Os_services.add_mail_service
+    (Os_session.connected_fun Os_handlers.add_mail_handler);
+
   %%%MODULE_NAME%%%_base.App.register
     ~service:Os_services.main_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.main_service_handler);

@@ -154,6 +154,9 @@ let%shared password_form ~service () = Eliom_content.Html.D.(
 	       (Os_user.userid_of_user user);
 	     br ();
 	     Os_userbox.reset_tips_link none;
+	     br ();
+	     p [pcdata "Link a new email to your account:"];
+	     Os_view.generic_email_form ~service:Os_services.add_mail_service ()
 	   ]
 	 ]
        )
