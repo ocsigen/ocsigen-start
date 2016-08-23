@@ -33,7 +33,9 @@ val is_complete : t -> bool
 
 val emails_of_user : t -> string Lwt.t
 
-val add_activationkey : act_key:string -> int64 -> string -> unit Lwt.t
+val add_activationkey :
+  act_key:string -> userid:int64 -> email:string -> unit Lwt.t
+
 val verify_password : email:string -> password:string -> int64 Lwt.t
 
 (** returns user information.

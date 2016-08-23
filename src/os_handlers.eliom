@@ -99,7 +99,7 @@ let send_act msg service email userid =
       email
   in
   Eliom_reference.Volatile.set Os_msg.activation_key_created true;
-  let%lwt () = Os_user.add_activationkey ~act_key userid email in
+  let%lwt () = Os_user.add_activationkey ~act_key ~userid ~email in
   Lwt.return ()
 
 let sign_up_handler () email =
@@ -245,7 +245,7 @@ let preregister_handler' () email =
      Lwt.return ()
    end
 
-let%server add_mail_handler userid () email =
+let%server add_mail_handler userid email =
   let send_act email userid =
     let msg =
       "Welcome!\r\nTo confirm your e-mail address, \
@@ -265,10 +265,9 @@ let%server add_mail_handler userid () email =
 let%client add_mail_handler =
   let rpc =
     ~%(Eliom_client.server_function [%derive.json: string]
-	 (Os_session.connected_rpc 
-	    (fun id mail -> add_mail_handler id () mail)))
+	 (Os_session.connected_rpc add_mail_handler))
   in
-  fun (_:int64) () mail -> rpc mail
+  fun (_:int64) mail -> rpc mail
 
 [%%shared
    let _ = Os_comet.__link (* to make sure eba_comet is linked *)
