@@ -248,7 +248,7 @@ module User = struct
        e.email  = $string:email$
     >>
 
-  let add_activationkey ~act_key userid email = run_query
+  let add_activationkey ~act_key ~userid ~email = run_query
      <:insert< $activation_table$ :=
       { userid = $int64:userid$;
         email  = $string:email$;
