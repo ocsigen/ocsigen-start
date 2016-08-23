@@ -91,7 +91,7 @@ let generate_activation_key
       with _ -> Lwt.return ());
   act_key
 
-let send_act msg service email userid =
+let send_activation msg service email userid =
   let act_key =
     generate_activation_key
       ~service:service
@@ -103,22 +103,22 @@ let send_act msg service email userid =
   Lwt.return ()
 
 let sign_up_handler () email =
-  let send_act email userid =
+  let send_activation email userid =
     let msg =
       "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: " in
-    send_act msg Os_services.main_service email userid
+    send_activation msg Os_services.main_service email userid
   in
   try%lwt
     let%lwt user = Os_user.create ~firstname:"" ~lastname:"" email in
     let userid = Os_user.userid_of_user user in
-    send_act email userid
+    send_activation email userid
   with Os_user.Already_exists userid ->
     (* If email is not validated, the user never logged in,
        I send an activation link, as if it were a new user. *)
     let%lwt validated = Os_db.User.get_email_validated userid email in
     if not validated
-    then send_act email userid
+    then send_activation email userid
     else begin
       Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
       Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
@@ -139,7 +139,7 @@ let forgot_password_handler service () email =
     let%lwt userid = Os_user.userid_of_email email in
     let msg = "Hi,\r\nTo set a new password, \
                please click on this link: " in
-    send_act msg service email userid
+    send_activation msg service email userid
   with Os_db.No_such_resource ->
     Eliom_reference.Volatile.set Os_userbox.user_does_not_exist true;
     Os_msg.msg ~level:`Err ~onload:true "User does not exist";
