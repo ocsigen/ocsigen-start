@@ -4,6 +4,14 @@ exception No_such_user
 (** Has user set its password? *)
 val password_set : int64 -> bool Lwt.t
 
+type activationkey_info = {
+  userid : int64;
+  email : string;
+  validity : int64;
+  action : string;
+  data : string;
+}
+
 [%%shared.start]
   (** The type which represents a user. *)
 type t = {
@@ -12,6 +20,7 @@ type t = {
     ln : string;
     avatar : string option;
   } [@@deriving json]
+
 
 val userid_of_user : t -> int64
 val firstname_of_user : t -> string
@@ -46,7 +55,7 @@ val verify_password : email:string -> password:string -> int64 Lwt.t
     Results are cached in memory during page generation. *)
 val user_of_userid : int64 -> t Lwt.t
 
-val userid_and_email_of_activationkey : string -> (int64 * string) Lwt.t
+val get_activationkey_info : string -> activationkey_info Lwt.t
 (** Retrieve the userid and email corresponding to an activation key.
     May raise [No_such_resource] if the activation key is not found
     (or outdated). *)

@@ -204,7 +204,7 @@ let activation_handler_common ~akey =
      TODO: do not disconnect users if we relog them with the same userid.
   *)
   try%lwt
-    let%lwt (userid, email) = Os_user.userid_and_email_of_activationkey akey in
+    let%lwt {userid; email} = Os_user.get_activationkey_info akey in
     let%lwt () = Os_db.User.set_email_validated userid email in
     let%lwt () = Os_session.disconnect () in
     let%lwt () = Os_session.connect userid in

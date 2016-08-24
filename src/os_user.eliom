@@ -55,6 +55,7 @@ let email_of_user user = Os_db.User.email_of_userid user.userid
 
 include Os_db.User
 
+
 (* Using cache tools to prevent multiple same database queries
    during the request. *)
 module MCache = Os_request_cache.Make(

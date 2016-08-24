@@ -23,6 +23,7 @@
 exception No_such_resource
 exception Main_email_removal_attempt
 
+
 let (>>=) = Lwt.bind
 
 module Lwt_thread = struct
@@ -222,6 +223,14 @@ end
 module User = struct
 
 
+  type activationkey_info = {
+    userid : int64;
+    email : string;
+    validity : int64;
+    action : string;
+    data : string;
+  }
+
   let userid_of_email email = one run_view
     ~success:(fun u -> Lwt.return u#!userid)
     ~fail:(Lwt.fail No_such_resource)
@@ -407,26 +416,6 @@ module User = struct
     ~fail:(Lwt.fail No_such_resource)
     <:view< t | t in $users_table$; t.userid = $int64:userid$ >>
 
-  let userid_and_email_of_activationkey act_key =
-    full_transaction_block (fun dbh ->
-      one (Lwt_Query.view dbh)
-	~fail:(Lwt.fail No_such_resource)
-        <:view< t
-         | t in $activation_table$;
-           t.validity > 0L;
-           t.activationkey = $string:act_key$ >>
-	~success:(fun t ->
-	  let userid = t#!userid in
-	  let email  = t#!email in
-   	  let v  = Int64.pred (t#!validity) in
-	  lwt () = Lwt_Query.query dbh
-            <:update< r in $activation_table$ := {validity = $int64:v$} |
-                      r.activationkey = $string:act_key$ >>
-	  in
-	  Lwt.return (userid, email)
-       )
-    )
-
   let get_activationkey_info act_key =
     full_transaction_block (fun dbh ->
       one (Lwt_Query.view dbh)
@@ -446,7 +435,7 @@ module User = struct
               <:update< r in $activation_table$ := {validity = $int64:v$} |
                         r.activationkey = $string:act_key$ >>
 	  in
-	  Lwt.return (userid, email, validity, action, data)
+	  Lwt.return {userid; email; validity; action; data}
         )
     )
 
@@ -465,7 +454,7 @@ module User = struct
           let validity = t#!validity in
           let action = t#!action in
           let data = t#!data in
-	  Lwt.return (userid, email, validity, action, data)
+	  Lwt.return {userid; email; validity; action; data}
         )
     )
 
