@@ -195,13 +195,18 @@ let%client connect_handler_rpc =
 let%client connect_handler () v = connect_handler_rpc v
 
 let activation_handler_common ~akey =
-  (* SECURITY: we disconnect the user before doing anything. *)
-  (* If the user is already connected,
-     we're going to disconnect him even if the activation key outdated. *)
-  let%lwt () = Os_session.disconnect () in
+  (* <s>
+     SECURITY: we disconnect the user before doing anything.
+     If the user is already connected,
+     we're going to disconnect him even if the activation key outdated.</s>
+     ---> Now we disconnect the user only if we reconnect them because it's
+     only annoying to disconnect people with unvalid keys.
+     TODO: do not disconnect users if we relog them with the same userid.
+  *)
   try%lwt
     let%lwt (userid, email) = Os_user.userid_and_email_of_activationkey akey in
     let%lwt () = Os_db.User.set_email_validated userid email in
+    let%lwt () = Os_session.disconnect () in
     let%lwt () = Os_session.connect userid in
     Lwt.return `Reload
   with Os_db.No_such_resource ->
