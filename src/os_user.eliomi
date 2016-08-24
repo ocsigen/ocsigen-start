@@ -34,7 +34,10 @@ val is_complete : t -> bool
 val emails_of_user : t -> string Lwt.t
 
 val add_activationkey :
-  ?action:string -> ?data:string ->
+  (* by default, an activation key is just an activation key *)
+  ?action:string -> (* default: "activation" *)
+  ?data:string -> (* default: empty string *)
+  ?validity:int64 -> (* default: 1L *)
   act_key:string -> userid:int64 -> email:string -> unit -> unit Lwt.t
 
 val verify_password : email:string -> password:string -> int64 Lwt.t
