@@ -442,7 +442,8 @@ module User = struct
       <:delete< e in $emails_table$
        | u in $users_table$;
          u.userid = $int64:userid$;
-         e.userid = u.userid
+         e.userid = u.userid;
+         e.email = $string:email$
       >>
 
   let get_users ?pattern () =
