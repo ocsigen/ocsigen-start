@@ -21,40 +21,40 @@
  let forgot_password_handler =
    forgot_password_handler Os_services.main_service
 
+ let set_personal_data_handler' =
+   Os_session.connected_fun set_personal_data_handler'
+
+ let set_password_handler' =
+   Os_session.connected_fun set_password_handler'
 ]
 
 [%%client
 
-  let set_personal_data_handler' =
-    let set_personal_data_rpc =
-      ~%(Eliom_client.server_function
-	   [%derive.json : ((string * string) * (string * string))]
-	   (Os_session.connected_rpc
-	      (fun id s -> set_personal_data_handler' id () s)))
-    in
-    fun (_ : int64) () d -> set_personal_data_rpc d
+ let set_personal_data_handler' =
+   let set_personal_data_rpc =
+     ~%(Eliom_client.server_function
+	  [%derive.json : ((string * string) * (string * string))]
+	@@ set_personal_data_handler' ())
+   in
+   fun () -> set_personal_data_rpc
 
-  let set_password_handler' id () p =
-    Os_handlers.set_password_rpc p
+ let set_password_handler' () = Os_handlers.set_password_rpc
 
-  let forgot_password_handler =
-    let forgot_password_rpc =
-      ~%(Eliom_client.server_function
-	   [%derive.json : string]
-	   (Os_session.Opt.connected_rpc
-	      (fun _ mail ->
-		forgot_password_handler () mail)))
-    in
-    fun () mail -> forgot_password_rpc mail
+ let forgot_password_handler =
+   let forgot_password_rpc =
+     ~%(Eliom_client.server_function [%derive.json : string]
+	@@ forgot_password_handler ())
+   in
+   fun () -> forgot_password_rpc
 
-  let preregister_handler' =
-    let preregister_rpc =
-      ~%(Eliom_client.server_function
-	   [%derive.json : string]
-	   (Os_session.Opt.connected_rpc
-	      (fun _ mail -> preregister_handler' () mail)))
-    in
-    fun () mail -> preregister_rpc mail
+ let preregister_handler' =
+   let preregister_rpc =
+     ~%(Eliom_client.server_function
+	  [%derive.json : string]
+	  (Os_session.Opt.connected_rpc
+	     (fun _ mail -> preregister_handler' () mail)))
+   in
+   fun () mail -> preregister_rpc mail
      
   let activation_handler =
     let activation_handler_rpc =

@@ -6,11 +6,11 @@ let () =
   (* Registering services. Feel free to customize handlers. *)
   Eliom_registration.Action.register
     ~service:Os_services.set_personal_data_service'
-    (Os_session.connected_fun %%%MODULE_NAME%%%_handlers.set_personal_data_handler');
+    %%%MODULE_NAME%%%_handlers.set_personal_data_handler';
 
   Eliom_registration.Action.register
     ~service:Os_services.set_password_service'
-    (Os_session.connected_fun %%%MODULE_NAME%%%_handlers.set_password_handler');
+    %%%MODULE_NAME%%%_handlers.set_password_handler';
 
   Eliom_registration.Action.register
     ~service:Os_services.forgot_password_service
