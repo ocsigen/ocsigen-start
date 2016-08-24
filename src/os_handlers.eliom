@@ -194,7 +194,7 @@ let%client connect_handler_rpc =
        connect_handler_rpc')
 let%client connect_handler () v = connect_handler_rpc v
 
-let activation_handler_common ~restart ~akey =
+let activation_handler_common ~akey =
   (* SECURITY: we disconnect the user before doing anything. *)
   (* If the user is already connected,
      we're going to disconnect him even if the activation key outdated. *)
@@ -203,22 +203,29 @@ let activation_handler_common ~restart ~akey =
     let%lwt userid = Os_user.userid_of_activationkey akey in
     let%lwt () = Os_db.User.set_email_validated userid in
     let%lwt () = Os_session.connect userid in
-    Lwt.return ()
+    Lwt.return `Reload
   with Os_db.No_such_resource ->
     Eliom_reference.Volatile.set
       Os_userbox.activation_key_outdated true;
     Os_msg.msg ~level:`Err ~onload:true
       "Invalid activation key, ask for a new one.";
-    Lwt.return ()
+    Lwt.return `NoReload
 
 let%server activation_handler akey () =
-  let%lwt () = activation_handler_common ~restart:false ~akey in
-  Eliom_registration.Action.send ()
+  let%lwt a = activation_handler_common ~akey in
+  match a with
+  | `Reload ->
+    Eliom_registration.
+      (Redirection.send (Redirection Eliom_service.reload_action))
+  | `NoReload ->
+    Eliom_registration.Action.send ()
 
 let%client activation_handler_rpc =
   ~%(Eliom_client.server_function ~name:"Eba_handlers.activation_handler"
        [%derive.json: string]
-       (fun akey -> activation_handler_common ~restart:true ~akey))
+       (fun akey ->
+          let%lwt _ = activation_handler_common ~akey in
+          Lwt.return ()))
 
 let%client activation_handler akey () =
   let%lwt () = activation_handler_rpc akey in
