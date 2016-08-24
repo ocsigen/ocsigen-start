@@ -253,30 +253,31 @@ let preregister_handler' () email =
    end
 
 
-let%server add_mail_handler userid () email =
-  let send_act email userid =
-    let msg =
-      "Welcome!\r\nTo confirm your e-mail address, \
+let%server add_mail_handler =
+  let add_mail userid () email =
+    let send_act email userid =
+      let msg =
+	"Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: " in
-    send_act msg Os_services.main_service email userid
+      send_act msg Os_services.main_service email userid
+    in
+    let%lwt available = Os_db.Email.available email in
+    if available then
+      let%lwt () = Os_db.User.add_mail_to_user userid email in
+      send_act email userid
+    else begin
+      Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
+      Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
+      Lwt.return_unit
+    end
   in
-  let%lwt available = Os_db.Email.available email in
-  if available then
-    let%lwt () = Os_db.User.add_mail_to_user userid email in
-    send_act email userid
-  else begin
-    Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
-    Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
-    Lwt.return_unit
-  end
+  fun () email -> Os_session.connected_fun add_mail () email
 
 let%client add_mail_handler =
-  let rpc =
-    ~%(Eliom_client.server_function [%derive.json: string]
-	 (Os_session.connected_rpc 
-	    (fun id mail -> add_mail_handler id () mail)))
+  let rpc = ~%(Eliom_client.server_function [%derive.json: string]
+		 @@ add_mail_handler ())
   in
-  fun (_:int64) () mail -> rpc mail
+  fun () -> rpc
 
 [%%shared
    let _ = Os_comet.__link (* to make sure eba_comet is linked *)
