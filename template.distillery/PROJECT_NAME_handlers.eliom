@@ -47,21 +47,17 @@
    in
    fun () -> forgot_password_rpc
 
- let preregister_handler' =
-   let preregister_rpc =
-     ~%(Eliom_client.server_function
-	  [%derive.json : string]
-	  (Os_session.Opt.connected_rpc
-	     (fun _ mail -> preregister_handler' () mail)))
-   in
-   fun () mail -> preregister_rpc mail
+  let preregister_handler' =
+    let preregister_rpc =
+      ~%(Eliom_client.server_function [%derive.json : string]
+	 @@ preregister_handler' ())
+    in
+    fun () -> preregister_rpc
      
   let activation_handler =
     let activation_handler_rpc =
-      ~%(Eliom_client.server_function
-	   [%derive.json : string]
-	   (Os_session.Opt.connected_rpc
-	      (fun _ akey -> activation_handler akey ())))
+      ~%(Eliom_client.server_function [%derive.json : string]
+	 @@ fun akey -> activation_handler akey ())
     in
     fun akey () -> activation_handler_rpc akey
 
