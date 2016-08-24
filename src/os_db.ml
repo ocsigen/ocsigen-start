@@ -267,12 +267,14 @@ module User = struct
        e.email  = $string:email$
     >>
 
-  let add_activationkey ~act_key ~userid ~email = run_query
+  let add_activationkey
+      ?(action="activation") ?(data="") ~act_key ~userid ~email () =
+    run_query
      <:insert< $activation_table$ :=
       { userid = $int64:userid$;
         email  = $string:email$;
-        action = $string:"activation"$;
-        data   = null;
+        action = $string:action$;
+        data   = $string:data$;
         validity = $int64:1L$;
         activationkey  = $string:act_key$;
         creationdate   = activation_table?creationdate }
