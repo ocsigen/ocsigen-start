@@ -1,4 +1,4 @@
-opam pin add --no-action eliom-base-app .
+opam pin add --no-action ocsigen-start .
 #opam pin add --no-action deriving 'https://github.com/ocsigen/deriving.git#master'
 opam pin add --no-action text 'https://github.com/vbmithr/ocaml-text.git#master'
 opam pin add --no-action ocsigenserver 'https://github.com/ocsigen/ocsigenserver.git#master'
@@ -9,8 +9,8 @@ opam pin add --no-action ocsigen-widgets 'https://github.com/ocsigen/ocsigen-wid
 opam pin add --no-action ocsigen-toolkit 'https://github.com/ocsigen/ocsigen-toolkit.git#master'
 opam pin add --no-action reactiveData 'https://github.com/ocsigen/reactiveData.git#master'
 
-opam install --deps-only eliom-base-app
-opam install --verbose eliom-base-app
+opam install --deps-only ocsigen-start
+opam install --verbose ocsigen-start
 
 do_build_doc () {
   make doc
@@ -21,5 +21,5 @@ do_build_doc () {
 }
 
 do_remove () {
-  opam remove --verbose eliom-base-app
+  opam remove --verbose ocsigen-start
 }
