@@ -21,6 +21,7 @@
  *)
 
 exception No_such_resource
+exception Main_email_removal_attempt
 
 let (>>=) = Lwt.bind
 
@@ -113,6 +114,7 @@ let users_table =
        userid bigint NOT NULL DEFAULT(nextval $users_userid_seq$),
        firstname text NOT NULL,
        lastname text NOT NULL,
+       main_email citext NOT NULL,
        password text,
        avatar text
           ) >>
@@ -285,11 +287,12 @@ module User = struct
 	let avatar_o = Eliom_lib.Option.map as_sql_string avatar in
 	lwt () = Lwt_Query.query dbh
 	  <:insert< $users_table$ :=
-           { userid    = users_table?userid;
-             firstname = $string:firstname$;
-             lastname  = $string:lastname$;
-             password  = of_option $password_o$;
-             avatar    = of_option $avatar_o$
+           { userid     = users_table?userid;
+             firstname  = $string:firstname$;
+             lastname   = $string:lastname$;
+             main_email = $string:email$;
+             password   = of_option $password_o$;
+             avatar     = of_option $avatar_o$
             } >>		      
 	in
         lwt userid = Lwt_Query.view_one dbh
@@ -342,11 +345,20 @@ module User = struct
      | d.userid = $int64:userid$
      >>
 
-   let verify_password ~email ~password =
-     if password = "" then Lwt.fail No_such_resource
-     else
-       full_transaction_block (fun dbh ->
-	 lwt r = Lwt_Query.view_one dbh <:view< { t1.userid; t1.password }
+  let update_main_email ~email ~userid = run_query
+    <:update< u in $users_table$ := { u.main_email = $string:email$ }
+     | e in $emails_table$;
+       e.email = $string:email$;
+       u.userid = $int64:userid$;
+       e.userid = u.userid;
+       e.validated
+    >>
+
+  let verify_password ~email ~password =
+    if password = "" then Lwt.fail No_such_resource
+    else
+      full_transaction_block (fun dbh ->
+	lwt r = Lwt_Query.view_one dbh <:view< { t1.userid; t1.password }
                  | t1 in $users_table$;
                    t2 in $emails_table$;
                    t1.userid = t2.userid;
@@ -357,14 +369,14 @@ module User = struct
           because we don't want the user to log in with a non-validated
           email address. For example if the sign-up form contains
           a password field. *)
-	 in
-	 let (userid, password') = (r#!userid, r#?password) in
-	 match password' with
-	 | Some password' when snd !pwd_crypt_ref userid password password' ->
-           Lwt.return userid
-	 | _ ->
-	   Lwt.fail No_such_resource
-       )
+	in
+        let (userid, password') = (r#!userid, r#?password) in
+	match password' with
+	| Some password' when snd !pwd_crypt_ref userid password password' ->
+          Lwt.return userid
+	| _ ->
+	  Lwt.fail No_such_resource
+      )
 
   let user_of_userid userid = one run_view
     ~success:(fun r -> Lwt.return @@ tupple_of_user_sql r)
@@ -400,21 +412,38 @@ module User = struct
     >>
 
   let email_of_userid userid = one run_view
-    ~success:(fun e -> Lwt.return e#!email)
+    ~success:(fun u -> Lwt.return u#!main_email)
     ~fail:(Lwt.fail No_such_resource)
-    <:view< { t2.email } limit 1
-     | t1 in $users_table$;
-       t2 in $emails_table$;
-       t1.userid = t2.userid;
-       t1.userid = $int64:userid$;
+    <:view< { u.main_email }
+     | u in $users_table$;
+       u.userid = $int64:userid$
     >>
 
-  let add_mail_to_user userid email = run_query
+   let is_main_email ~email ~userid = one run_view
+     ~success:(fun _ -> Lwt.return_true)
+     ~fail:Lwt.return_false
+     <:view< { u.main_email }
+      | u in $users_table$;
+        u.userid = $int64:userid$;
+        u.main_email = $string:email$
+     >>
+
+  let add_mail_to_user ~userid ~email = run_query
     <:insert< $emails_table$ :=
       { email = $string:email$;
         userid  = $int64:userid$;
         validated = emails_table?validated
       } >>
+
+  let remove_mail_from_user ~userid ~email =
+    lwt b = is_main_email ~email ~userid in
+    if b then Lwt.fail Main_email_removal_attempt else
+      run_query
+      <:delete< e in $emails_table$
+       | u in $users_table;
+         u.userid = $int64:userid$;
+         e.userid = u.userid
+      >>
 
   let get_users ?pattern () =
     full_transaction_block (fun dbh ->
