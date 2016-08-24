@@ -99,7 +99,7 @@ let send_activation msg service email userid =
       email
   in
   Eliom_reference.Volatile.set Os_msg.activation_key_created true;
-  let%lwt () = Os_user.add_activationkey ~act_key ~userid ~email in
+  let%lwt () = Os_user.add_activationkey ~act_key ~userid ~email () in
   Lwt.return ()
 
 let sign_up_handler () email =
@@ -255,7 +255,7 @@ let%server add_email_handler =
     "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: "
   in
-  let send_act = send_act msg Os_services.main_service in
+  let send_act = send_activation msg Os_services.main_service in
   let add_email userid () email =
     let%lwt available = Os_db.Email.available email in
     if available then
