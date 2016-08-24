@@ -271,7 +271,7 @@ let%server add_mail_handler =
       Lwt.return_unit
     end
   in
-  fun () email -> Os_session.connected_fun add_mail () email
+  Os_session.connected_fun add_mail
 
 let%client add_mail_handler =
   let rpc = ~%(Eliom_client.server_function [%derive.json: string]
