@@ -136,7 +136,7 @@ let activation_table :
        email citext NOT NULL,
        validity bigint NOT NULL,
        action text NOT NULL,
-       data text,
+       data text NOT NULL,
        creationdate timestamptz NOT NULL DEFAULT(current_timestamp ())
            ) >>
 
@@ -424,6 +424,48 @@ module User = struct
 	  in
 	  Lwt.return (userid, email)
        )
+    )
+
+  let get_activationkey_info act_key =
+    full_transaction_block (fun dbh ->
+      one (Lwt_Query.view dbh)
+	~fail:(Lwt.fail No_such_resource)
+        <:view< t
+                | t in $activation_table$;
+                t.validity > 0L;
+                t.activationkey = $string:act_key$ >>
+	~success:(fun t ->
+          let userid = t#!userid in
+          let email  = t#!email in
+          let validity = t#!validity in
+          let action = t#!action in
+          let data = t#!data in
+          let v  = Int64.pred validity in
+	  lwt () = Lwt_Query.query dbh
+              <:update< r in $activation_table$ := {validity = $int64:v$} |
+                        r.activationkey = $string:act_key$ >>
+	  in
+	  Lwt.return (userid, email, validity, action, data)
+        )
+    )
+
+
+  let get_unvalidactivationkey_info act_key =
+    full_transaction_block (fun dbh ->
+      one (Lwt_Query.view dbh)
+	~fail:(Lwt.fail No_such_resource)
+        <:view< t
+                | t in $activation_table$;
+                t.validity <= 0L;
+                t.activationkey = $string:act_key$ >>
+	~success:(fun t ->
+          let userid = t#!userid in
+          let email  = t#!email in
+          let validity = t#!validity in
+          let action = t#!action in
+          let data = t#!data in
+	  Lwt.return (userid, email, validity, action, data)
+        )
     )
 
   let emails_of_userid userid = Utils.all run_view

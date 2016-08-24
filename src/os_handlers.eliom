@@ -208,7 +208,7 @@ let activation_handler_common ~akey =
     let%lwt () = Os_db.User.set_email_validated userid email in
     let%lwt () = Os_session.disconnect () in
     let%lwt () = Os_session.connect userid in
-    Lwt.return_unit
+    Lwt.return `Reload
   with Os_db.No_such_resource ->
     Eliom_reference.Volatile.set
       Os_userbox.activation_key_outdated true;
@@ -228,7 +228,10 @@ let%server activation_handler akey () =
 let%client activation_handler_rpc =
   ~%(Eliom_client.server_function ~name:"Eba_handlers.activation_handler"
        [%derive.json: string]
-       (fun akey -> activation_handler_common ~akey))
+       (fun akey ->
+          let%lwt _ = activation_handler_common ~akey in
+          Lwt.return ()))
+
 
 let%client activation_handler akey () =
   let%lwt () = activation_handler_rpc akey in
