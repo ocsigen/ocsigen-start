@@ -252,15 +252,13 @@ let preregister_handler' () email =
      Lwt.return ()
    end
 
-
 let%server add_mail_handler =
+  let msg =
+    "Welcome!\r\nTo confirm your e-mail address, \
+       please click on this link: "
+  in
+  let send_act = send_act msg Os_services.main_service in
   let add_mail userid () email =
-    let send_act email userid =
-      let msg =
-	"Welcome!\r\nTo confirm your e-mail address, \
-       please click on this link: " in
-      send_act msg Os_services.main_service email userid
-    in
     let%lwt available = Os_db.Email.available email in
     if available then
       let%lwt () = Os_db.User.add_mail_to_user userid email in
