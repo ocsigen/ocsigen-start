@@ -37,8 +37,8 @@ let () =
     %%%MODULE_NAME%%%_handlers.activation_handler;
 
   Eliom_registration.Action.register
-    ~service:Os_services.add_mail_service
-    Os_handlers.add_mail_handler;
+    ~service:Os_services.add_email_service
+    Os_handlers.add_email_handler;
 
   %%%MODULE_NAME%%%_base.App.register
     ~service:Os_services.main_service

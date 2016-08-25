@@ -150,7 +150,7 @@ module Settings = struct
 	    Os_userbox.reset_tips_link none;
 	    br ();
 	    p [pcdata "Link a new email to your account:"];
-	    Os_view.generic_email_form ~service:Os_services.add_mail_service ()
+	    Os_view.generic_email_form ~service:Os_services.add_email_service ()
 	  ]
 	]
       )
