@@ -99,7 +99,7 @@ let send_act msg service email userid =
       email
   in
   Eliom_reference.Volatile.set Os_msg.activation_key_created true;
-  let%lwt () = Os_user.add_activationkey ~act_key userid in
+  let%lwt () = Os_user.add_activationkey ~act_key ~userid ~email in
   Lwt.return ()
 
 let sign_up_handler () email =
@@ -116,7 +116,7 @@ let sign_up_handler () email =
   with Os_user.Already_exists userid ->
     (* If email is not validated, the user never logged in,
        I send an activation link, as if it were a new user. *)
-    let%lwt validated = Os_db.User.get_email_validated userid in
+    let%lwt validated = Os_db.User.get_email_validated userid email in
     if not validated
     then send_act email userid
     else begin
@@ -200,8 +200,8 @@ let activation_handler_common ~akey =
      we're going to disconnect him even if the activation key outdated. *)
   let%lwt () = Os_session.disconnect () in
   try%lwt
-    let%lwt userid = Os_user.userid_of_activationkey akey in
-    let%lwt () = Os_db.User.set_email_validated userid in
+    let%lwt (userid, email) = Os_user.userid_and_email_of_activationkey akey in
+    let%lwt () = Os_db.User.set_email_validated userid email in
     let%lwt () = Os_session.connect userid in
     Lwt.return `Reload
   with Os_db.No_such_resource ->
@@ -252,6 +252,30 @@ let preregister_handler' () email =
      Lwt.return ()
    end
 
+let%server add_email_handler =
+  let msg =
+    "Welcome!\r\nTo confirm your e-mail address, \
+       please click on this link: "
+  in
+  let send_act = send_act msg Os_services.main_service in
+  let add_email userid () email =
+    let%lwt available = Os_db.Email.available email in
+    if available then
+      let%lwt () = Os_db.User.add_email_to_user ~userid ~email in
+      send_act email userid
+    else begin
+      Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
+      Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
+      Lwt.return_unit
+    end
+  in
+  Os_session.connected_fun add_email
+
+let%client add_email_handler =
+  let rpc = ~%(Eliom_client.server_function [%derive.json: string]
+		 @@ add_email_handler ())
+  in
+  fun () -> rpc
 
 [%%shared
    let _ = Os_comet.__link (* to make sure eba_comet is linked *)

@@ -33,16 +33,19 @@ val is_complete : t -> bool
 
 val emails_of_user : t -> string Lwt.t
 
-val add_activationkey : act_key:string -> int64 -> unit Lwt.t
+val add_activationkey :
+  act_key:string -> userid:int64 -> email:string -> unit Lwt.t
+
 val verify_password : email:string -> password:string -> int64 Lwt.t
 
 (** returns user information.
     Results are cached in memory during page generation. *)
 val user_of_userid : int64 -> t Lwt.t
 
-val userid_of_activationkey : string -> int64 Lwt.t
-(** Retrieve an userid from an activation key. May raise [No_such_resource] if
-    the activation key is not found (or outdated). *)
+val userid_and_email_of_activationkey : string -> (int64 * string) Lwt.t
+(** Retrieve the userid and email corresponding to an activation key.
+    May raise [No_such_resource] if the activation key is not found
+    (or outdated). *)
 
 val userid_of_email : string -> int64 Lwt.t
 
@@ -105,3 +108,20 @@ val all : ?limit:int64 -> unit -> string list Lwt.t
 *)
 val set_pwd_crypt_fun : (string -> string) *
                         (int64 -> string -> string -> bool) -> unit
+
+(** Removes the email [email] from the user with the id [userid],
+    if the email is registered as the main email for the user it fails
+    with the exception [Main_email_removal_attempt].
+*)
+val remove_email_from_user : userid:int64 -> email:string -> unit Lwt.t
+
+(** Returns whether for a user designated by its id the given email has been
+    validated. *)
+val email_is_validated : userid:int64 -> email:string -> bool Lwt.t
+
+(** Returns whether an email is the  main email registered for a
+    given user designated by its id. *)
+val is_main_email : userid:int64 -> email:string -> bool Lwt.t
+
+(** Sets the main email for a user with the id [userid] as the email [email]. *)
+val update_main_email : userid:int64 -> email:string -> unit Lwt.t

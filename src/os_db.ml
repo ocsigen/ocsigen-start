@@ -21,6 +21,7 @@
  *)
 
 exception No_such_resource
+exception Main_email_removal_attempt
 
 let (>>=) = Lwt.bind
 
@@ -113,6 +114,7 @@ let users_table =
        userid bigint NOT NULL DEFAULT(nextval $users_userid_seq$),
        firstname text NOT NULL,
        lastname text NOT NULL,
+       main_email citext NOT NULL,
        password text,
        avatar text
           ) >>
@@ -131,6 +133,7 @@ let activation_table :
   <:table< activation (
        activationkey text NOT NULL,
        userid bigint NOT NULL,
+       email citext NOT NULL,
        creationdate timestamptz NOT NULL DEFAULT(current_timestamp ())
            ) >>
 
@@ -158,294 +161,299 @@ let preregister_table =
 
 (*****************************************************************************)
 
+module Utils = struct
+
+  let ( => ) v (f, g) = match v with
+    | Some v -> f v
+    | None -> g v
+
+  let as_sql_string v = <:value< $string:v$>>
+
+  let run_query q = full_transaction_block (fun dbh ->
+    Lwt_Query.query dbh q)
+  
+  let run_view q = full_transaction_block (fun dbh ->
+    Lwt_Query.view dbh q)
+  
+  let run_view_opt q = full_transaction_block (fun dbh ->
+    Lwt_Query.view_opt dbh q)
+
+  let one f ~success ~fail q =
+    f q >>= function
+    | r::_ -> success r
+    | _ -> fail
+
+  let all f ~success ~fail q =
+    f q >>= function
+    | [] -> fail
+    | r -> success r
+
+  let password_of d = <:value< $d$.password>>
+    
+  let avatar_of d = <:value< $d$.avatar>>
+
+  let tupple_of_user_sql u =
+    u#!userid, u#!firstname, u#!lastname, u#?avatar, u#?password <> None
+
+end
+open Utils
+
 let pwd_crypt_ref = ref
     ((fun password -> Bcrypt.string_of_hash (Bcrypt.hash password)),
      (fun _ password1 password2 ->
         Bcrypt.verify password1 (Bcrypt.hash_of_string password2)))
 
 module Email = struct
-  let available email = full_transaction_block @@ fun dbh ->
-      lwt l = Lwt_Query.query dbh
-          <:select< row | row in $emails_table$;
-                    row.email = $string:email$;
-                    row.validated = $bool:true$ >>
-      in match l with
-      | [] -> Lwt.return true
-      | x::_ -> Lwt.return false
+
+  let available email = one run_query
+    ~success:(fun _ -> Lwt.return_false)
+    ~fail:Lwt.return_true
+    <:select< row
+     | row in $emails_table$;
+       row.email = $string:email$;
+       row.validated
+    >>
+
 end
 
 module User = struct
 
-  let select_user_from_email_q dbh email =
-    lwt r = Lwt_Query.view_one dbh
-      <:view< { t1.userid } |
-              t1 in $users_table$;
-              t2 in $emails_table$;
-              t1.userid = t2.userid;
-              t2.email = $string:email$;
-      >>
-    in
-    Lwt.return (r#!userid)
+  let userid_of_email email = one run_view
+    ~success:(fun u -> Lwt.return u#!userid)
+    ~fail:(Lwt.fail No_such_resource)
+    <:view< { t1.userid }
+     | t1 in $users_table$;
+       t2 in $emails_table$;
+       t1.userid = t2.userid;
+       t2.email = $string:email$
+    >>
 
   let is_registered email =
-    full_transaction_block (fun dbh ->
-      try_lwt
-        lwt _ = select_user_from_email_q dbh email in
-        Lwt.return true
-      with No_such_resource -> Lwt.return false)
+    try_lwt
+      lwt _ = userid_of_email email in
+      Lwt.return_true
+    with No_such_resource -> Lwt.return_false
 
-  let get_email_validated userid = full_transaction_block @@ fun dbh ->
-      lwt l = Lwt_Query.query dbh
-        <:select< row | row in $emails_table$; row.userid = $int64:userid$ >>
-      in match l with
-      | [] -> Lwt.return false
-      | x::_ -> Lwt.return x#!validated
+  let get_email_validated userid email = one run_query
+    ~success:(fun _ -> Lwt.return_true)
+    ~fail:Lwt.return_false
+    <:select< row |
+      row in $emails_table$;
+      row.userid = $int64:userid$;
+      row.email  = $string:email$;
+      row.validated
+    >>
 
-  let set_email_validated userid = full_transaction_block @@ fun dbh ->
-      Lwt_Query.query dbh
-          <:update< e in $emails_table$ := {validated = $bool:true$}
-                    | e.userid = $int64:userid$
-                    >>
+  let set_email_validated userid email = run_query
+    <:update< e in $emails_table$ := {validated = $bool:true$}
+     | e.userid = $int64:userid$;
+       e.email  = $string:email$
+    >>
 
-  let add_preregister email =
-    full_transaction_block (fun dbh ->
-      Lwt_Query.query dbh
-        <:insert< $preregister_table$ := { email = $string:email$ } >>)
+  let add_activationkey ~act_key ~userid ~email = run_query
+     <:insert< $activation_table$ :=
+      { userid = $int64:userid$;
+        email  = $string:email$;
+        activationkey  = $string:act_key$;
+        creationdate   = activation_table?creationdate }
+      >>
 
-  let remove_preregister email =
-    full_transaction_block (fun dbh ->
-      Lwt_Query.query dbh
-        <:delete< r in $preregister_table$ |
-                  r.email = $string:email$ >>)
 
-  let is_preregistered email =
-    full_transaction_block (fun dbh ->
-      try_lwt
-        lwt _ =
-          Lwt_Query.view_one dbh
-            <:view< { r.email } |
-              r in $preregister_table$;
-              r.email = $string:email$;
-            >>
-        in Lwt.return true
-      with No_such_resource -> Lwt.return false)
+  let add_preregister email = run_query
+  <:insert< $preregister_table$ := { email = $string:email$ } >>
 
-  let all ?(limit = 10L) () =
-    full_transaction_block (fun dbh ->
-      lwt l = Lwt_Query.query dbh
-        <:select< { email = a.email } limit $int64:limit$ |
-                  a in $preregister_table$;
-        >>
-      in
-      Lwt.return (List.map (fun a -> a#!email) l))
+  let remove_preregister email = run_query
+    <:delete< r in $preregister_table$ | r.email = $string:email$ >>
+
+  let is_preregistered email = one run_view
+    ~success:(fun _ -> Lwt.return_true)
+    ~fail:Lwt.return_false
+    <:view< { r.email }
+     | r in $preregister_table$;
+       r.email = $string:email$ >>
+
+  let all ?(limit = 10L) () = run_query
+    <:select< { email = a.email } limit $int64:limit$
+    | a in $preregister_table$;
+    >> >>= fun l ->
+    Lwt.return (List.map (fun a -> a#!email) l)
 
   let create ?password ?avatar ~firstname ~lastname email =
-    if password = Some ""
-    then Lwt.fail (Failure "empty password")
+    if password = Some "" then Lwt.fail_with "empty password"
     else
       full_transaction_block (fun dbh ->
-        let password_o =
-          Eliom_lib.Option.map (fun password ->
-            let password = (fst !pwd_crypt_ref) password in
-            <:value< $string:password$ >>)
-            password
+	let password_o = Eliom_lib.Option.map (fun p ->
+	  as_sql_string @@ fst !pwd_crypt_ref p) password
+	in
+	let avatar_o = Eliom_lib.Option.map as_sql_string avatar in
+	lwt () = Lwt_Query.query dbh
+	  <:insert< $users_table$ :=
+           { userid     = users_table?userid;
+             firstname  = $string:firstname$;
+             lastname   = $string:lastname$;
+             main_email = $string:email$;
+             password   = of_option $password_o$;
+             avatar     = of_option $avatar_o$
+            } >>		      
+	in
+        lwt userid = Lwt_Query.view_one dbh
+	  <:view< {x = currval $users_userid_seq$} >>
         in
-        lwt () =
-          Lwt_Query.query dbh
-            <:insert< $users_table$ :=
-                      { userid    = users_table?userid;
-                        firstname = $string:firstname$;
-                        lastname  = $string:lastname$;
-                        password  = of_option $password_o$;
-                        avatar    = null
-                      } >>
-        in
-        lwt userid =
-          Lwt_Query.view_one dbh <:view< {x = currval $users_userid_seq$} >>
-        in
-        let userid = userid#!x in
-        lwt () =
-          Lwt_Query.query dbh
-            <:insert< $emails_table$ :=
-                        { email = $string:email$;
-                          userid  = $int64:userid$;
-                          validated = emails_table?validated}
-            >>
-        in
-        lwt () = remove_preregister email in
-        Lwt.return userid
+	let userid = userid#!x in
+	lwt () = Lwt_Query.query dbh
+	  <:insert< $emails_table$ :=
+           { email = $string:email$;
+             userid  = $int64:userid$;
+             validated = emails_table?validated
+           } >>
+	in
+	lwt () = remove_preregister email in
+	Lwt.return userid
       )
 
   let update ?password ?avatar ~firstname ~lastname userid =
-    full_transaction_block (fun dbh ->
-      (match password, avatar with
-        | None, None ->
-          Lwt_Query.query dbh
-             <:update< d in $users_table$ :=
-                      { firstname = $string:firstname$;
-                        lastname = $string:lastname$ } |
-                       d.userid = $int64:userid$
-             >>
-        | None, Some avatar ->
-          let avatar = Some <:value< $string:avatar$ >> in
-          Lwt_Query.query dbh
-             <:update< d in $users_table$ :=
-                      { firstname = $string:firstname$;
-                        lastname = $string:lastname$;
-                        avatar = of_option $avatar$ } |
-                       d.userid = $int64:userid$
-             >>
-        | Some "", _ -> Lwt.fail (Failure "empty password")
-        | Some password, None ->
-          let password = (fst !pwd_crypt_ref) password in
-          let password = Some <:value< $string:password$ >> in
-          Lwt_Query.query dbh
-             <:update< d in $users_table$ :=
-                      { firstname = $string:firstname$;
-                        lastname = $string:lastname$;
-                        password = of_option $password$ } |
-                       d.userid = $int64:userid$
-             >>
-        | Some password, Some avatar ->
-          let password = (fst !pwd_crypt_ref) password in
-          let password = Some <:value< $string:password$ >> in
-          let avatar = Some <:value< $string:avatar$ >> in
-          Lwt_Query.query dbh
-             <:update< d in $users_table$ :=
-                      { firstname = $string:firstname$;
-                        lastname = $string:lastname$;
-                        avatar = of_option $avatar$;
-                        password = of_option $password$
-                       } |
-                       d.userid = $int64:userid$
-             >>
-      ))
+    if password = Some "" then Lwt.fail_with "empty password"
+    else
+      let password = password => (
+	(fun p _ -> as_sql_string @@ fst !pwd_crypt_ref p),
+	(fun _ -> password_of)
+      ) in
+      let avatar = avatar => (
+	(fun a _ -> as_sql_string a),
+	(fun _ -> avatar_of)
+      ) in
+      run_query <:update< d in $users_table$ :=
+       { firstname = $string:firstname$;
+         lastname = $string:lastname$;
+         avatar = $avatar d$;
+         password = $password d$
+       } |
+       d.userid = $int64:userid$
+      >>
 
   let update_password password userid =
-    if password = ""
-    then Lwt.fail (Failure "empty password")
+    if password = "" then Lwt.fail_with "empty password"
+    else
+      let password = as_sql_string @@ fst !pwd_crypt_ref password in
+      run_query <:update< d in $users_table$ :=
+        { password = $password$ }
+        | d.userid = $int64:userid$
+       >>
+
+  let update_avatar avatar userid = run_query
+    <:update< d in $users_table$ :=
+     { avatar = $string:avatar$ }
+     | d.userid = $int64:userid$
+     >>
+
+  let update_main_email ~userid ~email = run_query
+    <:update< u in $users_table$ := { main_email = $string:email$ }
+     | e in $emails_table$;
+       e.email = $string:email$;
+       u.userid = $int64:userid$;
+       e.userid = u.userid;
+       e.validated
+    >>
+
+  let verify_password ~email ~password =
+    if password = "" then Lwt.fail No_such_resource
     else
       full_transaction_block (fun dbh ->
-        let password = (fst !pwd_crypt_ref) password in
-        let password = Some <:value< $string:password$ >> in
-        Lwt_Query.query dbh
-          <:update< d in $users_table$ := { password = of_option $password$ }
-                    | d.userid = $int64:userid$
-          >>
+	lwt r = Lwt_Query.view_one dbh <:view< { t1.userid; t1.password }
+                 | t1 in $users_table$;
+                   t2 in $emails_table$;
+                   t1.userid = t2.userid;
+                   t2.email = $string:email$;
+                   t2.validated
+             >>
+       (* We fail for non-validated e-mails,
+          because we don't want the user to log in with a non-validated
+          email address. For example if the sign-up form contains
+          a password field. *)
+	in
+        let (userid, password') = (r#!userid, r#?password) in
+	match password' with
+	| Some password' when snd !pwd_crypt_ref userid password password' ->
+          Lwt.return userid
+	| _ ->
+	  Lwt.fail No_such_resource
       )
 
-  let update_avatar avatar userid =
+  let user_of_userid userid = one run_view
+    ~success:(fun r -> Lwt.return @@ tupple_of_user_sql r)
+    ~fail:(Lwt.fail No_such_resource)
+    <:view< t | t in $users_table$; t.userid = $int64:userid$ >>
+
+  let userid_and_email_of_activationkey act_key =
     full_transaction_block (fun dbh ->
-      Lwt_Query.query dbh
-        <:update< d in $users_table$ :=
-                      { avatar = $string:avatar$ } |
-                       d.userid = $int64:userid$
-        >>
+      one (Lwt_Query.view dbh)
+	~fail:(Lwt.fail No_such_resource)
+        <:view< t 
+         | t in $activation_table$;
+           t.activationkey = $string:act_key$ >>
+	~success:(fun t ->
+	  let userid = t#!userid in
+	  let email  = t#!email in
+	  lwt () = Lwt_Query.query dbh
+	   <:delete< r in $activation_table$
+            | r.activationkey = $string:act_key$ >>
+	  in
+	  Lwt.return (userid, email)
+       )
     )
 
-   let add_activationkey ~act_key userid =
-    full_transaction_block (fun dbh ->
-       Lwt_Query.query dbh
-         <:insert< $activation_table$ :=
-                      { userid = $int64:userid$;
-                        activationkey  = $string:act_key$;
-                        creationdate = activation_table?creationdate }
-         >>)
+  let emails_of_userid userid = Utils.all run_view
+    ~success:(fun r -> Lwt.return @@ List.map (fun a -> a#!email) r)
+    ~fail:(Lwt.fail No_such_resource)
+    <:view< { t2.email }
+     | t1 in $users_table$;
+       t2 in $emails_table$;
+       t1.userid = t2.userid;
+       t1.userid = $int64:userid$;
+    >>
 
-   let verify_password ~email ~password =
-     if password = ""
-     then Lwt.fail No_such_resource
-     else
-       full_transaction_block (fun dbh ->
-         lwt r = Lwt_Query.view_one dbh
-             <:view< { t1.userid; t1.password } |
-                     t1 in $users_table$;
-                     t2 in $emails_table$;
-                     t1.userid = t2.userid;
-                     t2.email = $string:email$;
-                     t2.validated
-             >>
-             (* We fail for non-validated e-mails,
-                because we don't want the user to log in with a non-validated
-                email address. For example if the sign-up form contains
-                a password field. *)
-         in
-         let (userid, password') = (r#!userid, r#?password) in
-         match password' with
-         | None -> Lwt.fail No_such_resource
-         | Some password' ->
-           if (snd !pwd_crypt_ref) userid password password'
-           then Lwt.return userid
-           else Lwt.fail No_such_resource)
+  let email_of_userid userid = one run_view
+    ~success:(fun u -> Lwt.return u#!main_email)
+    ~fail:(Lwt.fail No_such_resource)
+    <:view< { u.main_email }
+     | u in $users_table$;
+       u.userid = $int64:userid$
+    >>
 
-  let user_of_userid userid =
-    full_transaction_block (fun dbh ->
-      lwt r = Lwt_Query.view_one dbh
-          <:view< t |
-                  t in $users_table$;
-                  t.userid = $int64:userid$
-            >>
-      in
-      Lwt.return (r#!userid, r#!firstname, r#!lastname, r#?avatar,
-                  r#?password <> None))
+   let is_main_email ~email ~userid = one run_view
+     ~success:(fun _ -> Lwt.return_true)
+     ~fail:Lwt.return_false
+     <:view< { u.main_email }
+      | u in $users_table$;
+        u.userid = $int64:userid$;
+        u.main_email = $string:email$
+     >>
 
-  let userid_of_activationkey act_key =
-    full_transaction_block (fun dbh ->
-      lwt r = Lwt_Query.view_opt dbh
-          <:view< t |
-                  t in $activation_table$;
-                  t.activationkey = $string:act_key$
-            >>
-      in
-      match r with
-      | None -> Lwt.fail No_such_resource
-      | Some r ->
-        let userid = r#!userid in
-        lwt () = Lwt_Query.query dbh
-            <:delete< r in $activation_table$ |
-                      r.activationkey = $string:act_key$ >>
-        in
-        Lwt.return userid)
+  let add_email_to_user ~userid ~email = run_query
+    <:insert< $emails_table$ :=
+      { email = $string:email$;
+        userid  = $int64:userid$;
+        validated = emails_table?validated
+      } >>
 
-  let emails_of_userid userid =
-    full_transaction_block (fun dbh ->
-      lwt r = Lwt_Query.view dbh
-          <:view< { t2.email } |
-                    t1 in $users_table$;
-                    t2 in $emails_table$;
-                    t1.userid = t2.userid;
-                    t1.userid = $int64:userid$;
-            >>
-      in
-      Lwt.return (List.map (fun a -> a#!email) r))
-
-  let email_of_userid userid =
-    full_transaction_block (fun dbh ->
-      lwt r = Lwt_Query.view dbh
-          <:view< { t2.email } limit 1 |
-                    t1 in $users_table$;
-                    t2 in $emails_table$;
-                    t1.userid = t2.userid;
-                    t1.userid = $int64:userid$;
-            >>
-      in
-      match r with
-      | [a] -> Lwt.return a#!email
-      | _ -> Lwt.fail No_such_resource)
-
-  let userid_of_email email =
-    full_transaction_block (fun dbh ->
-      select_user_from_email_q dbh email)
+  let remove_email_from_user ~userid ~email =
+    lwt b = is_main_email ~email ~userid in
+    if b then Lwt.fail Main_email_removal_attempt else
+      run_query
+	<:delete< e in $emails_table$
+         | u in $users_table$;
+           u.userid = $int64:userid$;
+           e.userid = u.userid;
+           e.email = $string:email$
+        >>
+	  
 
   let get_users ?pattern () =
     full_transaction_block (fun dbh ->
       match pattern with
       | None ->
         lwt l = Lwt_Query.view dbh <:view< r | r in $users_table$ >> in
-        Lwt.return (List.map
-                      (fun a -> a#!userid, a#!firstname, a#!lastname, a#?avatar,
-                                a#?password <> None)
-                      l)
+	Lwt.return @@ List.map tupple_of_user_sql l
       | Some pattern ->
         let pattern = "(^"^pattern^")|(.* "^pattern^")" in
         (* Here I'm using the low-level pgocaml interface
@@ -477,62 +485,39 @@ end
 
 module Groups = struct
   let create ?description name =
-    let description_o =
-      Eliom_lib.Option.map (fun x -> <:value< $string:x$ >>) description
-    in
-    full_transaction_block (fun dbh ->
-      Lwt_Query.query dbh
-        <:insert< $groups_table$ :=
-                      { description = of_option $description_o$;
-                        name  = $string:name$;
-                        groupid = groups_table?groupid }
-         >>)
+    let description_o = Eliom_lib.Option.map as_sql_string description in
+    run_query <:insert< $groups_table$ :=
+                { description = of_option $description_o$;
+                  name  = $string:name$;
+                 groupid = groups_table?groupid }
+               >>
 
-  let group_of_name name =
-    full_transaction_block (fun dbh ->
-      lwt r = Lwt_Query.view_opt dbh
-          <:view< r |
-                  r in $groups_table$;
-                  r.name = $string:name$;
-            >>
-      in
-      match r with
-        | None -> Lwt.fail No_such_resource
-        | Some r -> Lwt.return (r#!groupid, r#!name, r#?description))
+  let group_of_name name = run_view_opt
+    <:view< r | r in $groups_table$; r.name = $string:name$ >> >>= fun r ->
+    r => ((fun r -> Lwt.return (r#!groupid, r#!name, r#?description)),
+	  (fun _ -> Lwt.fail No_such_resource))
 
-  let add_user_in_group ~groupid ~userid =
-    full_transaction_block (fun dbh ->
-      Lwt_Query.query dbh
-        <:insert< $user_groups_table$ :=
-                      { userid = $int64:userid$;
-                        groupid = $int64:groupid$ }
-         >>)
+  let add_user_in_group ~groupid ~userid = run_query
+    <:insert< $user_groups_table$ :=
+             { userid  = $int64:userid$;
+               groupid = $int64:groupid$ }
+    >>
 
-  let remove_user_in_group ~groupid ~userid =
-    full_transaction_block (fun dbh ->
-      Lwt_Query.query dbh
-        <:delete< r in $user_groups_table$ |
-                  r.groupid = $int64:groupid$;
-                  r.userid = $int64:userid$
-        >>)
+  let remove_user_in_group ~groupid ~userid = run_query
+    <:delete< r in $user_groups_table$ |
+              r.groupid = $int64:groupid$;
+              r.userid  = $int64:userid$
+    >>
 
-  let in_group ~groupid ~userid =
-    full_transaction_block (fun dbh ->
-      try_lwt
-        lwt _ = Lwt_Query.view_one dbh
-            <:view< t |
-                    t in $user_groups_table$;
-                    t.groupid = $int64:groupid$;
-                    t.userid = $int64:userid$;
-            >>
-        in
-        Lwt.return true
-      with No_such_resource -> Lwt.return false)
+  let in_group ~groupid ~userid = one run_view
+    ~success:(fun _ -> Lwt.return_true)
+    ~fail:Lwt.return_false
+    <:view< t | t in $user_groups_table$;
+                t.groupid = $int64:groupid$;
+                t.userid  = $int64:userid$;
+    >>
 
-  let all () =
-    full_transaction_block (fun dbh ->
-      lwt l = Lwt_Query.query dbh <:select< r | r in $groups_table$; >> in
-      Lwt.return (List.map (fun a -> (a#!groupid, a#!name, a#?description)) l))
-
+  let all () = run_query <:select< r | r in $groups_table$; >> >>= fun l ->
+    Lwt.return @@ List.map (fun a -> (a#!groupid, a#!name, a#?description)) l
 
 end
