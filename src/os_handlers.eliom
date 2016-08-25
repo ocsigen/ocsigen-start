@@ -91,7 +91,9 @@ let generate_activation_key
       with _ -> Lwt.return ());
   act_key
 
-let send_activation msg service email userid =
+
+(** For default value of [autoconnect], cf. [Os_user.add_activationkey]. *)
+let send_activation ?autoconnect msg service email userid =
   let act_key =
     generate_activation_key
       ~service:service
@@ -99,7 +101,8 @@ let send_activation msg service email userid =
       email
   in
   Eliom_reference.Volatile.set Os_msg.activation_key_created true;
-  let%lwt () = Os_user.add_activationkey ~act_key ~userid ~email () in
+  let%lwt () =
+    Os_user.add_activationkey ?autoconnect ~act_key ~userid ~email () in
   Lwt.return ()
 
 let sign_up_handler () email =
@@ -107,7 +110,7 @@ let sign_up_handler () email =
     let msg =
       "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: " in
-    send_activation msg Os_services.main_service email userid
+    send_activation ~autoconnect:true msg Os_services.main_service email userid
   in
   try%lwt
     let%lwt user = Os_user.create ~firstname:"" ~lastname:"" email in
@@ -139,7 +142,7 @@ let forgot_password_handler service () email =
     let%lwt userid = Os_user.userid_of_email email in
     let msg = "Hi,\r\nTo set a new password, \
                please click on this link: " in
-    send_activation msg service email userid
+    send_activation ~autoconnect:true msg service email userid
   with Os_db.No_such_resource ->
     Eliom_reference.Volatile.set Os_userbox.user_does_not_exist true;
     Os_msg.msg ~level:`Err ~onload:true "User does not exist";
@@ -204,14 +207,24 @@ let activation_handler_common ~akey =
      TODO: do not disconnect users if we relog them with the same userid.
   *)
   try%lwt
-    let%lwt {userid; email} = Os_user.get_activationkey_info akey in
+    let%lwt {userid; email; validity; action; data; autoconnect} =
+      Os_user.get_activationkey_info akey in
+    let%lwt () =
+      if validity <= 0L then
+        Lwt.fail Os_db.No_such_resource
+      else Lwt.return_unit in
     let%lwt () = Os_db.User.set_email_validated userid email in
-    let%lwt () = Os_session.disconnect () in
-    let%lwt () = Os_session.connect userid in
+    let%lwt () =
+      if autoconnect then
+        let%lwt () = Os_session.disconnect () in
+        let%lwt () = Os_session.connect userid in
+        Lwt.return_unit
+      else
+        Lwt.return_unit
+    in
     Lwt.return `Reload
   with Os_db.No_such_resource ->
-    Eliom_reference.Volatile.set
-      Os_userbox.activation_key_outdated true;
+    Eliom_reference.Volatile.set Os_userbox.activation_key_outdated true;
     Os_msg.msg ~level:`Err ~onload:true
       "Invalid activation key, ask for a new one.";
     Lwt.return `NoReload
@@ -263,7 +276,8 @@ let%server add_email_handler =
     "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: "
   in
-  let send_act = send_activation msg Os_services.main_service in
+  let send_act =
+    send_activation  ~autoconnect:true msg Os_services.main_service in
   let add_email userid () email =
     let%lwt available = Os_db.Email.available email in
     if available then

@@ -135,6 +135,7 @@ let activation_table :
        activationkey text NOT NULL,
        userid bigint NOT NULL,
        email citext NOT NULL,
+       autoconnect boolean NOT NULL,
        validity bigint NOT NULL,
        action text NOT NULL,
        data text NOT NULL,
@@ -227,6 +228,7 @@ module User = struct
     userid : int64;
     email : string;
     validity : int64;
+    autoconnect : bool;
     action : string;
     data : string;
   }
@@ -276,7 +278,7 @@ module User = struct
        e.email  = $string:email$
     >>
 
-  let add_activationkey
+  let add_activationkey ?(autoconnect=false)
       ?(action="activation") ?(data="") ?(validity=1L)
       ~act_key ~userid ~email () =
     run_query
@@ -284,6 +286,7 @@ module User = struct
       { userid = $int64:userid$;
         email  = $string:email$;
         action = $string:action$;
+        autoconnect = $bool:autoconnect$;
         data   = $string:data$;
         validity = $int64:validity$;
         activationkey  = $string:act_key$;
@@ -422,39 +425,20 @@ module User = struct
 	~fail:(Lwt.fail No_such_resource)
         <:view< t
                 | t in $activation_table$;
-                t.validity > 0L;
                 t.activationkey = $string:act_key$ >>
 	~success:(fun t ->
           let userid = t#!userid in
           let email  = t#!email in
           let validity = t#!validity in
+          let autoconnect = t#!autoconnect in
           let action = t#!action in
           let data = t#!data in
-          let v  = Int64.pred validity in
+          let v  = max 0L (Int64.pred validity) in
 	  lwt () = Lwt_Query.query dbh
               <:update< r in $activation_table$ := {validity = $int64:v$} |
                         r.activationkey = $string:act_key$ >>
 	  in
-	  Lwt.return {userid; email; validity; action; data}
-        )
-    )
-
-
-  let get_unvalidactivationkey_info act_key =
-    full_transaction_block (fun dbh ->
-      one (Lwt_Query.view dbh)
-	~fail:(Lwt.fail No_such_resource)
-        <:view< t
-                | t in $activation_table$;
-                t.validity <= 0L;
-                t.activationkey = $string:act_key$ >>
-	~success:(fun t ->
-          let userid = t#!userid in
-          let email  = t#!email in
-          let validity = t#!validity in
-          let action = t#!action in
-          let data = t#!data in
-	  Lwt.return {userid; email; validity; action; data}
+	  Lwt.return {userid; email; validity; action; data; autoconnect}
         )
     )
 
