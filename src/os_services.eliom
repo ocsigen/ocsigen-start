@@ -122,8 +122,8 @@ let set_password_service' =
           string "password" ** string "password2"))
     ()
 
-let add_mail_service = Eliom_service.create
-  ~name:"add_mail"
+let add_email_service = Eliom_service.create
+  ~name:"add_email"
   ~id:Eliom_service.Global
   ~meth:(Eliom_service.Post (
     Eliom_parameter.unit,
@@ -145,6 +145,6 @@ let activation_service = ~%activation_service
 let os_github_service = ~%os_github_service
 let ocsigen_service = ~%ocsigen_service
 let set_password_service' = ~%set_password_service'
-let add_mail_service = ~%add_mail_service
+let add_email_service = ~%add_email_service
 
 ]

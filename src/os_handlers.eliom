@@ -254,7 +254,7 @@ let%server add_email_handler =
   let add_email userid () email =
     let%lwt available = Os_db.Email.available email in
     if available then
-      let%lwt () = Os_db.User.add_email_to_user userid email in
+      let%lwt () = Os_db.User.add_email_to_user ~userid ~email in
       send_act email userid
     else begin
       Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
