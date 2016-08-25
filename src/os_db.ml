@@ -258,10 +258,6 @@ module User = struct
         creationdate   = activation_table?creationdate }
       >>
 
-  let remove_all_activationkeys email = run_query
-     <:delete< a in $activation_table$
-      | a.email  = $string:email$
-     >>
 
   let add_preregister email = run_query
   <:insert< $preregister_table$ := { email = $string:email$ } >>
@@ -443,23 +439,13 @@ module User = struct
   let remove_email_from_user ~userid ~email =
     lwt b = is_main_email ~email ~userid in
     if b then Lwt.fail Main_email_removal_attempt else
-      full_transaction_block (fun dbh ->
-        lwt () = Lwt_Query.query dbh
+      run_query
 	<:delete< e in $emails_table$
          | u in $users_table$;
            u.userid = $int64:userid$;
            e.userid = u.userid;
            e.email = $string:email$
         >>
-        in
-        Lwt_Query.query dbh
-        <:delete< a in $activation_table$
-         | u in $users_table$;
-           u.userid = $int64:userid$;
-           a.userid = u.userid;
-           a.email = $string:email$
-        >>
-      )
 	  
 
   let get_users ?pattern () =
