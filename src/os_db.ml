@@ -451,14 +451,15 @@ module User = struct
            e.userid = u.userid;
            e.email = $string:email$
         >>
-      in
-      Lwt_Query.query dbh
-      <:delete< a in $activation_table$
-       | u in $users_table$;
-         u.userid = $int64:userid$;
-         a.userid = u.userid;
-         a.email = $string:email$
-      >>
+        in
+        Lwt_Query.query dbh
+        <:delete< a in $activation_table$
+         | u in $users_table$;
+           u.userid = $int64:userid$;
+           a.userid = u.userid;
+           a.email = $string:email$
+        >>
+      )
 	  
 
   let get_users ?pattern () =
