@@ -165,7 +165,7 @@ let%server update_main_email_button email =
 	  (fun _ _ ->
 	    let%lwt () = update_main_email ~%email in
 	    Eliom_client.change_page
-	      ~service:Pop_services.settings_service () ()
+	      ~service:%%%MODULE_NAME%%%_services.settings_service () ()
 	  )
       ) : unit) ];
       button
@@ -181,7 +181,7 @@ let%server delete_email_button email =
       (fun _ _ ->
 	let%lwt () = remove_email_from_user ~%email in
 	Eliom_client.change_page
-	  ~service:Pop_services.settings_service () ()
+	  ~service:%%%MODULE_NAME%%%_services.settings_service () ()
       )
   ) : unit) ];
   button
