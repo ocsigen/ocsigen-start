@@ -245,16 +245,16 @@ let preregister_handler' () email =
      Lwt.return ()
    end
 
-let%server add_mail_handler =
+let%server add_email_handler =
   let msg =
     "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: "
   in
   let send_act = send_act msg Os_services.main_service in
-  let add_mail userid () email =
+  let add_email userid () email =
     let%lwt available = Os_db.Email.available email in
     if available then
-      let%lwt () = Os_db.User.add_mail_to_user userid email in
+      let%lwt () = Os_db.User.add_email_to_user userid email in
       send_act email userid
     else begin
       Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
@@ -262,11 +262,11 @@ let%server add_mail_handler =
       Lwt.return_unit
     end
   in
-  Os_session.connected_fun add_mail
+  Os_session.connected_fun add_email
 
-let%client add_mail_handler =
+let%client add_email_handler =
   let rpc = ~%(Eliom_client.server_function [%derive.json: string]
-		 @@ add_mail_handler ())
+		 @@ add_email_handler ())
   in
   fun () -> rpc
 

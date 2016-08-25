@@ -10,7 +10,7 @@ val sign_up_handler : unit -> string -> unit Lwt.t
 val activation_handler :
   string -> unit -> Eliom_registration.Action.result Lwt.t
 
-val add_mail_handler : unit -> string -> unit Lwt.t
+val add_email_handler : unit -> string -> unit Lwt.t
 
 [%%server.start]
 
