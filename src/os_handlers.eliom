@@ -271,7 +271,7 @@ let preregister_handler' () email =
      Lwt.return ()
    end
 
-let%server add_mail_handler =
+let%server add_email_handler =
   let msg =
     "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: "
