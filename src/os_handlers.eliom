@@ -278,7 +278,7 @@ let%server add_mail_handler =
   in
   let send_act =
     send_activation  ~autoconnect:true msg Os_services.main_service in
-  let add_mail userid () email =
+  let add_email userid () email =
     let%lwt available = Os_db.Email.available email in
     if available then
       let%lwt () = Os_db.User.add_email_to_user ~userid ~email in
