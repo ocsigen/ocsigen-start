@@ -212,8 +212,7 @@ let%server emails_table userid : [`Table] Eliom_content.Html.elt Lwt.t =
     Os_db.User.emails_of_userid userid
   in
   let tr_of_email = tr_of_email main_email in
-  let tr_list = List.map (fun mail ->
-    Lwt_main.run @@ tr_of_email mail) l in
+  let%lwt tr_list = Lwt_list.map_s tr_of_email l in
   Lwt.return @@ table tr_list
 
 let%client emails_table =
