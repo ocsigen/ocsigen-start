@@ -26,6 +26,10 @@ CREATE TABLE activation ( -- DEFAULT
        activationkey text primary key, -- DEFAULT
        userid bigint NOT NULL references users(userid), -- DEFAULT
        email citext NOT NULL,
+       autoconnect boolean NOT NULL,
+       validity bigint NOT NULL,
+       action text NOT NULL,
+       data text NOT NULL,
        creationdate timestamptz NOT NULL default now()
 );
 
