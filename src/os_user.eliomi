@@ -121,7 +121,7 @@ val email_is_validated : userid:int64 -> email:string -> bool Lwt.t
 
 (** Returns whether an email is the  main email registered for a
     given user designated by its id. *)
-val is_main_email : userid:int64 -> email:string -> string Lwt.t
+val is_main_email : userid:int64 -> email:string -> bool Lwt.t
 
 (** Sets the main email for a user with the id [userid] as the email [email]. *)
 val update_main_email : userid:int64 -> email:string -> unit Lwt.t
