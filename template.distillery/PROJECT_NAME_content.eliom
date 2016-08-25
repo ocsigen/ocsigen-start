@@ -131,11 +131,105 @@ module Connection = struct
 
 end
 
+let%server remove_email_from_user =
+  Os_session.connected_rpc (fun userid email ->
+    Os_user.remove_email_from_user ~userid ~email)
+
+let%client remove_email_from_user =
+  ~%(Eliom_client.server_function [%derive.json : string]
+       remove_email_from_user)
+
+let%server email_is_validated =
+  Os_session.connected_rpc Os_db.User.get_email_validated
+
+let%server is_main_email =
+  Os_session.connected_rpc (fun userid email ->
+    Os_user.is_main_email ~userid ~email)
+
+let%server update_main_email =
+  Os_session.connected_rpc (fun userid email ->
+    Os_user.update_main_email ~userid ~email)
+
+let%client update_main_email =
+  ~%(Eliom_client.server_function [%derive.json : string] update_main_email)
+
+let%server update_main_email_button email =
+  let open Eliom_content.Html in
+  let%lwt validated = email_is_validated email in
+  Lwt.return @@ if validated then
+      let button = 
+	D.button ~a:[D.a_class ["button"]] [D.pcdata "Set as main e-mail"] in
+      ignore [%client (Lwt.async (fun () ->
+	Lwt_js_events.clicks
+	  (Eliom_content.Html.To_dom.of_element ~%button)
+	  (fun _ _ ->
+	    let%lwt () = update_main_email ~%email in
+	    Eliom_client.change_page
+	      ~service:Pop_services.settings_service () ()
+	  )
+      ) : unit) ];
+      button
+    else
+      F.div []
+
+let%server delete_email_button email =
+  let open Eliom_content.Html in
+  let button = D.button ~a:[D.a_class ["button"]] [D.pcdata "X"] in
+  ignore [%client (Lwt.async (fun () ->
+    Lwt_js_events.clicks
+      (Eliom_content.Html.To_dom.of_element ~%button)
+      (fun _ _ ->
+	let%lwt () = remove_email_from_user ~%email in
+	Eliom_client.change_page
+	  ~service:Pop_services.settings_service () ()
+      )
+  ) : unit) ];
+  button
+
+let%server tr_of_email main_email email =
+  let open Eliom_content.Html.F in
+  let%lwt validated = email_is_validated email in
+  let valid = p [
+    pcdata @@
+      if validated
+      then "validated"
+      else "still waiting for confirmation"
+  ] in
+  let del_button, up_button =
+    if email = main_email
+    then (div [], Lwt.return @@ p [pcdata "Main e-mail"])
+    else (delete_email_button email, update_main_email_button email)
+  in
+  let%lwt up_button = up_button in
+  let email = p [pcdata email] in
+  Lwt.return @@ tr [td [del_button]; td [valid]; td [email]; td [up_button]]
+
+let%server emails_table userid : [`Table] Eliom_content.Html.elt Lwt.t =
+  let open Eliom_content.Html.F in
+  let open Lwt in
+  let%lwt main_email = Os_db.User.email_of_userid userid in
+  let%lwt l =
+    Os_db.User.emails_of_userid userid
+  in
+  let tr_of_email = tr_of_email main_email in
+  let tr_list = List.map (fun mail ->
+    Lwt_main.run @@ tr_of_email mail) l in
+  Lwt.return @@ table tr_list
+
+let%client emails_table =
+  ~%(Eliom_client.server_function [%derive.json : int64] emails_table)
+
+let%shared emails_table uid = 
+  (emails_table uid :> Html_types.div_content_fun Eliom_content.Html.elt Lwt.t)
+
+
 module Settings = struct
 
   let settings_content =
     let none = [%client ((fun () -> ()) : unit -> unit)] in
     fun user ->
+      let%lwt emails = emails_table @@ Os_user.userid_of_user user in
+      Lwt.return @@
       Eliom_content.Html.D.(
 	[
 	  div ~a:[a_class ["os-welcome-box"]] [
@@ -150,7 +244,9 @@ module Settings = struct
 	    Os_userbox.reset_tips_link none;
 	    br ();
 	    p [pcdata "Link a new email to your account:"];
-	    Os_view.generic_email_form ~service:Os_services.add_email_service ()
+	    Os_view.generic_email_form ~service:Os_services.add_email_service ();
+	    p [pcdata "currently registered emails:"];
+	    emails
 	  ]
 	]
       )
