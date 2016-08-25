@@ -415,7 +415,9 @@ module User = struct
     ~fail:(Lwt.fail No_such_resource)
     <:view< t | t in $users_table$; t.userid = $int64:userid$ >>
 
-  let get_activationkey_info act_key = one run_view
+  let get_activationkey_info act_key =
+    full_transaction_block (fun dbh ->
+      one (Lwt_Query.view dbh)
 	~fail:(Lwt.fail No_such_resource)
         <:view< t
                 | t in $activation_table$;
@@ -434,6 +436,7 @@ module User = struct
 	  in
 	  Lwt.return {userid; email; validity; action; data; autoconnect}
         )
+    )
 
   let emails_of_userid userid = Utils.all run_view
     ~success:(fun r -> Lwt.return @@ List.map (fun a -> a#!email) r)
