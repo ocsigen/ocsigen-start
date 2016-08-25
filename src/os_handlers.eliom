@@ -207,7 +207,7 @@ let activation_handler_common ~akey =
      TODO: do not disconnect users if we relog them with the same userid.
   *)
   try%lwt
-    let%lwt {userid; email; validity; action; data; autoconnect} =
+    let%lwt {userid; email; validity; action = _; data = _; autoconnect} =
       Os_user.get_activationkey_info akey in
     let%lwt () =
       if validity <= 0L then
