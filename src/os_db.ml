@@ -350,7 +350,7 @@ module User = struct
      | d.userid = $int64:userid$
      >>
 
-  let update_main_email ~email ~userid = run_query
+  let update_main_email ~userid ~email = run_query
     <:update< u in $users_table$ := { main_email = $string:email$ }
      | e in $emails_table$;
        e.email = $string:email$;

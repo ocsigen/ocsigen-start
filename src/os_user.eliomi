@@ -108,3 +108,20 @@ val all : ?limit:int64 -> unit -> string list Lwt.t
 *)
 val set_pwd_crypt_fun : (string -> string) *
                         (int64 -> string -> string -> bool) -> unit
+
+(** Removes the email [email] from the user with the id [userid],
+    if the email is registered as the main email for the user it fails
+    with the exception [Main_email_removal_attempt].
+*)
+val remove_email_from_user : userid:int64 -> email:string -> unit Lwt.t
+
+(** Returns whether for a user designated by its id the given email has been
+    validated. *)
+val email_is_validated : userid:int64 -> email:string -> bool Lwt.t
+
+(** Returns whether an email is the  main email registered for a
+    given user designated by its id. *)
+val is_main_email : userid:int64 -> email:string -> string Lwt.t
+
+(** Sets the main email for a user with the id [userid] as the email [email]. *)
+val update_main_email : userid:int64 -> email:string -> unit Lwt.t
