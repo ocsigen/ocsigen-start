@@ -70,10 +70,10 @@ val userid_of_email : string -> int64 Lwt.t
 (** Retrieve e-mails from user id. *)
 val emails_of_userid : int64 -> string list Lwt.t
 
-(** Retrieve one of the e-mails of a user. *)
+(** Retrieve the main e-mail of a user. *)
 val email_of_user : t -> string Lwt.t
 
-(** Retrieve one of the e-mails from user id. *)
+(** Retrieve the main e-mail from user id. *)
 val email_of_userid : int64 -> string Lwt.t
 
 (** Retrieve e-mails of a user. *)
