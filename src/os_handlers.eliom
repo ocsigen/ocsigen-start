@@ -60,7 +60,7 @@ let%client set_password_rpc =
           (fun myid p -> set_password_handler' myid () p))
     )
 
-let generate_act_key
+let generate_activation_key
     ?(act_key = Ocsigen_lib.make_cryptographic_safe_string ())
     ?(send_email = true)
     ~service
@@ -91,34 +91,37 @@ let generate_act_key
       with _ -> Lwt.return ());
   act_key
 
-let send_act msg service email userid =
+
+(** For default value of [autoconnect], cf. [Os_user.add_activationkey]. *)
+let send_activation ?autoconnect msg service email userid =
   let act_key =
-    generate_act_key
+    generate_activation_key
       ~service:service
       ~text:msg
       email
   in
   Eliom_reference.Volatile.set Os_msg.activation_key_created true;
-  let%lwt () = Os_user.add_activationkey ~act_key ~userid ~email in
+  let%lwt () =
+    Os_user.add_activationkey ?autoconnect ~act_key ~userid ~email () in
   Lwt.return ()
 
 let sign_up_handler () email =
-  let send_act email userid =
+  let send_activation email userid =
     let msg =
       "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: " in
-    send_act msg Os_services.main_service email userid
+    send_activation ~autoconnect:true msg Os_services.main_service email userid
   in
   try%lwt
     let%lwt user = Os_user.create ~firstname:"" ~lastname:"" email in
     let userid = Os_user.userid_of_user user in
-    send_act email userid
+    send_activation email userid
   with Os_user.Already_exists userid ->
     (* If email is not validated, the user never logged in,
        I send an activation link, as if it were a new user. *)
     let%lwt validated = Os_db.User.get_email_validated userid email in
     if not validated
-    then send_act email userid
+    then send_activation email userid
     else begin
       Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
       Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
@@ -139,7 +142,7 @@ let forgot_password_handler service () email =
     let%lwt userid = Os_user.userid_of_email email in
     let msg = "Hi,\r\nTo set a new password, \
                please click on this link: " in
-    send_act msg service email userid
+    send_activation ~autoconnect:true msg service email userid
   with Os_db.No_such_resource ->
     Eliom_reference.Volatile.set Os_userbox.user_does_not_exist true;
     Os_msg.msg ~level:`Err ~onload:true "User does not exist";
@@ -195,18 +198,33 @@ let%client connect_handler_rpc =
 let%client connect_handler () v = connect_handler_rpc v
 
 let activation_handler_common ~akey =
-  (* SECURITY: we disconnect the user before doing anything. *)
-  (* If the user is already connected,
-     we're going to disconnect him even if the activation key outdated. *)
-  let%lwt () = Os_session.disconnect () in
+  (* <s>
+     SECURITY: we disconnect the user before doing anything.
+     If the user is already connected,
+     we're going to disconnect him even if the activation key outdated.</s>
+     ---> Now we disconnect the user only if we reconnect them because it's
+     only annoying to disconnect people with unvalid keys.
+     TODO: do not disconnect users if we relog them with the same userid.
+  *)
   try%lwt
-    let%lwt (userid, email) = Os_user.userid_and_email_of_activationkey akey in
+    let%lwt {userid; email; validity; action = _; data = _; autoconnect} =
+      Os_user.get_activationkey_info akey in
+    let%lwt () =
+      if validity <= 0L then
+        Lwt.fail Os_db.No_such_resource
+      else Lwt.return_unit in
     let%lwt () = Os_db.User.set_email_validated userid email in
-    let%lwt () = Os_session.connect userid in
+    let%lwt () =
+      if autoconnect then
+        let%lwt () = Os_session.disconnect () in
+        let%lwt () = Os_session.connect userid in
+        Lwt.return_unit
+      else
+        Lwt.return_unit
+    in
     Lwt.return `Reload
   with Os_db.No_such_resource ->
-    Eliom_reference.Volatile.set
-      Os_userbox.activation_key_outdated true;
+    Eliom_reference.Volatile.set Os_userbox.activation_key_outdated true;
     Os_msg.msg ~level:`Err ~onload:true
       "Invalid activation key, ask for a new one.";
     Lwt.return `NoReload
@@ -226,6 +244,7 @@ let%client activation_handler_rpc =
        (fun akey ->
           let%lwt _ = activation_handler_common ~akey in
           Lwt.return ()))
+
 
 let%client activation_handler akey () =
   let%lwt () = activation_handler_rpc akey in
@@ -257,7 +276,8 @@ let%server add_email_handler =
     "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: "
   in
-  let send_act = send_act msg Os_services.main_service in
+  let send_act =
+    send_activation  ~autoconnect:true msg Os_services.main_service in
   let add_email userid () email =
     let%lwt available = Os_db.Email.available email in
     if available then
