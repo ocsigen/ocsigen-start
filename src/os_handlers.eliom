@@ -207,8 +207,12 @@ let activation_handler_common ~akey =
      TODO: do not disconnect users if we relog them with the same userid.
   *)
   try%lwt
-    let%lwt {userid; email; validity; action = _; data = _; autoconnect} =
+    let%lwt {userid; email; validity; action; data = _; autoconnect} =
       Os_user.get_activationkey_info akey in
+    let%lwt () =
+      if action = "activation" && validity <= 0L then
+        Lwt.fail Os_db.Account_already_activated
+      else Lwt.return_unit in
     let%lwt () =
       if validity <= 0L then
         Lwt.fail Os_db.No_such_resource
@@ -223,11 +227,19 @@ let activation_handler_common ~akey =
         Lwt.return_unit
     in
     Lwt.return `Reload
-  with Os_db.No_such_resource ->
+  with
+  | Os_db.No_such_resource ->
     Eliom_reference.Volatile.set Os_userbox.activation_key_outdated true;
     Os_msg.msg ~level:`Err ~onload:true
-      "Invalid activation key, ask for a new one.";
+      "Invalid activation key, please ask for a new one.";
     Lwt.return `NoReload
+  | Os_db.Account_already_activated ->
+    Eliom_reference.Volatile.set Os_userbox.activation_key_outdated true;
+    (* Account is already activated, don't bother telling that the key is wrong
+       because it's already served is purpose. Just reload the page
+       without the GET parameters to get rid of the key. *)
+    Lwt.return `Reload
+
 
 let%server activation_handler akey () =
   let%lwt a = activation_handler_common ~akey in

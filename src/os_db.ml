@@ -22,6 +22,7 @@
 
 exception No_such_resource
 exception Main_email_removal_attempt
+exception Account_already_activated
 
 let (>>=) = Lwt.bind
 
@@ -175,7 +176,7 @@ module Utils = struct
 
   let run_query q = full_transaction_block (fun dbh ->
     Lwt_Query.query dbh q)
-  
+
   let run_view q = full_transaction_block (fun dbh ->
     Lwt_Query.view dbh q)
 
