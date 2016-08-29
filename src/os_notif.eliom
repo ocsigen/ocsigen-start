@@ -158,7 +158,7 @@ VVV See if it is still needed
         Eliom_state.Ext.iter_volatile_sub_states
           ~state
           (fun state ->
-             let uc = Eliom_reference.Volatile.Ext.get state userchannel in
+             let uc = Eliom_reference.Volatile.Ext.get state userchannel2 in
              I.remove uc id))
 
   let notify ?(notforme = false) id content_gen =
