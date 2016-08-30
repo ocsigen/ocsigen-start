@@ -168,10 +168,6 @@ let preregister_table =
 
 module Utils = struct
 
-  let ( => ) v (f, g) = match v with
-    | Some v -> f v
-    | None -> g v
-
   let as_sql_string v = <:value< $string:v$>>
 
   let run_query q = full_transaction_block (fun dbh ->
@@ -349,14 +345,18 @@ module User = struct
   let update ?password ?avatar ~firstname ~lastname userid =
     if password = Some "" then Lwt.fail_with "empty password"
     else
-      let password = password => (
-	(fun p _ -> as_sql_string @@ fst !pwd_crypt_ref p),
-	(fun _ -> password_of)
-      ) in
-      let avatar = avatar => (
-	(fun a _ -> as_sql_string a),
-	(fun _ -> avatar_of)
-      ) in
+      let password = match password with
+	| Some password ->
+	  fun _ -> as_sql_string @@ fst !pwd_crypt_ref password
+	| None ->
+	  password_of
+      in
+      let avatar = match avatar with
+	| Some avatar ->
+	  fun _ -> as_sql_string avatar
+	| None ->
+	  avatar_of
+      in
       run_query <:update< d in $users_table$ :=
        { firstname = $string:firstname$;
          lastname = $string:lastname$;
@@ -533,9 +533,9 @@ module Groups = struct
                >>
 
   let group_of_name name = run_view_opt
-    <:view< r | r in $groups_table$; r.name = $string:name$ >> >>= fun r ->
-    r => ((fun r -> Lwt.return (r#!groupid, r#!name, r#?description)),
-	  (fun _ -> Lwt.fail No_such_resource))
+    <:view< r | r in $groups_table$; r.name = $string:name$ >> >>= function
+    | Some r -> Lwt.return (r#!groupid, r#!name, r#?description)
+    | None -> Lwt.fail No_such_resource
 
   let add_user_in_group ~groupid ~userid = run_query
     <:insert< $user_groups_table$ :=
