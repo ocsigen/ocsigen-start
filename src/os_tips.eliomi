@@ -54,7 +54,7 @@ val bubble :
   ?parent_node:[< `Body | Html_types.body_content ] Eliom_content.Html.elt ->
   name:string ->
   content:((unit -> unit Lwt.t) Eliom_client_value.t
-           -> Html_types.div_content Eliom_content.Html.elt list) ->
+           -> Html_types.div_content Eliom_content.Html.elt list Lwt.t) ->
   unit ->
   unit Lwt.t
 
@@ -66,7 +66,7 @@ val block :
   ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.D.attrib list ->
   name:string ->
   content:((unit -> unit Lwt.t) Eliom_client_value.t
-           -> Html_types.div_content Eliom_content.Html.elt list) ->
+           -> Html_types.div_content Eliom_content.Html.elt list Lwt.t) ->
   unit ->
   [> `Div ] Eliom_content.Html.elt option Lwt.t
 
