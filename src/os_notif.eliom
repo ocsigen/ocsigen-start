@@ -146,6 +146,23 @@ VVV See if it is still needed
     let uc = Eliom_reference.Volatile.get userchannel in
     I.remove uc id
 
+  let unlisten_user ~userid (id : A.key) =
+    let state =
+      Eliom_state.Ext.volatile_data_group_state
+        ~scope:Eliom_common.default_group_scope
+        (Int64.to_string userid)
+    in
+    (* Iterating on all sessions in group: *)
+    Eliom_state.Ext.iter_volatile_sub_states
+      ~state
+      (fun state ->
+         (* Iterating on all client processes in session: *)
+         Eliom_state.Ext.iter_volatile_sub_states
+           ~state
+           (fun state ->
+              let uc = Eliom_reference.Volatile.Ext.get state userchannel2 in
+              I.remove uc id))
+
   let notify ?(notforme = false) id content_gen =
     Lwt.async (fun () ->
       I.fold (* on all tabs registered on this data *)
