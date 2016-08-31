@@ -23,10 +23,11 @@ end
 
 (* popup button demo **********************************************************)
 
-let%server service = Eliom_service.create
-  ~id:(Eliom_service.Path ["otdemo-popup"])
-  ~meth:(Eliom_service.Get Eliom_parameter.unit)
-  ()
+let%server service =
+  Eliom_service.create
+    ~path:(Eliom_service.Path ["otdemo-popup"])
+    ~meth:(Eliom_service.Get Eliom_parameter.unit)
+    ()
 
 [%%shared
 module PopupPage : DemoPage = struct
@@ -69,10 +70,11 @@ end
 
 let%client (carousel_update, carousel_change) = React.E.create ()
 
-let%server service = Eliom_service.create
-  ~id:(Eliom_service.Path ["otdemo-carousel"])
-  ~meth:(Eliom_service.Get Eliom_parameter.unit)
-  ()
+let%server service =
+  Eliom_service.create
+    ~path:(Eliom_service.Path ["otdemo-carousel"])
+    ~meth:(Eliom_service.Get Eliom_parameter.unit)
+    ()
 
 [%%shared
 module CarouselPage : DemoPage = struct
@@ -150,10 +152,11 @@ let%server value_reactive () =
 let%client value_reactive =
   ~%(Eliom_client.server_function [%derive.json: unit] value_reactive)
 
-let%server service = Eliom_service.create
-  ~id:(Eliom_service.Path ["otdemo-rpc"])
-  ~meth:(Eliom_service.Get Eliom_parameter.unit)
-  ()
+let%server service =
+  Eliom_service.create
+    ~path:(Eliom_service.Path ["otdemo-rpc"])
+    ~meth:(Eliom_service.Get Eliom_parameter.unit)
+    ()
 
 [%%shared
 module RpcPage : DemoPage = struct
@@ -190,10 +193,11 @@ end
 
 (* calendar demo **********************************************************)
 
-let%server service = Eliom_service.create
-  ~id:(Eliom_service.Path ["otdemo-calendar"])
-  ~meth:(Eliom_service.Get Eliom_parameter.unit)
-  ()
+let%server service =
+  Eliom_service.create
+    ~path:(Eliom_service.Path ["otdemo-calendar"])
+    ~meth:(Eliom_service.Get Eliom_parameter.unit)
+    ()
 
 let%server s, f = Eliom_shared.React.S.create None
 
@@ -238,10 +242,11 @@ end
 
 (* timepicker demo ************************************************************)
 
-let%server service = Eliom_service.create
-  ~id:(Eliom_service.Path ["otdemo-timepicker"])
-  ~meth:(Eliom_service.Get Eliom_parameter.unit)
-  ()
+let%server service =
+  Eliom_service.create
+    ~path:(Eliom_service.Path ["otdemo-timepicker"])
+    ~meth:(Eliom_service.Get Eliom_parameter.unit)
+    ()
 
 let%server s, f = Eliom_shared.React.S.create None
 

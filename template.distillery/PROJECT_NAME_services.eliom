@@ -5,7 +5,7 @@
 
 let about_service =
   Eliom_service.create
-    ~id:(Eliom_service.Path ["about"])
+    ~path:(Eliom_service.Path ["about"])
     ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
@@ -16,12 +16,12 @@ let upload_user_avatar_service =
 
 let otdemo_service =
   Eliom_service.create
-    ~id:(Eliom_service.Path ["otdemo"])
+    ~path:(Eliom_service.Path ["otdemo"])
     ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
 let settings_service = Eliom_service.create
-  ~id:(Eliom_service.Path ["settings"])
+  ~path:(Eliom_service.Path ["settings"])
   ~meth:(Eliom_service.Get Eliom_parameter.unit)
   ()
 ]
