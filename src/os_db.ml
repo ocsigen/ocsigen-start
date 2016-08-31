@@ -229,6 +229,8 @@ module User = struct
     data : string;
   }
 
+  exception Invalid_activation_key of int64 (* userid *)
+
   let userid_of_email email = one run_view
     ~success:(fun u -> Lwt.return u#!userid)
     ~fail:(Lwt.fail No_such_resource)
@@ -238,19 +240,6 @@ module User = struct
        t1.userid = t2.userid;
        t2.email = $string:email$
     >>
-
-  exception Invalid_activation_key of int64 (* userid *)
-
-  let select_user_from_email_q dbh email =
-    lwt r = Lwt_Query.view_one dbh
-      <:view< { t1.userid } |
-              t1 in $users_table$;
-              t2 in $emails_table$;
-              t1.userid = t2.userid;
-              t2.email = $string:email$;
-      >>
-    in
-    Lwt.return (r#!userid)
 
   let is_registered email =
     try_lwt
