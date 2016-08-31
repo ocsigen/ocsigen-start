@@ -142,5 +142,4 @@ let email_is_validated ~userid ~email =
   Os_db.User.get_email_validated userid email
 
 let is_main_email ~userid ~email =
-  let%lwt main_email = Os_db.User.email_of_userid userid in
-  Lwt.return (main_email = email)
+  Os_db.User.is_main_email ~email ~userid
