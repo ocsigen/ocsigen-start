@@ -14,7 +14,7 @@ include Makefile.style
 
 # Eliom-base-app makefile
 # Makefile.PROJECT_NAME is also included in this makefile
-include Makefile.eba
+include Makefile.os
 
 # Mobile app makefile
 include Makefile.mobile

@@ -4,16 +4,17 @@
 
 CREATE DATABASE ocsipersist;
 
+CREATE EXTENSION citext; --DEFAULT
+-- You may remove the above line if you use the type TEXT for emails instead of CITEXT
+
 CREATE TABLE users ( -- DEFAULT
        userid bigserial primary key, -- DEFAULT
        firstname text NOT NULL,
        lastname text NOT NULL,
+       main_email citext NOT NULL,
        password text,
        avatar text
 );
-
-CREATE EXTENSION citext; --DEFAULT
--- You may remove the above line if you use the type TEXT for emails instead of CITEXT
 
 CREATE TABLE emails ( -- DEFAULT
        email citext primary key, -- DEFAULT
@@ -24,6 +25,11 @@ CREATE TABLE emails ( -- DEFAULT
 CREATE TABLE activation ( -- DEFAULT
        activationkey text primary key, -- DEFAULT
        userid bigint NOT NULL references users(userid), -- DEFAULT
+       email citext NOT NULL,
+       autoconnect boolean NOT NULL,
+       validity bigint NOT NULL,
+       action text NOT NULL,
+       data text NOT NULL,
        creationdate timestamptz NOT NULL default now()
 );
 

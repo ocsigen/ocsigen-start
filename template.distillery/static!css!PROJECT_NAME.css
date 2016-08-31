@@ -1,5 +1,14 @@
+:root {
+    --bg-color: #ddeeff;
+    --button-bg-color: #4183c4;
+}
+
 /*****************************************************************************
 /* Default tag style */
+
+#%%%PROJECT_NAME%%%-logo {
+    font-size: 25px;
+}
 
 a, a:visited {
   color: #4183c4;
@@ -14,12 +23,12 @@ input {
   background-color: #eef8ff;
 }
 input[type="submit"] {
-  background-color: #4183c4;
+  background-color: var(--button-bg-color);
 }
 
 .button {
   border: none;
-  background-color: #4183c4;
+  background-color: var(--button-bg-color);
   color: white;
 }
 
@@ -28,7 +37,7 @@ input[type="submit"] {
 /* Main layout */
 
 body {
-  margin: 0px;
+  margin: 0;
   min-height: 500px;
   font-family: Droid Sans, sans-serif;
   font-weight: 500;
@@ -37,55 +46,82 @@ body {
 #%%%PROJECT_NAME%%%-logo {
   color: white;
   text-decoration: none;
-  font-size: 25pt;
   font-weight: 700;
-  padding: 0 20px;
+  padding: 0 50px;
 }
 
 header#main {
-  position: relative;
-  height: 50px;
-  background-color: #ddeeff;
+  position: absolute;
+  top: 0;
+  height: auto;
+  width: 100%;
+  background-color: var(--bg-color);
   color: white;
-  padding: 0 50px;
-  margin-left: auto;
-  margin-right: auto;
+  z-index: 2;
+  display: flex;
+}
+@media only screen and (max-width: 1750px){
+    header#main {
+	display: inline-block;
+    }
 }
 
 #%%%PROJECT_NAME%%%-body {
-  margin-top: 40px;
+  margin-top: 80px;
   margin-bottom: 40px;
   width: 980px;
   min-height: 500px;
   text-align: center;
   margin-left: auto;
   margin-right: auto;
+  z-index: 1;
+  height: inherit;
+}
+@media only screen and (max-width: 980px){
+    #%%%PROJECT_NAME%%%-body {
+	margin-left: 0;
+	margin-right: 0;
+	width: 100%;
+    }
+}
+@media only screen and (max-width: 1750px){
+    #%%%PROJECT_NAME%%%-body {
+	margin-top: 140px;
+    }
+}
+@media only screen and (max-width: 588px){
+    #%%%PROJECT_NAME%%%-body {
+	margin-top: 180px;
+    }
 }
 
 #%%%PROJECT_NAME%%%-footer {
-  text-align: center;
-  padding: 20px;
-  height: 30px;
-  margin-left: auto;
-  margin-right: auto;
-  background-color: #ddeeff;
-  color: #445588;
+    position: relative;
+    bottom: 0;
+    text-align: center;
+    padding: 20px 0;
+    height: auto;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: var(--bg-color);
+    color: #445588;
 }
 
-div#eba_welcome_box {
+div#os_welcome_box {
   margin-left: auto;
   margin-right: auto;
 }
-div#eba_welcome_box {
+div#os_welcome_box {
   width: 480px;
   padding: 10px;
   margin-bottom: 16px;
   text-align: center;
 }
-div#eba_welcome_box h2 {
+div#os_welcome_box h2 {
   margin-top: 0;
 }
-div#eba_welcome_box input[type="submit"] {
+div#os_welcome_box input[type="submit"] {
   width: 246px;
   padding: 8px;
   font-weight: bold;
@@ -98,29 +134,9 @@ ul#%%%PROJECT_NAME%%%-navbar {
   margin-bottom: 10px;
   bottom: 0;
   display: inline-block;
+  padding: 0 0;
 }
 #%%%PROJECT_NAME%%%-navbar li {
   display: inline-block;
   padding-right: 15px;
-}
-
-#eba-user-box {
-  position: absolute;
-  right: 0;
-  top: 0;
-  line-height: 50px ;
-  width: 500px;
-}
-
-.ot-pup-submit,
-.eba_usermenu .button {
-    display: block ;
-    padding: 8px ;
-    width: 100% ;
-    font-weight: bold ;
-}
-.eba_usermenu .ot-icon-sign-out { margin-right: 8px ; }
-.eba_usermenu .ot-icon-sign-out::before,
-.eba_usermenu .ot-icon-sign-out::after {
-    border-color: white ;
 }

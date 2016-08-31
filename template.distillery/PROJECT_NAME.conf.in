@@ -39,7 +39,7 @@
       <eliommodule module="%%LIBDIR%%/%%PROJECT_NAME%%.cma">
         <app name="%%APPNAME%%" css="%%CSSNAME%%" />
         <avatars dir="%%FILESDIR%%/avatars" />
-        <eba-db
+        <os-db
           host="%%DB_HOST%%"
           port="%%DB_PORT%%"
           user="%%DB_USER%%"

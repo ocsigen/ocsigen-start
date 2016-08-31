@@ -1,0 +1,319 @@
+/* Default CSS for os and OW */
+
+/******************************************************************************/
+/*********************Default style for some basic elements********************/
+/******************************************************************************/
+
+hr {
+    color: transparent;
+}
+
+br {
+    color: transparent;
+}
+
+a {
+    text-decoration: none;
+}
+a:hover {
+    cursor: pointer;
+}
+
+html {
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+body {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #333;
+    background-color: #fff;
+    margin: 0;
+}
+
+nav {
+    display: block;
+}
+
+form input{
+    font-size: 100%;
+}
+
+/* footer */
+.footer {
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.footer a {
+    font-size: 110% !important;
+    color: #8fbc8f !important;
+}
+
+
+/* Buttons */
+.btn {
+    border: solid 1px;
+    border-radius: 10px;
+    border-width: 2px;
+    background-color: transparent;
+    font-size: 120%;
+    padding: 5px 5px;
+}
+
+.btn:hover {
+    cursor: pointer;
+}
+.button:hover {
+    cursor: pointer;
+}
+.button {
+    border: solid 1px;
+    border-radius: 10px;
+    border-width: 2px;
+    background-color: transparent;
+    font-size: 120%;
+    padding: 5px 5px;
+}
+
+/* Connected userbox and user settings */
+.connected-user-box {
+    width: auto;
+    display: flex;
+}
+.connected-user-box img {
+    height: 30px;
+    width: 30px;
+}
+.connected-user-box .button {
+    border: solid 1px;
+    border-radius: 10px;
+    border-width: 2px;
+    color: white;
+    background-color: transparent;
+    font-size: 100%;
+    margin-left: 10px;
+}
+
+.os_username {
+    margin-left: 20px;
+    margin-right: 20px;
+    color: white;
+    font-size: 120%;
+}
+
+.os-usermenu {
+    position: relative;
+    width: 90px;
+    padding: 5px 5px;
+    text-align: center;
+}
+
+.usermenu-pop {
+    position: absolute;
+    top: 80px;
+    right: 15px;
+    border: 2px solid white !important;
+    font-size: 100%;
+    padding: 5px 5px !important;
+    border-radius: 10px;
+    border-width: 2px !important;
+    text-align: initial;
+    width: auto;
+}
+
+.usermenu-pop .button {
+    border: solid 1px;
+    border-radius: 10px;
+    border-width: 2px;
+    color: white;
+    background-color: transparent;
+    font-size: 100%;
+}
+
+/* Body */
+.os-body {
+    text-align: center;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 920px;
+}
+
+/*Login Menu*/
+.os-login-menu .button {
+    border: solid 1px;
+    border-radius: 10px;
+    border-width: 2px;
+    color: white;
+    background-color: transparent;
+    font-size: 120%;
+    margin-left: 10px;
+}
+.os-login-menu input {
+    border-radius: 5px;
+    margin: 5px;
+    font-size: 150%;
+    padding: 5px;
+}
+.os-login-menu form {
+    display: table-caption;
+    text-align: center;
+}
+
+/* Welcome box */
+.os-welcome-box {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    display: inline-block;
+}
+.os-welcome-box input{
+    border-radius: 5px;
+    margin: 5px;
+    font-size: 100%;
+    padding: 5px;
+}
+.os-welcome-box .button {
+    color: black;
+    border-radius: 10px;
+}
+
+
+/* Display classes */
+.navbar a {
+    color: white;
+}
+
+.navbar-nav {
+    list-style-type: none;
+    display: flex !important;
+}
+.navbar-nav li {
+    font-size: 150%;
+    margin: auto;
+    padding: 10px 10px;
+}
+
+.navbar-brand {
+    font-size: 200%;
+    margin-left: 30px;
+}
+
+.navbar-inverse {
+    background-color: #222;
+    border-color: #080808;
+    color: #fff;
+}
+
+.navbar {
+    border-radius: 4px;
+    position: relative;
+    min-height: 50px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+}
+
+.navbar-right {
+    float: right !important;
+    margin-right: 5px;
+    margin-top: 10px;
+}
+
+.navbar-header {
+    margin-right: 0;
+    margin-left: 0;
+    float: left;
+    width: 100%;
+}
+
+.container-fluid {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.fa-large {
+    color: #ddd;
+    font-size: 38px;
+    vertical-align: middle;
+    padding: 6px;
+}
+
+/* Calendar */
+.ot-c-table {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+/* Carousel */
+.carousel > .car2 {
+    height: auto;
+    width: auto;
+}
+.carousel > .car2 .carpage {
+    height: unset;
+}
+.bullet-nav {
+    padding-left: unset;
+}
+.bullet-nav-item.active {
+    color: #008B8B;
+}
+
+/* Smartphone */
+@media only screen and (min-device-width : 320px) and (max-device-width: 500px) {
+    body {
+	font-size: 8px;
+    }
+    /* Calendar */
+    .ot-c-prev-year-button, .ot-c-next-year-button, .ot-c-prev-button, .ot-c-next-button {
+	padding: 0 1rem;
+    }
+
+}
+
+/******************************************************************************/
+/**********************************Login box***********************************/
+/******************************************************************************/
+
+div#os_login_signup_box {
+    height: auto;
+    width: 560px;
+    right: 100px;
+}
+div#os_login_signup_box form {
+  text-align: left;
+  height: auto;
+}
+
+div#os_login_signup_box input {
+  display: inline-block;
+  margin: 0 10px 10px 0;
+  width: 120px;
+}
+
+div#os_login_signup_box input[type="checkbox"] {
+  width: 10px;
+}
+
+div#os_login_signup_box span {
+    margin-right: 10px
+}
+
+div#os_login_signup_box label {
+    margin: 0 10px 0 0;
+}
+
+div#os_login_signup_box h2 {
+  display: inline;
+  margin: 0 10px 0 0;
+  cursor: pointer;
+}
+div#os_login_signup_box h2.pressed {
+  color: red;
+}
