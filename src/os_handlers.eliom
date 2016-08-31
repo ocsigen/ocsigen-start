@@ -67,9 +67,10 @@ let generate_activation_key
     ~text
     email =
   let service =
-    Eliom_service.attach_global_to_fallback
+    Eliom_service.attach_existing
       ~fallback:service
       ~service:Os_services.activation_service
+      ()
   in
   let act_link = Eliom_uri.make_string_uri ~absolute:true ~service act_key in
   (* For debugging we print the activation link on standard output
