@@ -33,10 +33,20 @@ modules from Ocsigen-start.
 
 ###<a id="install"></a>Installation
 
-Ocsigen-start depends on Eliom >= 5.0, ojquery (development version),
-Macaque, ocsigen-widgets and reactiveData. You can use OPAM to install
-everything; you need to pin the repositories for ocsigen-widgets,
-ojquery, and Ocsigen-start itself.
+Ocsigen-start has a list of dependencies. All can be installed using opam. Here the commands:
+```
+opam pin add ocsigenserver https://github.com/ocsigen/ocsigenserver.git
+opam pin add js_of_ocaml https://github.com/ocsigen/js_of_ocaml.git
+opam pin add deriving https://github.com/ocsigen/deriving.git
+opam pin add reactiveData https://github.com/ocsigen/reactiveData.git
+opam pin add eliom https://github.com/ocsigen/eliom.git
+opam pin add ocsigen-toolkit https://github.com/ocsigen/ocsigen-toolkit.git
+opam pin add ojquery https://github.com/ocsigen/ojquery.git
+opam pin add ocsigen-widgets https://github.com/ocsigen/ocsigen-widgets.git
+opam pin add ocsigen-start https://github.com/ocsigen/ocsigen-start.git
+```
+
+Ocsigen-widgets depends on the [OCaml binding to ImageMagick C library](https://github.com/besport/ocaml-imagemagick) so you need to install the [C library](http://www.imagemagick.org/script/index.php).
 
 ###<a id="create-your-project"></a>Create your project
 ```
