@@ -55,6 +55,7 @@ let email_of_user user = Os_db.User.email_of_userid user.userid
 
 include Os_db.User
 
+
 (* Using cache tools to prevent multiple same database queries
    during the request. *)
 module MCache = Os_request_cache.Make(
@@ -136,3 +137,9 @@ let get_users ?pattern () =
   Lwt.return (List.map create_user_from_db users)
 
 let set_pwd_crypt_fun a = Os_db.pwd_crypt_ref := a
+
+let email_is_validated ~userid ~email =
+  Os_db.User.get_email_validated userid email
+
+let is_main_email ~userid ~email =
+  Os_db.User.is_main_email ~email ~userid
