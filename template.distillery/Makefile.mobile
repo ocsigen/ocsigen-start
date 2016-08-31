@@ -280,7 +280,7 @@ assets: $(CORDOVAPATH) chcp
 
 $(CORDOVAPATH)/platforms/%: check-app-env assets $(CORDOVAPATH)
 	cd $(CORDOVAPATH) ;\
-	cordova platform add $*
+	cordova platform add $* 2> /dev/null ; true
 
 ADD_PLATFORMS := add-android add-browser add-ios add-windows
 
