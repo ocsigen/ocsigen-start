@@ -33,10 +33,23 @@ modules from Ocsigen-start.
 
 ###<a id="install"></a>Installation
 
-Ocsigen-start depends on Eliom >= 5.0, ojquery (development version),
-Macaque, ocsigen-widgets and reactiveData. You can use OPAM to install
-everything; you need to pin the repositories for ocsigen-widgets,
-ojquery, and Ocsigen-start itself.
+Ocsigen-start has a list of dependencies. All can be installed using opam. Here the commands:
+```
+opam pin add --no-action -y ocsigenserver https://github.com/ocsigen/ocsigenserver.git
+opam pin add --no-action -y js_of_ocaml https://github.com/ocsigen/js_of_ocaml.git
+opam pin add --no-action -y deriving https://github.com/ocsigen/deriving.git
+opam pin add --no-action -y reactiveData https://github.com/ocsigen/reactiveData.git
+opam pin add --no-action -y eliom https://github.com/ocsigen/eliom.git
+opam pin add --no-action -y ocsigen-toolkit https://github.com/ocsigen/ocsigen-toolkit.git
+opam pin add --no-action -y ojquery https://github.com/ocsigen/ojquery.git
+opam pin add --no-action -y ocsigen-widgets https://github.com/ocsigen/ocsigen-widgets.git
+opam pin add --no-action -y ocsigen-start https://github.com/ocsigen/ocsigen-start.git
+opam install ocsigen-start -y
+```
+
+Ocsigen-widgets depends on the [OCaml binding to ImageMagick C library](https://github.com/besport/ocaml-imagemagick) so you need to install the [C library](http://www.imagemagick.org/script/index.php).
+On Mac OSX, you can install it with Homebrew: `brew install imagemagick`
+On Debian/Ubuntu , you can install it with apt-get: `sudo apt-get install libgraphicsmagick1-dev libmagickcore-dev`
 
 ###<a id="create-your-project"></a>Create your project
 ```
