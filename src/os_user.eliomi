@@ -9,7 +9,7 @@ type activationkey_info = {
   email : string;
   validity : int64;
   autoconnect : bool;
-  action : string;
+  action : [ `AccountActivation | `PasswordReset | `Custom of string ];
   data : string;
 }
 
@@ -45,10 +45,11 @@ val emails_of_user : t -> string Lwt.t
 
 val add_activationkey :
   (* by default, an activation key is just an activation key *)
-  ?autoconnect:bool -> (* default: false *)
-  ?action:string -> (* default: "activation" *)
-  ?data:string -> (* default: empty string *)
-  ?validity:int64 -> (* default: 1L *)
+  ?autoconnect:bool -> (** default: false *)
+  ?action:[ `AccountActivation | `PasswordReset | `Custom of string ] ->
+  (** default: `AccountActivation *)
+  ?data:string -> (** default: empty string *)
+  ?validity:int64 -> (** default: 1L *)
   act_key:string -> userid:int64 -> email:string -> unit -> unit Lwt.t
 
 val verify_password : email:string -> password:string -> int64 Lwt.t
