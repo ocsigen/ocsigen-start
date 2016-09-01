@@ -174,7 +174,7 @@ $(CORDOVAPATH)/www/chcp.json: mobile/chcp.json.in \
 # Function to list files in a given directory $(1), and change prefix directory
 # to the target one $(2)
 # Example: $(call static_targets,$(SOURCE_DIR),$(TARGET_DIR))
-static_targets = $(shell find $(1) -type f -printf "$(2)/%P\n")
+static_targets = $(shell find $(1) -type f -exec echo "$(2)/{}" \;)
 
 # Static files dependencies: if a file changes in these directory, a new copy
 # of static files will be triggered
