@@ -226,7 +226,7 @@ module User = struct
     email : string;
     validity : int64;
     autoconnect : bool;
-    action : string;
+    action : [ `AccountActivation | `PasswordReset | `Custom of string ];
     data : string;
   }
 
@@ -265,8 +265,12 @@ module User = struct
     >>
 
   let add_activationkey ?(autoconnect=false)
-      ?(action="activation") ?(data="") ?(validity=1L)
+      ?(action=`AccountActivation) ?(data="") ?(validity=1L)
       ~act_key ~userid ~email () =
+    let action = match action with
+      | `AccountActivation -> "activation"
+      | `PasswordReset -> "passwordreset"
+      | `Custom s -> s in
     run_query
      <:insert< $activation_table$ :=
       { userid = $int64:userid$;
@@ -421,7 +425,10 @@ module User = struct
           let email  = t#!email in
           let validity = t#!validity in
           let autoconnect = t#!autoconnect in
-          let action = t#!action in
+          let action = match t#!action with
+            | "activation" -> `AccountActivation
+            | "passwordreset" -> `PasswordReset
+            | c -> `Custom c in
           let data = t#!data in
           let v  = max 0L (Int64.pred validity) in
 	  lwt () = Lwt_Query.query dbh
@@ -476,7 +483,7 @@ module User = struct
            e.userid = u.userid;
            e.email = $string:email$
         >>
-	  
+
 
   let get_users ?pattern () =
     full_transaction_block (fun dbh ->
