@@ -49,6 +49,9 @@
       </eliommodule>
       <eliom/>
       <if>
+        <!-- Remove the condition (or change it to true) if you're serving an iOS app and having
+             "Origin null is not allowed by Access-Control-Allow-Origin.",
+             since with iOS WkWebView, your origin is a local HTML file on the iOS platform. -->
         <header name="origin" regexp="http://localhost:8000"/>
         <then>
           <cors max_age="86400"
