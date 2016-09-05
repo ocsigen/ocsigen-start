@@ -17,5 +17,6 @@ depends: [
   "ocsigen-widgets" {>= "dev"}
   "ocsigen-toolkit" {>= "dev"}
   "ppx_deriving"
+  "yojson"
 ]
 available: [ ocaml-version >= "4.02" ]
