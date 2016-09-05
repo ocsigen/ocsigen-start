@@ -38,7 +38,7 @@ TEMPLATE_DIR := template.distillery
 TEMPLATE_NAME := os.pgocaml
 
 # OCamlfind packages for the server
-SERVER_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx text calendar safepass  ocsigen-widgets.server ocsigen-toolkit.server magick
+SERVER_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx text calendar safepass  ocsigen-widgets.server ocsigen-toolkit.server magick yojson
 SERVER_DB_PACKAGES := pgocaml pgocaml.syntax macaque.syntax calendar safepass
 # OCamlfind packages for the client
 CLIENT_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx js_of_ocaml.ppx calendar ocsigen-widgets.client ocsigen-toolkit.client
