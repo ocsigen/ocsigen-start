@@ -26,10 +26,7 @@
     Options.t.
 
     The type Options.t contains the list of registered ID you want to send the
-    notification [notification] and an optional attribute [collapse_key] (which
-    can be added with Options.add_collapse_key) which allows to collapse
-    notifications having the same collapse_key value (it avoids to have 5
-    different notifications in the notification area for a chat for example).
+    notification [notification].
     You can create a value of type Options.t with [Options.create ids] where ids
     is a list of client ID. These ID's are the devices you want to send the
     notification to.
@@ -70,8 +67,14 @@ module Notification :
     (** Add a soundame when the mobile receives the notification *)
     val add_soundname : string -> t -> t
 
-    (** Add a notification ID *)
-    val add_notId : string -> t -> t
+    (** Add a notification ID. By default, a new notification replaces the last
+     * one because they have the same ID. By adding a different ID for two
+     * different notifications, two notifications will be shown in the
+     * notification area instead of one. If a new notification has the same ID
+     * than an older, the new will replace it. It is useful for chat for
+     * example.
+     *)
+    val add_notification_id : int -> t -> t
 
     val add_style : string -> t -> t
 
@@ -138,6 +141,8 @@ module Options :
 
     val create : string list -> t
 
+    (** DEPRECATED: Use add_notification_id instead. It seems it's only working
+     * with the payload notification and not data. *)
     val add_collapse_key : string -> t -> t
   end
 

@@ -30,7 +30,8 @@ module Notification =
     (** Add a soundame when the mobile receives the notification. *)
     let add_soundname str t = add_raw_string "soundname" str t
 
-    let add_notId str t = add_raw_string "notId" str t
+    let add_notification_id id t =
+      ("notId", `Int id) :: t
 
     let add_style str t = add_raw_string "style" str t
 
