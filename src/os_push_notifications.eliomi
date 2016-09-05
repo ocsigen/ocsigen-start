@@ -93,13 +93,26 @@ module Notification :
         val to_json : t -> Yojson.Safe.json
 
         (* create [icon] [title] [callback] [foreground] *)
+        (* NOTE: The callback is the function name as string to call when the
+         * action is chosen. Be sure you exported the callback before sending
+         * the notification (by using
+         *  Js.Unsafe.set (Js.Unsafe.global "function name" f)
+         * for example)
+         *)
         val create : string -> string -> string -> bool -> t
       end
 
+    (** Add two buttons with an action (created with Action.create). Be sure you
+     * exported the callback in JavaScript.
+     *)
     val add_actions : Action.t -> Action.t -> t -> t
 
+    (** Change the led color when the notification is received. The parameters
+     * are in the ARGB format.
+     *)
     val add_led_color : int -> int -> int -> int -> t -> t
 
+    (** Add a vibration pattern *)
     val add_vibration_pattern : int list -> t -> t
 
     (** Add a badge to the icon of the notification in the launcher. Only
@@ -119,6 +132,9 @@ module Notification :
 
     val add_priority : Priority.t -> t -> t
 
+    (** Add a large picture in the notification (under the title and body).
+     * Don't forget to set style to the value Style.Picture.
+     *)
     val add_picture : string -> t -> t
 
     (* Add content-available: 1 also *)
