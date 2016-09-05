@@ -33,9 +33,19 @@ module Notification =
     let add_notification_id id t =
       ("notId", `Int id) :: t
 
-    let add_style str t = add_raw_string "style" str t
-
     let add_summary_text str t = add_raw_string "summaryText" str t
+
+    module Style =
+      struct
+        type t = Inbox | Picture
+      end
+
+    let add_style style t =
+      let style_to_str = match style with
+      | Style.Inbox -> "inbox"
+      | Style.Picture -> "picture"
+      in
+      add_raw_string "style" style_to_str t
 
     module Action =
       struct
@@ -81,6 +91,12 @@ module Notification =
       in
       ("priority", `Int int_of_priority) :: t
 
+    (** NOTE: we don't add automatically the value picture to style because we
+     * don't know if we can mix Inbox and Picture at the same time. In general,
+     * a notification with a picture will have a specific ID (we don't want to
+     * replace it with another notification) so Inbox value has no sense but we
+     * leave the choice to the user.
+     *)
     let add_picture picture t = add_raw_string "picture" picture t
 
     let add_info info t =

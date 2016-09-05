@@ -76,7 +76,12 @@ module Notification :
      *)
     val add_notification_id : int -> t -> t
 
-    val add_style : string -> t -> t
+    module Style :
+      sig
+        type t = Inbox | Picture
+      end
+
+    val add_style : Style.t -> t -> t
 
     (** Add a summary text. *)
     val add_summary_text : string -> t -> t
