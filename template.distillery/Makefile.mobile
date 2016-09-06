@@ -6,7 +6,7 @@
 #   sudo npm install -g cordova-hot-code-push-cli read-package-json xml2js
 #
 # For Android:
-# - Install jdk 7 ou plus (openjdk-7-jdk dans Debian)
+# - Install JDK 7 or newer (openjdk-7-jdk in Debian)
 # - Install qemu-kvm
 # - Download Android SDK http://developer.android.com/sdk
 # - Untar
