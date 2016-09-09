@@ -3,8 +3,8 @@
 #----------------------------------------------------------------------
 
 ## Here you can add specific rules for your project. It's recommended to add
-## variables in Makefile.options which contains all variables and it is
-## supposed to contain only variables, no rules.
+## variables in Makefile.options (which is supposed to contain all variables and
+## no rules).
 
 ## This file is included in Makefile.os. You can also use any variable defined
-## in Makefile.os.
+## in Makefile.options.
