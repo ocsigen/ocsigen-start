@@ -212,13 +212,13 @@ $(CORDOVAPATH)/www/eliom.html: $(CORDOVAPATH) \
 	sed "s,%%APPSERVER%%,$(APP_SERVER),g" > \
 	$(CORDOVAPATH)/www/eliom.html
 
-scripts/eliom_loader.byte: scripts/eliom_loader.ml
+mobile/eliom_loader.byte: mobile/eliom_loader.ml
 	ocamlfind ocamlc \
 	    -package js_of_ocaml,js_of_ocaml.ppx,lwt.ppx \
-	    -linkpkg -o scripts/eliom_loader.byte \
+	    -linkpkg -o mobile/eliom_loader.byte \
 	    $<
 
-$(CORDOVAPATH)/www/eliom_loader.js: scripts/eliom_loader.byte
+$(CORDOVAPATH)/www/eliom_loader.js: mobile/eliom_loader.byte
 	js_of_ocaml $< -o $(CORDOVAPATH)/www/eliom_loader.js
 
 app-config: $(CORDOVAPATH)/www/index.html \

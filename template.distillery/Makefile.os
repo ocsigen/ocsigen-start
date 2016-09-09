@@ -21,9 +21,6 @@ ELIOMDEP          := eliomdep
 OCSIGENSERVER     := ocsigenserver
 OCSIGENSERVER.OPT := ocsigenserver.opt
 
-## Hack to use camlp4o.opt when possible
-export PATH:=./tools:$(PATH)
-
 ## Where to put intermediate object files.
 ## - ELIOM_{SERVER,CLIENT}_DIR must be distinct
 ## - ELIOM_CLIENT_DIR must not be the local dir.

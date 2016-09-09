@@ -43,7 +43,7 @@ pg_ctl = $(shell\
 		 sh -c "if [ -f pg_ctl ]; then (echo ./pg_ctl) else (echo '') fi")
 
 ifeq ($(pg_ctl),)
-$(error "no 'pg_ctl' binary found, please run 'scripts/find_pg_ctl.sh'")
+$(error "no 'pg_ctl' binary found")
 endif
 
 ifeq ($(LOCAL),yes)
