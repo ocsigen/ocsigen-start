@@ -32,7 +32,7 @@
 # (https://github.com/nordnet/cordova-hot-code-push) to upload local files (like
 # CSS and JavaScript files, images and logo) when the server code changes.
 # Unfortunately, this plugin is not yet available for Windows phone.
-# However, as ocsigen-start builds also the website part, an idea is to
+# However, as ocsigen-start also builds the website part, an idea is to
 # run the website into a WebView on Windows phones.
 # Even if Cordova allows you to build Windows app, it doesn't authorize you to
 # load an external URL without interaction with the user (else, you have the
@@ -45,8 +45,8 @@
 # ).
 # Another solution is to build an Hosted Web App
 # (https://developer.microsoft.com/en-us/windows/bridges/hosted-web-apps). It
-# allows you to create easily an application based on your website. You can also
-# use Windows JavaScript API (no OCaml binding available for the moment) to get
+# makes it possible to create easily an application based on your website. You can 
+# also use Windows JavaScript API (no OCaml binding available for the moment) to get
 # access to native components.
 # You can create the APPX package (package format for Windows app) by using
 # manifoldjs, even if you are on MacOS X or Linux: http://manifoldjs.com/
@@ -56,10 +56,8 @@
 # manifoldjs and Visual Studio):
 # https://blogs.windows.com/buildingapps/2016/02/17/building-a-great-hosted-web-app
 #
-# The Visual Studio Community solution it's recommended to test and debug. You
-# can see all errors in the JavaScript console provided in Visual Studio. Before
-# deploying, be sure there are no JavaScript errors: it seems the application
-# doesn't start when there are some errors if you are not in debug mode.
+# The Visual Studio Community solution is recommended to test and debug. You
+# can see all errors in the JavaScript console provided in Visual Studio.
 #
 # If you use the manifoldjs solution, you need to sign the APPX before
 # installing it on a device.
