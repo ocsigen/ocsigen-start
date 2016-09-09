@@ -243,7 +243,6 @@ $(CORDOVAPATH)/www/eliom.html: $(CORDOVAPATH) \
 	CSS_HASH=$$(md5sum $(APPCSS) | cut -d ' ' -f 1) && \
 	sed "s,%%APPNAME%%,$(PROJECT_NAME)_$$JS_HASH,g" mobile/eliom.html.in | \
 	sed "s,%%PROJECTNAME%%,$(PROJECT_NAME),g" | \
-	sed "s,%%CSSNAME%%,$(PROJECT_NAME).css,g" | \
 	sed "s,%%APPSERVER%%,$(APP_SERVER),g" > \
 	$(CORDOVAPATH)/www/eliom.html
 
