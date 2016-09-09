@@ -1,0 +1,122 @@
+## ---------------------------------------------------------------------
+## This Makefile contains the rules about the database management.
+## Ocsigen-start uses PostgreSQL so you need to install it.
+## Ocsigen-start uses the executable
+## Some variables like the PostgreSQL directory for log or the PostgreSQL
+## directory can be found and changed in the file Makefile.options
+
+## ---------------------------------------------------------------------
+## The following part defines some variables by adding the environment variables
+## to the used binaries.
+
+ENV_PSQL          := PGHOST=$(DB_HOST) PGDATABASE=$(DB_NAME) PGPORT=$(DB_PORT) \
+                     PGUSER=$(DB_USER) PGPASSWORD=$(DB_PASSWORD)
+
+## Overload required binaries
+JS_OF_ELIOM       := $(JS_OF_ELIOM)
+ELIOMC            := $(ENV_PSQL) $(ELIOMC)
+ELIOMOPT          := $(ENV_PSQL) $(ELIOMOPT)
+ELIOMDEP          := $(ENV_PSQL) $(ELIOMDEP)
+
+# Ocsigenserver uses the DB settings from %%%PROJECT_NAME%%%.conf.in (which
+# should be the same as ENV_PSQL)
+OCSIGENSERVER     := $(OCSIGENSERVER)
+OCSIGENSERVER.OPT := $(OCSIGENSERVER.OPT)
+## ---------------------------------------------------------------------
+
+## ---------------------------------------------------------------------
+## Here some rules to easily manage the database.
+# - db-init:
+#   Initialise the database. It creates the directory PSQL_DIR and
+#   start the database.
+#
+# - db-start:
+#   Start the database.
+#
+# - db-stop:
+#   Stop the database.
+#
+# - db-status:
+#   Get the database status.
+#
+# - db-create:
+#   Create the database and use UNICODE.
+#
+# - db-update:
+#   Update the database with the SQL file contains in the PSQL_FILE
+#   variable. By default, the PSQL_FILE is PROJECTNAME.sql. See
+#   Makefile.options.
+#
+# - db-drop:
+#   Drop the database but doesn't remove the database directory PSQL_DIR.
+#
+# - db-psql:
+#   Connect to the database.
+#
+# - db-delete:
+#   Stop the database (without error if it's not running) and remove
+#   the database directory containing all database data.
+#
+# Depending on the value of the LOCAL variable (defined in Makefile.options),
+# the database is created locally or globally. By default, the database is
+# local.
+
+$(PSQL_DIR):
+	-mkdir -p $@
+
+pg_ctl = $(shell \
+           sh -c "which pg_ctl" || \
+           sh -c "which pg_ctlcluster" || \
+           sh -c "if [ -f pg_ctl ]; then (echo ./pg_ctl) else (echo '') fi")
+
+ifeq ($(pg_ctl),)
+$(error "no 'pg_ctl' binary found")
+endif
+
+
+ifeq ($(LOCAL),yes)
+
+db-init: $(PSQL_DIR)
+	$(pg_ctl) initdb -D $(PSQL_DIR)
+	echo unix_socket_directories = \'/tmp\' >> $(PSQL_DIR)/postgresql.conf
+	$(pg_ctl) -o "-p $(DB_PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
+
+db-start:
+	$(pg_ctl) -o "-p $(DB_PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
+
+db-stop:
+	$(pg_ctl) -D $(PSQL_DIR) -l $(PSQL_LOG) stop
+
+db-status:
+	$(pg_ctl) -D $(PSQL_DIR) -l $(PSQL_LOG) status
+
+db-delete:
+	$(pg_ctl) -D $(PSQL_DIR) -l $(PSQL_LOG) stop || true
+	rm -rf $(PSQL_DIR)
+
+else
+
+db-start:
+	$(pg_ctl) -o "-p $(DB_PORT)" start
+
+db-status:
+	$(pg_ctl) status
+
+db-stop:
+	$(pg_ctl) stop
+
+endif
+
+db-create:
+	$(ENV_PSQL) createdb --encoding UNICODE $(DB_NAME)
+
+db-update:
+	$(ENV_PSQL) psql -d $(DB_NAME) -f $(PSQL_FILE)
+
+db-drop:
+	$(ENV_PSQL) dropdb $(DB_NAME)
+
+db-psql:
+	$(ENV_PSQL) psql $(DB_NAME)
+
+##----------------------------------------------------------------------
