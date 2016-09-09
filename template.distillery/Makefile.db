@@ -1,9 +1,17 @@
 ## ---------------------------------------------------------------------
 ## This Makefile contains the rules about the database management.
+##
 ## Ocsigen-start uses PostgreSQL so you need to install it.
-## Ocsigen-start uses the executable
-## Some variables like the PostgreSQL directory for log or the PostgreSQL
-## directory can be found and changed in the file Makefile.options
+##
+## Ocsigen-start uses pg_ctlcluster (on Debian) or pg_ctl. The variable `pg_ctl`
+## defined in this Makefile is the approriate executable depending on the
+## platform. If pg_ctl or pg_ctlcluster is not found, it searches for a pg_ctl
+## executable (which can be a symbolic link) in the current directory. If any of
+## these executables are found, an error occured.
+##
+## Some variables like the PostgreSQL directory for log, the PostgreSQL
+## directory or the variables to access the database (like the database name or
+## the user) can be found and changed in the file Makefile.options
 
 ## ---------------------------------------------------------------------
 ## The following part defines some variables by adding the environment variables
