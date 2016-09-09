@@ -26,6 +26,41 @@
 # in ~/.android/avd/<your avd>/config.ini
 #
 # To debug: adb -e logcat
+#
+# For Windows:
+# Ocsigen-start uses cordova-hot-code-push-plugin
+# (https://github.com/nordnet/cordova-hot-code-push) to upload local files (like
+# CSS and JavaScript files, images and logo) when the server code changes.
+# Unfortunately, this plugin is not yet available for Windows phone.
+# However, as ocsigen-start also builds the website part, an idea is to
+# run the website into a WebView on Windows phones.
+# Even if Cordova allows you to build Windows app, it doesn't authorize you to
+# load an external URL without interaction with the user (else, you have the
+# error:
+# ```
+# "APPHOST9624: The app can't use script to load the <URL_HERE> url because the
+# url launches another app. Only direct user interaction can launch another
+# app."
+# ```
+# ).
+# Another solution is to build an Hosted Web App
+# (https://developer.microsoft.com/en-us/windows/bridges/hosted-web-apps). It
+# makes it possible to create easily an application based on your website. You can 
+# also use Windows JavaScript API (no OCaml binding available for the moment) to get
+# access to native components.
+# You can create the APPX package (package format for Windows app) by using
+# manifoldjs, even if you are on MacOS X or Linux: http://manifoldjs.com/
+# (contains a video describing the entire process available).
+# If you are on Windows, you can use Visual Studio Community.
+# Here a complete tutorial from the Windows blog for both versions (with
+# manifoldjs and Visual Studio):
+# https://blogs.windows.com/buildingapps/2016/02/17/building-a-great-hosted-web-app
+#
+# The Visual Studio Community solution is recommended to test and debug. You
+# can see all errors in the JavaScript console provided in Visual Studio.
+#
+# If you use the manifoldjs solution, you need to sign the APPX before
+# installing it on a device.
 
 CORDOVAPATH := cordova
 MOBILESTATICPATH := mobile
