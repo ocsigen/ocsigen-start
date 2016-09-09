@@ -9,7 +9,7 @@
 # Eliom settings. Contains all variables.
 include Makefile.options
 
-# Database (PGOcaml) settings and rules.
+# Database rules.
 include Makefile.db
 
 # Styles (CSS, SASS...).
