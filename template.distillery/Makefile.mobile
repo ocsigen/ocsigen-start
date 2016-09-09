@@ -49,11 +49,20 @@
 # use Windows JavaScript API (no OCaml binding available for the moment) to get
 # access to native components.
 # You can create the APPX package (package format for Windows app) by using
-# manifoldjs, even if you are on MacOS X or Linux: http://manifoldjs.com/.
+# manifoldjs, even if you are on MacOS X or Linux: http://manifoldjs.com/
+# (contains a video describing the entire process available).
 # If you are on Windows, you can use Visual Studio Community.
 # Here a complete tutorial from the Windows blog for both versions (with
-# manifolds and Visual Studio):
+# manifoldjs and Visual Studio):
 # https://blogs.windows.com/buildingapps/2016/02/17/building-a-great-hosted-web-app
+#
+# The Visual Studio Community solution it's recommended to test and debug. You
+# can see all errors in the JavaScript console provided in Visual Studio. Before
+# deploying, be sure there are no JavaScript errors: it seems the application
+# doesn't start when there are some errors if you are not in debug mode.
+#
+# If you use the manifoldjs solution, you need to sign the APPX before
+# installing it on a device.
 
 CORDOVAPATH := cordova
 MOBILESTATICPATH := mobile
