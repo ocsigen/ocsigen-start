@@ -23,7 +23,7 @@ let%shared connection_box () = Eliom_content.Html.D.(
 )
 
 let%shared msg () = Eliom_content.Html.D.(
-  div ~a:[a_id "eba_msg"] []
+  div ~a:[a_id "os_msg"] []
 )
 
 let%shared userbox user = Eliom_content.Html.F.(

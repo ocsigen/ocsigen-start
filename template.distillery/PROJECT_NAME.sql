@@ -1,6 +1,6 @@
 -- README:
 -- Do not remove the field with a `-- DEFAULT` suffix.
--- That's the default tables/fields needed by Eliom-base-app
+-- That's the default tables/fields needed by Ocsigen-start
 
 CREATE DATABASE ocsipersist;
 

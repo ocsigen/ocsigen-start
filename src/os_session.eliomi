@@ -70,7 +70,7 @@ exception Permission_denied
 [%%server.start]
 (** Open a session for a user by setting a session group for the browser
     which initiated the current request.
-    Eliom base app is using both persistent and volatile session groups.
+    Ocsigen-start is using both persistent and volatile session groups.
     The volatile groups is recreated from persistent group if absent.
     By default, the connection does not expire; by setting the optional
     argument [expire] to true, the session will expire when the browser

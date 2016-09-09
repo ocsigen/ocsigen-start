@@ -69,7 +69,7 @@
  let main_service_handler userid_o () () = Eliom_content.Html.F.(
   %%%MODULE_NAME%%%_container.page userid_o (
     [
-      p [em [pcdata "Eliom base app: Put app content here."]]
+      p [em [pcdata "Ocsigen-start: Put app content here."]]
     ]
   )
  )
