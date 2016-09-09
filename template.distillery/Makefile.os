@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------
-#           ELIOM-BASE-APP MAKEFILE, NOT TO BE MODIFIED
+#           OCSIGEN-START MAKEFILE, NOT TO BE MODIFIED
 #----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
@@ -8,7 +8,6 @@
 ## This file contains the rules to make an Eliom project. The project is
 ## configured through the variables in the file Makefile.options.
 ##----------------------------------------------------------------------
-
 
 ##----------------------------------------------------------------------
 ##                Internals
@@ -55,8 +54,8 @@ byte opt:: ${JS_PREFIX}.js
 byte opt:: $(CONFIG_FILES)
 
 ##----------------------------------------------------------------------
-## The following part has been generated with EBA template.
-## This will overload the default the required binaries
+## The following part has been generated with os template.
+## This will overload the default required binaries.
 
 ## DO NOT MOVE IT ON TOP OF THE `all` RULE!
 
