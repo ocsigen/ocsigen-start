@@ -6,8 +6,8 @@
 ## Ocsigen-start uses pg_ctlcluster (on Debian) or pg_ctl. The variable `pg_ctl`
 ## defined in this Makefile is the approriate executable depending on the
 ## platform. If pg_ctl or pg_ctlcluster is not found, it searches for a pg_ctl
-## executable (which can be a symbolic link) in the current directory. If any of
-## these executables are found, an error occured.
+## executable (which can be a symbolic link) in the current directory. If none of
+## these executables are found, an error occures.
 ##
 ## Some variables like the PostgreSQL directory for log, the PostgreSQL
 ## directory or the variables to access the database (like the database name or
