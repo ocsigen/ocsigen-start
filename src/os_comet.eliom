@@ -23,7 +23,7 @@
   open Eliom_content.Html
   open Eliom_content.Html.F
 
-  let __link = () (* to make sure eba_comet is linked *)
+  let __link = () (* to make sure os_comet is linked *)
 ]
 
 let%client restart_process () =

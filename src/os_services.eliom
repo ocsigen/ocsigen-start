@@ -102,7 +102,7 @@ let os_github_service =
     ~id:
       (Eliom_service.External
          ("http://github.com",
-          ["ocsigen"; "eliom-base-app"]))
+          ["ocsigen"; "ocsigen-start"]))
     ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 

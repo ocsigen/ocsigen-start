@@ -251,7 +251,7 @@ let%server activation_handler akey () =
     Eliom_registration.Action.send ()
 
 let%client activation_handler_rpc =
-  ~%(Eliom_client.server_function ~name:"Eba_handlers.activation_handler"
+  ~%(Eliom_client.server_function ~name:"Os_handlers.activation_handler"
        [%derive.json: string]
        (fun akey ->
           let%lwt _ = activation_handler_common ~akey in
@@ -310,5 +310,5 @@ let%client add_email_handler =
   fun () -> rpc
 
 [%%shared
-   let _ = Os_comet.__link (* to make sure eba_comet is linked *)
+   let _ = Os_comet.__link (* to make sure os_comet is linked *)
 ]

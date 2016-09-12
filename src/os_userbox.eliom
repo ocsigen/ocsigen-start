@@ -96,7 +96,7 @@ let reset_tips_service = Os_tips.reset_tips_service
 [%%shared
 
   let user_menu user service =
-    let but = D.div ~a:[a_class ["eba_usermenu_button"]]
+    let but = D.div ~a:[a_class ["os_usermenu_button"]]
         [Ow_icons.F.config ~a:[a_class ["fa-large"]] ()]
     in
     let menu = D.div [] in
@@ -108,7 +108,7 @@ let reset_tips_service = Os_tips.reset_tips_service
               o##unpress
             in
             Lwt.return (!user_menu_fun close ~%user ~%service): 'a -> 'b)]);
-    div ~a:[a_class ["eba_usermenu"]] [but; menu]
+    div ~a:[a_class ["os_usermenu"]] [but; menu]
 
 ]
 [%%client
@@ -118,7 +118,7 @@ let reset_tips_service = Os_tips.reset_tips_service
 
   let connected_user_box user service =
     let username = Os_view.username user in
-    D.div ~a:[a_id "eba-user-box"] [
+    D.div ~a:[a_id "os-user-box"] [
       Os_view.avatar user;
       username;
       user_menu user service;
@@ -138,7 +138,7 @@ let reset_tips_service = Os_tips.reset_tips_service
      Ow_active_set.set ~at_least_one:true ()
 ]
 [%%shared
-  let connection_box_id = "eba_login_signup_box"
+  let connection_box_id = "os_login_signup_box"
   let connection_box_ () =
       let set = make_set () in
       let button1 = D.h2 [pcdata "Login"] in

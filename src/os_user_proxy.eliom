@@ -31,7 +31,7 @@ let%client get_data_rpc' = ()
 
 let%shared get_data_rpc
   : (_, Os_user.t) Eliom_client.server_function =
-  Eliom_client.server_function ~name:"eba_user_proxy.get_data_rpc"
+  Eliom_client.server_function ~name:"os_user_proxy.get_data_rpc"
     [%derive.json: userid] get_data_rpc'
 
 let%client get_data id  = get_data_rpc id

@@ -27,7 +27,7 @@ open Eliom_content.Html.F
 [%%client
 
    let msgbox () =
-     let id = "eba_msg" in
+     let id = "os_msg" in
      try
        Dom_html.getElementById id
      with
@@ -42,7 +42,7 @@ open Eliom_content.Html.F
 
   let msg ?(level = `Err) ?(duration = 2.) ?(onload=false) msg =
     ignore [%client (
-      let c = if ~%level = `Msg then [] else ["eba_err"] in
+      let c = if ~%level = `Msg then [] else ["os_err"] in
       Eliom_lib.debug "%s" ~%msg;
       let msg = To_dom.of_p (D.p ~a:[a_class c] [pcdata ~%msg]) in
       let msgbox = msgbox () in

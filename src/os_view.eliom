@@ -141,7 +141,7 @@ let home_button ?a () =
 let avatar user =
   match Os_user.avatar_uri_of_user user with
   | Some src ->
-    img ~alt:"picture" ~a:[a_class ["eba_avatar"]] ~src ()
+    img ~alt:"picture" ~a:[a_class ["os_avatar"]] ~src ()
   | None -> Ot_icons.F.user ()
 
 let username user =
@@ -155,7 +155,7 @@ let username user =
        pcdata (Os_user.lastname_of_user user);
       ]
   in
-  div ~a:[a_class ["eba_username"]] n
+  div ~a:[a_class ["os_username"]] n
 
 let password_form ?a ~service () =
   D.Form.post_form
