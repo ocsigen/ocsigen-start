@@ -37,11 +37,11 @@ module PopupPage : DemoPage = struct
 
   let page () =
     let button =
-      D.Form.input 
-	~a:[a_class ["button"]]
-	~input_type:`Submit
-	~value:"Click for a popup!"
-	(Form.string)
+      D.Form.input
+        ~a:[a_class ["button"]]
+        ~input_type:`Submit
+        ~value:"Click for a popup!"
+        (Form.string)
     in
     ignore
       [%client
@@ -107,11 +107,11 @@ module CarouselPage : DemoPage = struct
     in
     Lwt.return
       [
-	p [pcdata "The carousel displays a number of blocks side-by-side (or vertically stacked)."];
-	p [pcdata "To switch to a different block, either use the buttons above or below the carousel."];
-	p [pcdata "In the mobile app you can also swipe the screen."];
-	ribbon; carousel; p [prev; next];
-	div ~a:[a_class ["otdemo-bullets"]] [bullets]
+        p [pcdata "The carousel displays a number of blocks side-by-side (or vertically stacked)."];
+        p [pcdata "To switch to a different block, either use the buttons above or below the carousel."];
+        p [pcdata "In the mobile app you can also swipe the screen."];
+        ribbon; carousel; p [prev; next];
+        div ~a:[a_class ["otdemo-bullets"]] [bullets]
       ]
 end
 ]
@@ -136,8 +136,8 @@ let%server demo_function () = Lwt.return (
 let%client demo_function =
   let demo_rpc =
     ~%(Eliom_client.server_function
-	 [%derive.json : unit]
-	 demo_function)
+         [%derive.json : unit]
+         demo_function)
   in
   demo_rpc
 
@@ -165,8 +165,8 @@ module RpcPage : DemoPage = struct
   let page () =
     let button =
       button
-	~a:[a_class ["button"]]
-	[pcdata "Click to call a RPC"]
+        ~a:[a_class ["button"]]
+        [pcdata "Click to call a RPC"]
     in
     ignore
       [%client
@@ -174,15 +174,15 @@ module RpcPage : DemoPage = struct
             Lwt_js_events.clicks
               (To_dom.of_element ~%button)
               (fun _ _ -> demo_function ())
-	   )
+           )
              : _)
       ];
     let%lwt value = value_reactive () in
     Lwt.return
       [
-	p [pcdata "Here is a button calling a rpc to increase a server side value."];
-	p [Eliom_content.Html.R.pcdata value];
-	p [button]
+        p [pcdata "Here is a button calling a rpc to increase a server side value."];
+        p [Eliom_content.Html.R.pcdata value];
+        p [button]
       ]
 end
 ]
@@ -229,9 +229,9 @@ module CalendarPage : DemoPage = struct
     let%lwt dr = date_reactive () in
     Lwt.return
       [
-	p [pcdata "This page shows the calendar."];
-	div ~a:[a_class ["os-calendar"]] [calendar];
-	p [Eliom_content.Html.R.pcdata dr]
+        p [pcdata "This page shows the calendar."];
+        div ~a:[a_class ["os-calendar"]] [calendar];
+        p [Eliom_content.Html.R.pcdata dr]
       ]
 end
 ]
@@ -288,10 +288,10 @@ module TimepickerPage : DemoPage = struct
     let%lwt tr = time_reactive () in
     Lwt.return
       [
-	p [pcdata "This page shows the time picker."];
-	div [time_picker];
-	p [Eliom_content.Html.R.pcdata tr];
-	div [button]
+        p [pcdata "This page shows the time picker."];
+        div [time_picker];
+        p [Eliom_content.Html.R.pcdata tr];
+        div [button]
       ]
 end
 ]
@@ -339,8 +339,8 @@ let%shared () =
     %%%MODULE_NAME%%%_base.App.register
       ~service:D.service
       (%%%MODULE_NAME%%%_page.Opt.connected_page @@ fun id () () ->
-	let%lwt p = D.page () in
-	make_page id p)
+        let%lwt p = D.page () in
+        make_page id p)
   in
   List.iter registerDemo demos;
   %%%MODULE_NAME%%%_base.App.register

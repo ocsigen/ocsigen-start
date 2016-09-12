@@ -17,20 +17,20 @@ let%shared navigation_bar =
 
 let%shared os_header ?user () = Eliom_content.Html.F.(
   ignore user;
-  let%lwt user_box = 
+  let%lwt user_box =
     %%%MODULE_NAME%%%_userbox.userbox user in
   let%lwt navigation_bar = navigation_bar () in
   Lwt.return (
     nav ~a:[a_class ["navbar";"navbar-inverse";"navbar-relative-top"]] [
       div ~a:[a_class ["container-fluid"]] [
-	div ~a:[a_class ["navbar-header"]][
-	  a ~a:[a_class ["navbar-brand"]]
+        div ~a:[a_class ["navbar-header"]][
+          a ~a:[a_class ["navbar-brand"]]
             ~service:Os_services.main_service [
-	      pcdata %%%MODULE_NAME%%%_base.displayed_app_name;
-	    ] ();
-	  user_box
-	];
-	navigation_bar
+              pcdata %%%MODULE_NAME%%%_base.displayed_app_name;
+            ] ();
+          user_box
+        ];
+        navigation_bar
       ]
     ]
   )
@@ -40,15 +40,15 @@ let%shared os_footer () = Eliom_content.Html.F.(
   footer ~a:[a_class ["footer";"navbar";"navbar-inverse"]] [
     div ~a:[a_class ["container"]] [
       p [
-	pcdata "This application has been generated using the ";
-	a ~service:Os_services.os_github_service [
-	  pcdata "Ocsigen-start"
-	] ();
-	pcdata " template for Eliom-distillery and uses the ";
-	a ~service:Os_services.ocsigen_service [
-	  pcdata "Ocsigen"
-	] ();
-	pcdata " technology.";
+        pcdata "This application has been generated using the ";
+        a ~service:Os_services.os_github_service [
+          pcdata "Ocsigen-start"
+        ] ();
+        pcdata " template for Eliom-distillery and uses the ";
+        a ~service:Os_services.ocsigen_service [
+          pcdata "Ocsigen"
+        ] ();
+        pcdata " technology.";
       ]
     ]
   ]
@@ -76,9 +76,9 @@ let%shared connected_welcome_box () = Eliom_content.Html.F.(
     div ~a:[a_class ["os-login-menu";"os-welcome-box"]] [
       div [h2 [pcdata ("Welcome!")]; info];
       Os_view.information_form
-	~firstname:fn ~lastname:ln
-	~password1:p1 ~password2:p2
-	()
+        ~firstname:fn ~lastname:ln
+        ~password1:p1 ~password2:p2
+        ()
     ]
 )
 
