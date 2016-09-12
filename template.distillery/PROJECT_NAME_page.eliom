@@ -34,7 +34,7 @@ let%server the_local_js = [
 let%client the_local_js = [] (* in index.html *)
 
 let%shared the_local_css = [
-  ["font-awesome.css"];
+  ["font-awesome.min.css"];
   ["ot_defaults.css"];
   ["ot_carousel.css"];
   ["ot_drawer.css"];
