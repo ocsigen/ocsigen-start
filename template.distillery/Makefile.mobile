@@ -45,9 +45,9 @@
 # ).
 # Another solution is to build an Hosted Web App
 # (https://developer.microsoft.com/en-us/windows/bridges/hosted-web-apps). It
-# makes it possible to create easily an application based on your website. You can 
-# also use Windows JavaScript API (no OCaml binding available for the moment) to get
-# access to native components.
+# makes it possible to create easily an application based on your website. You
+# can also use Windows JavaScript API (no OCaml binding available for the
+# moment) to get access to native components.
 # You can create the APPX package (package format for Windows app) by using
 # manifoldjs, even if you are on MacOS X or Linux: http://manifoldjs.com/
 # (contains a video describing the entire process available).
@@ -278,7 +278,7 @@ assets: $(CORDOVAPATH) chcp
 
 # cordova platform rules
 
-$(CORDOVAPATH)/platforms/%: $(CORDOVAPATH)
+$(CORDOVAPATH)/platforms/%: check-app-env assets $(CORDOVAPATH)
 	cd $(CORDOVAPATH) ;\
 	cordova platform add $*
 
