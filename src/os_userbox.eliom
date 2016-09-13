@@ -97,7 +97,7 @@ let reset_tips_service = Os_tips.reset_tips_service
 
   let user_menu user service =
     let but = D.div ~a:[a_class ["os_usermenu_button"]]
-        [Ow_icons.F.config ~a:[a_class ["fa-large"]] ()]
+        [Ot_icons.F.config ~a:[a_class ["fa-large"]] ()]
     in
     let menu = D.div [] in
     ignore

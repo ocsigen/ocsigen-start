@@ -36,7 +36,7 @@ let get_current_user () =
   | CU_user a -> a
   | CU_idontknown -> (* Should never happen *) failwith please_use_connected_fun
   | _ ->
-    Ow_log.log "Not connected error in Os_current_user";
+    Firebug.console##(log (Js.string "Not connected error in Os_current_user"));
     raise Os_session.Not_connected
 
 ]
