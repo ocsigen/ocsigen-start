@@ -163,20 +163,38 @@ VVV See if it is still needed
               let uc = Eliom_reference.Volatile.Ext.get state userchannel2 in
               I.remove uc id))
 
-  let notify ?(notforme = false) id content_gen =
-    Lwt.async (fun () ->
+  (* used by notify (local invocation) and receive_broadcast (remote invocation) *)
+  let notify_worker ~notforme id content =
       I.fold (* on all tabs registered on this data *)
         (fun (userid_o, ((_, _, send_e) as nn)) (beg : unit Lwt.t) ->
            if notforme && nn == Eliom_reference.Volatile.get notif_e
            then Lwt.return ()
            else
              let%lwt () = beg in
-             let%lwt content = content_gen userid_o in
+             let%lwt content = match content with
+             | `Generate content_gen -> content_gen userid_o
+             | `Concrete content -> content
+             in
              match content with
              | Some content -> send_e (id, content); Lwt.return ()
              | None -> Lwt.return ())
         id
-        (Lwt.return ()))
+        (Lwt.return ())
+
+  (* remote invocation *)
+  let receive_broadcast ~notforme id content =
+    notify_worker ~notforme id (`Concrete content)
+
+  (* local invocation *)
+  let notify ?broadcast ?(notforme = false) id content_gen = Lwt.async @@ fun () ->
+    match broadcast with
+    | None -> (* local invocation *)
+        notify_worker ~notforme id (`Generate content_gen)
+    | Some broadcast ->
+        let%lwt content = content_gen None in
+        match content with
+        | None -> Lwt.return ()
+        | Some content -> broadcast ~notforme id content
 
   let client_ev () =
     let (ev, _, _) = Eliom_reference.Volatile.get notif_e in
