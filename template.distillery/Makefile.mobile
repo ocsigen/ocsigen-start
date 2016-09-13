@@ -278,9 +278,13 @@ assets: $(CORDOVAPATH) chcp
 
 # cordova platform rules
 
+# Add the platform to the Cordova project.
+# FIXME/IMPROVEME: true is used to avoid to stop building
+# the application if the platform is already added. The disadvantage of
+# this method is any error will be ignored.
 $(CORDOVAPATH)/platforms/%: check-app-env assets $(CORDOVAPATH)
 	cd $(CORDOVAPATH) ;\
-	cordova platform add $*
+	cordova platform add $* ; true
 
 ADD_PLATFORMS := add-android add-browser add-ios add-windows
 
