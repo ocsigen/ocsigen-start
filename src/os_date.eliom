@@ -72,7 +72,7 @@ let%server init_time_rpc' = init_client_process_time
 let%client init_time_rpc' = ()
 
 let%shared init_time_rpc : (_, unit) Eliom_client.server_function =
-  Eliom_client.server_function ~name:"eba_date.init_time_rpc" [%derive.json: int]
+  Eliom_client.server_function ~name:"os_date.init_time_rpc" [%derive.json: int]
     init_time_rpc'
 
 [%%client

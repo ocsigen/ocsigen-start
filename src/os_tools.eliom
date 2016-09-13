@@ -27,7 +27,7 @@
 
 let%shared popup_button
     ~button_name
-    ?(button_class = ["eba_popup_button"])
+    ?(button_class = ["os_popup_button"])
     ~popup_content
     = Eliom_content.Html.D.(
       let button =

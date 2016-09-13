@@ -22,7 +22,7 @@
 
 (** Groups of users.
     Groups are sets of users. Groups and group members are saved in database.
-    Groups are used by EBA for example to restrict access to pages or
+    Groups are used by OS for example to restrict access to pages or
     server functions. *)
 
 exception No_such_group

@@ -35,7 +35,7 @@ type content =
 let content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
   let html_attrs =
     if Eliom_client.is_client_app () then
-      a_class ["eba-client-app"] :: html_a
+      a_class ["os-client-app"] :: html_a
     else
       html_a
   in
@@ -137,15 +137,15 @@ module Make(C : PAGE) = struct
         let uA = Dom_html.window##.navigator##.userAgent in
         let has s = uA##indexOf(Js.string s) <> -1 in
         if has "Android" then
-          "eba-android"
+          "os-android"
         else if has "iPhone" || has "iPad" || has "iPod" || has "iWatch" then
-          "eba-ios"
+          "os-ios"
         else if has "Windows" then
-          "eba-windows"
+          "os-windows"
         else if has "BlackBerry" then
-          "eba-blackberry"
+          "os-blackberry"
         else
-          "eba-unknown-platform"
+          "os-unknown-platform"
       in
       let p = Js.string @@ platform () in
       Js.Opt.case (ev##.currentTarget) (fun () -> ())

@@ -1,7 +1,7 @@
 (* Feel free to modify and/or redistribute this file as you wish. *)
 
 
-let section = Lwt_log.Section.make "eba:current_user"
+let section = Lwt_log.Section.make "os:current_user"
 
 [%%shared
 
