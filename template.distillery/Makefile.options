@@ -151,6 +151,10 @@ DB_PASSWORD           := ""
 ## in Makefile.db) to update the database.
 PSQL_FILE             := $(DB_NAME).sql
 
+## The filename for the database snapshot. This variable is used
+## by 'db-snapshot'.
+DB_SNAPSHOT           := %%%PROJECT_NAME%%%-$$(date '+%Y%m%d%H%M%S').sql.gz
+
 ## Choose if the database will be installed locally or globally
 # - yes: will create the database in the $(TEST_PREFIX)/db (which has the value
 #   'local' by default).

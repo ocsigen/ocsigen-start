@@ -30,7 +30,19 @@ ELIOMDEP          := $(ENV_PSQL) $(ELIOMDEP)
 # should be the same as ENV_PSQL)
 OCSIGENSERVER     := $(OCSIGENSERVER)
 OCSIGENSERVER.OPT := $(OCSIGENSERVER.OPT)
+
 ## ---------------------------------------------------------------------
+
+##----------------------------------------------------------------------
+
+pg_dump = pg_dump
+
+pg_ctl  = $(shell \
+           sh -c "which pg_ctl" || \
+           sh -c "which pg_ctlcluster" || \
+           sh -c "if [ -f pg_ctl ]; then (echo ./pg_ctl) else (echo '') fi")
+
+##----------------------------------------------------------------------
 
 ## ---------------------------------------------------------------------
 ## Here some rules to easily manage the database.
@@ -69,6 +81,10 @@ OCSIGENSERVER.OPT := $(OCSIGENSERVER.OPT)
 # the database is created locally or globally. By default, the database is
 # local.
 
+##----------------------------------------------------------------------
+
+##----------------------------------------------------------------------
+
 $(PSQL_DIR):
 	-mkdir -p $@
 
@@ -80,7 +96,6 @@ pg_ctl = $(shell \
 ifeq ($(pg_ctl),)
 $(error "no 'pg_ctl' binary found")
 endif
-
 
 ifeq ($(LOCAL),yes)
 
@@ -101,6 +116,11 @@ db-status:
 db-delete:
 	$(pg_ctl) -D $(PSQL_DIR) -l $(PSQL_LOG) stop || true
 	rm -rf $(PSQL_DIR)
+
+db-snapshot:
+	@echo "# Creating $(DB_SNAPSHOT)"
+	$(ENV_PSQL) $(pg_dump) --clean --create --no-owner --encoding=utf8 \
+        $(DB_NAME) | gzip > $(DB_SNAPSHOT)
 
 else
 
