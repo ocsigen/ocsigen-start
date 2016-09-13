@@ -1,0 +1,14 @@
+## This is an example of a Makefile.local file. It contains some example of
+## variables you can define.
+##
+## Makefile.local must be only local: you must not distribute it. It must
+## contain the local configuration for your development workflow.
+
+# The IP address of your server.
+# See Makefile.mobile for more information about this variable.
+APP_SERVER       := YOUR_IP_ADDRESS:PORT
+
+# Use to decide if JS and CSS files must be retrieved from the server or not
+# while building the mobile application.
+# See Makefile.mobile for more information about this variable.
+APP_REMOTE       := yes

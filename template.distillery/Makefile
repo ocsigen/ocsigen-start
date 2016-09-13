@@ -2,14 +2,17 @@
 #           GLOBAL MAKEFILE
 #----------------------------------------------------------------------
 
-# Local settings (optional)
+# Local settings (optional). See Makefile.local.example for an example.
 # WARNING: do not commit to a repository!
 -include Makefile.local
 
-# Eliom settings
+# Eliom settings. Contains all variables.
 include Makefile.options
 
-# Styles (CSS, SASS...)
+# Database rules.
+include Makefile.db
+
+# Styles (CSS, SASS...).
 include Makefile.style
 
 # Ocsigen-start makefile

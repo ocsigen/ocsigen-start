@@ -2,93 +2,9 @@
 #           SETTINGS FOR THE ELIOM PROJECT %%%PROJECT_NAME%%%
 #----------------------------------------------------------------------
 
-MOBILE_APP_ID := com.%%%PROJECT_NAME%%%.mobile
-MOBILE_APP_NAME := %%%PROJECT_NAME%%%
+## Here you can add specific rules for your project. It's recommended to add
+## variables in Makefile.options (which is supposed to contain all variables and
+## no rules).
 
-##----------------------------------------------------------------------
-## The following part is only used for PGOcaml
-
-DB_HOST := localhost
-DB_PORT := 3000
-DB_NAME := %%%PROJECT_NAME%%%
-DB_USER := $(USER)
-DB_PASSWORD := ""
-
-ENV_PSQL := PGHOST=$(DB_HOST) PGDATABASE=$(DB_NAME) PGPORT=$(DB_PORT) PGUSER=$(DB_USER) PGPASSWORD=$(DB_PASSWORD)
-
-## OVERLOAD Required binaries
-JS_OF_ELIOM       := $(JS_OF_ELIOM)
-ELIOMC            := $(ENV_PSQL) $(ELIOMC)
-ELIOMOPT          := $(ENV_PSQL) $(ELIOMOPT)
-ELIOMDEP          := $(ENV_PSQL) $(ELIOMDEP)
-# ocsigenserver uses the DB settings from %%%PROJECT_NAME%%%.conf.in (which should be the same as ENV_PSQL)
-OCSIGENSERVER     := $(OCSIGENSERVER)
-OCSIGENSERVER.OPT := $(OCSIGENSERVER.OPT)
-
-## Here are some extra rules to help you to manage your database
-
-# yes: will create the database in the $(TEXT_PREFIX)/db
-# no: will use the default database daemon
-LOCAL := yes
-
-PSQL_DIR := local_db
-PSQL_LOG := $(PSQL_DIR)/log
-PSQL_FILE := $(DB_NAME).sql
-
-$(PSQL_DIR):
-	-mkdir -p $@
-
-pg_ctl = $(shell\
-		 sh -c "which pg_ctl" ||\
-		 sh -c "if [ -f pg_ctl ]; then (echo ./pg_ctl) else (echo '') fi")
-
-ifeq ($(pg_ctl),)
-$(error "no 'pg_ctl' binary found")
-endif
-
-ifeq ($(LOCAL),yes)
-
-db-init: $(PSQL_DIR)
-	$(pg_ctl) initdb -D $(PSQL_DIR)
-	echo unix_socket_directories = \'/tmp\' >> $(PSQL_DIR)/postgresql.conf
-	$(pg_ctl) -o "-p $(DB_PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
-
-db-start:
-	$(pg_ctl) -o "-p $(DB_PORT)" -D $(PSQL_DIR) -l $(PSQL_LOG) start
-
-db-stop:
-	$(pg_ctl) -D $(PSQL_DIR) -l $(PSQL_LOG) stop
-
-db-status:
-	$(pg_ctl) -D $(PSQL_DIR) -l $(PSQL_LOG) status
-
-db-delete:
-	$(pg_ctl) -D $(PSQL_DIR) -l $(PSQL_LOG) stop || true
-	rm -rf $(PSQL_DIR)
-
-else
-
-db-start:
-	$(pg_ctl) -o "-p $(DB_PORT)" start
-
-db-status:
-	$(pg_ctl) status
-
-db-stop:
-	$(pg_ctl) stop
-
-endif
-
-db-create:
-	$(ENV_PSQL) createdb --encoding UNICODE $(DB_NAME)
-
-db-update:
-	$(ENV_PSQL) psql -d $(DB_NAME) -f $(PSQL_FILE)
-
-db-drop:
-	$(ENV_PSQL) dropdb $(DB_NAME)
-
-db-psql:
-	$(ENV_PSQL) psql $(DB_NAME)
-
-##----------------------------------------------------------------------
+## This file is included in Makefile.os. You can also use any variable defined
+## in Makefile.options.

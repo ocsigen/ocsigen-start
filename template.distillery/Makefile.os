@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------
-#           ELIOM-BASE-APP MAKEFILE, NOT TO BE MODIFIED
+#           OCSIGEN-START MAKEFILE, NOT TO BE MODIFIED
 #----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
@@ -9,9 +9,8 @@
 ## configured through the variables in the file Makefile.options.
 ##----------------------------------------------------------------------
 
-
 ##----------------------------------------------------------------------
-##			      Internals
+##                Internals
 
 ## Required binaries
 ELIOMC            := eliomc -w +A-4-7-9-37-38-39-41-42-44-45-48
@@ -55,8 +54,8 @@ byte opt:: ${JS_PREFIX}.js
 byte opt:: $(CONFIG_FILES)
 
 ##----------------------------------------------------------------------
-## The following part has been generated with EBA template.
-## This will overload the default the required binaries
+## The following part has been generated with os template.
+## This will overload the default required binaries.
 
 ## DO NOT MOVE IT ON TOP OF THE `all` RULE!
 
