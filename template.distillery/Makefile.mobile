@@ -193,6 +193,12 @@ $(CORDOVAPATH)/config.xml: mobile/config.xml.in $(CORDOVAPATH)
 	sed "s,%%APPSERVER%%,$(APP_SERVER),g" $< \
 	| sed "s,%%APPID%%,$(MOBILE_APP_ID),g" \
 	| sed "s,%%MOBILE_APP_NAME%%,$(MOBILE_APP_NAME),g" \
+	| sed "s,%%MOBILE_APP_VERSION%%,$(MOBILE_APP_VERSION),g" \
+	| sed "s,%%MOBILE_DESCRIPTION%%,$(MOBILE_DESCRIPTION),g" \
+	| sed "s,%%MOBILE_AUTHOR_EMAIL%%,$(MOBILE_AUTHOR_EMAIL),g" \
+	| sed "s,%%MOBILE_AUTHOR_HREF%%,$(MOBILE_AUTHOR_HREF),g" \
+	| sed "s,%%MOBILE_AUTHOR_DESCRIPTION%%,$(MOBILE_AUTHOR_DESCRIPTION),g" \
+	| sed "s,%%MOBILE_ANDROID_SDK_VERSION%%,$(MOBILE_ANDROID_SDK_VERSION),g" \
 	> $@
 
 $(CORDOVAPATH)/www/chcp.manifest: $(APPJS) $(APPCSS) \
