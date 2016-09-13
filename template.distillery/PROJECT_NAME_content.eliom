@@ -6,25 +6,25 @@ module Forms = struct
     Form.post_form
       ~service
       (fun (pwdn, pwd2n) ->
-	let pass1 =
+        let pass1 =
           Form.input
             ~a:[a_required ();
-		a_autocomplete false;
-		a_placeholder "password"]
+                a_autocomplete false;
+                a_placeholder "password"]
             ~input_type:`Password
-	    ~name:pwdn
+            ~name:pwdn
             Form.string
-	in
-	let pass2 =
+        in
+        let pass2 =
           Form.input
             ~a:[a_required ();
-		a_autocomplete false;
-		a_placeholder "retype your password"]
+                a_autocomplete false;
+                a_placeholder "retype your password"]
             ~input_type:`Password
-	    ~name:pwd2n
+            ~name:pwd2n
             Form.string
-	in
-	ignore [%client (
+        in
+        ignore [%client (
           let pass1 = Eliom_content.Html.To_dom.of_input ~%pass1 in
           let pass2 = Eliom_content.Html.To_dom.of_input ~%pass2 in
           Lwt_js_events.async
@@ -32,13 +32,13 @@ module Forms = struct
               Lwt_js_events.inputs pass2
                 (fun _ _ ->
                   ignore (
-		    if Js.to_string pass1##.value <> Js.to_string pass2##.value
+                    if Js.to_string pass1##.value <> Js.to_string pass2##.value
                     then
-		      (Js.Unsafe.coerce pass2)##(setCustomValidity ("Passwords do not match"))
+                      (Js.Unsafe.coerce pass2)##(setCustomValidity ("Passwords do not match"))
                     else (Js.Unsafe.coerce pass2)##(setCustomValidity ("")));
                   Lwt.return ()))
-	    : unit)];
-	[
+            : unit)];
+        [
           table
             [
               tr [td [pass1]];
@@ -46,7 +46,7 @@ module Forms = struct
             ];
           Form.input ~input_type:`Submit
             ~a:[ a_class [ "button" ] ] ~value:"Send" Form.string
-	])
+        ])
       ()
   )
 
@@ -57,22 +57,22 @@ module Connection = struct
   let connect_form () = Eliom_content.Html.D.(
     Form.post_form ~service:Os_services.connect_service
       (fun ((login, password), keepmeloggedin) -> [
-	Form.input
+        Form.input
           ~a:[a_placeholder "Your email"]
           ~name:login
           ~input_type:`Email
           Form.string;
-	Form.input
+        Form.input
           ~a:[a_placeholder "Your password"]
           ~name:password
           ~input_type:`Password
           Form.string;
-	Form.bool_checkbox_one
+        Form.bool_checkbox_one
           ~a:[a_checked ()]
           ~name:keepmeloggedin
           ();
-	span [pcdata "keep me logged in"];
-	Form.input
+        span [pcdata "keep me logged in"];
+        Form.input
           ~a:[a_class ["button"]]
           ~input_type:`Submit
           ~value:"Sign in"
@@ -158,15 +158,15 @@ let%server update_main_email_button email =
   let%lwt validated = email_is_validated email in
   Lwt.return @@ if validated then
       let button = 
-	D.button ~a:[D.a_class ["button"]] [D.pcdata "Set as main e-mail"] in
+        D.button ~a:[D.a_class ["button"]] [D.pcdata "Set as main e-mail"] in
       ignore [%client (Lwt.async (fun () ->
-	Lwt_js_events.clicks
-	  (Eliom_content.Html.To_dom.of_element ~%button)
-	  (fun _ _ ->
-	    let%lwt () = update_main_email ~%email in
-	    Eliom_client.change_page
-	      ~service:%%%MODULE_NAME%%%_services.settings_service () ()
-	  )
+        Lwt_js_events.clicks
+          (Eliom_content.Html.To_dom.of_element ~%button)
+          (fun _ _ ->
+            let%lwt () = update_main_email ~%email in
+            Eliom_client.change_page
+              ~service:%%%MODULE_NAME%%%_services.settings_service () ()
+          )
       ) : unit) ];
       button
     else
@@ -179,9 +179,9 @@ let%server delete_email_button email =
     Lwt_js_events.clicks
       (Eliom_content.Html.To_dom.of_element ~%button)
       (fun _ _ ->
-	let%lwt () = remove_email_from_user ~%email in
-	Eliom_client.change_page
-	  ~service:%%%MODULE_NAME%%%_services.settings_service () ()
+        let%lwt () = remove_email_from_user ~%email in
+        Eliom_client.change_page
+          ~service:%%%MODULE_NAME%%%_services.settings_service () ()
       )
   ) : unit) ];
   button
@@ -230,24 +230,24 @@ module Settings = struct
       let%lwt emails = emails_table @@ Os_user.userid_of_user user in
       Lwt.return @@
       Eliom_content.Html.D.(
-	[
-	  div ~a:[a_class ["os-welcome-box"]] [
-	    p [pcdata "Change your password:"];
-	    Forms.password_form ~service:Os_services.set_password_service' ();
-	    br ();
-	    Os_userbox.upload_pic_link
-	      none
+        [
+          div ~a:[a_class ["os-welcome-box"]] [
+            p [pcdata "Change your password:"];
+            Forms.password_form ~service:Os_services.set_password_service' ();
+            br ();
+            Os_userbox.upload_pic_link
+              none
               %%%MODULE_NAME%%%_services.upload_user_avatar_service
-	      (Os_user.userid_of_user user);
-	    br ();
-	    Os_userbox.reset_tips_link none;
-	    br ();
-	    p [pcdata "Link a new email to your account:"];
-	    Os_view.generic_email_form ~service:Os_services.add_email_service ();
-	    p [pcdata "currently registered emails:"];
-	    emails
-	  ]
-	]
+              (Os_user.userid_of_user user);
+            br ();
+            Os_userbox.reset_tips_link none;
+            br ();
+            p [pcdata "Link a new email to your account:"];
+            Os_view.generic_email_form ~service:Os_services.add_email_service ();
+            p [pcdata "currently registered emails:"];
+            emails
+          ]
+        ]
       )
 
   let settings_button () = Eliom_content.Html.D.(
@@ -260,10 +260,10 @@ module Settings = struct
             Lwt_js_events.clicks
               (Eliom_content.Html.To_dom.of_element ~%button)
               (fun _ _ ->
-		Eliom_client.change_page
-		  ~service:%%%MODULE_NAME%%%_services.settings_service () ()
-	      )
-	   )
+                Eliom_client.change_page
+                  ~service:%%%MODULE_NAME%%%_services.settings_service () ()
+              )
+           )
              : _)
       ];
     div [button]

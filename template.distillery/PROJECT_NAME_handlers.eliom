@@ -33,8 +33,8 @@
  let set_personal_data_handler' =
    let set_personal_data_rpc =
      ~%(Eliom_client.server_function
-	  [%derive.json : ((string * string) * (string * string))]
-	@@ set_personal_data_handler' ())
+          [%derive.json : ((string * string) * (string * string))]
+        @@ set_personal_data_handler' ())
    in
    fun () -> set_personal_data_rpc
 
@@ -43,21 +43,21 @@
  let forgot_password_handler =
    let forgot_password_rpc =
      ~%(Eliom_client.server_function [%derive.json : string]
-	@@ forgot_password_handler ())
+        @@ forgot_password_handler ())
    in
    fun () -> forgot_password_rpc
 
   let preregister_handler' =
     let preregister_rpc =
       ~%(Eliom_client.server_function [%derive.json : string]
-	 @@ preregister_handler' ())
+         @@ preregister_handler' ())
     in
     fun () -> preregister_rpc
-     
+
   let activation_handler =
     let activation_handler_rpc =
       ~%(Eliom_client.server_function [%derive.json : string]
-	 @@ fun akey -> activation_handler akey ())
+         @@ fun akey -> activation_handler akey ())
     in
     fun akey () -> activation_handler_rpc akey
 
