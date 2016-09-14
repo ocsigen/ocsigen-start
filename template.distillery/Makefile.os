@@ -33,25 +33,36 @@ DEPSDIR := _deps
 ifeq ($(DEBUG),yes)
   GENERATE_DEBUG ?= -g
   RUN_DEBUG ?= "-v"
-  DEBUG_JS ?= -jsopt --pretty -jsopt --noinline -jsopt --disable=shortvar # -jsopt --debuginfo
+  DEBUG_JS ?= -jsopt --noinline -jsopt --disable=shortvar
+  # -jsopt --pretty -jsopt --debuginfo
 endif
+
+##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
 ## General
 
 .PHONY: all css byte opt
+
+DIST_DIRS          := $(ETCDIR) $(DATADIR) $(LIBDIR) $(LOGDIR) $(STATICDIR) \
+                      $(FILESDIR)/avatars/tmp $(ELIOMSTATICDIR) \
+                      $(shell dirname $(CMDPIPE)) $(ELIOMTMPDIR)
+JS_PREFIX          := $(TEST_PREFIX)$(ELIOMSTATICDIR)/$(PROJECT_NAME)
+
+CONF_IN            := $(wildcard *.conf.in)
+CONFIG_FILES       := $(patsubst %.conf.in,$(TEST_PREFIX)$(ETCDIR)/%.conf,$(CONF_IN))
+TEST_CONFIG_FILES  := $(patsubst %.conf.in,$(TEST_PREFIX)$(ETCDIR)/%-test.conf,$(CONF_IN))
+
+
 all: css byte opt
+
 byte:: $(TEST_PREFIX)$(LIBDIR)/${PROJECT_NAME}.cma
 opt:: $(TEST_PREFIX)$(LIBDIR)/${PROJECT_NAME}.cmxs
 
-DIST_DIRS = $(ETCDIR) $(DATADIR) $(LIBDIR) $(LOGDIR) $(STATICDIR) $(FILESDIR)/avatars/tmp $(ELIOMSTATICDIR) $(shell dirname $(CMDPIPE)) $(ELIOMTMPDIR)
-JS_PREFIX=$(TEST_PREFIX)$(ELIOMSTATICDIR)/$(PROJECT_NAME)
-
-CONF_IN=$(wildcard *.conf.in)
-CONFIG_FILES=$(patsubst %.conf.in,$(TEST_PREFIX)$(ETCDIR)/%.conf,$(CONF_IN))
-TEST_CONFIG_FILES=$(patsubst %.conf.in,$(TEST_PREFIX)$(ETCDIR)/%-test.conf,$(CONF_IN))
 byte opt:: ${JS_PREFIX}.js
 byte opt:: $(CONFIG_FILES)
+
+##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
 ## The following part has been generated with os template.
@@ -124,6 +135,8 @@ run.opt:
 	$(OCSIGENSERVER.OPT) $(RUN_DEBUG) -c ${PREFIX}${ETCDIR}/${PROJECT_NAME}.conf
 
 ##----------------------------------------------------------------------
+
+##----------------------------------------------------------------------
 ## Aux
 
 # Use `eliomdep -sort' only in OCaml>4
@@ -135,6 +148,8 @@ run.opt:
 objs=$(patsubst %.ml,$(1)/%.$(2),$(patsubst %.eliom,$(1)/%.$(2),$(filter %.eliom %.ml,$(3))))
 #depsort=$(call objs,$(1),$(2),$(call eliomdep,$(3),$(4),$(5)))
 depsort=$(shell ocaml tools/sort_deps.ml .depend $(patsubst %.ml,$(1)/%.$(2),$(patsubst %.eliom,$(1)/%.$(2),$(filter %.eliom %.ml,$(5)))))
+
+##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
 ## Config files
@@ -184,6 +199,8 @@ $(TEST_CONFIG_FILES): $(TEST_PREFIX)$(ETCDIR)/%-test.conf: %.conf.in Makefile.op
 	sed $(SED_ARGS) $(LOCAL_SED_ARGS) $< | sed -e "s|%%PREFIX%%|$(TEST_PREFIX)|g" > $@
 
 ##----------------------------------------------------------------------
+
+##----------------------------------------------------------------------
 ## Server side compilation
 
 SERVER_INC_DEP  := ${addprefix -package ,${SERVER_PACKAGES} ${SERVER_ELIOM_PACKAGES}}
@@ -230,6 +247,7 @@ ${ELIOM_SERVER_DIR}/%.cmx: %.ml
 ${ELIOM_SERVER_DIR}/%.cmx: %.eliom
 	${ELIOMOPT} -ppx -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
+##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
 ## Client side compilation
@@ -261,6 +279,8 @@ ${ELIOM_CLIENT_DIR}/%.cmi: %.eliomi
 	${JS_OF_ELIOM} -ppx -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
 
 ##----------------------------------------------------------------------
+
+##----------------------------------------------------------------------
 ## Dependencies
 
 # DO NOT include `.depend' for the following commands: db-*, clean, distclean
@@ -276,16 +296,16 @@ endif
 .depend: $(patsubst %,$(DEPSDIR)/%.server,$(SERVER_FILES)) $(patsubst %,$(DEPSDIR)/%.client,$(CLIENT_FILES))
 	@cat $^ > $@
 
-$(DEPSDIR)/%.ml.server: %.ml | $(DEPSDIR)
+$(DEPSDIR)/%.ml.server: %.ml | $(DEPSDIR) $(SERVER_FILES)
 	$(ELIOMDEP) -server $(SERVER_DB_INC) $< > $@.tmp && mv $@.tmp $@
 
-$(DEPSDIR)/%.mli.server: %.mli | $(DEPSDIR)
+$(DEPSDIR)/%.mli.server: %.mli | $(DEPSDIR) $(SERVER_FILES)
 	$(ELIOMDEP) -server $(SERVER_DB_INC) $< > $@.tmp && mv $@.tmp $@
 
-$(DEPSDIR)/%.eliom.server: %.eliom | $(DEPSDIR)
+$(DEPSDIR)/%.eliom.server: %.eliom | $(DEPSDIR) $(SERVER_FILES)
 	$(ELIOMDEP) -server -ppx $(SERVER_INC_DEP) $< > $@.tmp && mv $@.tmp $@
 
-$(DEPSDIR)/%.eliomi.server: %.eliomi | $(DEPSDIR)
+$(DEPSDIR)/%.eliomi.server: %.eliomi | $(DEPSDIR) $(SERVER_FILES)
 	$(ELIOMDEP) -server -ppx $(SERVER_INC_DEP) $< > $@.tmp && mv $@.tmp $@
 
 $(DEPSDIR)/%.ml.client: %.ml | $(DEPSDIR)
@@ -300,6 +320,7 @@ $(DEPSDIR)/%.eliomi.client: %.eliomi | $(DEPSDIR)
 $(DEPSDIR):
 	mkdir $@
 
+##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
 ## Clean up

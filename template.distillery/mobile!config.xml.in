@@ -110,6 +110,6 @@
 
     <!-- Hot Code Push settings -->
     <chcp>
-        <config-file url="%%APPSERVER%%/update/chcp.json"/>
+        <config-file url="%%APPSERVER%%/update/conf/chcp.json"/>
     </chcp>
 </widget>

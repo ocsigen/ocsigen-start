@@ -142,7 +142,7 @@ endif
 
 $(APPJS): $(JS_PREFIX).js
 ifeq ($(APP_REMOTE),yes)
-	APPJS_FILE=$$(curl -s -f $(APP_SERVER)|grep -E -o -m 1 '$(PROJECT_NAME)_[a-f0-9]*?\.js') &&\
+	APPJS_FILE=$$(curl -s -f $(APP_SERVER) | cat | grep -E -o -m 1 '$(PROJECT_NAME)_[a-f0-9]*?\.js') &&\
 	curl -s -o $@ $(APP_SERVER)/$$APPJS_FILE
 else
 	cp -f $(WWW_PATH)/`readlink $(JS_PREFIX).js` $@
@@ -150,7 +150,7 @@ endif
 
 $(APPCSS):
 ifeq ($(APP_REMOTE),yes)
-	APPCSS_FILE=$$(curl -s -f $(APP_SERVER)|grep -E -o -m 1 '$(PROJECT_NAME)_[a-f0-9]*?\.css') &&\
+	APPCSS_FILE=$$(curl -s -f $(APP_SERVER) | cat | grep -E -o -m 1 '$(PROJECT_NAME)_[a-f0-9]*?\.css') &&\
 	curl -s -o $@ $(APP_SERVER)/css/$$APPCSS_FILE
 else
 	cp -f $(WWW_PATH)/css/`readlink $(CSS_PREFIX).css` $@
@@ -158,7 +158,7 @@ endif
 
 # Regenerate config files at each build, in case an environment variable has
 # changed.
-.PHONY: clean chcp app-config check-app-env $(APPJS) $(APPCSS) \
+.PHONY: clean spashes $(IOS_SPLASHES) chcp app-config check-app-env $(APPJS) $(APPCSS) \
 	$(ADD_PLATFORMS) $(PLATFORMS) $(EMULATE_PLATFORMS) $(RUN_PLATFORMS) \
 	$(CORDOVAPATH)/www/chcp.json \
 	$(CORDOVAPATH)/www/eliom.html \
@@ -190,67 +190,74 @@ else
 endif
 
 $(CORDOVAPATH)/config.xml: mobile/config.xml.in $(CORDOVAPATH)
-	sed "s,%%APPSERVER%%,$(APP_SERVER),g" $< \
-	| sed "s,%%APPID%%,$(MOBILE_APP_ID),g" \
-	| sed "s,%%MOBILE_APP_NAME%%,$(MOBILE_APP_NAME),g" \
-	| sed "s,%%MOBILE_APP_VERSION%%,$(MOBILE_APP_VERSION),g" \
-	| sed "s,%%MOBILE_DESCRIPTION%%,$(MOBILE_DESCRIPTION),g" \
-	| sed "s,%%MOBILE_AUTHOR_EMAIL%%,$(MOBILE_AUTHOR_EMAIL),g" \
-	| sed "s,%%MOBILE_AUTHOR_HREF%%,$(MOBILE_AUTHOR_HREF),g" \
-	| sed "s,%%MOBILE_AUTHOR_DESCRIPTION%%,$(MOBILE_AUTHOR_DESCRIPTION),g" \
-	| sed "s,%%MOBILE_ANDROID_SDK_VERSION%%,$(MOBILE_ANDROID_SDK_VERSION),g" \
-	> $@
-
-$(CORDOVAPATH)/www/chcp.manifest: $(APPJS) $(APPCSS) \
-	$(CORDOVAPATH) $(CORDOVA_STATIC_FILES) $(LOCAL_STATIC_FILES)
-	cd $(CORDOVAPATH) ; cordova-hcp build
-	rm -f $(CORDOVAPATH)/www/chcp.json
-
-$(CORDOVAPATH)/www/chcp.json: mobile/chcp.json.in \
-	$(CORDOVAPATH)/www/chcp.manifest
-	sed "s,%%APPSERVER%%,$(APP_SERVER),g" $< \
-	| sed "s,%%DATE%%,$(shell date +%y%m%d-%H%M%S),g" \
-	> $@
+	sed -e "s,%%APPSERVER%%,$(APP_SERVER),g" \
+	    -e "s,%%APPID%%,$(MOBILE_APP_ID),g" \
+	    -e "s,%%MOBILE_APP_NAME%%,$(MOBILE_APP_NAME),g" \
+	    -e "s,%%MOBILE_APP_VERSION%%,$(MOBILE_APP_VERSION),g" \
+	    -e "s,%%MOBILE_DESCRIPTION%%,$(MOBILE_DESCRIPTION),g" \
+	    -e "s,%%MOBILE_AUTHOR_EMAIL%%,$(MOBILE_AUTHOR_EMAIL),g" \
+	    -e "s,%%MOBILE_AUTHOR_HREF%%,$(MOBILE_AUTHOR_HREF),g" \
+	    -e "s,%%MOBILE_AUTHOR_DESCRIPTION%%,$(MOBILE_AUTHOR_DESCRIPTION),g" \
+	    -e "s,%%MOBILE_ANDROID_SDK_VERSION%%,$(MOBILE_ANDROID_SDK_VERSION),g" \
+	    mobile/config.xml.in > $@
 
 # Function to list files in a given directory $(1), and change prefix directory
 # to the target one $(2)
 # Example: $(call static_targets,$(SOURCE_DIR),$(TARGET_DIR))
 static_targets = $(shell find $(1) -type f -printf "$(2)/%P\n")
 
-# Static files dependencies: if a file changes in these directory, a new copy
-# of static files will be triggered
-
-CORDOVA_STATIC_FILES = \
+CORDOVA_STATIC_FILES := \
 	$(CORDOVAPATH)/.chcpignore \
 	$(CORDOVAPATH)/res \
 	$(call static_targets,$(MOBILESTATICPATH)/www,$(CORDOVAPATH)/www)
 
-$(CORDOVA_STATIC_FILES): $(CORDOVAPATH)/%: $(MOBILESTATICPATH)/%
-	cp -rf $< $@
-
 # FIXME: duplicate rule warning for 'cordova/www/css/os_test.css'
 LOCAL_STATIC_FILES = $(call static_targets,$(LOCAL_STATIC),$(CORDOVAPATH)/www)
+
+$(CORDOVAPATH)/www/chcp.manifest: $(APPJS) $(APPCSS) \
+	$(CORDOVAPATH) $(CORDOVA_STATIC_FILES) $(LOCAL_STATIC_FILES)
+	cd $(CORDOVAPATH) ; cordova-hcp build
+	rm -f $(CORDOVAPATH)/www/chcp.json
+
+TIMESTAMP := $(shell date +%y%m%d-%H%M%S)
+
+$(WWW_PATH)/update/conf/chcp.json: $(WWW_PATH)/update/$(TIMESTAMP)
+	mkdir -p $(WWW_PATH)/update/conf
+	cp $</chcp.json $@
+
+$(CORDOVAPATH)/www/chcp.json: mobile/chcp.json.in \
+		$(CORDOVAPATH)/www/chcp.manifest
+	sed -e "s,%%APPSERVER%%,$(APP_SERVER),g" \
+	    -e "s,%%DATE%%,$(TIMESTAMP),g" \
+		$< > $@
+
+# Static files dependencies: if a file changes in these directory, a new copy
+# of static files will be triggered
+
+$(CORDOVA_STATIC_FILES): $(CORDOVAPATH)/%: $(MOBILESTATICPATH)/%
+	cp -rf $< $@
 
 $(LOCAL_STATIC_FILES): $(CORDOVAPATH)/www/%: $(LOCAL_STATIC)/%
 	cp -rf $< $@
 
 # Cordova config files
 
-$(CORDOVAPATH)/www/index.html: mobile/index.html.in $(APPJS) $(CORDOVAPATH)
+$(CORDOVAPATH)/www/index.html: $(CORDOVAPATH) $(APPJS) mobile/index.html.in
 	HASH=$$(md5sum $(APPJS) | cut -d ' ' -f 1) && \
-	sed "s,%%APPNAME%%,$(PROJECT_NAME)_$$HASH,g" $< | \
-	sed "s,%%MOBILE_APP_NAME%%,$(MOBILE_APP_NAME),g" | \
-	sed "s,%%APPSERVER%%,$(APP_SERVER),g" > \
+	sed -e "s,%%APPNAME%%,$(PROJECT_NAME)_$$HASH,g" \
+	    -e "s,%%APPSERVER%%,$(APP_SERVER),g" \
+	    -e "s,%%MOBILE_APP_NAME%%,$(MOBILE_APP_NAME),g" \
+	    mobile/index.html.in > \
 	$(CORDOVAPATH)/www/index.html
 
 $(CORDOVAPATH)/www/eliom.html: $(CORDOVAPATH) \
 	$(APPJS) $(APPCSS) mobile/eliom.html.in
 	JS_HASH=$$(md5sum $(APPJS) | cut -d ' ' -f 1) && \
 	CSS_HASH=$$(md5sum $(APPCSS) | cut -d ' ' -f 1) && \
-	sed "s,%%APPNAME%%,$(PROJECT_NAME)_$$JS_HASH,g" mobile/eliom.html.in | \
-	sed "s,%%PROJECTNAME%%,$(PROJECT_NAME),g" | \
-	sed "s,%%APPSERVER%%,$(APP_SERVER),g" > \
-	$(CORDOVAPATH)/www/eliom.html
+	sed -e "s,%%APPNAME%%,$(PROJECT_NAME)_$$JS_HASH,g" \
+	    -e "s,%%PROJECTNAME%%,$(PROJECT_NAME),g" \
+	    -e "s,%%APPSERVER%%,$(APP_SERVER),g" \
+	    mobile/eliom.html.in > $@
 
 mobile/eliom_loader.byte: mobile/eliom_loader.ml
 	ocamlfind ocamlc \
@@ -259,20 +266,20 @@ mobile/eliom_loader.byte: mobile/eliom_loader.ml
 	    $<
 
 $(CORDOVAPATH)/www/eliom_loader.js: mobile/eliom_loader.byte
-	js_of_ocaml $< -o $(CORDOVAPATH)/www/eliom_loader.js
+	js_of_ocaml $< -o $@
 
 app-config: $(CORDOVAPATH)/www/index.html \
 	$(CORDOVAPATH)/www/eliom.html \
-	$(WWW_PATH)/$(PROJECT_NAME).js \
 	$(CORDOVAPATH)/www/eliom_loader.js \
 	$(CORDOVAPATH)/config.xml \
+	$(CORDOVAPATH)/www/chcp.manifest \
 	$(CORDOVAPATH)/www/chcp.json
 
-$(WWW_PATH)/update: app-config $(CORDOVA_STATIC_FILES) $(LOCAL_STATIC_FILES)
-	rm -rf $@
-	cp -rf $(CORDOVAPATH)/www $@
+$(WWW_PATH)/update/$(TIMESTAMP): app-config check-app-env $(CORDOVA_STATIC_FILES) $(LOCAL_STATIC_FILES)
+	mkdir -p $(WWW_PATH)/update
+	cp -r $(CORDOVAPATH)/www $@
 
-chcp: $(WWW_PATH)/update
+chcp: $(WWW_PATH)/update/conf/chcp.json
 
 assets: $(CORDOVAPATH) chcp
 
@@ -327,7 +334,7 @@ $(RUN_PLATFORMS): run-%: % check-app-env assets
 
 ANDROID_ICON_NAMES = ldpi mdpi hdpi xhdpi
 ANDROID_ICONS_PATH = $(MOBILESTATICPATH)/res/android
-ANDROID_ICONS = $(foreach name,$(ANDROID_ICON_NAMES),$(ANDROID_ICONS_PATH)/$(name).png)
+ANDROID_ICONS      = $(foreach name,$(ANDROID_ICON_NAMES),$(ANDROID_ICONS_PATH)/$(name).png)
 
 IOS_ICON_NAMES = \
 	icon-40 icon-40@2x \
@@ -339,13 +346,13 @@ IOS_ICON_NAMES = \
 	icon icon@2x \
 	icon-small icon-small@2x icon-small@3x
 
-IOS_ICONS_PATH = $(MOBILESTATICPATH)/res/ios
-IOS_ICONS = $(foreach name,$(IOS_ICON_NAMES),$(IOS_ICONS_PATH)/$(name).png)
+IOS_ICONS_PATH   = $(MOBILESTATICPATH)/res/ios
+IOS_ICONS        = $(foreach name,$(IOS_ICON_NAMES),$(IOS_ICONS_PATH)/$(name).png)
 
 # Icons creation (ImageMagick is necessary)
-ICON_SVG := assets/images/icon.svg
-convert_android = convert -background none -resize
-convert_ios = convert -background white -resize
+ICON_SVG         := assets/images/icon.svg
+convert_android  = convert -background none -resize
+convert_ios      = convert -background white -resize
 
 $(ANDROID_ICONS_PATH) $(IOS_ICONS_PATH):
 	mkdir -p $@
@@ -383,6 +390,29 @@ $(ANDROID_ICONS_PATH)/ldpi.png: $(ANDROID_ICONS_PATH)/icon-36.png; cp $< $@
 $(ANDROID_ICONS_PATH)/mdpi.png: $(ANDROID_ICONS_PATH)/icon-48.png; cp $< $@
 $(ANDROID_ICONS_PATH)/hdpi.png: $(ANDROID_ICONS_PATH)/icon-72.png; cp $< $@
 $(ANDROID_ICONS_PATH)/xhdpi.png: $(ANDROID_ICONS_PATH)/icon-96.png; cp $< $@
+# Launch images (iOS)
+# Format: SIZE.NAME
+IOS_SPLASHES = \
+	640x1136.Default-568h@2x~iphone \
+	750x1334.Default-667h \
+	1242x2208.Default-736h \
+	2208x1242.Default-Landscape-736h \
+	2048x1536.Default-Landscape@2x~ipad \
+	1024x768.Default-Landscape~ipad \
+	1536x2048.Default-Portrait@2x~ipad \
+	768x1024.Default-Portrait~ipad \
+	640x960.Default@2x~iphone \
+	320x480.Default~iphone
+
+convert_splash_ios = convert -background white -gravity center -extent
+
+$(IOS_SPLASHES): $(ICON_SVG) $(IOS_ICON_PATH)
+	splash=$@; \
+	size=$${splash%%.*}; \
+	name=$${splash#*.}; \
+	$(convert_splash_ios) $$size $< $(IOS_ICONS_PATH)/$$name.png
+
+splashes: $(IOS_SPLASHES)
 
 # Cleaning
 
