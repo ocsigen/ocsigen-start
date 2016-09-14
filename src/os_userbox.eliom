@@ -37,9 +37,9 @@ let%shared upload_pic_link
                  : Html_types.a_content Eliom_content.Html.D.Raw.elt list) in
   D.Raw.a ~a:( a_onclick [%client (fun ev -> Lwt.async (fun () ->
     ~%close () ;
-    let upload ?cropping file =
+    let upload ?progress ?cropping file =
       Ot_picture_uploader.ocaml_service_upload
-        ?cropping ~service:~%service ~arg:() file in
+        ?progress ?cropping ~service:~%service ~arg:() file in
     try%lwt ignore @@
       Ot_popup.popup
         ~close_button:[ Ot_icons.F.close () ]
