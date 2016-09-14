@@ -2,11 +2,11 @@
 [%%shared.start]
 
 val get_current_user : unit -> Os_user.t
-val get_current_userid : unit -> int64
+val get_current_userid : unit -> Os_user.id
 
 module Opt : sig
   val get_current_user : unit -> Os_user.t option
-  val get_current_userid : unit -> int64 option
+  val get_current_userid : unit -> Os_user.id option
 end
 
 [%%client.start]

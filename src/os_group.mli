@@ -58,13 +58,13 @@ val group_of_name : string -> t Lwt.t
 *)
 
 (** Insert a user to a group. *)
-val add_user_in_group : group:t -> userid:int64 -> unit Lwt.t
+val add_user_in_group : group:t -> userid:Os_user.id -> unit Lwt.t
 
 (** Remove a user from a group. *)
-val remove_user_in_group : group:t -> userid:int64 -> unit Lwt.t
+val remove_user_in_group : group:t -> userid:Os_user.id -> unit Lwt.t
 
 (** Does user belong to a group? *)
-val in_group : group:t -> userid:int64 -> bool Lwt.t
+val in_group : group:t -> userid:Os_user.id -> bool Lwt.t
 
 (** Returns all the groups of the database. *)
 val all : unit -> t list Lwt.t

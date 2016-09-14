@@ -4,13 +4,19 @@
 
 open Eliom_content.Html.F
 
-exception Already_exists of int64
-exception No_such_user
+[%%shared
+  type id = int64 [@@deriving json]
+]
+
+[%%server
+  exception Already_exists of id
+  exception No_such_user
+]
 
 [%%shared
   (** The type which represents a user. *)
   type t = {
-    userid : int64;
+    userid : id;
     fn : string;
     ln : string;
     avatar : string option;
@@ -60,7 +66,7 @@ include Os_db.User
    during the request. *)
 module MCache = Os_request_cache.Make(
 struct
-  type key = int64
+  type key = id
   type value = t * bool
 
   let compare = compare

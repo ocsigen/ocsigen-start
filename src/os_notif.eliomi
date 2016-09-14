@@ -51,7 +51,7 @@ sig
   val unlisten : A.key -> unit
 
   (** Make a user stop listening on data [key] *)
-  val unlisten_user : userid:int64 -> A.key -> unit
+  val unlisten_user : userid:Os_user.id -> A.key -> unit
 
   (** Call [notify id f] to send a notification to all clients currently
       listening on data [key]. The notification is build using function [f],
