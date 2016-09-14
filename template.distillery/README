@@ -92,29 +92,3 @@ Here's some help on how to work with this basic distillery project:
  - Mobile app: Have a look in Makefile.mobile to see how to install
    the requested packages to build a mobile application,
    and the makefile rules to build and test it.
-
-Use Camlp4 syntax
------------------
-
-The project is configured for using the PPX Eliom syntax. If you need
-to use Camlp4, you need to provide custom targets. For example, to use
-Camlp4 for the file foo_p4.eliom, add the following targets to the end
-of Makefile.local:
-
-  $(DEPSDIR)/foo_p4.eliom.server: foo_p4.eliom | $(DEPSDIR)
-          $(ELIOMDEP) -server $(SERVER_INC) $< > $@
-
-  $(DEPSDIR)/foo_p4.eliom.client: foo_p4.eliom | $(DEPSDIR)
-          $(ELIOMDEP) -client $(CLIENT_INC) $< > $@
-
-  ${ELIOM_TYPE_DIR}/foo_p4.type_mli: foo_p4.eliom
-          ${ELIOMC} -infer ${SERVER_INC} $<
-
-  ${ELIOM_SERVER_DIR}/foo_p4.cmo: foo_p4.eliom
-          ${ELIOMC} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
-
-  ${ELIOM_SERVER_DIR}/foo_p4.cmx: foo_p4.eliom
-          ${ELIOMOPT} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
-
-  ${ELIOM_CLIENT_DIR}/foo_p4.cmo: foo_p4.eliom
-          ${JS_OF_ELIOM} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
