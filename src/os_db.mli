@@ -119,25 +119,31 @@ module User : sig
       is 10). *)
   val all : ?limit:int64 -> unit -> string list Lwt.t
 
-  (** [create ?password ?avatar ~firstname ~lastname email] creates a new user
-      in the database and returns the userid of the new user.
-      Email is mandatory to create a new user.
+  (** [create ?password ?avatar ?language ~firstname ~lastname email] creates a
+      new user in the database and returns the userid of the new user.
+      Email, first name, last name and language are mandatory to create a new
+      user.
       If [password] is passed as an empty string, it fails with the message
-      ["empty password"]. TODO: change it to an exception?
+      ["empty password"].
+      The language is not optional because it depends on the project and each
+      user must have a default language.
+      TODO: change it to an exception?
    *)
   val create :
     ?password:string ->
     ?avatar:string ->
+    ?language:string ->
     firstname:string -> lastname:string -> string -> Os_types.User.id Lwt.t
 
-  (** [update ?password ?avatar ~firstname ~lastname userid] updates the user
-      profile with [userid].
+  (** [update ?password ?avatar ?language ~firstname ~lastname userid] updates
+      the user profile with [userid].
       If [password] is passed as an empty string, it fails with the message
       ["empty password"]. TODO: change it to an exception?
    *)
   val update :
     ?password:string ->
     ?avatar:string ->
+    ?language:string ->
     firstname:string -> lastname:string -> Os_types.User.id -> unit Lwt.t
 
   (** [update_password ~userid ~new_password] updates the password of the user
@@ -156,19 +162,26 @@ module User : sig
       with ID [userid]. *)
   val update_main_email : userid:Os_types.User.id -> email:string -> unit Lwt.t
 
+  (** [update_language ~userid ~language] updates the language of the user with
+      ID [userid].
+   *)
+  val update_language : userid:Os_types.User.id -> language:string -> unit Lwt.t
+
   (** [verify_password ~email ~password] returns the userid if user with email
       [email] is registered with the password [password]. If [password] is empty
       or if the password is wrong, it fails with {!No_such_resource}. *)
   val verify_password : email:string -> password:string -> Os_types.User.id Lwt.t
 
   (** [user_of_userid userid] returns a tuple [(userid, firstname, lastname,
-      main_email, password, avatar)] describing the information about the user
-      with ID [userid].
+      avatar, bool_password, language)] describing the information about
+      the user with ID [userid].
+      [bool_password] is a boolean. Its value is [true] if a password has been
+      set. Else [false].
       If there is no such user, it fails with {!No_such_resource}.
    *)
   val user_of_userid :
     Os_types.User.id ->
-    (Os_types.User.id * string * string * string option * bool) Lwt.t
+    (Os_types.User.id * string * string * string option * bool * string option) Lwt.t
 
   (** [get_actionlinkkey_info key] returns the information about the
       action link [key] as a type {!Os_types.Action_link_key.info}. *)
@@ -208,13 +221,17 @@ module User : sig
     email:string ->
     unit Lwt.t
 
-  (** [get_users ?pattern ()] returns all users matching the pattern [pattern]
-      as a tuple [(userid, firstname, lastname, avatar, encrypted_password)]
+  (** [get_language userid] returns the language of the user with ID [userid] *)
+  val get_language : Os_types.User.id -> string option Lwt.t
+
+  (** [get_users ~pattern ()] returns all users matching the pattern [pattern]
+      as a tuple [(userid, firstname, lastname, avatar, bool_password,
+      language)].
    *)
   val get_users :
     ?pattern:string ->
     unit ->
-    (Os_types.User.id * string * string * string option * bool) list Lwt.t
+    (Os_types.User.id * string * string * string option * bool * string option) list Lwt.t
 end
 
 (** This module is low-level and used to manage groups of user. *)

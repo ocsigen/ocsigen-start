@@ -51,7 +51,7 @@ let%server set_personal_data_handler myid ()
 let%server set_password_handler myid () (pwd, pwd2) =
   if pwd <> pwd2
   then
-    (Os_msg.msg ~level:`Err ~onload:true "Passwords do not match";
+    (Os_msg.msg ~level:`Err ~onload:true (Os_i18n.Current.passwords_do_not_match ());
      Lwt.return ())
   else (
     let%lwt user = Os_user.user_of_userid myid in
@@ -90,7 +90,7 @@ let%server generate_action_link_key
       try%lwt
         Os_email.send
           ~to_addrs:[("", email)]
-          ~subject:"creation"
+          ~subject:(Os_i18n.Current.generate_action_link_key_subject_email ())
           [
             text;
             act_link;
@@ -125,13 +125,20 @@ let%server send_action_link
 (* Sign up *)
 let%server sign_up_handler () email =
   let send_action_link email userid =
-    let msg =
-      "Welcome!\r\nTo confirm your e-mail address, \
-       please click on this link: " in
-    send_action_link ~autoconnect:true msg Os_services.main_service email userid
+    send_action_link
+      ~autoconnect:true
+      (Os_i18n.Current.sign_up_email_msg ())
+      Os_services.main_service
+      email
+      userid
   in
   try%lwt
-    let%lwt user = Os_user.create ~firstname:"" ~lastname:"" email in
+    let%lwt user =
+      Os_user.create
+        ~firstname:""
+        ~lastname:""
+        email
+    in
     let userid = Os_user.userid_of_user user in
     send_action_link email userid
   with Os_user.Already_exists userid ->
@@ -142,7 +149,10 @@ let%server sign_up_handler () email =
     then send_action_link email userid
     else begin
       Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
-      Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
+      Os_msg.msg
+        ~level:`Err
+        ~onload:true
+        (Os_i18n.Current.email_already_exists ());
       Lwt.return ()
     end
 
@@ -162,13 +172,17 @@ let%client sign_up_handler () v =
 let%server forgot_password_handler service () email =
   try%lwt
     let%lwt userid = Os_user.userid_of_email email in
-    let msg = "Hi,\r\nTo set a new password, \
-               please click on this link: " in
-    send_action_link ~autoconnect:true ~action:`PasswordReset ~validity:1L
-      msg service email userid
+    send_action_link
+      ~autoconnect:true
+      ~action:`PasswordReset
+      ~validity:1L
+      (Os_i18n.Current.forgot_pwd_email_msg ())
+      service
+      email
+      userid
   with Os_db.No_such_resource ->
     Eliom_reference.Volatile.set Os_userbox.user_does_not_exist true;
-    Os_msg.msg ~level:`Err ~onload:true "User does not exist";
+    Os_msg.msg ~level:`Err ~onload:true (Os_i18n.Current.user_does_not_exist ());
     Lwt.return ()
 
 let%client restart ?url () =
@@ -242,11 +256,11 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
   with
   | Os_db.Account_not_activated ->
       Eliom_reference.Volatile.set Os_userbox.account_not_activated true;
-      Os_msg.msg ~level:`Err ~onload:true "Account not activated";
+      Os_msg.msg ~level:`Err ~onload:true (Os_i18n.Current.account_not_activated ());
       Lwt.return ()
   | Os_db.No_such_resource ->
       Eliom_reference.Volatile.set Os_userbox.wrong_password true;
-      Os_msg.msg ~level:`Err ~onload:true "Wrong password";
+      Os_msg.msg ~level:`Err ~onload:true (Os_i18n.Current.wrong_password ());
       Lwt.return ()
 
 let%server connect_handler_rpc v = connect_handler () v
@@ -378,12 +392,11 @@ let preregister_handler () email =
 
 (* Add email *)
 let%server add_email_handler =
-  let msg =
-    "Welcome!\r\nTo confirm your e-mail address, \
-       please click on this link: "
-  in
   let send_act =
-    send_action_link  ~autoconnect:true msg Os_services.main_service
+    send_action_link
+      ~autoconnect:true
+      (Os_i18n.Current.add_email_msg ())
+      Os_services.main_service
   in
   let add_email userid () email =
     let%lwt available = Os_db.Email.available email in
@@ -392,7 +405,7 @@ let%server add_email_handler =
       send_act email userid
     else begin
       Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
-      Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
+      Os_msg.msg ~level:`Err ~onload:true (Os_i18n.Current.email_already_exists ());
       Lwt.return_unit
     end
   in

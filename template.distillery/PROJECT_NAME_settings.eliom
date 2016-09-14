@@ -12,7 +12,7 @@ module Forms = struct
           Form.input
             ~a:[a_required ();
                 a_autocomplete false;
-                a_placeholder "password"]
+                a_placeholder [%i18n S.password]]
             ~input_type:`Password
             ~name:pwdn
             Form.string
@@ -21,21 +21,21 @@ module Forms = struct
           Form.input
             ~a:[a_required ();
                 a_autocomplete false;
-                a_placeholder "retype your password"]
+                a_placeholder [%i18n S.retype_password]]
             ~input_type:`Password
             ~name:pwd2n
             Form.string
         in
         ignore [%client (
           Os_view.check_password_confirmation ~password:~%pass1
-          ~confirmation:~%pass1
+          ~confirmation:~%pass1 ()
         : unit)];
         [ pass1
         ; pass2
         ; Form.input
             ~input_type:`Submit
             ~a:[ a_class [ "button" ] ]
-            ~value:"Send"
+            ~value:[%i18n S.send]
             Form.string
         ])
       ()
@@ -52,7 +52,9 @@ let%server update_main_email_button email =
   let%lwt validated = Os_current_user.is_email_validated email in
   Lwt.return @@ if validated then
       let button =
-        D.button ~a:[D.a_class ["button"]] [D.pcdata "Set as main e-mail"] in
+        D.button ~a:[D.a_class ["button"]] [D.pcdata [%i18n S.set_as_main_email
+                                                ~capitalize:true]]
+      in
       ignore [%client (Lwt.async (fun () ->
         Lwt_js_events.clicks
           (Eliom_content.Html.To_dom.of_element ~%button)
@@ -86,12 +88,12 @@ let%server tr_of_email main_email email =
   let valid = p [
     pcdata @@
       if validated
-      then "validated"
-      else "still waiting for confirmation"
+      then [%i18n S.validated]
+      else [%i18n S.still_waiting_confirmation]
   ] in
   let del_button, up_button =
     if email = main_email
-    then (div [], Lwt.return @@ p [pcdata "Main e-mail"])
+    then (div [], Lwt.return @@ p [%i18n main_email ~capitalize:true])
     else (delete_email_button email, update_main_email_button email)
   in
   let%lwt up_button = up_button in
@@ -122,7 +124,7 @@ let%shared settings_content =
     Eliom_content.Html.D.(
       [
         div ~a:[a_class ["os-welcome-box"]] [
-          p [pcdata "Change your password:"];
+          p [%i18n change_password];
           Forms.password_form ~service:Os_services.set_password_service ();
           br ();
           Os_userbox.upload_pic_link
@@ -132,9 +134,9 @@ let%shared settings_content =
           br ();
           Os_userbox.reset_tips_link none;
           br ();
-          p [pcdata "Link a new email to your account:"];
+          p [%i18n link_new_email];
           Os_view.generic_email_form ~service:Os_services.add_email_service ();
-          p [pcdata "Currently registered emails:"];
+          p [%i18n currently_registered_emails] ;
           emails
         ]
       ]

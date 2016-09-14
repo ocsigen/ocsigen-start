@@ -37,10 +37,11 @@ module User : sig
 
   (** Type representing a user. See <<a_api | module Os_user >>. *)
   type t = {
-      userid : id;
-      fn : string;
-      ln : string;
-      avatar : string option;
+      userid    : id;
+      fn        : string;
+      ln        : string;
+      avatar    : string option;
+      language  : string option;
     } [@@deriving json]
 end
 

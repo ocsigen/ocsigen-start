@@ -64,6 +64,35 @@ byte opt:: ${JS_PREFIX}.js
 byte opt:: $(CONFIG_FILES)
 
 ##----------------------------------------------------------------------
+## The following part defines rules for i18n.
+## See https://github.com/besport/ocsigen-i18n for more information.
+
+I18N_CHECKER            := ocsigen-i18n-checker
+I18N_GENERATOR          := ocsigen-i18n-generator
+
+## The i18n generated file.
+## IMPROVEME: Due to %%%PROJECT_NAME%%%_language, the module
+## defining all translations must be static.
+I18N_ELIOM_FILE         := $(PROJECT_NAME)_i18n.eliom
+
+## PPX extension to rewrite each file while compiling.
+I18N_PPX_REWRITER       := "ocsigen-i18n-rewriter %%%MODULE_NAME%%%_i18n"
+
+## This rule will update the TSV file.
+i18n-update: $(I18N_TSV_FILE)
+# use LC_ALL=C so that all $(I18N_ELIOM_FILE) files are generated the same
+# way.
+	LC_ALL=C $(I18N_GENERATOR) \
+	--langs $(I18N_LANGUAGES) \
+	--default-lang $(I18N_DEFAULT_LANGUAGE) \
+	< $(I18N_TSV_FILE) \
+	> $(I18N_ELIOM_FILE)
+
+i18n-check:
+	$(I18N_CHECKER) ./*.eliom < $(I18N_TSV_FILE)
+
+## end of i18n
+##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
 ## The following part has been generated with os template.
@@ -209,7 +238,7 @@ SERVER_INC  := ${addprefix -package ,${SERVER_PACKAGES} ${SERVER_ELIOM_PACKAGES}
 SERVER_DB_INC  := ${addprefix -package ,${SERVER_PACKAGES} ${SERVER_DB_PACKAGES} ${SERVER_ELIOM_PACKAGES}}
 
 ${ELIOM_TYPE_DIR}/%.type_mli: %.eliom
-	${ELIOMC} -ppx -infer ${SERVER_INC} $<
+	${ELIOMC} -ppx -ppx ${I18N_PPX_REWRITER} -infer ${SERVER_INC} $<
 
 $(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cma: $(call objs,$(ELIOM_SERVER_DIR),cmo,$(SERVER_FILES)) | $(TEST_PREFIX)$(LIBDIR)
 	${ELIOMC} -a -o $@ $(GENERATE_DEBUG) \
@@ -228,21 +257,21 @@ ${ELIOM_SERVER_DIR}/%.cmi: %.mli
 	${ELIOMC} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%.cmi: %.eliomi
-	${ELIOMC} -ppx -c ${SERVER_INC} $(GENERATE_DEBUG) $<
+	${ELIOMC} -ppx -ppx ${I18N_PPX_REWRITER} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%_db.cmo: %_db.ml
 	${ELIOMC} -c ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmo: %.ml
 	${ELIOMC} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmo: %.eliom
-	${ELIOMC} -ppx -c ${SERVER_INC} $(GENERATE_DEBUG) $<
+	${ELIOMC} -ppx -ppx ${I18N_PPX_REWRITER} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%_db.cmx: %_db.ml
 	${ELIOMOPT} -c ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmx: %.ml
 	${ELIOMOPT} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmx: %.eliom
-	${ELIOMOPT} -ppx -c ${SERVER_INC} $(GENERATE_DEBUG) $<
+	${ELIOMOPT} -ppx -ppx ${I18N_PPX_REWRITER} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
 ##----------------------------------------------------------------------
 
@@ -279,13 +308,13 @@ ${ELIOM_CLIENT_DIR}/%.cmi: %.mli
 	${JS_OF_ELIOM} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_CLIENT_DIR}/%.cmo: %.eliom
-	${JS_OF_ELIOM} -ppx -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
+	${JS_OF_ELIOM} -ppx -ppx ${I18N_PPX_REWRITER} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_CLIENT_DIR}/%.cmo: %.ml
 	${JS_OF_ELIOM} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_CLIENT_DIR}/%.cmi: %.eliomi
-	${JS_OF_ELIOM} -ppx -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
+	${JS_OF_ELIOM} -ppx -ppx ${I18N_PPX_REWRITER} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_CLIENT_DIR}/%.js: ${ELIOM_CLIENT_DIR}/%.cmo
 	${JS_OF_OCAML} $(DEBUG_JS) $<
@@ -299,8 +328,10 @@ ${ELIOM_CLIENT_DIR}/%.js: ${ELIOM_CLIENT_DIR}/%.cmo
 is_db_command=$(shell echo $(1) | grep -q "db-" && echo "true" || echo "false")
 ifneq ($(call is_db_command,$(MAKECMDGOALS)),true)
 ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),i18n-update)
 ifneq ($(MAKECMDGOALS),distclean)
 include .depend
+endif
 endif
 endif
 endif
@@ -314,20 +345,20 @@ $(DEPSDIR)/%.ml.server: %.ml | $(DEPSDIR) $(SERVER_FILES)
 $(DEPSDIR)/%.mli.server: %.mli | $(DEPSDIR) $(SERVER_FILES)
 	$(ELIOMDEP) -server $(SERVER_DB_INC) $< > $@.tmp && mv $@.tmp $@
 
-$(DEPSDIR)/%.eliom.server: %.eliom | $(DEPSDIR) $(SERVER_FILES)
-	$(ELIOMDEP) -server -ppx $(SERVER_INC_DEP) $< > $@.tmp && mv $@.tmp $@
+$(DEPSDIR)/%.eliom.server: %.eliom | $(DEPSDIR)
+	$(ELIOMDEP) -server -ppx -ppx ${I18N_PPX_REWRITER} $(SERVER_INC_DEP) $< > $@.tmp && mv $@.tmp $@
 
-$(DEPSDIR)/%.eliomi.server: %.eliomi | $(DEPSDIR) $(SERVER_FILES)
-	$(ELIOMDEP) -server -ppx $(SERVER_INC_DEP) $< > $@.tmp && mv $@.tmp $@
+$(DEPSDIR)/%.eliomi.server: %.eliomi | $(DEPSDIR)
+	$(ELIOMDEP) -server -ppx -ppx ${I18N_PPX_REWRITER} $(SERVER_INC_DEP) $< > $@.tmp && mv $@.tmp $@
 
 $(DEPSDIR)/%.ml.client: %.ml | $(DEPSDIR)
 	$(ELIOMDEP) -client $(CLIENT_INC) $< > $@.tmp && mv $@.tmp $@
 
 $(DEPSDIR)/%.eliom.client: %.eliom | $(DEPSDIR)
-	$(ELIOMDEP) -client -ppx $(CLIENT_INC) $< > $@.tmp && mv $@.tmp $@
+	$(ELIOMDEP) -client -ppx -ppx ${I18N_PPX_REWRITER} $(CLIENT_INC) $< > $@.tmp && mv $@.tmp $@
 
 $(DEPSDIR)/%.eliomi.client: %.eliomi | $(DEPSDIR)
-	$(ELIOMDEP) -client -ppx $(CLIENT_INC) $< > $@.tmp && mv $@.tmp $@
+	$(ELIOMDEP) -client -ppx -ppx ${I18N_PPX_REWRITER} $(CLIENT_INC) $< > $@.tmp && mv $@.tmp $@
 
 $(DEPSDIR):
 	mkdir $@

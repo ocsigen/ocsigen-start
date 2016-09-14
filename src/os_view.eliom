@@ -23,7 +23,10 @@
   open Eliom_content.Html.F
 ]
 
-let%client check_password_confirmation ~password ~confirmation =
+let%client check_password_confirmation
+    ?(text_pwd_do_not_match=(Os_i18n.Current.passwords_do_not_match ()))
+    ~password
+    ~confirmation () =
   let password_dom = To_dom.of_input password in
   let confirmation_dom = To_dom.of_input confirmation in
   Lwt_js_events.async
@@ -35,16 +38,24 @@ let%client check_password_confirmation ~password ~confirmation =
               confirmation_dom##.value
                then
                  (Js.Unsafe.coerce
-                    confirmation_dom)##(setCustomValidity ("Passwords do not match"))
+                    confirmation_dom)##(setCustomValidity
+                    (text_pwd_do_not_match))
                else (Js.Unsafe.coerce confirmation_dom)##(setCustomValidity ("")));
             Lwt.return ()))
 
-let%shared generic_email_form ?a ?label ?(text="Send") ?(email="") ~service () =
+let%shared generic_email_form
+    ?(a_placeholder_email=(Os_i18n.Current.email_address ()))
+    ?a
+    ?label
+    ?(text="Send")
+    ?(email="")
+    ~service
+    () =
   D.Form.post_form ?a ~service
     (fun name ->
       let l = [
         Form.input
-          ~a:[a_placeholder "e-mail address"]
+          ~a:[a_placeholder a_placeholder_email]
           ~input_type:`Email
           ~value:email
           ~name
@@ -60,17 +71,24 @@ let%shared generic_email_form ?a ?label ?(text="Send") ?(email="") ~service () =
       | None -> l
       | Some lab -> F.label [pcdata lab]::l) ()
 
-let%shared connect_form ?a ?(email="") () =
+let%shared connect_form
+    ?(a_placeholder_email=(Os_i18n.Current.your_email ()))
+    ?(a_placeholder_pwd=(Os_i18n.Current.your_password ()))
+    ?(text_keep_me_logged_in=(Os_i18n.Current.keep_me_logged_in ()))
+    ?(text_sign_in=(Os_i18n.Current.sign_in ()))
+    ?a
+    ?(email="")
+    () =
   D.Form.post_form ?a ~xhr:false ~service:Os_services.connect_service
     (fun ((login, password), keepmeloggedin) -> [
       Form.input
-        ~a:[a_placeholder "Your email"]
+        ~a:[a_placeholder a_placeholder_email]
         ~name:login
         ~input_type:`Email
         ~value:email
         Form.string;
       Form.input
-        ~a:[a_placeholder "Your password"]
+        ~a:[a_placeholder a_placeholder_pwd]
         ~name:password
         ~input_type:`Password
         Form.string;
@@ -78,21 +96,21 @@ let%shared connect_form ?a ?(email="") () =
         ~a:[a_checked ()]
         ~name:keepmeloggedin
         ();
-      span [pcdata "keep me logged in"];
+      span [pcdata text_keep_me_logged_in];
       Form.input
         ~a:[a_class ["button" ; "os-sign-in"]]
         ~input_type:`Submit
-        ~value:"Sign in"
+        ~value:text_sign_in
         Form.string;
     ]) ()
 
-let%shared disconnect_button ?a () =
+let%shared disconnect_button ?(text_logout=(Os_i18n.Current.log_out ())) ?a () =
   Form.post_form ?a ~service:Os_services.disconnect_service
     (fun _ -> [
          Form.button_no_value
            ~a:[ a_class ["button"] ]
            ~button_type:`Submit
-           [Os_icons.F.signout (); pcdata "Logout"]
+           [Os_icons.F.signout (); pcdata text_logout]
        ]) ()
 
 let%shared sign_up_form ?a ?email () =
@@ -102,38 +120,44 @@ let%shared forgot_password_form ?a () =
   generic_email_form ?a
     ~service:Os_services.forgot_password_service ()
 
-let%shared information_form ?a
+let%shared information_form
+    ?(a_placeholder_pwd=(Os_i18n.Current.your_password ()))
+    ?(a_placeholder_retype_pwd=(Os_i18n.Current.retype_password ()))
+    ?(text_your_first_name=(Os_i18n.Current.your_first_name ()))
+    ?(text_your_last_name=(Os_i18n.Current.your_last_name ()))
+    ?(text_submit=(Os_i18n.Current.submit ()))
+    ?a
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
     () =
   D.Form.post_form ?a ~service:Os_services.set_personal_data_service
     (fun ((fname, lname), (passwordn1, passwordn2)) ->
        let pass1 = D.Form.input
-           ~a:[a_placeholder "Your password"]
+           ~a:[a_placeholder a_placeholder_pwd]
            ~name:passwordn1
            ~value:password1
            ~input_type:`Password
            Form.string
        in
        let pass2 = D.Form.input
-           ~a:[a_placeholder "Re-enter password"]
+           ~a:[a_placeholder a_placeholder_retype_pwd]
            ~name:passwordn2
            ~value:password2
            ~input_type:`Password
            Form.string
        in
        let _ = [%client (
-         check_password_confirmation ~password:~%pass1 ~confirmation:~%pass2
+         check_password_confirmation ~password:~%pass1 ~confirmation:~%pass2 ()
        : unit)]
        in
        [
          Form.input
-           ~a:[a_placeholder "Your first name"]
+           ~a:[a_placeholder text_your_first_name]
            ~name:fname
            ~value:firstname
            ~input_type:`Text
            Form.string;
          Form.input
-           ~a:[a_placeholder "Your last name"]
+           ~a:[a_placeholder text_your_last_name]
            ~name:lname
            ~value:lastname
            ~input_type:`Text
@@ -143,7 +167,7 @@ let%shared information_form ?a
          Form.input
            ~a:[a_class ["button"]]
            ~input_type:`Submit
-           ~value:"Submit"
+           ~value:text_submit
            Form.string;
        ]) ()
 
@@ -178,7 +202,12 @@ let%shared username user =
   in
   div ~a:[a_class ["os_username"]] n
 
-let%shared password_form ?a ~service () =
+let%shared password_form
+    ?(text_password=(Os_i18n.Current.password ()))
+    ?(text_retype_password=(Os_i18n.Current.retype_password ()))
+    ?a
+    ~service
+    () =
   D.Form.post_form
     ?a
     ~service
@@ -198,13 +227,13 @@ let%shared password_form ?a ~service () =
            Form.string
        in
        ignore [%client (
-        check_password_confirmation ~password:~%pass1 ~confirmation:~%pass2
+        check_password_confirmation ~password:~%pass1 ~confirmation:~%pass2 ()
        : unit)];
        [
          table
            [
-             tr [td [label [pcdata "Password:"]]; td [pass1]];
-             tr [td [label [pcdata "Retype password:"]]; td [pass2]];
+             tr [td [label [pcdata text_password]]; td [pass1]];
+             tr [td [label [pcdata text_retype_password]]; td [pass2]];
            ];
          Form.input ~input_type:`Submit
            ~a:[ a_class [ "button" ] ] ~value:"Send" Form.string

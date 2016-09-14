@@ -62,13 +62,13 @@ let%shared the_local_css = [
       %%%MODULE_NAME%%%_container.page None
         (if Ocsigen_config.get_debugmode ()
          then [p [pcdata (Printexc.to_string exn)]]
-         else [p [pcdata "Error"]])
+         else [p [%i18n error ~capitalize:true]])
 
     let default_connected_error_page myid_o _ _ exn =
       %%%MODULE_NAME%%%_container.page myid_o
         (if Ocsigen_config.get_debugmode ()
          then [p [pcdata (Printexc.to_string exn)]]
-         else [p [pcdata "Error"]])
+         else [p [%i18n error ~capitalize:true]])
 
   end
 

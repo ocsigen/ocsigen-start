@@ -27,10 +27,11 @@ type id = Os_types.User.id [@@deriving json]
 
 (** Type alias to {!Os_types.User.t} to allow to use [Os_user.t]. *)
 type t = Os_types.User.t = {
-    userid : id;
-    fn : string;
-    ln : string;
-    avatar : string option;
+    userid    : id;
+    fn        : string;
+    ln        : string;
+    avatar    : string option;
+    language  : string option;
   } [@@deriving json]
 
 [%%server.start]
@@ -78,13 +79,18 @@ val avatar_uri_of_avatar :
 val avatar_uri_of_user :
   ?absolute_path:bool -> Os_types.User.t -> Eliom_content.Xml.uri option
 
+(** [language_of_user user] returns the language of the user [user]. If the user has no
+    language, it returns [None].
+ *)
+val language_of_user : Os_types.User.t -> string option
+
 (** Retrieve the full name of user (which is the concatenation of the first name
     and last name).
  *)
 val fullname_of_user : Os_types.User.t -> string
 
 (** [is_complete user] returns [true] if the first name or the last name of
-    {!Os_types.user} has not been completed yet.
+    {!Os_types.User.t} has not been completed yet.
  *)
 val is_complete : Os_types.User.t -> bool
 
@@ -147,6 +153,11 @@ val emails_of_user : Os_types.User.t -> string list Lwt.t
 (** [email_of_user user] returns the main email of user [user]. *)
 val email_of_user : Os_types.User.t -> string Lwt.t
 
+(** [get_language userid] returns the language of the user with ID [userid]. The
+    language is retrieved from the database.
+ *)
+val get_language : Os_types.User.id -> string option Lwt.t
+
 (** [get_users ?pattern ()] gets users who match the [pattern] (useful for
     completion).
  *)
@@ -156,7 +167,7 @@ val get_users : ?pattern:string -> unit -> Os_types.User.t list Lwt.t
     with the given information. An email is mandatory.
  *)
 val create :
-  ?password:string -> ?avatar:string ->
+  ?password:string -> ?avatar:string -> ?language:string ->
   firstname:string -> lastname:string -> string -> Os_types.User.t Lwt.t
 
 (** [update ?password ?avatar ~firstname ~lastname userid] update the
@@ -164,7 +175,7 @@ val create :
     updated.
  *)
 val update :
-  ?password:string -> ?avatar:string ->
+  ?password:string -> ?avatar:string -> ?language:string ->
   firstname:string -> lastname:string -> Os_types.User.id -> unit Lwt.t
 
 (** Another version of [update] using a type {!Os_types.User.t} instead of
@@ -187,6 +198,11 @@ val update_avatar : userid:Os_types.User.id -> avatar:string -> unit Lwt.t
     Else, it returns [false].
  *)
 val is_registered : string -> bool Lwt.t
+
+(** [update_language userid language] updates the language of the user with ID
+    [userid].
+ *)
+val update_language : userid:Os_types.User.id -> language:string -> unit Lwt.t
 
 (** [is_preregistered email] returns [true] if a user exists with email
     [email]. Else, it returns [false].
