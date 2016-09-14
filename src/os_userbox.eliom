@@ -7,7 +7,7 @@ open Eliom_content.Html
 open Eliom_content.Html.F
 ]
 
-[%%shared type uploader = unit Ot_picture_uploader.service ]
+[%%shared type uploader = (unit,unit) Ot_picture_uploader.service ]
 
 let wrong_password =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
