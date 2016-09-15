@@ -88,11 +88,6 @@ pg_ctl  = $(shell \
 $(PSQL_DIR):
 	-mkdir -p $@
 
-pg_ctl = $(shell \
-           sh -c "which pg_ctl" || \
-           sh -c "which pg_ctlcluster" || \
-           sh -c "if [ -f pg_ctl ]; then (echo ./pg_ctl) else (echo '') fi")
-
 ifeq ($(pg_ctl),)
 $(error "no 'pg_ctl' binary found")
 endif
