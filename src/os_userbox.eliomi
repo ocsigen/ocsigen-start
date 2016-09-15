@@ -5,7 +5,7 @@
 
 [%%shared.start]
 
-type uploader = unit Ot_picture_uploader.service
+type uploader = (unit,unit) Ot_picture_uploader.service
 
 (** Box for connected users, with picture, name, and menu *)
 val connected_user_box :

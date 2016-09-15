@@ -7,7 +7,7 @@ open Eliom_content.Html
 open Eliom_content.Html.F
 ]
 
-[%%shared type uploader = unit Ot_picture_uploader.service ]
+[%%shared type uploader = (unit,unit) Ot_picture_uploader.service ]
 
 let wrong_password =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
@@ -37,8 +37,9 @@ let%shared upload_pic_link
                  : Html_types.a_content Eliom_content.Html.D.Raw.elt list) in
   D.Raw.a ~a:( a_onclick [%client (fun ev -> Lwt.async (fun () ->
     ~%close () ;
-    let upload =
-      Ot_picture_uploader.ocaml_service_upload ~service:~%service ~arg:() in
+    let upload ?progress ?cropping file =
+      Ot_picture_uploader.ocaml_service_upload
+        ?progress ?cropping ~service:~%service ~arg:() file in
     try%lwt ignore @@
       Ot_popup.popup
         ~close_button:[ Ot_icons.F.close () ]
