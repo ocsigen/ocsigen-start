@@ -158,7 +158,8 @@ endif
 
 # Regenerate config files at each build, in case an environment variable has
 # changed.
-.PHONY: clean spashes $(IOS_SPLASHES) chcp app-config check-app-env $(APPJS) $(APPCSS) \
+.PHONY: clean icons spashes $(IOS_SPLASHES) chcp app-config check-app-env \
+	$(APPJS) $(APPCSS) \
 	$(ADD_PLATFORMS) $(PLATFORMS) $(EMULATE_PLATFORMS) $(RUN_PLATFORMS) \
 	$(CORDOVAPATH)/www/chcp.json \
 	$(CORDOVAPATH)/www/eliom.html \
@@ -281,7 +282,7 @@ $(WWW_PATH)/update/$(TIMESTAMP): app-config check-app-env $(CORDOVA_STATIC_FILES
 
 chcp: $(WWW_PATH)/update/conf/chcp.json
 
-assets: $(CORDOVAPATH) chcp
+assets: $(CORDOVAPATH) icons chcp
 
 # cordova platform rules
 
@@ -332,7 +333,7 @@ $(RUN_PLATFORMS): run-%: % check-app-env assets
 
 # Icons definition
 
-ANDROID_ICON_NAMES = ldpi mdpi hdpi xhdpi
+ANDROID_ICON_NAMES = ldpi mdpi hdpi xhdpi xxhdpi xxxhdpi
 ANDROID_ICONS_PATH = $(MOBILESTATICPATH)/res/android
 ANDROID_ICONS      = $(foreach name,$(ANDROID_ICON_NAMES),$(ANDROID_ICONS_PATH)/$(name).png)
 
@@ -350,7 +351,7 @@ IOS_ICONS_PATH   = $(MOBILESTATICPATH)/res/ios
 IOS_ICONS        = $(foreach name,$(IOS_ICON_NAMES),$(IOS_ICONS_PATH)/$(name).png)
 
 # Icons creation (ImageMagick is necessary)
-ICON_SVG         := assets/images/icon.svg
+ICON_PNG         := assets/images/icon.png
 convert_android  = convert -background none -resize
 convert_ios      = convert -background white -resize
 
@@ -358,20 +359,20 @@ $(ANDROID_ICONS_PATH) $(IOS_ICONS_PATH):
 	mkdir -p $@
 
 # Simple icons (Android)
-$(ANDROID_ICONS_PATH)/icon-%.png: $(ICON_SVG) $(ANDROID_ICONS_PATH)
+$(ANDROID_ICONS_PATH)/icon-%.png: $(ICON_PNG) $(ANDROID_ICONS_PATH)
 	$(convert_android) $*x$* $< $@
 
 # Simple icons (iOS)
-$(IOS_ICONS_PATH)/icon-%.png: $(ICON_SVG) $(IOS_ICONS_PATH)
+$(IOS_ICONS_PATH)/icon-%.png: $(ICON_PNG) $(IOS_ICONS_PATH)
 	$(convert_ios) $*x$* $< $@
 
 # Double size icons (iOS)
-$(IOS_ICONS_PATH)/icon-%@2x.png: $(ICON_SVG) $(IOS_ICONS_PATH)
+$(IOS_ICONS_PATH)/icon-%@2x.png: $(ICON_PNG) $(IOS_ICONS_PATH)
 	size=$$((2 * $*)) ;\
 	$(convert_ios) $${size}x$${size} $< $@
 
 # Triple size icons (iOS)
-$(IOS_ICONS_PATH)/icon-%@3x.png: $(ICON_SVG) $(IOS_ICONS_PATH)
+$(IOS_ICONS_PATH)/icon-%@3x.png: $(ICON_PNG) $(IOS_ICONS_PATH)
 	size=$$((3 * $*)) ;\
 	$(convert_ios) $${size}x$${size} $< $@
 
@@ -390,6 +391,9 @@ $(ANDROID_ICONS_PATH)/ldpi.png: $(ANDROID_ICONS_PATH)/icon-36.png; cp $< $@
 $(ANDROID_ICONS_PATH)/mdpi.png: $(ANDROID_ICONS_PATH)/icon-48.png; cp $< $@
 $(ANDROID_ICONS_PATH)/hdpi.png: $(ANDROID_ICONS_PATH)/icon-72.png; cp $< $@
 $(ANDROID_ICONS_PATH)/xhdpi.png: $(ANDROID_ICONS_PATH)/icon-96.png; cp $< $@
+$(ANDROID_ICONS_PATH)/xxhdpi.png: $(ANDROID_ICONS_PATH)/icon-144.png; cp $< $@
+$(ANDROID_ICONS_PATH)/xxxhdpi.png: $(ANDROID_ICONS_PATH)/icon-192.png; cp $< $@
+
 # Launch images (iOS)
 # Format: SIZE.NAME
 IOS_SPLASHES = \
@@ -413,6 +417,9 @@ $(IOS_SPLASHES): $(ICON_SVG) $(IOS_ICON_PATH)
 	$(convert_splash_ios) $$size $< $(IOS_ICONS_PATH)/$$name.png
 
 splashes: $(IOS_SPLASHES)
+
+# Only this rule must be used to generate the icons.
+icons: $(ANDROID_ICONS) $(IOS_ICONS)
 
 # Cleaning
 
