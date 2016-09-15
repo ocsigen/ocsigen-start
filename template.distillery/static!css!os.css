@@ -268,11 +268,11 @@ form input{
 /* Smartphone */
 @media only screen and (min-device-width : 320px) and (max-device-width: 500px) {
     body {
-	font-size: 8px;
+        font-size: 8px;
     }
     /* Calendar */
     .ot-c-prev-year-button, .ot-c-next-year-button, .ot-c-prev-button, .ot-c-next-button {
-	padding: 0 1rem;
+        padding: 0 1rem;
     }
 
 }

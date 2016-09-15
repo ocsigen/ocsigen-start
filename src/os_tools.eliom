@@ -5,7 +5,7 @@
    val ul_of_elts :
      ?ul_class:string list ->
      (string * (unit, unit, Eliom_service.get, _, _, _, _,
-		_, _, unit, Eliom_service.non_ocaml) Eliom_service.t) list -> 
+                _, _, unit, Eliom_service.non_ocaml) Eliom_service.t) list ->
      [>`Ul] Eliom_content.Html.F.elt Lwt.t
 
  end = struct
@@ -31,23 +31,23 @@ let%shared popup_button
     ~popup_content
     = Eliom_content.Html.D.(
       let button =
-	button ~a:[a_class button_class] [pcdata button_name]
+        button ~a:[a_class button_class] [pcdata button_name]
       in
       let%lwt popup_content = popup_content () in
       ignore
-	[%client
+        [%client
             (Lwt.async (fun () ->
               Lwt_js_events.clicks
-		(Eliom_content.Html.To_dom.of_element ~%button)
-		(fun _ _ ->
-		  let%lwt _ =
+                (Eliom_content.Html.To_dom.of_element ~%button)
+                (fun _ _ ->
+                  let%lwt _ =
                     Ot_popup.popup
                       ~close_button:[Eliom_content.Html.D.pcdata "close"]
                       (fun _ -> Lwt.return ~%popup_content)
-		  in
-		  Lwt.return ()))
+                  in
+                  Lwt.return ()))
                : _)
-	];
+        ];
       Lwt.return button
     )
 
@@ -62,19 +62,19 @@ let%shared popup_button
        ([ `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t ->
      carousel:
        ([< Html_types.div_attrib ] Eliom_content.Html.attrib list
-	* [< Html_types.div_content ] Eliom_content.Html.elt list) ->
+        * [< Html_types.div_content ] Eliom_content.Html.elt list) ->
      ?ribbon:
        ([< Html_types.ul_attrib ] Eliom_content.Html.attrib list
-	* [< Html_types.li_content_fun ] Eliom_content.Html.elt list list) ->
+        * [< Html_types.li_content_fun ] Eliom_content.Html.elt list list) ->
      ?previous:
        ([< Html_types.button_attrib ] Eliom_content.Html.attrib list
-	* Html_types.button_content Eliom_content.Html.elt list) ->
+        * Html_types.button_content Eliom_content.Html.elt list) ->
      ?next:
        ([< Html_types.button_attrib ] Eliom_content.Html.attrib list
-	* Html_types.button_content Eliom_content.Html.elt list) ->
+        * Html_types.button_content Eliom_content.Html.elt list) ->
      ?bullets:
        ([< Html_types.ul_attrib ] Eliom_content.Html.attrib list
-	* [< Html_types.li_content_fun ] Eliom_content.Html.elt list list) ->
+        * [< Html_types.li_content_fun ] Eliom_content.Html.elt list list) ->
      unit ->
      [> Html_types.div ] Eliom_content.Html.elt
      * [> Html_types.div ] Eliom_content.Html.elt option
@@ -89,7 +89,7 @@ let%shared popup_button
        f x
      | _ ->
        None
-   
+
    let return x = Some x
 
    let make
@@ -103,28 +103,28 @@ let%shared popup_button
        ?bullets
        ()
        = Eliom_content.Html.D.(
-	 let a, carousel_content = carousel in
-	 let length = List.length carousel_content in
-	 let carousel, pos, size, _ =
-	   Ot_carousel.make ~a ~update ~vertical carousel_content
-	 in
-	 let prev =
-	   previous >>= fun (a,content) ->
-	   return @@ Ot_carousel.previous ~a ~change ~pos content
-	 in
-	 let next =
-	   next >>= fun (a,content) ->
-	   return @@ Ot_carousel.next ~a ~change ~pos ~length ~size content
-	 in
-	 let ribbon =
-	   ribbon >>= fun (a,content) ->
-	   return @@ Ot_carousel.ribbon ~a ~change ~pos ~size content
-	 in
-	 let bullets =
-	   bullets >>= fun (a,content) ->
-	   return @@ Ot_carousel.bullets ~a ~change ~pos ~length ~content ()
-	 in
-	 carousel, ribbon, prev, next, bullets
+         let a, carousel_content = carousel in
+         let length = List.length carousel_content in
+         let carousel, pos, size, _ =
+           Ot_carousel.make ~a ~update ~vertical carousel_content
+         in
+         let prev =
+           previous >>= fun (a,content) ->
+           return @@ Ot_carousel.previous ~a ~change ~pos content
+         in
+         let next =
+           next >>= fun (a,content) ->
+           return @@ Ot_carousel.next ~a ~change ~pos ~length ~size content
+         in
+         let ribbon =
+           ribbon >>= fun (a,content) ->
+           return @@ Ot_carousel.ribbon ~a ~change ~pos ~size content
+         in
+         let bullets =
+           bullets >>= fun (a,content) ->
+           return @@ Ot_carousel.bullets ~a ~change ~pos ~length ~content ()
+         in
+         carousel, ribbon, prev, next, bullets
        )
 
  end
