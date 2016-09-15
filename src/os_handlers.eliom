@@ -305,7 +305,7 @@ let%server add_email_handler =
 
 let%client add_email_handler =
   let rpc = ~%(Eliom_client.server_function [%derive.json: string]
-		 @@ add_email_handler ())
+                 @@ add_email_handler ())
   in
   fun () -> rpc
 

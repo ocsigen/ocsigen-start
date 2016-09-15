@@ -307,12 +307,12 @@ module User = struct
     if password = Some "" then Lwt.fail_with "empty password"
     else
       full_transaction_block (fun dbh ->
-	let password_o = Eliom_lib.Option.map (fun p ->
-	  as_sql_string @@ fst !pwd_crypt_ref p) password
-	in
-	let avatar_o = Eliom_lib.Option.map as_sql_string avatar in
-	lwt () = Lwt_Query.query dbh
-	  <:insert< $users_table$ :=
+        let password_o = Eliom_lib.Option.map (fun p ->
+          as_sql_string @@ fst !pwd_crypt_ref p) password
+        in
+        let avatar_o = Eliom_lib.Option.map as_sql_string avatar in
+        lwt () = Lwt_Query.query dbh
+          <:insert< $users_table$ :=
            { userid     = users_table?userid;
              firstname  = $string:firstname$;
              lastname   = $string:lastname$;
@@ -320,36 +320,36 @@ module User = struct
              password   = of_option $password_o$;
              avatar     = of_option $avatar_o$
             } >>
-	in
-        lwt userid = Lwt_Query.view_one dbh
-	  <:view< {x = currval $users_userid_seq$} >>
         in
-	let userid = userid#!x in
-	lwt () = Lwt_Query.query dbh
-	  <:insert< $emails_table$ :=
+        lwt userid = Lwt_Query.view_one dbh
+          <:view< {x = currval $users_userid_seq$} >>
+        in
+        let userid = userid#!x in
+        lwt () = Lwt_Query.query dbh
+          <:insert< $emails_table$ :=
            { email = $string:email$;
              userid  = $int64:userid$;
              validated = emails_table?validated
            } >>
-	in
-	lwt () = remove_preregister email in
-	Lwt.return userid
+        in
+        lwt () = remove_preregister email in
+        Lwt.return userid
       )
 
   let update ?password ?avatar ~firstname ~lastname userid =
     if password = Some "" then Lwt.fail_with "empty password"
     else
       let password = match password with
-	| Some password ->
-	  fun _ -> as_sql_string @@ fst !pwd_crypt_ref password
-	| None ->
-	  password_of
+        | Some password ->
+          fun _ -> as_sql_string @@ fst !pwd_crypt_ref password
+        | None ->
+          password_of
       in
       let avatar = match avatar with
-	| Some avatar ->
-	  fun _ -> as_sql_string avatar
-	| None ->
-	  avatar_of
+        | Some avatar ->
+          fun _ -> as_sql_string avatar
+        | None ->
+          avatar_of
       in
       run_query <:update< d in $users_table$ :=
        { firstname = $string:firstname$;
@@ -388,7 +388,7 @@ module User = struct
     if password = "" then Lwt.fail No_such_resource
     else
       full_transaction_block (fun dbh ->
-	lwt r = Lwt_Query.view_one dbh <:view< { t1.userid; t1.password }
+        lwt r = Lwt_Query.view_one dbh <:view< { t1.userid; t1.password }
                  | t1 in $users_table$;
                    t2 in $emails_table$;
                    t1.userid = t2.userid;
@@ -399,13 +399,13 @@ module User = struct
           because we don't want the user to log in with a non-validated
           email address. For example if the sign-up form contains
           a password field. *)
-	in
+        in
         let (userid, password') = (r#!userid, r#?password) in
-	match password' with
-	| Some password' when snd !pwd_crypt_ref userid password password' ->
+        match password' with
+        | Some password' when snd !pwd_crypt_ref userid password password' ->
           Lwt.return userid
-	| _ ->
-	  Lwt.fail No_such_resource
+        | _ ->
+          Lwt.fail No_such_resource
       )
 
   let user_of_userid userid = one run_view
@@ -416,11 +416,11 @@ module User = struct
   let get_activationkey_info act_key =
     full_transaction_block (fun dbh ->
       one (Lwt_Query.view dbh)
-	~fail:(Lwt.fail No_such_resource)
+        ~fail:(Lwt.fail No_such_resource)
         <:view< t
                 | t in $activation_table$;
                 t.activationkey = $string:act_key$ >>
-	~success:(fun t ->
+        ~success:(fun t ->
           let userid = t#!userid in
           let email  = t#!email in
           let validity = t#!validity in
@@ -431,11 +431,11 @@ module User = struct
             | c -> `Custom c in
           let data = t#!data in
           let v  = max 0L (Int64.pred validity) in
-	  lwt () = Lwt_Query.query dbh
+          lwt () = Lwt_Query.query dbh
               <:update< r in $activation_table$ := {validity = $int64:v$} |
                         r.activationkey = $string:act_key$ >>
-	  in
-	  Lwt.return {userid; email; validity; action; data; autoconnect}
+          in
+          Lwt.return {userid; email; validity; action; data; autoconnect}
         )
     )
 
@@ -477,7 +477,7 @@ module User = struct
     lwt b = is_main_email ~email ~userid in
     if b then Lwt.fail Main_email_removal_attempt else
       run_query
-	<:delete< e in $emails_table$
+        <:delete< e in $emails_table$
          | u in $users_table$;
            u.userid = $int64:userid$;
            e.userid = u.userid;
@@ -490,7 +490,7 @@ module User = struct
       match pattern with
       | None ->
         lwt l = Lwt_Query.view dbh <:view< r | r in $users_table$ >> in
-	Lwt.return @@ List.map tupple_of_user_sql l
+        Lwt.return @@ List.map tupple_of_user_sql l
       | Some pattern ->
         let pattern = "(^"^pattern^")|(.* "^pattern^")" in
         (* Here I'm using the low-level pgocaml interface
