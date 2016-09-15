@@ -62,7 +62,7 @@ header#main {
 }
 @media only screen and (max-width: 1750px){
     header#main {
-	display: inline-block;
+        display: inline-block;
     }
 }
 
@@ -79,19 +79,19 @@ header#main {
 }
 @media only screen and (max-width: 980px){
     #%%%PROJECT_NAME%%%-body {
-	margin-left: 0;
-	margin-right: 0;
-	width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
     }
 }
 @media only screen and (max-width: 1750px){
     #%%%PROJECT_NAME%%%-body {
-	margin-top: 140px;
+        margin-top: 140px;
     }
 }
 @media only screen and (max-width: 588px){
     #%%%PROJECT_NAME%%%-body {
-	margin-top: 180px;
+        margin-top: 180px;
     }
 }
 
