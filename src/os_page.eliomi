@@ -79,19 +79,19 @@ module type PAGE = sig
 
   (** Default error page for connected pages. *)
   val default_connected_error_page :
-    int64 option -> 'a -> 'b -> exn ->
+    Os_user.id option -> 'a -> 'b -> exn ->
     Html_types.body_content Eliom_content.Html.elt list Lwt.t
 
   (** Default error page for connected pages (with custom headers and
       title). *)
   val default_connected_error_page_full :
-    (int64 option -> 'a -> 'b -> exn -> content Lwt.t) option
+    (Os_user.id option -> 'a -> 'b -> exn -> content Lwt.t) option
 
   (** Default predicate. *)
   val default_predicate : 'a -> 'b -> bool Lwt.t
 
   (** Default predicate for connected pages. *)
-  val default_connected_predicate : int64 option -> 'a -> 'b -> bool Lwt.t
+  val default_connected_predicate : Os_user.id option -> 'a -> 'b -> bool Lwt.t
 
 end
 
@@ -132,11 +132,11 @@ module Make (C : PAGE) : sig
     val connected_page :
       ?allow:Os_group.t list ->
       ?deny:Os_group.t list ->
-      ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t) ->
-      ?fallback:(int64 option -> 'a -> 'b -> exn ->
+      ?predicate:(Os_user.id option -> 'a -> 'b -> bool Lwt.t) ->
+      ?fallback:(Os_user.id option -> 'a -> 'b -> exn ->
                  Html_types.body_content Eliom_content.Html.elt
                    list Lwt.t) ->
-      (int64 option -> 'a -> 'b ->
+      (Os_user.id option -> 'a -> 'b ->
        Html_types.body_content Eliom_content.Html.elt list Lwt.t) ->
       ('a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t)
 
@@ -146,9 +146,9 @@ module Make (C : PAGE) : sig
     val connected_page_full :
       ?allow:Os_group.t list ->
       ?deny:Os_group.t list ->
-      ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t) ->
-      ?fallback:(int64 option -> 'a -> 'b -> exn -> content Lwt.t) ->
-      (int64 option -> 'a -> 'b -> content Lwt.t) ->
+      ?predicate:(Os_user.id option -> 'a -> 'b -> bool Lwt.t) ->
+      ?fallback:(Os_user.id option -> 'a -> 'b -> exn -> content Lwt.t) ->
+      (Os_user.id option -> 'a -> 'b -> content Lwt.t) ->
       ('a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t)
   end
 
@@ -158,11 +158,11 @@ module Make (C : PAGE) : sig
   val connected_page :
        ?allow:Os_group.t list
     -> ?deny:Os_group.t list
-    -> ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t)
-    -> ?fallback:(int64 option -> 'a -> 'b -> exn ->
+    -> ?predicate:(Os_user.id option -> 'a -> 'b -> bool Lwt.t)
+    -> ?fallback:(Os_user.id option -> 'a -> 'b -> exn ->
                   Html_types.body_content Eliom_content.Html.elt list
                     Lwt.t)
-    -> (int64 -> 'a -> 'b ->
+    -> (Os_user.id -> 'a -> 'b ->
         Html_types.body_content Eliom_content.Html.elt list Lwt.t)
     -> 'a -> 'b
     -> Html_types.html Eliom_content.Html.elt Lwt.t
@@ -174,8 +174,8 @@ module Make (C : PAGE) : sig
   val connected_page_full :
     ?allow:Os_group.t list ->
     ?deny:Os_group.t list ->
-    ?predicate:(int64 option -> 'a -> 'b -> bool Lwt.t) ->
-    ?fallback:(int64 option -> 'a -> 'b -> exn -> content Lwt.t) ->
-    (int64 -> 'a -> 'b -> content Lwt.t) ->
+    ?predicate:(Os_user.id option -> 'a -> 'b -> bool Lwt.t) ->
+    ?fallback:(Os_user.id option -> 'a -> 'b -> exn -> content Lwt.t) ->
+    (Os_user.id -> 'a -> 'b -> content Lwt.t) ->
     ('a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t)
 end

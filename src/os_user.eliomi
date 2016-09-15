@@ -1,11 +1,15 @@
-exception Already_exists of int64
+[%%shared.start]
+type id = int64 [@@deriving json]
+
+[%%server.start]
+exception Already_exists of id
 exception No_such_user
 
 (** Has user set its password? *)
-val password_set : int64 -> bool Lwt.t
+val password_set : id -> bool Lwt.t
 
 type activationkey_info = {
-  userid : int64;
+  userid : id;
   email : string;
   validity : int64;
   autoconnect : bool;
@@ -16,14 +20,14 @@ type activationkey_info = {
 [%%shared.start]
   (** The type which represents a user. *)
 type t = {
-    userid : int64;
+    userid : id;
     fn : string;
     ln : string;
     avatar : string option;
   } [@@deriving json]
 
 
-val userid_of_user : t -> int64
+val userid_of_user : t -> id
 val firstname_of_user : t -> string
 val lastname_of_user : t -> string
 val avatar_of_user : t -> string option
@@ -50,13 +54,13 @@ val add_activationkey :
   (** default: `AccountActivation *)
   ?data:string -> (** default: empty string *)
   ?validity:int64 -> (** default: 1L *)
-  act_key:string -> userid:int64 -> email:string -> unit -> unit Lwt.t
+  act_key:string -> userid:id -> email:string -> unit -> unit Lwt.t
 
-val verify_password : email:string -> password:string -> int64 Lwt.t
+val verify_password : email:string -> password:string -> id Lwt.t
 
 (** returns user information.
     Results are cached in memory during page generation. *)
-val user_of_userid : int64 -> t Lwt.t
+val user_of_userid : id -> t Lwt.t
 
 val get_activationkey_info : string -> activationkey_info Lwt.t
 (** Retrieve the data corresponding to an activation key, each
@@ -65,16 +69,16 @@ val get_activationkey_info : string -> activationkey_info Lwt.t
     you to adapt the actions according to the value of validity!
     Raises [Os_db.No_such_resource] if the activation key is not found. *)
 
-val userid_of_email : string -> int64 Lwt.t
+val userid_of_email : string -> id Lwt.t
 
 (** Retrieve e-mails from user id. *)
-val emails_of_userid : int64 -> string list Lwt.t
+val emails_of_userid : id -> string list Lwt.t
 
 (** Retrieve the main e-mail of a user. *)
 val email_of_user : t -> string Lwt.t
 
 (** Retrieve the main e-mail from user id. *)
-val email_of_userid : int64 -> string Lwt.t
+val email_of_userid : id -> string Lwt.t
 
 (** Retrieve e-mails of a user. *)
 val emails_of_user : t -> string list Lwt.t
@@ -90,16 +94,16 @@ val create :
 (** Update the informations of a user. *)
 val update :
   ?password:string -> ?avatar:string ->
-  firstname:string -> lastname:string -> int64 -> unit Lwt.t
+  firstname:string -> lastname:string -> id -> unit Lwt.t
 
 (** Another version of [update] using a type [t] instead of labels. *)
 val update' : ?password:string -> t -> unit Lwt.t
 
 (** Update the password only *)
-val update_password : string -> int64 -> unit Lwt.t
+val update_password : string -> id -> unit Lwt.t
 
 (** Update the avatar only *)
-val update_avatar : string -> int64 -> unit Lwt.t
+val update_avatar : string -> id -> unit Lwt.t
 
 (** Check wether or not a user exists *)
 val is_registered : string -> bool Lwt.t
@@ -125,21 +129,21 @@ val all : ?limit:int64 -> unit -> string list Lwt.t
     by user, and as third parameter the hash found in database.
 *)
 val set_pwd_crypt_fun : (string -> string) *
-                        (int64 -> string -> string -> bool) -> unit
+                        (id -> string -> string -> bool) -> unit
 
 (** Removes the email [email] from the user with the id [userid],
     if the email is registered as the main email for the user it fails
     with the exception [Main_email_removal_attempt].
 *)
-val remove_email_from_user : userid:int64 -> email:string -> unit Lwt.t
+val remove_email_from_user : userid:id -> email:string -> unit Lwt.t
 
 (** Returns whether for a user designated by its id the given email has been
     validated. *)
-val email_is_validated : userid:int64 -> email:string -> bool Lwt.t
+val email_is_validated : userid:id -> email:string -> bool Lwt.t
 
 (** Returns whether an email is the  main email registered for a
     given user designated by its id. *)
-val is_main_email : userid:int64 -> email:string -> bool Lwt.t
+val is_main_email : userid:id -> email:string -> bool Lwt.t
 
 (** Sets the main email for a user with the id [userid] as the email [email]. *)
-val update_main_email : userid:int64 -> email:string -> unit Lwt.t
+val update_main_email : userid:id -> email:string -> unit Lwt.t

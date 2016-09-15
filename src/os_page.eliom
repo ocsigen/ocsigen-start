@@ -57,12 +57,12 @@ module type PAGE = sig
     Html_types.body_content Eliom_content.Html.elt list Lwt.t
   val default_error_page_full : ('a -> 'b -> exn -> content Lwt.t) option
   val default_connected_error_page :
-    int64 option -> 'a -> 'b -> exn ->
+    Os_user.id option -> 'a -> 'b -> exn ->
     Html_types.body_content Eliom_content.Html.elt list Lwt.t
   val default_connected_error_page_full :
-    (int64 option -> 'a -> 'b -> exn -> content Lwt.t) option
+    (Os_user.id option -> 'a -> 'b -> exn -> content Lwt.t) option
   val default_predicate : 'a -> 'b -> bool Lwt.t
-  val default_connected_predicate : int64 option -> 'a -> 'b -> bool Lwt.t
+  val default_connected_predicate : Os_user.id option -> 'a -> 'b -> bool Lwt.t
 end
 
 module Default_config = struct
@@ -244,7 +244,7 @@ module Make(C : PAGE) = struct
         ?(predicate = C.default_connected_predicate)
         ?(fallback = default_connected_error_page)
         f gp pp =
-      let f_wrapped (uid_o : int64 option) gp pp =
+      let f_wrapped (uid_o : Os_user.id option) gp pp =
         try%lwt
           let%lwt b = predicate uid_o gp pp in
           if b then
