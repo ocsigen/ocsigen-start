@@ -22,10 +22,11 @@
 
 exception No_such_group
 
+type id = int64
 
 (** The type of a group *)
 type t = {
-  id : int64;
+  id : id;
   name : string;
   desc : string option;
 }

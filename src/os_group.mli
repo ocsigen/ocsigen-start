@@ -34,10 +34,12 @@ exception No_such_group
 
 *)
 
+type id = int64
+
 (** The type of a group *)
 type t
 
-val id_of_group : t -> int64
+val id_of_group : t -> id
 val name_of_group : t -> string
 val desc_of_group : t -> string option
 
