@@ -74,6 +74,13 @@ endif
 #   variable to create the schema and the tables. By default, the PSQL_FILE is
 #   PROJECTNAME.sql. See Makefile.options.
 #
+# - db-upgrade:
+#   Upgrade the database schema related to Ocsigen-start to the newer database
+#   schema.
+#   It uses $(OS_UPGRADE_FILE) SQL file. You must not change it.
+#   Please read the upgrade information before calling this rule.
+#   Use it carefully!
+#
 # - db-drop:
 #   Drop the database but doesn't remove the database directory PSQL_DIR.
 #
