@@ -157,7 +157,7 @@ let%server update_main_email_button email =
   let open Eliom_content.Html in
   let%lwt validated = email_is_validated email in
   Lwt.return @@ if validated then
-      let button = 
+      let button =
         D.button ~a:[D.a_class ["button"]] [D.pcdata "Set as main e-mail"] in
       ignore [%client (Lwt.async (fun () ->
         Lwt_js_events.clicks
@@ -206,7 +206,6 @@ let%server tr_of_email main_email email =
 
 let%server emails_table userid : [`Table] Eliom_content.Html.elt Lwt.t =
   let open Eliom_content.Html.F in
-  let open Lwt in
   let%lwt main_email = Os_db.User.email_of_userid userid in
   let%lwt l =
     Os_db.User.emails_of_userid userid
@@ -218,7 +217,7 @@ let%server emails_table userid : [`Table] Eliom_content.Html.elt Lwt.t =
 let%client emails_table =
   ~%(Eliom_client.server_function [%derive.json : int64] emails_table)
 
-let%shared emails_table uid = 
+let%shared emails_table uid =
   (emails_table uid :> Html_types.div_content_fun Eliom_content.Html.elt Lwt.t)
 
 

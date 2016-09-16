@@ -36,12 +36,32 @@ let tips_seen =
   for all non-connected users. This is a weakness of persistent
   group eref. Use posgresql instead? *)
 
+(* In the current version of Eliom (2016-09),
+   groups of session have a weird semantics when no group is set
+   (1 group per IP address if I remember).
+   I think it would be better to have one group per session.
+   At least group references (like tips_seen) would work and the user would
+   have its tips.
+   (If the sessions are not grouped together, then each group contain one
+   session, which make more sense than grouping by IP address).
+
+   For now, I'm using a session reference for not connected users ...
+*)
+let tips_seen_not_connected =
+  Eliom_reference.eref
+    ~persistent:"tips_seen_not_connected1"
+    ~scope:Os_session.user_indep_session_scope
+    Stringset.empty
+
 
 (* We cache the set during a request *)
 let seen_by_user =
   Eliom_reference.Volatile.eref_from_fun
     ~scope:Eliom_common.request_scope
-    (fun () -> Eliom_reference.get tips_seen)
+    (fun () ->
+       match Os_current_user.Opt.get_current_userid () with
+       | None -> Eliom_reference.get tips_seen_not_connected
+       | _ -> Eliom_reference.get tips_seen)
 
 (* Get the set of seen tips *)
 let%server get_tips_seen () = Eliom_reference.Volatile.get seen_by_user
@@ -64,7 +84,10 @@ let%server () = Os_session.on_start_connected_process
 (* notify the server that a user has seen a tip *)
 let set_tip_seen (name : string) =
   let%lwt prev = Eliom_reference.Volatile.get seen_by_user in
-  Eliom_reference.set tips_seen (Stringset.add (name : string) prev)
+  let newset = Stringset.add (name : string) prev in
+  match Os_current_user.Opt.get_current_userid () with
+  | None -> Eliom_reference.set tips_seen_not_connected newset
+  | _ -> Eliom_reference.set tips_seen newset
 
 let%client set_tip_seen name =
   tips_seen_client_ref := Stringset.add name !tips_seen_client_ref;
@@ -75,20 +98,19 @@ let%client set_tip_seen name =
   name
 
 (* I want to see the tips again *)
-let%server reset_tips_user userid =
-  Eliom_reference.set tips_seen (Stringset.empty)
+let%server reset_tips_user myid_o =
+  match myid_o with
+  | None -> Eliom_reference.set tips_seen_not_connected (Stringset.empty)
+  | _ -> Eliom_reference.set tips_seen (Stringset.empty)
 
 let reset_tips () =
-  Eliom_lib.Option.Lwt.iter
-    reset_tips_user
-    (Os_current_user.Opt.get_current_userid ())
+  reset_tips_user (Os_current_user.Opt.get_current_userid ())
 
 let%server reset_tips_service =
   Eliom_service.create
     ~name:"resettips"
     ~id:Eliom_service.Global
-    ~meth:
-      (Eliom_service.Post (Eliom_parameter.unit, Eliom_parameter.unit))
+    ~meth:(Eliom_service.Post (Eliom_parameter.unit, Eliom_parameter.unit))
     ()
 
 let%client reset_tips_service = ~%reset_tips_service
@@ -96,7 +118,7 @@ let%client reset_tips_service = ~%reset_tips_service
 let%server _ =
   Eliom_registration.Action.register
     ~service:reset_tips_service
-    (Os_session.connected_fun (fun myid () () -> reset_tips_user myid))
+    (Os_session.Opt.connected_fun (fun myid_o () () -> reset_tips_user myid_o))
 
 let%client reset_tips () =
   tips_seen_client_ref := Stringset.empty;
@@ -108,11 +130,12 @@ let%client reset_tips () =
 
 (* Returns a block containing a tip,
    if it has not already been seen by the user. *)
-let%shared block ?(a = []) ~name ~content () =
+let%shared block ?(a = []) ?(recipient = `All) ~name ~content () =
   let myid_o = Os_current_user.Opt.get_current_userid () in
-  if myid_o = None
-  then Lwt.return None
-  else
+  match recipient, myid_o with
+  | `All, _
+  | `Not_connected, None
+  | `Connected, Some _ ->
     let%lwt seen = get_tips_seen () in
     if Stringset.mem name seen
     then Lwt.return None
@@ -133,6 +156,7 @@ let%shared block ?(a = []) ~name ~content () =
       box_ref := Some box ;
       Lwt.return (Some box)
     end
+  | _ -> Lwt.return None
 
 (* This thread is used to display only one tip at a time: *)
 let%client waiter = ref (let%lwt _ = Lwt_js_events.onload () in Lwt.return ())
@@ -216,23 +240,27 @@ let%client display_bubble ?(a = [])
   Lwt.return ()
 
 (* Function to be called on server to display a tip *)
-let%shared bubble ?a ?arrow ?top ?left ?right ?bottom ?height ?width
-    ?parent_node ~(name : string) ~content () =
+let%shared bubble
+  ?a ?(recipient = `All)
+  ?arrow ?top ?left ?right ?bottom ?height ?width
+  ?parent_node ~(name : string) ~content () =
   let myid_o = Os_current_user.Opt.get_current_userid () in
-  if myid_o = None
-  then Lwt.return ()
-  else
+  match recipient, myid_o with
+  | `All, _
+  | `Not_connected, None
+  | `Connected, Some _ ->
     let%lwt seen = get_tips_seen () in
     if Stringset.mem name seen
     then Lwt.return ()
     else let _ = [%client ( Lwt.async (fun () ->
-              display_bubble ?a:~%a ?arrow:~%arrow
-                ?top:~%top ?left:~%left ?right:~%right ?bottom:~%bottom
-                ?height:~%height ?width:~%width
-                ?parent_node:~%parent_node
-                ~name:(~%name : string)
-                ~content:~%content
-                ())
+      display_bubble ?a:~%a ?arrow:~%arrow
+        ?top:~%top ?left:~%left ?right:~%right ?bottom:~%bottom
+        ?height:~%height ?width:~%width
+        ?parent_node:~%parent_node
+        ~name:(~%name : string)
+        ~content:~%content
+        ())
                             : unit)]
       in
       Lwt.return ()
+  | _ -> Lwt.return ()
