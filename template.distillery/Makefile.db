@@ -31,6 +31,8 @@ ELIOMDEP          := $(ENV_PSQL) $(ELIOMDEP)
 OCSIGENSERVER     := $(OCSIGENSERVER)
 OCSIGENSERVER.OPT := $(OCSIGENSERVER.OPT)
 
+OPAM_LIB_DIR      := $(shell opam config var lib)
+OS_UPGRADE_FILE   := $(OPAM_LIB_DIR)/eliom/templates/os.pgocaml/upgrade.sql
 ## ---------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
@@ -136,6 +138,9 @@ db-create:
 
 db-schema:
 	$(ENV_PSQL) psql -d $(DB_NAME) -f $(PSQL_FILE)
+
+db-upgrade:
+	$(ENV_PSQL) psql -d $(DB_NAME) -f $(OS_UPGRADE_FILE)
 
 db-drop:
 	$(ENV_PSQL) dropdb $(DB_NAME)
