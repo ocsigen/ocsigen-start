@@ -180,6 +180,7 @@ $(CORDOVAPATH):
 ifdef CORDOVA_VERSION
 	cordova create $(CORDOVAPATH) $(MOBILE_APP_ID) "$(MOBILE_APP_NAME)"
 	rm -f $(CORDOVAPATH)/www/css/index.css
+	rm -f $(CORDOVAPATH)/www/js/index.js
 	rm -f $(CORDOVAPATH)/www/img/logo.png
 	rm -f $(CORDOVAPATH)/www/index.html
 	rm -f $(CORDOVAPATH)/config.xml
