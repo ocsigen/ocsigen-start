@@ -67,10 +67,10 @@ endif
 # - db-create:
 #   Create the database and use UNICODE.
 #
-# - db-update:
-#   Update the database with the SQL file contains in the PSQL_FILE
-#   variable. By default, the PSQL_FILE is PROJECTNAME.sql. See
-#   Makefile.options.
+# - db-schema:
+#   Execute the SQL file contained in the PSQL_FILE
+#   variable to create the schema and the tables. By default, the PSQL_FILE is
+#   PROJECTNAME.sql. See Makefile.options.
 #
 # - db-drop:
 #   Drop the database but doesn't remove the database directory PSQL_DIR.
@@ -134,7 +134,7 @@ endif
 db-create:
 	$(ENV_PSQL) createdb --encoding UNICODE $(DB_NAME)
 
-db-update:
+db-schema:
 	$(ENV_PSQL) psql -d $(DB_NAME) -f $(PSQL_FILE)
 
 db-drop:
