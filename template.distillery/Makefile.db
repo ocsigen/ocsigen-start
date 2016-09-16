@@ -37,10 +37,15 @@ OCSIGENSERVER.OPT := $(OCSIGENSERVER.OPT)
 
 pg_dump = pg_dump
 
-pg_ctl  = $(shell \
-           sh -c "which pg_ctl" || \
-           sh -c "which pg_ctlcluster" || \
-           sh -c "if [ -f pg_ctl ]; then (echo ./pg_ctl) else (echo '') fi")
+# Rule to get the pg_ctl binary.
+ifeq ($(shell sh -c "which psql" | echo $?),'0')
+$(error "PostgreSQL is not installed")
+else
+PSQL_VERSION := $(shell psql --version | cut -d' ' -f 3 | cut -d'.' -f 1-2)
+pg_ctl       := $(shell \
+                  sh -c "which pg_ctl" || \
+                  sh -c "echo /usr/lib/postgresql/$(PSQL_VERSION)/bin/pg_ctl")
+endif
 
 ##----------------------------------------------------------------------
 
@@ -87,10 +92,6 @@ pg_ctl  = $(shell \
 
 $(PSQL_DIR):
 	-mkdir -p $@
-
-ifeq ($(pg_ctl),)
-$(error "no 'pg_ctl' binary found")
-endif
 
 ifeq ($(LOCAL),yes)
 
