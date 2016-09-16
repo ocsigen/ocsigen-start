@@ -37,10 +37,14 @@
     to the eponymous CSS properties.
     - [~content] takes the function closing the tip as parameter
     and return the content of the tip div.
+    - [?recipient] makes it possible to decide whether the tip will be displayed
+    for connected users only, non-connected users only, or all (default).
+    Tips for non-connected users will reapear everytime the session is closed.
 
 *)
 val bubble :
   ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.D.attrib list ->
+  ?recipient:[> `All | `Connected | `Not_connected ] ->
   ?arrow: [< `left of int
           | `right of int
           | `top of int
@@ -64,6 +68,7 @@ val bubble :
  *)
 val block :
   ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.D.attrib list ->
+  ?recipient:[> `All | `Connected | `Not_connected ] ->
   name:string ->
   content:((unit -> unit Lwt.t) Eliom_client_value.t
            -> Html_types.div_content Eliom_content.Html.elt list Lwt.t) ->
