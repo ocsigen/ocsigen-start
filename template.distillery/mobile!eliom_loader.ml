@@ -8,39 +8,55 @@
 
    js_of_ocaml eliom_loader.byte
 *)
+
+(* Debug mode. Set to true if you want to use the debug mode. Used by "log".
+ *)
 let debug = false
 
+(* If debug mode is activated, a paragraph is created and a message is printed
+ * in the console.
+ *)
 let log =
   if debug then
     (fun s ->
        Firebug.console##log(Js.string s);
        let p = Dom_html.createP Dom_html.document in
-       p##.style##.color := Js.string "blue";
+       p##.style##.color := Js.string "#12B0E6";
        Dom.appendChild p (Dom_html.document##createTextNode (Js.string s));
        let container = Dom_html.getElementById "app-container" in
        Dom.appendChild container p)
   else
     (fun s -> ())
 
+(* Reference used by fetchUpdate binding to Cordova Hot Code plugin to know if
+ * update has been done or if it failed.
+ *)
 let update_failed = ref false
+
 let data_upload_failed = ref false
 
+(* Get the Eliom server URL where updates must be fetched. *)
 let url =
   Js.Optdef.case (Js.Unsafe.global##.___eliom_server_)
     (fun ()     -> "127.0.0.1:8080/__global_data__")
     (fun server -> Js.to_string server ^ "/__global_data__")
 
+(* Get the local storage object. Fail if local storage is not supported. *)
 let storage () =
   Js.Optdef.case (Dom_html.window##.localStorage)
     (fun () -> failwith "Browser storage not supported")
     (fun v -> v)
 
+(* This function is called when updating the files. It changes the class of the
+ * main container in index.html and add a button with an error message if
+ * something went wrong.
+ *)
 let rec add_retry_button wake msg =
   let container = Dom_html.getElementById "app-container" in
   let p = Dom_html.createP Dom_html.document in
   let btn = Dom_html.createButton Dom_html.document in
   (* Set error class *)
-  (Dom_html.getElementById "app-container")##.className :=
+  container##.className :=
     Js.string "app-error";
   (* Error message paragraph *)
   Dom.appendChild p
@@ -53,6 +69,7 @@ let rec add_retry_button wake msg =
   btn##.onclick := Dom_html.handler
       (fun _ ->
          Dom.removeChild container p;
+         container##.className := Js.string "app blink";
          if !update_failed then begin
            update_failed := false;
            ignore (Js.Unsafe.global##.chcp##fetchUpdate)
@@ -81,6 +98,9 @@ log "Could not get global data";
   end;
   Lwt.return ()
 
+(* Get the URL saved in the JavaScript variables "___eliom_html_url_" defined in
+ * index.html and go this location.
+ *)
 let redirect () =
   Js.Optdef.iter (Js.Unsafe.global##.___eliom_html_url_)
     (fun url -> Dom_html.window##.location##replace (url))
@@ -91,35 +111,53 @@ let _ =
     (Dom_html.Event.make "resume")
     (Dom.handler (fun _ ->
        log "Resume";
-                    ignore (Js.Unsafe.global##.chcp##fetchUpdate);
-                    Js._true))
+       ignore (Js.Unsafe.global##.chcp##fetchUpdate);
+       Js._true))
     Js._false;
-  let wait2, wake2 = Lwt.wait () in
+  (* Create two threads for success callbacks and error callbacks. *)
+  let wait_success, wake_success = Lwt.wait () in
+  let wait_error, wake_error = Lwt.wait () in
+  (* Callback when success.
+   * [callback ev] will print the event if debug mode is activated.
+   * Calls by the event chcp_nothingToUpdate.
+   *)
   let callback ev =
+    Dom.handler (fun _ ->
+        log ev;
+        update_failed := false;
+        Lwt.wakeup wake_success ();
+        Js._true)
+  in
+  (* Callback when errors.
+   * Calls by the event chcp_nothingToUpdate.
+   *)
+  let error_callback name =
     Dom.handler
-      (fun _ ->
-log ev;
-         update_failed := false;
-         Lwt.wakeup wake2 ();
+      (fun ev ->
+         log (name ^ ": " ^ Js.to_string (ev##.detail##.error##.description));
+         update_failed := true;
+         if not !data_upload_failed then
+           add_retry_button wake_error
+             (Js.to_string (ev##.detail##.error##.description));
          Js.bool true)
   in
+  (* Callback to print a message *)
+  let status_callback name =
+    Dom.handler
+      (fun ev ->
+         log name;
+         Js.bool true)
+  in
+  (* Binding to chcp_nothingToUpdate. Calls [callback ev]. *)
   List.iter
     (fun ev ->
        ignore @@
        Dom.addEventListener Dom_html.document (Dom_html.Event.make ev)
          (callback ev) Js._false)
     ["chcp_nothingToUpdate"];
-  let wait, wake = Lwt.wait () in
-  let error_callback name =
-    Dom.handler
-      (fun ev ->
-log (name ^ ": " ^ Js.to_string (ev##.detail##.error##.description));
-         update_failed := true;
-         if not !data_upload_failed then
-           add_retry_button wake
-             (Js.to_string (ev##.detail##.error##.description));
-         Js.bool true)
-  in
+  (* Binding to chcp_updateLoadFailed, chcp_updateInstallFailed and
+   * chcp_assetsInstallationError. It calls [error_callback ev].
+   *)
   List.iter
     (fun ev ->
        ignore @@
@@ -128,12 +166,9 @@ log (name ^ ": " ^ Js.to_string (ev##.detail##.error##.description));
     ["chcp_updateLoadFailed";
      "chcp_updateInstallFailed";
      "chcp_assetsInstallationError"];
-  let status_callback name =
-    Dom.handler
-      (fun ev ->
-         log name;
-         Js.bool true)
-  in
+  (* Binding to other chcp events. It calls [status_callback ev] which will only
+   * print the event.
+   *)
   List.iter
     (fun ev ->
        ignore @@
@@ -147,7 +182,7 @@ log (name ^ ": " ^ Js.to_string (ev##.detail##.error##.description));
      "chcp_assetsInstalledOnExternalStorage"];
   Lwt.async @@ fun () ->
   let%lwt _ = Lwt_js_events.onload () in
-  let%lwt _ = get_data wake in
-  let%lwt _ = wait in
-  let%lwt _ = wait2 in
+  let%lwt _ = get_data wake_error in
+  let%lwt _ = wait_error in
+  let%lwt _ = wait_success in
   Lwt.return (redirect ())
