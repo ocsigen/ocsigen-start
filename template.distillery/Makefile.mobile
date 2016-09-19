@@ -248,6 +248,7 @@ $(CORDOVAPATH)/config.xml: mobile/config.xml.in $(CORDOVAPATH)
 	    -e "s,%%MOBILE_AUTHOR_HREF%%,$(MOBILE_AUTHOR_HREF),g" \
 	    -e "s,%%MOBILE_AUTHOR_DESCRIPTION%%,$(MOBILE_AUTHOR_DESCRIPTION),g" \
 	    -e "s,%%MOBILE_ANDROID_SDK_VERSION%%,$(MOBILE_ANDROID_SDK_VERSION),g" \
+	    -e "s,%%MOBILE_NOTIFICATIONS_SENDER_ID%%,$(MOBILE_NOTIFICATIONS_SENDER_ID),g" \
 	    mobile/config.xml.in > $@
 
 # This rule generates index.html. md5sum is used to set the right JavaScript
