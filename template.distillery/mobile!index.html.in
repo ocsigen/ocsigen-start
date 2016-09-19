@@ -28,7 +28,7 @@
         </script>
     </head>
     <body>
-        <div class="app" id="app-container">
+        <div class="app blink" id="app-container">
         </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="eliom_loader.js"></script>
