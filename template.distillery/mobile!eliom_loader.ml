@@ -21,7 +21,7 @@ let log =
     (fun s ->
        Firebug.console##log(Js.string s);
        let p = Dom_html.createP Dom_html.document in
-       p##.style##.color := Js.string "#12B0E6";
+       p##.style##.color := Js.string "#64b5f6";
        Dom.appendChild p (Dom_html.document##createTextNode (Js.string s));
        let container = Dom_html.getElementById "app-container" in
        Dom.appendChild container p)
