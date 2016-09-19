@@ -31,8 +31,8 @@ let log =
   else
     (fun s -> ())
 
-(* Reference used by fetchUpdate binding to Cordova Hot Code plugin to know if
- * update has been done or if it failed.
+(* Reference used by the binding to fetchUpdate to know if update has been done
+ * or if it failed.
  *)
 let update_failed = ref false
 
