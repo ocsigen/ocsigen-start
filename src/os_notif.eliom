@@ -181,11 +181,9 @@ VVV See if it is still needed
         id
         (Lwt.return ())
 
-  (* remote invocation *)
-  let receive_broadcast ~notforme id content =
-    notify_worker ~notforme id (`Concrete content)
+  let receive_broadcast id content = (* remote invocation *)
+    notify_worker ~notforme:false id (`Concrete content)
 
-  (* local invocation *)
   let notify ?broadcast ?(notforme = false) id content_gen = Lwt.async @@ fun () ->
     match broadcast with
     | None -> (* local invocation *)
@@ -194,7 +192,7 @@ VVV See if it is still needed
         let%lwt content = content_gen None in
         match content with
         | None -> Lwt.return ()
-        | Some content -> broadcast ~notforme id content
+        | Some content -> broadcast id content
 
   let client_ev () =
     let (ev, _, _) = Eliom_reference.Volatile.get notif_e in

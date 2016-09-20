@@ -55,8 +55,7 @@ sig
 
   (** handles notifications received as a broadcast from another server
   *)
-  val receive_broadcast : notforme:bool ->
-    A.key -> A.notification option Lwt.t -> unit Lwt.t
+  val receive_broadcast : A.key -> A.notification option Lwt.t -> unit Lwt.t
 
   (** Call [notify id f] to send a notification to all clients currently
       listening on data [key]. The notification is build using function [f],
@@ -80,7 +79,7 @@ sig
       generator, so this might break some applications!
   *)
   val notify :
-    ?broadcast:(notforme:bool -> A.key -> A.notification -> unit Lwt.t) ->
+    ?broadcast:(A.key -> A.notification -> unit Lwt.t) ->
     ?notforme:bool -> A.key -> (int64 option -> A.notification option Lwt.t) ->
     unit
 
