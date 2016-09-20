@@ -1,4 +1,4 @@
-css: $(DEST) import-external-css
+css: $(CSS_DEST) import-external-css
 
 # If you want to compile the CSS file from SASS files, uncomment the following
 # recipe and place your SASS files into the 'sass' directory.
@@ -11,7 +11,7 @@ css: $(DEST) import-external-css
 $(CSSDIR):
 	mkdir -p $@
 
-$(DEST): $(LOCAL_CSS) | $(CSSDIR)
+$(CSS_DEST): $(LOCAL_CSS) | $(CSSDIR)
 	HASH=`cat $< | md5sum | cut -d ' ' -f 1` && \
 	cp $< $(CSS_PREFIX)_$$HASH.css && \
 	sed -i '1s/^/@charset "UTF-8";/' $(CSS_PREFIX)_$$HASH.css && \

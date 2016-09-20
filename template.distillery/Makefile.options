@@ -97,7 +97,7 @@ LOCAL_CSS             := $(LOCAL_STATIC_CSS)/$(PROJECT_NAME).css
 # CSS destination
 CSSDIR                := $(TEST_PREFIX)$(ELIOMSTATICDIR)/css
 CSS_PREFIX            := $(CSSDIR)/$(PROJECT_NAME)
-DEST                  := $(CSS_PREFIX).css
+CSS_DEST              := $(CSS_PREFIX).css
 
 # SASS related variables
 SASSDIR               := sass
