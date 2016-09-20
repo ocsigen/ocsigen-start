@@ -82,16 +82,23 @@ ELIOMSTATICDIR        := var/www/${PROJECT_NAME}
 ##----------------------------------------------------------------------
 ## The following part contains the settings for CSS and SASS files.
 
-# CSS files to copy from other projects into the working directory. By default,
-# Ocsigen-start needs the CSS files of ocsigen-toolkit.
+# CSS related variables
+#
+# CSS files to copy from other projects into the working directory.
+# By default, Ocsigen-start needs the CSS files of ocsigen-toolkit.
+# If you don't need Ocsigen-toolkit CSS files, comment EXTERNAL_CSS_FILES
+# variable.
 SHAREDIR              := $(shell $(OPAM) config var share)
 EXTERNAL_CSS_FILES    := $(SHAREDIR)/ocsigen-toolkit/css/*.css
 
-# Directory with files to be statically served
+# Directory with files to be statically served. All external CSS files will be
+# copied in this directory.
 LOCAL_STATIC          := static
 LOCAL_STATIC_CSS      := $(LOCAL_STATIC)/css
 
-# Main CSS file
+# Main CSS file. It's independent from $(LOCAL_STATIC_CSS). You can put all your
+# styles rules in this file.
+# NOTE: If you use the SASS option, the file will be the compiled CSS file.
 LOCAL_CSS             := $(LOCAL_STATIC_CSS)/$(PROJECT_NAME).css
 
 # CSS destination
@@ -100,9 +107,15 @@ CSS_PREFIX            := $(CSSDIR)/$(PROJECT_NAME)
 CSS_DEST              := $(CSS_PREFIX).css
 
 # SASS related variables
+#
+# The directory where SASS files are.
 SASSDIR               := sass
-SRC                   := $(SASSDIR)/$(PROJECT_NAME).scss
-FILES                 := $(SASSDIR)/lib/*.scss
+# The filename of the main SASS file.
+SASS_SRC              := $(SASSDIR)/$(PROJECT_NAME).scss
+# All external SASS files. It would be compiled at the same time than
+# $(SASS_SRC) and put in the same CSS file.
+# By default, it's empty.
+SASS_FILES            :=
 
 ##----------------------------------------------------------------------
 
