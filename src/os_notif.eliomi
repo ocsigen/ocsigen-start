@@ -51,7 +51,8 @@ sig
   val unlisten : A.key -> unit
 
   (** Make a user stop listening on data [key] *)
-  val unlisten_user : userid:Os_user.id -> A.key -> unit
+  val unlisten_user :
+    ?sitedata:Eliom_common.sitedata -> userid:Os_user.id -> A.key -> unit
 
   (** handles notifications received as a broadcast from another server
   *)
