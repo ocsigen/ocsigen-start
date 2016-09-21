@@ -30,11 +30,14 @@
   etc.
 *)
 
+(** The timezone offset. Use the browser date API. *)
 let%client timezone_offset =
   truncate (-. float ((new%js Js.date_now) ##getTimezoneOffset) /. 60.)
 
+(** Defines the timezone using CalendarLib *)
 let%client tz = CalendarLib.Time_Zone.UTC_Plus timezone_offset
 
+(** Returns the user timezone *)
 let%client user_tz () = tz
 
 let user_tz_sr =
@@ -75,6 +78,7 @@ let%shared init_time_rpc : (_, unit) Eliom_client.server_function =
   Eliom_client.server_function ~name:"os_date.init_time_rpc" [%derive.json: int]
     init_time_rpc'
 
+(** When the browser is loaded, we init the timezone *)
 let%client _ =
   (* We wait for the client process to be fully loaded: *)
   Eliom_client.onload (fun () ->

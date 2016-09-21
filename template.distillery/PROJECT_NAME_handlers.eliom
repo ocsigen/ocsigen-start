@@ -84,7 +84,6 @@ let%shared action_link_handler myid_o akey () =
            Redirection.send
            (Redirection Eliom_service.reload_action))
 
-
 (* Set password *)
 let%server set_password_handler =
   Os_session.connected_fun Os_handlers.set_password_handler

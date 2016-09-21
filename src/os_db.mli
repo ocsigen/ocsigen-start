@@ -24,6 +24,9 @@ exception Main_email_removal_attempt
 exception Account_already_activated
 exception Account_not_activated
 
+(** [init ~host ~port ~user ~password ~database ~unix_domain_socket_dir ()]
+    initializes the variables for the database access.
+ *)
 val init :
   ?host:string ->
   ?port:int ->
@@ -35,22 +38,41 @@ val init :
   unit ->
   unit
 
+(** [pwd_crypt_ref] is a reference to [(f_crypt, f_check)] where
+    - [f_crypt pwd] is used to encrypt the password [pwd]
+    - [f_check userid pwd hashed_pwd] returns [true] if the hash of [pwd] and
+    the hashed password [hashed_pwd] of the user with id [userid] match. If they
+    don't match, it returns [false].
+ *)
 val pwd_crypt_ref :
   ((string -> string) * (int64 -> string -> string -> bool)) ref
 
+(** This module is used for email management. *)
 module Email : sig
+  (** [available email] returns [true] if [email] is not already used. Else, it
+      returns [false].
+   *)
   val available : string -> bool Lwt.t
 end
 
+(** This module is used for user management *)
 module User : sig
   exception Invalid_action_link_key of int64
 
+  (** [userid_of_email email] returns the userid of the user which has the email
+      [email]. *)
   val userid_of_email : string -> int64 Lwt.t
 
+  (** [is_registered email] returns [true] if the email is already registered.
+      Else, it returns [false]. *)
   val is_registered : string -> bool Lwt.t
 
+  (** [get_email_validated userid email] returns [true] if [email] has been
+      validated by the user with id [userid]. *)
   val get_email_validated : int64 -> string -> bool Lwt.t
 
+  (** [set_email_validated userid email] valids [email] for the user with id
+      [userid]. *)
   val set_email_validated : int64 -> string -> unit Lwt.t
 
   val add_actionlinkkey :
@@ -61,62 +83,136 @@ module User : sig
     ?validity:int64 ->
     act_key:string -> userid:int64 -> email:string -> unit -> unit Lwt.t
 
+  (** [add_preregister email] preregisters [email] in the database. *)
   val add_preregister : string -> unit Lwt.t
 
+  (** [remove_preregister email] removes [email] from the database. *)
   val remove_preregister : string -> unit Lwt.t
 
+  (** [is_preregistered email] returns [true] if [email] is already
+      registered. Else, it returns [false]. *)
   val is_preregistered : string -> bool Lwt.t
 
+  (** [all ~limit ()] get all email addresses with a limit of [limit] (default
+      is 10). *)
   val all : ?limit:int64 -> unit -> string list Lwt.t
 
+  (** [create ~password ~avatar ~firstname ~lastname email] creates a new user
+      in the database and returns the userid of the new user.
+      Email is mandatory to create a new user.
+      If [password] is passed as an empty string, it fails with the message «
+      empty password ». TODO: change it to an exception?
+   *)
   val create :
     ?password:string ->
     ?avatar:string ->
     firstname:string -> lastname:string -> string -> int64 Lwt.t
 
+  (** [update ~password ~avatar ~firstname ~lastname userid] updates the user
+      profile with [userid].
+      If [password] is passed as an empty string, it fails with the message «
+      empty password ». TODO: change it to an exception?
+   *)
   val update :
     ?password:string ->
     ?avatar:string ->
     firstname:string -> lastname:string -> int64 -> unit Lwt.t
 
+  (** [update_password new_password userid] updates the password of the user
+      with ID [userid].
+      If [password] is passed as an empty string, it fails with the message «
+      empty password ». TODO: change it to an exception?
+   *)
   val update_password : string -> int64 -> unit Lwt.t
 
+  (** [update_avatar new_avatar userid] updates the avatar of the user
+      with ID [userid]. *)
   val update_avatar : string -> int64 -> unit Lwt.t
 
+  (** [update_main_email ~userid ~email] updates the main email of the user
+      with ID [userid]. *)
   val update_main_email : userid:int64 -> email:string -> unit Lwt.t
 
+  (** [verify_password ~email ~password] returns the userid if user with email
+      [email] is registered with the password [password]. If [password] is empty
+      or if the password is wrong, it fails with {!No_such_resource}. *)
   val verify_password : email:string -> password:string -> int64 Lwt.t
 
+  (** [user_of_userid userid] returns a tuple [(userid, firstname, lastname,
+      main_email, password, avatar)] describing the information about the user
+      with ID [userid].
+      If there is no such user, it fails with {!No_such_resource}.
+   *)
   val user_of_userid :
     int64 -> (int64 * string * string * string option * bool) Lwt.t
 
+  (** [get_actionlinkkey_info key] returns the information about the
+      action link [key] as a type {!Os_data.actionlinkkey_info}. *)
   val get_actionlinkkey_info : string -> Os_data.actionlinkkey_info Lwt.t
 
+  (** [emails_of_userid userid] returns all emails registered for the user with
+      ID [userid].
+      If there is no user with [userid] as ID, it fails with
+      {!No_such_resource}.
+      *)
   val emails_of_userid : int64 -> string list Lwt.t
 
+  (** [email_of_userid userid] returns the main email registered for the user
+      with ID [userid].
+      If there is no such user, it fails with
+      {!No_such_resource}.
+      *)
   val email_of_userid : int64 -> string Lwt.t
 
+  (** [is_main_email ~email ~userid] returns [true] if the main email of the
+      user with ID [userid] is [email].
+      If there is no such user or if [email] is not the main
+      email, it returns [false].
+   *)
   val is_main_email : email:string -> userid:int64 -> bool Lwt.t
 
+  (** [add_email_to_user ~userid ~email] add [email] to user with ID [userid].
+    *)
   val add_email_to_user : userid:int64 -> email:string -> unit Lwt.t
 
+  (** [remove_email_from_user ~userid ~email] removes the email [email] from the
+      emails list of user with ID [userid].
+      If [email] is the main email, it fails with {!Main_email_removal_attempt}.
+   *)
   val remove_email_from_user : userid:int64 -> email:string -> unit Lwt.t
 
+  (** [get_users ~pattern ()] returns all users matching the pattern [pattern]
+      as a tuple [(userid, firstname, lastname, avatar, encrypted_password)] *)
   val get_users :
     ?pattern:string ->
     unit -> (int64 * string * string * string option * bool) list Lwt.t
 end
 
+(** This module is used to manage groups of user. *)
 module Groups : sig
+  (** [create ~description name] creates a new group with name [name] and with
+      description [description]. *)
   val create : ?description:string -> string -> unit Lwt.t
 
+  (** [group_of_name name] returns a tuple [(groupid, name, description)]
+      describing the group.
+      If no group has the name [name], it fails with {!No_such_resource}.
+   *)
   val group_of_name : string -> (int64 * string * string option) Lwt.t
 
+  (** [add_user_in_group ~groupid ~userid] adds the user with ID [userid] in the
+      group with ID [groupid] *)
   val add_user_in_group : groupid:int64 -> userid:int64 -> unit Lwt.t
 
+  (** [remove_user_in_group ~groupid ~userid] removes the user with ID [userid]
+      in the group with ID [groupid] *)
   val remove_user_in_group : groupid:int64 -> userid:int64 -> unit Lwt.t
 
+  (** [in_group ~groupid ~userid] returns [true] if the user with ID [userid] is
+      in the group with ID [groupid]. *)
   val in_group : groupid:int64 -> userid:int64 -> bool Lwt.t
 
+  (** [all ()] returns all groups as list of tuple [(groupid, name,
+      description)]. *)
   val all : unit -> (int64 * string * string option) list Lwt.t
 end
