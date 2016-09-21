@@ -9,9 +9,10 @@
 
 module Make(A : module type of Eliom_content.Html.F) = struct
 
-  (** [icon classes] create an icon HTML attribute with "fa" and [classes]
-   * as CSS classes.
-   * The optional parameter is at the end to be able to add other CSS classes
+  (** [icon classes ~a:other_css_classes ()] create an icon HTML attribute with
+   * "fa" and [classes] as CSS classes. The HTML tag "i" is used because it
+   * became the standard for icons.
+   * The optional parameter ~a is at the end to be able to add other CSS classes
    * with predefined icons.
    *)
   let icon classes
@@ -28,10 +29,6 @@ module Make(A : module type of Eliom_content.Html.F) = struct
 
 end
 
-module F = struct
-  include Make(Eliom_content.Html.F)
-end
+module F = Make(Eliom_content.Html.F)
 
-module D = struct
-  include Make(Eliom_content.Html.D)
-end
+module D = Make(Eliom_content.Html.D)
