@@ -18,8 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(* Copyright Vincent Balat *)
-
 (*VVV Warning: Os already implements a cache of user, but for
   Os_user.t only. It's ok. *)
 

@@ -37,16 +37,21 @@ type id = int64
 (** The type of a group *)
 type t
 
+(** [id_of_group group] returns the group ID. *)
 val id_of_group : t -> id
+
+(** [name_of_group group] returns the group name. *)
 val name_of_group : t -> string
+
+(** [desc_of_group group] returns the group description. *)
 val desc_of_group : t -> string option
 
-(** Helper function which creates a new group and return it as
-  * a record of type [t]. *)
+(** [create ~description name] creates a new group in the database and returns
+    it as a record of type [t]. *)
 val create : ?description:string -> string -> t Lwt.t
 
 (** Overwrites the function [get_group] of [Os_db.User] and use
-  * the [get] function of the cache module. *)
+    the [get] function of the cache module. *)
 val group_of_name : string -> t Lwt.t
 
 (* -----------------------------------------------------------------
@@ -57,14 +62,17 @@ val group_of_name : string -> t Lwt.t
 
 *)
 
-(** Insert a user to a group. *)
+(** [add_user_in_group ~group ~userid] adds the user with ID [userid] to
+    [group]. *)
 val add_user_in_group : group:t -> userid:Os_user.id -> unit Lwt.t
 
-(** Remove a user from a group. *)
+(** [remove_user_in_group ~group ~userid] removes the user with ID [userid] from
+    [group]. *)
 val remove_user_in_group : group:t -> userid:Os_user.id -> unit Lwt.t
 
-(** Does user belong to a group? *)
+(** [in_group ~group ~userid] returns [true] if the user with ID [userid] is in
+    [group]. *)
 val in_group : group:t -> userid:Os_user.id -> bool Lwt.t
 
-(** Returns all the groups of the database. *)
+(** [all ()] returns all the groups of the database. *)
 val all : unit -> t list Lwt.t

@@ -4,11 +4,25 @@
 (** This file contains the configuration of your Eliom application.
     You can take some configuration options from Ocsigen server's
     configuration file, as shown below.
+    See https://ocsigen.org/ocsigenserver/ for more information about the
+    configuration file and how to get the information of the config file in an
+    Eliom project.
 *)
 
+(* --------------------- *)
+(* Variables definitions *)
+
+(* The following variables are changed by the ocsigenserver configuration file.
+ *)
+
+(* Configuration of the application itself. *)
 let app_name = ref ""
 let css_name = ref ""
+
+(* The name of the avatar directory. *)
 let avatar_dir = ref []
+
+(* Database configuration. *)
 let os_db_host = ref None
 let os_db_port = ref None
 let os_db_user = ref None
@@ -16,6 +30,10 @@ let os_db_password = ref None
 let os_db_database = ref None
 let os_db_unix_domain_socket_dir = ref None
 
+(* -------------------------------------------------------------- *)
+(* Get variables values from the ocsigenserver configuration file *)
+
+(* Application configuration *)
 let app = Ocsigen_extensions.Configuration.(
   let attributes = [
     attribute ~name:"name" ~obligatory:true
@@ -27,6 +45,7 @@ let app = Ocsigen_extensions.Configuration.(
   element ~name:"app" ~obligatory:true ~attributes ()
 )
 
+(* Avatars configuration *)
 let avatars = Ocsigen_extensions.Configuration.(
   let attributes = [
     attribute ~name:"dir" ~obligatory:true
@@ -36,6 +55,7 @@ let avatars = Ocsigen_extensions.Configuration.(
   element ~name:"avatars" ~obligatory:true ~attributes ()
 )
 
+(* Database configuration *)
 let os_db = Ocsigen_extensions.Configuration.(
   let attributes = [
     attribute ~name:"host" (fun h -> os_db_host := Some h);

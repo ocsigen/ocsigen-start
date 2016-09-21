@@ -18,16 +18,25 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+(** This module defines services which are mostly used for actions like the
+    signup process, to update user data, when a user forgot his password, etc.
+    Some of them are used in forms defined in Os_view.
+    Predefined handlers for each service are defined in the module
+    Os_handlers. *)
+
 [%%server
   open Eliom_parameter
 ]
 
+(** The main service. *)
 let%server main_service =
   Eliom_service.create
     ~path:(Eliom_service.Path [])
     ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
+(** A POST service to preregister a user. By default, an email is
+    enough. *)
 let%server preregister_service =
   Eliom_service.create
     ~name:"preregister_service"
@@ -38,6 +47,8 @@ let%server preregister_service =
           Eliom_parameter.string "email"))
     ()
 
+(** A POST service when the user forgot his password.
+    See {!Os_handlers.forgot_password_handler for a default handler. *)
 let%server forgot_password_service =
   Eliom_service.create
     ~name:"lost_password"
@@ -48,6 +59,9 @@ let%server forgot_password_service =
           Eliom_parameter.string "email"))
     ()
 
+(** A POST service to update the basic user data like first name, last name and
+    password.
+    See {!Os_handlers.set_personal_data_handler for a default handler. *)
 let%server set_personal_data_service =
   Eliom_service.create
     ~name:"set_data"
@@ -59,6 +73,8 @@ let%server set_personal_data_service =
           (string "password"  ** string "password2")))
     ()
 
+(** A POST service to sign up with only an email address.
+    See {!Os_handlers.sign_up_handler for a default handler. *)
 let%server sign_up_service =
   Eliom_service.create
     ~name:"sign_up"
@@ -69,6 +85,8 @@ let%server sign_up_service =
           Eliom_parameter.string "email"))
     ()
 
+(** A POST service to connect a user with username and password.
+    See {!Os_handlers.connect_handler for a default handler. *)
 let%server connect_service =
   Eliom_service.create
     ~name:"connect"
@@ -80,6 +98,8 @@ let%server connect_service =
            bool "keepmeloggedin")))
     ()
 
+(** A POST service to disconnect the current user.
+    See {!Os_handlers.disconnect_handler} for a default handler. *)
 let%server disconnect_service =
   Eliom_service.create
     ~name:"disconnect"
@@ -89,6 +109,10 @@ let%server disconnect_service =
          (Eliom_parameter.unit, Eliom_parameter.unit))
     ()
 
+(** A GET service for action link keys.
+    See {!Os_handlers.action_link_handler} for a default handler and
+    {!Os_db.action_link_table} for more information about the action
+    process. *)
 let%server action_link_service =
   Eliom_service.create
     ~name:"action_link"
@@ -96,6 +120,9 @@ let%server action_link_service =
     ~meth:(Eliom_service.Get (Eliom_parameter.string "actionkey"))
     ()
 
+(** A POST service to update the password. An update password action is
+    associated with the confirmation password.
+    See {!Os_handlers.set_password_handler} for a default handler. *)
 let%server set_password_service =
   Eliom_service.create
     ~name:"set_password"
@@ -106,6 +133,8 @@ let%server set_password_service =
           string "password" ** string "password2"))
     ()
 
+(** A POST service to add an email to a user.
+    See {!Os_handlers.add_email_handler} for a default handler. *)
 let%server add_email_service = Eliom_service.create
   ~name:"add_email"
   ~path:Eliom_service.No_path

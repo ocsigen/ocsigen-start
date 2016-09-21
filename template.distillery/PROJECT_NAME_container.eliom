@@ -4,6 +4,9 @@
 (** This module defines the default template for application pages *)
 
 
+(** Define a navigation bar. Each nav element is a couple [(title, service)]. By
+    default, the navigation bar is represented as a nav with a list of ul with
+    "nav" and "navbar-nav" CSS classes. *)
 let%shared navigation_bar =
   let nav_elts = [
     ("Home",Os_services.main_service);
@@ -15,6 +18,9 @@ let%shared navigation_bar =
       ~ul_class:["nav";"navbar-nav"]
       nav_elts
 
+(** [os_header ?user ()] defines a header with a navigation bar personalized for
+    the user [user]. In this template, it's a userbox and the user name is
+    displayed. *)
 let%shared os_header ?user () = Eliom_content.Html.F.(
   ignore user;
   let%lwt user_box =
@@ -36,6 +42,8 @@ let%shared os_header ?user () = Eliom_content.Html.F.(
   )
 )
 
+(** [os_footer ()] defines a footer. A footer is a navbar which has a fixed
+    position in the bottom. *)
 let%shared os_footer () = Eliom_content.Html.F.(
   footer ~a:[a_class ["footer";"navbar";"navbar-inverse"]] [
     div ~a:[a_class ["container"]] [
@@ -54,12 +62,14 @@ let%shared os_footer () = Eliom_content.Html.F.(
   ]
 )
 
+(** RPC for get_wrong_pdata. See {!Os_msg.wrong_pdata} for more information *)
 let%server get_wrong_pdata () =
   Lwt.return @@ Eliom_reference.Volatile.get Os_msg.wrong_pdata
 
 let%client get_wrong_pdata =
   ~%(Eliom_client.server_function [%derive.json : unit] get_wrong_pdata)
 
+(** [connected_welcome_box ()] creates a welcome box. *)
 let%shared connected_welcome_box () = Eliom_content.Html.F.(
   let%lwt wrong_pdata = get_wrong_pdata () in
   let info, ((fn, ln), (p1, p2)) =
@@ -89,6 +99,9 @@ let%shared get_user_data = function
     let%lwt u = Os_user_proxy.get_data myid in
     Lwt.return (Some u)
 
+(* [page userid_o content] returns a page personalized for the user with id
+   [myid_o] and with the content [content]. It adds a header and a footer. If
+   the user profile is not completed, a connected welcome box is used. *)
 let%shared page myid_o content = Eliom_content.Html.F.(
   let%lwt user = get_user_data myid_o in
   let%lwt content = match user with
@@ -105,5 +118,3 @@ let%shared page myid_o content = Eliom_content.Html.F.(
   let%lwt h = os_header ?user () in
   Lwt.return @@ h :: l
 )
-
-

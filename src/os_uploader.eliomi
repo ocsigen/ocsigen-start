@@ -21,6 +21,12 @@
 
 [%%server.start]
 
+(** [crop_image src dst ratio top right bottom left] crops the image saved in
+    [src] and saves the result in [dst] (default is the source file). [top],
+    [right], [bottom] and [left] are the number of pixels the image must be
+    truncated on the specific sides. The [ratio] is used after truncating
+    the image.
+ *)
 val crop_image :
   src:string ->
   ?dst:string ->
@@ -31,6 +37,9 @@ val crop_image :
   left:float ->
   unit Lwt.t
 
+(** [record_image directory ~ratio ~cropping:(top, right, bottom, left) file]
+    crops the image like [crop_image] and save in the directory [directory].
+ *)
 val record_image :
   string ->
   ?ratio:float ->

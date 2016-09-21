@@ -7,6 +7,7 @@ let%client application_name = Eliom_client.get_application_name ()
 
 let%shared displayed_app_name = "%%%PROJECT_NAME%%%"
 
+(* Database initialization *)
 let () =
   Os_db.init
     ?host:!%%%MODULE_NAME%%%_config.os_db_host
@@ -19,6 +20,10 @@ let () =
 
 let () = Os_email.set_mailer "/usr/sbin/sendmail"
 
+(* Create a module for the application. See
+ * https://ocsigen.org/eliom/manual/clientserver-applications for more
+ * information.
+ *)
 [%%shared
 module App = Eliom_registration.App(struct
     let application_name = application_name

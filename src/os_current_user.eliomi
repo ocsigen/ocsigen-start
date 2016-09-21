@@ -20,19 +20,30 @@
 
 [%%shared.start]
 
-val get_current_user : unit -> Os_user.t
-val get_current_userid : unit -> Os_user.id
-
-module Opt : sig
-  val get_current_user : unit -> Os_user.t option
-  val get_current_userid : unit -> Os_user.id option
-end
-
-[%%client.start]
-
 type current_user =
   | CU_idontknown
   | CU_notconnected
   | CU_user of Os_user.t
+
+(** [get_current_user ()] returns the current user as a {!Os_user.t} type.
+    If no user is connected, it fails with {!Os_session.Not_connected}. *)
+val get_current_user : unit -> Os_user.t
+
+(** [get_current_userid ()] returns the ID of the current user.
+    If no user is connected, it fails with {!Os_session.Not_connected}. *)
+val get_current_userid : unit -> Os_user.id
+
+(** Instead of exception, the module [Opt] returns an option. *)
+module Opt : sig
+  (** [get_current_user ()] returns the current user as a [Os_user.t option]
+      type. If no user is connected, [None] is returned. *)
+  val get_current_user : unit -> Os_user.t option
+
+  (** [get_current_userid ()] returns the ID of the current user as an option.
+      If no user is connected, [None] is returned. *)
+  val get_current_userid : unit -> Os_user.id option
+end
+
+[%%client.start]
 
 val me : current_user ref

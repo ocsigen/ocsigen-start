@@ -31,7 +31,7 @@ let%client storage () =
     (fun v -> v)
 
 (* Set personal data *)
-let set_personal_data_handler myid ()
+let%server set_personal_data_handler myid ()
     (((firstname, lastname), (pwd, pwd2)) as pd) =
   if firstname = "" || lastname = "" || pwd <> pwd2
   then
@@ -47,7 +47,8 @@ let set_personal_data_handler myid ()
     } in
     Os_user.update ~password:pwd record)
 
-let set_password_handler myid () (pwd, pwd2) =
+(* Set password handler *)
+let%server set_password_handler myid () (pwd, pwd2) =
   if pwd <> pwd2
   then
     (Os_msg.msg ~level:`Err ~onload:true "Passwords do not match";
@@ -65,7 +66,7 @@ let%client set_password_rpc =
           (fun myid p -> set_password_handler myid () p))
     )
 
-let generate_action_link_key
+let%server generate_action_link_key
     ?(act_key = Ocsigen_lib.make_cryptographic_safe_string ())
     ?(send_email = true)
     ~service
@@ -99,7 +100,15 @@ let generate_action_link_key
 
 
 (** For default value of [autoconnect], cf. [Os_user.add_actionlinkkey]. *)
-let send_action_link ?autoconnect ?action ?validity msg service email userid =
+let%server send_action_link
+    ?autoconnect
+    ?action
+    ?validity
+    msg
+    service
+    email
+    userid
+  =
   let act_key =
     generate_action_link_key
       ~service:service
@@ -114,7 +123,7 @@ let send_action_link ?autoconnect ?action ?validity msg service email userid =
   Lwt.return ()
 
 (* Sign up *)
-let sign_up_handler () email =
+let%server sign_up_handler () email =
   let send_action_link email userid =
     let msg =
       "Welcome!\r\nTo confirm your e-mail address, \
@@ -146,10 +155,11 @@ let%client sign_up_handler_rpc =
        [%derive.json: string]
        sign_up_handler_rpc)
 
-let%client sign_up_handler () v = sign_up_handler_rpc v
+let%client sign_up_handler () v =
+  sign_up_handler_rpc v
 
 (* Forgot password *)
-let forgot_password_handler service () email =
+let%server forgot_password_handler service () email =
   try%lwt
     let%lwt userid = Os_user.userid_of_email email in
     let msg = "Hi,\r\nTo set a new password, \
@@ -199,7 +209,8 @@ let disconnect_handler () () =
   ignore [%client (restart () : unit)];
   Lwt.return ()
 
-let%server disconnect_handler_rpc () = disconnect_handler () ()
+let%server disconnect_handler_rpc () =
+  disconnect_handler () ()
 
 let%client disconnect_handler_rpc  =
   ~%(Eliom_client.server_function
@@ -207,7 +218,8 @@ let%client disconnect_handler_rpc  =
        [%derive.json: unit]
        disconnect_handler_rpc)
 
-let%client disconnect_handler () () = disconnect_handler_rpc ()
+let%client disconnect_handler () () =
+  disconnect_handler_rpc ()
 
 (* Connection *)
 let connect_handler () ((login, pwd), keepmeloggedin) =
@@ -324,14 +336,7 @@ let%shared action_link_handler _myid_o akey () =
   | `Custom_action_link (action_link, phantom_user) ->
     Lwt.fail (Custom_action_link (action_link, phantom_user))
 
-          (*
-let admin_service_handler userid gp pp =
-  lwt user = Os_user.user_of_userid userid in
-  (*lwt cnt = Admin.admin_page_content user in*)
-  %%%MODULE_NAME%%%_container.page [
-  ] (*@ cnt*)
-           *)
-
+(* Preregister *)
 let preregister_handler () email =
   let%lwt is_preregistered = Os_user.is_preregistered email in
   let%lwt is_registered = Os_user.is_registered email in

@@ -21,10 +21,12 @@
 
 [%%client.start]
 
+(** [reload ()] reloads the current page. *)
 val reload : unit -> unit Lwt.t
 
 [%%shared.start]
 
+(** [memoizator f ()] caches the returned value of [f ()] *)
 val memoizator :
   (unit -> 'a Lwt.t)  ->
   unit                ->
