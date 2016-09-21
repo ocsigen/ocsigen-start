@@ -146,18 +146,18 @@ VVV See if it is still needed
     let uc = Eliom_reference.Volatile.get userchannel in
     I.remove uc id
 
-  let unlisten_user ~userid (id : A.key) =
+  let unlisten_user ?sitedata ~userid (id : A.key) =
     let state =
       Eliom_state.Ext.volatile_data_group_state
         ~scope:Eliom_common.default_group_scope
         (Int64.to_string userid)
     in
     (* Iterating on all sessions in group: *)
-    Eliom_state.Ext.iter_volatile_sub_states
+    Eliom_state.Ext.iter_volatile_sub_states ?sitedata
       ~state
       (fun state ->
          (* Iterating on all client processes in session: *)
-         Eliom_state.Ext.iter_volatile_sub_states
+         Eliom_state.Ext.iter_volatile_sub_states ?sitedata
            ~state
            (fun state ->
               let uc = Eliom_reference.Volatile.Ext.get state userchannel2 in
@@ -181,11 +181,9 @@ VVV See if it is still needed
         id
         (Lwt.return ())
 
-  (* remote invocation *)
-  let receive_broadcast ~notforme id content =
-    notify_worker ~notforme id (`Concrete content)
+  let receive_broadcast id content = (* remote invocation *)
+    notify_worker ~notforme:false id (`Concrete content)
 
-  (* local invocation *)
   let notify ?broadcast ?(notforme = false) id content_gen = Lwt.async @@ fun () ->
     match broadcast with
     | None -> (* local invocation *)
@@ -194,7 +192,7 @@ VVV See if it is still needed
         let%lwt content = content_gen None in
         match content with
         | None -> Lwt.return ()
-        | Some content -> broadcast ~notforme id content
+        | Some content -> broadcast id content
 
   let client_ev () =
     let (ev, _, _) = Eliom_reference.Volatile.get notif_e in
