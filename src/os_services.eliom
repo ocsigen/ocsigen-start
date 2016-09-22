@@ -97,20 +97,6 @@ let activation_service =
     ~meth:(Eliom_service.Get (Eliom_parameter.string "activationkey"))
     ()
 
-let os_github_service =
-  Eliom_service.extern
-    ~prefix:"http://github.com"
-    ~path:["ocsigen"; "ocsigen-start"]
-    ~meth:(Eliom_service.Get Eliom_parameter.unit)
-    ()
-
-let ocsigen_service =
-  Eliom_service.extern
-    ~prefix:"http://ocsigen.org"
-    ~path:[]
-    ~meth:(Eliom_service.Get Eliom_parameter.unit)
-    ()
-
 let set_password_service' =
   Eliom_service.create
     ~name:"set_password"
@@ -141,8 +127,6 @@ let sign_up_service' = ~%sign_up_service'
 let connect_service = ~%connect_service
 let disconnect_service = ~%disconnect_service
 let activation_service = ~%activation_service
-let os_github_service = ~%os_github_service
-let ocsigen_service = ~%ocsigen_service
 let set_password_service' = ~%set_password_service'
 let add_email_service = ~%add_email_service
 
