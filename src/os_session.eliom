@@ -100,8 +100,8 @@ let (on_denied_request, denied_request_action) =
 
 
 [%%shared
-exception Not_connected
-exception Permission_denied
+  exception Not_connected
+  exception Permission_denied
 ]
 
 let start_connected_process uid =
@@ -270,13 +270,11 @@ let gen_wrapper ~allow ~deny
       connected id gp pp
     with Permission_denied -> deny_fun uid
 
-[%%client
-
-   let get_current_userid_o = ref (fun () -> assert false)
+let%client get_current_userid_o = ref (fun () -> assert false)
 
 (* On client-side, we do no security check.
    They are done by the server. *)
-let gen_wrapper ~allow ~deny
+let%client gen_wrapper ~allow ~deny
     ?(deny_fun = fun _ -> Lwt.fail Permission_denied)
     connected not_connected gp pp =
   let userid_o = !get_current_userid_o () in
@@ -284,46 +282,43 @@ let gen_wrapper ~allow ~deny
   | None -> not_connected gp pp
   | Some userid -> connected userid gp pp
 
-]
-
-[%%shared
-let connected_fun ?allow ?deny ?deny_fun f gp pp =
+let%shared connected_fun ?allow ?deny ?deny_fun f gp pp =
   gen_wrapper
     ~allow ~deny ?deny_fun
     f
     (fun _ _ -> Lwt.fail Not_connected)
     gp pp
 
-let connected_rpc ?allow ?deny ?deny_fun f pp =
+let%shared connected_rpc ?allow ?deny ?deny_fun f pp =
   gen_wrapper
     ~allow ~deny ?deny_fun
     (fun userid _ p -> f userid p)
     (fun _ _ -> Lwt.fail Not_connected)
     () pp
 
-let connected_wrapper ?allow ?deny ?deny_fun f pp =
+let%shared connected_wrapper ?allow ?deny ?deny_fun f pp =
   gen_wrapper
     ~allow ~deny ?deny_fun
     (fun userid _ p -> f p)
     (fun _ p -> f p)
     () pp
 
-module Opt = struct
+[%%shared
+  module Opt = struct
 
-  let connected_fun ?allow ?deny ?deny_fun f gp pp =
-    gen_wrapper
-      ~allow ~deny ?deny_fun
-      (fun userid gp pp -> f (Some userid) gp pp)
-      (fun gp pp -> f None gp pp)
-      gp pp
+    let connected_fun ?allow ?deny ?deny_fun f gp pp =
+      gen_wrapper
+        ~allow ~deny ?deny_fun
+        (fun userid gp pp -> f (Some userid) gp pp)
+        (fun gp pp -> f None gp pp)
+        gp pp
 
-  let connected_rpc ?allow ?deny ?deny_fun f pp =
-    gen_wrapper
-      ~allow ~deny ?deny_fun
-      (fun userid _ p -> f (Some userid) p)
-      (fun _ p -> f None p)
-      () pp
+    let connected_rpc ?allow ?deny ?deny_fun f pp =
+      gen_wrapper
+        ~allow ~deny ?deny_fun
+        (fun userid _ p -> f (Some userid) p)
+        (fun _ p -> f None p)
+        () pp
 
-end
-
+  end
 ]

@@ -18,10 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%client
-let reload () =
+let%client reload () =
   Eliom_client.change_page ~service:Eliom_service.reload_action_hidden () ()
-]
 
 let%shared memoizator f =
   let value_ref = ref None in

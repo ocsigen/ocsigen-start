@@ -20,16 +20,16 @@
 
 open Printf
 
-[%%shared
-  let email_pattern = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]+$"
-]
+let%shared email_pattern = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]+$"
 
 let from_addr = ref ("team DEFAULT", "noreply@DEFAULT.DEFAULT")
 
 let mailer = ref "/usr/bin/sendmail"
 
 let set_from_addr s = from_addr := s
+
 let set_mailer s = mailer := s
+
 let get_mailer () = !mailer
 
 exception Invalid_mailer of string
@@ -80,13 +80,12 @@ let send ?(from_addr = !from_addr) ~to_addrs ~subject content =
 
 let set_send s = send_ref := s
 
-[%%client
-let email_pattern = email_pattern
-let regexp_email =
+let%client email_pattern = email_pattern
+
+let%client regexp_email =
   Regexp.regexp_with_flag email_pattern "i"
 
-let is_valid email =
+let%client is_valid email =
   match Regexp.string_match regexp_email email 0 with
   | None -> false
   | Some _ -> true
-]

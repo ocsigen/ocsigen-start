@@ -30,17 +30,18 @@
   etc.
 *)
 
-[%%client
-   let timezone_offset =
-     truncate (-. float ((new%js Js.date_now) ##getTimezoneOffset) /. 60.)
-   let tz = CalendarLib.Time_Zone.UTC_Plus timezone_offset
-   let user_tz () = tz
-]
+let%client timezone_offset =
+  truncate (-. float ((new%js Js.date_now) ##getTimezoneOffset) /. 60.)
+
+let%client tz = CalendarLib.Time_Zone.UTC_Plus timezone_offset
+
+let%client user_tz () = tz
 
 let user_tz_sr =
   Eliom_reference.Volatile.eref
     ~scope:Os_session.user_indep_session_scope
     CalendarLib.Time_Zone.UTC
+
 let user_tz_gr =
   Eliom_reference.Volatile.eref
     ~scope:Eliom_common.default_group_scope
@@ -67,42 +68,44 @@ let init_client_process_time tz =
   Lwt.return ()
 
 let%server init_time_rpc' = init_client_process_time
+
 let%client init_time_rpc' = ()
 
 let%shared init_time_rpc : (_, unit) Eliom_client.server_function =
   Eliom_client.server_function ~name:"os_date.init_time_rpc" [%derive.json: int]
     init_time_rpc'
 
-[%%client
+let%client _ =
+  (* We wait for the client process to be fully loaded: *)
+  Eliom_client.onload (fun () ->
+    Lwt.async (fun () -> init_time_rpc timezone_offset))
 
-let _ =
-(* We wait for the client process to be fully loaded: *)
-Eliom_client.onload (fun () ->
-  Lwt.async (fun () -> init_time_rpc timezone_offset))
-
-]
 
 [%%shared
-open CalendarLib
+  open CalendarLib
 
-type local_calendar = CalendarLib.Calendar.t
+  type local_calendar = CalendarLib.Calendar.t
+]
 
-let to_local date =
+let%shared to_local date =
   let user_tz = user_tz () in
   CalendarLib.(Time_Zone.on Calendar.from_gmt user_tz date)
 
-let to_utc date =
+let%shared to_utc date =
   let user_tz = user_tz () in
   CalendarLib.(Time_Zone.on Calendar.to_gmt user_tz date)
 
-let now () = to_local (CalendarLib.Calendar.now ())
+let%shared now () = to_local (CalendarLib.Calendar.now ())
 
-let to_local_time = CalendarLib.Calendar.to_time
-let to_local_date = CalendarLib.Calendar.to_date
-let local_to_calendar x = x
-let local_from_calendar x = x
+let%shared to_local_time = CalendarLib.Calendar.to_time
 
-let smart_date ?(now = now()) local_date =
+let%shared to_local_date = CalendarLib.Calendar.to_date
+
+let%shared local_to_calendar x = x
+
+let%shared local_from_calendar x = x
+
+let%shared smart_date ?(now = now()) local_date =
   let local_date = Calendar.to_date local_date in
   let today = Calendar.to_date now in
   let p = Date.Period.safe_nb_days (Date.sub local_date today) in
@@ -119,26 +122,26 @@ let smart_date ?(now = now()) local_date =
       in
       Printer.Date.sprint format local_date
 
-let smart_hours_minutes local_date =
+let%shared smart_hours_minutes local_date =
   Printer.Calendar.sprint "%-I:%M%P" local_date
 
-let smart_hours_minutes_fixed local_date =
+let%shared smart_hours_minutes_fixed local_date =
   Printer.Calendar.sprint "%I:%M%P" local_date
 
-let unknown_timezone () = user_tz () = CalendarLib.Time_Zone.UTC
+let%shared unknown_timezone () = user_tz () = CalendarLib.Time_Zone.UTC
 
-let smart_hours_minutes date =
+let%shared smart_hours_minutes date =
   if unknown_timezone () then
     smart_hours_minutes date ^ " GMT"
   else
     smart_hours_minutes date
 
-let smart_time ?now date =
+let%shared smart_time ?now date =
   let d = smart_date ?now date in
   let h = smart_hours_minutes date in
   d ^ " at " ^ h
 
-let smart_date_interval ?(now = now ()) start_date end_date =
+let%shared smart_date_interval ?(now = now ()) start_date end_date =
   let need_year =
     Calendar.year start_date <> Calendar.year end_date
       ||
@@ -150,7 +153,7 @@ let smart_date_interval ?(now = now ()) start_date end_date =
   let e = Printer.sprint format (Calendar.prev end_date `Second) in
   if s = e then smart_date ~now start_date else s ^ "–" ^ e
 
-let smart_interval ?(now = now ()) start_date end_date =
+let%shared smart_interval ?(now = now ()) start_date end_date =
   let need_year =
     Calendar.year start_date <> Calendar.year end_date
       ||
@@ -170,5 +173,3 @@ let smart_interval ?(now = now ()) start_date end_date =
   let s = Printer.sprint format1 start_date in
   let e = Printer.sprint format2 end_date in
   s ^ "–" ^ e
-
-]

@@ -19,9 +19,9 @@
  *)
 
 [%%shared
-open Eliom_content.Html
-open Eliom_content.Html.F
-module Stringset = Set.Make(String)
+  open Eliom_content.Html
+  open Eliom_content.Html.F
+  module Stringset = Set.Make(String)
 ]
 
 (* tips_seen is a group persistent reference recording which tips have

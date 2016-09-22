@@ -21,42 +21,37 @@
 let section = Lwt_log.Section.make "os:current_user"
 
 [%%shared
+  type current_user =
+    | CU_idontknown
+    | CU_notconnected
+    | CU_user of Os_user.t
+]
 
-type current_user =
-  | CU_idontknown
-  | CU_notconnected
-  | CU_user of Os_user.t
-
-let please_use_connected_fun =
+let%shared please_use_connected_fun =
   "Os_current_user is usable only with connected functions"
 
-]
 
 (* current user *)
 let me : current_user Eliom_reference.Volatile.eref =
   (* This is a request cache of current user *)
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope CU_idontknown
 
-[%%client
-
-let me : current_user ref = ref CU_notconnected
+let%client me : current_user ref = ref CU_notconnected
   (*on client side the default is not connected *)
 
-let get_current_user_option () =
+let%client get_current_user_option () =
   match !me with
   | CU_idontknown -> assert false
   | CU_notconnected -> None
   | CU_user u -> Some u
 
-let get_current_user () =
+let%client get_current_user () =
   match !me with
   | CU_user a -> a
   | CU_idontknown -> (* Should never happen *) failwith please_use_connected_fun
   | _ ->
     Firebug.console##(log (Js.string "Not connected error in Os_current_user"));
     raise Os_session.Not_connected
-
-]
 
 (* SECURITY: We can trust these functions on server side,
    because the user is set at every request from the session cookie value.
@@ -76,23 +71,22 @@ let get_current_user_option () =
   | CU_notconnected -> None
 
 
+let%shared get_current_userid () = Os_user.userid_of_user (get_current_user ())
+
 [%%shared
-let get_current_userid () = Os_user.userid_of_user (get_current_user ())
+  module Opt = struct
 
-module Opt = struct
+    let get_current_user = get_current_user_option
 
-  let get_current_user = get_current_user_option
+    let get_current_userid () =
+      Eliom_lib.Option.map
+        Os_user.userid_of_user
+        (get_current_user_option ())
 
-  let get_current_userid () =
-    Eliom_lib.Option.map
-      Os_user.userid_of_user
-      (get_current_user_option ())
-
-end
- ]
-[%%client
-   let _ = Os_session.get_current_userid_o := Opt.get_current_userid
+  end
 ]
+
+let%client _ = Os_session.get_current_userid_o := Opt.get_current_userid
 
 let set_user_server userid =
   let%lwt u = Os_user.user_of_userid userid in
@@ -108,9 +102,6 @@ let set_user_client () =
 
 let unset_user_client () =
   ignore [%client ( me := CU_notconnected : unit)]
-
-
-
 
 let last_activity : CalendarLib.Calendar.t option Eliom_reference.eref =
   Eliom_reference.eref
