@@ -5,13 +5,6 @@ let%client application_name = Eliom_client.get_application_name ()
 let%shared displayed_app_name = "%%%PROJECT_NAME%%%"
 
 let () =
-  let int_of_pgport s =
-    try
-      int_of_string s
-    with Failure _ ->
-      failwith @@ Printf.sprintf
-        "PGPORT environment variable must be an integer, not '%s'" s
-  in
   Os_db.init
     ?host:!%%%MODULE_NAME%%%_config.os_db_host
     ?port:!%%%MODULE_NAME%%%_config.os_db_port
