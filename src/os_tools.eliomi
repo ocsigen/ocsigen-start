@@ -1,4 +1,4 @@
-[%%server.start]
+[%%shared.start]
 
 module Navigation_bar :
   sig
@@ -26,7 +26,7 @@ module Navigation_bar :
 val popup_button :
   button_name:string Eliom_content.Html.D.wrap ->
   ?button_class:Html_types.nmtokens Eliom_content.Html.D.wrap ->
-  popup_content:(unit -> 'a Lwt.t) ->
+  popup_content:(unit -> [< Html_types.div_content ] Eliom_content.Html.elt Lwt.t) ->
   [> Html_types.button ] Eliom_content.Html.D.elt Lwt.t
 
 module Carousel :
