@@ -118,14 +118,15 @@ DEBUG                 := yes
 ##----------------------------------------------------------------------
 ## The following part contains the settings for the mobile application.
 
-MOBILE_APP_ID              := com.%%%PROJECT_NAME%%%.mobile
-MOBILE_APP_NAME            := %%%PROJECT_NAME%%%
-MOBILE_APP_VERSION         := 0.1
-MOBILE_DESCRIPTION         := %%%PROJECT_NAME%%% mobile application
-MOBILE_AUTHOR_EMAIL        := developer@domain.com
-MOBILE_AUTHOR_HREF         := http://domain.com
-MOBILE_AUTHOR_DESCRIPTION  := %%%PROJECT_NAME%%% team
-MOBILE_ANDROID_SDK_VERSION := 15
+MOBILE_APP_ID                  := com.%%%PROJECT_NAME%%%.mobile
+MOBILE_APP_NAME                := %%%PROJECT_NAME%%%
+MOBILE_APP_VERSION             := 0.1
+MOBILE_DESCRIPTION             := %%%PROJECT_NAME%%% mobile application
+MOBILE_AUTHOR_EMAIL            := developer@domain.com
+MOBILE_AUTHOR_HREF             := http://domain.com
+MOBILE_AUTHOR_DESCRIPTION      := %%%PROJECT_NAME%%% team
+MOBILE_ANDROID_SDK_VERSION     := 15
+MOBILE_NOTIFICATIONS_SENDER_ID := 424242424242
 
 ##----------------------------------------------------------------------
 
