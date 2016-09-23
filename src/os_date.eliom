@@ -1,9 +1,7 @@
 (* Ocsigen-start
  * http://www.ocsigen.org/ocsigen-start
  *
- * Copyright (C) 2014
- *      Séverine Maingaud
- *      Vincent Balat
+ * Copyright (C) Université Paris Diderot, CNRS, INRIA, Be Sport.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
