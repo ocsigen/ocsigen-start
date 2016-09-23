@@ -21,8 +21,9 @@
 [%%shared
   open Eliom_content.Html
   open Eliom_content.Html.F
+]
 
-let generic_email_form ?a ?label ?(text="Send") ~service () =
+let%shared generic_email_form ?a ?label ?(text="Send") ~service () =
   D.Form.post_form ?a ~service
     (fun name ->
       let l = [
@@ -42,7 +43,7 @@ let generic_email_form ?a ?label ?(text="Send") ~service () =
         | None -> l
         | Some lab -> F.label [pcdata lab]::l) ()
 
-let connect_form ?a () =
+let%shared connect_form ?a () =
   D.Form.post_form ?a ~xhr:false ~service:Os_services.connect_service
     (fun ((login, password), keepmeloggedin) -> [
       Form.input
@@ -67,11 +68,7 @@ let connect_form ?a () =
         Form.string;
     ]) ()
 
-]
-
-[%%shared
-
-let disconnect_button ?a () =
+let%shared disconnect_button ?a () =
   Form.post_form ?a ~service:Os_services.disconnect_service
     (fun _ -> [
          Form.button_no_value
@@ -80,14 +77,14 @@ let disconnect_button ?a () =
            [Ot_icons.F.signout (); pcdata "Logout"]
        ]) ()
 
-let sign_up_form ?a () =
+let%shared sign_up_form ?a () =
   generic_email_form ?a ~service:Os_services.sign_up_service' ()
 
-let forgot_password_form ?a () =
+let%shared forgot_password_form ?a () =
   generic_email_form ?a
     ~service:Os_services.forgot_password_service ()
 
-let information_form ?a
+let%shared information_form ?a
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
     () =
   D.Form.post_form ?a ~service:Os_services.set_personal_data_service'
@@ -141,10 +138,10 @@ let information_form ?a
        ]) ()
 
 
-let preregister_form ?a label =
+let%shared preregister_form ?a label =
   generic_email_form ?a ~service:Os_services.preregister_service' ~label ()
 
-let home_button ?a () =
+let%shared home_button ?a () =
   Form.get_form ?a ~service:Os_services.main_service
     (fun _ -> [
       Form.input
@@ -153,13 +150,13 @@ let home_button ?a () =
         Form.string;
     ])
 
-let avatar user =
+let%shared avatar user =
   match Os_user.avatar_uri_of_user user with
   | Some src ->
     img ~alt:"picture" ~a:[a_class ["os_avatar"]] ~src ()
   | None -> Ot_icons.F.user ()
 
-let username user =
+let%shared username user =
   let n = match Os_user.firstname_of_user user with
     | "" ->
       let userid = Os_user.userid_of_user user in
@@ -172,7 +169,7 @@ let username user =
   in
   div ~a:[a_class ["os_username"]] n
 
-let password_form ?a ~service () =
+let%shared password_form ?a ~service () =
   D.Form.post_form
     ?a
     ~service
@@ -216,4 +213,3 @@ let password_form ?a ~service () =
            ~a:[ a_class [ "button" ] ] ~value:"Send" Form.string
        ])
     ()
- ]

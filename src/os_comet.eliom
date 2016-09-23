@@ -21,9 +21,9 @@
 [%%shared
   open Eliom_content.Html
   open Eliom_content.Html.F
-
-  let __link = () (* to make sure os_comet is linked *)
 ]
+
+let%shared __link = () (* to make sure os_comet is linked *)
 
 let%client restart_process () =
   if Eliom_client.is_client_app () then
@@ -46,8 +46,8 @@ let%client _ = Eliom_comet.set_handle_exn_function
 *)
 
 [%%shared
-type msg = Connection_changed | Heartbeat
- ]
+  type msg = Connection_changed | Heartbeat
+]
 
 let create_monitor_channel () =
   let monitor_stream, monitor_send = Lwt_stream.create () in
@@ -72,25 +72,21 @@ let monitor_channel_ref =
 let already_send_ref =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
-[%%client
-
-   let handle_message = function
-     | Lwt_stream.Error exn ->
-       Eliom_lib.debug_exn
-         "Exception received on Os_comet's monitor channel: " exn;
-       restart_process ();
-       Lwt.return ()
-     | Lwt_stream.Value Heartbeat ->
-       Eliom_lib.debug "poum";
-       Lwt.return ()
-     | Lwt_stream.Value Connection_changed ->
-       Os_msg.msg ~level:`Err
-         "Connection has changed from outside. Program will restart.";
-       let%lwt () = Lwt_js.sleep 2. in
-       Eliom_client.exit_to ~service:Eliom_service.reload_action () ();
-       Lwt.return ()
-
-]
+let%client handle_message = function
+  | Lwt_stream.Error exn ->
+    Eliom_lib.debug_exn
+      "Exception received on Os_comet's monitor channel: " exn;
+    restart_process ();
+    Lwt.return ()
+  | Lwt_stream.Value Heartbeat ->
+    Eliom_lib.debug "poum";
+    Lwt.return ()
+  | Lwt_stream.Value Connection_changed ->
+    Os_msg.msg ~level:`Err
+      "Connection has changed from outside. Program will restart.";
+    let%lwt () = Lwt_js.sleep 2. in
+    Eliom_client.exit_to ~service:Eliom_service.reload_action () ();
+    Lwt.return ()
 
 let _ =
   Os_session.on_start_process

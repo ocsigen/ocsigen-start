@@ -300,6 +300,4 @@ let%client add_email_handler =
   in
   fun () -> rpc
 
-[%%shared
-   let _ = Os_comet.__link (* to make sure os_comet is linked *)
-]
+let%shared _ = Os_comet.__link (* to make sure os_comet is linked *)

@@ -2,13 +2,13 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 [%%shared
-    open Eliom_content.Html.F
+  open Eliom_content.Html.F
 ]
 
 [%%client
-    module Ocsigen_config = struct
-      let get_debugmode () = false
-    end
+  module Ocsigen_config = struct
+    let get_debugmode () = false
+  end
 ]
 
 (* FIXME MOBILE *)
@@ -46,36 +46,35 @@ let%shared the_local_css = [
   ["os.css"]
 ]
 
-[%%shared.start]
+[%%shared
+  module Page_config = struct
 
-module Page_config = struct
+    include Os_page.Default_config
 
-  include Os_page.Default_config
+    let title = "%%%PROJECT_NAME%%%"
 
-  let title = "%%%PROJECT_NAME%%%"
+    let local_js = the_local_js
+    let local_css = the_local_css
 
-  let local_js = the_local_js
-  let local_css = the_local_css
+    let other_head = css_name_script@app_js
 
-  let other_head = css_name_script@app_js
+    let default_predicate _ _ = Lwt.return true
 
-  let default_predicate _ _ = Lwt.return true
+    let default_connected_predicate _ _ _ = Lwt.return true
 
-  let default_connected_predicate _ _ _ = Lwt.return true
+    let default_error_page _ _ exn =
+      %%%MODULE_NAME%%%_container.page None
+        (if Ocsigen_config.get_debugmode ()
+         then [p [pcdata (Printexc.to_string exn)]]
+         else [p [pcdata "Error"]])
 
-  let default_error_page _ _ exn =
-    %%%MODULE_NAME%%%_container.page None
-      (if Ocsigen_config.get_debugmode ()
-       then [p [pcdata (Printexc.to_string exn)]]
-       else [p [pcdata "Error"]])
+    let default_connected_error_page userid_o _ _ exn =
+      %%%MODULE_NAME%%%_container.page userid_o
+        (if Ocsigen_config.get_debugmode ()
+         then [p [pcdata (Printexc.to_string exn)]]
+         else [p [pcdata "Error"]])
 
-  let default_connected_error_page userid_o _ _ exn =
-    %%%MODULE_NAME%%%_container.page userid_o
-      (if Ocsigen_config.get_debugmode ()
-       then [p [pcdata (Printexc.to_string exn)]]
-       else [p [pcdata "Error"]])
+  end
 
-end
-
-
-include Os_page.Make(Page_config)
+  include Os_page.Make(Page_config)
+]

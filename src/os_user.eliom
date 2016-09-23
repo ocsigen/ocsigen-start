@@ -51,27 +51,26 @@ let create_user_from_db0 (userid, fn, ln, avatar, pwdset) =
 
 let create_user_from_db d = fst (create_user_from_db0 d)
 
-[%%shared
 (** Getters functions. *)
-let userid_of_user u = u.userid
-let firstname_of_user u = u.fn
-let lastname_of_user u = u.ln
-let avatar_of_user u = u.avatar
+let%shared userid_of_user u = u.userid
+let%shared firstname_of_user u = u.fn
+let%shared lastname_of_user u = u.ln
+let%shared avatar_of_user u = u.avatar
 
-let avatar_uri_of_avatar ?absolute_path avatar =
+let%shared avatar_uri_of_avatar ?absolute_path avatar =
   Eliom_content.Html.F.make_uri ?absolute_path
     ~service:(Eliom_service.static_dir ()) ["avatars"; avatar]
 
-let avatar_uri_of_user ?absolute_path user =
+let%shared avatar_uri_of_user ?absolute_path user =
   Eliom_lib.Option.map
     (avatar_uri_of_avatar ?absolute_path) (avatar_of_user user)
 
-let fullname_of_user user = String.concat " " [user.fn; user.ln]
+let%shared fullname_of_user user = String.concat " " [user.fn; user.ln]
 
-let is_complete u = not (u.fn = "" || u.ln = "")
+let%shared is_complete u = not (u.fn = "" || u.ln = "")
 
-]
 let emails_of_user user = Os_db.User.emails_of_userid user.userid
+
 let email_of_user user = Os_db.User.email_of_userid user.userid
 
 

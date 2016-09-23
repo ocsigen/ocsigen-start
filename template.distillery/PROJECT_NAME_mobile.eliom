@@ -2,9 +2,9 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 [%%client
-[@@@ocaml.warning "-33"]
-open %%%MODULE_NAME%%% (* for dependency reasons *)
-[@@@ocaml.warning "+33"]
+  [@@@ocaml.warning "-33"]
+  open %%%MODULE_NAME%%% (* for dependency reasons *)
+  [@@@ocaml.warning "+33"]
 ]
 
 (*****************************************************************************)

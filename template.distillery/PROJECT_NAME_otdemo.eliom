@@ -2,26 +2,30 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 [%%shared
-    open Eliom_content.Html
-    open Eliom_content.Html.D
+  open Eliom_content.Html
+  open Eliom_content.Html.D
 ]
 
 [%%shared
-module type DemoPage = sig
-  val name : string
-  val service :
-    (unit, unit,
-     Eliom_service.get,
-     Eliom_service.att,
-     Eliom_service.non_co,
-     Eliom_service.non_ext,
-     Eliom_service.reg,
-     [ `WithoutSuffix ],
-     unit, unit,
-     Eliom_service.non_ocaml)
-      Eliom_service.t
-  val page : unit -> ([> `Input | `P | `Div] Eliom_content.Html.D.elt) list Lwt.t
-end
+  module type DemoPage = sig
+    val name : string
+
+    val service :
+      (unit, unit,
+       Eliom_service.get,
+       Eliom_service.att,
+       Eliom_service.non_co,
+       Eliom_service.non_ext,
+       Eliom_service.reg,
+       [ `WithoutSuffix ],
+       unit, unit,
+       Eliom_service.non_ocaml)
+        Eliom_service.t
+
+    val page :
+      unit ->
+      ([> `Input | `P | `Div] Eliom_content.Html.D.elt) list Lwt.t
+  end
 ]
 
 (* popup button demo **********************************************************)
@@ -33,40 +37,41 @@ let%server service =
     ()
 
 [%%shared
-module PopupPage : DemoPage = struct
+  module PopupPage : DemoPage = struct
 
-  let name = "Popup Button"
+    let name = "Popup Button"
 
-  let service = ~%service
+    let service = ~%service
 
-  let page () =
-    let button =
-      D.Form.input
-        ~a:[a_class ["button"]]
-        ~input_type:`Submit
-        ~value:"Click for a popup!"
-        (Form.string)
-    in
-    ignore
-      [%client
-          (Lwt.async (fun () ->
-            Lwt_js_events.clicks
-              (To_dom.of_element ~%button)
-              (fun _ _ ->
-                let%lwt _ =
-                  Ot_popup.popup
-                    ~close_button:[pcdata "close"]
-                    (fun _ -> Lwt.return @@ p [pcdata "Popup message"])
-                in
-                Lwt.return ()))
-             : _)
-      ];
-    Lwt.return
-    [
-      p [pcdata "Here is a button showing a simple popup window when clicked:"];
-      p [button]
-    ]
-end
+    let page () =
+      let button =
+        D.Form.input
+          ~a:[a_class ["button"]]
+          ~input_type:`Submit
+          ~value:"Click for a popup!"
+          (Form.string)
+      in
+      ignore
+        [%client
+            (Lwt.async (fun () ->
+              Lwt_js_events.clicks
+                (To_dom.of_element ~%button)
+                (fun _ _ ->
+                  let%lwt _ =
+                    Ot_popup.popup
+                      ~close_button:[pcdata "close"]
+                      (fun _ -> Lwt.return @@ p [pcdata "Popup message"])
+                  in
+                  Lwt.return ()))
+               : _)
+        ];
+      Lwt.return
+      [
+        p [pcdata "Here is a button showing a simple popup window when \
+        clicked:"];
+        p [button]
+      ]
+  end
 ]
 
 (* carousel demo **************************************************************)
@@ -80,45 +85,47 @@ let%server service =
     ()
 
 [%%shared
-module CarouselPage : DemoPage = struct
+  module CarouselPage : DemoPage = struct
 
-  let name = "Carousel"
+    let name = "Carousel"
 
-  let service = ~%service
+    let service = ~%service
 
-  let page () =
-    let make_page content =
-      div ~a:[a_class ["otdemo-carousel-page"]] [pcdata content]
-    in
-    let carousel_pages = ["1"; "2"; "3"] in
-    let ribbon_content = List.map (fun p -> [pcdata p]) carousel_pages in
-    let carousel_content = List.map make_page carousel_pages in
-    let bullets_content =
-      List.map (fun n -> [div [p [pcdata n]]]) carousel_pages
-    in
-    let r = Os_tools.Carousel.make
-      ~update:[%client carousel_update]
-      ~change:[%client carousel_change]
-      ~carousel:([a_class ["otdemo-carousel"]], carousel_content)
-      ~ribbon:([], ribbon_content)
-      ~previous:([a_class ["button"]], [pcdata "←"])
-      ~next:([a_class ["button"]], [pcdata "→"])
-      ~bullets:([], bullets_content)
-      ()
-    in
-    let carousel, ribbon, prev, next, bullets = match r with
-      | c, Some r, Some p, Some n, Some b -> c, r, p, n, b
-      | _ -> assert false
-    in
-    Lwt.return
-      [
-        p [pcdata "The carousel displays a number of blocks side-by-side (or vertically stacked)."];
-        p [pcdata "To switch to a different block, either use the buttons above or below the carousel."];
-        p [pcdata "In the mobile app you can also swipe the screen."];
-        ribbon; carousel; p [prev; next];
-        div ~a:[a_class ["otdemo-bullets"]] [bullets]
-      ]
-end
+    let page () =
+      let make_page content =
+        div ~a:[a_class ["otdemo-carousel-page"]] [pcdata content]
+      in
+      let carousel_pages = ["1"; "2"; "3"] in
+      let ribbon_content = List.map (fun p -> [pcdata p]) carousel_pages in
+      let carousel_content = List.map make_page carousel_pages in
+      let bullets_content =
+        List.map (fun n -> [div [p [pcdata n]]]) carousel_pages
+      in
+      let r = Os_tools.Carousel.make
+        ~update:[%client carousel_update]
+        ~change:[%client carousel_change]
+        ~carousel:([a_class ["otdemo-carousel"]], carousel_content)
+        ~ribbon:([], ribbon_content)
+        ~previous:([a_class ["button"]], [pcdata "←"])
+        ~next:([a_class ["button"]], [pcdata "→"])
+        ~bullets:([], bullets_content)
+        ()
+      in
+      let carousel, ribbon, prev, next, bullets = match r with
+        | c, Some r, Some p, Some n, Some b -> c, r, p, n, b
+        | _ -> assert false
+      in
+      Lwt.return
+        [
+          p [pcdata "The carousel displays a number of blocks side-by-side (or \
+          vertically stacked)."];
+          p [pcdata "To switch to a different block, either use the buttons \
+          above or below the carousel."];
+          p [pcdata "In the mobile app you can also swipe the screen."];
+          ribbon; carousel; p [prev; next];
+          div ~a:[a_class ["otdemo-bullets"]] [bullets]
+        ]
+  end
 ]
 
 (* rpc button demo **********************************************************)
@@ -162,35 +169,36 @@ let%server service =
     ()
 
 [%%shared
-module RpcPage : DemoPage = struct
+  module RpcPage : DemoPage = struct
 
-  let name = "RPC Button"
+    let name = "RPC Button"
 
-  let service = ~%service
+    let service = ~%service
 
-  let page () =
-    let button =
-      button
-        ~a:[a_class ["button"]]
-        [pcdata "Click to call a RPC"]
-    in
-    ignore
-      [%client
-          (Lwt.async (fun () ->
-            Lwt_js_events.clicks
-              (To_dom.of_element ~%button)
-              (fun _ _ -> demo_function ())
-           )
-             : _)
-      ];
-    let%lwt value = value_reactive () in
-    Lwt.return
-      [
-        p [pcdata "Here is a button calling a rpc to increase a server side value."];
-        p [Eliom_content.Html.R.pcdata value];
-        p [button]
-      ]
-end
+    let page () =
+      let button =
+        button
+          ~a:[a_class ["button"]]
+          [pcdata "Click to call a RPC"]
+      in
+      ignore
+        [%client
+            (Lwt.async (fun () ->
+              Lwt_js_events.clicks
+                (To_dom.of_element ~%button)
+                (fun _ _ -> demo_function ())
+             )
+               : _)
+        ];
+      let%lwt value = value_reactive () in
+      Lwt.return
+        [
+          p [pcdata "Here is a button calling a rpc to increase a server side \
+          value."];
+          p [Eliom_content.Html.R.pcdata value];
+          p [button]
+        ]
+  end
 ]
 
 
@@ -221,26 +229,26 @@ let%client date_reactive =
   ~%(Eliom_client.server_function [%derive.json: unit] date_reactive)
 
 [%%shared
-module CalendarPage : DemoPage = struct
+  module CalendarPage : DemoPage = struct
 
-  let name = "Calendar"
+    let name = "Calendar"
 
-  let service = ~%service
+    let service = ~%service
 
-  let page () =
-    let calendar = Ot_calendar.make
-      ~click_non_highlighted:true
-      ~action:[%client action]
-      ()
-    in
-    let%lwt dr = date_reactive () in
-    Lwt.return
-      [
-        p [pcdata "This page shows the calendar."];
-        div ~a:[a_class ["os-calendar"]] [calendar];
-        p [Eliom_content.Html.R.pcdata dr]
-      ]
-end
+    let page () =
+      let calendar = Ot_calendar.make
+        ~click_non_highlighted:true
+        ~action:[%client action]
+        ()
+      in
+      let%lwt dr = date_reactive () in
+      Lwt.return
+        [
+          p [pcdata "This page shows the calendar."];
+          div ~a:[a_class ["os-calendar"]] [calendar];
+          p [Eliom_content.Html.R.pcdata dr]
+        ]
+  end
 ]
 
 (* timepicker demo ************************************************************)
@@ -270,38 +278,38 @@ let%client time_reactive =
   ~%(Eliom_client.server_function [%derive.json: unit] time_reactive)
 
 [%%shared
-module TimepickerPage : DemoPage = struct
+  module TimepickerPage : DemoPage = struct
 
-  let name = "TimePicker"
+    let name = "TimePicker"
 
-  let service = ~%service
+    let service = ~%service
 
-  let page () =
-    let time_picker, _, back_f = Ot_time_picker.make
-      ~h24:true
-      ~action:[%client action]
-      ()
-    in
-    let button = Eliom_content.Html.D.button [pcdata "back to hours"] in
-    ignore
-      [%client
-          (Lwt.async (fun () ->
-            Lwt_js_events.clicks
-              (To_dom.of_element ~%button)
-              (fun _ _ ->
-                ~%back_f ();
-                Lwt.return ()))
-             : _)
-      ];
-    let%lwt tr = time_reactive () in
-    Lwt.return
-      [
-        p [pcdata "This page shows the time picker."];
-        div [time_picker];
-        p [Eliom_content.Html.R.pcdata tr];
-        div [button]
-      ]
-end
+    let page () =
+      let time_picker, _, back_f = Ot_time_picker.make
+        ~h24:true
+        ~action:[%client action]
+        ()
+      in
+      let button = Eliom_content.Html.D.button [pcdata "back to hours"] in
+      ignore
+        [%client
+            (Lwt.async (fun () ->
+              Lwt_js_events.clicks
+                (To_dom.of_element ~%button)
+                (fun _ _ ->
+                  ~%back_f ();
+                  Lwt.return ()))
+               : _)
+        ];
+      let%lwt tr = time_reactive () in
+      Lwt.return
+        [
+          p [pcdata "This page shows the time picker."];
+          div [time_picker];
+          p [Eliom_content.Html.R.pcdata tr];
+          div [button]
+        ]
+  end
 ]
 
 (* drawer / otdemo welcome page ***********************************************)
@@ -335,7 +343,7 @@ let%shared handler userid_o () () = make_page userid_o
   [
     p [pcdata "This page contains some demos for some widgets \
                from ocsigen-toolkit."];
-    p [pcdata "The different demos are accessible through the drawer\
+    p [pcdata "The different demos are accessible through the drawer \
                menu. To open it click the top left button on the screen."];
     p [pcdata "Feel free to modify the generated code and use it \
                or redistribute it as you want."];
