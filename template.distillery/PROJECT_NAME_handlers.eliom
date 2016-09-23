@@ -58,7 +58,7 @@ let%server preregister_handler' =
 let%client preregister_handler' =
   let preregister_rpc =
     ~%(Eliom_client.server_function [%derive.json : string]
-       @@ Os_handlers.preregister_handler' ())
+       @@ preregister_handler' ())
   in
   fun () -> preregister_rpc
 
@@ -68,7 +68,7 @@ let%server activation_handler =
 let%client activation_handler =
   let activation_handler_rpc =
     ~%(Eliom_client.server_function [%derive.json : string]
-       @@ fun akey -> Os_handlers.activation_handler akey ())
+       @@ fun akey -> activation_handler akey ())
   in
   fun akey () -> activation_handler_rpc akey
 
