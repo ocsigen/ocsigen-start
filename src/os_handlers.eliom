@@ -217,15 +217,12 @@ let activation_handler_common ~akey =
         Lwt.fail Os_db.No_such_resource
       else Lwt.return_unit in
     let%lwt () = Os_db.User.set_email_validated userid email in
-    let%lwt () =
-      if autoconnect then
-        let%lwt () = Os_session.disconnect () in
-        let%lwt () = Os_session.connect userid in
-        Lwt.return_unit
-      else
-        Lwt.return_unit
-    in
-    Lwt.return `Reload
+    if autoconnect then
+      let%lwt () = Os_session.disconnect () in
+      let%lwt () = Os_session.connect userid in
+      Lwt.return `Restart
+    else
+      Lwt.return `Reload
   with
   | Os_db.No_such_resource ->
     Eliom_reference.Volatile.set Os_userbox.activation_key_outdated true;
@@ -239,8 +236,13 @@ let activation_handler_common ~akey =
        without the GET parameters to get rid of the key. *)
     Lwt.return `Reload
 
+let%client activation_handler_common ~akey =
+  ~%(Eliom_client.server_function ~name:"Os_handlers.activation_handler"
+       [%derive.json: string]
+       (fun akey -> activation_handler_common ~akey))
+    akey
 
-let%server activation_handler akey () =
+let%shared activation_handler akey () =
   let%lwt a = activation_handler_common ~akey in
   match a with
   | `Reload ->
@@ -248,19 +250,9 @@ let%server activation_handler akey () =
       (Redirection.send (Redirection Eliom_service.reload_action))
   | `NoReload ->
     Eliom_registration.Action.send ()
-
-let%client activation_handler_rpc =
-  ~%(Eliom_client.server_function ~name:"Os_handlers.activation_handler"
-       [%derive.json: string]
-       (fun akey ->
-          let%lwt _ = activation_handler_common ~akey in
-          Lwt.return ()))
-
-
-let%client activation_handler akey () =
-  let%lwt () = activation_handler_rpc akey in
-  restart ();
-  Eliom_registration.Unit.send ()
+  | `Restart ->
+    ignore [%client (restart () : unit)];
+    Eliom_registration.Unit.send ()
 
           (*
 let admin_service_handler userid gp pp =
