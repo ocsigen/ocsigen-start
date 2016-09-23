@@ -10,6 +10,8 @@ val restart_process :
   unit ->
   unit
 
+val handle_message : msg Lwt_stream.result -> unit Lwt.t
+
 [%%server.start]
 
 val create_monitor_channel :
