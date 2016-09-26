@@ -47,7 +47,8 @@
 let%shared popup_button
     ~button_name
     ?(button_class = ["os_popup_button"])
-    ~popup_content
+    ~(popup_content : (unit -> [< Html_types.div_content ]
+    Eliom_content.Html.elt Lwt.t))
     = Eliom_content.Html.D.(
       let button =
         button ~a:[a_class button_class] [pcdata button_name]
