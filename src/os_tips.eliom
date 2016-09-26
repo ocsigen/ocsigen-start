@@ -141,11 +141,14 @@ let%shared block ?(a = []) ?(recipient = `All) ~name ~content () =
     then Lwt.return None
     else begin
       let box_ref = ref None in
-      let close = [%client (fun () ->
-        let () = match !(~%box_ref) with
-          | Some x -> Manip.removeSelf x
-          | None -> () in
-        set_tip_seen ~%name : _ -> _) ] in
+      let close : (unit -> unit Lwt.t) Eliom_client_value.t =
+        [%client (fun () ->
+          let () = match !(~%box_ref) with
+            | Some x -> Manip.removeSelf x
+            | None -> () in
+          set_tip_seen ~%name)
+        ]
+      in
       let%lwt c = content close in
       let box =
         D.div ~a:(a_class [ "tip" ; "block" ]::a)
@@ -241,9 +244,25 @@ let%client display_bubble ?(a = [])
 
 (* Function to be called on server to display a tip *)
 let%shared bubble
-  ?a ?(recipient = `All)
-  ?arrow ?top ?left ?right ?bottom ?height ?width
-  ?parent_node ~(name : string) ~content () =
+  ?(a: [< Html_types.div_attrib > `Class ] Eliom_content.Html.D.attrib list
+  option)
+  ?(recipient = `All)
+  ?(arrow: [< `left of int
+          | `right of int
+          | `top of int
+          | `bottom of int ] option)
+  ?(top: int option)
+  ?(left: int option)
+  ?(right: int option)
+  ?(bottom: int option)
+  ?(height: int option)
+  ?(width: int option)
+  ?(parent_node: [< `Body | Html_types.body_content ] Eliom_content.Html.elt
+  option)
+  ~(name : string)
+  ~(content: ((unit -> unit Lwt.t) Eliom_client_value.t
+           -> Html_types.div_content Eliom_content.Html.elt list Lwt.t))
+  () =
   let myid_o = Os_current_user.Opt.get_current_userid () in
   match recipient, myid_o with
   | `All, _
