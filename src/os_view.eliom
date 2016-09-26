@@ -109,11 +109,13 @@ let%shared information_form ?a
          Lwt_js_events.(async (fun () ->
            inputs pass2 (fun _ _ ->
              if (Js.to_string pass1##.value <> Js.to_string pass2##.value)
-             then (Js.Unsafe.coerce pass2)##(setCustomValidity
-                 ("Passwords do not match"))
-             else (Js.Unsafe.coerce pass2)##(setCustomValidity (""));
-             Lwt.return ())))
-       : unit)]
+             then
+               (Js.Unsafe.coerce pass2)##(setCustomValidity
+               ("Passwords do not match"))
+             else (Js.Unsafe.coerce pass2)##(setCustomValidity (""))
+           )
+         )
+       ) : unit)]
        in
        [
          Form.input
