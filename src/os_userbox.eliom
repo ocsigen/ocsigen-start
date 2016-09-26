@@ -46,10 +46,18 @@ let%shared upload_pic_link
     ?(a = [])
     ?(content=[pcdata "Change profile picture"])
     ?(crop = Some 1.)
-    ?(input= [], [])
-    ?(submit= [], [pcdata "Submit"])
-    close
-    service
+    ?(input :
+      Html_types.label_attrib Eliom_content.Html.D.Raw.attrib list
+      * Html_types.label_content_fun Eliom_content.Html.D.Raw.elt list
+      = [], []
+    )
+    ?(submit :
+      Html_types.button_attrib Eliom_content.Html.D.Raw.attrib list
+      * Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list
+      = [], [pcdata "Submit"]
+    )
+    (close : (unit -> unit) Eliom_client_value.t)
+    (service : uploader)
     userid =
   let content = (content
                  : Html_types.a_content Eliom_content.Html.D.Raw.elt list) in
@@ -124,7 +132,7 @@ let%shared user_menu user service =
 
 let%client set_user_menu f = user_menu_fun := f
 
-let%shared connected_user_box user service =
+let%shared connected_user_box user (service : uploader) =
   let username = Os_view.username user in
   D.div ~a:[a_id "os-user-box"] [
     Os_view.avatar user;
