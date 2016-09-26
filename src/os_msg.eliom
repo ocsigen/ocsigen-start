@@ -33,19 +33,23 @@ let%client msgbox () =
     Dom.appendChild Dom_html.document##.body b;
     b
 
-let%shared msg ?(level = `Err) ?(duration = 2.) ?(onload=false) msg =
+let%shared msg
+  ?(level = `Err)
+  ?(duration = 2.)
+  ?(onload=false)
+  (message : string) =
   ignore [%client (
     let c = if ~%level = `Msg then [] else ["os_err"] in
-    Eliom_lib.debug "%s" ~%msg;
-    let msg = To_dom.of_p (D.p ~a:[a_class c] [pcdata ~%msg]) in
+    Eliom_lib.debug "%s" ~%message;
+    let message_dom = To_dom.of_p (D.p ~a:[a_class c] [pcdata ~%message]) in
     let msgbox = msgbox () in
     Lwt.async (fun () ->
       let%lwt () =
         if ~%onload then Eliom_client.lwt_onload () else Lwt.return ()
       in
-      Dom.appendChild msgbox msg;
+      Dom.appendChild msgbox message_dom;
       let%lwt () = Lwt_js.sleep ~%duration in
-      Dom.removeChild msgbox msg;
+      Dom.removeChild msgbox message_dom;
       Lwt.return ())
     : unit)]
 
