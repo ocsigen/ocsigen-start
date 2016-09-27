@@ -4,23 +4,23 @@
 let%shared () =
   (* Registering services. Feel free to customize handlers. *)
   Eliom_registration.Action.register
-    ~service:Os_services.set_personal_data_service'
-    %%%MODULE_NAME%%%_handlers.set_personal_data_handler';
+    ~service:Os_services.set_personal_data_service
+    %%%MODULE_NAME%%%_handlers.set_personal_data_handler;
 
   Eliom_registration.Action.register
-    ~service:Os_services.set_password_service'
-    %%%MODULE_NAME%%%_handlers.set_password_handler';
+    ~service:Os_services.set_password_service
+    %%%MODULE_NAME%%%_handlers.set_password_handler;
 
   Eliom_registration.Action.register
     ~service:Os_services.forgot_password_service
     %%%MODULE_NAME%%%_handlers.forgot_password_handler;
 
   Eliom_registration.Action.register
-    ~service:Os_services.preregister_service'
-    %%%MODULE_NAME%%%_handlers.preregister_handler';
+    ~service:Os_services.preregister_service
+    %%%MODULE_NAME%%%_handlers.preregister_handler;
 
   Eliom_registration.Action.register
-    ~service:Os_services.sign_up_service'
+    ~service:Os_services.sign_up_service
     Os_handlers.sign_up_handler;
 
   Eliom_registration.Unit.register

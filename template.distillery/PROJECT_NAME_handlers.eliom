@@ -18,14 +18,14 @@ let upload_user_avatar_handler myid () ((), (cropping, photo)) =
     Lwt_unix.unlink (Filename.concat avatar_dir old_avatar )
 
 (* Set personal data *)
-let%server set_personal_data_handler' =
-  Os_session.connected_fun Os_handlers.set_personal_data_handler'
+let%server set_personal_data_handler =
+  Os_session.connected_fun Os_handlers.set_personal_data_handler
 
-let%client set_personal_data_handler' =
+let%client set_personal_data_handler =
   let set_personal_data_rpc =
     ~%(Eliom_client.server_function
          [%derive.json : ((string * string) * (string * string))]
-       @@ set_personal_data_handler' ())
+       @@ set_personal_data_handler ())
   in
   fun () -> set_personal_data_rpc
 
@@ -52,23 +52,22 @@ let%client activation_handler =
   fun akey () -> activation_handler_rpc akey
 
 (* Set password *)
-let%server set_password_handler' =
-  Os_session.connected_fun Os_handlers.set_password_handler'
+let%server set_password_handler =
+  Os_session.connected_fun Os_handlers.set_password_handler
 
-let%client set_password_handler' () =
+let%client set_password_handler () =
   Os_handlers.set_password_rpc
 
 (* Preregister *)
-let%server preregister_handler' =
-  Os_handlers.preregister_handler'
+let%server preregister_handler =
+  Os_handlers.preregister_handler
 
-let%client preregister_handler' =
+let%client preregister_handler =
   let preregister_rpc =
     ~%(Eliom_client.server_function [%derive.json : string]
-       @@ preregister_handler' ())
+       @@ preregister_handler ())
   in
   fun () -> preregister_rpc
-
 
 let%shared main_service_handler userid_o () () = Eliom_content.Html.F.(
  %%%MODULE_NAME%%%_container.page userid_o (

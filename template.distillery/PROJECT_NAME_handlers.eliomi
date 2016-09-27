@@ -12,7 +12,7 @@ val upload_user_avatar_handler :
 
 [%%shared.start]
 
-val set_personal_data_handler' :
+val set_personal_data_handler :
   unit -> (string * string) * (string * string) -> unit Lwt.t
 
 val forgot_password_handler :
@@ -21,9 +21,9 @@ val forgot_password_handler :
 val activation_handler :
   string -> unit -> Eliom_registration.Action.result Lwt.t
 
-val set_password_handler' : unit -> string * string -> unit Lwt.t
+val set_password_handler : unit -> string * string -> unit Lwt.t
 
-val preregister_handler' : unit -> string -> unit Lwt.t
+val preregister_handler : unit -> string -> unit Lwt.t
 
 val main_service_handler :
   Os_user.id option ->

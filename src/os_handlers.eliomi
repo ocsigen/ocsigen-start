@@ -39,12 +39,12 @@ val forgot_password_handler :
     Eliom_service.t ->
   unit -> string -> unit Lwt.t
 
-val preregister_handler' :
+val preregister_handler :
   unit -> string -> unit Lwt.t
 
-val set_password_handler' : Os_user.id -> unit -> string * string -> unit Lwt.t
+val set_password_handler : Os_user.id -> unit -> string * string -> unit Lwt.t
 
-val set_personal_data_handler' :
+val set_personal_data_handler :
   Os_user.id -> unit -> (string * string) * (string * string) -> unit Lwt.t
 
 [%%client.start]

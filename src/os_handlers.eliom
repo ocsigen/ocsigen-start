@@ -26,7 +26,7 @@
 ]
 
 (* Set personal data *)
-let set_personal_data_handler' userid ()
+let set_personal_data_handler userid ()
     (((firstname, lastname), (pwd, pwd2)) as pd) =
   if firstname = "" || lastname = "" || pwd <> pwd2
   then
@@ -40,16 +40,16 @@ let set_personal_data_handler' userid ()
       fn = firstname;
       ln = lastname;
     } in
-    Os_user.update' ~password:pwd record)
+    Os_user.update ~password:pwd record)
 
-let set_password_handler' userid () (pwd, pwd2) =
+let set_password_handler userid () (pwd, pwd2) =
   if pwd <> pwd2
   then
     (Os_msg.msg ~level:`Err ~onload:true "Passwords do not match";
      Lwt.return ())
   else (
     let%lwt user = Os_user.user_of_userid userid in
-    Os_user.update' ~password:pwd user)
+    Os_user.update ~password:pwd user)
 
 (* Set password RPC *)
 let%client set_password_rpc =
@@ -57,7 +57,7 @@ let%client set_password_rpc =
        ~name:"Os_handlers.set_password_rpc"
        [%derive.json: string * string]
        (Os_session.connected_rpc
-          (fun myid p -> set_password_handler' myid () p))
+          (fun myid p -> set_password_handler myid () p))
     )
 
 let generate_activation_key
@@ -175,15 +175,15 @@ let disconnect_handler () () =
   ignore [%client (restart () : unit)];
   Lwt.return ()
 
-let%server disconnect_handler_rpc' () = disconnect_handler () ()
+let%server disconnect_handler_rpc () = disconnect_handler () ()
 
-let%client disconnect_handler_rpc' =
+let%client disconnect_handler_rpc  =
   ~%(Eliom_client.server_function
        ~name:"Os_handlers.disconnect_handler"
        [%derive.json: unit]
-       disconnect_handler_rpc')
+       disconnect_handler_rpc)
 
-let%client disconnect_handler () () = disconnect_handler_rpc' ()
+let%client disconnect_handler () () = disconnect_handler_rpc ()
 
 (* Connection *)
 let connect_handler () ((login, pwd), keepmeloggedin) =
@@ -202,13 +202,13 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
       Os_msg.msg ~level:`Err ~onload:true "Wrong password";
       Lwt.return ()
 
-let%server connect_handler_rpc' v = connect_handler () v
+let%server connect_handler_rpc v = connect_handler () v
 
 let%client connect_handler_rpc =
   ~%(Eliom_client.server_function
        ~name:"Os_handlers.connect_handler"
        [%derive.json: (string * string) * bool]
-       connect_handler_rpc')
+       connect_handler_rpc)
 
 let%client connect_handler () v = connect_handler_rpc v
 
@@ -279,8 +279,7 @@ let admin_service_handler userid gp pp =
   ] (*@ cnt*)
            *)
 
-(* Preregister *)
-let preregister_handler' () email =
+let preregister_handler () email =
   let%lwt is_preregistered = Os_user.is_preregistered email in
   let%lwt is_registered = Os_user.is_registered email in
   Printf.printf "%b:%b%!\n" is_preregistered is_registered;
