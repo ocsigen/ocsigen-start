@@ -32,8 +32,9 @@ let%shared () =
     Os_handlers.disconnect_handler;
 
   Eliom_registration.Any.register
-    ~service:Os_services.activation_service
-    %%%MODULE_NAME%%%_handlers.activation_handler;
+    ~service:Os_services.action_link_service
+    (Os_session.Opt.connected_fun
+       %%%MODULE_NAME%%%_handlers.action_link_handler);
 
   Eliom_registration.Action.register
     ~service:Os_services.add_email_service
