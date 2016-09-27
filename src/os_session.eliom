@@ -95,8 +95,8 @@ let (on_denied_request, denied_request_action) =
   let r = ref (fun _ -> Lwt.return ()) in
   ((fun f ->
       let oldf = !r in
-      r := (fun userido -> let%lwt () = oldf userido in f userido)),
-   (fun userido -> !r userido))
+      r := (fun userid_o -> let%lwt () = oldf userid_o in f userid_o)),
+   (fun userid_o -> !r userid_o))
 
 
 [%%shared
@@ -277,10 +277,10 @@ let%client get_current_userid_o = ref (fun () -> assert false)
 let%client gen_wrapper ~allow ~deny
     ?(deny_fun = fun _ -> Lwt.fail Permission_denied)
     connected not_connected gp pp =
-  let userid_o = !get_current_userid_o () in
-  match userid_o with
+  let myid_o = !get_current_userid_o () in
+  match myid_o with
   | None -> not_connected gp pp
-  | Some userid -> connected userid gp pp
+  | Some myid -> connected myid gp pp
 
 let%shared connected_fun ?allow ?deny ?deny_fun f gp pp =
   gen_wrapper
@@ -292,14 +292,14 @@ let%shared connected_fun ?allow ?deny ?deny_fun f gp pp =
 let%shared connected_rpc ?allow ?deny ?deny_fun f pp =
   gen_wrapper
     ~allow ~deny ?deny_fun
-    (fun userid _ p -> f userid p)
+    (fun myid _ p -> f myid p)
     (fun _ _ -> Lwt.fail Not_connected)
     () pp
 
 let%shared connected_wrapper ?allow ?deny ?deny_fun f pp =
   gen_wrapper
     ~allow ~deny ?deny_fun
-    (fun userid _ p -> f p)
+    (fun myid _ p -> f p)
     (fun _ p -> f p)
     () pp
 
@@ -309,14 +309,14 @@ let%shared connected_wrapper ?allow ?deny ?deny_fun f pp =
     let connected_fun ?allow ?deny ?deny_fun f gp pp =
       gen_wrapper
         ~allow ~deny ?deny_fun
-        (fun userid gp pp -> f (Some userid) gp pp)
+        (fun myid gp pp -> f (Some myid) gp pp)
         (fun gp pp -> f None gp pp)
         gp pp
 
     let connected_rpc ?allow ?deny ?deny_fun f pp =
       gen_wrapper
         ~allow ~deny ?deny_fun
-        (fun userid _ p -> f (Some userid) p)
+        (fun myid _ p -> f (Some myid) p)
         (fun _ p -> f None p)
         () pp
 

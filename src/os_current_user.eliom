@@ -88,8 +88,8 @@ let%shared get_current_userid () = Os_user.userid_of_user (get_current_user ())
 
 let%client _ = Os_session.get_current_userid_o := Opt.get_current_userid
 
-let set_user_server userid =
-  let%lwt u = Os_user.user_of_userid userid in
+let set_user_server myid =
+  let%lwt u = Os_user.user_of_userid myid in
   Eliom_reference.Volatile.set me (CU_user u);
   Lwt.return ()
 
@@ -110,19 +110,19 @@ let last_activity : CalendarLib.Calendar.t option Eliom_reference.eref =
     None
 
 let () =
-  Os_session.on_request (fun userid ->
+  Os_session.on_request (fun myid ->
     (* I initialize current user to CU_notconnected *)
     Lwt_log.ign_debug ~section "request action";
     unset_user_server ();
     Lwt.return ());
-  Os_session.on_start_connected_process (fun userid ->
+  Os_session.on_start_connected_process (fun myid ->
     Lwt_log.ign_debug ~section "start connected process action";
-    let%lwt () = set_user_server userid in
+    let%lwt () = set_user_server myid in
     set_user_client ();
     Lwt.return ());
-  Os_session.on_connected_request (fun userid ->
+  Os_session.on_connected_request (fun myid ->
     Lwt_log.ign_debug ~section "connected request action";
-    let%lwt () = set_user_server userid in
+    let%lwt () = set_user_server myid in
     let now = CalendarLib.Calendar.now () in
     Eliom_reference.set last_activity (Some now));
   Os_session.on_pre_close_session (fun () ->
