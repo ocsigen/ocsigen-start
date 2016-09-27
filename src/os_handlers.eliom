@@ -184,10 +184,15 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
     let%lwt userid = Os_user.verify_password login pwd in
     let%lwt () = disconnect_handler () () in
     Os_session.connect ~expire:(not keepmeloggedin) userid
-  with Os_db.No_such_resource ->
-    Eliom_reference.Volatile.set Os_userbox.wrong_password true;
-    Os_msg.msg ~level:`Err ~onload:true "Wrong password";
-    Lwt.return ()
+  with
+  | Os_db.Account_not_activated ->
+      Eliom_reference.Volatile.set Os_userbox.account_not_activated true;
+      Os_msg.msg ~level:`Err ~onload:true "Account not activated";
+      Lwt.return ()
+  | Os_db.No_such_resource ->
+      Eliom_reference.Volatile.set Os_userbox.wrong_password true;
+      Os_msg.msg ~level:`Err ~onload:true "Wrong password";
+      Lwt.return ()
 
 let%server connect_handler_rpc' v = connect_handler () v
 let%client connect_handler_rpc =

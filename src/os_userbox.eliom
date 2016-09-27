@@ -12,6 +12,9 @@ open Eliom_content.Html.F
 let wrong_password =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
+let account_not_activated =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
+
 let user_already_exists =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
