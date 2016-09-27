@@ -68,8 +68,8 @@ let%shared the_local_css = [
          then [p [pcdata (Printexc.to_string exn)]]
          else [p [pcdata "Error"]])
 
-    let default_connected_error_page userid_o _ _ exn =
-      %%%MODULE_NAME%%%_container.page userid_o
+    let default_connected_error_page myid_o _ _ exn =
+      %%%MODULE_NAME%%%_container.page myid_o
         (if Ocsigen_config.get_debugmode ()
          then [p [pcdata (Printexc.to_string exn)]]
          else [p [pcdata "Error"]])
