@@ -26,14 +26,14 @@
 ]
 
 (* Set personal data *)
-let set_personal_data_handler userid ()
+let set_personal_data_handler myid ()
     (((firstname, lastname), (pwd, pwd2)) as pd) =
   if firstname = "" || lastname = "" || pwd <> pwd2
   then
     (Eliom_reference.Volatile.set Os_msg.wrong_pdata (Some pd);
      Lwt.return ())
   else (
-    let%lwt user = Os_user.user_of_userid userid in
+    let%lwt user = Os_user.user_of_userid myid in
     let open Os_user in
     let record = {
       user with
@@ -42,13 +42,13 @@ let set_personal_data_handler userid ()
     } in
     Os_user.update ~password:pwd record)
 
-let set_password_handler userid () (pwd, pwd2) =
+let set_password_handler myid () (pwd, pwd2) =
   if pwd <> pwd2
   then
     (Os_msg.msg ~level:`Err ~onload:true "Passwords do not match";
      Lwt.return ())
   else (
-    let%lwt user = Os_user.user_of_userid userid in
+    let%lwt user = Os_user.user_of_userid myid in
     Os_user.update ~password:pwd user)
 
 (* Set password RPC *)
