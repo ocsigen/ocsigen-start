@@ -37,6 +37,6 @@ val msg :
   ?level:[`Err | `Msg] -> ?duration:float -> ?onload:bool -> string -> unit
 
 [%%server.start]
-val activation_key_created : bool Eliom_reference.Volatile.eref
+val action_link_key_created : bool Eliom_reference.Volatile.eref
 val wrong_pdata
   : ((string * string) * (string * string)) option Eliom_reference.Volatile.eref

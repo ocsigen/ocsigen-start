@@ -90,11 +90,11 @@ let disconnect_service =
          (Eliom_parameter.unit, Eliom_parameter.unit))
     ()
 
-let activation_service =
+let action_link_service =
   Eliom_service.create
-    ~name:"activation"
+    ~name:"action_link"
     ~id:Eliom_service.Global
-    ~meth:(Eliom_service.Get (Eliom_parameter.string "activationkey"))
+    ~meth:(Eliom_service.Get (Eliom_parameter.string "actionkey"))
     ()
 
 let os_github_service =
@@ -141,7 +141,7 @@ let set_personal_data_service' = ~%set_personal_data_service'
 let sign_up_service' = ~%sign_up_service'
 let connect_service = ~%connect_service
 let disconnect_service = ~%disconnect_service
-let activation_service = ~%activation_service
+let action_link_service = ~%action_link_service
 let os_github_service = ~%os_github_service
 let ocsigen_service = ~%ocsigen_service
 let set_password_service' = ~%set_password_service'

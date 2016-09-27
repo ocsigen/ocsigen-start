@@ -8,17 +8,9 @@ exception No_such_user
 (** Has user set its password? *)
 val password_set : id -> bool Lwt.t
 
-type activationkey_info = {
-  userid : id;
-  email : string;
-  validity : int64;
-  autoconnect : bool;
-  action : [ `AccountActivation | `PasswordReset | `Custom of string ];
-  data : string;
-}
-
 [%%shared.start]
-  (** The type which represents a user. *)
+
+(** The type which represents a user. *)
 type t = {
     userid : id;
     fn : string;
@@ -47,8 +39,8 @@ val is_complete : t -> bool
 
 val emails_of_user : t -> string Lwt.t
 
-val add_activationkey :
-  (* by default, an activation key is just an activation key *)
+val add_actionlinkkey :
+  (* by default, an action_link key is just an activation key *)
   ?autoconnect:bool -> (** default: false *)
   ?action:[ `AccountActivation | `PasswordReset | `Custom of string ] ->
   (** default: `AccountActivation *)
@@ -62,12 +54,12 @@ val verify_password : email:string -> password:string -> id Lwt.t
     Results are cached in memory during page generation. *)
 val user_of_userid : id -> t Lwt.t
 
-val get_activationkey_info : string -> activationkey_info Lwt.t
-(** Retrieve the data corresponding to an activation key, each
+val get_actionlinkkey_info : string -> Os_data.actionlinkkey_info Lwt.t
+(** Retrieve the data corresponding to an action link key, each
     call decrements the validity of the key by 1 if it exists and
     validity > 0 (it remains at 0 if it's already 0). It is up to
     you to adapt the actions according to the value of validity!
-    Raises [Os_db.No_such_resource] if the activation key is not found. *)
+    Raises [Os_db.No_such_resource] if the action link key is not found. *)
 
 val userid_of_email : string -> id Lwt.t
 
