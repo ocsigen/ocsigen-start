@@ -103,16 +103,16 @@ let%client preregister_handler =
   in
   fun () -> preregister_rpc
 
-let%shared main_service_handler userid_o () () = Eliom_content.Html.F.(
- %%%MODULE_NAME%%%_container.page userid_o (
+let%shared main_service_handler myid_o () () = Eliom_content.Html.F.(
+ %%%MODULE_NAME%%%_container.page myid_o (
    [
      p [em [pcdata "Ocsigen-start: Put app content here."]]
    ]
  )
 )
 
-let%shared about_handler userid_o () () = Eliom_content.Html.F.(
- %%%MODULE_NAME%%%_container.page userid_o [
+let%shared about_handler myid_o () () = Eliom_content.Html.F.(
+ %%%MODULE_NAME%%%_container.page myid_o [
    div [
      p [pcdata "This template provides a skeleton \
                 for an Ocsigen application."];
@@ -123,11 +123,11 @@ let%shared about_handler userid_o () () = Eliom_content.Html.F.(
  ]
 )
 
-let%shared settings_handler userid_o () () =
-  let%lwt user = %%%MODULE_NAME%%%_container.get_user_data userid_o in
+let%shared settings_handler myid_o () () =
+  let%lwt user = %%%MODULE_NAME%%%_container.get_user_data myid_o in
   let%lwt content = match user with
     | Some user ->
       %%%MODULE_NAME%%%_content.Settings.settings_content user
     | None -> Lwt.return []
   in
-  %%%MODULE_NAME%%%_container.page userid_o content
+  %%%MODULE_NAME%%%_container.page myid_o content

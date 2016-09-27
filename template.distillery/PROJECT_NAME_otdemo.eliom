@@ -334,12 +334,12 @@ let%shared make_drawer_menu () =
   let drawer, _,_ = Ot_drawer.drawer menu in
   drawer
 
-let%shared make_page userid_o content =
-  %%%MODULE_NAME%%%_container.page userid_o (
+let%shared make_page myid_o content =
+  %%%MODULE_NAME%%%_container.page myid_o (
     make_drawer_menu () :: content
   )
 
-let%shared handler userid_o () () = make_page userid_o
+let%shared handler myid_o () () = make_page myid_o
   [
     p [pcdata "This page contains some demos for some widgets \
                from ocsigen-toolkit."];

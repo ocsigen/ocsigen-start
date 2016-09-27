@@ -85,12 +85,12 @@ let%shared connected_welcome_box () = Eliom_content.Html.F.(
 let%shared get_user_data = function
   | None ->
     Lwt.return None
-  | Some userid ->
-    let%lwt u = Os_user_proxy.get_data userid in
+  | Some myid ->
+    let%lwt u = Os_user_proxy.get_data myid in
     Lwt.return (Some u)
 
-let%shared page userid_o content = Eliom_content.Html.F.(
-  let%lwt user = get_user_data userid_o in
+let%shared page myid_o content = Eliom_content.Html.F.(
+  let%lwt user = get_user_data myid_o in
   let%lwt content = match user with
     | Some user when not (Os_user.is_complete user) ->
       let%lwt cwb = connected_welcome_box () in
