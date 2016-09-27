@@ -26,10 +26,30 @@ val disconnect_handler : unit -> unit -> unit Lwt.t
 
 val sign_up_handler : unit -> string -> unit Lwt.t
 
-val activation_handler :
-  string -> unit -> Eliom_registration.Action.result Lwt.t
-
 val add_email_handler : unit -> string -> unit Lwt.t
+
+exception Custom_action_link of
+    Os_data.actionlinkkey_info
+    * bool (* If true, the link corresponds to a phantom user
+              (user who never created its account).
+              In that case, you probably want to display a sign-up form,
+              and in the other case a login form. *)
+
+[%%server.start]
+
+val action_link_handler :
+  int64 option ->
+  string ->
+  unit ->
+  'a Eliom_registration.application_content Eliom_registration.kind Lwt.t
+
+[%%client.start]
+
+val action_link_handler :
+  int64 option ->
+  string ->
+  unit ->
+  Eliom_registration.browser_content Eliom_registration.kind Lwt.t
 
 [%%server.start]
 
@@ -50,3 +70,5 @@ val set_personal_data_handler' :
 [%%client.start]
 
 val set_password_rpc : string * string -> unit Lwt.t
+
+val restart : unit -> unit

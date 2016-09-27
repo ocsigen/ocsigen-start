@@ -39,7 +39,7 @@ let user_does_not_exist =
 let user_already_preregistered =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
-let activation_key_outdated =
+let action_link_key_outdated =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
 let%shared upload_pic_link
@@ -208,7 +208,7 @@ let%client connection_box () =
   Lwt.return a
 
 let%server connection_box () =
-  if Eliom_reference.Volatile.get Os_msg.activation_key_created
+  if Eliom_reference.Volatile.get Os_msg.action_link_key_created
   then
     Lwt.return
       (D.div ~a:[a_id connection_box_id]
@@ -234,13 +234,13 @@ let%server connection_box () =
       let user_already_preregistered =
         Eliom_reference.Volatile.get user_already_preregistered
       in
-      let activation_key_outdated =
-        Eliom_reference.Volatile.get activation_key_outdated
+      let action_link_key_outdated =
+        Eliom_reference.Volatile.get action_link_key_outdated
       in
 
       if wrong_password
       then press o1
-      else if activation_key_outdated
+      else if action_link_key_outdated
       then press o2
       else if user_already_exists
       then press o34

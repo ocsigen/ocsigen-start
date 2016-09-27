@@ -23,13 +23,14 @@
   open Eliom_content.Html.F
 ]
 
-let%shared generic_email_form ?a ?label ?(text="Send") ~service () =
+let%shared generic_email_form ?a ?label ?(text="Send") ?(email="") ~service () =
   D.Form.post_form ?a ~service
     (fun name ->
       let l = [
         Form.input
           ~a:[a_placeholder "e-mail address"]
           ~input_type:`Email
+          ~value:email
           ~name
           Form.string;
         Form.input
@@ -40,16 +41,17 @@ let%shared generic_email_form ?a ?label ?(text="Send") ~service () =
       ]
       in
       match label with
-        | None -> l
-        | Some lab -> F.label [pcdata lab]::l) ()
+      | None -> l
+      | Some lab -> F.label [pcdata lab]::l) ()
 
-let%shared connect_form ?a () =
+let%shared connect_form ?a ?(email = "") () =
   D.Form.post_form ?a ~xhr:false ~service:Os_services.connect_service
     (fun ((login, password), keepmeloggedin) -> [
       Form.input
         ~a:[a_placeholder "Your email"]
         ~name:login
         ~input_type:`Email
+        ~value:email
         Form.string;
       Form.input
         ~a:[a_placeholder "Your password"]
@@ -77,8 +79,8 @@ let%shared disconnect_button ?a () =
            [Ot_icons.F.signout (); pcdata "Logout"]
        ]) ()
 
-let%shared sign_up_form ?a () =
-  generic_email_form ?a ~service:Os_services.sign_up_service' ()
+let%shared sign_up_form ?a ?email () =
+  generic_email_form ?a ?email ~service:Os_services.sign_up_service' ()
 
 let%shared forgot_password_form ?a () =
   generic_email_form ?a

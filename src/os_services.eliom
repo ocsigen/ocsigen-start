@@ -89,11 +89,11 @@ let%server disconnect_service =
          (Eliom_parameter.unit, Eliom_parameter.unit))
     ()
 
-let%server activation_service =
+let%server action_link_service =
   Eliom_service.create
-    ~name:"activation"
+    ~name:"action_link"
     ~path:Eliom_service.No_path
-    ~meth:(Eliom_service.Get (Eliom_parameter.string "activationkey"))
+    ~meth:(Eliom_service.Get (Eliom_parameter.string "actionkey"))
     ()
 
 let%server set_password_service' =
@@ -121,6 +121,6 @@ let%client set_personal_data_service' = ~%set_personal_data_service'
 let%client sign_up_service' = ~%sign_up_service'
 let%client connect_service = ~%connect_service
 let%client disconnect_service = ~%disconnect_service
-let%client activation_service = ~%activation_service
+let%client action_link_service = ~%action_link_service
 let%client set_password_service' = ~%set_password_service'
 let%client add_email_service = ~%add_email_service

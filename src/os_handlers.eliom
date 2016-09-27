@@ -58,7 +58,7 @@ let%client set_password_rpc =
           (fun myid p -> set_password_handler' myid () p))
     )
 
-let generate_activation_key
+let generate_action_link_key
     ?(act_key = Ocsigen_lib.make_cryptographic_safe_string ())
     ?(send_email = true)
     ~service
@@ -67,15 +67,15 @@ let generate_activation_key
   let service =
     Eliom_service.attach_existing
       ~fallback:service
-      ~service:Os_services.activation_service
+      ~service:Os_services.action_link_service
       ()
   in
   let act_link = Eliom_uri.make_string_uri ~absolute:true ~service act_key in
-  (* For debugging we print the activation link on standard output
+  (* For debugging we print the action link on standard output
      to make possible to connect even if the mail transport is not
      configured. *)
   if Ocsigen_config.get_debugmode ()
-  then print_endline ("Debug: activation link created: "^act_link);
+  then print_endline ("Debug: action link created: "^act_link);
   if send_email
   then
     Lwt.async (fun () ->
@@ -91,36 +91,38 @@ let generate_activation_key
   act_key
 
 
-(** For default value of [autoconnect], cf. [Os_user.add_activationkey]. *)
-let send_activation ?autoconnect msg service email userid =
+(** For default value of [autoconnect], cf. [Os_user.add_actionlinkkey]. *)
+let send_action_link ?autoconnect ?action ?validity msg service email userid =
   let act_key =
-    generate_activation_key
+    generate_action_link_key
       ~service:service
       ~text:msg
       email
   in
-  Eliom_reference.Volatile.set Os_msg.activation_key_created true;
+  Eliom_reference.Volatile.set Os_msg.action_link_key_created true;
   let%lwt () =
-    Os_user.add_activationkey ?autoconnect ~act_key ~userid ~email () in
+    Os_user.add_actionlinkkey
+      ?autoconnect ?action ?validity ~act_key ~userid ~email ()
+  in
   Lwt.return ()
 
 let sign_up_handler () email =
-  let send_activation email userid =
+  let send_action_link email userid =
     let msg =
       "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: " in
-    send_activation ~autoconnect:true msg Os_services.main_service email userid
+    send_action_link ~autoconnect:true msg Os_services.main_service email userid
   in
   try%lwt
     let%lwt user = Os_user.create ~firstname:"" ~lastname:"" email in
     let userid = Os_user.userid_of_user user in
-    send_activation email userid
+    send_action_link email userid
   with Os_user.Already_exists userid ->
     (* If email is not validated, the user never logged in,
-       I send an activation link, as if it were a new user. *)
+       I send an action link, as if it were a new user. *)
     let%lwt validated = Os_db.User.get_email_validated userid email in
     if not validated
-    then send_activation email userid
+    then send_action_link email userid
     else begin
       Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
       Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
@@ -141,7 +143,8 @@ let forgot_password_handler service () email =
     let%lwt userid = Os_user.userid_of_email email in
     let msg = "Hi,\r\nTo set a new password, \
                please click on this link: " in
-    send_activation ~autoconnect:true msg service email userid
+    send_action_link ~autoconnect:true ~action:`PasswordReset ~validity:1L
+      msg service email userid
   with Os_db.No_such_resource ->
     Eliom_reference.Volatile.set Os_userbox.user_does_not_exist true;
     Os_msg.msg ~level:`Err ~onload:true "User does not exist";
@@ -196,63 +199,90 @@ let%client connect_handler_rpc =
        connect_handler_rpc')
 let%client connect_handler () v = connect_handler_rpc v
 
-let activation_handler_common ~akey =
+[%%shared
+  exception Custom_action_link of
+      Os_data.actionlinkkey_info
+      * bool (* If true, the link corresponds to a phantom user
+                (user who never created its account).
+                In that case, you probably want to display a sign-up form,
+                and in the other case a login form. *)
+]
+
+let action_link_handler_common akey =
   (* <s>
      SECURITY: we disconnect the user before doing anything.
      If the user is already connected,
-     we're going to disconnect him even if the activation key outdated.</s>
+     we're going to disconnect him even if the action_link key outdated.</s>
      ---> Now we disconnect the user only if we reconnect them because it's
      only annoying to disconnect people with unvalid keys.
-     TODO: do not disconnect users if we relog them with the same userid.
   *)
+  let myid_o = Os_current_user.Opt.get_current_userid () in
   try%lwt
-    let%lwt {Os_user.userid; email; validity; action; data = _; autoconnect} =
-      Os_user.get_activationkey_info akey in
+    let%lwt
+      {Os_data.userid; email; validity; action; data = _; autoconnect}
+      as action_link =
+      Os_user.get_actionlinkkey_info akey
+    in
     let%lwt () =
-      if action = `AccountActivation && validity <= 0L then
-        Lwt.fail Os_db.Account_already_activated
-      else Lwt.return_unit in
+      if action = `AccountActivation && validity <= 0L
+      then Lwt.fail Os_db.Account_already_activated
+      else Lwt.return_unit
+    in
     let%lwt () =
-      if validity <= 0L then
-        Lwt.fail Os_db.No_such_resource
-      else Lwt.return_unit in
-    let%lwt () = Os_db.User.set_email_validated userid email in
-    if autoconnect then
+      if validity <= 0L
+      then Lwt.fail Os_db.No_such_resource
+      else Lwt.return_unit
+    in
+    let%lwt () =
+      if action = `AccountActivation
+      then Os_db.User.set_email_validated userid email
+      else Lwt.return_unit
+    in
+    if autoconnect && myid_o <> Some userid
+    then
       let%lwt () = Os_session.disconnect () in
       let%lwt () = Os_session.connect userid in
       Lwt.return `Restart
     else
-      Lwt.return `Reload
+      match action with
+      | `Custom s ->
+        let%lwt existing_user = Os_db.User.get_email_validated userid email in
+        Lwt.return (`Custom_action_link (action_link, not existing_user))
+      | _ -> Lwt.return `Reload
+
   with
   | Os_db.No_such_resource ->
-    Eliom_reference.Volatile.set Os_userbox.activation_key_outdated true;
+    Eliom_reference.Volatile.set Os_userbox.action_link_key_outdated true;
     Os_msg.msg ~level:`Err ~onload:true
-      "Invalid activation key, please ask for a new one.";
+      "Invalid action link key, please ask for a new one.";
     Lwt.return `NoReload
   | Os_db.Account_already_activated ->
-    Eliom_reference.Volatile.set Os_userbox.activation_key_outdated true;
+    Eliom_reference.Volatile.set Os_userbox.action_link_key_outdated true;
     (* Account is already activated, don't bother telling that the key is wrong
        because it's already served is purpose. Just reload the page
        without the GET parameters to get rid of the key. *)
     Lwt.return `Reload
 
-let%client activation_handler_common ~akey =
-  ~%(Eliom_client.server_function ~name:"Os_handlers.activation_handler"
+let%client action_link_handler_common =
+  ~%(Eliom_client.server_function ~name:"Os_handlers.action_link_handler_common"
        [%derive.json: string]
-       (fun akey -> activation_handler_common ~akey))
-    akey
+       (Os_session.connected_wrapper action_link_handler_common))
 
-let%shared activation_handler akey () =
-  let%lwt a = activation_handler_common ~akey in
+let%shared action_link_handler _myid_o akey () =
+  let%lwt a = action_link_handler_common akey in
   match a with
   | `Reload ->
     Eliom_registration.
-      (Redirection.send (Redirection Eliom_service.reload_action))
+      (appl_self_redirect
+         Redirection.send
+         (Redirection Eliom_service.reload_action))
   | `NoReload ->
-    Eliom_registration.Action.send ()
+    Eliom_registration.(appl_self_redirect Action.send) ()
   | `Restart ->
     ignore [%client (restart () : unit)];
-    Eliom_registration.Unit.send ()
+    Eliom_registration.(appl_self_redirect Unit.send) ()
+  | `Custom_action_link (action_link, phantom_user) ->
+    Lwt.fail (Custom_action_link (action_link, phantom_user))
 
           (*
 let admin_service_handler userid gp pp =
@@ -280,7 +310,8 @@ let%server add_email_handler =
        please click on this link: "
   in
   let send_act =
-    send_activation  ~autoconnect:true msg Os_services.main_service in
+    send_action_link  ~autoconnect:true msg Os_services.main_service
+  in
   let add_email userid () email =
     let%lwt available = Os_db.Email.available email in
     if available then

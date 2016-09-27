@@ -16,26 +16,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+*)
+
+(** Data types *)
+
 
 [%%shared.start]
 
-(** Call this function either from client or server side
-    to display an error message in the page.
-    The message is displayed in a special box created automatically
-    in the body of the page.
-    It is displayed during a short amount of time then disappears.
-    The two levels correspond to different classes that you can
-    personalize in CSS.
-
-    If [~onload] is [true], the message is displayed after the next page
-    is displayed (default [false]). When called on server side, this is
-    always the case.
-*)
-val msg :
-  ?level:[`Err | `Msg] -> ?duration:float -> ?onload:bool -> string -> unit
-
-[%%server.start]
-val action_link_key_created : bool Eliom_reference.Volatile.eref
-val wrong_pdata
-  : ((string * string) * (string * string)) option Eliom_reference.Volatile.eref
+(** Action links *)
+type actionlinkkey_info = {
+  userid : int64;
+  email : string;
+  validity : int64;
+  autoconnect : bool;
+  action : [ `AccountActivation | `PasswordReset | `Custom of string ];
+  data : string;
+}
