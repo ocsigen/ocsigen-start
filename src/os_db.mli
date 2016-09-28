@@ -30,8 +30,11 @@ val init :
   ?password:string ->
   ?database:string ->
   ?unix_domain_socket_dir:string ->
+  ?pool_size:int ->
   unit ->
   unit
+
+val set_pool_size : int -> unit
 
 val pwd_crypt_ref :
   ((string -> string) * (int64 -> string -> string -> bool)) ref
