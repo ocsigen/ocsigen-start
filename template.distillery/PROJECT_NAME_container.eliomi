@@ -30,5 +30,5 @@ val get_wrong_pdata :
 [%%client.start]
 
 val get_wrong_pdata :
-  (Deriving_Json.Json_unit.a, ((string * string) * (string * string)) option)
+  (unit, ((string * string) * (string * string)) option)
   Eliom_client.server_function
