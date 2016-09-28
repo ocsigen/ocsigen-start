@@ -25,6 +25,7 @@
   open Eliom_content.Html.F
 ]
 
+(* Set personal data *)
 let set_personal_data_handler' userid ()
     (((firstname, lastname), (pwd, pwd2)) as pd) =
   if firstname = "" || lastname = "" || pwd <> pwd2
@@ -50,6 +51,7 @@ let set_password_handler' userid () (pwd, pwd2) =
     let%lwt user = Os_user.user_of_userid userid in
     Os_user.update' ~password:pwd user)
 
+(* Set password RPC *)
 let%client set_password_rpc =
   ~%(Eliom_client.server_function
        ~name:"Os_handlers.set_password_rpc"
@@ -104,6 +106,7 @@ let send_activation ?autoconnect msg service email userid =
     Os_user.add_activationkey ?autoconnect ~act_key ~userid ~email () in
   Lwt.return ()
 
+(* Sign up *)
 let sign_up_handler () email =
   let send_activation email userid =
     let msg =
@@ -129,13 +132,16 @@ let sign_up_handler () email =
 
 let%server sign_up_handler_rpc v =
   (Os_session.connected_wrapper (sign_up_handler ())) v
+
 let%client sign_up_handler_rpc =
   ~%(Eliom_client.server_function
        ~name:"Os_handlers.sign_up_handler"
        [%derive.json: string]
        sign_up_handler_rpc)
+
 let%client sign_up_handler () v = sign_up_handler_rpc v
 
+(* Forgot password *)
 let forgot_password_handler service () email =
   try%lwt
     let%lwt userid = Os_user.userid_of_email email in
@@ -162,6 +168,7 @@ let%client restart () =
       ~service:Eliom_service.reload_action_hidden
       () ()
 
+(* Disconnection *)
 let disconnect_handler () () =
   (* SECURITY: no check here because we disconnect the session cookie owner. *)
   let%lwt () = Os_session.disconnect () in
@@ -169,14 +176,16 @@ let disconnect_handler () () =
   Lwt.return ()
 
 let%server disconnect_handler_rpc' () = disconnect_handler () ()
+
 let%client disconnect_handler_rpc' =
   ~%(Eliom_client.server_function
        ~name:"Os_handlers.disconnect_handler"
        [%derive.json: unit]
        disconnect_handler_rpc')
+
 let%client disconnect_handler () () = disconnect_handler_rpc' ()
 
-
+(* Connection *)
 let connect_handler () ((login, pwd), keepmeloggedin) =
   (* SECURITY: no check here. *)
   try%lwt
@@ -189,13 +198,16 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
     Lwt.return ()
 
 let%server connect_handler_rpc' v = connect_handler () v
+
 let%client connect_handler_rpc =
   ~%(Eliom_client.server_function
        ~name:"Os_handlers.connect_handler"
        [%derive.json: (string * string) * bool]
        connect_handler_rpc')
+
 let%client connect_handler () v = connect_handler_rpc v
 
+(* Activation *)
 let activation_handler_common ~akey =
   (* <s>
      SECURITY: we disconnect the user before doing anything.
@@ -262,6 +274,7 @@ let admin_service_handler userid gp pp =
   ] (*@ cnt*)
            *)
 
+(* Preregister *)
 let preregister_handler' () email =
   let%lwt is_preregistered = Os_user.is_preregistered email in
   let%lwt is_registered = Os_user.is_registered email in
@@ -274,6 +287,7 @@ let preregister_handler' () email =
      Lwt.return ()
    end
 
+(* Add email *)
 let%server add_email_handler =
   let msg =
     "Welcome!\r\nTo confirm your e-mail address, \
