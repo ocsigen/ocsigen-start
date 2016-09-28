@@ -129,7 +129,7 @@ let emails_table =
        validated boolean NOT NULL DEFAULT(false)
           ) >>
 
-let activation_table :
+let action_link_table :
   (< .. >,
    < creationdate : < nul : Sql.non_nullable; .. > Sql.t > Sql.writable)
     Sql.view =
@@ -221,17 +221,7 @@ end
 
 module User = struct
 
-
-  type activationkey_info = {
-    userid : int64;
-    email : string;
-    validity : int64;
-    autoconnect : bool;
-    action : [ `AccountActivation | `PasswordReset | `Custom of string ];
-    data : string;
-  }
-
-  exception Invalid_activation_key of int64 (* userid *)
+  exception Invalid_action_link_key of int64 (* userid *)
 
   let userid_of_email email = one run_view
     ~success:(fun u -> Lwt.return u#!userid)
@@ -265,7 +255,7 @@ module User = struct
        e.email  = $string:email$
     >>
 
-  let add_activationkey ?(autoconnect=false)
+  let add_actionlinkkey ?(autoconnect=false)
       ?(action=`AccountActivation) ?(data="") ?(validity=1L)
       ~act_key ~userid ~email () =
     let action = match action with
@@ -273,7 +263,7 @@ module User = struct
       | `PasswordReset -> "passwordreset"
       | `Custom s -> s in
     run_query
-     <:insert< $activation_table$ :=
+     <:insert< $action_link_table$ :=
       { userid = $int64:userid$;
         email  = $string:email$;
         action = $string:action$;
@@ -281,7 +271,7 @@ module User = struct
         data   = $string:data$;
         validity = $int64:validity$;
         activationkey  = $string:act_key$;
-        creationdate   = activation_table?creationdate }
+        creationdate   = action_link_table?creationdate }
       >>
 
 
@@ -419,12 +409,12 @@ module User = struct
     ~fail:(Lwt.fail No_such_resource)
     <:view< t | t in $users_table$; t.userid = $int64:userid$ >>
 
-  let get_activationkey_info act_key =
+  let get_actionlinkkey_info act_key =
     full_transaction_block (fun dbh ->
       one (Lwt_Query.view dbh)
         ~fail:(Lwt.fail No_such_resource)
         <:view< t
-                | t in $activation_table$;
+                | t in $action_link_table$;
                 t.activationkey = $string:act_key$ >>
         ~success:(fun t ->
           let userid = t#!userid in
@@ -438,10 +428,11 @@ module User = struct
           let data = t#!data in
           let v  = max 0L (Int64.pred validity) in
           lwt () = Lwt_Query.query dbh
-              <:update< r in $activation_table$ := {validity = $int64:v$} |
+              <:update< r in $action_link_table$ := {validity = $int64:v$} |
                         r.activationkey = $string:act_key$ >>
           in
-          Lwt.return {userid; email; validity; action; data; autoconnect}
+          Lwt.return
+            {Os_data.userid; email; validity; action; data; autoconnect}
         )
     )
 

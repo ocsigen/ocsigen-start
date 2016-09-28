@@ -60,7 +60,7 @@ open Eliom_content.Html.F
 
 
 
-let activation_key_created =
+let action_link_key_created =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
 let wrong_pdata =
