@@ -3,14 +3,6 @@
 
 [%%server.start]
 
-val connect_handler : unit -> (string * string) * bool -> unit Lwt.t
-
-val disconnect_handler : unit -> unit -> unit Lwt.t
-
-val sign_up_handler : unit -> string -> unit Lwt.t
-
-val add_email_handler : unit -> string -> unit Lwt.t
-
 val upload_user_avatar_handler :
   Os_user.id ->
   unit ->
@@ -18,23 +10,13 @@ val upload_user_avatar_handler :
     ((float * float * float * float) option * Ocsigen_extensions.file_info) ->
   unit Lwt.t
 
+[%%shared.start]
+
 val set_personal_data_handler' :
   unit -> (string * string) * (string * string) -> unit Lwt.t
 
 val forgot_password_handler :
   unit -> string -> unit Lwt.t
-
-[%%client.start]
-
-val set_personal_data_handler' :
-  unit ->
-  (Deriving_Json.Json_string.a * Deriving_Json.Json_string.a) *
-  (Deriving_Json.Json_string.a * Deriving_Json.Json_string.a) -> unit Lwt.t
-
-val forgot_password_handler :
-  unit -> Deriving_Json.Json_string.a -> unit Lwt.t
-
-[%%shared.start]
 
 val activation_handler :
   string -> unit -> Eliom_registration.Action.result Lwt.t
