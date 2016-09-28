@@ -40,13 +40,12 @@ let password_r = ref None
 let database_r = ref None
 let unix_domain_socket_dir_r = ref None
 
-let init ?host ?port ?user ?password ?database ?unix_domain_socket_dir () =
-  host_r := host;
-  port_r := port;
-  user_r := user;
-  password_r := password;
-  database_r := database;
-  unix_domain_socket_dir_r := unix_domain_socket_dir
+let validate db =
+  try_lwt
+    lwt () = Lwt_PGOCaml.ping db in
+    Lwt.return true
+  with _ ->
+    Lwt.return false
 
 let connect () = Lwt_PGOCaml.connect
   ?host:!host_r
@@ -57,12 +56,23 @@ let connect () = Lwt_PGOCaml.connect
   ?unix_domain_socket_dir:!unix_domain_socket_dir_r
   ()
 
-let validate db =
-  try_lwt
-    lwt () = Lwt_PGOCaml.ping db in
-    Lwt.return true
-  with _ ->
-    Lwt.return false
+let pool_r = ref @@ Lwt_pool.create 16 ~validate connect
+
+let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Lwt_pool.t = !pool_r
+
+let set_pool_size n = pool_r := Lwt_pool.create 16 ~validate connect
+
+let init ?host ?port ?user ?password ?database
+         ?unix_domain_socket_dir ?pool_size () =
+  host_r := host;
+  port_r := port;
+  user_r := user;
+  password_r := password;
+  database_r := database;
+  unix_domain_socket_dir_r := unix_domain_socket_dir;
+  match pool_size with
+  | None -> ()
+  | Some n -> set_pool_size n
 
 let transaction_block db f =
   Lwt_PGOCaml.begin_work db >>= fun _ ->
@@ -73,9 +83,6 @@ let transaction_block db f =
   with e ->
     lwt () = Lwt_PGOCaml.rollback db in
     Lwt.fail e
-
-let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Lwt_pool.t =
-  Lwt_pool.create 16 ~validate connect
 
 let full_transaction_block f =
   Lwt_pool.use pool (fun db -> transaction_block db (fun () -> f db))
