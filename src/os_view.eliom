@@ -112,7 +112,8 @@ let%shared information_form ?a
              then
                (Js.Unsafe.coerce pass2)##(setCustomValidity
                ("Passwords do not match"))
-             else (Js.Unsafe.coerce pass2)##(setCustomValidity (""))
+             else (Js.Unsafe.coerce pass2)##(setCustomValidity (""));
+             Lwt.return ()
            )
          )
        ) : unit)]
