@@ -68,6 +68,7 @@ val set_user_menu :
 
 [%%server.start]
   val wrong_password : bool Eliom_reference.Volatile.eref
+  val account_not_activated : bool Eliom_reference.Volatile.eref
   val user_already_exists : bool Eliom_reference.Volatile.eref
   val user_does_not_exist : bool Eliom_reference.Volatile.eref
   val user_already_preregistered : bool Eliom_reference.Volatile.eref
