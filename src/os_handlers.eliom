@@ -258,7 +258,7 @@ let action_link_handler_common akey =
     then
       let%lwt () = Os_session.disconnect () in
       let%lwt () = Os_session.connect userid in
-      Lwt.return `Restart
+      Lwt.return `Restart_if_app
     else
       match action with
       | `Custom s ->
@@ -270,7 +270,7 @@ let action_link_handler_common akey =
   | Os_db.No_such_resource ->
     Eliom_reference.Volatile.set Os_userbox.action_link_key_outdated true;
     Os_msg.msg ~level:`Err ~onload:true
-      "Invalid action link key, please ask for a new one.";
+      "Invalid action key, please ask for a new one.";
     Lwt.return `NoReload
   | Os_db.Account_already_activated ->
     Eliom_reference.Volatile.set Os_userbox.action_link_key_outdated true;
@@ -284,6 +284,9 @@ let%client action_link_handler_common =
        [%derive.json: string]
        (Os_session.connected_wrapper action_link_handler_common))
 
+let%client restart_if_client_side = restart
+let%server restart_if_client_side () = ()
+
 let%shared action_link_handler _myid_o akey () =
   let%lwt a = action_link_handler_common akey in
   match a with
@@ -294,9 +297,9 @@ let%shared action_link_handler _myid_o akey () =
          (Redirection Eliom_service.reload_action))
   | `NoReload ->
     Eliom_registration.(appl_self_redirect Action.send) ()
-  | `Restart ->
-    ignore [%client (restart () : unit)];
-    Eliom_registration.(appl_self_redirect Unit.send) ()
+  | `Restart_if_app ->
+    restart_if_client_side ();
+    Eliom_registration.(appl_self_redirect Action.send) ()
   | `Custom_action_link (action_link, phantom_user) ->
     Lwt.fail (Custom_action_link (action_link, phantom_user))
 
