@@ -103,6 +103,10 @@ module Make (C : PAGE) : sig
     [< Html_types.body_content ] Eliom_content.Html.elt list ->
     [> Html_types.html ] Eliom_content.Html.elt
 
+  (** Same but takes type [content]. *)
+  val make_page_full :
+    content -> [> Html_types.html ] Eliom_content.Html.elt
+
   (** Default wrapper for service handler generating pages.
       It takes as parameter a function generating page content
       (body content) and transforms it into a function generating

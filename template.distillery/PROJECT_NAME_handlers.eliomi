@@ -18,8 +18,9 @@ val set_personal_data_handler :
 val forgot_password_handler :
   unit -> string -> unit Lwt.t
 
-val activation_handler :
-  string -> unit -> Eliom_registration.Action.result Lwt.t
+val action_link_handler :
+  Os_user.id option ->
+  string -> unit -> %%%MODULE_NAME%%%_base.App.result Lwt.t
 
 val set_password_handler : unit -> string * string -> unit Lwt.t
 

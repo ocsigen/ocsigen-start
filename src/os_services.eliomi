@@ -128,7 +128,7 @@ val disconnect_service :
     Eliom_service.non_ocaml
   ) Eliom_service.t
 
-val activation_service :
+val action_link_service :
   (
     string,
     unit,
