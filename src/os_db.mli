@@ -31,6 +31,7 @@ val init :
   ?password:string ->
   ?database:string ->
   ?unix_domain_socket_dir:string ->
+  ?pool_size:int ->
   unit ->
   unit
 
