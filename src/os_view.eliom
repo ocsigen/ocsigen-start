@@ -23,6 +23,22 @@
   open Eliom_content.Html.F
 ]
 
+let%client check_password_confirmation ~password ~confirmation =
+  let password_dom = To_dom.of_input password in
+  let confirmation_dom = To_dom.of_input confirmation in
+  Lwt_js_events.async
+    (fun () ->
+       Lwt_js_events.inputs confirmation_dom
+         (fun _ _ ->
+            ignore
+              (if Js.to_string password_dom##.value <> Js.to_string
+              confirmation_dom##.value
+               then
+                 (Js.Unsafe.coerce
+                    confirmation_dom)##(setCustomValidity ("Passwords do not match"))
+               else (Js.Unsafe.coerce confirmation_dom)##(setCustomValidity ("")));
+            Lwt.return ()))
+
 let%shared generic_email_form ?a ?label ?(text="Send") ~service () =
   D.Form.post_form ?a ~service
     (fun name ->
@@ -104,19 +120,8 @@ let%shared information_form ?a
            Form.string
        in
        let _ = [%client (
-         let pass1 = To_dom.of_input ~%pass1 in
-         let pass2 = To_dom.of_input ~%pass2 in
-         Lwt_js_events.(async (fun () ->
-           inputs pass2 (fun _ _ ->
-             if (Js.to_string pass1##.value <> Js.to_string pass2##.value)
-             then
-               (Js.Unsafe.coerce pass2)##(setCustomValidity
-               ("Passwords do not match"))
-             else (Js.Unsafe.coerce pass2)##(setCustomValidity (""));
-             Lwt.return ()
-           )
-         )
-       ) : unit)]
+         check_password_confirmation ~password:~%pass1 ~confirmation:~%pass2
+       : unit)]
        in
        [
          Form.input
@@ -192,19 +197,7 @@ let%shared password_form ?a ~service () =
            Form.string
        in
        ignore [%client (
-         let pass1 = To_dom.of_input ~%pass1 in
-         let pass2 = To_dom.of_input ~%pass2 in
-         Lwt_js_events.async
-           (fun () ->
-              Lwt_js_events.inputs pass2
-                (fun _ _ ->
-                   ignore
-                     (if Js.to_string pass1##.value <> Js.to_string pass2##.value
-                      then
-                        (Js.Unsafe.coerce
-                           pass2)##(setCustomValidity ("Passwords do not match"))
-                      else (Js.Unsafe.coerce pass2)##(setCustomValidity ("")));
-                   Lwt.return ()))
+        check_password_confirmation ~password:~%pass1 ~confirmation:~%pass2
        : unit)];
        [
          table
