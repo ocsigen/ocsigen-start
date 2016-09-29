@@ -21,6 +21,7 @@
 exception No_such_resource
 exception Main_email_removal_attempt
 exception Account_already_activated
+exception Account_not_activated
 
 
 let (>>=) = Lwt.bind
@@ -386,22 +387,27 @@ module User = struct
     if password = "" then Lwt.fail No_such_resource
     else
       full_transaction_block (fun dbh ->
-        lwt r = Lwt_Query.view_one dbh <:view< { t1.userid; t1.password }
+        lwt r = Lwt_Query.view_one dbh <:view<
+              { t1.userid; t1.password; t2.validated }
                  | t1 in $users_table$;
                    t2 in $emails_table$;
                    t1.userid = t2.userid;
-                   t2.email = $string:email$;
-                   t2.validated
+                   t2.email = $string:email$
              >>
        (* We fail for non-validated e-mails,
           because we don't want the user to log in with a non-validated
           email address. For example if the sign-up form contains
           a password field. *)
         in
-        let (userid, password') = (r#!userid, r#?password) in
+        let (userid, password', validated) =
+          (r#!userid, r#?password, r#!validated)
+        in
         match password' with
         | Some password' when snd !pwd_crypt_ref userid password password' ->
-          Lwt.return userid
+          if validated then
+            Lwt.return userid
+          else
+            Lwt.fail Account_not_activated
         | _ ->
           Lwt.fail No_such_resource
       )
