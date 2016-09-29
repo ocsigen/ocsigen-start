@@ -74,7 +74,7 @@ module Connection = struct
   )
 
   let sign_up_form () =
-    Os_view.generic_email_form ~service:Os_services.sign_up_service' ()
+    Os_view.generic_email_form ~service:Os_services.sign_up_service ()
 
   let forgot_password_form () =
     Os_view.generic_email_form ~service:Os_services.forgot_password_service ()
@@ -225,7 +225,7 @@ module Settings = struct
         [
           div ~a:[a_class ["os-welcome-box"]] [
             p [pcdata "Change your password:"];
-            Forms.password_form ~service:Os_services.set_password_service' ();
+            Forms.password_form ~service:Os_services.set_password_service ();
             br ();
             Os_userbox.upload_pic_link
               none

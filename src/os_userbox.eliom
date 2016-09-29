@@ -104,7 +104,7 @@ let%shared reset_tips_link close =
 let%shared user_menu_ close user service =
   [
     p [pcdata "Change your password:"];
-    Os_view.password_form ~service:Os_services.set_password_service' ();
+    Os_view.password_form ~service:Os_services.set_password_service ();
     hr ();
     upload_pic_link close service (Os_user.userid_of_user user);
     hr ();

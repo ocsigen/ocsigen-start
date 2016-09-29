@@ -22,6 +22,7 @@
 exception No_such_resource
 exception Main_email_removal_attempt
 exception Account_already_activated
+exception Account_not_activated
 
 val init :
   ?host:string ->

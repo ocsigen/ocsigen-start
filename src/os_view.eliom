@@ -94,7 +94,7 @@ let%shared disconnect_button ?a () =
        ]) ()
 
 let%shared sign_up_form ?a () =
-  generic_email_form ?a ~service:Os_services.sign_up_service' ()
+  generic_email_form ?a ~service:Os_services.sign_up_service ()
 
 let%shared forgot_password_form ?a () =
   generic_email_form ?a
@@ -103,7 +103,7 @@ let%shared forgot_password_form ?a () =
 let%shared information_form ?a
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
     () =
-  D.Form.post_form ?a ~service:Os_services.set_personal_data_service'
+  D.Form.post_form ?a ~service:Os_services.set_personal_data_service
     (fun ((fname, lname), (passwordn1, passwordn2)) ->
        let pass1 = D.Form.input
            ~a:[a_placeholder "Your password"]
@@ -147,7 +147,7 @@ let%shared information_form ?a
 
 
 let%shared preregister_form ?a label =
-  generic_email_form ?a ~service:Os_services.preregister_service' ~label ()
+  generic_email_form ?a ~service:Os_services.preregister_service ~label ()
 
 let%shared home_button ?a () =
   Form.get_form ?a ~service:Os_services.main_service

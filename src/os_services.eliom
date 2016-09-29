@@ -28,7 +28,7 @@ let%server main_service =
     ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
-let%server preregister_service' =
+let%server preregister_service =
   Eliom_service.create
     ~name:"preregister_service"
     ~path:Eliom_service.No_path
@@ -48,7 +48,7 @@ let%server forgot_password_service =
           Eliom_parameter.string "email"))
     ()
 
-let%server set_personal_data_service' =
+let%server set_personal_data_service =
   Eliom_service.create
     ~name:"set_data"
     ~path:Eliom_service.No_path
@@ -59,7 +59,7 @@ let%server set_personal_data_service' =
           (string "password"  ** string "password2")))
     ()
 
-let%server sign_up_service' =
+let%server sign_up_service =
   Eliom_service.create
     ~name:"sign_up"
     ~path:Eliom_service.No_path
@@ -96,7 +96,7 @@ let%server activation_service =
     ~meth:(Eliom_service.Get (Eliom_parameter.string "activationkey"))
     ()
 
-let%server set_password_service' =
+let%server set_password_service =
   Eliom_service.create
     ~name:"set_password"
     ~path:Eliom_service.No_path
@@ -115,12 +115,12 @@ let%server add_email_service = Eliom_service.create
   )) ()
 
 let%client main_service = ~%main_service
-let%client preregister_service' = ~%preregister_service'
+let%client preregister_service = ~%preregister_service
 let%client forgot_password_service = ~%forgot_password_service
-let%client set_personal_data_service' = ~%set_personal_data_service'
-let%client sign_up_service' = ~%sign_up_service'
+let%client set_personal_data_service = ~%set_personal_data_service
+let%client sign_up_service = ~%sign_up_service
 let%client connect_service = ~%connect_service
 let%client disconnect_service = ~%disconnect_service
 let%client activation_service = ~%activation_service
-let%client set_password_service' = ~%set_password_service'
+let%client set_password_service = ~%set_password_service
 let%client add_email_service = ~%add_email_service

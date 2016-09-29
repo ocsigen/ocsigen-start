@@ -36,7 +36,7 @@ val main_service :
     Eliom_service.non_ocaml
   ) Eliom_service.t
 
-val preregister_service' :
+val preregister_service :
   (
     unit,
     string,
@@ -66,7 +66,7 @@ val forgot_password_service :
     Eliom_service.non_ocaml
   ) Eliom_service.t
 
-val set_personal_data_service' :
+val set_personal_data_service :
   (
     unit,
     (string * string) * (string * string),
@@ -82,7 +82,7 @@ val set_personal_data_service' :
     Eliom_service.non_ocaml
   ) Eliom_service.t
 
-val sign_up_service' :
+val sign_up_service :
   (
     unit,
     string,
@@ -143,7 +143,7 @@ val activation_service :
     Eliom_service.non_ocaml
   ) Eliom_service.t
 
-val set_password_service' :
+val set_password_service :
   (
     unit,
     string * string,
