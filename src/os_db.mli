@@ -41,16 +41,7 @@ module Email : sig
 end
 
 module User : sig
-  exception Invalid_activation_key of int64
-
-  type activationkey_info = {
-    userid : int64;
-    email : string;
-    validity : int64;
-    autoconnect : bool;
-    action : [ `AccountActivation | `Custom of string | `PasswordReset ];
-    data : string;
-  }
+  exception Invalid_action_link_key of int64
 
   val userid_of_email : string -> int64 Lwt.t
 
@@ -60,7 +51,7 @@ module User : sig
 
   val set_email_validated : int64 -> string -> unit Lwt.t
 
-  val add_activationkey :
+  val add_actionlinkkey :
     ?autoconnect:bool ->
     ?action:[< `AccountActivation | `Custom of string | `PasswordReset
              > `AccountActivation ] ->
@@ -97,7 +88,7 @@ module User : sig
   val user_of_userid :
     int64 -> (int64 * string * string * string option * bool) Lwt.t
 
-  val get_activationkey_info : string -> activationkey_info Lwt.t
+  val get_actionlinkkey_info : string -> Os_data.actionlinkkey_info Lwt.t
 
   val emails_of_userid : int64 -> string list Lwt.t
 

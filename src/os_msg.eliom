@@ -53,7 +53,7 @@ let%shared msg
       Lwt.return ())
     : unit)]
 
-let activation_key_created =
+let action_link_key_created =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
 let wrong_pdata =

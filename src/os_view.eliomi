@@ -25,6 +25,7 @@ val generic_email_form :
   ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
   ?label:string Eliom_content.Html.F.wrap ->
   ?text:string ->
+  ?email:string ->
   service:(
     unit,
     'a,
@@ -44,6 +45,7 @@ val generic_email_form :
 
 val connect_form :
   ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
+  ?email:string ->
   unit ->
   [> Html_types.form ] Eliom_content.Html.D.elt
 
@@ -54,6 +56,7 @@ val disconnect_button :
 
 val sign_up_form :
   ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
+  ?email:string ->
   unit ->
   [> Html_types.form ] Eliom_content.Html.D.elt
 

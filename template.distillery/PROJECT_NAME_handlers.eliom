@@ -52,13 +52,45 @@ let%client preregister_handler' =
   in
   fun () -> preregister_rpc
 
-let%client activation_handler =
-  let activation_handler_rpc =
-    ~%(Eliom_client.server_function [%derive.json : string]
-       @@ fun akey -> activation_handler akey ())
-  in
-  fun akey () -> activation_handler_rpc akey
-
+(* Action links are links created to perform an action.
+   They are used for example to send activation links by email,
+   or links to reset a password.
+   You can create your own action links and define their behaviour here.
+*)
+let%shared action_link_handler myid_o akey () = Eliom_content.Html.F.(
+  (* We try first the default actions (activation link, reset password) *)
+  try%lwt Os_handlers.action_link_handler myid_o akey () with
+  | Os_handlers.Custom_action_link
+      ({ Os_data.userid; email; validity = _;
+         action = _; data = _; autoconnect = _ }, phantom_user) ->
+    (* Define here your custom action links.
+       If phantom_user is true, it means the link has been created for
+       an email that does not correspond to an existing user.
+       By default, we just display a sign up form or phantom users,
+       a login form for others.
+       You don't need to modify this if you are not using custom action links.
+    *)
+    if myid_o = None (* Not currently connected, and no autoconnect *)
+    then
+      if phantom_user
+      then
+        let page = [ div ~a:[ a_class ["login-signup-box"] ]
+                       [ Os_view.sign_up_form ~email () ] ]
+        in
+        %%%MODULE_NAME%%%_base.App.send (%%%MODULE_NAME%%%_page.make_page page)
+      else
+        let page = [ div ~a:[ a_class ["login-signup-box"] ]
+                       [ Os_view.connect_form ~email () ] ]
+        in
+        %%%MODULE_NAME%%%_base.App.send (%%%MODULE_NAME%%%_page.make_page page)
+    else (*VVV In that case we must do something more complex.
+            Check whether myid = userid and ask the user
+            what he wants to do. *)
+      Eliom_registration.
+        (appl_self_redirect
+           Redirection.send
+           (Redirection Eliom_service.reload_action))
+)
 
 let%shared main_service_handler userid_o () () = Eliom_content.Html.F.(
  %%%MODULE_NAME%%%_container.page userid_o (
