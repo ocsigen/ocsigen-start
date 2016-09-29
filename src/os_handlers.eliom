@@ -180,9 +180,17 @@ let%client restart ?url () =
        ["eliom.html"] ())
     (* How to do that without changing page? *)
   else
-    Eliom_client.exit_to ~absolute:false
-      ~service:Eliom_service.reload_action_hidden
-      () ()
+    match url with
+    | Some url ->
+      (* [Eliom_client.exit_to] ends up setting [.href], so we do the
+         same. We do not have an "untyped" [exit_to], and
+         reconstructing the params from the URL only to rebuild the
+         URL would be crazy *)
+      Dom_html.window##.location##.href := Js.string url
+    | None ->
+      Eliom_client.exit_to ~absolute:false
+        ~service:Eliom_service.reload_action_hidden
+        () ()
 
 (* Disconnection *)
 let disconnect_handler () () =
