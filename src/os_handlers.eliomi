@@ -16,21 +16,11 @@ exception Custom_action_link of
               In that case, you probably want to display a sign-up form,
               and in the other case a login form. *)
 
-[%%server.start]
-
 val action_link_handler :
   int64 option ->
   string ->
   unit ->
   'a Eliom_registration.application_content Eliom_registration.kind Lwt.t
-
-[%%client.start]
-
-val action_link_handler :
-  int64 option ->
-  string ->
-  unit ->
-  Eliom_registration.browser_content Eliom_registration.kind Lwt.t
 
 [%%server.start]
 
