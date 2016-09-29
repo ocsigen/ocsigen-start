@@ -19,6 +19,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+[%%client.start]
+
+(** [check_password_confirmation ~password ~confirmation] adds a listener to
+    the element [confirmation] which checks if the value of [password] and
+    [confirmation] match.
+ *)
+val check_password_confirmation :
+  password:[< Html_types.input] Eliom_content.Html.elt ->
+  confirmation:[< Html_types.input] Eliom_content.Html.elt ->
+  unit
+
 [%%shared.start]
 
 val generic_email_form :

@@ -28,19 +28,9 @@ module Forms = struct
             Form.string
         in
         ignore [%client (
-          let pass1 = Eliom_content.Html.To_dom.of_input ~%pass1 in
-          let pass2 = Eliom_content.Html.To_dom.of_input ~%pass2 in
-          Lwt_js_events.async
-            (fun () ->
-              Lwt_js_events.inputs pass2
-                (fun _ _ ->
-                  ignore (
-                    if Js.to_string pass1##.value <> Js.to_string pass2##.value
-                    then
-                      (Js.Unsafe.coerce pass2)##(setCustomValidity ("Passwords do not match"))
-                    else (Js.Unsafe.coerce pass2)##(setCustomValidity ("")));
-                  Lwt.return ()))
-            : unit)];
+          Os_view.check_password_confirmation ~password:~%pass1
+          ~confirmation:~%pass1
+        : unit)];
         [
           table
             [
