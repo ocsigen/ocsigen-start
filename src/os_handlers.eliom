@@ -189,19 +189,32 @@ let%client restart ?url () =
         ~service:Os_services.main_service
         () ()
 
-let disconnect_handler () () =
+(* By default, disconnect_handler stays on the same page.
+   If [main_page] is true, it goes to the main page.
+*)
+let disconnect_handler ?(main_page = false) () () =
   (* SECURITY: no check here because we disconnect the session cookie owner. *)
   let%lwt () = Os_session.disconnect () in
-  ignore [%client (restart () : unit)];
+  ignore [%client (restart
+                     ?url:(if ~%main_page
+                           then None
+                           else
+                             Some (make_uri
+                                     ~absolute:true
+                                     ~service:Eliom_service.reload_action ()))
+                     ()
+                   : unit)];
   Lwt.return ()
 
-let%server disconnect_handler_rpc' () = disconnect_handler () ()
+let%server disconnect_handler_rpc' main_page =
+  disconnect_handler ~main_page () ()
 let%client disconnect_handler_rpc' =
   ~%(Eliom_client.server_function
        ~name:"Os_handlers.disconnect_handler"
-       [%derive.json: unit]
+       [%derive.json: bool]
        disconnect_handler_rpc')
-let%client disconnect_handler () () = disconnect_handler_rpc' ()
+let%client disconnect_handler ?(main_page = false) () () =
+  disconnect_handler_rpc' main_page
 
 
 let connect_handler () ((login, pwd), keepmeloggedin) =
@@ -298,7 +311,9 @@ let%client action_link_handler_common =
        (Os_session.connected_wrapper action_link_handler_common))
 
 let%client restart_if_client_side () =
-  restart ~url:(make_uri Eliom_service.reload_action ()) ()
+  restart ~url:(make_uri
+                  ~absolute:true
+                  ~service:Eliom_service.reload_action ()) ()
 let%server restart_if_client_side () = ()
 
 let%shared action_link_handler _myid_o akey () =

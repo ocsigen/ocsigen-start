@@ -3,7 +3,7 @@
 
 val connect_handler : unit -> (string * string) * bool -> unit Lwt.t
 
-val disconnect_handler : unit -> unit -> unit Lwt.t
+val disconnect_handler : ?main_page:bool -> unit -> unit -> unit Lwt.t
 
 val sign_up_handler : unit -> string -> unit Lwt.t
 
