@@ -174,7 +174,6 @@ let%client restart ?url () =
      Eliom_client.exit_to ~absolute:false
        ~service:(Eliom_service.static_dir ())
        ["eliom.html"] ())
-    (* How to do that without changing page? *)
   else
     match url with
     | Some url ->
@@ -184,8 +183,10 @@ let%client restart ?url () =
          URL would be crazy *)
       Dom_html.window##.location##.href := Js.string url
     | None ->
-      Eliom_client.exit_to ~absolute:false
-        ~service:Eliom_service.reload_action_hidden
+      (* By default, we restart at main page, to have the same behaviour
+         as in the app. *)
+      Eliom_client.exit_to
+        ~service:Os_services.main_service
         () ()
 
 let disconnect_handler () () =
@@ -296,7 +297,8 @@ let%client action_link_handler_common =
        [%derive.json: string]
        (Os_session.connected_wrapper action_link_handler_common))
 
-let%client restart_if_client_side = restart
+let%client restart_if_client_side () =
+  restart ~url:(make_uri Eliom_service.reload_action ()) ()
 let%server restart_if_client_side () = ()
 
 let%shared action_link_handler _myid_o akey () =
