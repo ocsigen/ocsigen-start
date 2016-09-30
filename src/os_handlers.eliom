@@ -40,7 +40,7 @@ let set_personal_data_handler myid ()
     (Eliom_reference.Volatile.set Os_msg.wrong_pdata (Some pd);
      Lwt.return ())
   else (
-    let%lwt user = Os_user.user_of_userid userid in
+    let%lwt user = Os_user.user_of_userid myid in
     let open Os_user in
     let record = {
       user with

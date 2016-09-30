@@ -35,7 +35,7 @@ val preregister_handler' :
 
 val set_password_handler' : Os_user.id -> unit -> string * string -> unit Lwt.t
 
-val set_personal_data_handler' :
+val set_personal_data_handler :
   Os_user.id -> unit -> (string * string) * (string * string) -> unit Lwt.t
 
 [%%client.start]
