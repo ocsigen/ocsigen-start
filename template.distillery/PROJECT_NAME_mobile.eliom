@@ -26,6 +26,11 @@ let%server init_request_rpc : (_, unit) Eliom_client.server_function =
     [%derive.json: unit]
     (Os_session.Opt.connected_rpc init_request)
 
+let%client storage () =
+  Js.Optdef.case (Dom_html.window##.localStorage)
+    (fun () -> failwith "Browser storage not supported")
+    (fun v -> v)
+
 let%client _ =
   if Eliom_client.is_client_app ()
   then begin
@@ -37,8 +42,16 @@ let%client _ =
     *)
     let%lwt _ = Lwt_js_events.onload () in
     let%lwt _ = ~%init_request_rpc () in
-    Eliom_client.change_page ~replace:true
-      ~service:Os_services.main_service () ()
+    let st = storage ()
+    and lc = Js.string "__os_restart_url" in
+    Js.Opt.case
+      (st##getItem(lc))
+      (fun () ->
+         Eliom_client.change_page ~replace:true
+           ~service:Os_services.main_service () ())
+      (fun url ->
+         st##removeItem(lc);
+         Eliom_client.change_page_uri ~replace:true (Js.to_string url))
   end
   else Lwt.return ()
 

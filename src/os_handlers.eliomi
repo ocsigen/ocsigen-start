@@ -71,4 +71,4 @@ val set_personal_data_handler :
 
 val set_password_rpc : string * string -> unit Lwt.t
 
-val restart : unit -> unit
+val restart : ?url:string -> unit -> unit

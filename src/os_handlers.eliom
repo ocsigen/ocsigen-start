@@ -25,6 +25,11 @@
   open Eliom_content.Html.F
 ]
 
+let%client storage () =
+  Js.Optdef.case (Dom_html.window##.localStorage)
+    (fun () -> failwith "Browser storage not supported")
+    (fun v -> v)
+
 (* Set personal data *)
 let set_personal_data_handler myid ()
     (((firstname, lastname), (pwd, pwd2)) as pd) =
@@ -156,20 +161,36 @@ let forgot_password_handler service () email =
     Os_msg.msg ~level:`Err ~onload:true "User does not exist";
     Lwt.return ()
 
-let%client restart () =
+let%client restart ?url () =
   (* Restart the client.
      On a Web app, it is just reloading the page.
      On a mobile app, we want to restart from eliom.html.
   *)
   print_endline "restarting";
-  if Eliom_client.is_client_app ()
-  then Eliom_client.exit_to ~absolute:false
-      ~service:(Eliom_service.static_dir ())
-      ["eliom.html"] ()
-      (* How to do that without changing page? *)
-  else Eliom_client.exit_to ~absolute:false
-      ~service:Eliom_service.reload_action_hidden
-      () ()
+  if Eliom_client.is_client_app () then
+    ((match url with
+       | Some url ->
+         (storage ())##setItem
+           (Js.string "__os_restart_url")
+           (Js.string url)
+       | None ->
+         ());
+     Eliom_client.exit_to ~absolute:false
+       ~service:(Eliom_service.static_dir ())
+       ["eliom.html"] ())
+    (* How to do that without changing page? *)
+  else
+    match url with
+    | Some url ->
+      (* [Eliom_client.exit_to] ends up setting [.href], so we do the
+         same. We do not have an "untyped" [exit_to], and
+         reconstructing the params from the URL only to rebuild the
+         URL would be crazy *)
+      Dom_html.window##.location##.href := Js.string url
+    | None ->
+      Eliom_client.exit_to ~absolute:false
+        ~service:Eliom_service.reload_action_hidden
+        () ()
 
 (* Disconnection *)
 let disconnect_handler () () =
