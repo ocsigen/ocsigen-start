@@ -29,7 +29,7 @@ let%shared () =
 
   Eliom_registration.Unit.register
     ~service:Os_services.disconnect_service
-    Os_handlers.disconnect_handler;
+    (Os_handlers.disconnect_handler ~main_page:true);
 
   Eliom_registration.Any.register
     ~service:Os_services.action_link_service
