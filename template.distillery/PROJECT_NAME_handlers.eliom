@@ -2,7 +2,6 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 [%%shared
-  open Eliom_content.Html
   open Eliom_content.Html.F
 ]
 
@@ -54,7 +53,7 @@ let%shared action_link_handler myid_o akey () =
   (* We try first the default actions (activation link, reset password) *)
   try%lwt Os_handlers.action_link_handler myid_o akey () with
   | Os_handlers.Custom_action_link
-      ({ Os_types.userid; email; validity = _;
+      ({ Os_types.userid = _; email; validity = _;
          action = _; data = _; autoconnect = _ }, phantom_user) ->
     (* Define here your custom action links.
        If phantom_user is true, it means the link has been created for
