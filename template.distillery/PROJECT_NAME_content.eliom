@@ -132,8 +132,8 @@ let%client remove_email_from_user =
   ~%(Eliom_client.server_function [%derive.json : string]
        remove_email_from_user)
 
-let%server email_is_validated =
-  Os_session.connected_rpc Os_db.User.get_email_validated
+let%server is_email_validated =
+  Os_session.connected_rpc Os_db.User.is_email_validated
 
 let%server is_main_email =
   Os_session.connected_rpc (fun userid email ->
@@ -148,7 +148,7 @@ let%client update_main_email =
 
 let%server update_main_email_button email =
   let open Eliom_content.Html in
-  let%lwt validated = email_is_validated email in
+  let%lwt validated = is_email_validated email in
   Lwt.return @@ if validated then
       let button =
         D.button ~a:[D.a_class ["button"]] [D.pcdata "Set as main e-mail"] in
@@ -181,7 +181,7 @@ let%server delete_email_button email =
 
 let%server tr_of_email main_email email =
   let open Eliom_content.Html.F in
-  let%lwt validated = email_is_validated email in
+  let%lwt validated = is_email_validated email in
   let valid = p [
     pcdata @@
       if validated

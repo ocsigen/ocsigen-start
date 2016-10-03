@@ -79,9 +79,9 @@ module User : sig
       Else, it returns [false]. *)
   val is_registered : string -> bool Lwt.t
 
-  (** [get_email_validated userid email] returns [true] if [email] has been
+  (** [is_email_validated userid email] returns [true] if [email] has been
       validated by the user with id [userid]. *)
-  val get_email_validated : int64 -> string -> bool Lwt.t
+  val is_email_validated : int64 -> string -> bool Lwt.t
 
   (** [set_email_validated userid email] valids [email] for the user with id
       [userid]. *)

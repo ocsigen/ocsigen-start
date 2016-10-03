@@ -245,7 +245,7 @@ module User = struct
       Lwt.return_true
     with No_such_resource -> Lwt.return_false
 
-  let get_email_validated userid email = one run_query
+  let is_email_validated userid email = one run_query
     ~success:(fun _ -> Lwt.return_true)
     ~fail:Lwt.return_false
     <:select< row |
