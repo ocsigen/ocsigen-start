@@ -28,7 +28,13 @@
    We also record all opened mainboxes.
 *)
 
-module Make (A : sig type key type notification end) = struct
+module Make(A : sig
+      type key
+      type server_notif
+      type client_notif
+      val prepare : int64 option -> server_notif -> client_notif option Lwt.t
+    end) = struct
+
   module Notif_hastbl =
     Hashtbl.Make(struct type t = A.key
       let equal = (=)
@@ -39,9 +45,9 @@ module Make (A : sig type key type notification end) = struct
     Weak.Make(struct
       type t =
         (int64 option *
-         ((A.key * A.notification) Eliom_react.Down.t *
-          (A.key * A.notification) React.event *
-          (?step:React.step -> (A.key * A.notification) -> unit))) option
+         ((A.key * A.client_notif) Eliom_react.Down.t *
+          (A.key * A.client_notif) React.event *
+          (?step:React.step -> (A.key * A.client_notif) -> unit))) option
       let equal a b = match a, b with
         | None, None -> true
         | Some (a, b), Some (c, d) -> a = c && b == d
@@ -97,7 +103,7 @@ VVV See if it is still needed
      its client side counterpart,
      and the server side function to trigger it. *)
   let notif_e :
-    ('a * (A.key * A.notification) React.event * 'c)
+    ('a * (A.key * A.client_notif) React.event * 'c)
       Eliom_reference.Volatile.eref =
     Eliom_reference.Volatile.eref_from_fun
       ~scope:Eliom_common.default_process_scope
@@ -162,7 +168,7 @@ VVV See if it is still needed
               let uc = Eliom_reference.Volatile.Ext.get state userchannel2 in
               I.remove uc id))
 
-  let notify ?(notforme = false) id content_gen =
+  let notify ?(notforme = false) id content =
     Lwt.async (fun () ->
       I.fold (* on all tabs registered on this data *)
         (fun (userid_o, ((_, _, send_e) as nn)) (beg : unit Lwt.t) ->
@@ -170,7 +176,7 @@ VVV See if it is still needed
            then Lwt.return ()
            else
              let%lwt () = beg in
-             let%lwt content = content_gen userid_o in
+             let%lwt content = A.prepare userid_o content in
              match content with
              | Some content -> send_e (id, content); Lwt.return ()
              | None -> Lwt.return ())
@@ -183,3 +189,15 @@ VVV See if it is still needed
 
 
 end
+
+module Simple(A : sig
+      type key
+      type notification
+    end) =
+
+  Make (struct
+    type key = A.key
+    type server_notif = A.notification
+    type client_notif = A.notification
+    let prepare userid_o n = Lwt.return (Some n)
+  end)
