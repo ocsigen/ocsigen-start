@@ -28,15 +28,15 @@ val on_start_process : (unit -> unit Lwt.t) -> unit
 
 (** Call this to add an action to be done
     when the process starts in connected mode, or when the user logs in *)
-val on_start_connected_process : (Os_user.id -> unit Lwt.t) -> unit
+val on_start_connected_process : (Os_types.userid -> unit Lwt.t) -> unit
 
 (** Call this to add an action to be done at each connected request.
     The function takes the user id as parameter. *)
-val on_connected_request : (Os_user.id -> unit Lwt.t) -> unit
+val on_connected_request : (Os_types.userid -> unit Lwt.t) -> unit
 
 (** Call this to add an action to be done just after opening a session
     The function takes the user id as parameter. *)
-val on_open_session : (Os_user.id -> unit Lwt.t) -> unit
+val on_open_session : (Os_types.userid -> unit Lwt.t) -> unit
 
 (** Call this to add an action to be done just before closing the session *)
 val on_pre_close_session : (unit -> unit Lwt.t) -> unit
@@ -49,7 +49,7 @@ val on_request : (unit -> unit Lwt.t) -> unit
 
 (** Call this to add an action to be done just for each denied request.
     The function takes the user id as parameter, if some user is connected. *)
-val on_denied_request : (Os_user.id option -> unit Lwt.t) -> unit
+val on_denied_request : (Os_types.userid option -> unit Lwt.t) -> unit
 
 
 (** Scopes that are independant from user connection.
@@ -74,7 +74,7 @@ exception Permission_denied
     argument [expire] to true, the session will expire when the browser
     exits.
 *)
-val connect : ?expire:bool -> Os_user.id -> unit Lwt.t
+val connect : ?expire:bool -> Os_types.userid -> unit Lwt.t
 
 (** Close a session by discarding server side states for current browser
     (session and session group), current client process (tab) and current
@@ -104,48 +104,48 @@ val disconnect : unit -> unit Lwt.t
 val connected_fun :
   ?allow:Os_group.t list ->
   ?deny:Os_group.t list ->
-  ?deny_fun:(Os_user.id option -> 'c Lwt.t) ->
-  (Os_user.id -> 'a -> 'b -> 'c Lwt.t) ->
+  ?deny_fun:(Os_types.userid option -> 'c Lwt.t) ->
+  (Os_types.userid -> 'a -> 'b -> 'c Lwt.t) ->
   ('a -> 'b -> 'c Lwt.t)
 
 (** Wrapper for server functions (see {!connected_fun}). *)
 val connected_rpc :
   ?allow:Os_group.t list ->
   ?deny:Os_group.t list ->
-  ?deny_fun:(Os_user.id option -> 'b Lwt.t) ->
-  (Os_user.id -> 'a -> 'b Lwt.t) ->
+  ?deny_fun:(Os_types.userid option -> 'b Lwt.t) ->
+  (Os_types.userid -> 'a -> 'b Lwt.t) ->
   ('a -> 'b Lwt.t)
 
 (** Wrapper for server functions when you do not need userid. *)
 val connected_wrapper :
   ?allow:Os_group.t list ->
   ?deny:Os_group.t list ->
-  ?deny_fun:(Os_user.id option -> 'b Lwt.t) ->
+  ?deny_fun:(Os_types.userid option -> 'b Lwt.t) ->
   ('a -> 'b Lwt.t) ->
   ('a -> 'b Lwt.t)
 
 module Opt : sig
 
   (** Same as {!connected_fun} but instead of failing in case the user is
-      not connected, the function given as parameter takes an [Os_user.id
+      not connected, the function given as parameter takes an [Os_types.userid
       option] for user id.
   *)
   val connected_fun :
     ?allow:Os_group.t list ->
     ?deny:Os_group.t list ->
-    ?deny_fun:(Os_user.id option -> 'c Lwt.t) ->
-    (Os_user.id option -> 'a -> 'b -> 'c Lwt.t) ->
+    ?deny_fun:(Os_types.userid option -> 'c Lwt.t) ->
+    (Os_types.userid option -> 'a -> 'b -> 'c Lwt.t) ->
     ('a -> 'b -> 'c Lwt.t)
 
   (** Same as {!connected_rpc} but instead of failing in case the user is
-      not connected, the function given as parameter takes an [Os_user.id
+      not connected, the function given as parameter takes an [Os_types.userid
       option] for user id.
   *)
   val connected_rpc :
     ?allow:Os_group.t list ->
     ?deny:Os_group.t list ->
-    ?deny_fun:(Os_user.id option -> 'b Lwt.t) ->
-    (Os_user.id option -> 'a -> 'b Lwt.t) ->
+    ?deny_fun:(Os_types.userid option -> 'b Lwt.t) ->
+    (Os_types.userid option -> 'a -> 'b Lwt.t) ->
     ('a -> 'b Lwt.t)
 
 end
@@ -154,4 +154,4 @@ end
 (**/**)
 [%%client.start]
    (** internal. Do not use *)
-val get_current_userid_o : (unit -> Os_user.id option) ref
+val get_current_userid_o : (unit -> Os_types.userid option) ref

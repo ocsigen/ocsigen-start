@@ -23,12 +23,16 @@
 
 [%%shared.start]
 
+type userid = int64 [@@deriving json]
+
 (** Action links *)
 type actionlinkkey_info = {
-  userid : int64;
+  userid : userid;
   email : string;
   validity : int64;
   autoconnect : bool;
   action : [ `AccountActivation | `PasswordReset | `Custom of string ];
   data : string;
 }
+
+type groupid = int64 [@@deriving json]

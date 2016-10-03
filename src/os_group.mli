@@ -32,13 +32,11 @@ exception No_such_group
 
 *)
 
-type id = int64
-
 (** The type of a group *)
 type t
 
 (** [id_of_group group] returns the group ID. *)
-val id_of_group : t -> id
+val id_of_group : t -> Os_types.groupid
 
 (** [name_of_group group] returns the group name. *)
 val name_of_group : t -> string
@@ -64,15 +62,15 @@ val group_of_name : string -> t Lwt.t
 
 (** [add_user_in_group ~group ~userid] adds the user with ID [userid] to
     [group]. *)
-val add_user_in_group : group:t -> userid:Os_user.id -> unit Lwt.t
+val add_user_in_group : group:t -> userid:Os_types.userid -> unit Lwt.t
 
 (** [remove_user_in_group ~group ~userid] removes the user with ID [userid] from
     [group]. *)
-val remove_user_in_group : group:t -> userid:Os_user.id -> unit Lwt.t
+val remove_user_in_group : group:t -> userid:Os_types.userid -> unit Lwt.t
 
 (** [in_group ~group ~userid] returns [true] if the user with ID [userid] is in
     [group]. *)
-val in_group : group:t -> userid:Os_user.id -> bool Lwt.t
+val in_group : group:t -> userid:Os_types.userid -> bool Lwt.t
 
 (** [all ()] returns all the groups of the database. *)
 val all : unit -> t list Lwt.t

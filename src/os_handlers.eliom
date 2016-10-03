@@ -262,7 +262,7 @@ let%client connect_handler () v = connect_handler_rpc v
 
 [%%shared
   exception Custom_action_link of
-      Os_data.actionlinkkey_info
+      Os_types.actionlinkkey_info
       * bool (* If true, the link corresponds to a phantom user
                 (user who never created its account).
                 In that case, you probably want to display a sign-up form,
@@ -280,7 +280,7 @@ let action_link_handler_common akey =
   let myid_o = Os_current_user.Opt.get_current_userid () in
   try%lwt
     let%lwt
-      {Os_data.userid; email; validity; action; data = _; autoconnect}
+      {Os_types.userid; email; validity; action; data = _; autoconnect}
       as action_link =
       Os_user.get_actionlinkkey_info akey
     in

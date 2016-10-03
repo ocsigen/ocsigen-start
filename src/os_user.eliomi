@@ -18,28 +18,25 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared.start]
-type id = int64 [@@deriving json]
-
 [%%server.start]
-exception Already_exists of id
+exception Already_exists of Os_types.userid
 exception No_such_user
 
 (** Has user set its password? *)
-val password_set : id -> bool Lwt.t
+val password_set : Os_types.userid -> bool Lwt.t
 
 [%%shared.start]
 
 (** The type which represents a user. *)
 type t = {
-    userid : id;
+    userid : Os_types.userid;
     fn : string;
     ln : string;
     avatar : string option;
   } [@@deriving json]
 
 
-val userid_of_user : t -> id
+val userid_of_user : t -> Os_types.userid
 val firstname_of_user : t -> string
 val lastname_of_user : t -> string
 val avatar_of_user : t -> string option
@@ -66,31 +63,31 @@ val add_actionlinkkey :
   (** default: `AccountActivation *)
   ?data:string -> (** default: empty string *)
   ?validity:int64 -> (** default: 1L *)
-  act_key:string -> userid:id -> email:string -> unit -> unit Lwt.t
+  act_key:string -> userid:Os_types.userid -> email:string -> unit -> unit Lwt.t
 
-val verify_password : email:string -> password:string -> id Lwt.t
+val verify_password : email:string -> password:string -> Os_types.userid Lwt.t
 
 (** returns user information.
     Results are cached in memory during page generation. *)
-val user_of_userid : id -> t Lwt.t
+val user_of_userid : Os_types.userid -> t Lwt.t
 
-val get_actionlinkkey_info : string -> Os_data.actionlinkkey_info Lwt.t
+val get_actionlinkkey_info : string -> Os_types.actionlinkkey_info Lwt.t
 (** Retrieve the data corresponding to an action link key, each
     call decrements the validity of the key by 1 if it exists and
     validity > 0 (it remains at 0 if it's already 0). It is up to
     you to adapt the actions according to the value of validity!
     Raises [Os_db.No_such_resource] if the action link key is not found. *)
 
-val userid_of_email : string -> id Lwt.t
+val userid_of_email : string -> Os_types.userid Lwt.t
 
 (** Retrieve e-mails from user id. *)
-val emails_of_userid : id -> string list Lwt.t
+val emails_of_userid : Os_types.userid -> string list Lwt.t
 
 (** Retrieve the main e-mail of a user. *)
 val email_of_user : t -> string Lwt.t
 
 (** Retrieve the main e-mail from user id. *)
-val email_of_userid : id -> string Lwt.t
+val email_of_userid : Os_types.userid -> string Lwt.t
 
 (** Retrieve e-mails of a user. *)
 val emails_of_user : t -> string list Lwt.t
@@ -106,16 +103,16 @@ val create :
 (** Update the informations of a user. *)
 val update :
   ?password:string -> ?avatar:string ->
-  firstname:string -> lastname:string -> id -> unit Lwt.t
+  firstname:string -> lastname:string -> Os_types.userid -> unit Lwt.t
 
 (** Another version of [update] using a type [t] instead of labels. *)
 val update' : ?password:string -> t -> unit Lwt.t
 
 (** Update the password only *)
-val update_password : string -> id -> unit Lwt.t
+val update_password : string -> Os_types.userid -> unit Lwt.t
 
 (** Update the avatar only *)
-val update_avatar : string -> id -> unit Lwt.t
+val update_avatar : string -> Os_types.userid -> unit Lwt.t
 
 (** Check wether or not a user exists *)
 val is_registered : string -> bool Lwt.t
@@ -141,21 +138,21 @@ val all : ?limit:int64 -> unit -> string list Lwt.t
     by user, and as third parameter the hash found in database.
 *)
 val set_pwd_crypt_fun : (string -> string) *
-                        (id -> string -> string -> bool) -> unit
+                        (Os_types.userid -> string -> string -> bool) -> unit
 
 (** Removes the email [email] from the user with the id [userid],
     if the email is registered as the main email for the user it fails
     with the exception [Main_email_removal_attempt].
 *)
-val remove_email_from_user : userid:id -> email:string -> unit Lwt.t
+val remove_email_from_user : userid:Os_types.userid -> email:string -> unit Lwt.t
 
 (** Returns whether for a user designated by its id the given email has been
     validated. *)
-val is_email_validated : userid:id -> email:string -> bool Lwt.t
+val is_email_validated : userid:Os_types.userid -> email:string -> bool Lwt.t
 
 (** Returns whether an email is the  main email registered for a
     given user designated by its id. *)
-val is_main_email : userid:id -> email:string -> bool Lwt.t
+val is_main_email : userid:Os_types.userid -> email:string -> bool Lwt.t
 
 (** Sets the main email for a user with the id [userid] as the email [email]. *)
-val update_main_email : userid:id -> email:string -> unit Lwt.t
+val update_main_email : userid:Os_types.userid -> email:string -> unit Lwt.t

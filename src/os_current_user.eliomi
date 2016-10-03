@@ -31,7 +31,7 @@ val get_current_user : unit -> Os_user.t
 
 (** [get_current_userid ()] returns the ID of the current user.
     If no user is connected, it fails with {!Os_session.Not_connected}. *)
-val get_current_userid : unit -> Os_user.id
+val get_current_userid : unit -> Os_types.userid
 
 (** Instead of exception, the module [Opt] returns an option. *)
 module Opt : sig
@@ -41,7 +41,7 @@ module Opt : sig
 
   (** [get_current_userid ()] returns the ID of the current user as an option.
       If no user is connected, [None] is returned. *)
-  val get_current_userid : unit -> Os_user.id option
+  val get_current_userid : unit -> Os_types.userid option
 end
 
 [%%client.start]

@@ -36,8 +36,12 @@ module type S = sig
   val listen : key -> unit
   val unlisten : key -> unit
   val unlisten_user :
-    ?sitedata:Eliom_common.sitedata -> userid:Os_user.id -> key -> unit
-  val notify : ?notfor:[`Me | `User of Os_user.id] -> key -> server_notif -> unit
+    ?sitedata:Eliom_common.sitedata -> userid:Os_types.userid -> key -> unit
+  val notify :
+    ?notfor:[`Me | `User of Os_types.userid] ->
+    key ->
+    server_notif ->
+    unit
   val client_ev : unit -> (key * client_notif) Eliom_react.Down.t
 end
 
@@ -48,9 +52,9 @@ module Make(A : sig
       val prepare : int64 option -> server_notif -> client_notif option Lwt.t
     end) = struct
 
-	type key = A.key
-	type server_notif = A.server_notif
-	type client_notif = A.client_notif
+  type key = A.key
+  type server_notif = A.server_notif
+  type client_notif = A.client_notif
 
   module Notif_hastbl =
     Hashtbl.Make(struct type t = A.key
@@ -61,7 +65,7 @@ module Make(A : sig
   module Weak_tbl =
     Weak.Make(struct
       type t =
-        (int64 option *
+        (Os_types.userid option *
          ((A.key * A.client_notif) Eliom_react.Down.t *
           (A.key * A.client_notif) React.event *
           (?step:React.step -> (A.key * A.client_notif) -> unit))) option
@@ -213,7 +217,7 @@ VVV See if it is still needed
 end
 
 module Simple(A : sig type key type notification end) = Make
-	(struct
+  (struct
     type key = A.key
     type server_notif = A.notification
     type client_notif = A.notification

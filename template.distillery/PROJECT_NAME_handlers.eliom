@@ -54,7 +54,7 @@ let%shared action_link_handler myid_o akey () =
   (* We try first the default actions (activation link, reset password) *)
   try%lwt Os_handlers.action_link_handler myid_o akey () with
   | Os_handlers.Custom_action_link
-      ({ Os_data.userid; email; validity = _;
+      ({ Os_types.userid; email; validity = _;
          action = _; data = _; autoconnect = _ }, phantom_user) ->
     (* Define here your custom action links.
        If phantom_user is true, it means the link has been created for

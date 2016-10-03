@@ -77,19 +77,19 @@ module type PAGE = sig
 
   (** Default error page for connected pages. *)
   val default_connected_error_page :
-    Os_user.id option -> 'a -> 'b -> exn ->
+    Os_types.userid option -> 'a -> 'b -> exn ->
     Html_types.body_content Eliom_content.Html.elt list Lwt.t
 
   (** Default error page for connected pages (with custom headers and
       title). *)
   val default_connected_error_page_full :
-    (Os_user.id option -> 'a -> 'b -> exn -> content Lwt.t) option
+    (Os_types.userid option -> 'a -> 'b -> exn -> content Lwt.t) option
 
   (** Default predicate. *)
   val default_predicate : 'a -> 'b -> bool Lwt.t
 
   (** Default predicate for connected pages. *)
-  val default_connected_predicate : Os_user.id option -> 'a -> 'b -> bool Lwt.t
+  val default_connected_predicate : Os_types.userid option -> 'a -> 'b -> bool Lwt.t
 
 end
 
@@ -134,11 +134,11 @@ module Make (C : PAGE) : sig
     val connected_page :
       ?allow:Os_group.t list ->
       ?deny:Os_group.t list ->
-      ?predicate:(Os_user.id option -> 'a -> 'b -> bool Lwt.t) ->
-      ?fallback:(Os_user.id option -> 'a -> 'b -> exn ->
+      ?predicate:(Os_types.userid option -> 'a -> 'b -> bool Lwt.t) ->
+      ?fallback:(Os_types.userid option -> 'a -> 'b -> exn ->
                  Html_types.body_content Eliom_content.Html.elt
                    list Lwt.t) ->
-      (Os_user.id option -> 'a -> 'b ->
+      (Os_types.userid option -> 'a -> 'b ->
        Html_types.body_content Eliom_content.Html.elt list Lwt.t) ->
       ('a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t)
 
@@ -148,9 +148,9 @@ module Make (C : PAGE) : sig
     val connected_page_full :
       ?allow:Os_group.t list ->
       ?deny:Os_group.t list ->
-      ?predicate:(Os_user.id option -> 'a -> 'b -> bool Lwt.t) ->
-      ?fallback:(Os_user.id option -> 'a -> 'b -> exn -> content Lwt.t) ->
-      (Os_user.id option -> 'a -> 'b -> content Lwt.t) ->
+      ?predicate:(Os_types.userid option -> 'a -> 'b -> bool Lwt.t) ->
+      ?fallback:(Os_types.userid option -> 'a -> 'b -> exn -> content Lwt.t) ->
+      (Os_types.userid option -> 'a -> 'b -> content Lwt.t) ->
       ('a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t)
   end
 
@@ -160,11 +160,11 @@ module Make (C : PAGE) : sig
   val connected_page :
        ?allow:Os_group.t list
     -> ?deny:Os_group.t list
-    -> ?predicate:(Os_user.id option -> 'a -> 'b -> bool Lwt.t)
-    -> ?fallback:(Os_user.id option -> 'a -> 'b -> exn ->
+    -> ?predicate:(Os_types.userid option -> 'a -> 'b -> bool Lwt.t)
+    -> ?fallback:(Os_types.userid option -> 'a -> 'b -> exn ->
                   Html_types.body_content Eliom_content.Html.elt list
                     Lwt.t)
-    -> (Os_user.id -> 'a -> 'b ->
+    -> (Os_types.userid -> 'a -> 'b ->
         Html_types.body_content Eliom_content.Html.elt list Lwt.t)
     -> 'a -> 'b
     -> Html_types.html Eliom_content.Html.elt Lwt.t
@@ -176,8 +176,8 @@ module Make (C : PAGE) : sig
   val connected_page_full :
     ?allow:Os_group.t list ->
     ?deny:Os_group.t list ->
-    ?predicate:(Os_user.id option -> 'a -> 'b -> bool Lwt.t) ->
-    ?fallback:(Os_user.id option -> 'a -> 'b -> exn -> content Lwt.t) ->
-    (Os_user.id -> 'a -> 'b -> content Lwt.t) ->
+    ?predicate:(Os_types.userid option -> 'a -> 'b -> bool Lwt.t) ->
+    ?fallback:(Os_types.userid option -> 'a -> 'b -> exn -> content Lwt.t) ->
+    (Os_types.userid -> 'a -> 'b -> content Lwt.t) ->
     ('a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t)
 end

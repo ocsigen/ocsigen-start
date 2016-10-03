@@ -14,10 +14,10 @@ val os_footer : unit -> [> `Footer ] Eliom_content.Html.F.elt
 val connected_welcome_box :
   unit -> [> Html_types.div ] Eliom_content.Html.F.elt Lwt.t
 
-val get_user_data : Os_user.id option -> Os_user.t option Lwt.t
+val get_user_data : Os_types.userid option -> Os_user.t option Lwt.t
 
 val page :
-  Os_user.id option ->
+  Os_types.userid option ->
   [< Html_types.div_content_fun > `Div ] Eliom_content.Html.F.elt
   Eliom_content.Html.F.list_wrap ->
   [> `Div | `Footer | `Nav ] Eliom_content.Html.F.elt list Lwt.t
