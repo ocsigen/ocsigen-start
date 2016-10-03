@@ -25,8 +25,8 @@
     session if [keepMeLoggedIn] is set to [true] *)
 val connect_handler : unit -> (string * string) * bool -> unit Lwt.t
 
-(** [disconnect_handler () ()] disconnects the current user. *)
-val disconnect_handler : unit -> unit -> unit Lwt.t
+(** [disconnect_handler ?main_page () ()] disconnects the current user. *)
+val disconnect_handler : ?main_page:bool -> unit -> unit -> unit Lwt.t
 
 (** [sign_up_handler () email] *)
 val sign_up_handler : unit -> string -> unit Lwt.t
