@@ -113,13 +113,6 @@ let password_set userid =
 
 *)
 
-let empty = {
-  userid = 0L;
-  fn = "";
-  ln = "";
-  avatar = None;
-}
-
 (** Create new user. May raise [Already_exists] *)
 let create ?password ?avatar ~firstname ~lastname email =
   try%lwt
