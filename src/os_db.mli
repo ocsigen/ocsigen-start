@@ -38,6 +38,13 @@ val init :
   unit ->
   unit
 
+module PGOCaml : PGOCaml_generic.PGOCAML_GENERIC with type 'a monad = 'a Lwt.t
+
+(** [full_transaction_block f] executes function [f] within a database
+    transaction. The argument of [f] is a PGOCaml database handle. *)
+val full_transaction_block :
+  (PGOCaml.pa_pg_data PGOCaml.t -> 'a Lwt.t) -> 'a Lwt.t
+
 (** [pwd_crypt_ref] is a reference to [(f_crypt, f_check)] where
     - [f_crypt pwd] is used to encrypt the password [pwd]
     - [f_check userid pwd hashed_pwd] returns [true] if the hash of [pwd] and
