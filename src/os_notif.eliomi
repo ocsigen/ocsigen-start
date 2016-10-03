@@ -53,11 +53,6 @@ sig
   val unlisten_user :
     ?sitedata:Eliom_common.sitedata -> userid:Os_user.id -> A.key -> unit
 
-  (** handles notifications received as a broadcast from another server
-  *)
-  val receive_broadcast : notforme:bool ->
-    A.key -> A.notification option Lwt.t -> unit Lwt.t
-
   (** Call [notify id f] to send a notification to all clients currently
       listening on data [key]. The notification is build using function [f],
       that takes the userid as parameter, if a user is connected for this
@@ -70,19 +65,9 @@ sig
       If [~notforme] is [true], notification will not be sent to the tab
       currently doing the request (the one which caused the notification to
       happen). Default is [false].
-
-      If a function [broadcast] is supplied then instead of handling the
-      notification [notify] feeds its message to that function, which is
-      supposed to broadcast the message to other servers. See also
-      [receive_broadcast] which handles broadcast messages. Note, that the
-      transport between servers is not supplied by this module. Note also that
-      the [broadcast] function always supplies [None] to the messages content
-      generator, so this might break some applications!
   *)
-  val notify :
-    ?broadcast:(notforme:bool -> A.key -> A.notification -> unit Lwt.t) ->
-    ?notforme:bool -> A.key -> (int64 option -> A.notification option Lwt.t) ->
-    unit
+  val notify : ?notforme:bool -> A.key ->
+    (int64 option -> A.notification option Lwt.t) -> unit
 
   (** Returns the client react event. Map a function on this event to react
       to notifications from the server.
