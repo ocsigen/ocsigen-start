@@ -87,6 +87,8 @@ let transaction_block db f =
 let full_transaction_block f =
   Lwt_pool.use !pool (fun db -> transaction_block db (fun () -> f db))
 
+let without_transaction f = Lwt_pool.use !pool (fun db -> f db)
+
 let view_one rq =
   try List.hd rq
   with Failure _ -> raise No_such_resource
