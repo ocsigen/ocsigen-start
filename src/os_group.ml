@@ -71,7 +71,7 @@ let create ?description name =
     with Os_db.No_such_resource ->
       Lwt.fail No_such_group (* Should never happen *)
 
-(** Overwrite the function [group_of_name] of [Os_db.User] and use
+(** Overwrite the function [group_of_name] of [Os_db.Group] and use
   * the [get] function of the cache module. *)
 let group_of_name = MCache.get
 

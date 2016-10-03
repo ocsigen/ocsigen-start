@@ -50,7 +50,7 @@ val desc_of_group : t -> string option
     it as a record of type [t]. *)
 val create : ?description:string -> string -> t Lwt.t
 
-(** Overwrites the function [get_group] of [Os_db.User] and use
+(** Overwrites the function [group_of_name] of [Os_db.Group] and use
     the [get] function of the cache module. *)
 val group_of_name : string -> t Lwt.t
 
