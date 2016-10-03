@@ -40,22 +40,21 @@
     be updated every time the client is notified.
 *)
 
-module Make(A : sig
-      type key
-      type server_notif
-      type client_notif
-      val prepare : int64 option -> server_notif -> client_notif option Lwt.t
-    end) : sig
+module type T = sig
+
+  type key
+  type server_notif
+  type client_notif
 
   (** Make client process listen on data whose index is [key] *)
-  val listen : A.key -> unit
+  val listen : key -> unit
 
   (** Stop listening on data [key] *)
-  val unlisten : A.key -> unit
+  val unlisten : key -> unit
 
   (** Make a user stop listening on data [key] *)
   val unlisten_user :
-    ?sitedata:Eliom_common.sitedata -> userid:Os_user.id -> A.key -> unit
+    ?sitedata:Eliom_common.sitedata -> userid:Os_user.id -> key -> unit
 
   (** Call [notify id f] to send a notification to all clients currently
       listening on data [key]. The notification is build using function [f],
@@ -70,7 +69,7 @@ module Make(A : sig
       currently doing the request (the one which caused the notification to
       happen). Default is [false].
   *)
-  val notify : ?notforme:bool -> A.key -> A.server_notif -> unit
+  val notify : ?notforme:bool -> key -> server_notif -> unit
 
   (** Returns the client react event. Map a function on this event to react
       to notifications from the server.
@@ -85,18 +84,25 @@ module Make(A : sig
 ]
 
   *)
-  val client_ev : unit -> (A.key * A.client_notif) Eliom_react.Down.t
+  val client_ev : unit -> (key * client_notif) Eliom_react.Down.t
 
 end
 
-module Simple(A : sig
+
+module Make (A : sig
+      type key
+      type server_notif
+      type client_notif
+      val prepare : int64 option -> server_notif -> client_notif option Lwt.t
+    end) :
+	T with type key = A.key
+     and type server_notif = A.server_notif
+     and type client_notif = A.client_notif
+
+module Simple (A : sig
       type key
       type notification
-    end) : sig
-  val listen : A.key -> unit
-  val unlisten : A.key -> unit
-  val unlisten_user :
-    ?sitedata:Eliom_common.sitedata -> userid:int64 -> A.key -> unit
-  val notify : ?notforme:bool -> A.key -> A.notification -> unit
-  val client_ev : unit -> (A.key * A.notification) Eliom_react.Down.t
-end
+    end) :
+	T with type key = A.key
+     and type server_notif = A.notification
+     and type client_notif = A.notification

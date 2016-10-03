@@ -28,12 +28,29 @@
    We also record all opened mainboxes.
 *)
 
+module type T = sig
+  type key
+  type server_notif
+  type client_notif
+
+  val listen : key -> unit
+  val unlisten : key -> unit
+  val unlisten_user :
+    ?sitedata:Eliom_common.sitedata -> userid:Os_user.id -> key -> unit
+  val notify : ?notforme:bool -> key -> server_notif -> unit
+  val client_ev : unit -> (key * client_notif) Eliom_react.Down.t
+end
+
 module Make(A : sig
       type key
       type server_notif
       type client_notif
       val prepare : int64 option -> server_notif -> client_notif option Lwt.t
     end) = struct
+
+	type key = A.key
+	type server_notif = A.server_notif
+	type client_notif = A.client_notif
 
   module Notif_hastbl =
     Hashtbl.Make(struct type t = A.key
@@ -190,12 +207,8 @@ VVV See if it is still needed
 
 end
 
-module Simple(A : sig
-      type key
-      type notification
-    end) =
-
-  Make (struct
+module Simple(A : sig type key type notification end) = Make
+	(struct
     type key = A.key
     type server_notif = A.notification
     type client_notif = A.notification
