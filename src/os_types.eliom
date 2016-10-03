@@ -18,13 +18,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 *)
 
-(** Data types *)
+(** Data types
+
+    This module defines types used in ocsigen-start in multiple files. It
+    gives a more readable interface (for example by using [Os_types.userid]
+    instead of [int64]). Put all most used types in this file avoids to have
+    dependencies between different modules for only one type.
+ **)
 
 
 [%%shared.start]
 
+(** Type representing a user ID *)
 type userid = int64 [@@deriving json]
 
+(** Type representing a user. See <<a_api | module Os_user >>. *)
 type user = {
     userid : userid;
     fn : string;
@@ -42,8 +50,10 @@ type actionlinkkey_info = {
   data          : string;
 }
 
+(** Type representing a group ID *)
 type groupid = int64 [@@deriving json]
 
+(** Type representing a group. See <<a_api | module Os_group >> *)
 type group = {
   id    : groupid;
   name  : string;
