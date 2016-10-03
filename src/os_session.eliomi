@@ -102,24 +102,24 @@ val disconnect : unit -> unit Lwt.t
     When called on client side, no security check is done.
 *)
 val connected_fun :
-  ?allow:Os_group.t list ->
-  ?deny:Os_group.t list ->
+  ?allow:Os_types.group list ->
+  ?deny:Os_types.group list ->
   ?deny_fun:(Os_types.userid option -> 'c Lwt.t) ->
   (Os_types.userid -> 'a -> 'b -> 'c Lwt.t) ->
   ('a -> 'b -> 'c Lwt.t)
 
 (** Wrapper for server functions (see {!connected_fun}). *)
 val connected_rpc :
-  ?allow:Os_group.t list ->
-  ?deny:Os_group.t list ->
+  ?allow:Os_types.group list ->
+  ?deny:Os_types.group list ->
   ?deny_fun:(Os_types.userid option -> 'b Lwt.t) ->
   (Os_types.userid -> 'a -> 'b Lwt.t) ->
   ('a -> 'b Lwt.t)
 
 (** Wrapper for server functions when you do not need userid. *)
 val connected_wrapper :
-  ?allow:Os_group.t list ->
-  ?deny:Os_group.t list ->
+  ?allow:Os_types.group list ->
+  ?deny:Os_types.group list ->
   ?deny_fun:(Os_types.userid option -> 'b Lwt.t) ->
   ('a -> 'b Lwt.t) ->
   ('a -> 'b Lwt.t)
@@ -131,8 +131,8 @@ module Opt : sig
       option] for user id.
   *)
   val connected_fun :
-    ?allow:Os_group.t list ->
-    ?deny:Os_group.t list ->
+    ?allow:Os_types.group list ->
+    ?deny:Os_types.group list ->
     ?deny_fun:(Os_types.userid option -> 'c Lwt.t) ->
     (Os_types.userid option -> 'a -> 'b -> 'c Lwt.t) ->
     ('a -> 'b -> 'c Lwt.t)
@@ -142,8 +142,8 @@ module Opt : sig
       option] for user id.
   *)
   val connected_rpc :
-    ?allow:Os_group.t list ->
-    ?deny:Os_group.t list ->
+    ?allow:Os_types.group list ->
+    ?deny:Os_types.group list ->
     ?deny_fun:(Os_types.userid option -> 'b Lwt.t) ->
     (Os_types.userid option -> 'a -> 'b Lwt.t) ->
     ('a -> 'b Lwt.t)

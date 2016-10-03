@@ -132,8 +132,8 @@ module Make (C : PAGE) : sig
       See {!Eliom_session.Opt.connected_fun}.
   *)
     val connected_page :
-      ?allow:Os_group.t list ->
-      ?deny:Os_group.t list ->
+      ?allow:Os_types.group list ->
+      ?deny:Os_types.group list ->
       ?predicate:(Os_types.userid option -> 'a -> 'b -> bool Lwt.t) ->
       ?fallback:(Os_types.userid option -> 'a -> 'b -> exn ->
                  Html_types.body_content Eliom_content.Html.elt
@@ -146,8 +146,8 @@ module Make (C : PAGE) : sig
         first checks if the user is connected.
     *)
     val connected_page_full :
-      ?allow:Os_group.t list ->
-      ?deny:Os_group.t list ->
+      ?allow:Os_types.group list ->
+      ?deny:Os_types.group list ->
       ?predicate:(Os_types.userid option -> 'a -> 'b -> bool Lwt.t) ->
       ?fallback:(Os_types.userid option -> 'a -> 'b -> exn -> content Lwt.t) ->
       (Os_types.userid option -> 'a -> 'b -> content Lwt.t) ->
@@ -158,8 +158,8 @@ module Make (C : PAGE) : sig
       See {!Eliom_session.connected_fun}.
   *)
   val connected_page :
-       ?allow:Os_group.t list
-    -> ?deny:Os_group.t list
+       ?allow:Os_types.group list
+    -> ?deny:Os_types.group list
     -> ?predicate:(Os_types.userid option -> 'a -> 'b -> bool Lwt.t)
     -> ?fallback:(Os_types.userid option -> 'a -> 'b -> exn ->
                   Html_types.body_content Eliom_content.Html.elt list
@@ -174,8 +174,8 @@ module Make (C : PAGE) : sig
       first checks if user is connected.
   *)
   val connected_page_full :
-    ?allow:Os_group.t list ->
-    ?deny:Os_group.t list ->
+    ?allow:Os_types.group list ->
+    ?deny:Os_types.group list ->
     ?predicate:(Os_types.userid option -> 'a -> 'b -> bool Lwt.t) ->
     ?fallback:(Os_types.userid option -> 'a -> 'b -> exn -> content Lwt.t) ->
     (Os_types.userid -> 'a -> 'b -> content Lwt.t) ->

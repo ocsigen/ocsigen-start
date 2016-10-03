@@ -39,7 +39,7 @@ let%server set_personal_data_handler myid ()
      Lwt.return ())
   else (
     let%lwt user = Os_user.user_of_userid myid in
-    let open Os_user in
+    let open Os_types in
     let record = {
       user with
       fn = firstname;

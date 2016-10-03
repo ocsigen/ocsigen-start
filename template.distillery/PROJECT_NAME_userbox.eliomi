@@ -4,7 +4,7 @@
 [%%shared.start]
 
 val connected_user_box :
-  Os_user.t -> [> Html_types.div ] Eliom_content.Html.D.elt
+  Os_types.user -> [> Html_types.div ] Eliom_content.Html.D.elt
 
 val connection_box :
   unit -> [> Html_types.div ] Eliom_content.Html.D.elt Lwt.t
@@ -13,4 +13,4 @@ val msg :
   unit -> [> Html_types.div ] Eliom_content.Html.D.elt
 
 val userbox :
-  Os_user.t option -> [> Html_types.div ] Eliom_content.Html.F.elt Lwt.t
+  Os_types.user option -> [> Html_types.div ] Eliom_content.Html.F.elt Lwt.t

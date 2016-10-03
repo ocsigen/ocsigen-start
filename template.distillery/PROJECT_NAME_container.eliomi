@@ -6,7 +6,7 @@
 val navigation_bar : unit -> [> `Ul ] Eliom_content.Html.F.elt Lwt.t
 
 val os_header :
-  ?user:Os_user.t ->
+  ?user:Os_types.user ->
   unit -> [> Html_types.nav ] Eliom_content.Html.F.elt Lwt.t
 
 val os_footer : unit -> [> `Footer ] Eliom_content.Html.F.elt
@@ -14,7 +14,7 @@ val os_footer : unit -> [> `Footer ] Eliom_content.Html.F.elt
 val connected_welcome_box :
   unit -> [> Html_types.div ] Eliom_content.Html.F.elt Lwt.t
 
-val get_user_data : Os_types.userid option -> Os_user.t option Lwt.t
+val get_user_data : Os_types.userid option -> Os_types.user option Lwt.t
 
 val page :
   Os_types.userid option ->

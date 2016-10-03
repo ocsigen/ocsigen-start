@@ -25,14 +25,27 @@
 
 type userid = int64 [@@deriving json]
 
+type user = {
+    userid : userid;
+    fn : string;
+    ln : string;
+    avatar : string option;
+  } [@@deriving json]
+
 (** Action links *)
 type actionlinkkey_info = {
-  userid : userid;
-  email : string;
-  validity : int64;
-  autoconnect : bool;
-  action : [ `AccountActivation | `PasswordReset | `Custom of string ];
-  data : string;
+  userid        : userid;
+  email         : string;
+  validity      : int64;
+  autoconnect   : bool;
+  action        : [ `AccountActivation | `PasswordReset | `Custom of string ];
+  data          : string;
 }
 
 type groupid = int64 [@@deriving json]
+
+type group = {
+  id    : groupid;
+  name  : string;
+  desc  : string option;
+}

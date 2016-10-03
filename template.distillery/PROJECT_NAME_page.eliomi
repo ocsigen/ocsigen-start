@@ -65,8 +65,8 @@ val page :
 module Opt :
   sig
     val connected_page :
-      ?allow:Os_group.t list ->
-      ?deny:Os_group.t list ->
+      ?allow:Os_types.group list ->
+      ?deny:Os_types.group list ->
       ?predicate:(Os_types.userid option -> 'a -> 'b -> bool Lwt.t) ->
       ?fallback:
       (
@@ -87,8 +87,8 @@ module Opt :
       Html_types.html Eliom_content.Html.elt Lwt.t
 
     val connected_page_full :
-      ?allow:Os_group.t list ->
-      ?deny:Os_group.t list ->
+      ?allow:Os_types.group list ->
+      ?deny:Os_types.group list ->
       ?predicate:(Os_types.userid option -> 'a -> 'b -> bool Lwt.t) ->
       ?fallback:(Os_types.userid option ->
                  'a -> 'b -> exn -> Os_page.content Lwt.t) ->
@@ -97,8 +97,8 @@ module Opt :
   end
 
 val connected_page :
-  ?allow:Os_group.t list ->
-  ?deny:Os_group.t list ->
+  ?allow:Os_types.group list ->
+  ?deny:Os_types.group list ->
   ?predicate:(Os_types.userid option -> 'a -> 'b -> bool Lwt.t) ->
   ?fallback:(Os_types.userid option ->
              'a ->
@@ -110,8 +110,8 @@ val connected_page :
   'a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t
 
 val connected_page_full :
-  ?allow:Os_group.t list ->
-  ?deny:Os_group.t list ->
+  ?allow:Os_types.group list ->
+  ?deny:Os_types.group list ->
   ?predicate:(Os_types.userid option -> 'a -> 'b -> bool Lwt.t) ->
   ?fallback:(Os_types.userid option -> 'a -> 'b -> exn -> Os_page.content Lwt.t) ->
   (Os_types.userid -> 'a -> 'b -> Os_page.content Lwt.t) ->

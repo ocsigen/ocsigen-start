@@ -25,18 +25,9 @@ open Eliom_content.Html.F
   exception No_such_user
 ]
 
-[%%shared
-  (** The type which represents a user. *)
-  type t = {
-    userid : Os_types.userid;
-    fn : string;
-    ln : string;
-    avatar : string option;
-  } [@@deriving json]
-]
-
 (** Create a user of type [t] using db informations. *)
 let create_user_from_db0 (userid, fn, ln, avatar, pwdset) =
+  Os_types.
   {
     userid = userid;
     fn = fn;
@@ -48,10 +39,10 @@ let create_user_from_db0 (userid, fn, ln, avatar, pwdset) =
 let create_user_from_db d = fst (create_user_from_db0 d)
 
 (** Getters functions. *)
-let%shared userid_of_user u = u.userid
-let%shared firstname_of_user u = u.fn
-let%shared lastname_of_user u = u.ln
-let%shared avatar_of_user u = u.avatar
+let%shared userid_of_user (u : Os_types.user) = Os_types.(u.userid)
+let%shared firstname_of_user u = Os_types.(u.fn)
+let%shared lastname_of_user u = Os_types.(u.ln)
+let%shared avatar_of_user u = Os_types.(u.avatar)
 
 let%shared avatar_uri_of_avatar ?absolute_path avatar =
   Eliom_content.Html.F.make_uri ?absolute_path
@@ -61,13 +52,17 @@ let%shared avatar_uri_of_user ?absolute_path user =
   Eliom_lib.Option.map
     (avatar_uri_of_avatar ?absolute_path) (avatar_of_user user)
 
-let%shared fullname_of_user user = String.concat " " [user.fn; user.ln]
+let%shared fullname_of_user user =
+  String.concat " " [firstname_of_user user; lastname_of_user user]
 
-let%shared is_complete u = not (u.fn = "" || u.ln = "")
+let%shared is_complete user =
+  not ((firstname_of_user user) = "" || (lastname_of_user user) = "")
 
-let emails_of_user user = Os_db.User.emails_of_userid user.userid
+let emails_of_user user =
+  Os_db.User.emails_of_userid (userid_of_user user)
 
-let email_of_user user = Os_db.User.email_of_userid user.userid
+let email_of_user user =
+  Os_db.User.email_of_userid (userid_of_user user)
 
 
 include Os_db.User
@@ -78,7 +73,7 @@ include Os_db.User
 module MCache = Os_request_cache.Make(
 struct
   type key = Os_types.userid
-  type value = t * bool
+  type value = Os_types.user * bool
 
   let compare = compare
   let get key =
@@ -129,8 +124,13 @@ let update ?password ?avatar ~firstname ~lastname userid =
   MCache.reset userid;
   Lwt.return ()
 
-let update' ?password t =
-  update ?password ?avatar:t.avatar ~firstname:t.fn ~lastname:t.ln t.userid
+let update' ?password user =
+  update
+    ?password
+    ?avatar:(avatar_of_user user)
+    ~firstname:(firstname_of_user user)
+    ~lastname:(lastname_of_user user)
+    (userid_of_user user)
 
 let update_password password userid =
   let%lwt () = Os_db.User.update_password password userid in

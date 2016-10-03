@@ -28,33 +28,26 @@ val password_set : Os_types.userid -> bool Lwt.t
 [%%shared.start]
 
 (** The type which represents a user. *)
-type t = {
-    userid : Os_types.userid;
-    fn : string;
-    ln : string;
-    avatar : string option;
-  } [@@deriving json]
 
-
-val userid_of_user : t -> Os_types.userid
-val firstname_of_user : t -> string
-val lastname_of_user : t -> string
-val avatar_of_user : t -> string option
+val userid_of_user : Os_types.user -> Os_types.userid
+val firstname_of_user : Os_types.user -> string
+val lastname_of_user : Os_types.user -> string
+val avatar_of_user : Os_types.user -> string option
 val avatar_uri_of_avatar :
   ?absolute_path:bool -> string -> Eliom_content.Xml.uri
 val avatar_uri_of_user :
-  ?absolute_path:bool -> t -> Eliom_content.Xml.uri option
+  ?absolute_path:bool -> Os_types.user -> Eliom_content.Xml.uri option
 
 (** Retrieve the full name of user. *)
-val fullname_of_user : t -> string
+val fullname_of_user : Os_types.user -> string
 
-(** Returns true if the firstname and the lastname of [t] has not
+(** Returns true if the firstname and the lastname of [Os_types.user] has not
   * been completed yet. *)
-val is_complete : t -> bool
+val is_complete : Os_types.user -> bool
 
 [%%server.start]
 
-val emails_of_user : t -> string Lwt.t
+val emails_of_user : Os_types.user -> string Lwt.t
 
 val add_actionlinkkey :
   (* by default, an action_link key is just an activation key *)
@@ -69,7 +62,7 @@ val verify_password : email:string -> password:string -> Os_types.userid Lwt.t
 
 (** returns user information.
     Results are cached in memory during page generation. *)
-val user_of_userid : Os_types.userid -> t Lwt.t
+val user_of_userid : Os_types.userid -> Os_types.user Lwt.t
 
 val get_actionlinkkey_info : string -> Os_types.actionlinkkey_info Lwt.t
 (** Retrieve the data corresponding to an action link key, each
@@ -84,29 +77,30 @@ val userid_of_email : string -> Os_types.userid Lwt.t
 val emails_of_userid : Os_types.userid -> string list Lwt.t
 
 (** Retrieve the main e-mail of a user. *)
-val email_of_user : t -> string Lwt.t
+val email_of_user : Os_types.user -> string Lwt.t
 
 (** Retrieve the main e-mail from user id. *)
 val email_of_userid : Os_types.userid -> string Lwt.t
 
 (** Retrieve e-mails of a user. *)
-val emails_of_user : t -> string list Lwt.t
+val emails_of_user : Os_types.user -> string list Lwt.t
 
 (** Get users who match the [pattern] (useful for completion) *)
-val get_users : ?pattern:string -> unit -> t list Lwt.t
+val get_users : ?pattern:string -> unit -> Os_types.user list Lwt.t
 
 (** Create a new user *)
 val create :
   ?password:string -> ?avatar:string ->
-  firstname:string -> lastname:string -> string -> t Lwt.t
+  firstname:string -> lastname:string -> string -> Os_types.user Lwt.t
 
 (** Update the informations of a user. *)
 val update :
   ?password:string -> ?avatar:string ->
   firstname:string -> lastname:string -> Os_types.userid -> unit Lwt.t
 
-(** Another version of [update] using a type [t] instead of labels. *)
-val update' : ?password:string -> t -> unit Lwt.t
+(** Another version of [update] using a type [Os_types.user] instead of
+    label. *)
+val update' : ?password:string -> Os_types.user -> unit Lwt.t
 
 (** Update the password only *)
 val update_password : string -> Os_types.userid -> unit Lwt.t
