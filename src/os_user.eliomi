@@ -109,7 +109,7 @@ val update :
   firstname:string -> lastname:string -> id -> unit Lwt.t
 
 (** Another version of [update] using a type [t] instead of labels. *)
-val update : ?password:string -> t -> unit Lwt.t
+val update' : ?password:string -> t -> unit Lwt.t
 
 (** Update the password only *)
 val update_password : string -> id -> unit Lwt.t
