@@ -116,7 +116,7 @@ val connected_rpc :
   (Os_user.id -> 'a -> 'b Lwt.t) ->
   ('a -> 'b Lwt.t)
 
-(** Wrapper for server functions when you do not not need userid. *)
+(** Wrapper for server functions when you do not need userid. *)
 val connected_wrapper :
   ?allow:Os_group.t list ->
   ?deny:Os_group.t list ->
