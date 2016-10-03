@@ -137,7 +137,7 @@ let%server sign_up_handler () email =
   with Os_user.Already_exists userid ->
     (* If email is not validated, the user never logged in,
        I send an action link, as if it were a new user. *)
-    let%lwt validated = Os_db.User.get_email_validated userid email in
+    let%lwt validated = Os_db.User.is_email_validated userid email in
     if not validated
     then send_action_link email userid
     else begin
@@ -307,7 +307,7 @@ let action_link_handler_common akey =
     else
       match action with
       | `Custom s ->
-        let%lwt existing_user = Os_db.User.get_email_validated userid email in
+        let%lwt existing_user = Os_db.User.is_email_validated userid email in
         Lwt.return (`Custom_action_link (action_link, not existing_user))
       | _ -> Lwt.return `Reload
 

@@ -159,8 +159,8 @@ let get_users ?pattern () =
 
 let set_pwd_crypt_fun a = Os_db.pwd_crypt_ref := a
 
-let email_is_validated ~userid ~email =
-  Os_db.User.get_email_validated userid email
+let is_email_validated ~userid ~email =
+  Os_db.User.is_email_validated userid email
 
 let is_main_email ~userid ~email =
   Os_db.User.is_main_email ~email ~userid

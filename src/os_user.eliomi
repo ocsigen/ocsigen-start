@@ -151,7 +151,7 @@ val remove_email_from_user : userid:id -> email:string -> unit Lwt.t
 
 (** Returns whether for a user designated by its id the given email has been
     validated. *)
-val email_is_validated : userid:id -> email:string -> bool Lwt.t
+val is_email_validated : userid:id -> email:string -> bool Lwt.t
 
 (** Returns whether an email is the  main email registered for a
     given user designated by its id. *)
