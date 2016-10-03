@@ -140,7 +140,7 @@ let update ?password ?avatar ~firstname ~lastname userid =
   MCache.reset userid;
   Lwt.return ()
 
-let update ?password t =
+let update' ?password t =
   update ?password ?avatar:t.avatar ~firstname:t.fn ~lastname:t.ln t.userid
 
 let update_password password userid =

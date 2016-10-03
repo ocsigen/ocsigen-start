@@ -45,7 +45,7 @@ let%server set_personal_data_handler myid ()
       fn = firstname;
       ln = lastname;
     } in
-    Os_user.update ~password:pwd record)
+    Os_user.update' ~password:pwd record)
 
 (* Set password handler *)
 let%server set_password_handler myid () (pwd, pwd2) =
@@ -55,7 +55,7 @@ let%server set_password_handler myid () (pwd, pwd2) =
      Lwt.return ())
   else (
     let%lwt user = Os_user.user_of_userid myid in
-    Os_user.update ~password:pwd user)
+    Os_user.update' ~password:pwd user)
 
 (* Set password RPC *)
 let%client set_password_rpc =
