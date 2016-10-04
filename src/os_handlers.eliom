@@ -73,10 +73,9 @@ let%server generate_action_link_key
     ~text
     email =
   let service =
-    Eliom_service.attach_existing
+    Eliom_service.attach_global_to_fallback
       ~fallback:service
       ~service:Os_services.action_link_service
-      ()
   in
   let act_link = Eliom_uri.make_string_uri ~absolute:true ~service act_key in
   (* For debugging we print the action link on standard output
