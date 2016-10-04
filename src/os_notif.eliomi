@@ -40,7 +40,7 @@
     be updated every time the client is notified.
 *)
 
-module type T = sig
+module type S = sig
 
   type key
   type server_notif
@@ -95,7 +95,7 @@ module Make (A : sig
       type client_notif
       val prepare : int64 option -> server_notif -> client_notif option Lwt.t
     end) :
-	T with type key = A.key
+	S with type key = A.key
      and type server_notif = A.server_notif
      and type client_notif = A.client_notif
 
@@ -103,6 +103,6 @@ module Simple (A : sig
       type key
       type notification
     end) :
-	T with type key = A.key
+	S with type key = A.key
      and type server_notif = A.notification
      and type client_notif = A.notification
