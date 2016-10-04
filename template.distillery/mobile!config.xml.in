@@ -78,7 +78,7 @@
     <plugin name="cordova-hot-code-push-plugin" spec="~1.2.5" />
     <!-- <plugin name="cordova-plugin-facebook4" spec="~1.7.0"> -->
     <!--     <variable name="APP_ID" value="%%FACEBOOK_ID%%" /> -->
-    <!--     <variable name="APP_NAME" value="besport" /> -->
+    <!--     <variable name="APP_NAME" value="%%MOBILE_APP_NAME%%" /> -->
     <!-- </plugin> -->
     <plugin name="cordova-plugin-network-information" spec="~1.2.0" />
     <plugin name="cordova-plugin-globalization" spec="~1.0.3" />
