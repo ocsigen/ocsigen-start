@@ -40,6 +40,13 @@
     be updated every time the client is notified.
 *)
 
+(** we have two types of notifications ([server_notif], and [client_notif])
+    because we might need to serialise and deserialise the notification twice.
+    Once for broadcasting it to other servers (in case of a multi-server set-up)
+    and once for transferring it to the client (after possibly transforming the
+    message using information which is only disponible at the receiving server
+    (see [prepare] below).
+*)
 module type S = sig
 
   type key
@@ -56,22 +63,14 @@ module type S = sig
   val unlisten_user :
     ?sitedata:Eliom_common.sitedata -> userid:Os_user.id -> key -> unit
 
-  (*TODO: explain, why we have two types of keys. move documentation about [f]
-          to [prepare] *)
-  (** Call [notify id f] to send a notification to all clients currently
-      listening on data [key]. The notification is build using function [f],
-      that takes the userid as parameter, if a user is connected for this
-      client process.
+  (** Call [notify id] to send a notification to all clients currently
+      listening on data [key].
 
-      If you do not want to send the notification for this user,
-      for example because he is not allowed to see this data,
-      make function [f] return [None].
-
-      (*TODO: adapt documentation to notfor*)
-      If [~notforme] is [true], notification will not be sent to the tab
+      If [~notfor] is [`Me], notification will not be sent to the tab
       currently doing the request (the one which caused the notification to
-      happen). Default is [false].
+      happen). If it is [`User id] it won't be sent to the user with id [id].
   *)
+  (*TODO: is the restriction to the current tab relevant?*)
   val notify : ?notfor:[`Me | `User of Os_user.id] -> key -> server_notif -> unit
 
   (** Returns the client react event. Map a function on this event to react
@@ -96,6 +95,12 @@ module Make (A : sig
       type key
       type server_notif
       type client_notif
+      (* [prepare] transforms server notifications into client notifications.
+         It takes the userid as parameter, if a user is connected for this
+         client process. If you do not want to send the notification for this
+         user, for example because he is not allowed to see this data, make
+         function [f] return [None].
+      *)
       val prepare : int64 option -> server_notif -> client_notif option Lwt.t
     end) :
 	S with type key = A.key
