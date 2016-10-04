@@ -124,31 +124,13 @@ module Connection = struct
 
 end
 
-let%server remove_email_from_user =
-  Os_session.connected_rpc (fun userid email ->
-    Os_user.remove_email_from_user ~userid ~email)
-
-let%client remove_email_from_user =
-  ~%(Eliom_client.server_function [%derive.json : string]
-       remove_email_from_user)
-
-let%server is_email_validated =
-  Os_session.connected_rpc Os_db.User.is_email_validated
-
 let%server is_main_email =
   Os_session.connected_rpc (fun userid email ->
     Os_user.is_main_email ~userid ~email)
 
-let%server update_main_email =
-  Os_session.connected_rpc (fun userid email ->
-    Os_user.update_main_email ~userid ~email)
-
-let%client update_main_email =
-  ~%(Eliom_client.server_function [%derive.json : string] update_main_email)
-
 let%server update_main_email_button email =
   let open Eliom_content.Html in
-  let%lwt validated = is_email_validated email in
+  let%lwt validated = Os_current_user.is_email_validated email in
   Lwt.return @@ if validated then
       let button =
         D.button ~a:[D.a_class ["button"]] [D.pcdata "Set as main e-mail"] in
@@ -156,7 +138,7 @@ let%server update_main_email_button email =
         Lwt_js_events.clicks
           (Eliom_content.Html.To_dom.of_element ~%button)
           (fun _ _ ->
-            let%lwt () = update_main_email ~%email in
+            let%lwt () = Os_current_user.update_main_email ~%email in
             Eliom_client.change_page
               ~service:%%%MODULE_NAME%%%_services.settings_service () ()
           )
@@ -172,7 +154,7 @@ let%server delete_email_button email =
     Lwt_js_events.clicks
       (Eliom_content.Html.To_dom.of_element ~%button)
       (fun _ _ ->
-        let%lwt () = remove_email_from_user ~%email in
+        let%lwt () = Os_current_user.remove_email_from_user ~%email in
         Eliom_client.change_page
           ~service:%%%MODULE_NAME%%%_services.settings_service () ()
       )
@@ -181,7 +163,7 @@ let%server delete_email_button email =
 
 let%server tr_of_email main_email email =
   let open Eliom_content.Html.F in
-  let%lwt validated = is_email_validated email in
+  let%lwt validated = Os_current_user.is_email_validated email in
   let valid = p [
     pcdata @@
       if validated

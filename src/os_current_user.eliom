@@ -70,8 +70,8 @@ let get_current_user_option () =
   | CU_idontknown -> failwith please_use_connected_fun
   | CU_notconnected -> None
 
-
-let%shared get_current_userid () = Os_user.userid_of_user (get_current_user ())
+let%shared get_current_userid () =
+  Os_user.userid_of_user (get_current_user ())
 
 [%%shared
   module Opt = struct
@@ -86,7 +86,8 @@ let%shared get_current_userid () = Os_user.userid_of_user (get_current_user ())
   end
 ]
 
-let%client _ = Os_session.get_current_userid_o := Opt.get_current_userid
+let%client _ =
+  Os_session.get_current_userid_o := Opt.get_current_userid
 
 let set_user_server myid =
   let%lwt u = Os_user.user_of_userid myid in
@@ -139,3 +140,36 @@ let () =
   Os_session.on_denied_request (fun _ ->
     Lwt_log.ign_debug ~section "denied request action";
     Lwt.return ())
+
+let%server remove_email_from_user email =
+  let myid = get_current_userid () in
+  Os_user.remove_email_from_user ~userid:myid ~email
+
+let%client remove_email_from_user email =
+  ~%(Eliom_client.server_function
+      [%derive.json: string]
+      (Os_session.connected_wrapper remove_email_from_user)
+  )
+  email
+
+let%server update_main_email email =
+  let myid = get_current_userid () in
+  Os_user.update_main_email ~userid:myid ~email
+
+let%client update_main_email email =
+  ~%(Eliom_client.server_function
+      [%derive.json: string]
+      (Os_session.connected_wrapper update_main_email)
+  )
+  email
+
+let%server is_email_validated email =
+  let myid = get_current_userid () in
+  Os_user.is_email_validated ~userid:myid ~email
+
+let%client is_email_validated email =
+  ~%(Eliom_client.server_function
+      [%derive.json: string]
+      (Os_session.connected_wrapper is_email_validated)
+  )
+  email
