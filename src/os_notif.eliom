@@ -37,7 +37,7 @@ module type S = sig
   val unlisten : key -> unit
   val unlisten_user :
     ?sitedata:Eliom_common.sitedata -> userid:Os_user.id -> key -> unit
-  val notify : ?notforme:bool -> key -> server_notif -> unit
+  val notify : ?notfor:[`Me | `User of Os_user.id] -> key -> server_notif -> unit
   val client_ev : unit -> (key * client_notif) Eliom_react.Down.t
 end
 
@@ -185,11 +185,16 @@ VVV See if it is still needed
               let uc = Eliom_reference.Volatile.Ext.get state userchannel2 in
               I.remove uc id))
 
-  let notify ?(notforme = false) id content =
+  let notify ?notfor id content =
     Lwt.async (fun () ->
       I.fold (* on all tabs registered on this data *)
         (fun (userid_o, ((_, _, send_e) as nn)) (beg : unit Lwt.t) ->
-           if notforme && nn == Eliom_reference.Volatile.get notif_e
+           let blocked = match notfor with
+             | Some `Me -> nn == Eliom_reference.Volatile.get notif_e
+             | Some (`User userid) -> userid_o = Some userid
+             | None -> false
+           in
+           if blocked
            then Lwt.return ()
            else
              let%lwt () = beg in
