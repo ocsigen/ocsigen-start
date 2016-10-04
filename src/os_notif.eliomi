@@ -56,6 +56,8 @@ module type S = sig
   val unlisten_user :
     ?sitedata:Eliom_common.sitedata -> userid:Os_user.id -> key -> unit
 
+  (*TODO: explain, why we have two types of keys. move documentation about [f]
+          to [prepare] *)
   (** Call [notify id f] to send a notification to all clients currently
       listening on data [key]. The notification is build using function [f],
       that takes the userid as parameter, if a user is connected for this
@@ -65,11 +67,12 @@ module type S = sig
       for example because he is not allowed to see this data,
       make function [f] return [None].
 
+      (*TODO: adapt documentation to notfor*)
       If [~notforme] is [true], notification will not be sent to the tab
       currently doing the request (the one which caused the notification to
       happen). Default is [false].
   *)
-  val notify : ?notforme:bool -> key -> server_notif -> unit
+  val notify : ?notfor:[`Me | `User of Os_user.id] -> key -> server_notif -> unit
 
   (** Returns the client react event. Map a function on this event to react
       to notifications from the server.
