@@ -107,7 +107,7 @@ module Make (A : sig
       *)
       val prepare : int64 option -> server_notif -> client_notif option Lwt.t
     end) :
-  S with type key = A.key
+       S with type key = A.key
      and type server_notif = A.server_notif
      and type client_notif = A.client_notif
 
@@ -115,6 +115,6 @@ module Simple (A : sig
       type key
       type notification
     end) :
-  S with type key = A.key
+       S with type key = A.key
      and type server_notif = A.notification
      and type client_notif = A.notification

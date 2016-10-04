@@ -18,6 +18,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+[%%shared.start]
+
+(** Type alias to {!Os_types.userid} to allow to use [Os_user.id]. *)
+type id = Os_types.userid [@@deriving json]
+
+(** Type alias to {!Os_types.user} to allow to use [Os_user.t]. *)
+type t = Os_types.user = {
+    userid : id;
+    fn : string;
+    ln : string;
+    avatar : string option;
+  } [@@deriving json]
+
 [%%server.start]
 exception Already_exists of Os_types.userid
 exception No_such_user

@@ -32,6 +32,16 @@ exception No_such_group
 
 *)
 
+(** Type alias to {!Os_types.groupid} to allow to use [Os_group.id]. *)
+type id = Os_types.groupid [@@deriving json]
+
+(** Type alias to {!Os_types.group} to allow to use [Os_group.t]. *)
+type t = Os_types.group = {
+  id    : id;
+  name  : string;
+  desc  : string option;
+} [@@deriving json]
+
 (** [id_of_group group] returns the group ID. *)
 val id_of_group : Os_types.group -> Os_types.groupid
 

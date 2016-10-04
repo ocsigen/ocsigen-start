@@ -20,6 +20,17 @@
 
 open Eliom_content.Html.F
 
+[%%shared
+  type id = Os_types.userid [@@deriving json]
+
+  type t = Os_types.user = {
+      userid : id;
+      fn : string;
+      ln : string;
+      avatar : string option;
+    } [@@deriving json]
+]
+
 [%%server
   exception Already_exists of Os_types.userid
   exception No_such_user

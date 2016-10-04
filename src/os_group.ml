@@ -20,6 +20,14 @@
 
 exception No_such_group
 
+type id = Os_types.groupid [@@deriving json]
+
+type t = Os_types.group = {
+  id    : id;
+  name  : string;
+  desc  : string option;
+} [@@deriving json]
+
 (** Create a group of type [Os_types.group] using db informations. *)
 let create_group_from_db (groupid, name, description) : Os_types.group =
   let open Os_types in {
