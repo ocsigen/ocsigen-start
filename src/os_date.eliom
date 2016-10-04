@@ -74,11 +74,13 @@ let%server init_time_rpc' = init_client_process_time
 
 let%client init_time_rpc' = ()
 
-let%shared init_time_rpc : (_, unit) Eliom_client.server_function =
+(** When the browser is loaded, we init the timezone *)
+let init_time_rpc : (_, unit) Eliom_client.server_function =
   Eliom_client.server_function ~name:"os_date.init_time_rpc" [%derive.json: int]
     init_time_rpc'
 
-(** When the browser is loaded, we init the timezone *)
+let%client init_time_rpc = ~%init_time_rpc
+
 let%client _ =
   (* We wait for the client process to be fully loaded: *)
   Eliom_client.onload (fun () ->
