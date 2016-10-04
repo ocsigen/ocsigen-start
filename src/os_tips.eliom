@@ -108,9 +108,8 @@ let reset_tips () =
 let%server reset_tips_service =
   Eliom_service.create
     ~name:"resettips"
-    ~path:Eliom_service.No_path
-    ~meth:
-      (Eliom_service.Post (Eliom_parameter.unit, Eliom_parameter.unit))
+    ~id:Eliom_service.Global
+    ~meth:(Eliom_service.Post (Eliom_parameter.unit, Eliom_parameter.unit))
     ()
 
 let%client reset_tips_service = ~%reset_tips_service

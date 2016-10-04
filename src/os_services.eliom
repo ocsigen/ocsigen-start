@@ -31,7 +31,7 @@
 (** The main service. *)
 let%server main_service =
   Eliom_service.create
-    ~path:(Eliom_service.Path [])
+    ~id:(Eliom_service.Path [])
     ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
@@ -40,7 +40,7 @@ let%server main_service =
 let%server preregister_service =
   Eliom_service.create
     ~name:"preregister_service"
-    ~path:Eliom_service.No_path
+    ~id:Eliom_service.Global
     ~meth:
       (Eliom_service.Post
          (Eliom_parameter.unit,
@@ -52,7 +52,7 @@ let%server preregister_service =
 let%server forgot_password_service =
   Eliom_service.create
     ~name:"lost_password"
-    ~path:Eliom_service.No_path
+    ~id:Eliom_service.Global
     ~meth:
       (Eliom_service.Post
          (Eliom_parameter.unit,
@@ -65,7 +65,7 @@ let%server forgot_password_service =
 let%server set_personal_data_service =
   Eliom_service.create
     ~name:"set_data"
-    ~path:Eliom_service.No_path
+    ~id:Eliom_service.Global
     ~meth:
       (Eliom_service.Post
          (Eliom_parameter.unit,
@@ -78,7 +78,7 @@ let%server set_personal_data_service =
 let%server sign_up_service =
   Eliom_service.create
     ~name:"sign_up"
-    ~path:Eliom_service.No_path
+    ~id:Eliom_service.Global
     ~meth:
       (Eliom_service.Post
          (Eliom_parameter.unit,
@@ -90,7 +90,7 @@ let%server sign_up_service =
 let%server connect_service =
   Eliom_service.create
     ~name:"connect"
-    ~path:Eliom_service.No_path
+    ~id:Eliom_service.Global
     ~meth:
       (Eliom_service.Post
          (Eliom_parameter.unit,
@@ -103,7 +103,7 @@ let%server connect_service =
 let%server disconnect_service =
   Eliom_service.create
     ~name:"disconnect"
-    ~path:Eliom_service.No_path
+    ~id:Eliom_service.Global
     ~meth:
       (Eliom_service.Post
          (Eliom_parameter.unit, Eliom_parameter.unit))
@@ -116,7 +116,7 @@ let%server disconnect_service =
 let%server action_link_service =
   Eliom_service.create
     ~name:"action_link"
-    ~path:Eliom_service.No_path
+    ~id:Eliom_service.Global
     ~meth:(Eliom_service.Get (Eliom_parameter.string "actionkey"))
     ()
 
@@ -126,7 +126,7 @@ let%server action_link_service =
 let%server set_password_service =
   Eliom_service.create
     ~name:"set_password"
-    ~path:Eliom_service.No_path
+    ~id:Eliom_service.Global
     ~meth:
       (Eliom_service.Post
          (Eliom_parameter.unit,
@@ -137,7 +137,7 @@ let%server set_password_service =
     See {!Os_handlers.add_email_handler} for a default handler. *)
 let%server add_email_service = Eliom_service.create
   ~name:"add_email"
-  ~path:Eliom_service.No_path
+  ~id:Eliom_service.Global
   ~meth:(Eliom_service.Post (
     Eliom_parameter.unit,
     Eliom_parameter.string "email"
