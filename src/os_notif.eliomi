@@ -40,48 +40,38 @@
     be updated every time the client is notified.
 *)
 
-module Make(A : sig type key type notification end) :
-sig
+(** we have two types of notifications ([server_notif], and [client_notif])
+    because we might need to serialise and deserialise the notification twice.
+    Once for broadcasting it to other servers (in case of a multi-server set-up)
+    and once for transferring it to the client (after possibly transforming the
+    message using information which is only disponible at the receiving server
+    (see [prepare] below).
+*)
+module type S = sig
+
+  type key
+  type server_notif
+  type client_notif
 
   (** Make client process listen on data whose index is [key] *)
-  val listen : A.key -> unit
+  val listen : key -> unit
 
   (** Stop listening on data [key] *)
-  val unlisten : A.key -> unit
+  val unlisten : key -> unit
 
   (** Make a user stop listening on data [key] *)
   val unlisten_user :
-    ?sitedata:Eliom_common.sitedata -> userid:Os_user.id -> A.key -> unit
+    ?sitedata:Eliom_common.sitedata -> userid:Os_user.id -> key -> unit
 
-  (** handles notifications received as a broadcast from another server
-  *)
-  val receive_broadcast : A.key -> A.notification option Lwt.t -> unit Lwt.t
+  (** Call [notify id] to send a notification to all clients currently
+      listening on data [key].
 
-  (** Call [notify id f] to send a notification to all clients currently
-      listening on data [key]. The notification is build using function [f],
-      that takes the userid as parameter, if a user is connected for this
-      client process.
-
-      If you do not want to send the notification for this user,
-      for example because he is not allowed to see this data,
-      make function [f] return [None].
-
-      If [~notforme] is [true], notification will not be sent to the tab
+      If [~notfor] is [`Me], notification will not be sent to the tab
       currently doing the request (the one which caused the notification to
-      happen). Default is [false].
-
-      If a function [broadcast] is supplied then instead of handling the
-      notification [notify] feeds its message to that function, which is
-      supposed to broadcast the message to other servers. See also
-      [receive_broadcast] which handles broadcast messages. Note, that the
-      transport between servers is not supplied by this module. Note also that
-      the [broadcast] function always supplies [None] to the messages content
-      generator, so this might break some applications!
+      happen). If it is [`User id] it won't be sent to the user with id [id].
   *)
-  val notify :
-    ?broadcast:(A.key -> A.notification -> unit Lwt.t) ->
-    ?notforme:bool -> A.key -> (int64 option -> A.notification option Lwt.t) ->
-    unit
+  (*TODO: is the restriction to the current tab relevant?*)
+  val notify : ?notfor:[`Me | `User of Os_user.id] -> key -> server_notif -> unit
 
   (** Returns the client react event. Map a function on this event to react
       to notifications from the server.
@@ -96,6 +86,31 @@ sig
 ]
 
   *)
-  val client_ev : unit -> (A.key * A.notification) Eliom_react.Down.t
+  val client_ev : unit -> (key * client_notif) Eliom_react.Down.t
 
 end
+
+
+module Make (A : sig
+      type key
+      type server_notif
+      type client_notif
+      (* [prepare] transforms server notifications into client notifications.
+         It takes the userid as parameter, if a user is connected for this
+         client process. If you do not want to send the notification for this
+         user, for example because he is not allowed to see this data, make
+         function [f] return [None].
+      *)
+      val prepare : int64 option -> server_notif -> client_notif option Lwt.t
+    end) :
+	S with type key = A.key
+     and type server_notif = A.server_notif
+     and type client_notif = A.client_notif
+
+module Simple (A : sig
+      type key
+      type notification
+    end) :
+	S with type key = A.key
+     and type server_notif = A.notification
+     and type client_notif = A.notification

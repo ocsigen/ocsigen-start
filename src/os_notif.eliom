@@ -28,7 +28,30 @@
    We also record all opened mainboxes.
 *)
 
-module Make (A : sig type key type notification end) = struct
+module type S = sig
+  type key
+  type server_notif
+  type client_notif
+
+  val listen : key -> unit
+  val unlisten : key -> unit
+  val unlisten_user :
+    ?sitedata:Eliom_common.sitedata -> userid:Os_user.id -> key -> unit
+  val notify : ?notfor:[`Me | `User of Os_user.id] -> key -> server_notif -> unit
+  val client_ev : unit -> (key * client_notif) Eliom_react.Down.t
+end
+
+module Make(A : sig
+      type key
+      type server_notif
+      type client_notif
+      val prepare : int64 option -> server_notif -> client_notif option Lwt.t
+    end) = struct
+
+	type key = A.key
+	type server_notif = A.server_notif
+	type client_notif = A.client_notif
+
   module Notif_hastbl =
     Hashtbl.Make(struct type t = A.key
       let equal = (=)
@@ -39,9 +62,9 @@ module Make (A : sig type key type notification end) = struct
     Weak.Make(struct
       type t =
         (int64 option *
-         ((A.key * A.notification) Eliom_react.Down.t *
-          (A.key * A.notification) React.event *
-          (?step:React.step -> (A.key * A.notification) -> unit))) option
+         ((A.key * A.client_notif) Eliom_react.Down.t *
+          (A.key * A.client_notif) React.event *
+          (?step:React.step -> (A.key * A.client_notif) -> unit))) option
       let equal a b = match a, b with
         | None, None -> true
         | Some (a, b), Some (c, d) -> a = c && b == d
@@ -97,7 +120,7 @@ VVV See if it is still needed
      its client side counterpart,
      and the server side function to trigger it. *)
   let notif_e :
-    ('a * (A.key * A.notification) React.event * 'c)
+    ('a * (A.key * A.client_notif) React.event * 'c)
       Eliom_reference.Volatile.eref =
     Eliom_reference.Volatile.eref_from_fun
       ~scope:Eliom_common.default_process_scope
@@ -162,36 +185,25 @@ VVV See if it is still needed
               let uc = Eliom_reference.Volatile.Ext.get state userchannel2 in
               I.remove uc id))
 
-  (* used by notify (local invocation) and receive_broadcast (remote invocation) *)
-  let notify_worker ~notforme id content =
+  let notify ?notfor id content =
+    Lwt.async (fun () ->
       I.fold (* on all tabs registered on this data *)
         (fun (userid_o, ((_, _, send_e) as nn)) (beg : unit Lwt.t) ->
-           if notforme && nn == Eliom_reference.Volatile.get notif_e
+           let blocked = match notfor with
+             | Some `Me -> nn == Eliom_reference.Volatile.get notif_e
+             | Some (`User userid) -> userid_o = Some userid
+             | None -> false
+           in
+           if blocked
            then Lwt.return ()
            else
              let%lwt () = beg in
-             let%lwt content = match content with
-             | `Generate content_gen -> content_gen userid_o
-             | `Concrete content -> content
-             in
+             let%lwt content = A.prepare userid_o content in
              match content with
              | Some content -> send_e (id, content); Lwt.return ()
              | None -> Lwt.return ())
         id
-        (Lwt.return ())
-
-  let receive_broadcast id content = (* remote invocation *)
-    notify_worker ~notforme:false id (`Concrete content)
-
-  let notify ?broadcast ?(notforme = false) id content_gen = Lwt.async @@ fun () ->
-    match broadcast with
-    | None -> (* local invocation *)
-        notify_worker ~notforme id (`Generate content_gen)
-    | Some broadcast ->
-        let%lwt content = content_gen None in
-        match content with
-        | None -> Lwt.return ()
-        | Some content -> broadcast id content
+        (Lwt.return ()))
 
   let client_ev () =
     let (ev, _, _) = Eliom_reference.Volatile.get notif_e in
@@ -199,3 +211,11 @@ VVV See if it is still needed
 
 
 end
+
+module Simple(A : sig type key type notification end) = Make
+	(struct
+    type key = A.key
+    type server_notif = A.notification
+    type client_notif = A.notification
+    let prepare userid_o n = Lwt.return (Some n)
+  end)
