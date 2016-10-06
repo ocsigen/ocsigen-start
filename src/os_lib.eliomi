@@ -31,3 +31,9 @@ val memoizator :
   (unit -> 'a Lwt.t)  ->
   unit                ->
   'a Lwt.t
+
+[%%server.start]
+module Http :
+  sig
+    val string_of_stream : ?len:int -> string Ocsigen_stream.t -> string Lwt.t
+  end

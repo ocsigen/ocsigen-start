@@ -30,3 +30,18 @@ let%shared memoizator f =
       let%lwt value = f () in
       value_ref := Some value;
       Lwt.return value
+
+[%%server.start]
+module Http =
+  struct
+    let string_of_stream ?(len=16384) contents =
+      Lwt.try_bind
+        (fun () ->
+           Ocsigen_stream.string_of_stream len (Ocsigen_stream.get contents))
+        (fun r ->
+           let%lwt () = Ocsigen_stream.finalize contents `Success in
+           Lwt.return r)
+        (fun e ->
+           let%lwt () = Ocsigen_stream.finalize contents `Failure in
+           Lwt.fail e)
+  end
