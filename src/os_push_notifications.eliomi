@@ -67,6 +67,11 @@
     >> %}
 *)
 
+exception GCM_empty_response
+exception GCM_no_json_response of string
+exception GCM_missing_field of string
+exception GCM_unauthorized
+
 (** This module provides a interface to create notifications and add payloads *)
 module Notification :
   sig
@@ -195,5 +200,76 @@ module Options :
     val add_collapse_key : string -> t -> t
   end
 
+module Response :
+  sig
+    module Results :
+      sig
+        type error =
+        | Missing_registration
+        | Invalid_registration
+        | Unregistered_device
+        | Invalid_package_name
+        | Authentication_failed
+        | Mismatched_sender_id
+        | Invalid_JSON
+        | Message_too_big
+        | Invalid_data_key
+        | Invalid_time_to_live
+        | Timeout
+        | Internal_server
+        | Device_message_rate_exceeded
+        | Topics_message_rate_exceeded
+        | Unknown
+
+        val string_of_error : error -> string
+
+        (** The type representing a success result.
+            If no error occured, the JSON in the results attribute contains a
+            mandatory field [message_id] and an optional field
+            [registration_id].
+         *)
+        type success
+
+        (** The type representing a result. *)
+        type t = Success of success | Error of error
+
+        (** [message_id_of_success success] returns a string specifying a unique
+            ID for each successfully processed message. *)
+        val message_id_of_success : success -> string
+
+        (** [registration_id_of_t result] returns a string specifying the
+            canonical registration token for the client app that the message was
+            processed and sent to. *)
+        val registration_id_of_success : success -> string option
+      end
+    (** The type representing a GCM response *)
+    type t
+
+    (** [multicast_id_of_t response] returns the unique ID identifying the
+        multicast message.
+
+        NOTE: In GCM documentation, it is defined as a number but the ID is
+        sometimes too big to be considered as an OCaml integer.
+     *)
+    val multicast_id_of_t : t -> string
+
+    (** [success_of_t response] returns the number of messages that were
+        processed without an error. *)
+    val success_of_t : t -> int
+
+    (** [failure_of_t response] returns the number of messages that could not
+        be processed. *)
+    val failure_of_t : t -> int
+
+    (** [canonical_ids_of_t response] returns the number of results that contain
+        a canonical registration token. See
+        https://developers.google.com/cloud-messaging/registration#canonical-ids
+        for more discussion of this topic. *)
+    val canonical_ids_of_t : t -> int
+
+    (** [results_of_t response] returns the status of the messages processed. *)
+    val results_of_t : t -> Results.t list
+  end
+
 (** [send server_key notification options]  *)
-val send : string -> Notification.t -> Options.t -> unit Lwt.t
+val send : string -> Notification.t -> Options.t -> Response.t Lwt.t
