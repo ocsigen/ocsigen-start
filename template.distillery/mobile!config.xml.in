@@ -75,7 +75,7 @@
     <plugin name="cordova-plugin-whitelist" spec="1" />
     <!-- <allow-navigation href="*" /> --><!-- this seems to be necessary for outside resources, e.g., outside videos in iframes -->
     <plugin name="cordova-plugin-crosswalk-webview" spec="~1.6.0" />
-    <plugin name="cordova-hot-code-push-plugin" spec="~1.2.5" />
+    <plugin name="cordova-hot-code-push-plugin" spec="~1.5.1" />
     <!-- <plugin name="cordova-plugin-facebook4" spec="~1.7.0"> -->
     <!--     <variable name="APP_ID" value="%%FACEBOOK_ID%%" /> -->
     <!--     <variable name="APP_NAME" value="%%MOBILE_APP_NAME%%" /> -->
