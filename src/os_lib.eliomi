@@ -33,7 +33,11 @@ val memoizator :
   'a Lwt.t
 
 [%%server.start]
+(** This module contains functions about HTTP request. *)
 module Http :
   sig
+    (** [string_of_stream ?len stream] creates a string of maximum length [len]
+        (default is [16384]) from the stream [stream].
+     *)
     val string_of_stream : ?len:int -> string Ocsigen_stream.t -> string Lwt.t
   end
