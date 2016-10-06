@@ -20,8 +20,9 @@
 
 (** Send push notifications to mobile clients.
 
-    This module provides a simple OCaml interface to Google Cloud Messaging
-    (GCM) to send push notifications to mobile devices. It is recommended to use
+    This module provides a simple OCaml interface to Firebase Cloud Messaging
+    (FCM) to send push notifications to mobile devices by using downstream HTTP
+    messages in JSON. It is recommended to use
     https://github.com/dannywillems/ocaml-cordova-plugin-push client-side to
     receive push notifications on the mobile.
 
@@ -29,11 +30,11 @@
     https://github.com/phonegap/phonegap-plugin-push/blob/master/docs/PAYLOAD.md
 
     Before using this module, you need to register your mobile application in
-    GCM and save the server key GCM will give you. You need to pass this key to
+    FCM and save the server key FCM will give you. You need to pass this key to
     {!send} when you want to send a notification.
 
-    On the client, you will need first to register the device on GCM and save
-    server-side the registered ID returned by GCM. You will use this ID when you
+    On the client, you will need first to register the device on FCM and save
+    server-side the registered ID returned by FCM. You will use this ID when you
     will want to send a notification to the device. This step is described in
     the binding to the Cordova plugin phonegap-plugin-push available at this
     address: https://github.com/dannywillems/ocaml-cordova-plugin-push.
@@ -67,10 +68,10 @@
     >> %}
 *)
 
-exception GCM_empty_response
-exception GCM_no_json_response of string
-exception GCM_missing_field of string
-exception GCM_unauthorized
+exception FCM_empty_response
+exception FCM_no_json_response of string
+exception FCM_missing_field of string
+exception FCM_unauthorized
 
 (** This module provides a interface to create notifications and add payloads *)
 module Notification :
@@ -204,6 +205,22 @@ module Response :
   sig
     module Results :
       sig
+        (** The type representing a success result.
+            If no error occured, the JSON in the results attribute contains a
+            mandatory field [message_id] and an optional field
+            [registration_id].
+         *)
+        type success
+
+        (** [message_id_of_success success] returns a string specifying a unique
+            ID for each successfully processed message. *)
+        val message_id_of_success : success -> string
+
+        (** [registration_id_of_t result] returns a string specifying the
+            canonical registration token for the client app that the message was
+            processed and sent to. *)
+        val registration_id_of_success : success -> string option
+
         type error =
         | Missing_registration
         | Invalid_registration
@@ -223,32 +240,17 @@ module Response :
 
         val string_of_error : error -> string
 
-        (** The type representing a success result.
-            If no error occured, the JSON in the results attribute contains a
-            mandatory field [message_id] and an optional field
-            [registration_id].
-         *)
-        type success
-
         (** The type representing a result. *)
         type t = Success of success | Error of error
 
-        (** [message_id_of_success success] returns a string specifying a unique
-            ID for each successfully processed message. *)
-        val message_id_of_success : success -> string
-
-        (** [registration_id_of_t result] returns a string specifying the
-            canonical registration token for the client app that the message was
-            processed and sent to. *)
-        val registration_id_of_success : success -> string option
       end
-    (** The type representing a GCM response *)
+    (** The type representing a FCM response *)
     type t
 
     (** [multicast_id_of_t response] returns the unique ID identifying the
         multicast message.
 
-        NOTE: In GCM documentation, it is defined as a number but the ID is
+        NOTE: In FCM documentation, it is defined as a number but the ID is
         sometimes too big to be considered as an OCaml integer.
      *)
     val multicast_id_of_t : t -> string

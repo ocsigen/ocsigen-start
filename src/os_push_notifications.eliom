@@ -18,10 +18,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-exception GCM_empty_response
-exception GCM_no_json_response of string
-exception GCM_missing_field of string
-exception GCM_unauthorized
+exception FCM_empty_response
+exception FCM_no_json_response of string
+exception FCM_missing_field of string
+exception FCM_unauthorized
 
 module Notification =
   struct
@@ -262,7 +262,7 @@ module Response =
                *)
               | `String err -> Error (error_of_string_and_code (code, err))
               (* Else we don't know what is the result. *)
-              | _ -> raise (GCM_missing_field "No message_id and error fields \
+              | _ -> raise (FCM_missing_field "No message_id and error fields \
               found.")
       end
 
@@ -283,11 +283,11 @@ module Response =
         | Ocsigen_http_frame.Http_header.Answer code -> code
         | _ -> assert false
 
-     (* Build a type t from the JSON representation of the GCM response. Used
+     (* Build a type t from the JSON representation of the FCM response. Used
         by [t_of_http_response]. *)
       let t_of_json code json =
         let open Yojson.Basic in
-        (* NOTE: In GCM documentation, multicast_id is defined as a number but
+        (* NOTE: In FCM documentation, multicast_id is defined as a number but
            Yojson converts to a string when the number is too big (greater than
            the max integer. The first pattern is `Int x is x is smaller
            than the max integer and the second is `String if x can't be
@@ -296,19 +296,19 @@ module Response =
         let multicast_id = match Util.member "multicast_id" json with
         | `Int x -> string_of_int x
         | `String x -> x
-        | _ -> raise (GCM_missing_field "Missing multicast_id")
+        | _ -> raise (FCM_missing_field "Missing multicast_id")
         in
         let success = match Util.member "success" json with
         | `Int x -> x
-        | _ -> raise (GCM_missing_field "Missing success")
+        | _ -> raise (FCM_missing_field "Missing success")
         in
         let failure = match Util.member "failure" json with
         | `Int x -> x
-        | _ -> raise (GCM_missing_field "Missing failure")
+        | _ -> raise (FCM_missing_field "Missing failure")
         in
         let canonical_ids = match Util.member "canonical_ids" json with
         | `Int x -> x
-        | _ -> raise (GCM_missing_field "Missing canonical_ids")
+        | _ -> raise (FCM_missing_field "Missing canonical_ids")
         in
         (* As results is an options array, we don't fail if it's not present but
            we use an empty list.
@@ -328,9 +328,9 @@ module Response =
           let code = code_of_http_response http_response in
           let%lwt content_str =
             match Ocsigen_http_frame.(http_response.frame_content) with
-            (* Must never be the case because it seems GCM always sends a body
+            (* Must never be the case because it seems FCM always sends a body
                content *)
-            | None -> Lwt.fail GCM_empty_response
+            | None -> Lwt.fail FCM_empty_response
             (* FIXME: is it enough to read a string of length 16384? *)
             | Some x -> Os_lib.Http.string_of_stream x
           in
@@ -340,9 +340,9 @@ module Response =
           Lwt.return (t_of_json code content_basic_json)
         with
         (* Could be the case if the server key is wrong or if it's not
-           registered only in GCM and not in FCM (since September 2016).
+           registered only in FCM and not in FCM (since September 2016).
          *)
-        | Yojson.Json_error _ -> Lwt.fail (GCM_no_json_response "It could come \
+        | Yojson.Json_error _ -> Lwt.fail (FCM_no_json_response "It could come \
         from your server key.")
 
       let multicast_id_of_t response  = response.multicast_id
@@ -358,7 +358,7 @@ module Response =
   end
 
 let send server_key notification options =
-  let gcm_url = "https://gcm-http.googleapis.com/gcm/send" in
+  let gcm_url = "https://fcm.googleapis.com/fcm/send" in
   let headers =
     Http_headers.empty |>
     Http_headers.add Http_headers.authorization ("key=" ^ server_key)
