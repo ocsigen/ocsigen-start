@@ -118,7 +118,7 @@
     <!-- Phonegap plugin push notification settings -->
     <!-- Uncomment the following lines if you want to use push notifications -->
     <!--
-    <plugin name="phonegap-plugin-push" spec="1.6.0" source="npm">
+    <plugin name="phonegap-plugin-push" spec="1.8.2" source="npm">
         <variable name="SENDER_ID" value="%%MOBILE_NOTIFICATIONS_SENDER_ID%%" />
     </plugin>
     -->
