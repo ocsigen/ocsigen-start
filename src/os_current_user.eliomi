@@ -44,6 +44,27 @@ module Opt : sig
   val get_current_userid : unit -> Os_user.id option
 end
 
+(** [remove_email_from_user email] removes the email [email] of the current
+    user.
+    If no user is connected, it fails with {!Os_session.Not_connected}. If
+    [email] is the main email of the current user, it fails with
+    {!Os_db.Main_email_removal_attempt}.
+ *)
+val remove_email_from_user : string -> unit Lwt.t
+
+(** [update_main_email email] sets the main email of the current user to
+    [email].
+    If no user is connected, it fails with {!Os_session.Not_connected}.
+ *)
+val update_main_email : string -> unit Lwt.t
+
+(** [is_email_validated email] returns [true] if [email] is a valided email for
+    the current user.
+    If no user is connected, it fails with {!Os_session.Not_connected}.
+    It returns [false] in all other cases.
+ *)
+val is_email_validated : string -> bool Lwt.t
+
 [%%client.start]
 
 val me : current_user ref
