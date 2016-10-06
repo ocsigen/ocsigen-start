@@ -19,13 +19,9 @@
  *)
 
 (*VVV Warning: Os already implements a cache of user, but for
-  Os_user.t only. It's ok. *)
+  Os_types.user only. It's ok. *)
 
-[%%shared
-  type userid = int64 [@@deriving json]
-]
-
-let%server cache : (userid, Os_user.t) Eliom_cscache.t =
+let%server cache : (Os_types.userid, Os_types.user) Eliom_cscache.t =
   Eliom_cscache.create ()
 
 
@@ -45,9 +41,9 @@ let%server get_data_rpc' =
 let%client get_data_rpc' = ()
 
 let%shared get_data_rpc
-  : (_, Os_user.t) Eliom_client.server_function =
+  : (_, Os_types.user) Eliom_client.server_function =
   Eliom_client.server_function ~name:"os_user_proxy.get_data_rpc"
-    [%derive.json: userid] get_data_rpc'
+    [%derive.json: Os_types.userid] get_data_rpc'
 
 let%client get_data id  = get_data_rpc id
 

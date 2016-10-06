@@ -61,7 +61,7 @@ module type S = sig
 
   (** Make a user stop listening on data [key] *)
   val unlisten_user :
-    ?sitedata:Eliom_common.sitedata -> userid:Os_user.id -> key -> unit
+    ?sitedata:Eliom_common.sitedata -> userid:Os_types.userid -> key -> unit
 
   (** Call [notify id] to send a notification to all clients currently
       listening on data [key].
@@ -71,7 +71,11 @@ module type S = sig
       happen). If it is [`User id] it won't be sent to the user with id [id].
   *)
   (*TODO: is the restriction to the current tab relevant?*)
-  val notify : ?notfor:[`Me | `User of Os_user.id] -> key -> server_notif -> unit
+  val notify :
+    ?notfor:[`Me | `User of Os_types.userid] ->
+    key ->
+    server_notif ->
+    unit
 
   (** Returns the client react event. Map a function on this event to react
       to notifications from the server.
@@ -103,7 +107,7 @@ module Make (A : sig
       *)
       val prepare : int64 option -> server_notif -> client_notif option Lwt.t
     end) :
-	S with type key = A.key
+       S with type key = A.key
      and type server_notif = A.server_notif
      and type client_notif = A.client_notif
 
@@ -111,6 +115,6 @@ module Simple (A : sig
       type key
       type notification
     end) :
-	S with type key = A.key
+       S with type key = A.key
      and type server_notif = A.notification
      and type client_notif = A.notification

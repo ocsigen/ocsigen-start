@@ -19,30 +19,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared.start]
-
-type userid = int64 [@@deriving json]
-
 [%%server.start]
 
-val cache : (userid, Os_user.t) Eliom_cscache.t
+val cache : (Os_types.userid, Os_types.user) Eliom_cscache.t
 
-val get_data_from_db : 'a -> Os_user.id -> Os_user.t Lwt.t
+val get_data_from_db : 'a -> Os_types.userid -> Os_types.user Lwt.t
 
-val get_data : Os_user.id -> Os_user.t Lwt.t
+val get_data : Os_types.userid -> Os_types.user Lwt.t
 
-val get_data_from_db_for_client : 'a -> Os_user.id -> Os_user.t Lwt.t
+val get_data_from_db_for_client : 'a -> Os_types.userid -> Os_types.user Lwt.t
 
-val get_data_rpc' : Os_user.id -> Os_user.t Lwt.t
+val get_data_rpc' : Os_types.userid -> Os_types.user Lwt.t
 
 [%%client.start]
 
 val get_data_rpc' : unit
 
-val get_data : Os_user.id -> Os_user.t Lwt.t
+val get_data : Os_types.userid -> Os_types.user Lwt.t
 
 [%%shared.start]
 
-val get_data_rpc : (userid, Os_user.t) Eliom_client.server_function
+val get_data_rpc : (Os_types.userid, Os_types.user) Eliom_client.server_function
 
-val get_data_from_cache : userid -> Os_user.t Lwt.t
+val get_data_from_cache : Os_types.userid -> Os_types.user Lwt.t

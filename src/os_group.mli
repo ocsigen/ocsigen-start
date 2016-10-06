@@ -32,27 +32,32 @@ exception No_such_group
 
 *)
 
-type id = int64
+(** Type alias to {!Os_types.groupid} to allow to use [Os_group.id]. *)
+type id = Os_types.groupid [@@deriving json]
 
-(** The type of a group *)
-type t
+(** Type alias to {!Os_types.group} to allow to use [Os_group.t]. *)
+type t = Os_types.group = {
+  id    : id;
+  name  : string;
+  desc  : string option;
+} [@@deriving json]
 
 (** [id_of_group group] returns the group ID. *)
-val id_of_group : t -> id
+val id_of_group : Os_types.group -> Os_types.groupid
 
 (** [name_of_group group] returns the group name. *)
-val name_of_group : t -> string
+val name_of_group : Os_types.group -> string
 
 (** [desc_of_group group] returns the group description. *)
-val desc_of_group : t -> string option
+val desc_of_group : Os_types.group -> string option
 
 (** [create ~description name] creates a new group in the database and returns
-    it as a record of type [t]. *)
-val create : ?description:string -> string -> t Lwt.t
+    it as a record of type [Os_types.group]. *)
+val create : ?description:string -> string -> Os_types.group Lwt.t
 
 (** Overwrites the function [get_group] of [Os_db.User] and use
     the [get] function of the cache module. *)
-val group_of_name : string -> t Lwt.t
+val group_of_name : string -> Os_types.group Lwt.t
 
 (* -----------------------------------------------------------------
 
@@ -64,15 +69,24 @@ val group_of_name : string -> t Lwt.t
 
 (** [add_user_in_group ~group ~userid] adds the user with ID [userid] to
     [group]. *)
-val add_user_in_group : group:t -> userid:Os_user.id -> unit Lwt.t
+val add_user_in_group :
+  group:Os_types.group ->
+  userid:Os_types.userid ->
+  unit Lwt.t
 
 (** [remove_user_in_group ~group ~userid] removes the user with ID [userid] from
     [group]. *)
-val remove_user_in_group : group:t -> userid:Os_user.id -> unit Lwt.t
+val remove_user_in_group :
+  group:Os_types.group ->
+  userid:Os_types.userid ->
+  unit Lwt.t
 
 (** [in_group ~group ~userid] returns [true] if the user with ID [userid] is in
     [group]. *)
-val in_group : group:t -> userid:Os_user.id -> bool Lwt.t
+val in_group :
+  group:Os_types.group ->
+  userid:Os_types.userid ->
+  bool Lwt.t
 
 (** [all ()] returns all the groups of the database. *)
-val all : unit -> t list Lwt.t
+val all : unit -> Os_types.group list Lwt.t

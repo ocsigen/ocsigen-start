@@ -35,7 +35,7 @@ val sign_up_handler : unit -> string -> unit Lwt.t
 val add_email_handler : unit -> string -> unit Lwt.t
 
 exception Custom_action_link of
-    Os_data.actionlinkkey_info
+    Os_types.actionlinkkey_info
     * bool (* If true, the link corresponds to a phantom user
               (user who never created its account).
               In that case, you probably want to display a sign-up form,
@@ -68,10 +68,11 @@ val forgot_password_handler :
 val preregister_handler :
   unit -> string -> unit Lwt.t
 
-val set_password_handler : Os_user.id -> unit -> string * string -> unit Lwt.t
+val set_password_handler :
+  Os_types.userid -> unit -> string * string -> unit Lwt.t
 
 val set_personal_data_handler :
-  Os_user.id -> unit -> (string * string) * (string * string) -> unit Lwt.t
+  Os_types.userid -> unit -> (string * string) * (string * string) -> unit Lwt.t
 
 [%%client.start]
 

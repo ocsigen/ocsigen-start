@@ -26,7 +26,7 @@ type uploader = (unit,unit) Ot_picture_uploader.service
 
 (** Box for connected users, with picture, name, and menu *)
 val connected_user_box :
-  Os_user.t -> uploader -> [> Html_types.div ] Eliom_content.Html.D.elt
+  Os_types.user -> uploader -> [> Html_types.div ] Eliom_content.Html.D.elt
 
 (** Connection box *)
 val connection_box :
@@ -35,7 +35,7 @@ val connection_box :
 (** Connected user box or connexion box, depending whether user
     is connected or not *)
 val userbox :
-  Os_user.t option ->
+  Os_types.user option ->
   uploader ->
   [> Html_types.div ] Eliom_content.Html.D.elt Lwt.t
 
@@ -54,7 +54,7 @@ val upload_pic_link :
      * Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list
   -> (unit -> unit) Eliom_client_value.t
   -> uploader
-  -> Os_user.id
+  -> Os_types.userid
   -> [> `A of Html_types.a_content ] Eliom_content.Html.D.Raw.elt
 
 (** Link to start to see the help from the begining.
@@ -66,7 +66,7 @@ val reset_tips_link :
 
 (** Display user menu *)
 val user_menu :
-  Os_user.t ->
+  Os_types.user ->
   uploader -> [> Html_types.div ] Eliom_content.Html.F.elt
 
 
@@ -75,7 +75,7 @@ val user_menu :
 (** Personnalize user menu *)
 val set_user_menu :
   ((unit -> unit) ->
-   Os_user.t ->
+   Os_types.user ->
    uploader ->
    Html_types.div_content Eliom_content.Html.D.elt
      Eliom_content.Html.D.list_wrap) ->
