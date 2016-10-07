@@ -208,21 +208,21 @@ endif
 ##----------------------------------------------------------------------
 ## Rules for static files.
 
-# Function to list files in a given directory $(1), and change prefix directory
-# to the target one $(2).
-# FIXME: -printf is not available on BSD.
-# Example: $(call static_targets,$(SOURCE_DIR),$(TARGET_DIR))
-static_targets = $(shell find $(1) -type f -printf "$(2)/%P\n")
-
 # Cordova static files which needs to be copied to the Cordova project
 # directory.
 CORDOVA_STATIC_FILES := \
     $(CORDOVAPATH)/.chcpignore \
     $(CORDOVAPATH)/res \
-    $(call static_targets,$(MOBILESTATICPATH)/www,$(CORDOVAPATH)/www)
+    $(patsubst $(MOBILESTATICPATH)/www/%, \
+               $(CORDOVAPATH)/www/%, \
+               $(shell find $(MOBILESTATICPATH)/www -type f) \
+     )
 
 # FIXME: duplicate rule warning for 'cordova/www/css/os_test.css'
-LOCAL_STATIC_FILES = $(call static_targets,$(LOCAL_STATIC),$(CORDOVAPATH)/www)
+LOCAL_STATIC_FILES = $(patsubst \
+    $(LOCAL_STATIC)/%, \
+    $(CORDOVAPATH)/www/%, \
+    $(shell find $(LOCAL_STATIC) -type f))
 
 # Static files dependencies: if a file changes in these directory, a new copy
 # of static files will be triggered
