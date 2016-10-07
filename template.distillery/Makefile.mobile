@@ -390,6 +390,7 @@ ANDROID_ICONS_PATH = $(MOBILESTATICPATH)/res/android
 ANDROID_ICONS      = $(foreach name,$(ANDROID_ICON_NAMES),$(ANDROID_ICONS_PATH)/$(name).png)
 
 IOS_ICON_NAMES = \
+	icon-20 icon-20@2x \
 	icon-40 icon-40@2x \
 	icon-50 icon-50@2x \
 	icon-60 icon-60@2x icon-60@3x \
