@@ -216,11 +216,17 @@ CORDOVA_STATIC_FILES := \
                $(shell find $(MOBILESTATICPATH)/www -type f) \
      )
 
-# FIXME: duplicate rule warning for 'cordova/www/css/os_test.css'
+# LOCAL_STATIC_FILES contains all static files which must be copied in the
+# Cordova www directory.
+# The file $(LOCAL_CSS), which is $(LOCAL_STATIC_CSS)/$(PROJECT_NAME).css, is
+# excluded, because it's producing another rule for $(APPCSS). By excluding this
+# file, the CSS file which will be retrieved from the server (remote or local
+# depending on the APP_REMOTE value) instead of copied from $(LOCAL_CSS).
 LOCAL_STATIC_FILES = $(patsubst \
     $(LOCAL_STATIC)/%, \
     $(CORDOVAPATH)/www/%, \
-    $(shell find $(LOCAL_STATIC) -type f))
+    $(shell find $(LOCAL_STATIC) -type f ! -name '$(PROJECT_NAME).css' \
+                 ! -path '$(LOCAL_STATIC_CSS)'))
 
 # Static files dependencies: if a file changes in these directory, a new copy
 # of static files will be triggered
@@ -257,7 +263,7 @@ $(CORDOVAPATH)/www/index.html: $(CORDOVAPATH) $(APPJS) mobile/index.html.in
 	    -e "s,%%APPSERVER%%,$(APP_SERVER),g" \
 	    -e "s,%%MOBILE_APP_NAME%%,$(MOBILE_APP_NAME),g" \
 	    mobile/index.html.in > \
-	$(CORDOVAPATH)/www/index.html
+	    $(CORDOVAPATH)/www/index.html
 
 # This rule generates eliom.html. md5sum is used to set the right JavaScript and
 # CSS filenames in the page.
