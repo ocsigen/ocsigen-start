@@ -328,7 +328,7 @@ $(WWW_PATH)/update/conf/chcp.json: $(WWW_PATH)/update/$(TIMESTAMP)
 
 chcp: $(WWW_PATH)/update/conf/chcp.json
 
-assets: $(CORDOVAPATH) icons chcp
+assets: $(CORDOVAPATH) chcp
 
 ##----------------------------------------------------------------------
 ## Cordova platform rules
@@ -352,7 +352,7 @@ $(ADD_PLATFORMS): add-%: $(CORDOVAPATH)/platforms/%
 PLATFORMS := android ios browser
 
 # before building, environment variables are checked and assets are copied.
-$(PLATFORMS): %: check-app-env assets add-%
+$(PLATFORMS): %: check-app-env icons-% assets add-%
 	cd $(CORDOVAPATH) ;\
 	cordova build $(CORDOVA_FLAGS) $*
 
@@ -473,10 +473,17 @@ splashes: $(IOS_SPLASHES)
 # Only this rule must be used to generate the icons.
 icons: $(ANDROID_ICONS) $(IOS_ICONS)
 
+icons-android: $(ANDROID_ICONS)
+
+icons-ios: $(IOS_ICONS)
+
+icons-clean:
+	rm -rf $(IOS_ICONS_PATH) $(ANDROID_ICONS_PATH)
+
 ##----------------------------------------------------------------------
 ## Cleaning rules.
 
-mobile-clean:
+mobile-clean: icons-clean
 	rm -rf $(CORDOVAPATH)
 	rm -f mobile/eliom_loader.byte mobile/eliom_loader.cmi \
           mobile/eliom_loader.cmo
