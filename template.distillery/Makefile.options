@@ -118,6 +118,13 @@ DEBUG                 := yes
 ##----------------------------------------------------------------------
 ## The following part contains the settings for the mobile application.
 
+# The directory where the Cordova application will be copied.
+CORDOVAPATH                    := cordova
+
+# The directory containing the files about the mobile application like the
+# config.xml.in, index.html.in, eliom_loader.ml, ...
+MOBILESTATICPATH               := mobile
+
 MOBILE_APP_ID                  := com.%%%PROJECT_NAME%%%.mobile
 MOBILE_APP_NAME                := %%%PROJECT_NAME%%%
 MOBILE_APP_VERSION             := 0.1
