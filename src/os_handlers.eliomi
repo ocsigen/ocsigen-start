@@ -20,7 +20,7 @@
 
 [%%shared.start]
 
-(** [connect_handler () ((login, password), keepMeLoggedIn)]] connects the user
+(** [connect_handler () ((login, password), keepMeLoggedIn)] connects the user
     with [login] and [password] and keeps the user logged in between different
     session if [keepMeLoggedIn] is set to [true] *)
 val connect_handler : unit -> (string * string) * bool -> unit Lwt.t
