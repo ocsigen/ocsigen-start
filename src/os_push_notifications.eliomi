@@ -41,27 +41,30 @@
     your sender ID.
 
     To send a notification, you need to use [send server_key notification
-    options] where [notification] is of type {!Notification.t] and [options] is
-    of type {!Options.t}
+    options] where [notification] is of type {!Notification.t} and [options] is
+    of type {!Options.t}.
 
-    The type {!Options.t} contains the list of registered ID you want to send
-    the notification [notification] to.
-    You can create a value of type Options.t with [Options.create ids] where
-    [ids] is a list of client ID. These ID's are the devices you want to send
-    the notification to.
+    The type {!Options.t} contains the list of registered
+    ID you want to send the notification [notification] to.
+    You can create a value of type {!Options.t} with
+    {!Options.create} which needs a list of client ID. These ID's are the
+    devices you want to send the notification to.
 
     The type {!Notification.t} contains the notification payloads. These
     payloads and their description are listed here:
     https://github.com/phonegap/phonegap-plugin-push/blob/master/docs/PAYLOAD.md
+
     You can create an empty value of type {!Notification.t} with
-    [Notification.empty ()]. As described in the link given above, you can add a
+    {!Notification.empty}. As described in the link given above, you can add a
     title, a message, etc to the notification. In general, to add the payload
     [payload], you can use the function [add_(payload)]. The notification value
     is at the end to be able to use the pipe. For example, to add a title and a
     message, you can use:
+    {% <<code language="ocaml" |
       Notification.empty () |>
       add_title "Hello, World!" |>
       add_message "Message to the world!"
+    >> %}
 *)
 
 (** This module provides a interface to create notifications and add payloads *)
