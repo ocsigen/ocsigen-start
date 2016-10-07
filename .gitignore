@@ -21,15 +21,4 @@ local/
 META
 Makefile.depend
 
-samples/static/avatars
-samples/static/tmp
-
-# local database directory
-samples/data
-samples/local
-
-samples.distillery/local*
-samples.distillery/_*
-samples.distillery.*
-
 _opam
