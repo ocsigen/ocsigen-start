@@ -62,8 +62,6 @@
 # If you use the manifoldjs solution, you need to sign the APPX before
 # installing it on a device.
 
-CORDOVAPATH := cordova
-MOBILESTATICPATH := mobile
 WWW_PATH := local/var/www/$(PROJECT_NAME)
 
 mobile-all: assets android browser # ios
@@ -480,4 +478,5 @@ icons: $(ANDROID_ICONS) $(IOS_ICONS)
 
 mobile-clean:
 	rm -rf $(CORDOVAPATH)
-	rm -f mobile/eliom_loader.byte mobile/eliom_loader.cmi mobile/eliom_loader.cmo
+	rm -f mobile/eliom_loader.byte mobile/eliom_loader.cmi \
+          mobile/eliom_loader.cmo
