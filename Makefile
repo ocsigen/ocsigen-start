@@ -219,7 +219,7 @@ COMMON_OPTIONS := -colorize-code -stars -sort
 eliomdoc_wiki = ODOC_WIKI_SUBPROJECT="$(1)" \
                 eliomdoc \
                 -$(1) \
-                -ppx -package yojson,calendar,ocsigen-widgets.$(1) \
+                -ppx -package pgocaml,yojson,calendar,ocsigen-widgets.$(1) \
                 -intro doc/indexdoc.$(1) $(COMMON_OPTIONS) \
                 -i $(shell ocamlfind query wikidoc) \
                 -g odoc_wiki.cma \
@@ -229,7 +229,7 @@ eliomdoc_wiki = ODOC_WIKI_SUBPROJECT="$(1)" \
 eliomdoc_html = ODOC_WIKI_SUBPROJECT="$(1)" \
                 eliomdoc \
                 -$(1) \
-                -ppx -package yojson,calendar,ocsigen-widgets.$(1) \
+                -ppx -package pgocaml,yojson,calendar,ocsigen-widgets.$(1) \
                 -intro doc/indexdoc.$(1) \
                 $(COMMON_OPTIONS) \
                 -html \
