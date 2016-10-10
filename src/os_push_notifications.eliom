@@ -188,12 +188,13 @@ module Response =
         let error_of_string_and_code = function
         | (200, "MissingRegistration")       -> Missing_registration
         | (200, "InvalidRegistration")       -> Invalid_registration
-        | (200, "UnregisteredDevice")        -> Unregistered_device
+        | (200, "NotRegistered")             -> Unregistered_device
         | (200, "InvalidPackageName")        -> Invalid_package_name
         | (401, _)                           -> Authentication_failed
         | (200, "MismatchSenderId")          -> Mismatched_sender_id
         | (400, _)                           -> Invalid_JSON
         | (200, "MessageTooBig")             -> Message_too_big
+        | (200, "InvalidDataKey")            -> Invalid_data_key
         | (200, "InvalidTtl")                -> Invalid_time_to_live
         | (code, "Unavailable")
             when code = 200 ||
