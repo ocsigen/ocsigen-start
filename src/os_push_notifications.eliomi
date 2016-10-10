@@ -218,7 +218,12 @@ module Response :
 
         (** [registration_id_of_t result] returns a string specifying the
             canonical registration token for the client app that the message was
-            processed and sent to. *)
+            processed and sent to.
+            A value will be returned by FCM if the registration ID of the device
+            you sent the notification to has changed. The value will be the new
+            registration ID and must be used to send new notifications. If you
+            don't change the ID, you will receive the error NotRegistered.
+          *)
         val registration_id_of_success : success -> string option
 
         type error =
