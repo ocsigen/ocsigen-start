@@ -170,7 +170,7 @@ module Response =
         | Unregistered_device
         | Invalid_package_name
         | Authentication_failed
-        | Mismatched_sender_id
+        | Mismatch_sender_id
         | Invalid_JSON
         | Message_too_big
         | Invalid_data_key
@@ -191,7 +191,7 @@ module Response =
         | (200, "NotRegistered")             -> Unregistered_device
         | (200, "InvalidPackageName")        -> Invalid_package_name
         | (401, _)                           -> Authentication_failed
-        | (200, "MismatchSenderId")          -> Mismatched_sender_id
+        | (200, "MismatchSenderId")          -> Mismatch_sender_id
         | (400, _)                           -> Invalid_JSON
         | (200, "MessageTooBig")             -> Message_too_big
         | (200, "InvalidDataKey")            -> Invalid_data_key
@@ -211,7 +211,7 @@ module Response =
         | Unregistered_device          -> "Unregistered device"
         | Invalid_package_name         -> "Invalid package name"
         | Authentication_failed        -> "Authentication failed"
-        | Mismatched_sender_id         -> "Mismatched sender ID"
+        | Mismatch_sender_id           -> "Mismatch sender ID"
         | Invalid_JSON                 -> "Invalid JSON"
         | Message_too_big              -> "Message too big"
         | Invalid_data_key             -> "Invalid data key"

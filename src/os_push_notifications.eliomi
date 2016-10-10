@@ -232,7 +232,7 @@ module Response :
         | Unregistered_device
         | Invalid_package_name
         | Authentication_failed
-        | Mismatched_sender_id
+        | Mismatch_sender_id
         | Invalid_JSON
         | Message_too_big
         | Invalid_data_key
