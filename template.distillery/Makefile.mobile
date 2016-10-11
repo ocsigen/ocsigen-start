@@ -378,7 +378,7 @@ RUN_PLATFORMS := run-android run-ios run-browser
 
 # Run the mobile app on a platform
 # run-(android|ios|windows)
-$(RUN_PLATFORMS): run-%: check-app-env assets %
+$(RUN_PLATFORMS): run-%: check-app-env icons-% assets %
 	cd $(CORDOVAPATH) ;\
 	cordova run --nobuild $*
 
