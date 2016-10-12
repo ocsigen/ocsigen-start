@@ -43,101 +43,34 @@ module Notification =
     let add_raw_json key json t =
       (key, json) :: t
 
-    (** Add a message attribute to the notification *)
-    let add_message str t = add_raw_string "message" str t
-
     (** Add a title attribute to the notification *)
     let add_title str t = add_raw_string "title" str t
 
-    (** Add an image to the push notification in the notification area *)
-    let add_image str t = add_raw_string "image" str t
+    (** Add a body attribute to the notification *)
+    let add_body str t = add_raw_string "body" str t
 
-    (** Add a soundame when the mobile receives the notification. *)
-    let add_soundname str t = add_raw_string "soundname" str t
+    (** Add a sound when the mobile receives the notification. *)
+    let add_sound str t = add_raw_string "sound" str t
 
-    let add_notification_id id t =
-      ("notId", `Int id) :: t
+    (** Add an action when user taps the notification *)
+    let add_click_action activity t = add_raw_string "click_action" activity t
 
-    let add_summary_text str t = add_raw_string "summaryText" str t
-
-    module Style =
-      struct
-        type t = Inbox | Picture
-      end
-
-    let add_style style t =
-      let style_to_str = match style with
-      | Style.Inbox -> "inbox"
-      | Style.Picture -> "picture"
-      in
-      add_raw_string "style" style_to_str t
-
-    module Action =
-      struct
-        type t = Yojson.Safe.json
-
-        let to_json t = t
-
-        let create icon title callback foreground =
-        `Assoc
-        [
-          ("icon", `String icon) ;
-          ("title", `String title) ;
-          ("callback", `String callback) ;
-          ("foreground", `Bool foreground)
-        ]
-      end
-
-    let add_actions left right t =
-      let actions_list = `List [Action.to_json left ; Action.to_json right] in
-      ("actions", actions_list) :: t
-
-    let add_led_color a r g b t =
-      let json_int_list = `List [ `Int a ; `Int r ; `Int g ; `Int b ] in
-      ("ledColor", json_int_list) :: t
-
-    let add_vibration_pattern pattern t =
-      ("vibrationPattern", `List (List.map (fun x -> `Int x) pattern)) ::  t
-
-    let add_badge nb t =
-      ("badge", `Int nb) :: t
-
-    module Priority = struct
-      type t = Minimum | Low | Default | High | Maximum
+    module Ios = struct
+      let add_badge nb t =
+        ("badge", `Int nb) :: t
     end
 
-    let add_priority priority t =
-      let int_of_priority = match priority with
-      | Priority.Minimum   -> -2
-      | Priority.Low       -> -1
-      | Priority.Default   -> 0
-      | Priority.High      -> 1
-      | Priority.Maximum   -> 2
-      in
-      ("priority", `Int int_of_priority) :: t
+    module Android = struct
+      let add_icon icon t = add_raw_string "icon" icon t
 
-    (** NOTE: we don't add automatically the value picture to style because we
-     * don't know if we can mix Inbox and Picture at the same time. In general,
-     * a notification with a picture will have a specific ID (we don't want to
-     * replace it with another notification) so Inbox value has no sense but we
-     * leave the choice to the user.
-     *)
-    let add_picture picture t = add_raw_string "picture" picture t
+      let add_tag tag t = add_raw_string "tag" tag t
 
-    let add_info info t =
-      ("info", `String info) :: ("content-available", `Int 1) :: t
-
-    module Visibility = struct
-        type t = Secret | Private | Public
-      end
-
-    let add_visibility visibility t =
-      let visibility_to_int = match visibility with
-      | Visibility.Secret -> -1
-      | Visibility.Private -> 0
-      | Visibility.Public -> 1
-      in
-      ("visibility", `Int visibility_to_int) :: t
+      let add_color ~red ~green ~blue t =
+        let str_rgb =
+          Printf.sprintf "#%X%X%X" (red mod 256) (blue mod 256) (green mod 256)
+        in
+        add_raw_string "color" str_rgb t
+    end
   end
 
 module Options =
@@ -152,8 +85,52 @@ module Options =
       `List (List.map (fun x -> `String x) ids)
     )]
 
+    let add_to value t =
+      ("to", `String value) :: t
+
+    let add_condition condition t =
+      ("condition", `String condition) :: t
+
     let add_collapse_key key t =
       ("collapse_key", `String key) :: t
+
+    module Priority = struct
+      type t = Normal | High
+    end
+
+    let add_priority priority t = match priority with
+    | Priority.Normal -> ("priority", `String "normal") :: t
+    | Priority.High -> ("priority", `String "high") :: t
+
+    let add_content_available available t =
+      ("content_available", `Bool available) :: t
+
+    let add_time_to_live time_in_seconds t =
+      ("time_to_live", `Int time_in_seconds) :: t
+
+    let add_restricted_package_name package_name t =
+      ("restricted_package_name", `String package_name) :: t
+
+    let add_dry_run value t =
+      ("dry_run", `Bool value) :: t
+  end
+
+module Data =
+  struct
+    type t = (string * Yojson.Safe.json) list
+
+    let to_list t = t
+
+    let to_json t =
+      `Assoc t
+
+    let empty () = []
+
+    let add_raw_string key value data =
+      (key, `String value) :: data
+
+    let add_raw_json key value data =
+      (key, value) :: data
   end
 
 (* See https://developers.google.com/cloud-messaging/http-server-ref, table 5 *)
@@ -358,16 +335,19 @@ module Response =
 
   end
 
-let send server_key notification options =
+let send server_key notification ?(data=Data.empty ()) options =
   let gcm_url = "https://fcm.googleapis.com/fcm/send" in
   let headers =
     Http_headers.empty |>
     Http_headers.add Http_headers.authorization ("key=" ^ server_key)
   in
+  (* Data is optional, so we use an option type and a pattern matching *)
   let content = Yojson.Safe.to_string (
     `Assoc
     (
-      ("data", Notification.to_json notification) :: (Options.to_list options)
+      ("notification", Notification.to_json notification) ::
+      ("data", Data.to_json data) ::
+      (Options.to_list options)
     )
   )
   in

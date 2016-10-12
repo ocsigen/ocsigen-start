@@ -73,7 +73,9 @@ exception FCM_no_json_response of string
 exception FCM_missing_field of string
 exception FCM_unauthorized
 
-(** This module provides a interface to create notifications and add payloads *)
+(** This module provides an interface to create the JSON for the notification
+    key
+  *)
 module Notification :
   sig
     (** The type representing a notification *)
@@ -81,105 +83,89 @@ module Notification :
 
     val to_json : t -> Yojson.Safe.json
 
-    (** Create an empty notification *)
+    (** [empty ()] creates an empty notification *)
     val empty : unit -> t
 
-    (** Add a message attribute to the notification *)
-    val add_message : string -> t -> t
-
-    (** Add a title attribute to the notification *)
+    (** [add_title title notification] adds a title to push notification in
+        the notification area. This field is not visible on iOS phones and
+        tablets.
+     *)
     val add_title : string -> t -> t
 
-    (** Add an image to the push notification in the notification area *)
-    val add_image : string -> t -> t
+    (** [add_body body notification] adds a body to the notification *)
+    val add_body : string -> t -> t
 
-    (** Add a soundame when the mobile receives the notification *)
-    val add_soundname : string -> t -> t
-
-    (** Add a notification ID. By default, a new notification replaces the last
-        one because they have the same ID. By adding a different ID for two
-        different notifications, two notifications will be shown in the
-        notification area instead of one. If a new notification has the same ID
-        as an older one, the new one will replace it. It is useful for chats for
-        example.
+    (** [add_sound sound notification] indicates a sound to play when the device
+        receives a notification. See
+        https://firebase.google.com/docs/cloud-messaging/http-server-ref for
+        more information about the value of [sound] depending on the platform.
      *)
-    val add_notification_id : int -> t -> t
+    val add_sound : string -> t -> t
 
-    module Style :
-      sig
-        type t = Inbox | Picture
-      end
-
-    val add_style : Style.t -> t -> t
-
-    (** Add a summary text. *)
-    val add_summary_text : string -> t -> t
-
-    module Action :
-      sig
-        type t
-
-        val to_json : t -> Yojson.Safe.json
-
-        (** [create icon title callback foreground] *)
-        (* NOTE: The callback is the function name as string to call when the
-         * action is chosen. Be sure you exported the callback before sending
-         * the notification (by using
-         * [Js.Unsafe.set (Js.Unsafe.global "function name" f)] for example)
-         *)
-        val create : string -> string -> string -> bool -> t
-      end
-
-    (** Add two buttons with an action (created with {!Action.create}). Be sure
-        you exported the callback in JavaScript.
+    (** [add_click_action activity notification] adds an action when the user
+        taps on the notification.
+        On Android, the activity [activity] with a matching intent filter is
+        launched when user clicks the notification.
+        It corresponds to category in the APNs payload.
      *)
-    val add_actions : Action.t -> Action.t -> t -> t
+    val add_click_action : string -> t -> t
 
-    (** Change the LED color when the notification is received. The parameters
-        are in the ARGB format.
-     *)
-    val add_led_color : int -> int -> int -> int -> t -> t
-
-    (** Add a vibration pattern *)
-    val add_vibration_pattern : int list -> t -> t
-
-    (** Add a badge to the icon of the notification in the launcher. Only
-        available for some launcher. The integer parameter is the number of the
-        badge.
-     *)
-    val add_badge : int -> t -> t
-
-    module Priority :
-      sig
-        (** [Maximum] means the notification will be displayed on the screen
-            above all views during 2 or 3 seconds. The notification will remain
-            available in the notification area.
-         *)
-        type t = Minimum | Low | Default | High | Maximum
-      end
-
-    val add_priority : Priority.t -> t -> t
-
-    (** Add a large picture in the notification (under the title and body).
-        Don't forget to set style to the value {!Style.Picture}.
-     *)
-    val add_picture : string -> t -> t
-
-    (** Add [content-available: 1] also *)
-    val add_info : string -> t -> t
-
-    module Visibility :
-      sig
-        type t = Secret | Private | Public
-      end
-
-    (** Add the visibility payload *)
-    val add_visibility : Visibility.t -> t -> t
+    (* TODO: add_body_loc_key, add_body_loc_args, add_title_loc_args,
+     * add_title_loc_key *)
 
     (** [add_raw_string key content notification] *)
     val add_raw_string : string -> string -> t -> t
 
     (** [add_raw_json key content_json notification] *)
+    val add_raw_json : string -> Yojson.Safe.json -> t -> t
+
+    module Ios :
+      sig
+        (** [add_badge nb_badge notification] indicates the badge on the client
+            app home icon.
+         *)
+        val add_badge : int -> t -> t
+      end
+
+    module Android :
+      sig
+        (** [add_icon icon notification] indicates notification icon. Sets value
+            to [myicon] for drawable resource [myicon].
+         *)
+        val add_icon : string -> t -> t
+
+        (** [add_tag tag notification] indicates whether each notification
+            results in a new entry in the notification drawer on Android.
+         *)
+        val add_tag : string -> t -> t
+
+        (** [add_color ~red ~green ~blue notification] indicates color of the icon,
+            expressed in #rrggbb format.
+
+            Positive values are used modulo 256 i.e. [add_color 257 100 257
+            notification] is equivalent to [add_color 1 100 1].
+            NOTE: Don't use negative number.
+         *)
+        val add_color : red:int -> green:int -> blue:int -> t -> t
+      end
+  end
+
+module Data :
+  sig
+    (** The type representing a data payload. *)
+    type t
+
+    (** [to_list data] returns the representation of the data as a list of
+        tuples [(data_key, json_value)]. *)
+    val to_list : t -> (string * Yojson.Safe.json) list
+
+    (** [empty ()] creates an empty data value. *)
+    val empty : unit -> t
+
+    (** [add_raw_string key content data] *)
+    val add_raw_string : string -> string -> t -> t
+
+    (** [add_raw_json key content_json data] *)
     val add_raw_json : string -> Yojson.Safe.json -> t -> t
   end
 
@@ -196,9 +182,61 @@ module Options :
         the ID of mobile devices you want to send the notifications to. *)
     val create : string list -> t
 
-    (** DEPRECATED Use {!add_notification_id} instead. It seems it's only
-        working with the payload notification and not data. *)
+    (** [add_to to options] specifies the recipient of a message.
+
+        The value must be a registration token, notification key, or topic. Do
+        not set this field when sending to multiple topics.
+     *)
+    val add_to : string -> t -> t
+
+    (** [add_condition condition options] specifies a logical expression of
+        conditions that determine the message target.
+     *)
+    val add_condition : string -> t -> t
+
+    (** [add_collapse_key collapse_key options] identifies a group of
+        messages (e.g., with collapse_key: "Updates Available") that can be
+        collapsed, so that only the last message gets sent when delivery can be
+        resumed.
+     *)
     val add_collapse_key : string -> t -> t
+
+    (** This modules defines a type for priorities for the notifications. See
+        https://firebase.google.com/docs/cloud-messaging/concept-options#setting-the-priority-of-a-message
+     *)
+    module Priority :
+      sig
+        (** Priority of the message. On iOS, [Normal] means 5 and [High] means
+            10.
+          *)
+        type t = Normal | High
+      end
+
+    (** [add_priority priority options] sets the priority of the message. *)
+    val add_priority : Priority.t -> t -> t
+
+    (** [add_content_available value options]. On iOS, if [value] is set to
+        [true], an inactive client app is awoken. On Android, data messages wake
+        the app by default.
+     *)
+    val add_content_available : bool -> t -> t
+
+    (** [add_time_to_live time_in_seconds options] specifies how long (in
+        seconds) the message should be kept in FCM storage if the device is
+        offline.
+     *)
+    val add_time_to_live : int -> t -> t
+
+    (** [add_restricted_package_name package_name options] specifies the
+        package name of the application where the registration tokens must match
+        in order to receive the message.
+     *)
+    val add_restricted_package_name : string -> t -> t
+
+    (** [add_dry_run value options]. When set to [true], allows developers to
+        test a request without actually sending a message. Default is [false].
+     *)
+    val add_dry_run : bool -> t -> t
   end
 
 module Response :
@@ -279,4 +317,9 @@ module Response :
   end
 
 (** [send server_key notification options]  *)
-val send : string -> Notification.t -> Options.t -> Response.t Lwt.t
+val send :
+  string ->
+  Notification.t ->
+  ?data:Data.t ->
+  Options.t ->
+  Response.t Lwt.t
