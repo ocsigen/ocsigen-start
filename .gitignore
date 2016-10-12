@@ -15,6 +15,8 @@ _client/
 _deps/
 _server/
 local/
+doc/client
+doc/server
 
 .*.sw*
 
