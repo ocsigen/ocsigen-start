@@ -18,53 +18,65 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(** Send push notifications to mobile clients.
+(** Send push notifications to Android and iOS mobile devices.
 
     This module provides a simple OCaml interface to Firebase Cloud Messaging
-    (FCM) to send push notifications to mobile devices by using downstream HTTP
-    messages in JSON. It is recommended to use
-    https://github.com/dannywillems/ocaml-cordova-plugin-push client-side to
-    receive push notifications on the mobile.
+    (FCM) to send push notifications to Android and iOS mobile devices by using
+    downstream HTTP messages in JSON.
 
-    This implementation is based on the payloads listed on this page:
-    https://github.com/phonegap/phonegap-plugin-push/blob/master/docs/PAYLOAD.md
+    You can find all informations abou FCM at this address:
+        https://firebase.google.com/docs/cloud-messaging/
 
     Before using this module, you need to register your mobile application in
     FCM and save the server key FCM will give you. You need to pass this key to
     {!send} when you want to send a notification.
 
-    On the client, you will need first to register the device on FCM and save
-    server-side the registered ID returned by FCM. You will use this ID when you
-    will want to send a notification to the device. This step is described in
-    the binding to the Cordova plugin phonegap-plugin-push available at this
-    address: https://github.com/dannywillems/ocaml-cordova-plugin-push.
-    Don't forget to add the plugin phonegap-plugin-push in the config.xml with
-    your sender ID.
+    On the client, you will need first to register the device on FCM.
+    See
+    - for iOS: https://firebase.google.com/docs/cloud-messaging/ios/client
+    - for Android: https://firebase.google.com/docs/cloud-messaging/android/client
 
-    To send a notification, you need to use [send server_key notification
-    options] where [notification] is of type {!Notification.t} and [options] is
-    of type {!Options.t}.
+    If you use this module to send push notifications to mobile devices created
+    with ocsigen-start, you can use one of these plugins.
+    - cordova-plugin-fcm (binding ocaml-cordova-plugin-fcm).
+    - phonegap-plugin-push (binding ocaml-cordova-plugin-push-notifications).
+
+    FCM works with tokens which represents a device. This token is used to
+    target the device when you send a notification. The token is retrieved
+    client-side.
+
+    To send a notification, you need to use
+    [send server_key notification ?data options]
+    where
+    - [notification] is of type {!Notification.t} and represents the
+    notification payload in the JSON sent to FCM.
+    - [data] is an optional value of type {!Data.t} and represents the data
+    payload in the JSON sent to FCM. By default, it's empty.
+    - [options] is of type {!Options.t} and represents options in the FCM
+    documentation.
 
     The type {!Options.t} contains the list of registered
     ID you want to send the notification [notification] to.
     You can create a value of type {!Options.t} with
     {!Options.create} which needs a list of client ID. These ID's are the
     devices you want to send the notification to.
+    You can add some parameters like priorities, restricted package name,
+    condition, etc.
 
-    The type {!Notification.t} contains the notification payloads. These
-    payloads and their description are listed here:
-    https://github.com/phonegap/phonegap-plugin-push/blob/master/docs/PAYLOAD.md
+    The type {!Notification.t} contains the notification payloads. The
+    description is given here:
+    https://firebase.google.com/docs/cloud-messaging/http-server-ref
 
     You can create an empty value of type {!Notification.t} with
     {!Notification.empty}. As described in the link given above, you can add a
-    title, a message, etc to the notification. In general, to add the payload
+    title, a body, etc to the notification. In general, to add the payload
     [payload], you can use the function [add_(payload)]. The notification value
     is at the end to be able to use the pipe. For example, to add a title and a
     message, you can use:
     {% <<code language="ocaml" |
       Notification.empty () |>
       add_title "Hello, World!" |>
-      add_message "Message to the world!"
+      add_body "Message to the world!"
     >> %}
 *)
 
@@ -74,7 +86,7 @@ exception FCM_missing_field of string
 exception FCM_unauthorized
 
 (** This module provides an interface to create the JSON for the notification
-    key
+    key.
   *)
 module Notification :
   sig
@@ -167,6 +179,109 @@ module Data :
 
     (** [add_raw_json key content_json data] *)
     val add_raw_json : string -> Yojson.Safe.json -> t -> t
+
+    (** The Cordova plugin phonegap-plugin-push interprets some payloads defined
+        in the Data key. The following module defines an interface to these
+        payloads.
+        You can find the payloads list here:
+          https://github.com/phonegap/phonegap-plugin-push/blob/v2.0.x/docs/PAYLOAD.md
+        Be aware that if you use this plugin, all attributes must be added in
+        the data object and not in the notification object which must be empty.
+     *)
+    module PhoneGap :
+      sig
+        (** Add a message attribute to the notification *)
+        val add_message : string -> t -> t
+
+        (** Add a title attribute to the notification *)
+        val add_title : string -> t -> t
+
+        (** Add an image to the push notification in the notification area *)
+        val add_image : string -> t -> t
+
+        (** Add a soundame when the mobile receives the notification *)
+        val add_soundname : string -> t -> t
+
+        (** Add a notification ID. By default, a new notification replaces the
+            last one because they have the same ID. By adding a different ID for
+            two different notifications, two notifications will be shown in the
+            notification area instead of one. If a new notification has the same
+            ID as an older one, the new one will replace it. It is useful for
+            chats for example.
+         *)
+        val add_notification_id : int -> t -> t
+
+        module Style :
+          sig
+            type t = Inbox | Picture
+          end
+
+        val add_style : Style.t -> t -> t
+
+        (** Add a summary text. *)
+        val add_summary_text : string -> t -> t
+
+        module Action :
+          sig
+            type t
+
+            val to_json : t -> Yojson.Safe.json
+
+            (** [create icon title callback foreground] *)
+            (* NOTE: The callback is the function name as string to call when
+             * the action is chosen. Be sure you exported the callback before
+             * sending the notification (by using
+             * [Js.Unsafe.set (Js.Unsafe.global "function name" f)] for example)
+             *)
+            val create : string -> string -> string -> bool -> t
+          end
+
+        (** Add two buttons with an action (created with {!Action.create}). Be
+            sure you exported the callback in JavaScript.
+         *)
+        val add_actions : Action.t -> Action.t -> t -> t
+
+        (** Change the LED color when the notification is received. The
+            parameters are in the ARGB format.
+         *)
+        val add_led_color : int -> int -> int -> int -> t -> t
+
+        (** Add a vibration pattern *)
+        val add_vibration_pattern : int list -> t -> t
+
+        (** Add a badge to the icon of the notification in the launcher. Only
+            available for some launcher. The integer parameter is the number of
+            the badge.
+         *)
+        val add_badge : int -> t -> t
+
+        module Priority :
+          sig
+            (** [Maximum] means the notification will be displayed on the screen
+                above all views during 2 or 3 seconds. The notification will
+                remain available in the notification area.
+             *)
+            type t = Minimum | Low | Default | High | Maximum
+          end
+
+        val add_priority : Priority.t -> t -> t
+
+        (** Add a large picture in the notification (under the title and body).
+            Don't forget to set style to the value {!Style.Picture}.
+         *)
+        val add_picture : string -> t -> t
+
+        (** Add [content-available: 1] also *)
+        val add_info : string -> t -> t
+
+        module Visibility :
+          sig
+            type t = Secret | Private | Public
+          end
+
+        (** Add the visibility payload *)
+        val add_visibility : Visibility.t -> t -> t
+      end
   end
 
 module Options :
@@ -264,6 +379,9 @@ module Response :
           *)
         val registration_id_of_success : success -> string option
 
+        (** Sum type to represent errors. You can use {!string_of_error} to have
+            a string representation of the error.
+         *)
         type error =
         | Missing_registration
         | Invalid_registration
@@ -281,6 +399,9 @@ module Response :
         | Topics_message_rate_exceeded
         | Unknown
 
+        (** [string_of_error error] returns a string representation of the
+            error [error].
+         *)
         val string_of_error : error -> string
 
         (** The type representing a result. *)

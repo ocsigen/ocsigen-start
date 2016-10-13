@@ -34,7 +34,6 @@ module Notification =
     let to_json t =
       `Assoc t
 
-    (** Create an empty notification *)
     let empty () = []
 
     let add_raw_string key str t =
@@ -43,16 +42,12 @@ module Notification =
     let add_raw_json key json t =
       (key, json) :: t
 
-    (** Add a title attribute to the notification *)
     let add_title str t = add_raw_string "title" str t
 
-    (** Add a body attribute to the notification *)
     let add_body str t = add_raw_string "body" str t
 
-    (** Add a sound when the mobile receives the notification. *)
     let add_sound str t = add_raw_string "sound" str t
 
-    (** Add an action when user taps the notification *)
     let add_click_action activity t = add_raw_string "click_action" activity t
 
     module Ios = struct
@@ -131,6 +126,101 @@ module Data =
 
     let add_raw_json key value data =
       (key, value) :: data
+
+    module PhoneGap =
+      struct
+        let add_message str t = add_raw_string "message" str t
+
+        let add_title str t = add_raw_string "title" str t
+
+        let add_image str t = add_raw_string "image" str t
+
+        let add_soundname str t = add_raw_string "soundname" str t
+
+        let add_notification_id id t =
+          ("notId", `Int id) :: t
+
+        let add_summary_text str t = add_raw_string "summaryText" str t
+
+        module Style =
+          struct
+            type t = Inbox | Picture
+          end
+
+        let add_style style t =
+          let style_to_str = match style with
+          | Style.Inbox -> "inbox"
+          | Style.Picture -> "picture"
+          in
+          add_raw_string "style" style_to_str t
+
+        module Action =
+          struct
+            type t = Yojson.Safe.json
+
+            let to_json t = t
+
+            let create icon title callback foreground =
+            `Assoc
+            [
+              ("icon", `String icon) ;
+              ("title", `String title) ;
+              ("callback", `String callback) ;
+              ("foreground", `Bool foreground)
+            ]
+          end
+
+        let add_actions left right t =
+          let actions_list = `List [Action.to_json left ; Action.to_json right] in
+          ("actions", actions_list) :: t
+
+        let add_led_color a r g b t =
+          let json_int_list = `List [ `Int a ; `Int r ; `Int g ; `Int b ] in
+          ("ledColor", json_int_list) :: t
+
+        let add_vibration_pattern pattern t =
+          ("vibrationPattern", `List (List.map (fun x -> `Int x) pattern)) ::  t
+
+        let add_badge nb t =
+          ("badge", `Int nb) :: t
+
+        module Priority = struct
+          type t = Minimum | Low | Default | High | Maximum
+        end
+
+        let add_priority priority t =
+          let int_of_priority = match priority with
+          | Priority.Minimum   -> -2
+          | Priority.Low       -> -1
+          | Priority.Default   -> 0
+          | Priority.High      -> 1
+          | Priority.Maximum   -> 2
+          in
+          ("priority", `Int int_of_priority) :: t
+
+        (** NOTE: we don't add automatically the value picture to style because we
+         * don't know if we can mix Inbox and Picture at the same time. In general,
+         * a notification with a picture will have a specific ID (we don't want to
+         * replace it with another notification) so Inbox value has no sense but we
+         * leave the choice to the user.
+         *)
+        let add_picture picture t = add_raw_string "picture" picture t
+
+        let add_info info t =
+          ("info", `String info) :: ("content-available", `Int 1) :: t
+
+        module Visibility = struct
+            type t = Secret | Private | Public
+          end
+
+        let add_visibility visibility t =
+          let visibility_to_int = match visibility with
+          | Visibility.Secret -> -1
+          | Visibility.Private -> 0
+          | Visibility.Public -> 1
+          in
+          ("visibility", `Int visibility_to_int) :: t
+      end
   end
 
 (* See https://developers.google.com/cloud-messaging/http-server-ref, table 5 *)
