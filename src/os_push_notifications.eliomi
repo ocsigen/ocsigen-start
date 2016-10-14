@@ -40,6 +40,9 @@
     with ocsigen-start, you can use one of these plugins.
     - cordova-plugin-fcm (binding ocaml-cordova-plugin-fcm).
     - phonegap-plugin-push (binding ocaml-cordova-plugin-push-notifications).
+    If you use one of them and if you want to add extra data, you need to
+    use {!Data.add_raw_string} or {!Data.add_raw_json} depending on the type of
+    the value.
 
     FCM works with tokens which represents a device. This token is used to
     target the device when you send a notification. The token is retrieved
@@ -119,6 +122,9 @@ module Notification :
         On Android, the activity [activity] with a matching intent filter is
         launched when user clicks the notification.
         It corresponds to category in the APNs payload.
+
+        For Android devices, "FCM_PLUGIN_ACTIVITY" is mandatory to open the
+        application when the user touchs the notification.
      *)
     val add_click_action : string -> t -> t
 
@@ -148,6 +154,10 @@ module Notification :
 
         (** [add_tag tag notification] indicates whether each notification
             results in a new entry in the notification drawer on Android.
+            If two notifications has the same tag, the last one will replace the
+            first one.
+            Two different tags produce two different notifications in the
+            notification area.
          *)
         val add_tag : string -> t -> t
 
@@ -181,12 +191,16 @@ module Data :
     val add_raw_json : string -> Yojson.Safe.json -> t -> t
 
     (** The Cordova plugin phonegap-plugin-push interprets some payloads defined
-        in the Data key. The following module defines an interface to these
+        in the data key. The following module defines an interface to these
         payloads.
         You can find the payloads list here:
           https://github.com/phonegap/phonegap-plugin-push/blob/v2.0.x/docs/PAYLOAD.md
         Be aware that if you use this plugin, all attributes must be added in
         the data object and not in the notification object which must be empty.
+
+        Another difference is that by default with the phonegap plugin, a new
+        notification replaces the last one, which is not the case for
+        cordova-plugin-fcm. See {!add_notification_id} for more information.
      *)
     module PhoneGap :
       sig
