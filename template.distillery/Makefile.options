@@ -80,43 +80,81 @@ ELIOMSTATICDIR        := var/www/${PROJECT_NAME}
 ##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
-## The following part contains the settings for CSS and SASS files.
-
-# CSS related variables
-#
-# CSS files to copy from other projects into the working directory.
-# By default, Ocsigen-start needs the CSS files of ocsigen-toolkit.
-# If you don't need Ocsigen-toolkit CSS files, comment EXTERNAL_CSS_FILES
-# variable.
-SHAREDIR              := $(shell $(OPAM) config var share)
-EXTERNAL_CSS_FILES    := $(SHAREDIR)/ocsigen-toolkit/css/*.css
+## The following part contains the settings for CSS.
 
 # Directory with files to be statically served. All external CSS files will be
 # copied in this directory.
 LOCAL_STATIC          := static
 LOCAL_STATIC_CSS      := $(LOCAL_STATIC)/css
 
-# Main CSS file. It's independent from $(LOCAL_STATIC_CSS). You can put all your
-# styles rules in this file.
-# NOTE: If you use the SASS option, the file will be the compiled CSS file.
+# Main CSS generated file.
+# If you use SASS, this is the compiled file.
+# If you don't use SASS, all CSS files in $(CSS_FILES) will be concatenate in
+# this file.
 LOCAL_CSS             := $(LOCAL_STATIC_CSS)/$(PROJECT_NAME).css
 
+# The OPAM share directory.
+SHAREDIR              := $(shell $(OPAM) config var share)
+
+# The ocsigen-toolkit directory containing CSS files.
+SHAREDIR_OT_CSS       := $(SHAREDIR)/ocsigen-toolkit/css
+
+# CSS files to copy from other projects into the working directory.
+# By default, ocsigen-start needs the CSS files of ocsigen-toolkit.
+# If you don't need ocsigen-toolkit CSS files, remote CSS files related to
+# ocsigen-toolkit in this variable.
+# The order is important because it will be used when concataining all CSS files
+# if SASS is deactivated.
+EXTERNAL_CSS_FILES    := $(SHAREDIR_OT_CSS)/ot_buttons.css \
+                         $(SHAREDIR_OT_CSS)/ot_carousel.css \
+                         $(SHAREDIR_OT_CSS)/ot_defaults.css \
+                         $(SHAREDIR_OT_CSS)/ot_drawer.css \
+                         $(SHAREDIR_OT_CSS)/ot_icons.css \
+                         $(SHAREDIR_OT_CSS)/ot_picture_uploader.css \
+                         $(SHAREDIR_OT_CSS)/ot_popup.css \
+                         $(SHAREDIR_OT_CSS)/ot_spinner.css
+
+# All CSS files which must be concatenated.
+# This variable is only used if SASS is deactivated.
+# The order is important because it will be used when concataining all CSS
+# files.
+CSS_FILES             := $(LOCAL_STATIC_CSS)/font-awesome.min.css \
+                         $(EXTERNAL_CSS_FILES) \
+                         $(LOCAL_STATIC_CSS)/os.css \
+                         $(LOCAL_STATIC_CSS)/os_otdemo.css \
 # CSS destination
 CSSDIR                := $(TEST_PREFIX)$(ELIOMSTATICDIR)/css
 CSS_PREFIX            := $(CSSDIR)/$(PROJECT_NAME)
 CSS_DEST              := $(CSS_PREFIX).css
+##----------------------------------------------------------------------
 
-# SASS related variables
-#
+##----------------------------------------------------------------------
+## The following part contains the settings for SASS.
+
+# Set to yes if you want to use SASS (http://sass-lang.com). Any other value
+# will disable SASS.
+# It is recommended to use SASS to write your styles. By default, SASS is
+# activated.
+USE_SASS              := yes
+
 # The directory where SASS files are.
 SASSDIR               := sass
+
 # The filename of the main SASS file.
+# It is recommended to use only one SCSS file where you import other stylesheets
+# (with @import "path/filename[.css]"): in this way, you can import stylesheets
+# in the order you want.
 SASS_SRC              := $(SASSDIR)/$(PROJECT_NAME).scss
+
 # All external SASS files. It would be compiled at the same time than
 # $(SASS_SRC) and put in the same CSS file.
 # By default, it's empty.
+# The order is important.
 SASS_FILES            :=
 
+# A separated-colon list of path containing CSS and SCSS files. It allows to
+# avoid to write the entire path to a SCSS/CSS file in a @import rule.
+SASS_PATH             := $(SASSDIR)/lib:$(LOCAL_STATIC_CSS)
 ##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------

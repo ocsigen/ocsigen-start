@@ -16,6 +16,11 @@ let%server css_name = !%%%MODULE_NAME%%%_config.css_name
 let%client css_name = try Js.to_string (Js.Unsafe.global##.___css_name_)
   with _ -> ""
 
+let%server css_name_script =
+  [script (cdata_script (Printf.sprintf "var __css_name = '%s';" css_name))]
+
+let%client css_name_script = []
+
 (* FIXME MOBILE *)
 let%server app_js = [%%%MODULE_NAME%%%_base.App.application_script ~defer:true ()]
 let%client app_js = []

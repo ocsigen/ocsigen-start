@@ -1,18 +1,20 @@
-css: $(CSS_DEST) import-external-css
+css: import-external-css $(CSS_DEST)
 
 ##----------------------------------------------------------------------
 ## SASS rules
 
-# If you want to compile the CSS main file (see $(LOCAL_CSS)) from SASS
-# files, uncomment the following recipe and place your SASS files into
-# $(SASSDIR) (see Makefile.options).
-# See http://sass-lang.com/ for more information about SASS.
-
-# Compile and compress all SASS files and save it in $(LOCAL_CSS).
-#$(LOCAL_CSS): $(SASS_SRC) $(SASS_FILES)
-#	[ -d $(SASSDIR) ] && \
-#	SASS_PATH=$(SASSDIR)/lib:static/css sass --style compressed $< $@ && \
-#	postcss --use autoprefixer --replace $@
+# If $(USE_SASS) (see Makefile.options) is set to yes, it will compile and
+# compress all SASS files and save it in $(LOCAL_CSS).
+# If SASS is not activated, it will concatenate all CSS files (listed in
+# $(CSS_FILES)) in $(LOCAL_CSS).
+# In both cases, external CSS files ($(EXTERNAL_CSS_FILES)) are copied.
+$(LOCAL_CSS): import-external-css
+ifeq "$(USE_SASS)" "yes"
+	[ -d $(SASSDIR) ] && \
+	SASS_PATH=$(SASS_PATH) sass --style compressed $(SASS_SRC) $(SASS_FILES) $@
+else
+	cat $(CSS_FILES) > $(LOCAL_CSS)
+endif
 
 ##----------------------------------------------------------------------
 ## CSS rules
@@ -51,3 +53,6 @@ import-external-css:
 ifneq "$(EXTERNAL_CSS_FILES)" ""
 	cp -n $(EXTERNAL_CSS_FILES) $(LOCAL_STATIC_CSS)
 endif
+
+clean-style:
+	$(RM) $(LOCAL_CSS) $(LOCAL_STATIC_CSS)/$(PROJECT_NAME).map.css
