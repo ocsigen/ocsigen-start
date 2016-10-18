@@ -42,7 +42,7 @@ let%shared the_local_css = [
   ["ot_picture_uploader.css"];
   ["ot_popup.css"];
   ["ot_spinner.css"];
-  ["os_otdemo.css"];
+  ["demo.css"];
   ["os.css"]
 ]
 
