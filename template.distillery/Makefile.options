@@ -22,8 +22,7 @@ CLIENT_FILES          := $(wildcard *.eliomi *.eliom)
 SERVER_ELIOM_PACKAGES := ocsigen-start.server
 
 # OCamlfind packages for the server
-SERVER_PACKAGES       := lwt.ppx js_of_ocaml.deriving.ppx ppx_deriving.std \
-                        ocsigen-widgets.server
+SERVER_PACKAGES       := lwt.ppx js_of_ocaml.deriving.ppx ppx_deriving.std
 
 # OCamlfind packages for the client
 CLIENT_PACKAGES       := lwt.ppx js_of_ocaml.ppx js_of_ocaml.deriving.ppx \

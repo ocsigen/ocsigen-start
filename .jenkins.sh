@@ -5,7 +5,6 @@ opam pin add --no-action reactiveData 'https://github.com/ocsigen/reactiveData.g
 opam pin add --no-action eliom 'https://github.com/ocsigen/eliom.git'
 opam pin add --no-action ocsigen-toolkit 'https://github.com/ocsigen/ocsigen-toolkit.git#master'
 opam pin add --no-action ojquery 'https://github.com/ocsigen/ojquery.git#master'
-opam pin add --no-action ocsigen-widgets 'https://github.com/ocsigen/ocsigen-widgets.git#master'
 opam pin add --no-action wikidoc 'https://github.com/ocsigen/wikidoc.git#master'
 opam pin add --no-action ocsigen-start .
 
