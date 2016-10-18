@@ -42,13 +42,14 @@ opam pin add --no-action -y reactiveData https://github.com/ocsigen/reactiveData
 opam pin add --no-action -y eliom https://github.com/ocsigen/eliom.git
 opam pin add --no-action -y ocsigen-toolkit https://github.com/ocsigen/ocsigen-toolkit.git
 opam pin add --no-action -y ojquery https://github.com/ocsigen/ojquery.git
-opam pin add --no-action -y ocsigen-widgets https://github.com/ocsigen/ocsigen-widgets.git
 opam pin add --no-action -y ocsigen-start https://github.com/ocsigen/ocsigen-start.git
 opam install ocsigen-start -y
 ```
 
-Ocsigen-widgets depends on the [OCaml binding to ImageMagick C library](https://github.com/besport/ocaml-imagemagick) so you need to install the [C library](http://www.imagemagick.org/script/index.php).
-On Mac OSX, you can install it with Homebrew: `brew install imagemagick`
+Ocsigen-toolkit depends on the [OCaml binding to ImageMagick C library](https://github.com/besport/ocaml-imagemagick) so you need to install the [C library](http://www.imagemagick.org/script/index.php).
+
+On Mac OSX, you can install it with Homebrew: `brew install imagemagick`.
+
 On Debian/Ubuntu , you can install it with apt-get: `sudo apt-get install libgraphicsmagick1-dev libmagickcore-dev`
 
 ###<a id="create-your-project"></a>Create your project

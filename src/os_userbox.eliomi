@@ -24,21 +24,6 @@
 
 type uploader = (unit,unit) Ot_picture_uploader.service
 
-(** Box for connected users, with picture, name, and menu *)
-val connected_user_box :
-  Os_types.user -> uploader -> [> Html_types.div ] Eliom_content.Html.D.elt
-
-(** Connection box *)
-val connection_box :
-  unit -> [> Html_types.div ] Eliom_content.Html.D.elt Lwt.t
-
-(** Connected user box or connexion box, depending whether user
-    is connected or not *)
-val userbox :
-  Os_types.user option ->
-  uploader ->
-  [> Html_types.div ] Eliom_content.Html.D.elt Lwt.t
-
 (** Link to upload a picture.
     The client function given as first parameter will be called first,
     for example to close the menu containing the link. *)
@@ -63,23 +48,6 @@ val upload_pic_link :
 val reset_tips_link :
   (unit -> unit) Eliom_client_value.t ->
   [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
-
-(** Display user menu *)
-val user_menu :
-  Os_types.user ->
-  uploader -> [> Html_types.div ] Eliom_content.Html.F.elt
-
-
-[%%client.start]
-
-(** Personnalize user menu *)
-val set_user_menu :
-  ((unit -> unit) ->
-   Os_types.user ->
-   uploader ->
-   Html_types.div_content Eliom_content.Html.D.elt
-     Eliom_content.Html.D.list_wrap) ->
-  unit
 
 [%%server.start]
 

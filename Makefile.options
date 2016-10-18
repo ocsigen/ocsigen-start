@@ -4,50 +4,54 @@
 #----------------------------------------------------------------------
 
 # Package name for your
-PKG_NAME := ocsigen-start
-PKG_VERS := 0.1
-PKG_DESC := Eliom application skeleton ready to use to build your own application with users, (pre)registration, notifications, etc.
+PKG_NAME            := ocsigen-start
+PKG_VERS            := 0.1
+PKG_DESC            := Eliom application skeleton ready to use to build your own application with users, (pre)registration, notifications, etc.
 
 # Source files for the server
-SERVER_FILES := $(wildcard \
+SERVER_FILES        := $(wildcard \
   src/*.ml* \
   src/*.eliom* \
   src/view/*.eliom* \
 )
 # Source files for the client
-CLIENT_FILES := $(wildcard \
+CLIENT_FILES        := $(wildcard \
   src/*.eliom* \
   src/view/*.eliom* \
 )
 
 # Source files for the server
-SERVER_FILES_DOC := $(wildcard \
+SERVER_FILES_DOC    := $(wildcard \
   src/*.eliomi \
   src/*.mli \
   src/view/*.eliomi \
 )
 # Source files for the client
-CLIENT_FILES_DOC := $(wildcard \
+CLIENT_FILES_DOC    := $(wildcard \
   src/*.eliomi \
   src/view/*.eliomi \
 )
 
 # Template directory (used when installing template with distillery)
-TEMPLATE_DIR := template.distillery
+TEMPLATE_DIR       := template.distillery
 # Template name (name used by distillery)
-TEMPLATE_NAME := os.pgocaml
+TEMPLATE_NAME      := os.pgocaml
 
 # OCamlfind packages for the server
-SERVER_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx text calendar safepass  ocsigen-widgets.server ocsigen-toolkit.server magick yojson
+SERVER_PACKAGES    := lwt.ppx js_of_ocaml.deriving.ppx text calendar safepass \
+                      ocsigen-toolkit.server magick yojson
+
 SERVER_DB_PACKAGES := pgocaml pgocaml.syntax macaque.syntax calendar safepass
+
 # OCamlfind packages for the client
-CLIENT_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx js_of_ocaml.ppx calendar ocsigen-widgets.client ocsigen-toolkit.client
+CLIENT_PACKAGES    := lwt.ppx js_of_ocaml.deriving.ppx js_of_ocaml.ppx \
+                      calendar ocsigen-toolkit.client
 
 # Debug package (yes/no): Debugging info in compilation
-DEBUG := yes
+DEBUG              := yes
 
 # Native mode (yes/no): Compile also with native mode (it will always compile with byte mode)
-NATIVE := yes
+NATIVE             := yes
 
 # Package's library $(PKG_NAME).{client,server}.cma (a,cmxa,cmxs only server side)
-LIBDIR := lib/
+LIBDIR             := lib/
