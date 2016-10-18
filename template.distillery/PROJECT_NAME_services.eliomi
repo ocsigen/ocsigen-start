@@ -21,7 +21,7 @@ val about_service :
 val upload_user_avatar_service :
   (unit, unit) Ot_picture_uploader.service
 
-val otdemo_service :
+val demo_service :
   (
     unit,
     unit,
