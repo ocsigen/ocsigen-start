@@ -79,6 +79,11 @@ val block :
 *)
 val reset_tips : unit -> unit Lwt.t
 
+(** Call this function to mark a tip as "already seen" by current user.
+    This is done automatically when a tip is closed.
+*)
+val set_tip_seen : string -> unit Lwt.t
+
 [%%shared.start]
 (** A non-attached service that will reset tips.
     Call it with [Eliom_client.exit_to] to restart the application and
