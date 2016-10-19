@@ -24,20 +24,20 @@
 }
 
 /* Carousel */
-div.otdemo-carousel {
+div.demo-carousel {
   width: 4cm;
   margin: auto;
   border: 2px;
   border-style: solid;
 }
 
-div.otdemo-carousel-page {
+div.demo-carousel-page {
   font-size: 4cm;
   margin: 1mm;
   background-color: #222;
   color: white;
 }
-.otdemo-bullets {
+.demo-bullets {
     margin: auto;
     width: 100px;
 }

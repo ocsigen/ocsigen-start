@@ -12,9 +12,9 @@ let%server upload_user_avatar_service : (unit, unit) Ot_picture_uploader.service
     "upload_user_avatar_service"
     [%derive.json: unit]
 
-let%server otdemo_service =
+let%server demo_service =
   Eliom_service.create
-    ~path:(Eliom_service.Path ["otdemo"])
+    ~path:(Eliom_service.Path ["demo"])
     ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
@@ -43,8 +43,8 @@ let%client about_service =
 let%client upload_user_avatar_service =
   ~%upload_user_avatar_service
 
-let%client otdemo_service =
-  ~%otdemo_service
+let%client demo_service =
+  ~%demo_service
 
 let%client settings_service =
   ~%settings_service

@@ -9,9 +9,9 @@
     "nav" and "navbar-nav" CSS classes. *)
 let%shared navigation_bar =
   let nav_elts = [
-    ("Home",Os_services.main_service);
-    ("About",%%%MODULE_NAME%%%_services.about_service);
-    ("Demo",%%%MODULE_NAME%%%_services.otdemo_service)
+    ("Home", Os_services.main_service);
+    ("About", %%%MODULE_NAME%%%_services.about_service);
+    ("Demo", %%%MODULE_NAME%%%_services.demo_service)
   ] in
   fun () ->
     Os_tools.Navigation_bar.ul_of_elts
