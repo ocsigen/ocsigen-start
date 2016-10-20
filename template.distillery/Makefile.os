@@ -329,7 +329,7 @@ $(DEPSDIR):
 ##----------------------------------------------------------------------
 ## Clean up
 
-clean:: mobile-clean
+clean:: clean-style mobile-clean
 	-rm -f *.cm[ioax] *.cmxa *.cmxs *.o *.a *.annot
 	-rm -f *.type_mli
 	-rm -rf ${ELIOM_CLIENT_DIR} ${ELIOM_SERVER_DIR}

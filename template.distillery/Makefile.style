@@ -1,17 +1,32 @@
-css: $(DEST) import-external-css
+css: import-external-css $(CSS_DEST)
 
-# If you want to compile the CSS file from SASS files, uncomment the following
-# recipe and place your SASS files into the 'sass' directory.
+##----------------------------------------------------------------------
+## SASS rules
 
-# $(LOCAL_CSS): $(SRC) $(FILES)
-# 	[ -d $(SASSDIR) ] && \
-# 	SASS_PATH=$(SASSDIR)/lib:static/css sass --style compressed $< $@ && \
-# 	postcss --use autoprefixer --replace $@
+# If $(USE_SASS) (see Makefile.options) is set to yes, it will compile and
+# compress all SASS files and save it in $(LOCAL_CSS).
+# If SASS is not activated, it will concatenate all CSS files (listed in
+# $(CSS_FILES)) in $(LOCAL_CSS).
+# In both cases, external CSS files ($(EXTERNAL_CSS_FILES)) are copied.
+$(LOCAL_CSS): import-external-css
+ifeq "$(USE_SASS)" "yes"
+	[ -d $(SASSDIR) ] && \
+	SASS_PATH=$(SASS_PATH) sass --style compressed $(SASS_SRC) $(SASS_FILES) $@
+else
+	cat $(CSS_FILES) > $(LOCAL_CSS)
+endif
+
+##----------------------------------------------------------------------
+## CSS rules
 
 $(CSSDIR):
 	mkdir -p $@
 
-$(DEST): $(LOCAL_CSS) | $(CSSDIR)
+# Copy the CSS file $(LOCAL_CSS) in $(CSS_DEST) after adding a hash in the name
+# and make a symlink for $(PROJECT_NAME).css which is used in index.html.
+# FIXME: md5sum is not by default on Mac OSX: it must be installed with brew.
+# Instead of md5sum, md5 is present but the output is different.
+$(CSS_DEST): $(LOCAL_CSS) | $(CSSDIR)
 	HASH=`cat $< | md5sum | cut -d ' ' -f 1` && \
 	cp $< $(CSS_PREFIX)_$$HASH.css && \
 	sed -i '1s/^/@charset "UTF-8";/' $(CSS_PREFIX)_$$HASH.css && \
@@ -19,12 +34,18 @@ $(DEST): $(LOCAL_CSS) | $(CSSDIR)
 # Charset is necessary for iOS.
 # Including it in scss does not work because sass removes it.
 
-# Only works with recent version of sass: --sourcemap=inline
-# Needs autoprefixer: https://github.com/postcss/autoprefixer#cli
+##----------------------------------------------------------------------
+## External CSS
 
 # Copy files from other projects into the working directory.
-# The -n switch ensures that user modifications to these files are never overwritten.
-# TODO: This should be part of eliom-distillery and not be executed with every run of make.
+# By default, it imports all CSS files from ocsigen-toolkit because the template
+# needs it.
+# See EXTERNAL_CSS_FILES definition in Makefile.options for more information.
+# The -n switch ensures that user modifications to these files are never
+# overwritten.
+# It is executed with every run of make to be sure external CSS files are
+# up-to-date and it allows to add other external CSS files between two
+# compilation processes.
 
 .PHONY: import-external-css
 
@@ -32,3 +53,6 @@ import-external-css:
 ifneq "$(EXTERNAL_CSS_FILES)" ""
 	cp -n $(EXTERNAL_CSS_FILES) $(LOCAL_STATIC_CSS)
 endif
+
+clean-style:
+	$(RM) $(LOCAL_CSS) $(LOCAL_STATIC_CSS)/$(PROJECT_NAME).map.css

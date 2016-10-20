@@ -30,3 +30,6 @@ module App = Eliom_registration.App(struct
     let global_data_path = Some ["__global_data__"]
   end)
 ]
+
+(* TODO: DOC *)
+let%client _ = Eliom_client.persist_document_head ()
