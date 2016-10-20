@@ -46,7 +46,10 @@ let%client _ = Eliom_comet.set_handle_exn_function
 *)
 
 [%%shared
-  type msg = Connection_changed | Heartbeat
+(** The type of sent message *)
+type msg =
+  | Connection_changed (** If a connection changed *)
+  | Heartbeat (** Just to be sure the server is not down. *)
 ]
 
 let create_monitor_channel () =
