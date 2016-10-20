@@ -358,7 +358,7 @@ module User = struct
        d.userid = $int64:userid$
       >>
 
-  let update_password userid password =
+  let update_password ~userid ~password =
     if password = "" then Lwt.fail_with "empty password"
     else
       let password = as_sql_string @@ fst !pwd_crypt_ref password in
@@ -367,7 +367,7 @@ module User = struct
         | d.userid = $int64:userid$
        >>
 
-  let update_avatar userid avatar = run_query
+  let update_avatar ~userid ~avatar = run_query
     <:update< d in $users_table$ :=
      { avatar = $string:avatar$ }
      | d.userid = $int64:userid$

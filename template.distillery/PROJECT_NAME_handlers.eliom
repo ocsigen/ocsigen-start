@@ -15,7 +15,7 @@ let upload_user_avatar_handler myid () ((), (cropping, photo)) =
     Os_uploader.record_image avatar_dir ~ratio:1. ?cropping photo in
   let%lwt user = Os_user.user_of_userid myid in
   let old_avatar = Os_user.avatar_of_user user in
-  let%lwt () = Os_user.update_avatar myid avatar in
+  let%lwt () = Os_user.update_avatar ~userid:myid ~avatar in
   match old_avatar with
   | None -> Lwt.return ()
   | Some old_avatar ->

@@ -116,10 +116,10 @@ val update :
 val update' : ?password:string -> Os_types.user -> unit Lwt.t
 
 (** Update the password only *)
-val update_password : Os_types.userid -> string -> unit Lwt.t
+val update_password : userid:Os_types.userid -> password:string -> unit Lwt.t
 
 (** Update the avatar only *)
-val update_avatar : Os_types.userid -> string -> unit Lwt.t
+val update_avatar : userid:Os_types.userid -> avatar:string -> unit Lwt.t
 
 (** Check wether or not a user exists *)
 val is_registered : string -> bool Lwt.t
