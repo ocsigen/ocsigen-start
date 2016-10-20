@@ -295,7 +295,7 @@ let action_link_handler_common akey =
       else Lwt.return_unit
     in
     let%lwt () =
-      if action = `AccountActivation
+      if action = `AccountActivation || action = `PasswordReset
       then Os_db.User.set_email_validated userid email
       else Lwt.return_unit
     in
