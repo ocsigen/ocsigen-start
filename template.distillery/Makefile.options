@@ -154,8 +154,8 @@ DB_USER               := $(USER)
 ## The password to access the database. By default it's empty.
 DB_PASSWORD           := ""
 
-## The main SQL file. This file will be used by the rule 'db-update' (defined
-## in Makefile.db) to update the database.
+## The main SQL file. This file will be used by the rule 'db-schema' (defined
+## in Makefile.db) to initialise the database schema.
 PSQL_FILE             := $(DB_NAME).sql
 
 ## The filename for the database snapshot. This variable is used

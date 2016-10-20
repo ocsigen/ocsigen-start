@@ -7,7 +7,7 @@ CREATE DATABASE ocsipersist;
 CREATE EXTENSION citext; --DEFAULT
 -- You may remove the above line if you use the type TEXT for emails instead of CITEXT
 
-CREATE TABLE users ( -- DEFAULT
+CREATE TABLE os_users ( -- DEFAULT
        userid bigserial primary key, -- DEFAULT
        firstname text NOT NULL,
        lastname text NOT NULL,
@@ -16,15 +16,15 @@ CREATE TABLE users ( -- DEFAULT
        avatar text
 );
 
-CREATE TABLE emails ( -- DEFAULT
+CREATE TABLE os_emails ( -- DEFAULT
        email citext primary key, -- DEFAULT
-       userid bigint NOT NULL references users(userid), -- DEFAULT
+       userid bigint NOT NULL references os_users(userid), -- DEFAULT
        validated boolean NOT NULL DEFAULT(false)
 );
 
-CREATE TABLE activation ( -- DEFAULT
+CREATE TABLE os_activation ( -- DEFAULT
        activationkey text primary key, -- DEFAULT
-       userid bigint NOT NULL references users(userid), -- DEFAULT
+       userid bigint NOT NULL references os_users(userid), -- DEFAULT
        email citext NOT NULL,
        autoconnect boolean NOT NULL,
        validity bigint NOT NULL,
@@ -33,17 +33,17 @@ CREATE TABLE activation ( -- DEFAULT
        creationdate timestamptz NOT NULL default now()
 );
 
-CREATE TABLE groups ( -- DEFAULT
+CREATE TABLE os_groups ( -- DEFAULT
        groupid bigserial primary key, -- DEFAULT
        name text NOT NULL, -- DEFAULT
        description text -- DEFAULT
 );
 
-CREATE TABLE user_groups ( -- DEFAULT
-       userid bigint NOT NULL references users(userid), -- DEFAULT
-       groupid bigint NOT NULL references groups(groupid) -- DEFAULT
+CREATE TABLE os_user_groups ( -- DEFAULT
+       userid bigint NOT NULL references os_users(userid), -- DEFAULT
+       groupid bigint NOT NULL references os_groups(groupid) -- DEFAULT
 );
 
-CREATE TABLE preregister (
+CREATE TABLE os_preregister (
        email citext NOT NULL
 );
