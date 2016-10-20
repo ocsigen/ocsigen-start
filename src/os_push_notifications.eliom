@@ -18,6 +18,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+exception FCM_empty_response
+exception FCM_no_json_response of string
+exception FCM_missing_field of string
+exception FCM_unauthorized
+
 module Notification =
   struct
     (* A notification is represented as a list of pair (key, value) where [key]
@@ -29,7 +34,6 @@ module Notification =
     let to_json t =
       `Assoc t
 
-    (** Create an empty notification *)
     let empty () = []
 
     let add_raw_string key str t =
@@ -38,101 +42,30 @@ module Notification =
     let add_raw_json key json t =
       (key, json) :: t
 
-    (** Add a message attribute to the notification *)
-    let add_message str t = add_raw_string "message" str t
-
-    (** Add a title attribute to the notification *)
     let add_title str t = add_raw_string "title" str t
 
-    (** Add an image to the push notification in the notification area *)
-    let add_image str t = add_raw_string "image" str t
+    let add_body str t = add_raw_string "body" str t
 
-    (** Add a soundame when the mobile receives the notification. *)
-    let add_soundname str t = add_raw_string "soundname" str t
+    let add_sound str t = add_raw_string "sound" str t
 
-    let add_notification_id id t =
-      ("notId", `Int id) :: t
+    let add_click_action activity t = add_raw_string "click_action" activity t
 
-    let add_summary_text str t = add_raw_string "summaryText" str t
-
-    module Style =
-      struct
-        type t = Inbox | Picture
-      end
-
-    let add_style style t =
-      let style_to_str = match style with
-      | Style.Inbox -> "inbox"
-      | Style.Picture -> "picture"
-      in
-      add_raw_string "style" style_to_str t
-
-    module Action =
-      struct
-        type t = Yojson.Safe.json
-
-        let to_json t = t
-
-        let create icon title callback foreground =
-        `Assoc
-        [
-          ("icon", `String icon) ;
-          ("title", `String title) ;
-          ("callback", `String callback) ;
-          ("foreground", `Bool foreground)
-        ]
-      end
-
-    let add_actions left right t =
-      let actions_list = `List [Action.to_json left ; Action.to_json right] in
-      ("actions", actions_list) :: t
-
-    let add_led_color a r g b t =
-      let json_int_list = `List [ `Int a ; `Int r ; `Int g ; `Int b ] in
-      ("ledColor", json_int_list) :: t
-
-    let add_vibration_pattern pattern t =
-      ("vibrationPattern", `List (List.map (fun x -> `Int x) pattern)) ::  t
-
-    let add_badge nb t =
-      ("badge", `Int nb) :: t
-
-    module Priority = struct
-      type t = Minimum | Low | Default | High | Maximum
+    module Ios = struct
+      let add_badge nb t =
+        ("badge", `Int nb) :: t
     end
 
-    let add_priority priority t =
-      let int_of_priority = match priority with
-      | Priority.Minimum   -> -2
-      | Priority.Low       -> -1
-      | Priority.Default   -> 0
-      | Priority.High      -> 1
-      | Priority.Maximum   -> 2
-      in
-      ("priority", `Int int_of_priority) :: t
+    module Android = struct
+      let add_icon icon t = add_raw_string "icon" icon t
 
-    (** NOTE: we don't add automatically the value picture to style because we
-     * don't know if we can mix Inbox and Picture at the same time. In general,
-     * a notification with a picture will have a specific ID (we don't want to
-     * replace it with another notification) so Inbox value has no sense but we
-     * leave the choice to the user.
-     *)
-    let add_picture picture t = add_raw_string "picture" picture t
+      let add_tag tag t = add_raw_string "tag" tag t
 
-    let add_info info t =
-      ("info", `String info) :: ("content-available", `Int 1) :: t
-
-    module Visibility = struct
-        type t = Secret | Private | Public
-      end
-
-    let add_visibility visibility t =
-      let visibility_to_int = match visibility with
-      | Visibility.Secret -> -1
-      | Visibility.Private -> 0
-      | Visibility.Public -> 1
-      in
-      ("visibility", `Int visibility_to_int) :: t
+      let add_color ~red ~green ~blue t =
+        let str_rgb =
+          Printf.sprintf "#%X%X%X" (red mod 256) (blue mod 256) (green mod 256)
+        in
+        add_raw_string "color" str_rgb t
+    end
   end
 
 module Options =
@@ -147,28 +80,372 @@ module Options =
       `List (List.map (fun x -> `String x) ids)
     )]
 
+    let add_to value t =
+      ("to", `String value) :: t
+
+    let add_condition condition t =
+      ("condition", `String condition) :: t
+
     let add_collapse_key key t =
       ("collapse_key", `String key) :: t
+
+    module Priority = struct
+      type t = Normal | High
+    end
+
+    let add_priority priority t = match priority with
+    | Priority.Normal -> ("priority", `String "normal") :: t
+    | Priority.High -> ("priority", `String "high") :: t
+
+    let add_content_available available t =
+      ("content_available", `Bool available) :: t
+
+    let add_time_to_live time_in_seconds t =
+      ("time_to_live", `Int time_in_seconds) :: t
+
+    let add_restricted_package_name package_name t =
+      ("restricted_package_name", `String package_name) :: t
+
+    let add_dry_run value t =
+      ("dry_run", `Bool value) :: t
   end
 
-let send server_key notification options =
-  let gcm_url = "https://gcm-http.googleapis.com/gcm/send" in
+module Data =
+  struct
+    type t = (string * Yojson.Safe.json) list
+
+    let to_list t = t
+
+    let to_json t =
+      `Assoc t
+
+    let empty () = []
+
+    let add_raw_string key value data =
+      (key, `String value) :: data
+
+    let add_raw_json key value data =
+      (key, value) :: data
+
+    module PhoneGap =
+      struct
+        let add_message str t = add_raw_string "message" str t
+
+        let add_title str t = add_raw_string "title" str t
+
+        let add_image str t = add_raw_string "image" str t
+
+        let add_soundname str t = add_raw_string "soundname" str t
+
+        let add_notification_id id t =
+          ("notId", `Int id) :: t
+
+        let add_summary_text str t = add_raw_string "summaryText" str t
+
+        module Style =
+          struct
+            type t = Inbox | Picture
+          end
+
+        let add_style style t =
+          let style_to_str = match style with
+          | Style.Inbox -> "inbox"
+          | Style.Picture -> "picture"
+          in
+          add_raw_string "style" style_to_str t
+
+        module Action =
+          struct
+            type t = Yojson.Safe.json
+
+            let to_json t = t
+
+            let create icon title callback foreground =
+            `Assoc
+            [
+              ("icon", `String icon) ;
+              ("title", `String title) ;
+              ("callback", `String callback) ;
+              ("foreground", `Bool foreground)
+            ]
+          end
+
+        let add_actions left right t =
+          let actions_list = `List [Action.to_json left ; Action.to_json right] in
+          ("actions", actions_list) :: t
+
+        let add_led_color a r g b t =
+          let json_int_list = `List [ `Int a ; `Int r ; `Int g ; `Int b ] in
+          ("ledColor", json_int_list) :: t
+
+        let add_vibration_pattern pattern t =
+          ("vibrationPattern", `List (List.map (fun x -> `Int x) pattern)) ::  t
+
+        let add_badge nb t =
+          ("badge", `Int nb) :: t
+
+        module Priority = struct
+          type t = Minimum | Low | Default | High | Maximum
+        end
+
+        let add_priority priority t =
+          let int_of_priority = match priority with
+          | Priority.Minimum   -> -2
+          | Priority.Low       -> -1
+          | Priority.Default   -> 0
+          | Priority.High      -> 1
+          | Priority.Maximum   -> 2
+          in
+          ("priority", `Int int_of_priority) :: t
+
+        (** NOTE: we don't add automatically the value picture to style because we
+         * don't know if we can mix Inbox and Picture at the same time. In general,
+         * a notification with a picture will have a specific ID (we don't want to
+         * replace it with another notification) so Inbox value has no sense but we
+         * leave the choice to the user.
+         *)
+        let add_picture picture t = add_raw_string "picture" picture t
+
+        let add_info info t =
+          ("info", `String info) :: ("content-available", `Int 1) :: t
+
+        module Visibility = struct
+            type t = Secret | Private | Public
+          end
+
+        let add_visibility visibility t =
+          let visibility_to_int = match visibility with
+          | Visibility.Secret -> -1
+          | Visibility.Private -> 0
+          | Visibility.Public -> 1
+          in
+          ("visibility", `Int visibility_to_int) :: t
+      end
+  end
+
+(* See https://developers.google.com/cloud-messaging/http-server-ref, table 5 *)
+module Response =
+  struct
+    module Results =
+      struct
+        (* If an error occured, one of these sum types is returned (based on the
+           couple (code, error_as_string), see [error_of_string_and_code].
+         *)
+        type error =
+        | Missing_registration
+        | Invalid_registration
+        | Unregistered_device
+        | Invalid_package_name
+        | Authentication_failed
+        | Mismatch_sender_id
+        | Invalid_JSON
+        | Message_too_big
+        | Invalid_data_key
+        | Invalid_time_to_live
+        | Timeout
+        | Internal_server
+        | Device_message_rate_exceeded
+        | Topics_message_rate_exceeded
+        | Unknown
+
+        (* Internal use. See
+           https://developers.google.com/cloud-messaging/http-server-ref
+           table 9
+         *)
+        let error_of_string_and_code = function
+        | (200, "MissingRegistration")       -> Missing_registration
+        | (200, "InvalidRegistration")       -> Invalid_registration
+        | (200, "NotRegistered")             -> Unregistered_device
+        | (200, "InvalidPackageName")        -> Invalid_package_name
+        | (401, _)                           -> Authentication_failed
+        | (200, "MismatchSenderId")          -> Mismatch_sender_id
+        | (400, _)                           -> Invalid_JSON
+        | (200, "MessageTooBig")             -> Message_too_big
+        | (200, "InvalidDataKey")            -> Invalid_data_key
+        | (200, "InvalidTtl")                -> Invalid_time_to_live
+        | (code, "Unavailable")
+            when code = 200 ||
+                 (500 <= code && code < 600) -> Timeout
+        | (code, "IntervalServerError")
+            when (code = 500 || code = 200)  -> Internal_server
+        | (200, "DeviceMessageRateExceeded") -> Device_message_rate_exceeded
+        | (200, "TopicsMessageRateExceeded") -> Topics_message_rate_exceeded
+        | _                                  -> Unknown
+
+        let string_of_error = function
+        | Missing_registration         -> "Missing registration"
+        | Invalid_registration         -> "Invalid registration"
+        | Unregistered_device          -> "Unregistered device"
+        | Invalid_package_name         -> "Invalid package name"
+        | Authentication_failed        -> "Authentication failed"
+        | Mismatch_sender_id           -> "Mismatch sender ID"
+        | Invalid_JSON                 -> "Invalid JSON"
+        | Message_too_big              -> "Message too big"
+        | Invalid_data_key             -> "Invalid data key"
+        | Invalid_time_to_live         -> "Invalid time to live"
+        | Timeout                      -> "Timeout"
+        | Internal_server              -> "Interval server error"
+        | Device_message_rate_exceeded -> "Device message rate exceeded"
+        | Topics_message_rate_exceeded -> "Topics message rate exceeded"
+        | Unknown                      -> "Unknown"
+
+        (* If no error occured, the JSON in the results attribute contains a
+           mandatory field message_id and an optional field registration_id.
+         *)
+        type success =
+          {
+            message_id      : string ;
+            registration_id : string option
+          }
+
+        let message_id_of_success success        = success.message_id
+
+        let registration_id_of_success success   = success.registration_id
+
+        type t = Success of success | Error of error
+
+        let t_of_json code json =
+          let open Yojson.Basic in
+          match Util.member "message_id" json with
+            (* If the field [message_id] is present, we are in the case of a
+               successfull message
+             *)
+            | `String x ->
+                let message_id = x in
+                let registration_id =
+                  match Util.member "registration_id" json with
+                  | `String x -> Some x
+                  | _ -> None
+                in
+                Success {message_id; registration_id}
+            (* If the field [message_id] is not present, maybe we are in the
+               case of an error message.
+               The pattern _ is used because is equivalent to `Null in this
+               case due to the predefined type of the message_id (string).
+             *)
+            | _ ->
+              match Util.member "error" json with
+              (* If the field [error] is present, we are in the case of an
+                 error message.
+               *)
+              | `String err -> Error (error_of_string_and_code (code, err))
+              (* Else we don't know what is the result. *)
+              | _ -> raise (FCM_missing_field "No message_id and error fields \
+              found.")
+      end
+
+      type t =
+      {
+        multicast_id  : string ;
+        success       : int ;
+        failure       : int ;
+        canonical_ids : int ;
+        results       : Results.t list
+      }
+
+      (* Get the HTTP code. We mention explicitely the module to avoid
+         warnings *)
+      let code_of_http_response http_response =
+        let http_header = http_response.Ocsigen_http_frame.frame_header in
+        match Ocsigen_http_frame.Http_header.(http_header.mode) with
+        | Ocsigen_http_frame.Http_header.Answer code -> code
+        | _ -> assert false
+
+     (* Build a type t from the JSON representation of the FCM response. Used
+        by [t_of_http_response]. *)
+      let t_of_json code json =
+        let open Yojson.Basic in
+        (* NOTE: In FCM documentation, multicast_id is defined as a number but
+           Yojson converts to a string when the number is too big (greater than
+           the max integer. The first pattern is `Int x is x is smaller
+           than the max integer and the second is `String if x can't be
+           interpreted as an integer.
+         *)
+        let multicast_id = match Util.member "multicast_id" json with
+        | `Int x -> string_of_int x
+        | `String x -> x
+        | _ -> raise (FCM_missing_field "Missing multicast_id")
+        in
+        let success = match Util.member "success" json with
+        | `Int x -> x
+        | _ -> raise (FCM_missing_field "Missing success")
+        in
+        let failure = match Util.member "failure" json with
+        | `Int x -> x
+        | _ -> raise (FCM_missing_field "Missing failure")
+        in
+        let canonical_ids = match Util.member "canonical_ids" json with
+        | `Int x -> x
+        | _ -> raise (FCM_missing_field "Missing canonical_ids")
+        in
+        (* As results is an options array, we don't fail if it's not present but
+           we use an empty list.
+         *)
+        let results = match Util.member "results" json with
+        | `List l -> List.map (Results.t_of_json code) l
+        | _ -> []
+        in
+        {multicast_id; success; failure; canonical_ids; results}
+
+      (* Build a type t from the raw HTTP response. The HTTP response code is
+         computed to pass it to [t_of_json] and to [results_of_json] to be used
+         if an error occured.
+       *)
+      let t_of_http_response http_response =
+        try%lwt
+          let code = code_of_http_response http_response in
+          let%lwt content_str =
+            match Ocsigen_http_frame.(http_response.frame_content) with
+            (* Must never be the case because it seems FCM always sends a body
+               content *)
+            | None -> Lwt.fail FCM_empty_response
+            (* FIXME: is it enough to read a string of length 16384? *)
+            | Some x -> Os_lib.Http.string_of_stream x
+          in
+          let content_basic_json =
+            Yojson.Safe.to_basic (Yojson.Safe.from_string content_str)
+          in
+          Lwt.return (t_of_json code content_basic_json)
+        with
+        (* Could be the case if the server key is wrong or if it's not
+           registered only in FCM and not in FCM (since September 2016).
+         *)
+        | Yojson.Json_error _ -> Lwt.fail (FCM_no_json_response "It could come \
+        from your server key.")
+
+      let multicast_id_of_t response  = response.multicast_id
+
+      let success_of_t response       = response.success
+
+      let failure_of_t response       = response.failure
+
+      let canonical_ids_of_t response = response.canonical_ids
+
+      let results_of_t response       = response.results
+
+  end
+
+let send server_key notification ?(data=Data.empty ()) options =
+  let gcm_url = "https://fcm.googleapis.com/fcm/send" in
   let headers =
     Http_headers.empty |>
     Http_headers.add Http_headers.authorization ("key=" ^ server_key)
   in
+  (* Data is optional, so we use an option type and a pattern matching *)
   let content = Yojson.Safe.to_string (
     `Assoc
     (
-      ("data", Notification.to_json notification) :: (Options.to_list options)
+      ("notification", Notification.to_json notification) ::
+      ("data", Data.to_json data) ::
+      (Options.to_list options)
     )
   )
   in
-  (* FIXME: GCM returns a response saying if the notification has been sent *)
-  ignore (Ocsigen_http_client.post_string_url
-    ~headers
-    ~content_type:("application", "json")
-    ~content
-    gcm_url
-  );
-  Lwt.return ()
+  let%lwt http_response =
+    Ocsigen_http_client.post_string_url
+      ~headers
+      ~content_type:("application", "json")
+      ~content
+      gcm_url
+  in
+  (Response.t_of_http_response http_response)
