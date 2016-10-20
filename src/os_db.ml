@@ -358,7 +358,7 @@ module User = struct
        d.userid = $int64:userid$
       >>
 
-  let update_password password userid =
+  let update_password ~userid ~password =
     if password = "" then Lwt.fail_with "empty password"
     else
       let password = as_sql_string @@ fst !pwd_crypt_ref password in
@@ -367,7 +367,7 @@ module User = struct
         | d.userid = $int64:userid$
        >>
 
-  let update_avatar avatar userid = run_query
+  let update_avatar ~userid ~avatar = run_query
     <:update< d in $users_table$ :=
      { avatar = $string:avatar$ }
      | d.userid = $int64:userid$
@@ -461,7 +461,7 @@ module User = struct
        u.userid = $int64:userid$
     >>
 
-   let is_main_email ~email ~userid = one run_view
+   let is_main_email ~userid ~email = one run_view
      ~success:(fun _ -> Lwt.return_true)
      ~fail:Lwt.return_false
      <:view< { u.main_email }
@@ -478,7 +478,7 @@ module User = struct
       } >>
 
   let remove_email_from_user ~userid ~email =
-    lwt b = is_main_email ~email ~userid in
+    lwt b = is_main_email ~userid ~email in
     if b then Lwt.fail Main_email_removal_attempt else
       run_query
         <:delete< e in $emails_table$

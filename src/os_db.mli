@@ -134,16 +134,17 @@ module User : sig
     ?avatar:string ->
     firstname:string -> lastname:string -> Os_types.userid -> unit Lwt.t
 
-  (** [update_password new_password userid] updates the password of the user
+  (** [update_password ~userid ~new_password] updates the password of the user
       with ID [userid].
       If [password] is passed as an empty string, it fails with the message «
       empty password ». TODO: change it to an exception?
    *)
-  val update_password : string -> Os_types.userid -> unit Lwt.t
+  val update_password :
+    userid:Os_types.userid -> password:string -> unit Lwt.t
 
-  (** [update_avatar new_avatar userid] updates the avatar of the user
+  (** [update_avatar ~userid ~avatar] updates the avatar of the user
       with ID [userid]. *)
-  val update_avatar : string -> Os_types.userid -> unit Lwt.t
+  val update_avatar : userid:Os_types.userid -> avatar:string -> unit Lwt.t
 
   (** [update_main_email ~userid ~email] updates the main email of the user
       with ID [userid]. *)
@@ -186,7 +187,7 @@ module User : sig
       If there is no such user or if [email] is not the main
       email, it returns [false].
    *)
-  val is_main_email : email:string -> userid:Os_types.userid -> bool Lwt.t
+  val is_main_email : userid:Os_types.userid -> email:string -> bool Lwt.t
 
   (** [add_email_to_user ~userid ~email] add [email] to user with ID [userid].
     *)

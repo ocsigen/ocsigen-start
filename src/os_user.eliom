@@ -143,13 +143,13 @@ let update' ?password user =
     ~lastname:(lastname_of_user user)
     (userid_of_user user)
 
-let update_password password userid =
-  let%lwt () = Os_db.User.update_password password userid in
+let update_password ~userid ~password =
+  let%lwt () = Os_db.User.update_password userid password in
   MCache.reset userid;
   Lwt.return ()
 
-let update_avatar avatar userid =
-  let%lwt () = Os_db.User.update_avatar avatar userid in
+let update_avatar ~userid ~avatar =
+  let%lwt () = Os_db.User.update_avatar userid avatar in
   MCache.reset userid;
   Lwt.return ()
 
