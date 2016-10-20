@@ -18,6 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+(** This module provides functions and types to manage the current user. *)
+
 [%%shared.start]
 
 type current_user =

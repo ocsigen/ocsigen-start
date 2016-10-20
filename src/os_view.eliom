@@ -150,10 +150,6 @@ let%shared information_form ?a
 let%shared preregister_form ?a label =
   generic_email_form ?a ~service:Os_services.preregister_service ~label ()
 
-(** [home_button ~a ()] creates a input button with value "home" which redirects
-    to the main service.
-
-    @param a modify the attributes of the form. *)
 let%shared home_button ?a () =
   Form.get_form ?a ~service:Os_services.main_service
     (fun _ -> [

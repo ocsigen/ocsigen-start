@@ -89,28 +89,28 @@ let%shared get_current_userid () =
 let%client _ =
   Os_session.get_current_userid_o := Opt.get_current_userid
 
-let set_user_server myid =
+let%server set_user_server myid =
   let%lwt u = Os_user.user_of_userid myid in
   Eliom_reference.Volatile.set me (CU_user u);
   Lwt.return ()
 
-let unset_user_server () =
+let%server unset_user_server () =
   Eliom_reference.Volatile.set me CU_notconnected
 
-let set_user_client () =
+let%server set_user_client () =
   let u = Eliom_reference.Volatile.get me in
   ignore [%client ( me := ~%u : unit)]
 
-let unset_user_client () =
+let%server unset_user_client () =
   ignore [%client ( me := CU_notconnected : unit)]
 
-let last_activity : CalendarLib.Calendar.t option Eliom_reference.eref =
+let%server last_activity : CalendarLib.Calendar.t option Eliom_reference.eref =
   Eliom_reference.eref
     ~persistent:"lastactivity"
     ~scope:Eliom_common.default_group_scope
     None
 
-let () =
+let%server () =
   Os_session.on_request (fun myid ->
     (* I initialize current user to CU_notconnected *)
     Lwt_log.ign_debug ~section "request action";

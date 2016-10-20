@@ -19,10 +19,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+(** This module implements a cache of user. *)
 [%%server.start]
 
 val cache : (Os_types.User.id, Os_types.User.t) Eliom_cscache.t
 
+(** [get_data_from_db myid_o userid] *)
 val get_data_from_db : 'a -> Os_types.User.id -> Os_types.User.t Lwt.t
 
 val get_data : Os_types.User.id -> Os_types.User.t Lwt.t
@@ -39,6 +41,7 @@ val get_data : Os_types.User.id -> Os_types.User.t Lwt.t
 
 [%%shared.start]
 
-val get_data_rpc : (Os_types.User.id, Os_types.User.t) Eliom_client.server_function
+val get_data_rpc :
+  (Os_types.User.id, Os_types.User.t) Eliom_client.server_function
 
 val get_data_from_cache : Os_types.User.id -> Os_types.User.t Lwt.t

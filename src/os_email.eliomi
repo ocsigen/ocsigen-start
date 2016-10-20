@@ -23,19 +23,22 @@
 *)
 
 (** [set_from_addr (sender_name, sender_email)] sets the email address used to
-    send mail to [sender_email] and the sender name to [sender_name] *)
+    send mail to [sender_email] and the sender name to [sender_name]. *)
 val set_from_addr : (string * string) -> unit
 
 (** [set_mailer mailer] sets the name of the external [sendmail] program on your
-    system, used by the default send function. *)
+    system, used by the default {!send} function. *)
 val set_mailer : string -> unit
 
-(** [get_mailer ()] returns the name of mailer program *)
+(** [get_mailer ()] returns the name of mailer program. *)
 val get_mailer : unit -> string
 
+(** Exception raised if the mailer is invalid. You can raise an exception of
+    this type in email sending function if you use {!set_send}.
+ *)
 exception Invalid_mailer of string
 
-(** The pattern used to check the validity of an e-mail address *)
+(** The pattern used to check the validity of an e-mail address. *)
 val email_pattern : string
 
 (** [is_valid email] returns [true] if the e-mail address [email] is valid. Else
@@ -45,7 +48,7 @@ val is_valid : string -> bool
 (** Send an e-mail to [to_addrs] from [from_addr]. You have to define the
     [subject] of your email. The body of the email is a list of strings
     and each element of the list is automatically separated by a new line.
-    A tuple used by [from_addr] and [to_addrs] is of the form (name, email).
+    Tuples used by [from_addr] and [to_addrs] is of the form [(name, email)].
     *)
 val send :
   ?from_addr:(string * string) ->
@@ -54,7 +57,9 @@ val send :
   string list ->
   unit Lwt.t
 
-(** Customize email sending function. *)
+(** Customize email sending function. See {!send} for more details about the
+    arguments.
+ *)
 val set_send :
   (from_addr:(string * string) ->
    to_addrs:((string * string) list) ->

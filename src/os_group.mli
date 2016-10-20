@@ -23,6 +23,9 @@
     Groups are used by OS for example to restrict access to pages or
     server functions. *)
 
+(** Exception raised when no there is no group corresponding to the request (for
+    example wrong ID or name).
+ *)
 exception No_such_group
 
 (* -----------------------------------------------------------------
@@ -62,8 +65,9 @@ val group_of_name : string -> Os_types.Group.t Lwt.t
 (* -----------------------------------------------------------------
 
    All the followings functions are only helpers/wrappers around db
-   functions ones. They generally use the type [t] of the module
-   and get rid of the part of picking each field of the record [t].
+   functions ones. They generally use the type {!Os_types.group} of the module
+   and get rid of the part of picking each field of the record
+   {!os_types.group}.
 
 *)
 

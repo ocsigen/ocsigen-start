@@ -19,11 +19,18 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+(** This module defines low level functions for database requests. *)
+
+(** Exception raised when no ressource corresponds to the database request. *)
 exception No_such_resource
+
+(** Exception raised when there is an attempt to remove the main email. *)
 exception Main_email_removal_attempt
+
+(** Exception raised when the account is not activated. *)
 exception Account_not_activated
 
-(** [init ~host ~port ~user ~password ~database ~unix_domain_socket_dir ()]
+(** [init ?host ?port ?user ?password ?database ?unix_domain_socket_dir ()]
     initializes the variables for the database access.
  *)
 val init :
@@ -50,7 +57,7 @@ val without_transaction :
   (PGOCaml.pa_pg_data PGOCaml.t -> 'a Lwt.t) -> 'a Lwt.t
 
 (** [pwd_crypt_ref] is a reference to [(f_crypt, f_check)] where
-    - [f_crypt pwd] is used to encrypt the password [pwd]
+    - [f_crypt pwd] is used to encrypt the password [pwd].
     - [f_check userid pwd hashed_pwd] returns [true] if the hash of [pwd] and
     the hashed password [hashed_pwd] of the user with id [userid] match. If they
     don't match, it returns [false].
@@ -58,7 +65,7 @@ val without_transaction :
 val pwd_crypt_ref :
   ((string -> string) * (Os_types.User.id -> string -> string -> bool)) ref
 
-(** This module is used for email management. *)
+(** This module is used for low-level email management with database. *)
 module Email : sig
   (** [available email] returns [true] if [email] is not already used. Else, it
       returns [false].
@@ -66,7 +73,7 @@ module Email : sig
   val available : string -> bool Lwt.t
 end
 
-(** This module is used for user management *)
+(** This module is used for low-level user management with database. *)
 module User : sig
   exception Invalid_action_link_key of Os_types.User.id
 
@@ -108,25 +115,25 @@ module User : sig
       registered. Else, it returns [false]. *)
   val is_preregistered : string -> bool Lwt.t
 
-  (** [all ~limit ()] get all email addresses with a limit of [limit] (default
+  (** [all ?limit ()] get all email addresses with a limit of [limit] (default
       is 10). *)
   val all : ?limit:int64 -> unit -> string list Lwt.t
 
-  (** [create ~password ~avatar ~firstname ~lastname email] creates a new user
+  (** [create ?password ?avatar ~firstname ~lastname email] creates a new user
       in the database and returns the userid of the new user.
       Email is mandatory to create a new user.
-      If [password] is passed as an empty string, it fails with the message «
-      empty password ». TODO: change it to an exception?
+      If [password] is passed as an empty string, it fails with the message
+      ["empty password"]. TODO: change it to an exception?
    *)
   val create :
     ?password:string ->
     ?avatar:string ->
     firstname:string -> lastname:string -> string -> Os_types.User.id Lwt.t
 
-  (** [update ~password ~avatar ~firstname ~lastname userid] updates the user
+  (** [update ?password ?avatar ~firstname ~lastname userid] updates the user
       profile with [userid].
-      If [password] is passed as an empty string, it fails with the message «
-      empty password ». TODO: change it to an exception?
+      If [password] is passed as an empty string, it fails with the message
+      ["empty password"]. TODO: change it to an exception?
    *)
   val update :
     ?password:string ->
@@ -135,8 +142,8 @@ module User : sig
 
   (** [update_password ~userid ~new_password] updates the password of the user
       with ID [userid].
-      If [password] is passed as an empty string, it fails with the message «
-      empty password ». TODO: change it to an exception?
+      If [password] is passed as an empty string, it fails with the message
+      ["empty password"]. TODO: change it to an exception?
    *)
   val update_password :
     userid:Os_types.User.id -> password:string -> unit Lwt.t
@@ -201,17 +208,18 @@ module User : sig
     email:string ->
     unit Lwt.t
 
-  (** [get_users ~pattern ()] returns all users matching the pattern [pattern]
-      as a tuple [(userid, firstname, lastname, avatar, encrypted_password)] *)
+  (** [get_users ?pattern ()] returns all users matching the pattern [pattern]
+      as a tuple [(userid, firstname, lastname, avatar, encrypted_password)]
+   *)
   val get_users :
     ?pattern:string ->
     unit ->
     (Os_types.User.id * string * string * string option * bool) list Lwt.t
 end
 
-(** This module is used to manage groups of user. *)
+(** This module is low-level and used to manage groups of user. *)
 module Groups : sig
-  (** [create ~description name] creates a new group with name [name] and with
+  (** [create ?description name] creates a new group with name [name] and with
       description [description]. *)
   val create : ?description:string -> string -> unit Lwt.t
 

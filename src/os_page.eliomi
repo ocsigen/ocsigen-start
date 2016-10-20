@@ -26,9 +26,12 @@ exception Predicate_failed of (exn option)
 (** An abstract type describing the content of a page *)
 type content
 
-(** Specifies a page with an optional title, some optional extra
-    metadata and a given body. [?html_a] allows to set attributes
-    to the html tag *)
+(** Specifies a page with an optional title (with the argument [?title]), some
+    optional extra metadata (with the argument [?head]) and a given body.
+
+    [?html_a] (resp. [?a]) allows to set attributes to the html (resp. body)
+    tag.
+ *)
 val content :
   ?html_a: Html_types.html_attrib Eliom_content.Html.attrib list ->
   ?a : Html_types.body_attrib Eliom_content.Html.attrib list ->
@@ -45,43 +48,64 @@ module type PAGE = sig
       pages.  *)
   val title : string
 
-  (** [js] corresponds to the Javascript files to include into each page.
-      Os will automatically preprend the suffix "js/" as directory.  *)
+  (** [js] corresponds to the JavaScript files to include into each page.
+      Os will automatically preprend the suffix ["js/"] as directory.  *)
   val js : string list list
 
   (** Use [local_js] instead of [js] for local scripts if you are building
       a mobile application.
-      Os will automatically preprend the suffix "js/" as directory.  *)
+      Os will automatically preprend the suffix ["js/"] as directory.  *)
   val local_js : string list list
 
   (** [css] (same as [js] but for style sheet files).
-      Os will automatically prepend the suffix "css/" as directory.  *)
+      Os will automatically prepend the suffix ["css/"] as directory.  *)
   val css : string list list
 
   (** Use [local_css] instead of [css] for local stylesheets if you are building
       a mobile application.
-      Os will automatically prepend the suffix "css/" as directory.  *)
+      Os will automatically prepend the suffix ["css/"] as directory.  *)
   val local_css : string list list
 
   (** [other_head] is a list of custom elements to add in the head section.
       It can be used to add <meta> elements, for example. *)
   val other_head : Html_types.head_content_fun Eliom_content.Html.elt list
 
-  (** Default error page. *)
+  (** [default_error_page get_param post_param exn] is the default error page.
+      [get_param] (resp. [post_param]) is the GET (resp. POST) parameters sent
+      to the error page.
+
+      [exn] is the exception which must be caught when something went wrong.
+   *)
   val default_error_page : 'a -> 'b -> exn -> content Lwt.t
 
-  (** Default error page for connected pages. *)
+  (** [default_connected_error_page userid_o get_param post_param exn] is the
+      default error page for connected pages.
+   *)
   val default_connected_error_page :
     Os_types.User.id option -> 'a -> 'b -> exn -> content Lwt.t
 
-  (** Default predicate. *)
+  (** [default_predicate get_param post_param] is the default predicate. *)
   val default_predicate : 'a -> 'b -> bool Lwt.t
 
-  (** Default predicate for connected pages. *)
-  val default_connected_predicate : Os_types.User.id option -> 'a -> 'b -> bool Lwt.t
+  (** [default_connected_predicate userid_o get_param post_param] is the default
+      predicate for connected pages.
+   *)
+  val default_connected_predicate :
+    Os_types.User.id option ->
+    'a ->
+    'b ->
+    bool Lwt.t
 
 end
 
+(** A default configuration for pages.
+    - no CSS and JS files are included.
+    - no meta data are added in head
+    - error page prints debug information about the exception.
+    - a div is returned in case of an error with class ["errormsg"] containing a
+    h2 with value ["Error"] and a paragraph if the exception is
+    {!Os_session.Not_connected}.
+ *)
 module Default_config : PAGE
 
 module Make (C : PAGE) : sig
