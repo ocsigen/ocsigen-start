@@ -116,10 +116,10 @@ end
 
 (*****************************************************************************)
 (* tables, for Macaque *)
-let os_users_userid_seq = <:sequence< bigserial "os_users_userid_seq" >>
+let os_users_userid_seq = <:sequence< bigserial "ocsigen_start.users_userid_seq" >>
 
 let os_users_table =
-  <:table< os_users (
+  <:table< ocsigen_start.users (
        userid bigint NOT NULL DEFAULT(nextval $os_users_userid_seq$),
        firstname text NOT NULL,
        lastname text NOT NULL,
@@ -129,7 +129,7 @@ let os_users_table =
           ) >>
 
 let os_emails_table =
-  <:table< os_emails (
+  <:table< ocsigen_start.emails (
        email citext NOT NULL,
        userid bigint NOT NULL,
        validated boolean NOT NULL DEFAULT(false)
@@ -139,7 +139,7 @@ let os_action_link_table :
   (< .. >,
    < creationdate : < nul : Sql.non_nullable; .. > Sql.t > Sql.writable)
     Sql.view =
-  <:table< os_activation (
+  <:table< ocsigen_start.activation (
        activationkey text NOT NULL,
        userid bigint NOT NULL,
        email citext NOT NULL,
@@ -150,23 +150,23 @@ let os_action_link_table :
        creationdate timestamptz NOT NULL DEFAULT(current_timestamp ())
            ) >>
 
-let os_groups_groupid_seq = <:sequence< bigserial "os_groups_groupid_seq" >>
+let os_groups_groupid_seq = <:sequence< bigserial "ocsigen_start.groupid_seq" >>
 
 let os_groups_table =
-  <:table< os_groups (
+  <:table< ocsigen_start.groups (
        groupid bigint NOT NULL DEFAULT(nextval $os_groups_groupid_seq$),
        name text NOT NULL,
        description text
           ) >>
 
 let os_user_groups_table =
-  <:table< os_user_groups (
+  <:table< ocsigen_start.user_groups (
        userid bigint NOT NULL,
        groupid bigint NOT NULL
           ) >>
 
 let os_preregister_table =
-  <:table< os_preregister (
+  <:table< ocsigen_start.preregister (
        email citext NOT NULL
           ) >>
 
