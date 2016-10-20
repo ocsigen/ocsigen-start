@@ -215,13 +215,14 @@ let pwd_crypt_ref = ref
 module Email = struct
 
   let available email = one run_query
-    ~success:(fun _ -> Lwt.return_false)
-    ~fail:Lwt.return_true
-    <:select< row
-     | row in $emails_table$;
-       row.email = $string:email$;
-       row.validated
-    >>
+      ~success:(fun _ -> Lwt.return_false)
+      ~fail:Lwt.return_true
+      <:select< row
+                | row in $emails_table$; row2 in $users_table$;
+                row.email = $string:email$;
+                row2.userid = row.userid;
+                is_null (row2.password) || (row.validated = $bool:false$)
+      >>
 
 end
 
