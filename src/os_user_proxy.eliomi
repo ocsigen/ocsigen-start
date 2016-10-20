@@ -19,29 +19,57 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(** This module implements a cache of user. *)
+(** This module implements a cache of user using <<a_api project="eliom" |
+    module Eliom_cscache>> which allows to keep synchronized the cache between
+    the client and the server.
+    Even if there is a cache implemented in {!Os_user} to avoid to do database
+    requests, this last one is implementing only server side. Same for
+    {!Os_request_cache} which is also only server-side.
+ *)
 [%%server.start]
 
+(** Cache keeping userid and user information as a {!Os_types.user} type. *)
 val cache : (Os_types.User.id, Os_types.User.t) Eliom_cscache.t
 
-(** [get_data_from_db myid_o userid] *)
+(** [get_data_from_db myid_o userid] returns the user which has ID [userid].
+    For the moment, [myid_o] is not used but it will be use later.
+
+    Data comes from the database, not the cache.
+ *)
 val get_data_from_db : 'a -> Os_types.User.id -> Os_types.User.t Lwt.t
 
+(** [get_data userid] returns the user which has ID [userid].
+    For the moment, [myid_o] is not used but it will be use later.
+
+    Data comes from the database, not the cache.
+ *)
 val get_data : Os_types.User.id -> Os_types.User.t Lwt.t
 
+(** [get_data_from_db_for_client myid_o userid] returns the user which has ID
+    [userid]. For the moment, [myid_o] is not used but it will be use later.
+
+    Data comes from the database, not the cache.
+ *)
 val get_data_from_db_for_client : 'a -> Os_types.User.id -> Os_types.User.t Lwt.t
 
+(** [get_data_rpc' userid] returns the user which has ID [userid].
+    Use {!Os_connected_rpc} and {!get_data_from_db_for_client}.
+ *)
 val get_data_rpc' : Os_types.User.id -> Os_types.User.t Lwt.t
 
 [%%client.start]
-
-val get_data_rpc' : unit
 
 val get_data : Os_types.User.id -> Os_types.User.t Lwt.t
 
 [%%shared.start]
 
+(** [get_data_rpc] is a RPC to <<a_api subproject="server" | module
+    Os_user_proxy.get_data_rpc'>>
+ *)
 val get_data_rpc :
   (Os_types.User.id, Os_types.User.t) Eliom_client.server_function
 
+(** [get_data_from_cache userid] returns the user with ID [userid] saved in
+    cache.
+ *)
 val get_data_from_cache : Os_types.User.id -> Os_types.User.t Lwt.t
