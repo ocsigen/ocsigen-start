@@ -503,7 +503,7 @@ module User = struct
            it requires the db to be created (which is impossible in a lib). *)
         let query = "
              SELECT userid, firstname, lastname, avatar, password
-             FROM os_users
+             FROM ocsigen_start.users
              WHERE
                firstname <> '' -- avoids email addresses
              AND CONCAT_WS(' ', firstname, lastname) ~* $1
