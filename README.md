@@ -36,12 +36,9 @@ modules from Ocsigen-start.
 Ocsigen-start has a list of dependencies. All can be installed using opam. Here the commands:
 ```
 opam pin add --no-action -y ocsigenserver https://github.com/ocsigen/ocsigenserver.git
-opam pin add --no-action -y js_of_ocaml https://github.com/ocsigen/js_of_ocaml.git
-opam pin add --no-action -y deriving https://github.com/ocsigen/deriving.git
 opam pin add --no-action -y reactiveData https://github.com/ocsigen/reactiveData.git
 opam pin add --no-action -y eliom https://github.com/ocsigen/eliom.git
 opam pin add --no-action -y ocsigen-toolkit https://github.com/ocsigen/ocsigen-toolkit.git
-opam pin add --no-action -y ojquery https://github.com/ocsigen/ojquery.git
 opam pin add --no-action -y ocsigen-start https://github.com/ocsigen/ocsigen-start.git
 opam install ocsigen-start -y
 ```
