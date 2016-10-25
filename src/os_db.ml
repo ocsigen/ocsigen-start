@@ -221,7 +221,7 @@ module Email = struct
                 | row in $os_emails_table$; row2 in $os_users_table$;
                 row.email = $string:email$;
                 row2.userid = row.userid;
-                is_null (row2.password) || (row.validated = $bool:false$)
+                is_not_null (row2.password) || row.validated
       >>
 
 end
