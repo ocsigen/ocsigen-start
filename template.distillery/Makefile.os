@@ -235,16 +235,12 @@ ${ELIOM_SERVER_DIR}/%.cmi: %.eliomi
 
 ${ELIOM_SERVER_DIR}/%_db.cmo: %_db.ml
 	${ELIOMC} -c ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
-${ELIOM_SERVER_DIR}/%_db2.cmo: %_db2.ml
-	${ELIOMC} -c ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmo: %.ml
 	${ELIOMC} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmo: %.eliom
 	${ELIOMC} -ppx -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%_db.cmx: %_db.ml
-	${ELIOMOPT} -c ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
-${ELIOM_SERVER_DIR}/%_db2.cmx: %_db2.ml
 	${ELIOMOPT} -c ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmx: %.ml
 	${ELIOMOPT} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
