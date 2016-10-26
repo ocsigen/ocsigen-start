@@ -41,8 +41,6 @@ $(CSS_DEST): $(LOCAL_CSS) | $(CSSDIR)
 # By default, it imports all CSS files from ocsigen-toolkit because the template
 # needs it.
 # See EXTERNAL_CSS_FILES definition in Makefile.options for more information.
-# The -n switch ensures that user modifications to these files are never
-# overwritten.
 # It is executed with every run of make to be sure external CSS files are
 # up-to-date and it allows to add other external CSS files between two
 # compilation processes.
@@ -51,7 +49,7 @@ $(CSS_DEST): $(LOCAL_CSS) | $(CSSDIR)
 
 import-external-css:
 ifneq "$(EXTERNAL_CSS_FILES)" ""
-	cp -n $(EXTERNAL_CSS_FILES) $(LOCAL_STATIC_CSS)
+	cp $(EXTERNAL_CSS_FILES) $(LOCAL_STATIC_CSS)
 endif
 
 clean-style:
