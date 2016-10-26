@@ -43,11 +43,13 @@ opam pin add --no-action -y ocsigen-start https://github.com/ocsigen/ocsigen-sta
 opam install ocsigen-start -y
 ```
 
-Ocsigen-toolkit depends on the [OCaml binding to ImageMagick C library](https://github.com/besport/ocaml-imagemagick) so you need to install the [C library](http://www.imagemagick.org/script/index.php).
+Ocsigen-start depends on the [OCaml binding to ImageMagick C library](https://github.com/besport/ocaml-imagemagick) so you need to install the [C library](http://www.imagemagick.org/script/index.php).
 
 On Mac OSX, you can install it with Homebrew: `brew install imagemagick`.
 
 On Debian/Ubuntu , you can install it with apt-get: `sudo apt-get install libgraphicsmagick1-dev libmagickcore-dev`
+
+`Makefile.mobile` needs `convert` which is an ImageMagick utility. If you are on Debian/Ubuntu, you can install this utility with `sudo apt-get install imagemagick`.
 
 ###<a id="create-your-project"></a>Create your project
 ```
