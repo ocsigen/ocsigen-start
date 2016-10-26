@@ -41,6 +41,8 @@ exception Custom_action_link of
               In that case, you probably want to display a sign-up form,
               and in the other case a login form. *)
 
+exception Account_already_activated_unconnected of Os_types.actionlinkkey_info
+
 [%%server.start]
 
 val action_link_handler :
