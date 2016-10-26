@@ -367,7 +367,7 @@ $(RELEASE_PLATFORMS): %-release: %
 
 EMULATE_PLATFORMS := emulate-android emulate-ios
 
-$(EMULATE_PLATFORMS): emulate-%: check-app-env assets %
+$(EMULATE_PLATFORMS): emulate-%: check-app-env icons-% assets %
 	cd $(CORDOVAPATH) ;\
 	cordova emulate --nobuild $*
 
