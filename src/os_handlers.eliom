@@ -270,13 +270,6 @@ let%client connect_handler () v = connect_handler_rpc v
 ]
 
 let action_link_handler_common akey =
-  (* <s>
-     SECURITY: we disconnect the user before doing anything.
-     If the user is already connected,
-     we're going to disconnect him even if the action_link key outdated.</s>
-     ---> Now we disconnect the user only if we reconnect them because it's
-     only annoying to disconnect people with unvalid keys.
-  *)
   let myid_o = Os_current_user.Opt.get_current_userid () in
   try%lwt
     let%lwt
