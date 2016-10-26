@@ -86,7 +86,7 @@ let%shared upload_pic_link
 
 let%shared reset_tips_service = Os_tips.reset_tips_service
 
-let%shared reset_tips_link close =
+let%shared reset_tips_link (close : (unit -> unit) Eliom_client_value.t) =
   let l = D.Raw.a [pcdata "See help again from beginning"] in
   ignore [%client (
     Lwt_js_events.(async (fun () ->
