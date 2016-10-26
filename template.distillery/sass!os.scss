@@ -248,36 +248,11 @@ form input{
     padding: 6px;
 }
 
-/* Calendar */
-.ot-c-table {
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-}
-
-/* Carousel */
-.carousel > .car2 {
-    height: auto;
-    width: auto;
-}
-.carousel > .car2 .carpage {
-    height: unset;
-}
-.bullet-nav {
-    padding-left: unset;
-}
-.bullet-nav-item.active {
-    color: #008B8B;
-}
 
 /* Smartphone */
 @media only screen and (min-device-width : 320px) and (max-device-width: 500px) {
     body {
         font-size: 8px;
-    }
-    /* Calendar */
-    .ot-c-prev-year-button, .ot-c-next-year-button, .ot-c-prev-button, .ot-c-next-button {
-        padding: 0 1rem;
     }
 
 }

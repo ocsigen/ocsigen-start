@@ -37,6 +37,7 @@
 let%shared demos = [
   (module Demo_popup : DemoPage);
   (module Demo_carousel1);
+  (module Demo_carousel3);
   (module Demo_rpc);
   (module Demo_calendar);
   (module Demo_timepicker)

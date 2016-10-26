@@ -22,7 +22,7 @@ let%shared name = "Carousel"
 
 let%shared page () =
   let make_page content =
-    div ~a:[a_class ["demo-carousel-page"]] [pcdata content]
+    div ~a:[a_class ["demo-carousel1-page"]] [pcdata content]
   in
   let carousel_pages = ["1"; "2"; "3"] in
   let ribbon_content = List.map (fun p -> [pcdata p]) carousel_pages in
@@ -33,7 +33,7 @@ let%shared page () =
   let r = Os_tools.Carousel.make
       ~update:[%client carousel_update]
       ~change:[%client carousel_change]
-      ~carousel:([a_class ["demo-carousel"]], carousel_content)
+      ~carousel:([a_class ["demo-carousel1"]], carousel_content)
       ~ribbon:([], ribbon_content)
       ~previous:([a_class ["button"]], [pcdata "←"])
       ~next:([a_class ["button"]], [pcdata "→"])
@@ -52,5 +52,5 @@ let%shared page () =
                  above or below the carousel."];
       p [pcdata "In the mobile app you can also swipe the screen."];
       ribbon; carousel; p [prev; next];
-      div ~a:[a_class ["demo-bullets"]] [bullets]
+      div ~a:[a_class ["demo-carousel1-bullets"]] [ bullets ]
     ]
