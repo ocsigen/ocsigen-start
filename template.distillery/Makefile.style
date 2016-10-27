@@ -1,5 +1,26 @@
 css: import-external-css $(CSS_DEST)
 
+define ERROR_SASS
+
+Error: SASS not found.
+
+Ocsigen-start gives the choice to use SASS (a CSS preprocessor) to write
+stylesheets. We encourage you to use SASS and the template needs it by default.
+See https://sass-lang.com for more information.
+If you don't really want to use it, you can change the value of the variable
+USE_SASS to "no" in Makefile.options to use CSS.
+
+endef
+
+.PHONY: check_sass clean-style import-external-css
+
+check_sass:
+ifeq ($(strip $(USE_SASS)),yes)
+ifneq ($(shell sh -c "which sass" | echo $?),'0')
+	$(error $(ERROR_SASS))
+endif
+endif
+
 ##----------------------------------------------------------------------
 ## SASS rules
 
@@ -8,7 +29,7 @@ css: import-external-css $(CSS_DEST)
 # If SASS is not activated, it will concatenate all CSS files (listed in
 # $(CSS_FILES)) in $(LOCAL_CSS).
 # In both cases, external CSS files ($(EXTERNAL_CSS_FILES)) are copied.
-$(LOCAL_CSS): import-external-css
+$(LOCAL_CSS): check_sass import-external-css
 ifeq "$(USE_SASS)" "yes"
 	[ -d $(SASSDIR) ] && \
 	SASS_PATH=$(SASS_PATH) sass --style compressed $(SASS_SRC) $(SASS_FILES) $@
@@ -44,8 +65,6 @@ $(CSS_DEST): $(LOCAL_CSS) | $(CSSDIR)
 # It is executed with every run of make to be sure external CSS files are
 # up-to-date and it allows to add other external CSS files between two
 # compilation processes.
-
-.PHONY: import-external-css
 
 import-external-css:
 ifneq "$(EXTERNAL_CSS_FILES)" ""
