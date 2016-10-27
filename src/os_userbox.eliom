@@ -27,24 +27,6 @@
   type uploader = (unit,unit) Ot_picture_uploader.service
 ]
 
-let wrong_password =
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
-
-let account_not_activated =
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
-
-let user_already_exists =
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
-
-let user_does_not_exist =
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
-
-let user_already_preregistered =
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
-
-let action_link_key_outdated =
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
-
 let%shared upload_pic_link
     ?(a = [])
     ?(content=[pcdata "Change profile picture"])

@@ -62,9 +62,11 @@ let%shared os_footer () = Eliom_content.Html.F.(
   ]
 )
 
-(** RPC for get_wrong_pdata. See {!Os_msg.wrong_pdata} for more information *)
+(** RPC for get_wrong_pdata. See {!Os_references.wrong_pdata} for more
+    information.
+ *)
 let%server get_wrong_pdata () =
-  Lwt.return @@ Eliom_reference.Volatile.get Os_msg.wrong_pdata
+  Lwt.return @@ Eliom_reference.Volatile.get Os_references.wrong_pdata
 
 let%client get_wrong_pdata =
   ~%(Eliom_client.server_function [%derive.json : unit] get_wrong_pdata)

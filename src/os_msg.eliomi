@@ -37,19 +37,3 @@
 *)
 val msg :
   ?level:[`Err | `Msg] -> ?duration:float -> ?onload:bool -> string -> unit
-
-[%%server.start]
-
-(** Set to [true] if an action link key has been already created and sent to the
-    user email, else [false]. Default is [false]. *)
-val action_link_key_created : bool Eliom_reference.Volatile.eref
-
-(** [((firstname, lastname), (password, password_confirmation)) option]
-    This reference is used to remember information about the user during a
-    request when something went wrong (for example in a form when the password
-    and password confirmation are not the same).
-    If the value is [None], no user data has been set.
-    Default is [None].
- *)
-val wrong_pdata
-  : ((string * string) * (string * string)) option Eliom_reference.Volatile.eref
