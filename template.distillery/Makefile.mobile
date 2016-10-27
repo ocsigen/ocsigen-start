@@ -325,7 +325,16 @@ $(RUN_PLATFORMS): run-%: check-app-env icons-% assets %
 ##----------------------------------------------------------------------
 ## Rules for the icons and splashes generation.
 
-ANDROID_ICON_NAMES = ldpi mdpi hdpi xhdpi xxhdpi xxxhdpi
+## Android icons names. It corresponds to ldpi, mdpi, hdpi, xhdpi, xxhdpi and
+## xxxhdpi.
+ANDROID_ICON_NAMES = \
+	icon-36 \
+	icon-48 \
+	icon-72 \
+	icon-96 \
+	icon-144 \
+	icon-192
+
 ANDROID_ICONS_PATH = $(MOBILESTATICPATH)/res/android
 ANDROID_ICONS      = $(foreach name,$(ANDROID_ICON_NAMES),$(ANDROID_ICONS_PATH)/$(name).png)
 
@@ -378,14 +387,6 @@ $(IOS_ICONS_PATH)/icon-small@3x.png: $(IOS_ICONS_PATH)/icon-29@3x.png; cp $< $@
 $(IOS_ICONS_PATH)/icon.png: $(IOS_ICONS_PATH)/icon-57.png; cp $< $@
 $(IOS_ICONS_PATH)/icon@2x.png: $(IOS_ICONS_PATH)/icon-57@2x.png; cp $< $@
 $(IOS_ICONS_PATH)/icon-83.5@2x.png: $(IOS_ICONS_PATH)/icon-167.png; cp $< $@
-
-# Android icons
-$(ANDROID_ICONS_PATH)/ldpi.png: $(ANDROID_ICONS_PATH)/icon-36.png; cp $< $@
-$(ANDROID_ICONS_PATH)/mdpi.png: $(ANDROID_ICONS_PATH)/icon-48.png; cp $< $@
-$(ANDROID_ICONS_PATH)/hdpi.png: $(ANDROID_ICONS_PATH)/icon-72.png; cp $< $@
-$(ANDROID_ICONS_PATH)/xhdpi.png: $(ANDROID_ICONS_PATH)/icon-96.png; cp $< $@
-$(ANDROID_ICONS_PATH)/xxhdpi.png: $(ANDROID_ICONS_PATH)/icon-144.png; cp $< $@
-$(ANDROID_ICONS_PATH)/xxxhdpi.png: $(ANDROID_ICONS_PATH)/icon-192.png; cp $< $@
 
 # Launch images (iOS)
 # Format: SIZE.NAME
