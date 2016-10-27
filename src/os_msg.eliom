@@ -52,10 +52,3 @@ let%shared msg
       Dom.removeChild msgbox message_dom;
       Lwt.return ())
     : unit)]
-
-let action_link_key_created =
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
-
-let wrong_pdata =
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope
-    (None : ((string * string) * (string * string)) option)
