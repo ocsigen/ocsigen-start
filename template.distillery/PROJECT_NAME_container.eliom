@@ -111,10 +111,9 @@ let%shared page myid_o content = Eliom_content.Html.F.(
     | _ ->
       Lwt.return @@ content
   in
-  let l = [
-    div ~a:[a_class ["os-body"]] content;
-    os_footer ();
-  ] in
+  let l = [ div ~a:[a_class ["os-body"]] content
+          ; os_footer () ]
+  in
   let%lwt h = os_header ?user () in
   Lwt.return @@ h :: l
 )

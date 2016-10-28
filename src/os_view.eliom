@@ -92,7 +92,7 @@ let%shared disconnect_button ?a () =
          Form.button_no_value
            ~a:[ a_class ["button"] ]
            ~button_type:`Submit
-           [Ot_icons.F.signout (); pcdata "Logout"]
+           [Os_icons.F.signout (); pcdata "Logout"]
        ]) ()
 
 let%shared sign_up_form ?a ?email () =
@@ -167,7 +167,7 @@ let%shared avatar user =
   match Os_user.avatar_uri_of_user user with
   | Some src ->
     img ~alt:"picture" ~a:[a_class ["os_avatar"]] ~src ()
-  | None -> Ot_icons.F.user ()
+  | None -> Os_icons.F.user ()
 
 let%shared username user =
   let n = match Os_user.firstname_of_user user with
