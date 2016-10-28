@@ -24,6 +24,10 @@ button, input {
     border: none;
 }
 
+button, input[type="submit"], input[type="button"] {
+    cursor: pointer;
+}
+
 .button {
     border-radius: 2px;
     box-shadow: 0 2px 2px rgba(0,0,0,.28);
@@ -118,18 +122,31 @@ a.os-page-header-app-name {
     text-align: center;
 }
 
-.os-welcome-box {
+.os-welcome-box, .os-sign-in, .os-sign-up, .os-forgot-pwd {
+    h2 {
+        font-size: 14px;
+        margin: 16px 0 4px 0;
+    }
     form {
         display: flex;
         margin: 0 auto;
         flex-direction: column;
-        background-color: #ddd;
+        background-color: #eee;
         padding: 16px;
-        max-width: 250px;
+        min-width: 250px;
     }
-    input {
+    input[type="checkbox"] {
+        vertical-align: middle;
+    }
+    input[type="text"], input[type="password"], input[type="email"] {
         width: 150px;
         display: block;
         margin: 5px auto;
     }
+    label {
+        font-size: 12px;
+    }
+}
+.os-forgot-pwd-link {
+    font-size: 12px;
 }
