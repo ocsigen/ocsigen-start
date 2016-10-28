@@ -71,7 +71,7 @@ let%shared upload_pic_link
         ?progress ?cropping ~service:~%service ~arg:() file in
     try%lwt ignore @@
       Ot_popup.popup
-        ~close_button:[ Ot_icons.F.close () ]
+        ~close_button:[ Os_icons.F.close () ]
         ~onclose:(fun () ->
           Eliom_client.change_page
             ~service:Eliom_service.reload_action () ())

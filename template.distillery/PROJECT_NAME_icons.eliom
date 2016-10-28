@@ -22,16 +22,22 @@ module Make(A : module type of Eliom_content.Html.F) = struct
       ?(a = ([] : Html_types.i_attrib Eliom_content.Html.attrib list)) () =
     A.i ~a:(A.a_class ("fa" :: classes) :: a) []
 
+  (* Icons used by Ocsigen Start's library: *)
+
+  let user = icon ["fa-user"; "fa-fw"]
+  let signout = icon ["fa-sign-out"; "fa-fw"]
+  let close = icon ["fa-close"; "fa-fw"]
+
   (* Add your own icons here. See http://fontawesome.io/icons/ for the complete
    * list of CSS classes available by default.
    *)
 
-  (* Example for the user icon:
-   *  let user = icon ["fa-user"; "fa-fw"]
-   *)
 
 end
 
 module F = Make(Eliom_content.Html.F)
 
 module D = Make(Eliom_content.Html.D)
+
+(* I want Os_icon to use this module: *)
+module Empty = Os_icons.Register(F)(D)

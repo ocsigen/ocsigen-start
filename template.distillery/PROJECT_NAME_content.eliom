@@ -118,7 +118,7 @@ module Connection = struct
         Form.button_no_value
           ~a:[ a_class ["button"] ]
           ~button_type:`Submit
-          [Ot_icons.F.signout (); pcdata "Logout"]
+          [%%%MODULE_NAME%%%_icons.F.signout (); pcdata "Logout"]
       ]) ()
   )
 
