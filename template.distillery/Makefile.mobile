@@ -150,7 +150,6 @@ endif
 # directory.
 CORDOVA_STATIC_FILES := \
     $(CORDOVAPATH)/.chcpignore \
-    $(CORDOVAPATH)/res \
     $(patsubst $(MOBILESTATICPATH)/www/%, \
                $(CORDOVAPATH)/www/%, \
                $(shell find $(MOBILESTATICPATH)/www -type f) \
@@ -277,7 +276,7 @@ assets: $(CORDOVAPATH) chcp
 # FIXME/IMPROVEME: true is used to avoid to stop building
 # the application if the platform is already added. The disadvantage of
 # this method is any error will be ignored.
-$(CORDOVAPATH)/platforms/%: check-app-env assets $(CORDOVAPATH)
+$(CORDOVAPATH)/platforms/%: check-app-env assets icons-cp-% $(CORDOVAPATH)
 	cd $(CORDOVAPATH) ;\
 	cordova platform add $* ; true
 
@@ -292,7 +291,7 @@ $(ADD_PLATFORMS): add-%: $(CORDOVAPATH)/platforms/%
 PLATFORMS := android ios browser
 
 # before building, environment variables are checked and assets are copied.
-$(PLATFORMS): %: check-app-env icons-% assets add-%
+$(PLATFORMS): %: check-app-env icons-% assets icons-cp-% add-%
 	cd $(CORDOVAPATH) ;\
 	cordova build $(CORDOVA_FLAGS) $*
 
@@ -307,7 +306,7 @@ $(RELEASE_PLATFORMS): %-release: %
 
 EMULATE_PLATFORMS := emulate-android emulate-ios
 
-$(EMULATE_PLATFORMS): emulate-%: check-app-env icons-% assets %
+$(EMULATE_PLATFORMS): emulate-%: check-app-env icons-% assets icons-cp-% %
 	cd $(CORDOVAPATH) ;\
 	cordova emulate --nobuild $*
 
@@ -418,6 +417,12 @@ icons: $(ANDROID_ICONS) $(IOS_ICONS)
 icons-android: $(ANDROID_ICONS)
 
 icons-ios: $(IOS_ICONS)
+
+$(CORDOVA_RES_PATH): $(CORDOVAPATH)
+	mkdir $(CORDOVA_RES_PATH)
+
+icons-cp-%: $(MOBILESTATICPATH)/res/% $(CORDOVA_RES_PATH)
+	cp -r $< $(CORDOVA_RES_PATH)
 
 icons-clean:
 	rm -rf $(IOS_ICONS_PATH) $(ANDROID_ICONS_PATH)
