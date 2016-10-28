@@ -43,6 +43,10 @@ exception Custom_action_link of
 
 exception Account_already_activated_unconnected of Os_types.actionlinkkey_info
 
+exception Invalid_action_key of Os_types.actionlinkkey_info
+
+exception No_such_resource
+
 [%%server.start]
 
 val action_link_handler :

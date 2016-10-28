@@ -52,6 +52,11 @@ let%client forgot_password_handler =
 let%shared action_link_handler myid_o akey () =
   (* We try first the default actions (activation link, reset password) *)
   try%lwt Os_handlers.action_link_handler myid_o akey () with
+  | Os_handlers.No_such_resource
+  | Os_handlers.Invalid_action_key _ ->
+    Os_msg.msg ~level:`Err ~onload:true
+      "Invalid action key, please ask for a new one.";
+    Eliom_registration.(appl_self_redirect Action.send) ()
   | e ->
     let%lwt (email, phantom_user) =
       match e with

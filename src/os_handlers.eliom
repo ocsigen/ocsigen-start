@@ -271,6 +271,8 @@ let%client connect_handler () v = connect_handler_rpc v
   exception Account_already_activated_unconnected of Os_types.actionlinkkey_info
   exception Account_already_activated_connected of
       Os_types.actionlinkkey_info * Os_types.userid
+  exception Invalid_action_key of Os_types.actionlinkkey_info
+  exception No_such_resource
 ]
 
 let action_link_handler_common akey =
@@ -293,7 +295,7 @@ let action_link_handler_common akey =
     in
     let%lwt () =
       if validity <= 0L
-      then Lwt.fail Os_db.No_such_resource
+      then Lwt.fail (Invalid_action_key action_link)
       else Lwt.return_unit
     in
     let%lwt () =
@@ -315,10 +317,10 @@ let action_link_handler_common akey =
 
   with
   | Os_db.No_such_resource ->
+    Lwt.return `No_such_resource
+  | Invalid_action_key action_link ->
     Eliom_reference.Volatile.set Os_userbox.action_link_key_outdated true;
-    Os_msg.msg ~level:`Err ~onload:true
-      "Invalid action key, please ask for a new one.";
-    Lwt.return `NoReload
+    Lwt.return (`Invalid_action_key action_link)
   | Account_already_activated_unconnected action_link ->
     Eliom_reference.Volatile.set Os_userbox.action_link_key_outdated true;
     Lwt.return (`Account_already_activated_unconnected action_link)
@@ -348,8 +350,10 @@ let%shared action_link_handler _myid_o akey () =
       (appl_self_redirect
          Redirection.send
          (Redirection Eliom_service.reload_action))
-  | `NoReload ->
-    Eliom_registration.(appl_self_redirect Action.send) ()
+  | `No_such_resource ->
+    Lwt.fail No_such_resource
+  | `Invalid_action_key action_link ->
+    Lwt.fail (Invalid_action_key action_link)
   | `Restart_if_app ->
     restart_if_client_side ();
     Eliom_registration.(appl_self_redirect Action.send) ()
