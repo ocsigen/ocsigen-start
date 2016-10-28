@@ -1,3 +1,17 @@
+# The following condition is used to determinate if the sed version is BSD or
+# GNU. It is useful because `sed -i` has a different implementation (and this
+# command is needed by $(CSS_DEST). It uses the fact that `sed --version`
+# doesn't exist for the BSD version.
+
+check_sed:
+ifneq ($(shell sed --version 2> /dev/null),)
+SED = sed -i
+else
+SED = sed -i .css
+endif
+
+.PHONY: check_sed
+
 css: import-external-css $(CSS_DEST)
 
 ##----------------------------------------------------------------------
@@ -26,10 +40,10 @@ $(CSSDIR):
 # and make a symlink for $(PROJECT_NAME).css which is used in index.html.
 # FIXME: md5sum is not by default on Mac OSX: it must be installed with brew.
 # Instead of md5sum, md5 is present but the output is different.
-$(CSS_DEST): $(LOCAL_CSS) | $(CSSDIR)
+$(CSS_DEST): $(LOCAL_CSS) | $(CSSDIR) check_sed
 	HASH=`cat $< | md5sum | cut -d ' ' -f 1` && \
 	cp $< $(CSS_PREFIX)_$$HASH.css && \
-	sed -i '1s/^/@charset "UTF-8";/' $(CSS_PREFIX)_$$HASH.css && \
+	$(SED) '1s/^/@charset "UTF-8";/' $(CSS_PREFIX)_$$HASH.css && \
 	ln -sf $(PROJECT_NAME)_$$HASH.css $@
 # Charset is necessary for iOS.
 # Including it in scss does not work because sass removes it.
