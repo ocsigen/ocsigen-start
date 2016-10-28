@@ -8,27 +8,27 @@
 
 let%shared connect_form () =
   D.Form.post_form ~service:Os_services.connect_service
-    (fun ((login, password), keepmeloggedin) -> [
-         Form.input
+    (fun ((login, password), keepmeloggedin) ->
+       [ Form.input
            ~a:[a_placeholder "Your email"]
            ~name:login
            ~input_type:`Email
-           Form.string;
-         Form.input
+           Form.string
+       ; Form.input
            ~a:[a_placeholder "Your password"]
            ~name:password
            ~input_type:`Password
-           Form.string;
-         Form.bool_checkbox_one
-           ~a:[a_checked ()]
-           ~name:keepmeloggedin
-           ();
-         span [pcdata "keep me logged in"];
-         Form.input
+           Form.string
+       ; label [ Form.bool_checkbox_one
+                   ~a:[a_checked ()]
+                   ~name:keepmeloggedin
+                   ()
+               ; pcdata "keep me logged in"]
+       ; Form.input
            ~a:[a_class ["button"]]
            ~input_type:`Submit
            ~value:"Sign in"
-           Form.string;
+           Form.string
        ]) ()
 
 let%shared sign_up_form () =
@@ -37,37 +37,55 @@ let%shared sign_up_form () =
 let%shared forgot_password_form () =
   Os_view.generic_email_form ~service:Os_services.forgot_password_service ()
 
-let%shared forgotpwd_button () = Eliom_content.Html.D.(
-  let popup_content = fun () -> Lwt.return @@
-    div ~a:[a_class ["os-forgot-pwd"]] [forgot_password_form ()]
+let%shared forgotpwd_button ?(close = [%client (fun () -> () : unit -> unit)])
+    () =
+  let popup_content = [%client fun _ -> Lwt.return @@
+    div [ h2 [ pcdata "Recover password" ]
+        ; forgot_password_form ()] ]
   in
-  let button_name = "forgot your password?" in
-  Os_tools.popup_button
-    ~button_name
-    ~button_class:["button"]
+  let button_name = "Forgot your password?" in
+  let button = D.Raw.a ~a:[ a_class ["os-forgot-pwd-link"]
+                          ; a_onclick [%client fun _ -> ~%close () ] ]
+      [pcdata button_name]
+  in
+  Os_tools.bind_popup_button
+    ~a:[a_class ["os-forgot-pwd"]]
+    ~button
     ~popup_content
-)
+    ();
+  button
+
 
 let%shared sign_in_button () =
-  let popup_content = fun () -> Lwt.return @@
-    div ~a:[a_class ["os-sign-in"]]
-      [connect_form ()] in
+  let popup_content = [%client fun close -> Lwt.return @@
+    div [ h2 [ pcdata "Sign in" ]
+        ; connect_form ()
+        ; forgotpwd_button ~close:(fun () -> Lwt.async close) ()
+        ] ]
+  in
   let button_name = "Sign In" in
-  Os_tools.popup_button
-    ~button_name
-    ~button_class:["button"]
+  let button = D.button ~a:[a_class ["button"]] [pcdata button_name] in
+  Os_tools.bind_popup_button
+    ~a:[a_class ["os-sign-in"]]
+    ~button
     ~popup_content
+    ();
+  button
 
 
 let%shared sign_up_button () =
-  let popup_content = fun () -> Lwt.return @@
-    div ~a:[a_class ["sign-up"]]
-      [sign_up_form ()] in
+  let popup_content = [%client fun _ -> Lwt.return @@
+    div [ h2 [ pcdata "Sign up" ]
+        ; sign_up_form ()] ]
+  in
   let button_name = "Sign Up" in
-  Os_tools.popup_button
-    ~button_name
-    ~button_class:["button"]
+  let button = D.button ~a:[a_class ["button"]] [pcdata button_name] in
+  Os_tools.bind_popup_button
+    ~a:[a_class ["os-sign-up"]]
+    ~button
     ~popup_content
+    ();
+  button
 
 
 let%shared disconnect_button () =
@@ -99,13 +117,11 @@ let%shared connected_user_box ~user =
 
 
 let%shared connection_box () =
-  let%lwt sign_in    = sign_in_button () in
-  let%lwt sign_up    = sign_up_button () in
-  let%lwt forgot_pwd = forgotpwd_button () in
+  let sign_in    = sign_in_button () in
+  let sign_up    = sign_up_button () in
   Lwt.return @@ div ~a:[a_class ["os-connection-box"]]
     [ sign_in
     ; sign_up
-    ; forgot_pwd
     ]
 
 
