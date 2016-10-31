@@ -155,7 +155,7 @@ val home_button :
 
     @param user the user. *)
 val avatar :
-  Os_types.user ->
+  Os_types.User.t ->
   [> `I | `Img ] Eliom_content.Html.F.elt
 
 (** [username user] creates a div with class "os_username" containing:
@@ -167,7 +167,7 @@ val avatar :
 
     @param user the user. *)
 val username :
-  Os_types.user ->
+  Os_types.User.t ->
   [> Html_types.div ] Eliom_content.Html.F.elt
 
 (** [password_form ~a ~service ()] defines a POST form with two inputs for a

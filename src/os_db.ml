@@ -228,7 +228,7 @@ end
 
 module User = struct
 
-  exception Invalid_action_link_key of Os_types.userid
+  exception Invalid_action_link_key of Os_types.User.id
 
   let userid_of_email email = one run_view
     ~success:(fun u -> Lwt.return u#!userid)
@@ -439,7 +439,14 @@ module User = struct
                         r.activationkey = $string:act_key$ >>
           in
           Lwt.return
-            {Os_types.userid; email; validity; action; data; autoconnect}
+            Os_types.Action_link_key.{
+              userid;
+              email;
+              validity;
+              action;
+              data;
+              autoconnect
+            }
         )
     )
 

@@ -21,24 +21,24 @@
 
 [%%server.start]
 
-val cache : (Os_types.userid, Os_types.user) Eliom_cscache.t
+val cache : (Os_types.User.id, Os_types.User.t) Eliom_cscache.t
 
-val get_data_from_db : 'a -> Os_types.userid -> Os_types.user Lwt.t
+val get_data_from_db : 'a -> Os_types.User.id -> Os_types.User.t Lwt.t
 
-val get_data : Os_types.userid -> Os_types.user Lwt.t
+val get_data : Os_types.User.id -> Os_types.User.t Lwt.t
 
-val get_data_from_db_for_client : 'a -> Os_types.userid -> Os_types.user Lwt.t
+val get_data_from_db_for_client : 'a -> Os_types.User.id -> Os_types.User.t Lwt.t
 
-val get_data_rpc' : Os_types.userid -> Os_types.user Lwt.t
+val get_data_rpc' : Os_types.User.id -> Os_types.User.t Lwt.t
 
 [%%client.start]
 
 val get_data_rpc' : unit
 
-val get_data : Os_types.userid -> Os_types.user Lwt.t
+val get_data : Os_types.User.id -> Os_types.User.t Lwt.t
 
 [%%shared.start]
 
-val get_data_rpc : (Os_types.userid, Os_types.user) Eliom_client.server_function
+val get_data_rpc : (Os_types.User.id, Os_types.User.t) Eliom_client.server_function
 
-val get_data_from_cache : Os_types.userid -> Os_types.user Lwt.t
+val get_data_from_cache : Os_types.User.id -> Os_types.User.t Lwt.t

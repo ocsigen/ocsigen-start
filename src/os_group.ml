@@ -20,32 +20,32 @@
 
 exception No_such_group
 
-type id = Os_types.groupid [@@deriving json]
+type id = Os_types.Group.id [@@deriving json]
 
-type t = Os_types.group = {
+type t = Os_types.Group.t = {
   id    : id;
   name  : string;
   desc  : string option;
 } [@@deriving json]
 
-(** Create a group of type [Os_types.group] using db informations. *)
-let create_group_from_db (groupid, name, description) : Os_types.group =
+(** Create a group of type [Os_types.Group.t] using db informations. *)
+let create_group_from_db (groupid, name, description) : Os_types.Group.t =
   let open Os_types in {
   id = groupid;
   name = name;
   desc = description;
 }
 
-let id_of_group (g : Os_types.group)    = Os_types.(g.id)
-let name_of_group (g : Os_types.group)  = Os_types.(g.name)
-let desc_of_group (g : Os_types.group)  = Os_types.(g.desc)
+let id_of_group (g : Os_types.Group.t)    = Os_types.(g.id)
+let name_of_group (g : Os_types.Group.t)  = Os_types.(g.name)
+let desc_of_group (g : Os_types.Group.t)  = Os_types.(g.desc)
 
 (* Using cache tools to prevent multiple same database queries
    during the request. *)
 module MCache = Os_request_cache.Make(
 struct
   type key = string
-  type value = Os_types.group
+  type value = Os_types.Group.t
 
   let compare = compare
   let get key =
@@ -56,7 +56,7 @@ struct
 end)
 
 (** Helper function which creates a new group and return it as
-  * a record of type [Os_types.group]. *)
+  * a record of type [Os_types.Group.t]. *)
 let create ?description name =
   let group_of_name name =
     let%lwt g = Os_db.Groups.group_of_name name in
@@ -78,18 +78,18 @@ let group_of_name = MCache.get
 (* -----------------------------------------------------------------
  *
  * All the followings functions are only helpers/wrappers around db
- * functions ones. They generally use the type [Os_types.group] of the module
- * and get rid of the part of picking each field of the record [Os_types.group].
+ * functions ones. They generally use the type [Os_types.Group.t] of the module
+ * and get rid of the part of picking each field of the record [Os_types.Group.t].
  *
  * *)
 
-let add_user_in_group ~(group : Os_types.group) =
+let add_user_in_group ~(group : Os_types.Group.t) =
   Os_db.Groups.add_user_in_group ~groupid:(Os_types.(group.id))
 
-let remove_user_in_group ~(group : Os_types.group) =
+let remove_user_in_group ~(group : Os_types.Group.t) =
   Os_db.Groups.remove_user_in_group ~groupid:(Os_types.(group.id))
 
-let in_group ~(group : Os_types.group) =
+let in_group ~(group : Os_types.Group.t) =
   Os_db.Groups.in_group ~groupid:(Os_types.(group.id))
 
 (** Returns all the groups of the database. *)

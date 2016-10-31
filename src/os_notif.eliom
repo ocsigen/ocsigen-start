@@ -36,9 +36,9 @@ module type S = sig
   val listen : key -> unit
   val unlisten : key -> unit
   val unlisten_user :
-    ?sitedata:Eliom_common.sitedata -> userid:Os_types.userid -> key -> unit
+    ?sitedata:Eliom_common.sitedata -> userid:Os_types.User.id -> key -> unit
   val notify :
-    ?notfor:[`Me | `User of Os_types.userid] ->
+    ?notfor:[`Me | `User of Os_types.User.id] ->
     key ->
     server_notif ->
     unit
@@ -65,7 +65,7 @@ module Make(A : sig
   module Weak_tbl =
     Weak.Make(struct
       type t =
-        (Os_types.userid option *
+        (Os_types.User.id option *
          ((A.key * A.client_notif) Eliom_react.Down.t *
           (A.key * A.client_notif) React.event *
           (?step:React.step -> (A.key * A.client_notif) -> unit))) option

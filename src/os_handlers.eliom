@@ -39,7 +39,7 @@ let%server set_personal_data_handler myid ()
      Lwt.return ())
   else (
     let%lwt user = Os_user.user_of_userid myid in
-    let open Os_types in
+    let open Os_types.User in
     let record = {
       user with
       fn = firstname;
@@ -262,7 +262,7 @@ let%client connect_handler () v = connect_handler_rpc v
 
 [%%shared
   exception Custom_action_link of
-      Os_types.actionlinkkey_info
+      Os_types.Action_link_key.info
       * bool (* If true, the link corresponds to a phantom user
                 (user who never created its account).
                 In that case, you probably want to display a sign-up form,
@@ -272,8 +272,9 @@ let%client connect_handler () v = connect_handler_rpc v
 let action_link_handler_common akey =
   let myid_o = Os_current_user.Opt.get_current_userid () in
   try%lwt
+    let open Os_types.Action_link_key in
     let%lwt
-      {Os_types.userid; email; validity; action; data = _; autoconnect}
+      {userid; email; validity; action; data = _; autoconnect}
       as action_link =
       Os_user.get_actionlinkkey_info akey
     in

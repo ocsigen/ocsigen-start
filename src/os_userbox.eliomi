@@ -39,7 +39,7 @@ val upload_pic_link :
      * Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list
   -> (unit -> unit) Eliom_client_value.t
   -> uploader
-  -> Os_types.userid
+  -> Os_types.User.id
   -> [> `A of Html_types.a_content ] Eliom_content.Html.D.Raw.elt
 
 (** Link to start to see the help from the begining.
