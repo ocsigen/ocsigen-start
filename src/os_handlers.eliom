@@ -268,10 +268,10 @@ let%client connect_handler () v = connect_handler_rpc v
                 In that case, you probably want to display a sign-up form,
                 and in the other case a login form. *)
 
-  exception Account_already_activated_unconnected of Os_types.actionlinkkey_info
+  exception Account_already_activated_unconnected of Os_types.Action_link_key.info
   exception Account_already_activated_connected of
-      Os_types.actionlinkkey_info * Os_types.userid
-  exception Invalid_action_key of Os_types.actionlinkkey_info
+      Os_types.Action_link_key.info * Os_types.User.id
+  exception Invalid_action_key of Os_types.Action_link_key.info
   exception No_such_resource
 ]
 

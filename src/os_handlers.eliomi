@@ -41,9 +41,9 @@ exception Custom_action_link of
               In that case, you probably want to display a sign-up form,
               and in the other case a login form. *)
 
-exception Account_already_activated_unconnected of Os_types.actionlinkkey_info
+exception Account_already_activated_unconnected of Os_types.Action_link_key.info
 
-exception Invalid_action_key of Os_types.actionlinkkey_info
+exception Invalid_action_key of Os_types.Action_link_key.info
 
 exception No_such_resource
 
