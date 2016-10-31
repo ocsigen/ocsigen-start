@@ -65,3 +65,19 @@ module Group = struct
     desc  : string option;
   }
 end
+
+[%%server.start]
+
+module OAuth2 = struct
+  type client_id      = string
+  type client_secret  = string
+
+  module Client = struct
+    type id           = int64
+    type server_id    = string
+  end
+
+  module Server = struct
+    type id           = int64
+  end
+end

@@ -69,3 +69,19 @@ module Group : sig
     desc  : string option;
   }
 end
+
+[%%server.start]
+
+module OAuth2 : sig
+  type client_id      = string
+  type client_secret  = string
+
+  module Client : sig
+    type id           = int64
+    type server_id    = string
+  end
+
+  module Server : sig
+    type id           = int64
+  end
+end

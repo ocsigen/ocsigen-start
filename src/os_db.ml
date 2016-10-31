@@ -169,7 +169,63 @@ let os_preregister_table =
        email citext NOT NULL
           ) >>
 
+(** ------------------------ *)
+(** Tables for OAuth2 server *)
+(** An Eliom application can be a OAuth2.0 server.
+ * Its client can be OAuth2.0 client which can be an Eliom application, but not
+ * always.
+ *)
 
+(** Table to represent and register client *)
+let oauth2_server_client_id_seq =
+  <:sequence< bigserial "oauth2_server_client_id_seq" >>
+
+let oauth2_server_client_table =
+  <:table< oauth2_server_client (
+       id bigint NOT NULL DEFAULT(nextval $oauth2_server_client_id_seq$),
+       application_name text NOT NULL,
+       description text NOT NULL,
+       redirect_uri text NOT NULL,
+       client_id text NOT NULL,
+       client_secret text NOT NULL
+          ) >>
+
+(** ------------------------ *)
+
+(** ------------------------ *)
+(** Tables for OAuth2 client *)
+
+(** An Eliom application can be a OAuth2.0 client of a OAuth2.0 server which can
+ * be also an Eliom application, but not always.
+ *)
+
+let oauth2_client_credentials_id_seq =
+  <:sequence< bigserial "oauth2_client_credentials_id_seq" >>
+
+(** Table to represent the client credentials of the current OAuth2.0 client *)
+(** The server id. A OAuth2 client registers all OAuth2 server he has
+ * client credentials and he chooses an ID for each of them. Checks are
+ * done if the server_id exists. All url's must begin with https (or http if
+ * not, even if https is recommended) due to eliom external services.
+ *)
+let oauth2_client_credentials_table =
+  <:table< oauth2_client_credentials (
+       id bigint NOT NULL DEFAULT(nextval $oauth2_client_credentials_id_seq$),
+       server_id text NOT NULL,
+       (* server_authorization_url. The URI used to get an authorization code *)
+       server_authorization_url text NOT NULL,
+       (* server_token_url. The URI used to get an access token *)
+       server_token_url text NOT NULL,
+       (* server_data_url. The URI used to get data *)
+       server_data_url text NOT NULL,
+       (* The client id for this server id *)
+       client_id text NOT NULL,
+       (* The client secret for this server id *)
+       client_secret text NOT NULL
+          ) >>
+
+(** Tables for OAuth2 client *)
+(** ------------------------ *)
 
 (*****************************************************************************)
 
@@ -568,3 +624,462 @@ module Groups = struct
     Lwt.return @@ List.map (fun a -> (a#!groupid, a#!name, a#?description)) l
 
 end
+
+(* -------------------------------------------------------------------------- *)
+(** Database management for OAuth2 server and client *)
+module OAuth2_server =
+  struct
+    (* ---------------------------------------- *)
+    (* --------- Client registration ---------- *)
+
+    (** Register a new client in the database and return the id associated *)
+    (** OK *)
+    let new_client
+      ~application_name ~description ~redirect_uri ~client_id ~client_secret =
+      full_transaction_block (fun dbh ->
+        lwt () =
+          Lwt_Query.query dbh
+          <:insert<
+            $oauth2_server_client_table$ :=
+            {
+              id                = oauth2_server_client_table?id ;
+              application_name  = $string:application_name$ ;
+              description       = $string:description$ ;
+              redirect_uri      = $string:redirect_uri$ ;
+              client_id         = $string:client_id$ ;
+              client_secret     = $string:client_secret$
+            }
+          >>
+        in
+        lwt id_client =
+          Lwt_Query.view_one dbh
+          <:view< {x = currval $oauth2_server_client_id_seq$ } >>
+        in
+        let id_client = id_client#!x in
+        Lwt.return id_client
+      )
+
+    (* --------- Client registration ---------- *)
+    (* ---------------------------------------- *)
+
+    (* --------------------------- *)
+    (* --------- Client ---------- *)
+
+    let client_of_id id =
+      full_transaction_block (fun dbh ->
+        try_lwt
+          lwt r = Lwt_Query.view_one dbh
+            <:view<
+              t | t in $oauth2_server_client_table$;
+                  t.id = $int64:id$
+            >>
+          in
+          Lwt.return (
+            r#!application_name,
+            r#!description,
+            r#!redirect_uri
+          )
+        with No_such_resource -> Lwt.fail No_such_resource
+      )
+
+    (* --------- Client ---------- *)
+    (* --------------------------- *)
+
+    (* --------------------------------------- *)
+    (* ---------- Registered client ---------- *)
+
+    (** OK *)
+    let registered_client_of_client_id client_id =
+      full_transaction_block (fun dbh ->
+        try_lwt
+          lwt r = Lwt_Query.view_one dbh
+            <:view<
+              t | t in $oauth2_server_client_table$;
+                  t.client_id = $string:client_id$
+            >>
+          in
+          Lwt.return (
+            r#!id,
+            r#!application_name,
+            r#!description,
+            r#!redirect_uri,
+            r#!client_id,
+            r#!client_secret
+          )
+        with No_such_resource -> Lwt.fail No_such_resource
+      )
+
+    (** OK *)
+    let registered_client_of_id id =
+      full_transaction_block (fun dbh ->
+        try_lwt
+          lwt r = Lwt_Query.view_one dbh
+            <:view<
+              t | t in $oauth2_server_client_table$;
+                  t.id = $int64:id$
+            >>
+          in
+          Lwt.return (
+            r#!id,
+            r#!application_name,
+            r#!description,
+            r#!redirect_uri,
+            r#!client_id,
+            r#!client_secret
+          )
+        with No_such_resource -> Lwt.fail No_such_resource
+      )
+
+    (** OK *)
+    let registered_client_of_client_id client_id =
+      full_transaction_block (fun dbh ->
+        try_lwt
+          lwt r = Lwt_Query.view_one dbh
+            <:view<
+              t | t in $oauth2_server_client_table$;
+                  t.client_id = $string:client_id$
+            >>
+          in
+          Lwt.return (
+            r#!id,
+            r#!application_name,
+            r#!description,
+            r#!redirect_uri,
+            r#!client_id,
+            r#!client_secret
+          )
+        with No_such_resource -> Lwt.fail No_such_resource
+      )
+
+    (** OK *)
+    let registered_client_exists_by_client_id client_id =
+      full_transaction_block (fun dbh ->
+        try_lwt
+          lwt _ = Lwt_Query.view_one dbh
+            <:view<
+              t | t in $oauth2_server_client_table$;
+                  t.client_id = $string:client_id$
+            >>
+          in
+          Lwt.return_true
+        with No_such_resource -> Lwt.return_false
+      )
+
+    (* ---------- Registered client ---------- *)
+    (* --------------------------------------- *)
+
+    (** OK *)
+    let client_secret_of_client_id client_id =
+      full_transaction_block (fun dbh ->
+        try_lwt
+          lwt r = Lwt_Query.view_one dbh
+            <:view<
+              t | t in $oauth2_server_client_table$;
+                  t.client_id = $string:client_id$
+            >>
+          in
+          Lwt.return r#!client_secret
+        with No_such_resource -> Lwt.fail No_such_resource
+      )
+
+    (** List all clients, with a limit of [limit] with a minimum id [min_i] *)
+    (** OK *)
+    let list_clients ?(min_id=Int64.of_int 0) ?(limit=Int64.of_int 10) () =
+      full_transaction_block (fun dbh ->
+        lwt l = Lwt_Query.query dbh
+          <:select<
+            a limit $int64:limit$
+            | a in $oauth2_server_client_table$ ;
+            a.id >= $int64:min_id$
+          >>
+        in
+        Lwt.return (List.map (fun a ->
+          (
+            a#!id,
+            a#!application_name,
+            a#!description,
+            a#!redirect_uri,
+            a#!client_id,
+            a#!client_secret
+          )) l)
+      )
+
+    (** Get the id (primary key) of client represented by [client_id] in the
+     * oauth2_server_client table
+     *)
+    (** OK *)
+    let id_of_client_id client_id =
+      full_transaction_block (fun dbh ->
+        lwt r = Lwt_Query.view_one dbh
+            <:view<
+              t | t in $oauth2_server_client_table$;
+                  t.client_id = $string:client_id$
+            >>
+        in
+        Lwt.return r#!id
+      )
+
+    (** Update a client with [application_name], [description] and
+     * [redirect_uri]
+     *)
+    let update_client id ~application_name ~description ~redirect_uri =
+      full_transaction_block (fun dbh ->
+        Lwt_Query.query dbh
+        <:update<
+          d in $oauth2_server_client_table$
+          :=
+            {
+              description       = $string:description$ ;
+              application_name  = $string:application_name$ ;
+              redirect_uri      = $string:redirect_uri$
+            }
+          | d.id = $int64:id$
+        >>
+      )
+
+    (** Update the client description having the id [id] description with
+     * [description]
+     *)
+    let update_description id description =
+      full_transaction_block (fun dbh ->
+        Lwt_Query.query dbh
+        <:update<
+          d in $oauth2_server_client_table$
+          :=
+            {
+              description = $string:description$
+            }
+          | d.id = $int64:id$
+        >>
+      )
+
+    (** Update the client redirect_uri having the id [id] description with
+     * [redirect_uri]
+     *)
+    let update_redirect_uri id redirect_uri =
+      full_transaction_block (fun dbh ->
+        Lwt_Query.query dbh
+        <:update<
+          d in $oauth2_server_client_table$
+          :=
+            {
+              redirect_uri = $string:redirect_uri$
+            }
+          | d.id = $int64:id$
+        >>
+      )
+
+    (** Update the client credentials having the id [id] description with
+     * [client_id] and [client_secret]
+     *)
+    let update_client_credentials id client_id client_secret =
+      full_transaction_block (fun dbh ->
+        Lwt_Query.query dbh
+        <:update<
+          d in $oauth2_server_client_table$
+          :=
+            {
+              client_id     = $string:client_id$ ;
+              client_secret = $string:client_secret$
+            }
+          | d.id = $int64:id$
+        >>
+      )
+
+    (** Update the client application_name having the id [id] description with
+     * [application_name]
+     *)
+    let update_application_name id application_name =
+      full_transaction_block (fun dbh ->
+        Lwt_Query.query dbh
+        <:update<
+          d in $oauth2_server_client_table$
+          :=
+            {
+              application_name = $string:application_name$
+            }
+          | d.id = $int64:id$
+        >>
+      )
+
+    (** Remove the client represented by [id] *)
+    let remove_client id =
+      full_transaction_block (fun dbh ->
+        Lwt_Query.query dbh
+        <:delete<
+          u in $oauth2_server_client_table$
+          | u.id = $int64:id$
+        >>
+      )
+    (* --------- Client registration ---------- *)
+    (* ---------------------------------------- *)
+  end
+
+module OAuth2_client =
+  struct
+
+    (** Add new client credentials [client_id] and [client_secret] associated to
+     * the server [server_id] and return the id associated to this entry
+     *)
+    (** OK *)
+    let save_server
+      ~server_id ~server_authorization_url ~server_token_url ~server_data_url
+      ~client_id ~client_secret =
+      full_transaction_block (fun dbh ->
+        lwt () = Lwt_Query.query dbh
+          <:insert<
+            $oauth2_client_credentials_table$ :=
+            {
+              id                        = oauth2_client_credentials_table?id ;
+              server_id                 = $string:server_id$ ;
+              server_authorization_url  = $string:server_authorization_url$ ;
+              server_token_url          = $string:server_token_url$ ;
+              server_data_url           = $string:server_data_url$ ;
+              client_id                 = $string:client_id$ ;
+              client_secret             = $string:client_secret$
+            }
+          >>
+        in
+        lwt id =
+          Lwt_Query.view_one dbh
+          <:view< {x = currval $oauth2_client_credentials_id_seq$ } >>
+        in
+        Lwt.return id#!x
+      )
+
+    (** Remove the OAuth2 server registered with id [id] *)
+    let remove_server_by_id id =
+      full_transaction_block (fun dbh ->
+        try_lwt
+          Lwt_Query.query dbh
+          <:delete<
+            u in $oauth2_client_credentials_table$
+            | u.id = $int64:id$
+          >>;
+        with No_such_resource -> Lwt.fail No_such_resource
+      )
+
+    (** Check if there exists a registered server with server_id [server_id].
+     * Returns true if the server exists, else returns false. *)
+    (** OK *)
+    let server_id_exists server_id =
+      full_transaction_block (fun dbh ->
+        try_lwt
+          lwt _ = Lwt_Query.view_one dbh
+            <:view<
+              t | t in $oauth2_client_credentials_table$;
+                  t.server_id = $string:server_id$
+            >>
+          in
+          Lwt.return true
+        with No_such_resource -> Lwt.return false
+      )
+
+    (** Get the id of the OAuth2 server represented by [server_id] *)
+    (** OK *)
+    let id_of_server_id server_id =
+      full_transaction_block (fun dbh ->
+        try_lwt
+          lwt r = Lwt_Query.view_one dbh
+            <:view<
+              t | t in $oauth2_client_credentials_table$;
+                  t.server_id = $string:server_id$
+            >>
+          in
+          Lwt.return r#!id
+        with No_such_resource -> Lwt.fail No_such_resource
+      )
+
+    (** Remove the client credentials of the server with id [id] *)
+    let remove_client_credentials id =
+      full_transaction_block (fun dbh ->
+        Lwt_Query.query dbh
+        <:delete<
+          u in $oauth2_client_credentials_table$
+          | u.id = $int64:id$
+        >>
+      )
+
+    (** Get the authorization URL of the OAuth2 server represented by
+     * [server_id] *)
+    (** OK *)
+    let get_server_authorization_url ~server_id =
+      full_transaction_block (fun dbh ->
+        lwt url = Lwt_Query.view_one dbh
+        <:view<
+        {
+          t.server_authorization_url;
+        }
+        | t in $oauth2_client_credentials_table$;
+          t.server_id = $string:server_id$
+        >>
+        in
+        Lwt.return (url#!server_authorization_url)
+      )
+
+    (** Get the token URL of the OAuth2 server represented by
+     * [server_id] *)
+    (** OK *)
+    let get_server_token_url ~server_id =
+      full_transaction_block (fun dbh ->
+        try_lwt
+          lwt url =
+            Lwt_Query.view_one dbh
+              <:view<
+              {
+                t.server_token_url;
+              }
+              | t in $oauth2_client_credentials_table$;
+                t.server_id = $string:server_id$
+              >>
+          in
+          Lwt.return (url#!server_token_url)
+        with No_such_resource -> Lwt.fail No_such_resource
+      )
+
+
+    (** Fetch client credentials from the database. A OAuth2.0 can have multiple
+     * OAuth2.0 credentials for different OAuth2.0 server which can be
+     * recognized by the id used to register them.
+     * OK
+     *)
+    let get_client_credentials ~server_id =
+      full_transaction_block (fun dbh ->
+        try_lwt
+          lwt credentials = Lwt_Query.view_one dbh
+          <:view<
+          {
+            t.client_id ;
+            t.client_secret;
+          }
+          | t in $oauth2_client_credentials_table$;
+            t.server_id = $string:server_id$
+          >>
+          in
+          Lwt.return (credentials#!client_id, credentials#!client_secret)
+        with No_such_resource -> Lwt.fail No_such_resource
+      )
+
+    (** Fetch all subscribed OAuth2.0 servers *)
+    (** OK *)
+    let list_servers () =
+      full_transaction_block (fun dbh ->
+        lwt l = Lwt_Query.query dbh
+          <:select<
+            a
+            | a in $oauth2_client_credentials_table$
+          >>
+        in
+        Lwt.return (List.map (fun a ->
+          (
+            a#!id,
+            a#!server_id,
+            a#!server_authorization_url,
+            a#!server_token_url,
+            a#!server_data_url,
+            a#!client_id,
+            a#!client_secret
+          )) l)
+      )
+  end
+(* -------------------------------------------------------------------------- *)
