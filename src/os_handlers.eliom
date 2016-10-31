@@ -267,6 +267,12 @@ let%client connect_handler () v = connect_handler_rpc v
                 (user who never created its account).
                 In that case, you probably want to display a sign-up form,
                 and in the other case a login form. *)
+
+  exception Account_already_activated_unconnected of Os_types.Action_link_key.info
+  exception Account_already_activated_connected of
+      Os_types.Action_link_key.info * Os_types.User.id
+  exception Invalid_action_key of Os_types.Action_link_key.info
+  exception No_such_resource
 ]
 
 let action_link_handler_common akey =
@@ -280,12 +286,17 @@ let action_link_handler_common akey =
     in
     let%lwt () =
       if action = `AccountActivation && validity <= 0L
-      then Lwt.fail Os_db.Account_already_activated
+      then
+        match myid_o with
+        | Some myid ->
+           Lwt.fail (Account_already_activated_connected (action_link, myid))
+        | None ->
+           Lwt.fail (Account_already_activated_unconnected action_link)
       else Lwt.return_unit
     in
     let%lwt () =
       if validity <= 0L
-      then Lwt.fail Os_db.No_such_resource
+      then Lwt.fail (Invalid_action_key action_link)
       else Lwt.return_unit
     in
     let%lwt () =
@@ -307,15 +318,18 @@ let action_link_handler_common akey =
 
   with
   | Os_db.No_such_resource ->
+    Lwt.return `No_such_resource
+  | Invalid_action_key action_link ->
     Eliom_reference.Volatile.set Os_userbox.action_link_key_outdated true;
-    Os_msg.msg ~level:`Err ~onload:true
-      "Invalid action key, please ask for a new one.";
-    Lwt.return `NoReload
-  | Os_db.Account_already_activated ->
+    Lwt.return (`Invalid_action_key action_link)
+  | Account_already_activated_unconnected action_link ->
     Eliom_reference.Volatile.set Os_userbox.action_link_key_outdated true;
-    (* Account is already activated, don't bother telling that the key is wrong
-       because it's already served is purpose. Just reload the page
-       without the GET parameters to get rid of the key. *)
+    Lwt.return (`Account_already_activated_unconnected action_link)
+  | Account_already_activated_connected (action_link, _) ->
+    Eliom_reference.Volatile.set Os_userbox.action_link_key_outdated true;
+    (* Just reload the page without the GET parameters to get rid of the key.
+       If the user wasn't already logged in, let the exception pass to the
+       next exception handler. *)
     Lwt.return `Reload
 
 let%client action_link_handler_common =
@@ -337,13 +351,18 @@ let%shared action_link_handler _myid_o akey () =
       (appl_self_redirect
          Redirection.send
          (Redirection Eliom_service.reload_action))
-  | `NoReload ->
-    Eliom_registration.(appl_self_redirect Action.send) ()
+  | `No_such_resource ->
+    Lwt.fail No_such_resource
+  | `Invalid_action_key action_link ->
+    Lwt.fail (Invalid_action_key action_link)
   | `Restart_if_app ->
     restart_if_client_side ();
     Eliom_registration.(appl_self_redirect Action.send) ()
   | `Custom_action_link (action_link, phantom_user) ->
     Lwt.fail (Custom_action_link (action_link, phantom_user))
+  | `Account_already_activated_unconnected (action_link) ->
+    Lwt.fail (Account_already_activated_unconnected (action_link))
+
 
 (* Preregister *)
 let preregister_handler () email =
