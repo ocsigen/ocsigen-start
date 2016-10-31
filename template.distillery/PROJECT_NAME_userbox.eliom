@@ -119,21 +119,14 @@ let%shared connected_user_box ~user =
 let%shared connection_box () =
   let sign_in    = sign_in_button () in
   let sign_up    = sign_up_button () in
-  Lwt.return @@ div ~a:[a_class ["os-connection-box"]]
+  Lwt.return @@ div ~a:[ a_class ["os-connection-box"] ]
     [ sign_in
     ; sign_up
     ]
 
 
-let%shared msg () = D.div ~a:[a_id "os_msg"] []
-
 
 let%shared user_box ?user () =
-  let d = div ~a:[a_class ["navbar-right"]] in
-  let msg = msg () in
   match user with
-  | None ->
-    let%lwt cb = connection_box () in
-    Lwt.return @@ d [msg; cb]
-  | Some user ->
-    Lwt.return @@ d [msg; connected_user_box user]
+  | None -> connection_box ()
+  | Some user -> Lwt.return (connected_user_box user)

@@ -17,9 +17,6 @@ val connected_user_box :
 val connection_box :
   unit -> [> Html_types.div ] Eliom_content.Html.D.elt Lwt.t
 
-val msg :
-  unit -> [> Html_types.div ] Eliom_content.Html.D.elt
-
 val user_box :
   ?user:Os_types.User.t ->
   unit ->

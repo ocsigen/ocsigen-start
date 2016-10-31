@@ -51,7 +51,6 @@ let%client forgot_password_handler =
 *)
 let%shared action_link_handler myid_o akey () =
   (* We try first the default actions (activation link, reset password) *)
-  let open Os_types.Action_link_key in
   try%lwt Os_handlers.action_link_handler myid_o akey () with
   | Os_handlers.No_such_resource
   | Os_handlers.Invalid_action_key _ ->
@@ -62,11 +61,11 @@ let%shared action_link_handler myid_o akey () =
     let%lwt (email, phantom_user) =
       match e with
       | Os_handlers.Account_already_activated_unconnected
-          {Os_types.userid = _; email; validity = _;
+          {Os_types.Action_link_key.userid = _; email; validity = _;
            action = _; data = _; autoconnect = _} ->
         Lwt.return (email, false)
       | Os_handlers.Custom_action_link
-          ({Os_types.userid = _; email; validity = _;
+          ({Os_types.Action_link_key.userid = _; email; validity = _;
             action = _; data = _; autoconnect = _},
            phantom_user) ->
         Lwt.return (email, phantom_user)
@@ -124,7 +123,7 @@ let%client preregister_handler =
 
 let%shared main_service_handler myid_o () () = Eliom_content.Html.F.(
   %%%MODULE_NAME%%%_container.page
-    ~a:[ a_class ["ot-page-main"] ]
+    ~a:[ a_class ["os-page-main"] ]
     myid_o (
     [ p [em [pcdata "Ocsigen Start: Put app content here."]] ]
   )
@@ -132,7 +131,7 @@ let%shared main_service_handler myid_o () () = Eliom_content.Html.F.(
 
 let%shared about_handler myid_o () () = Eliom_content.Html.F.(
   %%%MODULE_NAME%%%_container.page
-    ~a:[ a_class ["ot-page-about"] ]
+    ~a:[ a_class ["os-page-about"] ]
     myid_o
     [ div
         [ p [pcdata "This template provides a skeleton \
