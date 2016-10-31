@@ -21,9 +21,9 @@
 open Eliom_content.Html.F
 
 [%%shared
-  type id = Os_types.userid [@@deriving json]
+  type id = Os_types.User.id [@@deriving json]
 
-  type t = Os_types.user = {
+  type t = Os_types.User.t = {
       userid : id;
       fn : string;
       ln : string;
@@ -32,7 +32,7 @@ open Eliom_content.Html.F
 ]
 
 [%%server
-  exception Already_exists of Os_types.userid
+  exception Already_exists of Os_types.User.id
   exception No_such_user
 ]
 
@@ -50,7 +50,7 @@ let create_user_from_db0 (userid, fn, ln, avatar, pwdset) =
 let create_user_from_db d = fst (create_user_from_db0 d)
 
 (** Getters functions. *)
-let%shared userid_of_user (u : Os_types.user) = Os_types.(u.userid)
+let%shared userid_of_user (u : Os_types.User.t) = Os_types.(u.userid)
 let%shared firstname_of_user u = Os_types.(u.fn)
 let%shared lastname_of_user u = Os_types.(u.ln)
 let%shared avatar_of_user u = Os_types.(u.avatar)
@@ -83,8 +83,8 @@ include Os_db.User
    during the request. *)
 module MCache = Os_request_cache.Make(
 struct
-  type key = Os_types.userid
-  type value = Os_types.user * bool
+  type key = Os_types.User.id
+  type value = Os_types.User.t * bool
 
   let compare = compare
   let get key =

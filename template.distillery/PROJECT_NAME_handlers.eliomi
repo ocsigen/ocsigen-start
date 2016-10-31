@@ -13,7 +13,7 @@
     saved and the old is removed.
   *)
 val upload_user_avatar_handler :
-  Os_types.userid ->
+  Os_types.User.id ->
   unit ->
   unit *
     ((float * float * float * float) option * Ocsigen_extensions.file_info) ->
@@ -35,7 +35,7 @@ val forgot_password_handler :
   unit -> string -> unit Lwt.t
 
 val action_link_handler :
-  Os_types.userid option ->
+  Os_types.User.id option ->
   string -> unit -> %%%MODULE_NAME%%%_base.App.result Lwt.t
 
 (** Handler to set a new password. It uses the default OS handler
@@ -56,13 +56,13 @@ val preregister_handler : unit -> string -> unit Lwt.t
 
 (** This is the main handler, the first page of the application. *)
 val main_service_handler :
-  Os_types.userid option ->
+  Os_types.User.id option ->
   unit ->
   unit -> [> `Div | `Footer | `Nav ] Eliom_content.Html.F.elt list Lwt.t
 
 (** This is the handler for the about service. *)
 val about_handler :
-  Os_types.userid option ->
+  Os_types.User.id option ->
   unit ->
   unit -> [> `Div | `Footer | `Nav ] Eliom_content.Html.F.elt list Lwt.t
 
@@ -70,6 +70,6 @@ val about_handler :
     {!%%%MODULE_NAME%%%_container.get_user_data}), a settings container will be
     created. *)
 val settings_handler :
-  Os_types.userid option ->
+  Os_types.User.id option ->
   unit ->
   unit -> [> `Div | `Footer | `Nav ] Eliom_content.Html.F.elt list Lwt.t

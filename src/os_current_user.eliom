@@ -24,7 +24,7 @@ let section = Lwt_log.Section.make "os:current_user"
   type current_user =
     | CU_idontknown
     | CU_notconnected
-    | CU_user of Os_types.user
+    | CU_user of Os_types.User.t
 ]
 
 let%shared please_use_connected_fun =

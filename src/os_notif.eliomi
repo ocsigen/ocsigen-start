@@ -61,7 +61,7 @@ module type S = sig
 
   (** Make a user stop listening on data [key] *)
   val unlisten_user :
-    ?sitedata:Eliom_common.sitedata -> userid:Os_types.userid -> key -> unit
+    ?sitedata:Eliom_common.sitedata -> userid:Os_types.User.id -> key -> unit
 
   (** Call [notify id] to send a notification to all clients currently
       listening on data [key].
@@ -72,7 +72,7 @@ module type S = sig
   *)
   (*TODO: is the restriction to the current tab relevant?*)
   val notify :
-    ?notfor:[`Me | `User of Os_types.userid] ->
+    ?notfor:[`Me | `User of Os_types.User.id] ->
     key ->
     server_notif ->
     unit

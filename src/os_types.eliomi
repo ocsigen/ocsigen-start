@@ -21,7 +21,7 @@
 (** Data types
 
     This module defines types used in ocsigen-start in multiple files. It
-    gives a more readable interface (for example by using [Os_types.userid]
+    gives a more readable interface (for example by using [Os_types.User.id]
     instead of [int64]). Put all most used types in this file avoids to have
     dependencies between different modules for only one type.
  **)
@@ -29,33 +29,43 @@
 
 [%%shared.start]
 
-(** Type representing a user ID *)
-type userid = int64 [@@deriving json]
+(** Types related to users. *)
 
-(** Type representing a user. See <<a_api | module Os_user >>. *)
-type user = {
-    userid : userid;
-    fn : string;
-    ln : string;
-    avatar : string option;
-  } [@@deriving json]
+module User : sig
+  (** Type representing a user ID *)
+  type id = int64 [@@deriving json]
 
-(** Action links *)
-type actionlinkkey_info = {
-  userid        : userid;
-  email         : string;
-  validity      : int64;
-  autoconnect   : bool;
-  action        : [ `AccountActivation | `PasswordReset | `Custom of string ];
-  data          : string;
-}
+  (** Type representing a user. See <<a_api | module Os_user >>. *)
+  type t = {
+      userid : id;
+      fn : string;
+      ln : string;
+      avatar : string option;
+    } [@@deriving json]
+end
 
-(** Type representing a group ID *)
-type groupid = int64 [@@deriving json]
+(** Types related to action link keys *)
 
-(** Type representing a group. See <<a_api | module Os_group >> *)
-type group = {
-  id    : groupid;
-  name  : string;
-  desc  : string option;
-}
+module Action_link_key : sig
+  (** Type representing information about the action link key *)
+  type info = {
+    userid        : User.id;
+    email         : string;
+    validity      : int64;
+    autoconnect   : bool;
+    action        : [ `AccountActivation | `PasswordReset | `Custom of string ];
+    data          : string;
+  }
+end
+
+module Group : sig
+  (** Type representing a group ID *)
+  type id = int64 [@@deriving json]
+
+  (** Type representing a group. See <<a_api | module Os_group >> *)
+  type t = {
+    id    : id;
+    name  : string;
+    desc  : string option;
+  }
+end
