@@ -34,8 +34,24 @@ CLIENT_FILES_DOC    := $(wildcard \
 
 # Template directory (used when installing template with distillery)
 TEMPLATE_DIR       := template.distillery
+
 # Template name (name used by distillery)
 TEMPLATE_NAME      := os.pgocaml
+
+##----------------------------------------------------------------------
+## Generate CSS from SASS files in the template.
+
+SCSS_FILES         := $(TEMPLATE_DIR)/sass\!os.scss \
+                      $(TEMPLATE_DIR)/sass\!os_otdemo.scss
+
+CSS_FILES          := $(TEMPLATE_DIR)/static\!css\!os.css \
+                      $(TEMPLATE_DIR)/static\!css\!os_otdemo.css
+
+SASS_TEMPORARY_FILENAME     := .os_temporary_filename
+
+SASS_TEMPORARY_PROJECT_NAME := os_temporary_project_name
+
+##----------------------------------------------------------------------
 
 # OCamlfind packages for the server
 SERVER_PACKAGES    := lwt.ppx js_of_ocaml.deriving.ppx calendar safepass \
