@@ -212,6 +212,24 @@ $(DEPSDIR):
 	mkdir -p $(addprefix $@/, ${SERVER_DIRS})
 
 ##----------------------------------------------------------------------
+## Generate CSS from SASS in the template.
+
+## A temporary filename and project name are mandatory because SASS files
+## contain %%%PROJECT_NAME%%% as ID which is not available in SCSS.
+## For the moment, no external SCSS files are used to generate the CSS.
+
+.PHONY: generate_css
+
+generate_css: $(CSS_FILES)
+
+$(TEMPLATE_DIR)/static\!css\!%.css: $(TEMPLATE_DIR)/sass!%.scss
+	sed s/%%%PROJECT_NAME%%%/$(SASS_TEMPORARY_PROJECT_NAME)/g $< > \
+        $(SASS_TEMPORARY_FILENAME).scss
+	sass $(SASS_TEMPORARY_FILENAME).scss $(SASS_TEMPORARY_FILENAME).css
+	sed s/$(SASS_TEMPORARY_PROJECT_NAME)/%%%PROJECT_NAME%%%/g \
+        $(SASS_TEMPORARY_FILENAME).css > $@
+
+##----------------------------------------------------------------------
 ## Documentation
 
 COMMON_OPTIONS := -colorize-code -stars -sort
@@ -258,6 +276,8 @@ clean:
 	-rm -f *.type_mli
 	-rm -f META
 	-rm -rf ${ELIOM_CLIENT_DIR} ${ELIOM_SERVER_DIR} ${LIBDIR}
+	-rm $(SASS_TEMPORARY_FILENAME).*
+	-rm -rf .sass-cache
 
 distclean: clean
 	-rm -rf $(DEPSDIR) .depend
