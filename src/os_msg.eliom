@@ -24,7 +24,7 @@
 ]
 
 let%client msgbox () =
-  let id = "os_msg" in
+  let id = "os-msg" in
   try
     Dom_html.getElementById id
   with
@@ -39,7 +39,7 @@ let%shared msg
   ?(onload=false)
   (message : string) =
   ignore [%client (
-    let c = if ~%level = `Msg then [] else ["os_err"] in
+    let c = if ~%level = `Msg then [] else ["os-err"] in
     Eliom_lib.debug "%s" ~%message;
     let message_dom = To_dom.of_p (D.p ~a:[a_class c] [pcdata ~%message]) in
     let msgbox = msgbox () in
