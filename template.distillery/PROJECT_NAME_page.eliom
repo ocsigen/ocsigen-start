@@ -43,12 +43,16 @@ let%shared the_local_css = [
 
     include Os_page.Default_config
 
-    let title = "%%%PROJECT_NAME%%%"
+    let title ="%%%PROJECT_NAME%%%"
 
     let local_js = the_local_js
     let local_css = the_local_css
 
-    let other_head = css_name_script@app_js
+    let other_head =
+      meta ~a:[a_name "viewport";
+               a_content "width=device-width, initial-scale=1, user-scalable=no"
+              ] ()
+      ::css_name_script@app_js
 
     let default_predicate _ _ = Lwt.return true
 

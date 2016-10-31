@@ -22,7 +22,7 @@ ELIOMC            := $(ENV_PSQL) $(ELIOMC)
 ELIOMOPT          := $(ENV_PSQL) $(ELIOMOPT)
 ELIOMDEP          := $(ENV_PSQL) $(ELIOMDEP)
 
-# Ocsigenserver uses the DB settings from ee.conf.in (which
+# Ocsigenserver uses the DB settings from %%%PROJECT_NAME%%%.conf.in (which
 # should be the same as ENV_PSQL)
 OCSIGENSERVER     := $(OCSIGENSERVER)
 OCSIGENSERVER.OPT := $(OCSIGENSERVER.OPT)

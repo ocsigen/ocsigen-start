@@ -4,14 +4,16 @@
 
 /* Default CSS for Ocsigen Start */
 
-@import url('https://fonts.googleapis.com/css?family=Muli');
+@import url('https://fonts.googleapis.com/css?family=Raleway');
 
 $main-color: #25a;
 $dark-color: #445;
+$breakpoint1: 720px;
 
 body {
     margin: 0;
-    font-family: 'Muli', sans-serif;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
 }
 
 a, a:visited {
@@ -133,10 +135,13 @@ a.os-page-header-app-name {
         flex-direction: column;
         background-color: #eee;
         padding: 16px;
-        min-width: 250px;
+        width: 350px;
     }
     input[type="checkbox"] {
         vertical-align: middle;
+    }
+    input[type="submit"] {
+        margin: 5px auto;
     }
     input[type="text"], input[type="password"], input[type="email"] {
         width: 150px;
@@ -149,4 +154,66 @@ a.os-page-header-app-name {
 }
 .os-forgot-pwd-link {
     font-size: 12px;
+}
+
+#os-msg {
+    position: fixed;
+    top: 100px;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    p {
+        padding: 50px 0;
+        text-align: center;
+        background-color: rgba(255,255,255,0.8);
+        &.os-err {
+            background-color: rgba(200,0,0,0.7);
+            color: white;
+        }
+    }
+}
+
+.os-page-main .os-page-header .os-connection-box {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.os-page-main:not(.connected) {
+    .os-page-header {
+        display: block;
+        height: 40vh;
+        .os-page-header-app-name {
+            display: block;
+            position: absolute;
+            top: 30vh;
+        }
+    }
+}
+
+@media (max-width: $breakpoint1) {
+    .os-page-footer { display: none; }
+    .os-page-header {
+        .os-connection-box, .os-page-header-app-name, .connected-user-box {
+            display: none;
+        }
+    }
+    .os-page-main {
+        .os-page-header .os-connection-box {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 45vh;
+            left: 0;
+            width: 100%;
+            .button {
+                width: 150px;
+                margin: 16px auto;
+            }
+        }
+        .os-body {
+            display: none;
+        }
+    }
+    .os-page-header { display: block; }
 }

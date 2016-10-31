@@ -32,7 +32,7 @@ module Page_config :
 
     val local_css : string list list
 
-    val other_head : [> Html_types.script ] Eliom_content.Html.F.elt list
+    val other_head : [> Html_types.head_content ] Eliom_content.Html.F.elt list
 
     val default_predicate : 'a -> 'b -> bool Lwt.t
 

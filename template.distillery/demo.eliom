@@ -10,7 +10,7 @@
 
 let%shared handler myid_o () () =
   %%%MODULE_NAME%%%_container.page
-    ~a:[ a_class ["ot-page-demo"] ]
+    ~a:[ a_class ["os-page-demo"] ]
     myid_o
     [ p [pcdata "This page contains some demos for some widgets \
                  from ocsigen-toolkit."]
