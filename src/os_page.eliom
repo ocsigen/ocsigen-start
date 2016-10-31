@@ -30,20 +30,22 @@
      head : Html_types.head_content_fun elt list;
      body_attrs : Html_types.body_attrib Eliom_content.Html.attrib list;
      body : Html_types.body_content elt list}
+]
 
-  let content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
-    let html_attrs =
-      if Eliom_client.is_client_app () then
-        a_class ["os-client-app"] :: html_a
-      else
-        html_a
-    in
-    { html_attrs;
-      title;
-      head = (head :> Html_types.head_content_fun elt list);
-      body_attrs = a;
-      body = (body :> Html_types.body_content elt list)}
+let%shared content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
+  let html_attrs =
+    if Eliom_client.is_client_app () then
+      a_class ["os-client-app"] :: html_a
+    else
+      html_a
+  in
+  { html_attrs
+  ; title
+  ; head = (head :> Html_types.head_content_fun elt list)
+  ; body_attrs = a
+  ; body = (body :> Html_types.body_content elt list)}
 
+[%%shared
   module type PAGE = sig
     val title : string
     val js : string list list
@@ -61,7 +63,8 @@
     val default_connected_error_page_full :
       (Os_types.User.id option -> 'a -> 'b -> exn -> content Lwt.t) option
     val default_predicate : 'a -> 'b -> bool Lwt.t
-    val default_connected_predicate : Os_types.User.id option -> 'a -> 'b -> bool Lwt.t
+    val default_connected_predicate :
+      Os_types.User.id option -> 'a -> 'b -> bool Lwt.t
   end
 
   module Default_config = struct
@@ -135,16 +138,15 @@
         let platform () =
           let uA = Dom_html.window##.navigator##.userAgent in
           let has s = uA##indexOf(Js.string s) <> -1 in
-          if has "Android" then
-            "os-android"
-          else if has "iPhone" || has "iPad" || has "iPod" || has "iWatch" then
-            "os-ios"
-          else if has "Windows" then
-            "os-windows"
-          else if has "BlackBerry" then
-            "os-blackberry"
-          else
-            "os-unknown-platform"
+          if has "Android"
+          then "os-android"
+          else if has "iPhone" || has "iPad" || has "iPod" || has "iWatch"
+          then "os-ios"
+          else if has "Windows"
+          then "os-windows"
+          else if has "BlackBerry"
+          then "os-blackberry"
+          else "os-unknown-platform"
         in
         let p = Js.string @@ platform () in
         Js.Opt.case (ev##.currentTarget) (fun () -> ())
@@ -161,8 +163,7 @@
 
     let default_error_page =
       match C.default_error_page_full with
-        Some default ->
-          default
+      | Some default -> default
       | None ->
           fun gp pp exc_opt -> wrap_fallback C.default_error_page gp pp exc_opt
 
@@ -184,42 +185,41 @@
     let page ?predicate ?fallback f =
       page_full ?predicate
         ?fallback:(match fallback with
-                     None          -> None
-                   | Some fallback -> Some (wrap_fallback fallback))
+          | None          -> None
+          | Some fallback -> Some (wrap_fallback fallback))
         (fun gp pp -> let%lwt body = f gp pp in Lwt.return (content body))
 
-    let wrap_fallback_2 fallback uid_opt gp pp exc_opt =
-      let%lwt body = fallback uid_opt gp pp exc_opt in Lwt.return (content body)
+    let wrap_fallback_2 fallback myid_o gp pp exc_opt =
+      let%lwt body = fallback myid_o gp pp exc_opt in Lwt.return (content body)
 
     let default_connected_error_page =
       match C.default_connected_error_page_full with
-        Some default ->
-          default
+      | Some default -> default
       | None ->
-          fun uid_opt gp pp exc_opt ->
-            wrap_fallback_2 C.default_connected_error_page uid_opt gp pp exc_opt
+        fun myid_o gp pp exc_opt ->
+          wrap_fallback_2 C.default_connected_error_page myid_o gp pp exc_opt
 
     let connected_page_full
         ?allow ?deny
         ?(predicate = C.default_connected_predicate)
         ?(fallback = default_connected_error_page)
         f gp pp =
-      let f_wrapped uid gp pp =
+      let f_wrapped myid gp pp =
         try%lwt
-          let%lwt b = predicate (Some uid) gp pp in
+          let%lwt b = predicate (Some myid) gp pp in
           if b then
-            try%lwt f uid gp pp
-            with exc -> fallback (Some uid) gp pp exc
+            try%lwt f myid gp pp
+            with exc -> fallback (Some myid) gp pp exc
           else Lwt.fail (Predicate_failed None)
         with
-          | (Predicate_failed _) as exc -> fallback (Some uid) gp pp exc
-          | exc -> fallback (Some uid) gp pp (Predicate_failed (Some exc))
+        | (Predicate_failed _) as exc -> fallback (Some myid) gp pp exc
+        | exc -> fallback (Some myid) gp pp (Predicate_failed (Some exc))
       in
       let%lwt content =
         try%lwt
           Os_session.connected_fun ?allow ?deny
-            ~deny_fun:(fun uid_o ->
-              fallback uid_o gp pp Os_session.Permission_denied)
+            ~deny_fun:(fun myid_o ->
+              fallback myid_o gp pp Os_session.Permission_denied)
             f_wrapped gp pp
         with Os_session.Not_connected as exc -> fallback None gp pp exc
       in
@@ -230,10 +230,10 @@
         ?allow ?deny
         ?predicate
         ?fallback:(match fallback with
-                     None          -> None
-                   | Some fallback -> Some (wrap_fallback_2 fallback))
-        (fun uid_opt gpp pp ->
-           let%lwt body = f uid_opt gp pp in Lwt.return (content body))
+          | None          -> None
+          | Some fallback -> Some (wrap_fallback_2 fallback))
+        (fun myid_o gpp pp ->
+           let%lwt body = f myid_o gp pp in Lwt.return (content body))
         gp pp
 
     module Opt = struct
@@ -243,21 +243,21 @@
           ?(predicate = C.default_connected_predicate)
           ?(fallback = default_connected_error_page)
           f gp pp =
-        let f_wrapped (uid_o : Os_types.User.id option) gp pp =
+        let f_wrapped (myid_o : Os_types.User.id option) gp pp =
           try%lwt
-            let%lwt b = predicate uid_o gp pp in
+            let%lwt b = predicate myid_o gp pp in
             if b then
-              try%lwt f uid_o gp pp
-              with exc -> fallback uid_o gp pp exc
+              try%lwt f myid_o gp pp
+              with exc -> fallback myid_o gp pp exc
             else Lwt.fail (Predicate_failed None)
           with
-            | (Predicate_failed _) as exc -> fallback uid_o gp pp exc
-            | exc -> fallback uid_o gp pp (Predicate_failed (Some exc))
+          | (Predicate_failed _) as exc -> fallback myid_o gp pp exc
+          | exc -> fallback myid_o gp pp (Predicate_failed (Some exc))
         in
         let%lwt content = Os_session.Opt.connected_fun
           ?allow ?deny
-          ~deny_fun:(fun uid_o ->
-            fallback uid_o gp pp Os_session.Permission_denied)
+          ~deny_fun:(fun myid_o ->
+            fallback myid_o gp pp Os_session.Permission_denied)
           f_wrapped gp pp
         in
         Lwt.return (make_page_full content)
@@ -267,10 +267,10 @@
           ?allow ?deny
           ?predicate
           ?fallback:(match fallback with
-                       None          -> None
-                     | Some fallback -> Some (wrap_fallback_2 fallback))
-          (fun uid_opt gpp pp ->
-             let%lwt body = f uid_opt gp pp in Lwt.return (content body))
+            | None          -> None
+            | Some fallback -> Some (wrap_fallback_2 fallback))
+          (fun myid_o gpp pp ->
+             let%lwt body = f myid_o gp pp in Lwt.return (content body))
           gp pp
 
     end
