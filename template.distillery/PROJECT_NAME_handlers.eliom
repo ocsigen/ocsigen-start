@@ -53,15 +53,35 @@ let%shared action_link_handler myid_o akey () =
   (* We try first the default actions (activation link, reset password) *)
   let open Os_types.Action_link_key in
   try%lwt Os_handlers.action_link_handler myid_o akey () with
-  | Os_handlers.Custom_action_link
-      ({ userid = _; email; validity = _;
-         action = _; data = _; autoconnect = _ }, phantom_user) ->
+  | Os_handlers.No_such_resource
+  | Os_handlers.Invalid_action_key _ ->
+    Os_msg.msg ~level:`Err ~onload:true
+      "Invalid action key, please ask for a new one.";
+    Eliom_registration.(appl_self_redirect Action.send) ()
+  | e ->
+    let%lwt (email, phantom_user) =
+      match e with
+      | Os_handlers.Account_already_activated_unconnected
+          {Os_types.userid = _; email; validity = _;
+           action = _; data = _; autoconnect = _} ->
+        Lwt.return (email, false)
+      | Os_handlers.Custom_action_link
+          ({Os_types.userid = _; email; validity = _;
+            action = _; data = _; autoconnect = _},
+           phantom_user) ->
+        Lwt.return (email, phantom_user)
+      | _ ->
+        Lwt.fail e
+    in
     (* Define here your custom action links.
        If phantom_user is true, it means the link has been created for
        an email that does not correspond to an existing user.
        By default, we just display a sign up form or phantom users,
        a login form for others.
        You don't need to modify this if you are not using custom action links.
+
+       Perhaps personalise the intended behaviour for when you meet
+       [Account_already_activated_unconnected].
     *)
     if myid_o = None (* Not currently connected, and no autoconnect *)
     then

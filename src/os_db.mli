@@ -21,7 +21,6 @@
 
 exception No_such_resource
 exception Main_email_removal_attempt
-exception Account_already_activated
 exception Account_not_activated
 
 (** [init ~host ~port ~user ~password ~database ~unix_domain_socket_dir ()]
