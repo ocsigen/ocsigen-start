@@ -60,7 +60,7 @@ let%shared page () =
   in
   let carousel_content = List.map (fun p -> D.div [ pcdata p ]) carousel_pages
   in
-  let carousel, pos, size, swipe_pos =
+  let carousel, pos, swipe_pos =
     Ot_carousel.wheel
       ~a:[ a_class ["demo-carousel3"] ]
       ~update:[%client carousel_update]
@@ -78,7 +78,8 @@ let%shared page () =
     ; div [
         Ot_carousel.previous ~change:[%client carousel_change] ~pos
           [pcdata "down"];
-        Ot_carousel.next ~change:[%client carousel_change] ~pos ~size ~length:7
+        Ot_carousel.next ~change:[%client carousel_change]
+          ~pos ~size:(Eliom_shared.React.S.const 1) ~length:7
           [pcdata "up"]
       ]
     ]
