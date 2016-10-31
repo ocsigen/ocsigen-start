@@ -36,7 +36,7 @@ OS_UPGRADE_FILE   := $(OPAM_LIB_DIR)/eliom/templates/os.pgocaml/upgrade.sql
 pg_dump = pg_dump
 
 # Rule to get the pg_ctl binary.
-ifeq ($(shell sh -c "which psql" | echo $?),'0')
+ifeq ($(shell psql --version 2> /dev/null),)
 $(error "PostgreSQL is not installed")
 else
 PSQL_VERSION := $(shell psql --version | cut -d' ' -f 3 | cut -d'.' -f 1-2)
