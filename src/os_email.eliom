@@ -24,7 +24,7 @@ let%shared email_pattern = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]+$"
 
 let from_addr = ref ("team DEFAULT", "noreply@DEFAULT.DEFAULT")
 
-let mailer = ref "/usr/bin/sendmail"
+let mailer = ref "sendmail"
 
 let set_from_addr s = from_addr := s
 
