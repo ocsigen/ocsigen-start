@@ -64,7 +64,8 @@ let list_servers () =
         to_registered_server
         ~id ~server_id ~authorization_url ~token_url ~data_url
         ~client_credentials:
-          (Os_oauth2_shared.client_credentials_of_str client_id client_secret)
+          (Os_oauth2_shared.client_credentials_of_string
+            client_id client_secret)
       ) servers
   )
 
@@ -73,7 +74,7 @@ let get_client_credentials ~server_id =
     (Os_db.OAuth2_client.get_client_credentials ~server_id)
     >>=
     (fun (client_id, client_secret) ->
-      Lwt.return (Os_oauth2_shared.client_credentials_of_str
+      Lwt.return (Os_oauth2_shared.client_credentials_of_string
         ~client_id ~client_secret
       )
     )
@@ -336,7 +337,7 @@ module MakeClient
     (* ------------------------------ *)
     let%lwt client_credentials = get_client_credentials ~server_id in
     let client_id              =
-      Os_oauth2_shared.client_credentials_id client_credentials
+      Os_oauth2_shared.client_id_of_client_credentials client_credentials
     in
     let state                  = generate_state () in
 
@@ -387,10 +388,10 @@ module MakeClient
     let grant_type              = "authorization_code" in
     (* ----------------------------- *)
     let client_id               =
-      Os_oauth2_shared.client_credentials_id client_credentials
+      Os_oauth2_shared.client_id_of_client_credentials client_credentials
     in
     let client_secret           =
-      Os_oauth2_shared.client_credentials_secret client_credentials
+      Os_oauth2_shared.client_secret_of_client_credentials client_credentials
     in
 
     let base64_credentials      =

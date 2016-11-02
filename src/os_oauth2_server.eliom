@@ -37,7 +37,7 @@ let split_scope_list s = Re.split (Re.compile (Re.rep1 Re.space)) s
 let generate_client_credentials () =
   let client_id     = Os_oauth2_shared.generate_random_string size_client_id in
   let client_secret = Os_oauth2_shared.generate_random_string size_client_id in
-  client_credentials_of_str ~client_id ~client_secret
+  client_credentials_of_string ~client_id ~client_secret
 
 (* Check if the client id and the client secret has been set in the header while
  * requesting a token and if they are correct.
@@ -102,8 +102,8 @@ let new_client ~application_name ~description ~redirect_uri =
     application_name
     description
     redirect_uri
-    (client_credentials_id credentials)
-    (client_credentials_secret credentials)
+    (client_id_of_client_credentials credentials)
+    (client_secret_of_client_credentials credentials)
 
 let remove_client_by_id id =
   Os_db.OAuth2_server.remove_client id
@@ -137,7 +137,7 @@ let registered_client_of_client_id client_id =
       client_of_str ~application_name ~description ~redirect_uri
     in
     let credentials =
-      client_credentials_of_str ~client_id ~client_secret
+      client_credentials_of_string ~client_id ~client_secret
     in
     Lwt.return (to_registered_client id info credentials)
   with Os_db.No_such_resource -> Lwt.fail No_such_client
@@ -155,7 +155,7 @@ let list_clients ?(min_id=Int64.of_int 0) ?(limit=Int64.of_int 10) () =
             ~redirect_uri
         in
         let credentials =
-          client_credentials_of_str
+          client_credentials_of_string
             ~client_id
             ~client_secret
         in

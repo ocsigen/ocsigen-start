@@ -39,14 +39,14 @@ type client_credentials =
     client_secret : Os_types.OAuth2.client_secret
   }
 
-let client_credentials_of_str ~client_id ~client_secret =
+let client_credentials_of_string ~client_id ~client_secret =
   {
     client_id;
     client_secret
   }
 
-let client_credentials_id c     = c.client_id
-let client_credentials_secret c = c.client_secret
+let client_id_of_client_credentials c     = c.client_id
+let client_secret_of_client_credentials c = c.client_secret
 
 type error_authorization_code_type =
   | Auth_invalid_request

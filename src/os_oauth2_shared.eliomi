@@ -23,25 +23,37 @@
  *)
 
 (** {1 Constants} *)
+
+(** Length of state. *)
 val size_state              : int
+
+(** Length of client ID. *)
 val size_client_id          : int
-val size_token              : int
+
+(** Length of client secret. *)
 val size_client_secret      : int
+
+(** Length of token. *)
+val size_token              : int
+
+(** Length of authorization code. *)
 val size_authorization_code : int
 
 (** {2 About client credentials} *)
+
+(** Client credentials type. *)
 type client_credentials
 
-val client_credentials_of_str :
+val client_credentials_of_string :
   client_id:Os_types.OAuth2.client_id         ->
   client_secret:Os_types.OAuth2.client_secret ->
   client_credentials
 
-val client_credentials_id     :
+val client_id_of_client_credentials :
   client_credentials ->
   Os_types.OAuth2.client_id
 
-val client_credentials_secret :
+val client_secret_of_client_credentials :
   client_credentials ->
   Os_types.OAuth2.client_secret
 
