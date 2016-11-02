@@ -24,22 +24,20 @@ exception State_not_found
 exception No_such_client
 exception No_such_saved_token
 
-(* ---------------------------- *)
-(* ---------- Client ---------- *)
+(**
+   A basic OAuth2.0 client is represented by an application name, a description
+   and redirect_uri. When a client is registered, credentials and an ID is
+   assigned and becomes a {registered_client}.
 
-(* A basic OAuth2.0 client is represented by an application name, a description
- * and redirect_uri. When a client is registered, credentials and an ID is
- * assigned and becomes a {registered_client}.
- *
- * IMPROVEME:
- * For the moment, the client type is the same for all OAuth2 server. However,
- * we can be interested to register several OAuth2 server (for different
- * purpose) and in this case, we are interested to list client by OAuth2 server.
+   IMPROVEME:
+   For the moment, the client type is the same for all OAuth2 server. However,
+   it can be interesting to register several OAuth2 servers (for different
+   purpose) and in this case, we are interested to list client by OAuth2 server.
  *)
 
 type client
 
-val client_of_str :
+val client_of_string :
   application_name:string ->
   description:string ->
   redirect_uri:Ocsigen_lib.Url.t ->

@@ -76,7 +76,7 @@ type client =
   redirect_uri: string
 }
 
-let client_of_str ~application_name ~description ~redirect_uri =
+let client_of_string ~application_name ~description ~redirect_uri =
 { application_name; description; redirect_uri }
 
 let application_name_of_client c = c.application_name
@@ -134,7 +134,7 @@ let registered_client_of_client_id client_id =
       Os_db.OAuth2_server.registered_client_of_client_id client_id
     in
     let info =
-      client_of_str ~application_name ~description ~redirect_uri
+      client_of_string ~application_name ~description ~redirect_uri
     in
     let credentials =
       client_credentials_of_string ~client_id ~client_secret
@@ -149,7 +149,7 @@ let list_clients ?(min_id=Int64.of_int 0) ?(limit=Int64.of_int 10) () =
       (fun (id, application_name, description,
             redirect_uri, client_id, client_secret) ->
         let info =
-          client_of_str
+          client_of_string
             ~application_name
             ~description
             ~redirect_uri
