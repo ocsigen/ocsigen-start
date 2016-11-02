@@ -89,12 +89,14 @@ let%shared action_link_handler myid_o akey () =
         let page = [ div ~a:[ a_class ["login-signup-box"] ]
                        [ Os_view.sign_up_form ~email () ] ]
         in
-        %%%MODULE_NAME%%%_base.App.send (%%%MODULE_NAME%%%_page.make_page page)
+        %%%MODULE_NAME%%%_base.App.send
+          (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))
       else
         let page = [ div ~a:[ a_class ["login-signup-box"] ]
                        [ Os_view.connect_form ~email () ] ]
         in
-        %%%MODULE_NAME%%%_base.App.send (%%%MODULE_NAME%%%_page.make_page page)
+        %%%MODULE_NAME%%%_base.App.send
+          (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))
     else (*VVV In that case we must do something more complex.
             Check whether myid = userid and ask the user
             what he wants to do. *)

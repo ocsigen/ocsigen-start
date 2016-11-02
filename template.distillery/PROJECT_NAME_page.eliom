@@ -58,17 +58,17 @@ let%shared the_local_css = [
 
     let default_connected_predicate _ _ _ = Lwt.return true
 
-    let default_error_page_full = Some (fun _ _ exn ->
+    let default_error_page _ _ exn =
       %%%MODULE_NAME%%%_container.page None
         (if Ocsigen_config.get_debugmode ()
          then [p [pcdata (Printexc.to_string exn)]]
-         else [p [pcdata "Error"]]))
+         else [p [pcdata "Error"]])
 
-    let default_connected_error_page_full = Some (fun myid_o _ _ exn ->
+    let default_connected_error_page myid_o _ _ exn =
       %%%MODULE_NAME%%%_container.page myid_o
         (if Ocsigen_config.get_debugmode ()
          then [p [pcdata (Printexc.to_string exn)]]
-         else [p [pcdata "Error"]]))
+         else [p [pcdata "Error"]])
 
   end
 

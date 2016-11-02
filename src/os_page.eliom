@@ -53,15 +53,9 @@ let%shared content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
     val css : string list list
     val local_css : string list list
     val other_head : Html_types.head_content_fun Eliom_content.Html.elt list
-    val default_error_page :
-      'a -> 'b -> exn ->
-      Html_types.body_content Eliom_content.Html.elt list Lwt.t
-    val default_error_page_full : ('a -> 'b -> exn -> content Lwt.t) option
+    val default_error_page : 'a -> 'b -> exn -> content Lwt.t
     val default_connected_error_page :
-      Os_types.User.id option -> 'a -> 'b -> exn ->
-      Html_types.body_content Eliom_content.Html.elt list Lwt.t
-    val default_connected_error_page_full :
-      (Os_types.User.id option -> 'a -> 'b -> exn -> content Lwt.t) option
+      Os_types.User.id option -> 'a -> 'b -> exn -> content Lwt.t
     val default_predicate : 'a -> 'b -> bool Lwt.t
     val default_connected_predicate :
       Os_types.User.id option -> 'a -> 'b -> bool Lwt.t
@@ -87,14 +81,13 @@ let%shared content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
           p [pcdata "You must be connected to see this page."]::de
         | _ -> de
       in
-      Lwt.return [div ~a:[a_class ["errormsg"]] (h2 [pcdata "Error"]::l)]
+      Lwt.return
+        (content [div ~a:[a_class ["errormsg"]] (h2 [pcdata "Error"]::l)])
 
     let default_predicate _ _ = Lwt.return true
     let default_connected_predicate _ _ _ = Lwt.return true
     let default_error_page _ _ exn = err_page exn
-    let default_error_page_full = None
     let default_connected_error_page _ _ _ exn = err_page exn
-    let default_connected_error_page_full = None
 
   end
 
@@ -132,7 +125,7 @@ let%shared content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
                      ("js"::cssname)) () )
         C.local_js
 
-    let make_page_full content =
+    let make_page content =
       let title = match content.title with Some t -> t | None -> C.title in
       html ~a:(a_onload [%client fun ev -> (
         let platform () =
@@ -156,20 +149,9 @@ let%shared content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
            ~other:(local_css @ local_js @ content.head @ C.other_head) ())
         (body ~a:content.body_attrs content.body)
 
-    let make_page body = make_page_full (content body)
-
-    let wrap_fallback fallback gp pp exc_opt =
-      let%lwt body = fallback gp pp exc_opt in Lwt.return (content body)
-
-    let default_error_page =
-      match C.default_error_page_full with
-      | Some default -> default
-      | None ->
-          fun gp pp exc_opt -> wrap_fallback C.default_error_page gp pp exc_opt
-
-    let page_full
+    let page
         ?(predicate = C.default_predicate)
-        ?(fallback = default_error_page)
+        ?(fallback = C.default_error_page)
         f gp pp =
       let%lwt content =
         try%lwt
@@ -180,29 +162,12 @@ let%shared content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
           else fallback gp pp (Predicate_failed None)
         with exc -> fallback gp pp (Predicate_failed (Some exc))
       in
-      Lwt.return (make_page_full content)
+      Lwt.return (make_page content)
 
-    let page ?predicate ?fallback f =
-      page_full ?predicate
-        ?fallback:(match fallback with
-          | None          -> None
-          | Some fallback -> Some (wrap_fallback fallback))
-        (fun gp pp -> let%lwt body = f gp pp in Lwt.return (content body))
-
-    let wrap_fallback_2 fallback myid_o gp pp exc_opt =
-      let%lwt body = fallback myid_o gp pp exc_opt in Lwt.return (content body)
-
-    let default_connected_error_page =
-      match C.default_connected_error_page_full with
-      | Some default -> default
-      | None ->
-        fun myid_o gp pp exc_opt ->
-          wrap_fallback_2 C.default_connected_error_page myid_o gp pp exc_opt
-
-    let connected_page_full
+    let connected_page
         ?allow ?deny
         ?(predicate = C.default_connected_predicate)
-        ?(fallback = default_connected_error_page)
+        ?(fallback = C.default_connected_error_page)
         f gp pp =
       let f_wrapped myid gp pp =
         try%lwt
@@ -223,25 +188,14 @@ let%shared content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
             f_wrapped gp pp
         with Os_session.Not_connected as exc -> fallback None gp pp exc
       in
-      Lwt.return (make_page_full content)
-
-    let connected_page ?allow ?deny ?predicate ?fallback f gp pp =
-      connected_page_full
-        ?allow ?deny
-        ?predicate
-        ?fallback:(match fallback with
-          | None          -> None
-          | Some fallback -> Some (wrap_fallback_2 fallback))
-        (fun myid_o gpp pp ->
-           let%lwt body = f myid_o gp pp in Lwt.return (content body))
-        gp pp
+      Lwt.return (make_page content)
 
     module Opt = struct
 
-      let connected_page_full
+      let connected_page
           ?allow ?deny
           ?(predicate = C.default_connected_predicate)
-          ?(fallback = default_connected_error_page)
+          ?(fallback = C.default_connected_error_page)
           f gp pp =
         let f_wrapped (myid_o : Os_types.User.id option) gp pp =
           try%lwt
@@ -260,18 +214,7 @@ let%shared content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
             fallback myid_o gp pp Os_session.Permission_denied)
           f_wrapped gp pp
         in
-        Lwt.return (make_page_full content)
-
-      let connected_page ?allow ?deny ?predicate ?fallback f gp pp =
-        connected_page_full
-          ?allow ?deny
-          ?predicate
-          ?fallback:(match fallback with
-            | None          -> None
-            | Some fallback -> Some (wrap_fallback_2 fallback))
-          (fun myid_o gpp pp ->
-             let%lwt body = f myid_o gp pp in Lwt.return (content body))
-          gp pp
+        Lwt.return (make_page content)
 
     end
   end
