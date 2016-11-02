@@ -185,7 +185,7 @@ module type TOKEN = sig
   (** The duration of a cycle. *)
   val cycle_duration : int
 
-  (** [number_of_cycle] the number of cycle. *)
+  (** [number_of_cycle] is the number of cycle. *)
   val number_of_cycle : int
 
   (** Returns the OpenID Connect server ID which delivered the token. *)
@@ -198,7 +198,7 @@ module type TOKEN = sig
     saved_token ->
     string
 
-  (** Returns the token type (for example ["bearer"]. *)
+  (** Returns the token type (for example ["bearer"]). *)
   val token_type_of_saved_token            :
     saved_token ->
     string
@@ -244,7 +244,7 @@ module type TOKEN = sig
     saved_token list
 
   (** [remove_saved_token token] removes [token] (used for example when [token]
-      is expired.
+      is expired).
    *)
   val remove_saved_token  :
     saved_token         ->
@@ -255,8 +255,8 @@ module type TOKEN = sig
 
 module type CLIENT = sig
   (** The following types and functions related to tokens and scopes are
-      aliases to the same types and functions from the module type given in the
-      functor {!MakeClient}. These aliases avoid to know the modules used to
+      aliases to the same types and functions from the modules types given in
+      the functor {!MakeClient}. These aliases avoid to know the modules used to
       build the client.
    *)
 
@@ -282,9 +282,17 @@ module type CLIENT = sig
 
   type saved_token
 
-  val id_server_of_saved_token    : saved_token -> Os_types.OAuth2.Server.id
-  val value_of_saved_token        : saved_token -> string
-  val token_type_of_saved_token   : saved_token -> string
+  val id_server_of_saved_token    :
+    saved_token ->
+    Os_types.OAuth2.Server.id
+
+  val value_of_saved_token        :
+    saved_token ->
+    string
+
+  val token_type_of_saved_token   :
+    saved_token ->
+    string
 
   val saved_token_of_id_server_and_value :
     Os_types.OAuth2.Server.id ->
@@ -299,21 +307,20 @@ module type CLIENT = sig
     saved_token         ->
     unit
 
-  (** When registering, clients must specify a redirect uri where the code will
-     be sent as GET parameter (or the authorization code error).
-     [register_redirect_uri ~redirect_uri ~success_redirection ~error_rediction]
-     registers two services at the url [redirect_uri] :
-     - for successfull authorization code response.
-     - for error authorization code response.
+  (** When registering, clients must specify a redirection URL where the code
+      will be sent as GET parameter (or the authorization code error).
+      [register_redirect_uri ~redirect_uri ~success_redirection
+      ~error_rediction] registers two services at the url [redirect_uri] :
+      - for successfull authorization code response.
+      - for error authorization code response.
 
-     In the case of a successfull authorization code, this service will
-     request an access token to the token server and if the token server
-     responds with success, the token is saved in the database and a
-     redirection is done to the service [success_redirection].
+      In the case of a successfull authorization code, this service will
+      request an access token to the token server and if the token server
+      responds with success, the token is saved and a redirection is done to the
+      service [success_redirection].
 
-     In the case of an error response (while requesting an authorization code
-     or a token), we redirect the user to the service [error_redirection].
-
+      In the case of an error response (while requesting an authorization code
+      or a token), we redirect the user to the service [error_redirection].
    *)
 
   val register_redirect_uri :
@@ -334,7 +341,7 @@ module type CLIENT = sig
      to redirect the user-agent on the client OAuth2.
 
      You will never manipulate the authorization code. The code is temporarily
-     saved server side until expiration in the HTTP parameter.
+     saved server side until expiration.
      The next time you request an access token, authorization code will
      be checked and if it's not expired, request an access token to the
      OAuth2.0 server.
@@ -354,7 +361,7 @@ end
 
 (** Basic_scope is a {!SCOPE} module representing a basic scope list (firstname,
     lastname and email).
-    This scope representation is used in {!Os_oauth2_server.Basic} so you can to
+    This scope representation is used in {!Os_oauth2_server.Basic} so you can
     use this module if the OAuth2.0 server is an instance of
     {!Os_oauth2_server.Basic}.
 
