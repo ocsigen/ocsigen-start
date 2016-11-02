@@ -66,7 +66,7 @@ type registered_server
 (** Get the ID database. *)
 val id_of_registered_server                 :
   registered_server                       ->
-  int64
+  Os_types.OAuth2.Server.id
 
 (** Get the server ID which is a string to recognize it easily. *)
 val server_id_of_registered_server          :
@@ -78,19 +78,19 @@ val server_id_of_registered_server          :
  *)
 val authorization_url_of_registered_server  :
   registered_server                       ->
-  string
+  Ocsigen_lib.Url.t
 
 (** Get the token URL which must be used to get a token after requesting an
     authorization code.
  *)
 val token_url_of_registered_server          :
   registered_server                       ->
-  string
+  Ocsigen_lib.Url.t
 
 (** Get the data URL which must be used to get the data. *)
 val data_url_of_registered_server           :
   registered_server                       ->
-  string
+  Ocsigen_lib.Url.t
 
 (** Get the client credentials. *)
 val client_credentials_of_registered_server :
@@ -99,11 +99,11 @@ val client_credentials_of_registered_server :
 
 (** Build a type {!registered_server}. *)
 val to_registered_server                    :
-  id:int64                                ->
+  id:Os_types.OAuth2.Server.id            ->
   server_id:string                        ->
-  authorization_url:string                ->
-  token_url:string                        ->
-  data_url:string                         ->
+  authorization_url:Ocsigen_lib.Url.t     ->
+  token_url:Ocsigen_lib.Url.t             ->
+  data_url:Ocsigen_lib.Url.t              ->
   client_credentials:client_credentials   ->
   registered_server
 
@@ -117,23 +117,25 @@ val list_servers        :
     {!Server_id_exists} is raised.
  *)
 val save_server :
-  server_id:string                  ->
-  server_authorization_url:string   ->
-  server_token_url:string           ->
-  server_data_url:string            ->
-  client_id:string                  ->
-  client_secret:string              ->
+  server_id:string                            ->
+  server_authorization_url:Ocsigen_lib.Url.t  ->
+  server_token_url:Ocsigen_lib.Url.t          ->
+  server_data_url:Ocsigen_lib.Url.t           ->
+  client_id:Os_types.OAuth2.client_id         ->
+  client_secret:Os_types.OAuth2.client_secret ->
   unit Lwt.t
 
 (** [remove_server_by_id id] removes from the database the registered server
     with ID [id].
  *)
 val remove_server_by_id :
-  int64                             ->
+  Os_types.OAuth2.Server.id ->
   unit Lwt.t
 
 (** Get the client credientials for a given OAuth2.0 server. *)
-val get_client_credentials : server_id:string -> client_credentials Lwt.t
+val get_client_credentials :
+  server_id:string ->
+  client_credentials Lwt.t
 
 (** {3 About scopes, tokens and basic client. } *)
 
@@ -189,7 +191,7 @@ module type TOKEN = sig
   (** Returns the OpenID Connect server ID which delivered the token. *)
   val id_server_of_saved_token :
     saved_token ->
-    int64
+    Os_types.OAuth2.Server.id
 
   (** Returns the token value. *)
   val value_of_saved_token                 :
@@ -201,7 +203,7 @@ module type TOKEN = sig
     saved_token ->
     string
 
-  (** Returns the number of remaining cycles. *)
+  (** Returns the number of passed cycles. *)
   val counter_of_saved_token               :
     saved_token  ->
     int ref
@@ -213,8 +215,8 @@ module type TOKEN = sig
       Unrecognized JSON attributes must be ignored.
    *)
   val parse_json_token    :
-    int64                ->
-    Yojson.Basic.json    ->
+    Os_types.OAuth2.Server.id ->
+    Yojson.Basic.json         ->
     saved_token
 
   (** [saved_token_of_id_server_and_value id_server value] returns the
@@ -227,8 +229,8 @@ module type TOKEN = sig
      logical for security.
    *)
   val saved_token_of_id_server_and_value   :
-    int64               ->
-    string              ->
+    Os_types.OAuth2.Server.id ->
+    string                    ->
     saved_token
 
   (** [save_token token] saves a new token. *)
@@ -280,13 +282,13 @@ module type CLIENT = sig
 
   type saved_token
 
-  val id_server_of_saved_token    : saved_token -> int64
+  val id_server_of_saved_token    : saved_token -> Os_types.OAuth2.Server.id
   val value_of_saved_token        : saved_token -> string
   val token_type_of_saved_token   : saved_token -> string
 
   val saved_token_of_id_server_and_value :
-    int64               ->
-    string              ->
+    Os_types.OAuth2.Server.id ->
+    string                    ->
     saved_token
 
   val list_tokens         :
@@ -315,7 +317,7 @@ module type CLIENT = sig
    *)
 
   val register_redirect_uri :
-    redirect_uri:string ->
+    redirect_uri:Ocsigen_lib.Url.t ->
     success_redirection:
       Eliom_service.non_ocaml Eliom_registration.Redirection.page ->
     error_redirection:
@@ -343,9 +345,9 @@ module type CLIENT = sig
      [server_id].
    *)
   val request_authorization_code :
-    redirect_uri:string   ->
-    server_id:string      ->
-    scope:scope list ->
+    redirect_uri:Ocsigen_lib.Url.t  ->
+    server_id:string                ->
+    scope:scope list                ->
     unit Lwt.t
 
 end

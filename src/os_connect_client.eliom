@@ -36,7 +36,7 @@ module type IDTOKEN =
 
   val id_server_of_saved_token :
     saved_token ->
-    int64
+    Os_types.OAuth2.Server.id
 
   val value_of_saved_token                 :
     saved_token ->
@@ -60,8 +60,8 @@ module type IDTOKEN =
     saved_token
 
   val saved_token_of_id_server_and_value   :
-    int64               ->
-    string              ->
+    Os_types.OAuth2.Server.id ->
+    string                    ->
     saved_token
 
   val save_token          :
@@ -102,10 +102,10 @@ module Basic_ID_token : IDTOKEN =
     struct
       type saved_token =
       {
-        id_server   : int64           ;
-        value       : string          ;
-        token_type  : string          ;
-        counter     : int ref         ;
+        id_server   : Os_types.OAuth2.Server.id ;
+        value       : string                    ;
+        token_type  : string                    ;
+        counter     : int ref                   ;
         id_token    : Jwt.t
       }
 

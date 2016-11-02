@@ -42,7 +42,7 @@ type client
 val client_of_str :
   application_name:string ->
   description:string ->
-  redirect_uri:string ->
+  redirect_uri:Ocsigen_lib.Url.t ->
   client
 
 val application_name_of_client :
@@ -51,28 +51,28 @@ val application_name_of_client :
 
 val redirect_uri_of_client :
   client ->
-  string
+  Ocsigen_lib.Url.t
 
 val description_of_client :
   client ->
   string
 
 val client_of_id :
-  int64 ->
+  Os_types.OAuth2.Client.id ->
   client Lwt.t
 
 (* Create a new client by generating credentials. The return value is the ID in
  * the database.
  *)
 val new_client                 :
-  application_name:string ->
-  description:string      ->
-  redirect_uri:string     ->
-  int64 Lwt.t
+  application_name:string         ->
+  description:string              ->
+  redirect_uri:Ocsigen_lib.Url.t  ->
+  Os_types.OAuth2.Client.id Lwt.t
 
 (** Remove the client with the id [id] from the database. *)
 val remove_client_by_id :
-  int64                   ->
+  Os_types.OAuth2.Client.id ->
   unit Lwt.t
 
 (** Remove the client with the client_id [client_id] from the database.
@@ -96,7 +96,7 @@ type registered_client
 
 val id_of_registered_client          :
   registered_client  ->
-  int64
+  Os_types.OAuth2.Client.id
 
 val client_of_registered_client      :
   registered_client  ->
@@ -107,9 +107,9 @@ val credentials_of_registered_client :
   client_credentials
 
 val to_registered_client             :
-  int64              ->
-  client             ->
-  client_credentials ->
+  Os_types.OAuth2.Client.id ->
+  client                    ->
+  client_credentials        ->
   registered_client
 
 (** Return the registered client having [client_id] as client id *)
@@ -118,9 +118,9 @@ val registered_client_of_client_id   :
   registered_client Lwt.t
 
 val list_clients :
-  ?min_id:Int64.t    ->
-  ?limit:Int64.t     ->
-  unit               ->
+  ?min_id:Os_types.OAuth2.Client.id ->
+  ?limit:Int64.t                    ->
+  unit                              ->
   registered_client list Lwt.t
 
 (* ---------- Registered client ---------- *)
@@ -128,9 +128,6 @@ val list_clients :
 
 module type SCOPE =
   sig
-    (* --------------------------- *)
-    (* ---------- Scope ---------- *)
-
     (** Scope is a list of permissions *)
     type scope
 
@@ -150,9 +147,6 @@ module type SCOPE =
     val check_scope_list :
       scope list ->
       bool
-
-    (* --------------------------- *)
-    (* ---------- Scope ---------- *)
   end
 
 module type TOKEN =
@@ -176,11 +170,11 @@ module type TOKEN =
 
     val id_client_of_saved_token  :
       saved_token ->
-      int64
+      Os_types.OAuth2.Client.id
 
     val userid_of_saved_token     :
       saved_token ->
-      int64
+      Os_types.User.id
 
     val value_of_saved_token      :
       saved_token ->
@@ -210,9 +204,9 @@ module type TOKEN =
 
     (* Generate a new token *)
     val generate_token            :
-      id_client:int64             ->
-      userid:int64                ->
-      scope:scope list            ->
+      id_client:Os_types.OAuth2.Client.id ->
+      userid:Os_types.User.id             ->
+      scope:scope list                    ->
       saved_token Lwt.t
 
     (* Save a token *)
@@ -225,7 +219,7 @@ module type TOKEN =
       unit
 
     val saved_token_of_id_client_and_value :
-      int64                       ->
+      Os_types.OAuth2.Client.id   ->
       string                      ->
       saved_token
 
@@ -272,7 +266,7 @@ module type SERVER =
     val set_userid_of_request_info_code :
       string ->
       string ->
-      int64 ->
+      Os_types.User.id ->
       unit
 
     (* ---------- request code information --------- *)
@@ -328,8 +322,8 @@ module type SERVER =
 
     type saved_token
 
-    val id_client_of_saved_token  : saved_token -> int64
-    val userid_of_saved_token     : saved_token -> int64
+    val id_client_of_saved_token  : saved_token -> Os_types.OAuth2.Client.id
+    val userid_of_saved_token     : saved_token -> Os_types.User.id
     val value_of_saved_token      : saved_token -> string
     val token_type_of_saved_token : saved_token -> string
     val scope_of_saved_token      : saved_token -> scope list
@@ -347,7 +341,7 @@ module type SERVER =
       unit
 
     val saved_token_of_id_client_and_value :
-      int64                       ->
+      Os_types.OAuth2.Client.id   ->
       string                      ->
       saved_token
 
@@ -416,10 +410,10 @@ module type SERVER =
     (* authorization handler *)
 
     type authorization_handler  =
-      state:string          ->
-      client_id:string      ->
-      redirect_uri:string   ->
-      scope:scope list      ->
+      state:string                        ->
+      client_id:Os_types.OAuth2.client_id ->
+      redirect_uri:Ocsigen_lib.Url.t      ->
+      scope:scope list                    ->
       Eliom_registration.Html.page Lwt.t (* Return value of the handler *)
 
     (** authorize_handler [handler] returns a handler for the authorization URL.
@@ -471,7 +465,7 @@ module type SERVER =
      * {!token_handler}
      *)
     val token_service :
-      Eliom_lib.Url.path ->
+      Ocsigen_lib.Url.path ->
       token_service
 
     (* token service *)

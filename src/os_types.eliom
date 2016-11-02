@@ -66,8 +66,6 @@ module Group = struct
   }
 end
 
-[%%server.start]
-
 module OAuth2 = struct
   type client_id      = string
   type client_secret  = string

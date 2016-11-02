@@ -70,8 +70,6 @@ module Group : sig
   }
 end
 
-[%%server.start]
-
 module OAuth2 : sig
   type client_id      = string
   type client_secret  = string

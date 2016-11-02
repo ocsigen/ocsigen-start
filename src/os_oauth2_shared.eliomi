@@ -33,12 +33,17 @@ val size_authorization_code : int
 type client_credentials
 
 val client_credentials_of_str :
-  client_id:string      ->
-  client_secret:string  ->
+  client_id:Os_types.OAuth2.client_id         ->
+  client_secret:Os_types.OAuth2.client_secret ->
   client_credentials
 
-val client_credentials_id     : client_credentials -> string
-val client_credentials_secret : client_credentials -> string
+val client_credentials_id     :
+  client_credentials ->
+  Os_types.OAuth2.client_id
+
+val client_credentials_secret :
+  client_credentials ->
+  Os_types.OAuth2.client_secret
 
 (** {3 Error types for authorization code. } *)
 
@@ -74,10 +79,11 @@ val error_token_type_to_str               :
 val param_authorization_code :
   (
     Eliom_service.get,
-    string * (string * (string * (string * string))),
+    string *
+      (Os_types.OAuth2.client_id * (Ocsigen_lib.Url.t * (string * string))),
     [ `One of string ] Eliom_parameter.param_name *
-    ([ `One of string ] Eliom_parameter.param_name *
-     ([ `One of string ] Eliom_parameter.param_name *
+    ([ `One of Os_types.OAuth2.client_id ] Eliom_parameter.param_name *
+     ([ `One of Ocsigen_lib.Url.t ] Eliom_parameter.param_name *
       ([ `One of string ] Eliom_parameter.param_name *
        [ `One of string ] Eliom_parameter.param_name))),
     unit,
@@ -103,10 +109,10 @@ val param_authorization_code_response :
 val param_authorization_code_response_error :
   (
     Eliom_service.get,
-    string * (string option * (string option * string)),
+    string * (string option * (Ocsigen_lib.Url.t option * string)),
     [ `One of string ] Eliom_parameter.param_name *
     ([ `One of string ] Eliom_parameter.param_name *
-     ([ `One of string ] Eliom_parameter.param_name *
+     ([ `One of Ocsigen_lib.Url.t ] Eliom_parameter.param_name *
       [ `One of string ] Eliom_parameter.param_name)),
     unit,
     unit,
@@ -120,12 +126,13 @@ val param_access_token :
     Eliom_service.post,
     unit,
     unit,
-    string * (string * (string * (string * string))),
+    string *
+      (string * (Ocsigen_lib.Url.t * (string * Os_types.OAuth2.client_id))),
     [ `One of string ] Eliom_parameter.param_name *
-    ([ `One of string ] Eliom_parameter.param_name *
+    ([ `One of Ocsigen_lib.Url.t ] Eliom_parameter.param_name *
      ([ `One of string ] Eliom_parameter.param_name *
       ([ `One of string ] Eliom_parameter.param_name *
-       [ `One of string ] Eliom_parameter.param_name))),
+       [ `One of Os_types.OAuth2.client_id ] Eliom_parameter.param_name))),
     [ `WithoutSuffix ],
     (*Eliom_service.get,*)
     unit

@@ -35,8 +35,8 @@ let expiration_time_authorization_code = 10 * 60
 
 type client_credentials =
   {
-    client_id     : string ;
-    client_secret : string
+    client_id     : Os_types.OAuth2.client_id     ;
+    client_secret : Os_types.OAuth2.client_secret
   }
 
 let client_credentials_of_str ~client_id ~client_secret =

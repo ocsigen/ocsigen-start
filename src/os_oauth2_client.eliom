@@ -46,12 +46,12 @@ exception Bad_JSON_respoonse
 
 type registered_server =
   {
-    id : int64 ;
-    server_id : string ;
-    authorization_url : string ;
-    token_url : string ;
-    data_url : string ;
-    client_credentials : Os_oauth2_shared.client_credentials
+    id                : Os_types.OAuth2.Server.id ;
+    server_id         : string ;
+    authorization_url : Ocsigen_lib.Url.t ;
+    token_url         : Ocsigen_lib.Url.t ;
+    data_url          : Ocsigen_lib.Url.t ;
+    client_credentials :Os_oauth2_shared.client_credentials
   }
 
 let id_of_registered_server s                 = s.id
@@ -169,7 +169,7 @@ module type TOKEN = sig
 
   val id_server_of_saved_token :
     saved_token ->
-    int64
+    Os_types.OAuth2.Server.id
 
   val value_of_saved_token                 :
     saved_token ->
@@ -189,8 +189,8 @@ module type TOKEN = sig
     saved_token
 
   val saved_token_of_id_server_and_value   :
-    int64               ->
-    string              ->
+    Os_types.OAuth2.Server.id ->
+    string                    ->
     saved_token
 
   val save_token          :
@@ -229,13 +229,13 @@ module type CLIENT = sig
 
   type saved_token
 
-  val id_server_of_saved_token    : saved_token -> int64
+  val id_server_of_saved_token    : saved_token -> Os_types.OAuth2.Server.id
   val value_of_saved_token        : saved_token -> string
   val token_type_of_saved_token   : saved_token -> string
 
   val saved_token_of_id_server_and_value :
-    int64               ->
-    string              ->
+    Os_types.OAuth2.Server.id ->
+    string                    ->
     saved_token
 
   val list_tokens         :
@@ -247,7 +247,7 @@ module type CLIENT = sig
     unit
 
   val register_redirect_uri :
-    redirect_uri:string ->
+    redirect_uri:Ocsigen_lib.Url.t ->
     success_redirection:
       Eliom_service.non_ocaml Eliom_registration.Redirection.page ->
     error_redirection:
@@ -255,9 +255,9 @@ module type CLIENT = sig
     unit Lwt.t
 
   val request_authorization_code :
-    redirect_uri:string   ->
-    server_id:string      ->
-    scope:scope list ->
+    redirect_uri:Ocsigen_lib.Url.t  ->
+    server_id:string                ->
+    scope:scope list                ->
     unit Lwt.t
 end
 
@@ -565,9 +565,9 @@ module Basic_scope =
 module Basic_token : TOKEN = struct
   type saved_token =
   {
-    id_server   : int64           ;
-    value       : string          ;
-    token_type  : string          ;
+    id_server   : Os_types.OAuth2.Server.id ;
+    value       : string                    ;
+    token_type  : string                    ;
     counter     : int ref
   }
 

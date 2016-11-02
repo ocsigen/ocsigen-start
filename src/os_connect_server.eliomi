@@ -39,11 +39,11 @@ module type IDTOKEN =
 
     val id_client_of_saved_token :
       saved_token ->
-      int64
+      Os_types.OAuth2.Client.id
 
     val userid_of_saved_token :
       saved_token ->
-      int64
+      Os_types.User.id
 
     val token_type_of_saved_token :
       saved_token ->
@@ -84,9 +84,9 @@ module type IDTOKEN =
 
     (* Generate a new token *)
     val generate_token            :
-      id_client:int64             ->
-      userid:int64                ->
-      scope:scope list            ->
+      id_client:Os_types.OAuth2.Client.id ->
+      userid:Os_types.User.id             ->
+      scope:scope list                    ->
       saved_token Lwt.t
 
     (* Save a token *)
@@ -99,8 +99,8 @@ module type IDTOKEN =
       unit
 
     val saved_token_of_id_client_and_value :
-      int64                       ->
-      string                      ->
+      Os_types.OAuth2.Server.id ->
+      string                    ->
       saved_token
 
     (* List all saved tokens *)

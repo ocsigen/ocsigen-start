@@ -64,7 +64,7 @@ module type IDTOKEN =
   (** Returns the OpenID Connect server ID which delivered the token. *)
   val id_server_of_saved_token :
     saved_token ->
-    int64
+    Os_types.OAuth2.Server.id
 
   (** Returns the token value. *)
   val value_of_saved_token                 :
@@ -93,8 +93,8 @@ module type IDTOKEN =
       Unrecognized JSON attributes must be ignored.
    *)
   val parse_json_token    :
-    int64                ->
-    Yojson.Basic.json    ->
+    Os_types.OAuth2.Server.id ->
+    Yojson.Basic.json         ->
     saved_token
 
   (** [saved_token_of_id_server_and_value id_server value] returns the
@@ -107,8 +107,8 @@ module type IDTOKEN =
      logical for security.
    *)
   val saved_token_of_id_server_and_value   :
-    int64               ->
-    string              ->
+    Os_types.OAuth2.Server.id ->
+    string                    ->
     saved_token
 
   (** [save_token token] saves a new token. *)
