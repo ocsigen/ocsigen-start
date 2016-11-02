@@ -31,28 +31,13 @@ exception No_such_saved_token
 exception No_such_request_info_code
 exception No_such_userid_registered
 
-(* -------------------------- *)
-(* ---------- MISC ---------- *)
-
 (* Split a string representing a list of scope value separated by space *)
 let split_scope_list s = Re.split (Re.compile (Re.rep1 Re.space)) s
-
-(* ---------- MISC ---------- *)
-(* -------------------------- *)
-
-(* ---------------------------------------- *)
-(* ---------- Client credentials ---------- *)
 
 let generate_client_credentials () =
   let client_id     = Os_oauth2_shared.generate_random_string size_client_id in
   let client_secret = Os_oauth2_shared.generate_random_string size_client_id in
   client_credentials_of_str ~client_id ~client_secret
-
-(* ---------- Client credentials ---------- *)
-(* ---------------------------------------- *)
-
-(* ---------------------------- *)
-(* ---------- Header ---------- *)
 
 (* Check if the client id and the client secret has been set in the header while
  * requesting a token and if they are correct.
@@ -74,23 +59,11 @@ let check_authorization_header client_id header =
   (* if the authorization value is not defined *)
   with Not_found -> Lwt.return_false
 
-(* ---------- Header ---------- *)
-(* ---------------------------- *)
-
-(** ------------------------------------------------------------ *)
-(** ---------- Functions about the authorization code ---------- *)
-
 (** generate_authorization_code () generates an authorization code.
  * NOTE: Improve the generation by using the userid of the OAuth2 server
  * user, the client_id of OAuth2 client and the scope? *)
 let generate_authorization_code () =
   Os_oauth2_shared.generate_random_string size_authorization_code
-
-(** ---------- Functions about the authorization code ---------- *)
-(** ------------------------------------------------------------ *)
-
-(* ---------------------------- *)
-(* ---------- Client ---------- *)
 
 (* A basic OAuth2.0 client is represented by an application name, a description
  * and redirect_uri. When a client is registered, credentials and an ID is
@@ -138,12 +111,6 @@ let remove_client_by_id id =
 let remove_client_by_client_id client_id =
   let%lwt id = Os_db.OAuth2_server.id_of_client_id client_id in
   remove_client_by_id id
-
-(* ---------- Client ---------- *)
-(* ---------------------------- *)
-
-(* --------------------------------------- *)
-(* ---------- Registered client ---------- *)
 
 type registered_client =
 {
@@ -201,15 +168,8 @@ let registered_client_exists_by_client_id client_id =
   Os_db.OAuth2_server.registered_client_exists_by_client_id client_id
 
 
-(* ---------- Registered client ---------- *)
-(* --------------------------------------- *)
-
 module type SCOPE =
   sig
-    (* --------------------------- *)
-    (* ---------- Scope ---------- *)
-
-    (** Scope is a list of permissions *)
     type scope
 
     val scope_of_str :
@@ -220,17 +180,9 @@ module type SCOPE =
       scope ->
       string
 
-    (** check_scope_list is used to check if the scope asked by the client is
-     * allowed. You can implement simple check_scope_list by only check is all
-     * element of the scope list is defined but you can also have the case where
-     * two scopes can't be asked at the same time.
-     *)
     val check_scope_list :
       scope list ->
       bool
-
-    (* --------------------------- *)
-    (* ---------- Scope ---------- *)
   end
 
 module type TOKEN =
@@ -419,7 +371,7 @@ module type SERVER =
       client_id:string      ->
       redirect_uri:string   ->
       scope:scope list      ->
-      Eliom_registration.Html.page Lwt.t (* Return value of the handler *)
+      Eliom_registration.Html.page Lwt.t (* Returned value of the handler *)
 
     val authorization_handler :
       authorization_handler ->
@@ -617,24 +569,6 @@ module MakeServer
     (* ---------- request code information --------- *)
     (* --------------------------------------------- *)
 
-    (* --------------- Not in signature --------------- *)
-    (* ------------------------------------------------ *)
-
-
-    (** ------------------------------------------------------------ *)
-    (** ---------- Functions about the authorization code ---------- *)
-
-    (* Send the authorization code and redirect the user-agent to
-     * [redirect_uri]
-     * TODO: Use redirection and not change_page.
-     * TODO: if there's already a token for this client_id and this userid, send
-     * the token and not the code.
-     * NOTE: As the client_id and state are sent as GET parameters (so visible
-     * by the user agent), we can use it client-side without lack of security.
-     * If these informations are changed client-side, it will raise an error
-     * No_such_request_info_code and it will be caught in
-    * [authorization_handler] which will call send_authorization_code_error.
-     *)
     let send_authorization_code state client_id =
       let request_info_code_tmp =
         request_info_code_of_state_and_client_id state client_id
@@ -778,7 +712,7 @@ module MakeServer
       client_id:string      ->
       redirect_uri:string   ->
       scope:scope list      ->
-      Eliom_registration.Html.page Lwt.t (* Return value of the handler *)
+      Eliom_registration.Html.page Lwt.t (* Returned value of the handler *)
 
     (* Performs check on client_id, scope and response_type before sent state,
      * client_id, redirect_uri and scope to the handler
@@ -903,24 +837,16 @@ module MakeServer
               state
               redirect_uri
 
-    (* Authorization handler *)
-    (* --------------------- *)
-
-    (** ---------- Authorization registration ---------- *)
-    (** ------------------------------------------------ *)
-
-    (** ---------- URL registration ---------- *)
-    (** -------------------------------------- *)
-
-    (** ------------------------------------------ *)
-    (** ---------- Function about token ---------- *)
-
     type saved_token              = Token.saved_token
 
     let id_client_of_saved_token  = Token.id_client_of_saved_token
+
     let userid_of_saved_token     = Token.userid_of_saved_token
+
     let value_of_saved_token      = Token.value_of_saved_token
+
     let token_type_of_saved_token = Token.token_type_of_saved_token
+
     let scope_of_saved_token      = Token.scope_of_saved_token
 
     let generate_token            = Token.generate_token
@@ -988,15 +914,6 @@ module MakeServer
           "application/json;charset=UTF-8"
         )
 
-        (** ---------- Function about token ---------- *)
-    (** ------------------------------------------ *)
-
-    (** ---------------------------------------- *)
-    (** ---------- Token registration ---------- *)
-
-    (* ------------- *)
-    (* token service *)
-
     type token_service =
       (unit,
       string * (string * (string * (string * string))),
@@ -1028,12 +945,6 @@ module MakeServer
         ~meth:param_access_token
         ~https:true
         ()
-
-    (* token service *)
-    (* ------------- *)
-
-    (* ------------- *)
-    (* token handler *)
 
     (* NOTE: the state is not mandatory but it is used to get information about
      * the request. Not in RFC!!
@@ -1118,17 +1029,9 @@ module MakeServer
                 (Some "Client authentication failed.")
               Token_invalid_client
 
-    (* token handler *)
-    (* ------------- *)
-
-    (** ---------- Token registration ---------- *)
-    (** ---------------------------------------- *)
   end
 
 module Basic_scope = struct
-  (* --------------------------- *)
-  (* ---------- Scope ---------- *)
-
   type scope = OAuth | Firstname | Lastname | Email | Unknown
 
   let scope_to_str = function
@@ -1145,13 +1048,6 @@ module Basic_scope = struct
     | "email"     -> Email
     | _           -> Unknown
 
-  (** check_scope_list scope_list returns true if every element in
-  * [scope_list] is a available scope value.
-  * If the list contains only OAuth or if the list doesn't contain OAuth
-  * (mandatory scope in RFC), returns false.
-  * If an unknown scope value is in list (represented by Unknown value), returns
-  * false.
-  *)
   let check_scope_list scope_list =
     if List.length scope_list = 0
     then false
@@ -1166,15 +1062,10 @@ module Basic_scope = struct
           | _ -> true
         )
         scope_list
-
-  (* ---------- Scope ---------- *)
-  (* --------------------------- *)
 end
 
 module MakeBasicToken (Scope : SCOPE) : (TOKEN with type scope = Scope.scope) =
   struct
-    (** ------------------------------------------ *)
-    (** ---------- Function about token ---------- *)
     type scope = Scope.scope
 
     let cycle_duration      = 10
@@ -1193,9 +1084,6 @@ module MakeBasicToken (Scope : SCOPE) : (TOKEN with type scope = Scope.scope) =
 
     let saved_tokens : saved_token list ref = ref []
 
-    (* ------- *)
-    (* getters *)
-
     let id_client_of_saved_token t  = t.id_client
 
     let userid_of_saved_token t     = t.userid
@@ -1208,19 +1096,11 @@ module MakeBasicToken (Scope : SCOPE) : (TOKEN with type scope = Scope.scope) =
 
     let counter_of_saved_token t    = t.counter
 
-    (* getters *)
-    (* ------- *)
-
-    (** token_exists_by_id_client_and_value [id_client] [value] returns true if
-      * there exists a saved token with [id_client] and [value].
-      *)
     let token_exists_by_id_client_and_value id_client value =
       List.exists
         (fun x -> x.id_client = id_client && x.value = value)
         (! saved_tokens)
 
-    (** token_exists [saved_token] returns true if [saved_token] exists
-      *)
     let token_exists saved_token =
       let id_client   = id_client_of_saved_token saved_token  in
       let value       = value_of_saved_token saved_token      in
@@ -1267,7 +1147,6 @@ module MakeBasicToken (Scope : SCOPE) : (TOKEN with type scope = Scope.scope) =
       in
       locale tokens
 
-    (* List all saved tokens *)
     (* IMPROVEME: list tokens by client OAuth2 id *)
     let list_tokens () =
       (! saved_tokens)
@@ -1277,13 +1156,9 @@ module MakeBasicToken (Scope : SCOPE) : (TOKEN with type scope = Scope.scope) =
       [
         ("token_type", `String "bearer") ;
         ("token", `String (value_of_saved_token saved_token)) ;
-        (* FIXME: See fixme for saved_token value. *)
-        (* ("expires_in", `Int 3600) ; *)
+        ("expires_in", `Int (cycle_duration * number_of_cycle)) ;
         (* ("refresh_token", `String refresh_token) ;*)
       ]
-
-    (** ---------- Function about token ---------- *)
-    (** ------------------------------------------ *)
   end
 
 module Basic_token = MakeBasicToken (Basic_scope)

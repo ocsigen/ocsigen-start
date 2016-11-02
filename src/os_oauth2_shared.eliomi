@@ -134,7 +134,6 @@ val param_access_token :
       ([ `One of string ] Eliom_parameter.param_name *
        [ `One of Os_types.OAuth2.client_id ] Eliom_parameter.param_name))),
     [ `WithoutSuffix ],
-    (*Eliom_service.get,*)
     unit
   )
   Eliom_service.meth
