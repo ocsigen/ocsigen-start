@@ -912,6 +912,16 @@ module OAuth2_server =
           | u.id = $int64:id$
         >>
       )
+
+    let remove_client_by_client_id client_id =
+      full_transaction_block (fun dbh ->
+        Lwt_Query.query dbh
+        <:delete<
+          u in $oauth2_server_client_table$
+          | u.client_id = $string:client_id$
+        >>
+      )
+
     (* --------- Client registration ---------- *)
     (* ---------------------------------------- *)
   end

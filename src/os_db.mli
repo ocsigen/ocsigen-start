@@ -347,6 +347,14 @@ module OAuth2_server : sig
   val remove_client :
     Os_types.OAuth2.Server.id ->
     unit Lwt.t
+
+  (** Remove a client by using the client ID.
+      Raise an exception {!No_such_resource} if no client has the given client
+      ID.
+   *)
+  val remove_client_by_client_id :
+    Os_types.OAuth2.client_id ->
+    unit Lwt.t
 end
 
 module OAuth2_client : sig
@@ -358,7 +366,6 @@ module OAuth2_client : sig
     client_id:Os_types.OAuth2.client_id ->
     client_secret:Os_types.OAuth2.client_secret ->
     Os_types.OAuth2.Client.id Lwt.t
-
 
   val remove_server_by_id :
     Os_types.OAuth2.Client.id ->
