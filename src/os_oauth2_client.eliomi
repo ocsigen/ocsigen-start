@@ -22,9 +22,6 @@
     ({!Basic_token}) and client implementation ({!Basic}).
  *)
 
-open Os_oauth2_shared
-
-(* ---------- Exceptions ---------- *)
 (** {1 Exceptions } *)
 
 (** Raised if a state is not found. *)
@@ -95,16 +92,16 @@ val data_url_of_registered_server           :
 (** Get the client credentials. *)
 val client_credentials_of_registered_server :
   registered_server                       ->
-  client_credentials
+  Os_oauth2_shared.client_credentials
 
 (** Build a type {!registered_server}. *)
 val to_registered_server                    :
-  id:Os_types.OAuth2.Server.id            ->
-  server_id:string                        ->
-  authorization_url:Ocsigen_lib.Url.t     ->
-  token_url:Ocsigen_lib.Url.t             ->
-  data_url:Ocsigen_lib.Url.t              ->
-  client_credentials:client_credentials   ->
+  id:Os_types.OAuth2.Server.id                           ->
+  server_id:string                                       ->
+  authorization_url:Ocsigen_lib.Url.t                    ->
+  token_url:Ocsigen_lib.Url.t                            ->
+  data_url:Ocsigen_lib.Url.t                             ->
+  client_credentials:Os_oauth2_shared.client_credentials ->
   registered_server
 
 (** List all registered servers. Data are retrieved from the database. *)
@@ -135,7 +132,7 @@ val remove_server_by_id :
 (** Get the client credientials for a given OAuth2.0 server. *)
 val get_client_credentials :
   server_id:string ->
-  client_credentials Lwt.t
+  Os_oauth2_shared.client_credentials Lwt.t
 
 (** {3 About scopes, tokens and basic client. } *)
 
