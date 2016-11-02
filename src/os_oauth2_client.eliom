@@ -21,28 +21,14 @@
 open Eliom_parameter
 open Lwt.Infix
 
-(* -------------------------------- *)
-(* ---------- Exceptions ---------- *)
-
-(* About state *)
 exception State_not_found
-
-(* About client *)
 exception No_such_client
 
-(* About server *)
 exception Server_id_exists
 exception No_such_server
 
-(* About saved token *)
 exception No_such_saved_token
 exception Bad_JSON_respoonse
-
-(* ---------- Exceptions ---------- *)
-(* -------------------------------- *)
-
-(* ----------------------------------- *)
-(* Type of registered OAuth2.0 server. *)
 
 type registered_server =
   {
@@ -82,12 +68,6 @@ let list_servers () =
       ) servers
   )
 
-(** Type of registered OAuth2.0 server. Only used client side. *)
-(** ---------------------------------------------------------- *)
-
-(** --------------------------------------------- *)
-(** Get client credentials and server information *)
-
 let get_client_credentials ~server_id =
   try%lwt
     (Os_db.OAuth2_client.get_client_credentials ~server_id)
@@ -112,12 +92,6 @@ let get_server_url_token ~server_id =
     Os_db.OAuth2_client.get_server_token_url ~server_id
   with Os_db.No_such_resource -> Lwt.fail No_such_server
 
-(** Get client credentials and server information *)
-(** --------------------------------------------- *)
-
-(** ------------------------------- *)
-(** Save and remove a OAuth2 server *)
-
 let save_server
   ~server_id ~server_authorization_url ~server_token_url
   ~server_data_url ~client_id ~client_secret =
@@ -137,12 +111,6 @@ let remove_server_by_id id =
   try%lwt
     Os_db.OAuth2_client.remove_server_by_id id
   with Os_db.No_such_resource -> Lwt.fail No_such_server
-
-(** Save and remove a OAuth2 server *)
-(** ------------------------------- *)
-
-(** ----------------------------------------------------------- *)
-(** Scope module type. See the eliomi file for more information *)
 
 module type SCOPE = sig
   type scope
@@ -358,7 +326,7 @@ module MakeClient
   (* TODO: add a optional parameter for other parameters to send. *)
   let request_authorization_code ~redirect_uri ~server_id ~scope
     =
-    let%lwt (prefix, path)       = get_server_url_authorization ~server_id  in
+    let%lwt (prefix, path)     = get_server_url_authorization ~server_id in
     let scope_str_list         =
       scope_list_to_str_list (default_scopes @ scope)
     in
@@ -366,11 +334,11 @@ module MakeClient
     (* in raw to easily change later. *)
     let response_type          = "code" in
     (* ------------------------------ *)
-    let%lwt client_credentials = get_client_credentials ~server_id        in
+    let%lwt client_credentials = get_client_credentials ~server_id in
     let client_id              =
       Os_oauth2_shared.client_credentials_id client_credentials
     in
-    let state                  = generate_state ()                        in
+    let state                  = generate_state () in
 
     let service_url            = Eliom_service.extern
       ~prefix
@@ -378,7 +346,7 @@ module MakeClient
       ~meth:Os_oauth2_shared.param_authorization_code
       ()
     in
-    let scope_str              = String.concat " " scope_str_list         in
+    let scope_str              = String.concat " " scope_str_list in
     add_request_info state server_id scope;
     ignore ([%client (
       Eliom_client.change_page
@@ -405,21 +373,6 @@ module MakeClient
   let list_tokens                        = Token.list_tokens
 
   let remove_saved_token                 = Token.remove_saved_token
-
-  (** OCaml representation of a token. This is the OCaml equivalent
-   * representation of the JSON returned by the token server
-   *)
-  type token_json =
-  {
-    token_type  : string ;
-    value       : string ;
-  }
-
-  (** Create a token with the type and the corresponding value *)
-  let token_json_of_str token_type value = {token_type ; value}
-
-  let token_type_of_token_json t = t.token_type
-  let value_of_token_json t      = t.value
 
   (** Request a token to the server represented as ~server_id in the
    * database.

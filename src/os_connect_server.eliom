@@ -142,16 +142,14 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
 
     let saved_tokens : saved_token list ref = ref []
 
-    (** token_exists_by_id_client_and_value [id_client] [value] returns true if
-      * there exists a saved token with [id_client] and [value].
-      *)
+    (** Returns [true] if there exists a saved token with [id_client] and
+        [value].
+     *)
     let token_exists_by_id_client_and_value id_client value =
       List.exists
         (fun x -> x.id_client = id_client && x.value = value)
         (! saved_tokens)
 
-    (** token_exists [saved_token] returns true if [saved_token] exists
-      *)
     let token_exists saved_token =
       let id_client   = id_client_of_saved_token saved_token  in
       let value       = value_of_saved_token saved_token      in
@@ -213,11 +211,9 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
           id_token ; scope ; counter = ref 0 ; secret_key
         }
 
-    (* Save a token *)
     let save_token token =
       saved_tokens := (token :: (! saved_tokens))
 
-    (* remove a saved token of type saved_token *)
     let remove_saved_token saved_token =
       let value       = value_of_saved_token saved_token      in
       let id_client   = id_client_of_saved_token saved_token  in
@@ -228,7 +224,6 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
           (! saved_tokens)
       )
 
-    (* Search a saved token by id_client and value *)
     let saved_token_of_id_client_and_value id_client value =
       let tokens = ! saved_tokens in
       let rec locale = function
@@ -240,7 +235,6 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
       in
       locale tokens
 
-    (* List all saved tokens *)
     (* IMPROVEME: list tokens by client OAuth2 id *)
     let list_tokens () = (! saved_tokens)
 
