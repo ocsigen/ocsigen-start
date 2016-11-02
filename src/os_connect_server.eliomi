@@ -1,3 +1,28 @@
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
+ *
+ * Copyright (C) Université Paris Diderot, CNRS, INRIA, Be Sport.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+
+(** OpenID Connect server with default scopes ({!Basic_scope}), ID Tokens
+    ({!Basic_ID_Token}) and client implementation ({!Basic}).
+ *)
+
+(** Exception raised when the given token doesn't exist. *)
 exception No_such_saved_token
 
 module type IDTOKEN =
@@ -8,20 +33,9 @@ module type IDTOKEN =
 
     val saved_tokens : saved_token list ref
 
-    (* Tokens must expire after a certain amount of time. For this, a timer checks
-     * all [timeout] seconds and if the token has been generated after [timeout] *
-     * [number_of_timeout] seconds, we remove it.
-     *)
-    (** [timeout] is the number of seconds after how many we need to check if
-      * saved tokens are expired.
-     *)
     val timeout : int
 
-    (** [number_of_timeout] IMPROVEME DOCUMENTATION *)
     val number_of_timeout : int
-
-    (* ------- *)
-    (* getters *)
 
     val id_client_of_saved_token :
       saved_token ->
@@ -98,6 +112,15 @@ module type IDTOKEN =
       saved_token                 ->
       Yojson.Safe.json
   end
+
+(** Basic module for scopes.
+    [check_scope_list scope_list] returns [true] if every element in
+    [scope_list] is a available scope value.
+    If the list contains only [OpenID] or if the list doesn't contain [OpenID]
+    (mandatory scope in RFC), returns [false].
+    If an unknown scope value is in list (represented by [Unknown] value),
+     returns [false].
+ *)
 
 module Basic_scope : Os_oauth2_server.SCOPE
 

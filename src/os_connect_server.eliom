@@ -1,3 +1,23 @@
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
+ *
+ * Copyright (C) Université Paris Diderot, CNRS, INRIA, Be Sport.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+
 exception No_such_saved_token
 
 module type IDTOKEN =
@@ -8,20 +28,9 @@ module type IDTOKEN =
 
     val saved_tokens : saved_token list ref
 
-    (* Tokens must expire after a certain amount of time. For this, a timer checks
-     * all [timeout] seconds and if the token has been generated after [timeout] *
-     * [number_of_timeout] seconds, we remove it.
-     *)
-    (** [timeout] is the number of seconds after how many we need to check if
-      * saved tokens are expired.
-     *)
     val timeout : int
 
-    (** [number_of_timeout] IMPROVEME DOCUMENTATION *)
     val number_of_timeout : int
-
-    (* ------- *)
-    (* getters *)
 
     val id_client_of_saved_token :
       saved_token ->
@@ -55,27 +64,20 @@ module type IDTOKEN =
       saved_token ->
       int ref
 
-    (* getters *)
-    (* ------- *)
-
-    (* Returns true if the token already exists *)
     val token_exists              :
       saved_token                 ->
       bool
 
-    (* Generate a token value *)
     val generate_token_value      :
       unit                        ->
       string
 
-    (* Generate a new token *)
     val generate_token            :
       id_client:int64             ->
       userid:int64                ->
       scope:scope list            ->
       saved_token Lwt.t
 
-    (* Save a token *)
     val save_token                :
       saved_token                 ->
       unit
@@ -89,7 +91,6 @@ module type IDTOKEN =
       string                      ->
       saved_token
 
-    (* List all saved tokens *)
     val list_tokens               :
       unit                        ->
       saved_token list
@@ -121,9 +122,6 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
       right id_token. This is the key used by HS256 to sign the token. *)
     }
 
-    (* ------- *)
-    (* getters *)
-
     let id_client_of_saved_token s  = s.id_client
 
     let userid_of_saved_token s     = s.userid
@@ -141,12 +139,6 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
     let secret_key_of_saved_token s = s.secret_key
 
     let counter_of_saved_token s    = s.counter
-
-    (* getters *)
-    (* ------- *)
-
-    (** ------------------------------------------ *)
-    (** ---------- Function about token ---------- *)
 
     (* FIXME: We need to set an expiration time to 10 minutes for each token in
     * the list. So the type will be saved_token Eliom_reference.Volatile.eref
@@ -276,9 +268,6 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
 
 module Basic_scope : Os_oauth2_server.SCOPE =
   struct
-  (* --------------------------- *)
-  (* ---------- Scope ---------- *)
-
   type scope = OpenID | Firstname | Lastname | Email | Unknown
 
   let scope_to_str = function
@@ -295,12 +284,12 @@ module Basic_scope : Os_oauth2_server.SCOPE =
     | "email"     -> Email
     | _           -> Unknown
 
-  (** check_scope_list scope_list returns true if every element in
-  * [scope_list] is a available scope value.
-  * If the list contains only OpenID or if the list doesn't contain OpenID
-  * (mandatory scope in RFC), returns false.
-  * If an unknown scope value is in list (represented by Unknown value), returns
-  * false.
+  (** Returns true if every element in
+      [scope_list] is a available scope value.
+      If the list contains only OpenID or if the list doesn't contain OpenID
+      (mandatory scope in RFC), returns false.
+      If an unknown scope value is in list (represented by Unknown value),
+      returns false.
   *)
   let check_scope_list scope_list =
     if List.length scope_list = 0
@@ -316,9 +305,6 @@ module Basic_scope : Os_oauth2_server.SCOPE =
           | _ -> true
         )
         scope_list
-
-  (* ---------- Scope ---------- *)
-  (* --------------------------- *)
   end
 
 module Basic_ID_token

@@ -1,4 +1,23 @@
-open Os_oauth2_shared
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
+ *
+ * Copyright (C) Université Paris Diderot, CNRS, INRIA, Be Sport.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+
 open Eliom_parameter
 open Lwt.Infix
 
@@ -32,7 +51,7 @@ type registered_server =
     authorization_url : string ;
     token_url : string ;
     data_url : string ;
-    client_credentials : client_credentials
+    client_credentials : Os_oauth2_shared.client_credentials
   }
 
 let id_of_registered_server s                 = s.id
@@ -59,7 +78,7 @@ let list_servers () =
         to_registered_server
         ~id ~server_id ~authorization_url ~token_url ~data_url
         ~client_credentials:
-          (client_credentials_of_str client_id client_secret)
+          (Os_oauth2_shared.client_credentials_of_str client_id client_secret)
       ) servers
   )
 
@@ -73,8 +92,10 @@ let get_client_credentials ~server_id =
   try%lwt
     (Os_db.OAuth2_client.get_client_credentials ~server_id)
     >>=
-    (fun (id, secret) ->
-      Lwt.return (client_credentials_of_str ~client_id:id ~client_secret:secret)
+    (fun (client_id, client_secret) ->
+      Lwt.return (Os_oauth2_shared.client_credentials_of_str
+        ~client_id ~client_secret
+      )
     )
   with Os_db.No_such_resource -> Lwt.fail No_such_server
 
@@ -126,7 +147,7 @@ let remove_server_by_id id =
 module type SCOPE = sig
   type scope
 
-  val default_scope : scope list
+  val default_scopes : scope list
 
   val scope_of_str :
     string ->
@@ -137,32 +158,14 @@ module type SCOPE = sig
     string
 end
 
-(** Scope module type. See the eliomi file for more information *)
-(** ----------------------------------------------------------- *)
-
-(** ----------------------------------------------------------- *)
-(** Token module type. See the eliomi file for more information *)
-
 module type TOKEN = sig
-  (** Represents a saved token *)
   type saved_token
 
   val saved_tokens : saved_token list ref
 
-  (* Tokens must expire after a certain amount of time. For this, a timer checks
-   * all [timeout] seconds and if the token has been generated after [timeout] *
-   * [number_of_timeout] seconds, we remove it.
-   *)
-  (** [timeout] is the number of seconds after how many we need to check if
-    * saved tokens are expired.
-   *)
   val timeout : int
 
-  (** [number_of_timeout] IMPROVEME DOCUMENTATION *)
   val number_of_timeout : int
-
-  (** ---------------------------- *)
-  (** Getters for the saved tokens *)
 
   val id_server_of_saved_token :
     saved_token ->
@@ -176,15 +179,9 @@ module type TOKEN = sig
     saved_token ->
     string
 
-  (** Representing the number of times the token has been checked by the timeout.
-   * Must be of type int ref.
-   *)
   val counter_of_saved_token               :
     saved_token  ->
     int ref
-
-  (** Getters for the saved tokens *)
-  (** ---------------------------- *)
 
   val parse_json_token    :
     int64                ->
@@ -209,19 +206,10 @@ module type TOKEN = sig
     unit
   end
 
-(** Token module type. See the eliomi file for more information *)
-(** ----------------------------------------------------------- *)
-
-(** ------------------------------------------------------------ *)
-(** Client module type. See the eliomi file for more information *)
-
 module type CLIENT = sig
-  (* -------------------------- *)
-  (* --------- Scope ---------- *)
-
   type scope
 
-  val default_scope : scope list
+  val default_scopes : scope list
 
   val scope_of_str :
     string ->
@@ -239,84 +227,11 @@ module type CLIENT = sig
     scope list  ->
     string list
 
-  (* --------- Scope ---------- *)
-  (* -------------------------- *)
-
-  (** ---------------------------- *)
-  (** Initialize a OAuth2.0 client *)
-
-  (** When register, clients must specify a redirect uri where the code will
-   * be sent as GET parameter (or the authorization code error).
-   * register_redirect_uri ~redirect_uri ~success_redirection ~error_rediction
-   * registers two services at the url [link] :
-       * - for successfull authorization code response.
-       * - for error authorization code response.
-   * 1. In the case of a successfull authorization code, this service will
-   * request an access token to the token server and if the token server
-   * responds with success, the token is saved in the database and a
-   * redirection is done to the service [success_redirection].
-   * 2. In the case of an error response (while requesting an authorization code
-   * or a token, we redirect the user to the service [error_redirection].
-   *)
-
-  val register_redirect_uri :
-    redirect_uri:string ->
-    success_redirection:
-      Eliom_service.non_ocaml Eliom_registration.Redirection.page ->
-    error_redirection:
-      Eliom_service.non_ocaml Eliom_registration.Redirection.page ->
-    unit Lwt.t
-
-  (** Initialize a OAuth2.0 client *)
-  (** ---------------------------- *)
-
-  (** ---------------------------------------- *)
-  (** ---------- Authorization code ---------- *)
-
-  (**
-   * request_authorization_code
-   *  ~redirect_uri ~server_id ~scope=["firstname", "lastname"]
-   * Requests an authorization code to the OAuth2 server represented by
-   * ~server_id to get access to the firstname and lastname of the resource
-   * owner. ~server_id is needed to get credentials. ~redirect_uri is used to
-   * redirect the user-agent on the client OAuth2.
-   *
-   * You will never manipulate the authorization code. The code is temporarily
-   * server side saved until expiration in the HTTP parameter.
-   * The next time you request an access token, authorization code will
-   * be checked and if it's not expired, request an access token to the
-   * OAuth2.0 server.
-   *
-   * The optional default scope is to be compatible with OAuth2.0 which
-   * doesn't respect "oauth" (mandatory in the RFC) in scope.
-   * IMPROVEME: Use string list to add multiple default scope?
-   *)
-  val request_authorization_code :
-    redirect_uri:string   ->
-    server_id:string      ->
-    scope:scope list ->
-    unit Lwt.t
-
-  (** ---------- Authorization code ---------- *)
-  (** ---------------------------------------- *)
-
-  (* ---------------------------------- *)
-  (* ----------- Saved token ---------- *)
-
-  (** Represents a saved token. Tokens are registered in the volatile memory with
-   * scope default_global_scope.
-   *)
   type saved_token
-
-  (** ---------------------------- *)
-  (** Getters for the saved tokens *)
 
   val id_server_of_saved_token    : saved_token -> int64
   val value_of_saved_token        : saved_token -> string
   val token_type_of_saved_token   : saved_token -> string
-
-  (** Getters for the saved tokens *)
-  (** ---------------------------- *)
 
   val saved_token_of_id_server_and_value :
     int64               ->
@@ -331,15 +246,20 @@ module type CLIENT = sig
     saved_token         ->
     unit
 
-  (* ----------- Saved token ---------- *)
-  (* ---------------------------------- *)
+  val register_redirect_uri :
+    redirect_uri:string ->
+    success_redirection:
+      Eliom_service.non_ocaml Eliom_registration.Redirection.page ->
+    error_redirection:
+      Eliom_service.non_ocaml Eliom_registration.Redirection.page ->
+    unit Lwt.t
+
+  val request_authorization_code :
+    redirect_uri:string   ->
+    server_id:string      ->
+    scope:scope list ->
+    unit Lwt.t
 end
-
-(** Client module type. See the eliomi file for more information *)
-(** ------------------------------------------------------------ *)
-
-(** -------------------------------------------------------- *)
-(** Functor to create a Client from a Scope and Token module *)
 
 module MakeClient
   (Scope : SCOPE)
@@ -349,12 +269,9 @@ module MakeClient
       type saved_token  = Token.saved_token
     ) = struct
 
-  (* -------------------------- *)
-  (* --------- Scope ---------- *)
-
   type scope = Scope.scope
 
-  let default_scope = Scope.default_scope
+  let default_scopes = Scope.default_scopes
 
   let scope_of_str = Scope.scope_of_str
 
@@ -363,9 +280,6 @@ module MakeClient
   let scope_list_of_str_list l = List.map scope_of_str l
 
   let scope_list_to_str_list l = List.map scope_to_str l
-
-  (* --------- Scope ---------- *)
-  (* -------------------------- *)
 
   (* ---------------------------------------- *)
   (* --------- Request information ---------- *)
@@ -403,19 +317,18 @@ module MakeClient
         )
         states
 
-  (** add_request_info [state] [server_id] [scope] creates a new
-   * request_info value and add it in the volatile reference.
-   *)
+  (** Creates a new request_info value and add it in the volatile reference. *)
   let add_request_info state server_id scope =
     let new_request_info = {state ; server_id ; scope} in
     request_info := (new_request_info :: (! request_info))
 
-  (** remove_request_info [state] removes the
-   * request_info which has [state] as state.
-   *)
+  (** Removes the request info which has [state] as state. *)
   let remove_request_info_by_state state =
     request_info :=
-      (remove_from_list (fun x -> x.state = state) (!request_info))
+      (Os_oauth2_shared.remove_from_list
+        (fun x -> x.state = state)
+        (!request_info)
+      )
 
   (** Get the request_info value which has state [state] *)
   let request_info_of_state state =
@@ -447,20 +360,22 @@ module MakeClient
     =
     let%lwt (prefix, path)       = get_server_url_authorization ~server_id  in
     let scope_str_list         =
-      scope_list_to_str_list (default_scope @ scope)
+      scope_list_to_str_list (default_scopes @ scope)
     in
     (* ------------------------------ *)
     (* in raw to easily change later. *)
     let response_type          = "code" in
     (* ------------------------------ *)
     let%lwt client_credentials = get_client_credentials ~server_id        in
-    let client_id              = client_credentials_id client_credentials in
+    let client_id              =
+      Os_oauth2_shared.client_credentials_id client_credentials
+    in
     let state                  = generate_state ()                        in
 
     let service_url            = Eliom_service.extern
       ~prefix
       ~path
-      ~meth:param_authorization_code
+      ~meth:Os_oauth2_shared.param_authorization_code
       ()
     in
     let scope_str              = String.concat " " scope_str_list         in
@@ -475,18 +390,8 @@ module MakeClient
     ]);
 
     Lwt.return ()
-  (** ------------------ *)
-
-  (** ---------- Authorization code ---------- *)
-  (** ---------------------------------------- *)
-
-  (* ---------------------------------- *)
-  (* ----------- Saved token ---------- *)
 
   type saved_token                       = Token.saved_token
-
-  (* ------- *)
-  (* getters *)
 
   let id_server_of_saved_token           = Token.id_server_of_saved_token
 
@@ -494,18 +399,12 @@ module MakeClient
 
   let token_type_of_saved_token          = Token.token_type_of_saved_token
 
-  (* getters *)
-  (* ------- *)
-
   let saved_token_of_id_server_and_value =
     Token.saved_token_of_id_server_and_value
 
   let list_tokens                        = Token.list_tokens
 
   let remove_saved_token                 = Token.remove_saved_token
-
-  (* ----------- Saved token ---------- *)
-  (* ---------------------------------- *)
 
   (** OCaml representation of a token. This is the OCaml equivalent
    * representation of the JSON returned by the token server
@@ -519,14 +418,8 @@ module MakeClient
   (** Create a token with the type and the corresponding value *)
   let token_json_of_str token_type value = {token_type ; value}
 
-  (** ------- *)
-  (** Getters *)
-
   let token_type_of_token_json t = t.token_type
   let value_of_token_json t      = t.value
-
-  (** Getters *)
-  (** ------- *)
 
   (** Request a token to the server represented as ~server_id in the
    * database. Saving it in the database allows to keep it a long time.
@@ -541,10 +434,10 @@ module MakeClient
     let grant_type              = "authorization_code" in
     (* ----------------------------- *)
     let client_id               =
-      client_credentials_id client_credentials
+      Os_oauth2_shared.client_credentials_id client_credentials
     in
     let client_secret           =
-      client_credentials_secret client_credentials
+      Os_oauth2_shared.client_credentials_secret client_credentials
     in
 
     let base64_credentials      =
@@ -569,12 +462,6 @@ module MakeClient
       ~content_type:("application", "x-www-form-urlencoded")
       server_url
 
-  (** ---------- Token ---------- *)
-  (** --------------------------- *)
-
-  (** ---------------------------- *)
-  (** Initialize a OAuth2.0 client *)
-
   (** Use a default handler for the moment *)
   let register_redirect_uri
     ~redirect_uri ~success_redirection ~error_redirection
@@ -583,24 +470,24 @@ module MakeClient
     let success =
       Eliom_service.create
         ~path:(Eliom_service.Path path)
-        ~meth:param_authorization_code_response
+        ~meth:Os_oauth2_shared.param_authorization_code_response
         ()
     in
     let error =
       Eliom_service.create
         ~path:(Eliom_service.Path path)
-        ~meth:param_authorization_code_response_error
+        ~meth:Os_oauth2_shared.param_authorization_code_response_error
         ()
     in
 
-    update_list_timer
+    Os_oauth2_shared.update_list_timer
       Token.timeout
       (fun x -> let c = Token.counter_of_saved_token x in !c >= Token.number_of_timeout)
       (fun x -> let c = Token.counter_of_saved_token x in incr c)
       Token.saved_tokens
       ();
 
-    (* We register the service while we succeed to get a authorization code.
+    (* We register the service while we succeed to get an authorization code.
      * This service will request a token with request_token.
      *)
     Eliom_registration.Redirection.register
@@ -651,28 +538,13 @@ module MakeClient
       );
 
     Lwt.return ()
-
-  (** Initialize a OAuth2.0 client *)
-  (** ---------------------------- *)
-
-  (** --------------------------------- *)
-  (** Tokens *)
-
-  (** Tokens *)
-  (** --------------------------------- *)
 end
-
-(** Functor to create a Client from a Scope and Token module *)
-(** -------------------------------------------------------- *)
-
-(* -------------------------------------------------------------------------- *)
-(* ------------------------------ Basic modules ----------------------------- *)
 
 module Basic_scope =
   struct
     type scope = OAuth | Firstname | Lastname | Email | Unknown
 
-    let default_scope = [ OAuth ]
+    let default_scopes = [ OAuth ]
 
     let scope_to_str = function
       | OAuth       -> "oauth"
@@ -689,15 +561,6 @@ module Basic_scope =
       | _           -> Unknown
   end
 
-(** Basic_token is a TOKEN module representing a basic token (id_server, value
- * and token_type.
- * This token representation is used in Os_oauth2_server.Basic so you need to
- * use this module if the OAuth2 server is a instance of
- * Os_oauth2_server.Basic.
- *
- * See Os_oauth2_client.Basic for a basic OAuth2 client compatible with
- * the OAuth2 server Os_oauth2_server.Basic.
- *)
 module Basic_token : TOKEN = struct
   type saved_token =
   {
@@ -710,22 +573,11 @@ module Basic_token : TOKEN = struct
   let timeout             = 10
   let number_of_timeout   = 1
 
-  (* ------- *)
-  (* getters *)
-
   let id_server_of_saved_token t      = t.id_server
   let value_of_saved_token t          = t.value
   let token_type_of_saved_token t     = t.token_type
   let counter_of_saved_token t        = t.counter
 
-  (* getters *)
-  (* ------- *)
-
-  (** Parse the JSON file returned by the token server and returns the
-   * corresponding save_token OCaml type.
-   * In this way, it's easier to work with the token response.
-   * NOTE: Ignore unrecognized JSON attributes.
-   *)
   let parse_json_token id_server t =
     try
       let value       =
@@ -761,7 +613,7 @@ module Basic_token : TOKEN = struct
     let id_server = id_server_of_saved_token token in
     saved_tokens :=
       (
-        remove_from_list
+        Os_oauth2_shared.remove_from_list
         (fun (x : saved_token) ->
           x.value = value && x.id_server = id_server
         )
@@ -769,10 +621,4 @@ module Basic_token : TOKEN = struct
       )
 end
 
-(** Basic OAuth2 client, compatible with OAuth2.0 server
- * Os_oauth2_server.Basic.
- *)
 module Basic = MakeClient (Basic_scope) (Basic_token)
-
-(* ------------------------------ Basic modules ----------------------------- *)
-(* -------------------------------------------------------------------------- *)

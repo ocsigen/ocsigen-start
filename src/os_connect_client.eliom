@@ -1,3 +1,23 @@
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
+ *
+ * Copyright (C) Université Paris Diderot, CNRS, INRIA, Be Sport.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+
 open Os_oauth2_shared
 
 exception Bad_JSON_response
@@ -6,27 +26,13 @@ exception No_such_saved_token
 
 module type IDTOKEN =
   sig
-  (** Represents a saved token. Tokens are registered in the volatile memory with
-   * scope default_global_scope.
-   *)
   type saved_token
 
   val saved_tokens : saved_token list ref
 
-  (* Tokens must expire after a certain amount of time. For this, a timer checks
-   * all [timeout] seconds and if the token has been generated after [timeout] *
-   * [number_of_timeout] seconds, we remove it.
-   *)
-  (** [timeout] is the number of seconds after how many we need to check if
-    * saved tokens are expired.
-   *)
   val timeout : int
 
-  (** [number_of_timeout] IMPROVEME DOCUMENTATION *)
   val number_of_timeout : int
-
-  (** ---------------------------- *)
-  (** Getters for the saved tokens *)
 
   val id_server_of_saved_token :
     saved_token ->
@@ -44,21 +50,10 @@ module type IDTOKEN =
     saved_token ->
     Jwt.t
 
-  (** Representing the number of times the token has been checked by the timeout.
-   * Must be of type int ref.
-   *)
   val counter_of_saved_token               :
     saved_token  ->
     int ref
 
-  (** Getters for the saved tokens *)
-  (** ---------------------------- *)
-
-  (** Parse the JSON file returned by the token server and returns the
-   * corresponding save_token OCaml type.
-   * Must raise Bad_JSON_response if all needed information are not given.
-   * NOTE: Must ignore unrecognized JSON attributes.
-   *)
   val parse_json_token    :
     int64                ->
     Yojson.Basic.json    ->
@@ -84,12 +79,9 @@ module type IDTOKEN =
 
 module Basic_scope =
   struct
-  (* --------------------------- *)
-  (* ---------- Scope ---------- *)
-
   type scope = OpenID | Firstname | Lastname | Email | Unknown
 
-  let default_scope = [ OpenID ]
+  let default_scopes = [ OpenID ]
 
   let scope_to_str = function
     | OpenID      -> "openid"
@@ -104,9 +96,6 @@ module Basic_scope =
     | "lastname"  -> Lastname
     | "email"     -> Email
     | _           -> Unknown
-
-  (* ---------- Scope ---------- *)
-  (* --------------------------- *)
   end
 
 module Basic_ID_token : IDTOKEN =
@@ -122,12 +111,9 @@ module Basic_ID_token : IDTOKEN =
 
       let saved_tokens : saved_token list ref = ref []
 
-      let timeout           = 10
+      let timeout                         = 10
 
-      let number_of_timeout = 1
-
-      (* ------- *)
-      (* getters *)
+      let number_of_timeout               = 1
 
       let id_server_of_saved_token t      = t.id_server
 
@@ -139,14 +125,6 @@ module Basic_ID_token : IDTOKEN =
 
       let counter_of_saved_token t        = t.counter
 
-      (* getters *)
-      (* ------- *)
-
-      (** Parse the JSON file returned by the token server and returns the
-       * corresponding save_token OCaml type.
-       * In this way, it's easier to work with the token response.
-       * NOTE: Ignore unrecognized JSON attributes.
-       *)
       let parse_json_token id_server t =
         try
           let value       =
@@ -164,7 +142,6 @@ module Basic_ID_token : IDTOKEN =
           in
           { id_server ; value ; token_type ; id_token ; counter = ref 0 }
         with _ -> raise Bad_JSON_response
-
 
       let save_token token =
         saved_tokens := (token :: (! saved_tokens))
