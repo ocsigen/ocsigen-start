@@ -127,6 +127,11 @@ let%shared content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
 
     let make_page content =
       let title = match content.title with Some t -> t | None -> C.title in
+      let body_attrs =
+        if Os_current_user.Opt.get_current_userid () <> None
+        then a_class ["connected"] :: content.body_attrs
+        else a_class ["not-connected"] :: content.body_attrs
+      in
       html ~a:(a_onload [%client fun ev -> (
         let platform () =
           let uA = Dom_html.window##.navigator##.userAgent in
@@ -147,7 +152,7 @@ let%shared content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
         : unit) ] :: content.html_attrs)
         (Eliom_tools.F.head ~title ~css ~js
            ~other:(local_css @ local_js @ content.head @ C.other_head) ())
-        (body ~a:content.body_attrs content.body)
+        (body ~a:body_attrs content.body)
 
     let page
         ?(predicate = C.default_predicate)

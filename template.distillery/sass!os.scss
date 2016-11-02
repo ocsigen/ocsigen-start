@@ -211,7 +211,7 @@ a.os-page-header-app-name {
                 margin: 16px auto;
             }
         }
-        .os-body {
+        &.not-connected .os-body {
             display: none;
         }
     }
