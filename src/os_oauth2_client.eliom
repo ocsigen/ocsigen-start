@@ -325,7 +325,7 @@ module MakeClient
   (** Removes the request info which has [state] as state. *)
   let remove_request_info_by_state state =
     request_info :=
-      (Os_oauth2_shared.remove_from_list
+      (List.filter
         (fun x -> x.state = state)
         (!request_info)
       )
@@ -614,7 +614,7 @@ module Basic_token : TOKEN = struct
     let id_server = id_server_of_saved_token token in
     saved_tokens :=
       (
-        Os_oauth2_shared.remove_from_list
+        List.filter
         (fun (x : saved_token) ->
           x.value = value && x.id_server = id_server
         )

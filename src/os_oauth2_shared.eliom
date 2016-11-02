@@ -25,21 +25,13 @@ exception No_such_client
 exception Server_id_exists
 exception Empty_content
 
-(* Put these variable in Makefile? *)
 let size_authorization_code         = 42
 let size_client_id                  = 42
 let size_client_secret              = 42
 let size_token                      = 42
 let size_state                      = 42
 
-(* Expiration time for the authorization code: default 10 minutes *)
 let expiration_time_authorization_code = 10 * 60
-
-(* -------------------------------------------------------------------------- *)
-(** Shared types definitions between the OAuth2.0 client and server *)
-
-(** -------------------------- *)
-(** Type of client credentials *)
 
 type client_credentials =
   {
@@ -55,11 +47,6 @@ let client_credentials_of_str ~client_id ~client_secret =
 
 let client_credentials_id c     = c.client_id
 let client_credentials_secret c = c.client_secret
-
-(** -------------------------- *)
-
-(** ---------------------------------- *)
-(** Error types for authorization code *)
 
 type error_authorization_code_type =
   | Auth_invalid_request
@@ -79,12 +66,6 @@ let error_authorization_code_type_to_str e = match e with
   | Auth_server_error              -> "server_error"
   | Auth_temporarily_unavailable   -> "temporarily_unavailable"
 
-(** Error types for authorization code *)
-(** ---------------------------------- *)
-
-(** --------------------- *)
-(** Error types for token *)
-
 type error_token_type =
   | Token_invalid_request
   | Token_unauthorized_client
@@ -100,13 +81,6 @@ let error_token_type_to_str e = match e with
   | Token_invalid_client            -> "invalid_client"
   | Token_invalid_grant             -> "invalid_grant"
   | Token_invalid_scope             -> "invalid_scope"
-
-(** Error types for token *)
-(** --------------------- *)
-
-
-(** ------------------------------------------- *)
-(** Parameters types for the different services *)
 
 let param_authorization_code = Eliom_service.Get
   (
@@ -148,21 +122,6 @@ let param_access_token = Eliom_service.Post
       )
     )
   )
-(** Parameters types for the different services *)
-(** ------------------------------------------- *)
-
-(* -------------------------------------------------------------------------- *)
-
-let remove_from_list f l =
-  let rec local l buf =
-    match l with
-  | [] -> List.rev buf
-  | head::tail ->
-      if f head
-      then (List.rev buf) @ tail
-      else local tail (head::buf)
-  in
-  local l []
 
 let rec update_list_timer timer fn_remove fn_incr l () =
   let rec locale l = match l with
@@ -179,9 +138,6 @@ let rec update_list_timer timer fn_remove fn_incr l () =
   Lwt_timeout.start
     (Lwt_timeout.create timer (update_list_timer timer fn_remove fn_incr l))
 
-(** Generate a random string with alphanumerical values (capitals or not) with a
-    given [length].
- *)
 let generate_random_string length =
   let random_character () = match Random.int (26 + 26 + 10) with
     n when n < 26 -> int_of_char 'a' + n
@@ -190,10 +146,6 @@ let generate_random_string length =
   let random_character _ = String.make 1 (char_of_int (random_character ())) in
   String.concat "" (Array.to_list (Array.init length random_character))
 
-(** [base_and_path_of_url "http://ocsigen.org:80/tuto/manual"] returns
-    (base, path) where base is "http://ocsigen.org:80" and path is
-    ["tuto", "manual"]
- *)
 let prefix_and_path_of_url url =
   let (https, host, port, _, path, _, _) = Ocsigen_lib.Url.parse url in
   let https_str = match https with

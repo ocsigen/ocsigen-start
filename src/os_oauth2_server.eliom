@@ -523,7 +523,7 @@ module MakeServer
      * as state.
      *)
     let remove_request_info_by_state_and_client_id state client_id =
-      remove_from_list
+      List.filter
         (fun x -> x.state = state && x.client_id = client_id)
         (! request_info)
 
@@ -610,7 +610,7 @@ module MakeServer
       request.userid := Some userid
 
     let remove_request_info_code_by_client_id_and_state client_id state =
-      remove_from_list
+      List.filter
         (fun x -> x.client_id = client_id && x.state = state)
         (! request_info_code)
 
@@ -1251,7 +1251,7 @@ module MakeBasicToken (Scope : SCOPE) : (TOKEN with type scope = Scope.scope) =
       let id_client   = id_client_of_saved_token saved_token  in
       saved_tokens :=
       (
-        remove_from_list
+        List.filter
           (fun x -> x.value = value && x.id_client = id_client)
           (! saved_tokens)
       )

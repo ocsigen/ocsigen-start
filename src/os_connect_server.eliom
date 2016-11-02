@@ -223,7 +223,7 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
       let id_client   = id_client_of_saved_token saved_token  in
       saved_tokens :=
       (
-        Os_oauth2_shared.remove_from_list
+        List.filter
           (fun x -> x.value = value && x.id_client = id_client)
           (! saved_tokens)
       )

@@ -18,22 +18,18 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(* -------------------------------------------------------------------------- *)
-(** Shared types definitions between the OAuth2.0 client and server *)
+(** Shared types, functions and values between the OAuth2.0/OpenID Connect
+    client and server.
+ *)
 
+(** {1 Constants} *)
 val size_state              : int
 val size_client_id          : int
 val size_token              : int
 val size_client_secret      : int
 val size_authorization_code : int
 
-(** -------------------------- *)
-(** A type representing a client. It's not mandatory that the OAuth2.0 client
- * knows his data so this type is only declared server-side *)
-
-(** -------------------------- *)
-(** Type of client credentials *)
-
+(** {2 About client credentials} *)
 type client_credentials
 
 val client_credentials_of_str :
@@ -44,11 +40,7 @@ val client_credentials_of_str :
 val client_credentials_id     : client_credentials -> string
 val client_credentials_secret : client_credentials -> string
 
-(** Type of client credentials *)
-(** -------------------------- *)
-
-(** ---------------------------------- *)
-(** Error types for authorization code *)
+(** {3 Error types for authorization code. } *)
 
 type error_authorization_code_type =
   | Auth_invalid_request
@@ -63,11 +55,7 @@ val error_authorization_code_type_to_str  :
   error_authorization_code_type     ->
   string
 
-(** Error types for authorization code *)
-(** ---------------------------------- *)
-
-(** --------------------- *)
-(** Error types for token *)
+(** {4 Error types for token. } *)
 
 type error_token_type =
   | Token_invalid_request
@@ -81,8 +69,7 @@ val error_token_type_to_str               :
   error_token_type                  ->
   string
 
-(** Error types for token *)
-(** --------------------- *)
+(** {5 Parameters types for the different services. } *)
 
 val param_authorization_code :
   (
@@ -96,7 +83,6 @@ val param_authorization_code :
     unit,
     unit,
     [ `WithoutSuffix ],
-    (*Eliom_service.get,*)
     unit
   )
   Eliom_service.meth
@@ -110,7 +96,6 @@ val param_authorization_code_response :
     unit,
     unit,
     [ `WithoutSuffix ],
-    (*Eliom_service.get,*)
     unit
   )
   Eliom_service.meth
@@ -126,7 +111,6 @@ val param_authorization_code_response_error :
     unit,
     unit,
     [ `WithoutSuffix ],
-    (*Eliom_service.get,*)
     unit
   )
   Eliom_service.meth
@@ -148,12 +132,7 @@ val param_access_token :
   )
   Eliom_service.meth
 
-(* -------------------------------------------------------------------------- *)
-
-val remove_from_list :
-  ('a -> bool) ->
-  'a list      ->
-  'a list
+(** {6 MISC functions. } *)
 
 val update_list_timer :
   int ->

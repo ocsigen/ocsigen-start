@@ -165,7 +165,7 @@ module Basic_ID_token : IDTOKEN =
         let id_server = id_server_of_saved_token token in
         saved_tokens :=
         (
-          remove_from_list
+          List.filter
             (fun (x : saved_token) ->
               x.value = value && x.id_server = id_server
             )
