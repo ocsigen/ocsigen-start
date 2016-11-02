@@ -33,9 +33,9 @@ module type IDTOKEN =
 
     val saved_tokens : saved_token list ref
 
-    val timeout : int
+    val cycle_duration  : int
 
-    val number_of_timeout : int
+    val number_of_cycle : int
 
     val id_client_of_saved_token :
       saved_token ->

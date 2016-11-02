@@ -163,20 +163,16 @@ module type TOKEN =
 
     val saved_tokens : saved_token list ref
 
-    (* Tokens must expire after a certain amount of time. For this, a timer checks
-     * all [timeout] seconds and if the token has been generated after [timeout] *
-     * [number_of_timeout] seconds, we remove it.
+    (** Tokens must expire after a certain amount of time. For this reason, a
+        timer {!Os_oauth2_shared.update_list_timer} checks all {!cycle_duration}
+        seconds if the token has been generated after {!cycle_duration} *
+        {!number_of_cycle} seconds. If it's the case, the token is removed.
      *)
-    (** [timeout] is the number of seconds after how many we need to check if
-      * saved tokens are expired.
-     *)
-    val timeout : int
+    (** The duration of a cycle. *)
+    val cycle_duration : int
 
-    (** [number_of_timeout] IMPROVEME DOCUMENTATION *)
-    val number_of_timeout : int
-
-    (* ------- *)
-    (* getters *)
+    (** [number_of_cycle] the number of cycle. *)
+    val number_of_cycle : int
 
     val id_client_of_saved_token  :
       saved_token ->
@@ -201,9 +197,6 @@ module type TOKEN =
     val counter_of_saved_token    :
       saved_token ->
       int ref
-
-    (* getters *)
-    (* ------- *)
 
     (* Returns true if the token already exists *)
     val token_exists              :

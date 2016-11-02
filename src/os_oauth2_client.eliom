@@ -163,9 +163,9 @@ module type TOKEN = sig
 
   val saved_tokens : saved_token list ref
 
-  val timeout : int
+  val cycle_duration : int
 
-  val number_of_timeout : int
+  val number_of_cycle : int
 
   val id_server_of_saved_token :
     saved_token ->
@@ -422,7 +422,7 @@ module MakeClient
   let value_of_token_json t      = t.value
 
   (** Request a token to the server represented as ~server_id in the
-   * database. Saving it in the database allows to keep it a long time.
+   * database.
    * TODO: add an optional parameter for other parameters to send.
    * NOTE: an exception No_such_server is raised if [server_id] doesn't exist.
    *)
@@ -481,8 +481,9 @@ module MakeClient
     in
 
     Os_oauth2_shared.update_list_timer
-      Token.timeout
-      (fun x -> let c = Token.counter_of_saved_token x in !c >= Token.number_of_timeout)
+      Token.cycle_duration
+      (fun x -> let c = Token.counter_of_saved_token x in !c >=
+        Token.number_of_cycle)
       (fun x -> let c = Token.counter_of_saved_token x in incr c)
       Token.saved_tokens
       ();
@@ -570,8 +571,8 @@ module Basic_token : TOKEN = struct
     counter     : int ref
   }
 
-  let timeout             = 10
-  let number_of_timeout   = 1
+  let cycle_duration                  = 10
+  let number_of_cycle                 = 1
 
   let id_server_of_saved_token t      = t.id_server
   let value_of_saved_token t          = t.value

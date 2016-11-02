@@ -30,9 +30,9 @@ module type IDTOKEN =
 
   val saved_tokens : saved_token list ref
 
-  val timeout : int
+  val cycle_duration : int
 
-  val number_of_timeout : int
+  val number_of_cycle : int
 
   val id_server_of_saved_token :
     saved_token ->
@@ -111,9 +111,9 @@ module Basic_ID_token : IDTOKEN =
 
       let saved_tokens : saved_token list ref = ref []
 
-      let timeout                         = 10
+      let cycle_duration                  = 10
 
-      let number_of_timeout               = 1
+      let number_of_cycle                 = 1
 
       let id_server_of_saved_token t      = t.id_server
 

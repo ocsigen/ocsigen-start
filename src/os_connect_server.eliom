@@ -28,9 +28,9 @@ module type IDTOKEN =
 
     val saved_tokens : saved_token list ref
 
-    val timeout : int
+    val cycle_duration : int
 
-    val number_of_timeout : int
+    val number_of_cycle : int
 
     val id_client_of_saved_token :
       saved_token ->
@@ -105,9 +105,9 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
   struct
     type scope = Scope.scope
 
-    let timeout               = 10
+    let cycle_duration        = 10
 
-    let number_of_timeout     = 1
+    let number_of_cycle       = 1
 
     type saved_token =
     {
@@ -140,10 +140,6 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
 
     let counter_of_saved_token s    = s.counter
 
-    (* FIXME: We need to set an expiration time to 10 minutes for each token in
-    * the list. So the type will be saved_token Eliom_reference.Volatile.eref
-    * list and not saved_token list Eliom_reference.Volatile.eref.
-    *)
     let saved_tokens : saved_token list ref = ref []
 
     (** token_exists_by_id_client_and_value [id_client] [value] returns true if
@@ -186,7 +182,7 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
           "JWT"
       in
       let current_time = Unix.time () in
-      let exp_time = 10. *. 60. in (* NOTE: expiration in 10 minutes *)
+      let exp_time = float_of_int (number_of_cycle * cycle_duration) in
       let payload_token =
         let open Jwt in
         empty_payload
@@ -247,6 +243,7 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
     (* List all saved tokens *)
     (* IMPROVEME: list tokens by client OAuth2 id *)
     let list_tokens () = (! saved_tokens)
+
     let saved_token_to_json saved_token =
       `Assoc
       [
@@ -255,9 +252,8 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
         (
           "id_token",
           `String (Jwt.token_of_t (id_token_of_saved_token saved_token))
-        )
-        (* FIXME: See fixme for saved_token value. *)
-        (* ("expires_in", `Int 3600) ; *)
+        ) ;
+        ("expires_in", `Int (cycle_duration * number_of_cycle))
         (* What about a refresh_token ? *)
         (* ("refresh_token", `String refresh_token) ;*)
       ]
@@ -284,13 +280,6 @@ module Basic_scope : Os_oauth2_server.SCOPE =
     | "email"     -> Email
     | _           -> Unknown
 
-  (** Returns true if every element in
-      [scope_list] is a available scope value.
-      If the list contains only OpenID or if the list doesn't contain OpenID
-      (mandatory scope in RFC), returns false.
-      If an unknown scope value is in list (represented by Unknown value),
-      returns false.
-  *)
   let check_scope_list scope_list =
     if List.length scope_list = 0
     then false

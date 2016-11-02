@@ -176,15 +176,15 @@ module type TOKEN = sig
   val saved_tokens : saved_token list ref
 
   (** Tokens must expire after a certain amount of time. For this reason, a
-      timer {!Os_oauth2_shared.update_list_timer} checks all {!timeout} seconds
-      and if the token has been generated after {!timeout} *
-      {!number_of_timeout} seconds, the token is removed.
+      timer {!Os_oauth2_shared.update_list_timer} checks all {!cycle_duration}
+      seconds if the token has been generated after {!cycle_duration} *
+      {!number_of_cycle} seconds. If it's the case, the token is removed.
    *)
-  (** [timeout] represents a check cycle (in seconds). *)
-  val timeout : int
+  (** The duration of a cycle. *)
+  val cycle_duration : int
 
-  (** [timeout] the number of cycle. *)
-  val number_of_timeout : int
+  (** [number_of_cycle] the number of cycle. *)
+  val number_of_cycle : int
 
   (** Returns the OpenID Connect server ID which delivered the token. *)
   val id_server_of_saved_token :

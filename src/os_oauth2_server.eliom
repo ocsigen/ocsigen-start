@@ -22,26 +22,14 @@
 
 open Os_oauth2_shared
 
-(* -------------------------------- *)
-(* ---------- Exceptions ---------- *)
-
 exception State_not_found
 
 exception No_such_client
 
 exception No_such_saved_token
 
-(* ------------------------ *)
-(* Request code information *)
-
 exception No_such_request_info_code
 exception No_such_userid_registered
-
-(* Request code information *)
-(* ------------------------ *)
-
-(* ---------- Exceptions ---------- *)
-(* -------------------------------- *)
 
 (* -------------------------- *)
 (* ---------- MISC ---------- *)
@@ -253,20 +241,9 @@ module type TOKEN =
 
     val saved_tokens : saved_token list ref
 
-    (* Tokens must expire after a certain amount of time. For this, a timer checks
-     * all [timeout] seconds and if the token has been generated after [timeout] *
-     * [number_of_timeout] seconds, we remove it.
-     *)
-    (** [timeout] is the number of seconds after how many we need to check if
-      * saved tokens are expired.
-     *)
-    val timeout : int
+    val cycle_duration  : int
 
-    (** [number_of_timeout] IMPROVEME DOCUMENTATION *)
-    val number_of_timeout : int
-
-    (* ------- *)
-    (* getters *)
+    val number_of_cycle : int
 
     val id_client_of_saved_token  :
       saved_token ->
@@ -293,27 +270,20 @@ module type TOKEN =
       saved_token ->
       int ref
 
-    (* getters *)
-    (* ------- *)
-
-    (* Returns true if the token already exists *)
     val token_exists              :
       saved_token                 ->
       bool
 
-    (* Generate a token value *)
     val generate_token_value      :
       unit                        ->
       string
 
-    (* Generate a new token *)
     val generate_token            :
       id_client:int64             ->
       userid:int64                ->
       scope:scope list            ->
       saved_token Lwt.t
 
-    (* Save a token *)
     val save_token                :
       saved_token                 ->
       unit
@@ -327,7 +297,6 @@ module type TOKEN =
       string                      ->
       saved_token
 
-    (* List all saved tokens *)
     val list_tokens               :
       unit                        ->
       saved_token list
@@ -339,10 +308,6 @@ module type TOKEN =
 
 module type SERVER =
   sig
-    (* --------------------------- *)
-    (* ---------- Scope ---------- *)
-
-    (** Scope is a list of permissions *)
     type scope
 
     val scope_of_str :
@@ -361,34 +326,11 @@ module type SERVER =
       scope list ->
       string list
 
-    (* --------------------------- *)
-    (* ---------- Scope ---------- *)
-
-    (* --------------------------------------------- *)
-    (* ---------- request code information --------- *)
-
     val set_userid_of_request_info_code :
       string ->
       string ->
       int64 ->
       unit
-
-    (* ---------- request code information --------- *)
-    (* --------------------------------------------- *)
-
-    (** ------------------------------------------------------------ *)
-    (** ---------- Functions about the authorization code ---------- *)
-
-    (** send_authorization_code [state] [redirect_uri] [client_id] [scope] sends
-     * an authorization code to redirect_uri
-     * including the state [state]. This function can be called by
-     * the authorization handler. It uses Eliom_lib.change_page.
-     * It avoids to know how OAuth2 works and to implement the redirection
-     * manually.
-     * NOTE: The example in the RFC is a redirection but it is not mentionned
-     * if is mandatory. So we use change_page.
-     * FIXME: They don't return a page normally. We need to change for a Any.
-     *)
 
     val send_authorization_code :
       string                                ->
@@ -417,12 +359,6 @@ module type SERVER =
         Eliom_registration.Html.page
       )
       Eliom_client.server_function
-
-    (** ---------- Functions about the authorization code ---------- *)
-    (** ------------------------------------------------------------ *)
-
-    (** ------------------------------------------ *)
-    (** ---------- Function about token ---------- *)
 
     type saved_token
 
@@ -453,32 +389,6 @@ module type SERVER =
       unit                  ->
       saved_token list
 
-    (** ---------- Function about token ---------- *)
-    (** ------------------------------------------ *)
-
-
-    (** ---------- URL registration ---------- *)
-    (** -------------------------------------- *)
-
-    (** When registering, we need to have several get parameters so we need to
-     * force the developer to have these GET parameter. We define a type for the
-     * token handler and the authorization handler.
-     * because they have different GET parameters.
-     *
-     * There are not abstract because we need to know the type. And it's also
-     * known due to RFC.
-     **)
-
-    (** ------------------------------------------------ *)
-    (** ---------- Authorization registration ---------- *)
-
-    (* --------------------- *)
-    (* authorization service *)
-
-    (** Type of pre-defined service for authorization service. It's a GET
-     * service
-     *)
-    (* NOTE: need to improve this type! It's so ugly *)
     type authorization_service =
       (string * (string * (string * (string * string))),
       unit,
@@ -500,18 +410,9 @@ module type SERVER =
       unit, Eliom_service.non_ocaml)
       Eliom_service.t
 
-    (** authorization_service [path] returns a service for the authorization URL.
-     * You can use it with Your_app_name.App.register with
-     * {!authorization_handler} *)
     val authorization_service :
       Eliom_lib.Url.path ->
       authorization_service
-
-    (* authorization service *)
-    (* --------------------- *)
-
-    (* --------------------- *)
-    (* authorization handler *)
 
     type authorization_handler  =
       state:string          ->
@@ -520,10 +421,6 @@ module type SERVER =
       scope:scope list      ->
       Eliom_registration.Html.page Lwt.t (* Return value of the handler *)
 
-    (** authorize_handler [handler] returns a handler for the authorization URL.
-     * You can use it with Your_app_name.App.register with
-     * {!authorization_service}
-     *)
     val authorization_handler :
       authorization_handler ->
       (
@@ -532,20 +429,6 @@ module type SERVER =
         Eliom_registration.Html.page Lwt.t
       )
 
-    (* authorization handler *)
-    (* --------------------- *)
-
-    (** ---------- Authorization registration ---------- *)
-    (** ------------------------------------------------ *)
-
-    (** ---------------------------------------- *)
-    (** ---------- Token registration ---------- *)
-
-    (* ------------- *)
-    (* token service *)
-
-    (** Type of pre-defined service for token service. It's a POST service. *)
-    (* NOTE: need to improve this type! It's so ugly *)
     type token_service =
       (unit,
       string * (string * (string * (string * string))),
@@ -564,40 +447,16 @@ module type SERVER =
       Eliom_registration.String.return)
       Eliom_service.t
 
-    (** token_service [path] returns a service for the access token URL.
-     * You can use it with Your_app_name.App.register with
-     * {!token_handler}
-     *)
     val token_service :
       Eliom_lib.Url.path ->
       token_service
 
-    (* token service *)
-    (* ------------- *)
-
-    (* ------------- *)
-    (* token handler *)
-
-    (** token_handler returns a handler for the access token URL.
-     * You can use it with Your_app_name.App.register with
-     * {!token_service}
-     *)
     val token_handler :
       (
         unit                                                  ->
         (string * (string * (string * (string * string))))    ->
         Eliom_registration.String.result Lwt.t
       )
-
-    (* token handler *)
-    (* ------------- *)
-
-    (** ---------- Token registration ---------- *)
-    (** ---------------------------------------- *)
-
-    (** ---------- URL registration ---------- *)
-    (** -------------------------------------- *)
-
   end
 
 module MakeServer
@@ -606,10 +465,6 @@ module MakeServer
     type scope = Scope.scope and
     type saved_token = Token.saved_token) =
   struct
-    (* --------------------------- *)
-    (* ---------- Scope ---------- *)
-
-    (** Scope is a list of permissions *)
     type scope = Scope.scope
 
     let scope_of_str = Scope.scope_of_str
@@ -622,17 +477,11 @@ module MakeServer
 
     let check_scope_list = Scope.check_scope_list
 
-    (* --------------------------- *)
-    (* ---------- Scope ---------- *)
-
-    (* ------------------------------------------------ *)
-    (* --------------- Not in signature --------------- *)
-
     (* ----------------------------------------- *)
     (* ---------- request information ---------- *)
 
-    let number_of_timeout_request_info = 10
-    let timeout_request_info           = 60
+    let cycle_duration_request_info   = 10
+    let number_of_cycle_request_info  = 60
 
     type request_info =
     {
@@ -656,8 +505,8 @@ module MakeServer
 
     let _ =
       update_list_timer
-        timeout_request_info
-        (fun x -> let c = x.counter in !c >= number_of_timeout_request_info)
+        cycle_duration_request_info
+        (fun x -> let c = x.counter in !c >= number_of_cycle_request_info)
         (fun x -> incr x.counter)
         request_info
 
@@ -896,21 +745,6 @@ module MakeServer
         [%derive.json: string * string]
         resource_owner_decline
 
-    (** ---------- Functions about the authorization code ---------- *)
-    (** ------------------------------------------------------------ *)
-
-    (** -------------------------------------- *)
-    (** ---------- URL registration ---------- *)
-
-    (** ------------------------------------------------ *)
-    (** ---------- Authorization registration ---------- *)
-
-    (* --------------------- *)
-    (* Authorization service *)
-
-    (** Type of pre-defined service for authorization service. It's a GET
-     * service
-     *)
     type authorization_service =
       (string * (string * (string * (string * string))),
       unit,
@@ -939,21 +773,12 @@ module MakeServer
         ~https:true
         ()
 
-    (* Authorization service *)
-    (* --------------------- *)
-
-    (* --------------------- *)
-    (* Authorization handler *)
-
     type authorization_handler  =
       state:string          ->
       client_id:string      ->
       redirect_uri:string   ->
       scope:scope list      ->
       Eliom_registration.Html.page Lwt.t (* Return value of the handler *)
-
-    (** ---------- Authorization registration ---------- *)
-    (** ------------------------------------------------ *)
 
     (* Performs check on client_id, scope and response_type before sent state,
      * client_id, redirect_uri and scope to the handler
@@ -1192,8 +1017,9 @@ module MakeServer
 
     let token_service path =
       update_list_timer
-        Token.timeout
-        (fun x -> let c = Token.counter_of_saved_token x in !c >= Token.number_of_timeout)
+        Token.cycle_duration
+        (fun x -> let c = Token.counter_of_saved_token x in !c >=
+          Token.number_of_cycle)
         (fun x -> let c = Token.counter_of_saved_token x in incr c)
         Token.saved_tokens
         ();
@@ -1351,9 +1177,9 @@ module MakeBasicToken (Scope : SCOPE) : (TOKEN with type scope = Scope.scope) =
     (** ---------- Function about token ---------- *)
     type scope = Scope.scope
 
-    let timeout               = 10
+    let cycle_duration      = 10
 
-    let number_of_timeout     = 1
+    let number_of_cycle     = 1
 
     type saved_token =
     {
