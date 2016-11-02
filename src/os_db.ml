@@ -171,17 +171,18 @@ let os_preregister_table =
 
 (** ------------------------ *)
 (** Tables for OAuth2 server *)
+
 (** An Eliom application can be a OAuth2.0 server.
- * Its client can be OAuth2.0 client which can be an Eliom application, but not
- * always.
+    Its client can be OAuth2.0 client which can be an Eliom application, but not
+    always.
  *)
 
 (** Table to represent and register client *)
 let oauth2_server_client_id_seq =
-  <:sequence< bigserial "oauth2_server_client_id_seq" >>
+  <:sequence< bigserial "ocsigen_start.oauth2_server_client_id_seq" >>
 
 let oauth2_server_client_table =
-  <:table< oauth2_server_client (
+  <:table< ocsigen_start.oauth2_server_client (
        id bigint NOT NULL DEFAULT(nextval $oauth2_server_client_id_seq$),
        application_name text NOT NULL,
        description text NOT NULL,
@@ -196,20 +197,20 @@ let oauth2_server_client_table =
 (** Tables for OAuth2 client *)
 
 (** An Eliom application can be a OAuth2.0 client of a OAuth2.0 server which can
- * be also an Eliom application, but not always.
+    be also an Eliom application, but not always.
  *)
 
 let oauth2_client_credentials_id_seq =
-  <:sequence< bigserial "oauth2_client_credentials_id_seq" >>
+  <:sequence< bigserial "ocsigen_start.oauth2_client_credentials_id_seq" >>
 
 (** Table to represent the client credentials of the current OAuth2.0 client *)
 (** The server id. A OAuth2 client registers all OAuth2 server he has
- * client credentials and he chooses an ID for each of them. Checks are
- * done if the server_id exists. All url's must begin with https (or http if
- * not, even if https is recommended) due to eliom external services.
+    client credentials and he chooses an ID for each of them. Checks are
+    done if the server_id exists. All url's must begin with https (or http if
+    not, even if https is recommended) due to eliom external services.
  *)
 let oauth2_client_credentials_table =
-  <:table< oauth2_client_credentials (
+  <:table< ocsigen_start.oauth2_client_credentials (
        id bigint NOT NULL DEFAULT(nextval $oauth2_client_credentials_id_seq$),
        server_id text NOT NULL,
        (* server_authorization_url. The URI used to get an authorization code *)
