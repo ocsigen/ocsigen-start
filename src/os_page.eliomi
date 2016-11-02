@@ -68,22 +68,11 @@ module type PAGE = sig
   val other_head : Html_types.head_content_fun Eliom_content.Html.elt list
 
   (** Default error page. *)
-  val default_error_page :
-    'a -> 'b -> exn ->
-    Html_types.body_content Eliom_content.Html.elt list Lwt.t
-
-  (** Default error page (with custom headers and title). *)
-  val default_error_page_full : ('a -> 'b -> exn -> content Lwt.t) option
+  val default_error_page : 'a -> 'b -> exn -> content Lwt.t
 
   (** Default error page for connected pages. *)
   val default_connected_error_page :
-    Os_types.User.id option -> 'a -> 'b -> exn ->
-    Html_types.body_content Eliom_content.Html.elt list Lwt.t
-
-  (** Default error page for connected pages (with custom headers and
-      title). *)
-  val default_connected_error_page_full :
-    (Os_types.User.id option -> 'a -> 'b -> exn -> content Lwt.t) option
+    Os_types.User.id option -> 'a -> 'b -> exn -> content Lwt.t
 
   (** Default predicate. *)
   val default_predicate : 'a -> 'b -> bool Lwt.t
@@ -99,13 +88,7 @@ module Make (C : PAGE) : sig
 
   (** Builds a valid html page from body content by adding headers
       for this app *)
-  val make_page :
-    [< Html_types.body_content ] Eliom_content.Html.elt list ->
-    [> Html_types.html ] Eliom_content.Html.elt
-
-  (** Same but takes type [content]. *)
-  val make_page_full :
-    content -> [> Html_types.html ] Eliom_content.Html.elt
+  val make_page : content -> [> Html_types.html ] Eliom_content.Html.elt
 
   (** Default wrapper for service handler generating pages.
       It takes as parameter a function generating page content
@@ -119,11 +102,8 @@ module Make (C : PAGE) : sig
   *)
   val page :
     ?predicate:('a -> 'b -> bool Lwt.t) ->
-    ?fallback:('a -> 'b -> exn ->
-               Html_types.body_content Eliom_content.Html.elt
-                 list Lwt.t) ->
-    ('a -> 'b ->
-     Html_types.body_content Eliom_content.Html.elt list Lwt.t) ->
+    ?fallback:('a -> 'b -> exn -> content Lwt.t) ->
+    ('a -> 'b -> content Lwt.t) ->
     ('a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t)
 
 
@@ -132,20 +112,6 @@ module Make (C : PAGE) : sig
       See {!Eliom_session.Opt.connected_fun}.
   *)
     val connected_page :
-      ?allow:Os_types.Group.t list ->
-      ?deny:Os_types.Group.t list ->
-      ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool Lwt.t) ->
-      ?fallback:(Os_types.User.id option -> 'a -> 'b -> exn ->
-                 Html_types.body_content Eliom_content.Html.elt
-                   list Lwt.t) ->
-      (Os_types.User.id option -> 'a -> 'b ->
-       Html_types.body_content Eliom_content.Html.elt list Lwt.t) ->
-      ('a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t)
-
-    (** More flexible wrapper than {!connected_page} for pages that
-        first checks if the user is connected.
-    *)
-    val connected_page_full :
       ?allow:Os_types.Group.t list ->
       ?deny:Os_types.Group.t list ->
       ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool Lwt.t) ->
@@ -158,22 +124,6 @@ module Make (C : PAGE) : sig
       See {!Eliom_session.connected_fun}.
   *)
   val connected_page :
-       ?allow:Os_types.Group.t list
-    -> ?deny:Os_types.Group.t list
-    -> ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool Lwt.t)
-    -> ?fallback:(Os_types.User.id option -> 'a -> 'b -> exn ->
-                  Html_types.body_content Eliom_content.Html.elt list
-                    Lwt.t)
-    -> (Os_types.User.id -> 'a -> 'b ->
-        Html_types.body_content Eliom_content.Html.elt list Lwt.t)
-    -> 'a -> 'b
-    -> Html_types.html Eliom_content.Html.elt Lwt.t
-
-
-  (** More flexible wrapper than {!connected_page} for pages that
-      first checks if user is connected.
-  *)
-  val connected_page_full :
     ?allow:Os_types.Group.t list ->
     ?deny:Os_types.Group.t list ->
     ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool Lwt.t) ->
