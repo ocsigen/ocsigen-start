@@ -152,7 +152,7 @@ let%shared block ?(a = []) ?(recipient = `All) ~name ~content () =
       let%lwt c = content close in
       let box =
         D.div ~a:(a_class [ "tip" ; "block" ]::a)
-          (Ot_icons.D.close ~a:[ a_onclick [%client fun _ ->
+          (Os_icons.D.close ~a:[ a_onclick [%client fun _ ->
              Lwt.async ~%close ] ] ()
            :: c)
       in
@@ -185,7 +185,7 @@ let%client display_bubble ?(a = [])
   let%lwt c = content close in
   let box =
     D.div ~a:(a_class [ "tip" ; "bubble" ]::a)
-      (Ot_icons.D.close ~a:[ a_onclick (fun _ -> Lwt.async close) ] ()
+      (Os_icons.D.close ~a:[ a_onclick (fun _ -> Lwt.async close) ] ()
        :: match arrow with None -> c
                          | _    -> bec :: c)
   in

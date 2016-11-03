@@ -120,8 +120,7 @@ EXTERNAL_CSS_FILES    := $(SHAREDIR_OT_CSS)/ot_buttons.css \
 # files.
 CSS_FILES             := $(LOCAL_STATIC_CSS)/font-awesome.min.css \
                          $(EXTERNAL_CSS_FILES) \
-                         $(LOCAL_STATIC_CSS)/os.css \
-                         $(LOCAL_STATIC_CSS)/os_otdemo.css \
+                         $(LOCAL_STATIC_CSS)/os.css
 # CSS destination
 CSSDIR                := $(TEST_PREFIX)$(ELIOMSTATICDIR)/css
 CSS_PREFIX            := $(CSSDIR)/$(PROJECT_NAME)

@@ -1,9 +1,9 @@
 ## ---------------------------------------------------------------------
 ## This Makefile contains the rules about the database management.
 ##
-## Ocsigen-start uses PostgreSQL so you need to install it.
+## Ocsigen Start uses PostgreSQL so you need to install it.
 ##
-## Ocsigen-start uses pg_ctl. If this executable is not found, an error occurs.
+## Ocsigen Start uses pg_ctl. If this executable is not found, an error occurs.
 ##
 ## Some variables like the PostgreSQL directory for log, the PostgreSQL
 ## directory or the variables to access the database (like the database name or
@@ -71,7 +71,7 @@ endif
 #   PROJECTNAME.sql. See Makefile.options.
 #
 # - db-upgrade:
-#   Upgrade the database schema related to Ocsigen-start to the newer database
+#   Upgrade the database schema related to Ocsigen Start to the newer database
 #   schema.
 #   It uses $(OS_UPGRADE_FILE) SQL file. You must not change it.
 #   Please read the upgrade information before calling this rule.
