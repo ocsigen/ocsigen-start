@@ -34,15 +34,17 @@ exception No_such_saved_token
 
 (** {2 Token representation. } *)
 
-(** Represents tokens used by the OpenID Connect server. *)
+(** Interface for ID Token used by the OpenID Connect server. *)
 
-module type IDTOKEN =
-  sig
-
-  (** Represents a saved token. The type is abstract to let the choice of the
+module type IDTOKEN = sig
+  (** Represent a saved token. The type is abstract to let the choice of the
       implementation.
       In addition to {!Os_oauth2_client.TOKEN.saved_token}, a token must contain
       at least:
+      - the token type (for example ["bearer"]).
+      - the scopes list (of type {!scope}). Used to know which data the data
+      service must send.
+
       - the ID token as a JSON Web Token (JWT).
    *)
   type saved_token
@@ -61,27 +63,27 @@ module type IDTOKEN =
   (** [number_of_cycle] the number of cycle. *)
   val number_of_cycle : int
 
-  (** Returns the OpenID Connect server ID which delivered the token. *)
+  (** Return the OpenID Connect server ID which delivered the token. *)
   val id_server_of_saved_token :
     saved_token ->
     Os_types.OAuth2.Server.id
 
-  (** Returns the token value. *)
+  (** Return the token value. *)
   val value_of_saved_token                 :
     saved_token ->
     string
 
-  (** Returns the token type (for example ["bearer"]. *)
+  (** Return the token type (for example ["bearer"]. *)
   val token_type_of_saved_token            :
     saved_token ->
     string
 
-  (** Returns the ID token as a JWT. *)
+  (** Return the ID token as a JWT. *)
   val id_token_of_saved_token              :
     saved_token ->
     Jwt.t
 
-  (** Returns the number of remaining cycles. *)
+  (** Return the number of remaining cycles. *)
   val counter_of_saved_token               :
     saved_token  ->
     int ref
@@ -116,7 +118,7 @@ module type IDTOKEN =
     saved_token         ->
     unit
 
-  (** Returns all saved tokens as a list. *)
+  (** Return all saved tokens as a list. *)
   val list_tokens         :
     unit                ->
     saved_token list
@@ -133,29 +135,28 @@ module type IDTOKEN =
 
 (** Basic scope for OpenID Connect. *)
 
-module Basic_scope :
-  sig
-    (** Available scopes. When doing a request, [OpenID] is automatically
-        set.
-     *)
-    type scope =
-      | OpenID (** Mandatory in each requests (due to RFC).*)
-      | Firstname (** Get access to the first name *)
-      | Lastname (** Get access to the last name *)
-      | Email (** Get access to the email *)
-      | Unknown (** Used when an unknown scope is given. *)
+module Basic_scope : sig
+  (** Available scopes. When doing a request, [OpenID] is automatically
+      set.
+   *)
+  type scope =
+    | OpenID (** Mandatory in each requests (due to RFC).*)
+    | Firstname (** Get access to the first name *)
+    | Lastname (** Get access to the last name *)
+    | Email (** Get access to the email *)
+    | Unknown (** Used when an unknown scope is given. *)
 
-    (** Default scopes is set to {{!scope}OpenID} (due to RFC). *)
-    val default_scopes : scope list
+  (** Default scopes is set to {{!scope}OpenID} (due to RFC). *)
+  val default_scopes : scope list
 
-    (** Get a string representation of the scope. {{!scope}Unknown} string
-        representation is the empty string.
-     *)
-    val scope_to_str : scope -> string
+  (** Get a string representation of the scope. {{!scope}Unknown} string
+      representation is the empty string.
+   *)
+  val scope_to_str : scope -> string
 
-    (** Converts a string scope to {!scope} type. *)
-    val scope_of_str : string -> scope
-  end
+  (** Converts a string scope to {!scope} type. *)
+  val scope_of_str : string -> scope
+end
 
 (** Basic ID token implementation. *)
 

@@ -146,142 +146,141 @@ val list_clients :
 (** {2 Scopes, tokens and basic implementations of them. } *)
 
 (** Interface for scopes. *)
-module type SCOPE =
-  sig
-    (** Scope is a list of permissions. *)
-    type scope
+module type SCOPE = sig
+  (** Scope is a list of permissions. *)
+  type scope
 
-    val scope_of_str :
-      string ->
-      scope
+  val scope_of_str :
+    string ->
+    scope
 
-    val scope_to_str :
-      scope ->
-      string
+  val scope_to_str :
+    scope ->
+    string
 
-    (** Return [true] if the scope asked by the client is
-        allowed, else [false].
+  (** Return [true] if the scope asked by the client is
+      allowed, else [false].
 
-        You can implement simple check functions by only checking if all
-        elements of the scopes list are defined but you can also have the case
-        where two scopes can't be asked at the same time.
-     *)
-    val check_scope_list :
-      scope list ->
-      bool
-  end
+      You can implement simple check functions by only checking if all
+      elements of the scopes list are defined but you can also have the case
+      where two scopes can't be asked at the same time.
+   *)
+  val check_scope_list :
+    scope list ->
+    bool
+end
 
 (** Interface for tokens. *)
-module type TOKEN =
-  sig
-    (** List of permissions. Used to type the [scope] field in {!saved_token} *)
-    type scope
 
-    (** Saved token representation. The type is abstract to let the choice of
-        the implementation.
-        A token must contain at least:
-        - the userid to know which user authorized.
-        - the OAuth2.0 client ID to know the client to which the token is
-          assigned. The ID is related to the database.
-        - a value (the token value).
-        - the token type (for example ["bearer"]).
-        - the scopes list (of type {!scope}). Used to know which data the data
-        service must send.
-        - a counter which represents the number of times the token has been
-          checked by the timer.
-     *)
-    type saved_token
+module type TOKEN = sig
+  (** List of permissions. Used to type the [scope] field in {!saved_token} *)
+  type scope
 
-    (** The list of all saved tokens. *)
-    val saved_tokens : saved_token list ref
+  (** Saved token representation. The type is abstract to let the choice of
+      the implementation.
+      A token must contain at least:
+      - the userid to know which user authorized.
+      - the OAuth2.0 client ID to know the client to which the token is
+        assigned. The ID is related to the database.
+      - a value (the token value).
+      - the token type (for example ["bearer"]).
+      - the scopes list (of type {!scope}). Used to know which data the data
+      service must send.
+      - a counter which represents the number of times the token has been
+        checked by the timer.
+   *)
+  type saved_token
 
-    (** Tokens must expire after a certain amount of time. For this reason, a
-        timer {!Os_oauth2_shared.update_list_timer} checks all {!cycle_duration}
-        seconds if the token has been generated after {!cycle_duration} *
-        {!number_of_cycle} seconds. If it's the case, the token is removed.
-     *)
+  (** The list of all saved tokens. *)
+  val saved_tokens : saved_token list ref
 
-    (** The duration of a cycle. *)
-    val cycle_duration : int
+  (** Tokens must expire after a certain amount of time. For this reason, a
+      timer {!Os_oauth2_shared.update_list_timer} checks all {!cycle_duration}
+      seconds if the token has been generated after {!cycle_duration} *
+      {!number_of_cycle} seconds. If it's the case, the token is removed.
+   *)
 
-    (** The number of cycle. *)
-    val number_of_cycle : int
+  (** The duration of a cycle. *)
+  val cycle_duration : int
 
-    (** Return the client ID. *)
-    val id_client_of_saved_token  :
-      saved_token ->
-      Os_types.OAuth2.Client.id
+  (** The number of cycle. *)
+  val number_of_cycle : int
 
-    (** Return the userid of the user who authorized. *)
-    val userid_of_saved_token     :
-      saved_token ->
-      Os_types.User.id
+  (** Return the client ID. *)
+  val id_client_of_saved_token  :
+    saved_token ->
+    Os_types.OAuth2.Client.id
 
-    (** Return the token value. *)
-    val value_of_saved_token      :
-      saved_token ->
-      string
+  (** Return the userid of the user who authorized. *)
+  val userid_of_saved_token     :
+    saved_token ->
+    Os_types.User.id
 
-    (** Return the token type. *)
-    val token_type_of_saved_token :
-      saved_token ->
-      string
+  (** Return the token value. *)
+  val value_of_saved_token      :
+    saved_token ->
+    string
 
-    (** Return the scope asked by the client. *)
-    val scope_of_saved_token      :
-      saved_token ->
-      scope list
+  (** Return the token type. *)
+  val token_type_of_saved_token :
+    saved_token ->
+    string
 
-    (** Return the number of passed cycle. *)
-    val counter_of_saved_token    :
-      saved_token ->
-      int ref
+  (** Return the scope asked by the client. *)
+  val scope_of_saved_token      :
+    saved_token ->
+    scope list
 
-    (** Return [true] if the token already exists. *)
-    val token_exists              :
-      saved_token                 ->
-      bool
+  (** Return the number of passed cycle. *)
+  val counter_of_saved_token    :
+    saved_token ->
+    int ref
 
-    (** Generate a token value. *)
-    val generate_token_value      :
-      unit                        ->
-      string
+  (** Return [true] if the token already exists. *)
+  val token_exists              :
+    saved_token                 ->
+    bool
 
-    (** Generate a new token. *)
-    val generate_token            :
-      id_client:Os_types.OAuth2.Client.id ->
-      userid:Os_types.User.id             ->
-      scope:scope list                    ->
-      saved_token Lwt.t
+  (** Generate a token value. *)
+  val generate_token_value      :
+    unit                        ->
+    string
 
-    (** Save a token. *)
-    val save_token                :
-      saved_token                 ->
-      unit
+  (** Generate a new token. *)
+  val generate_token            :
+    id_client:Os_types.OAuth2.Client.id ->
+    userid:Os_types.User.id             ->
+    scope:scope list                    ->
+    saved_token Lwt.t
 
-    (** Remove a saved token. *)
-    val remove_saved_token        :
-      saved_token                 ->
-      unit
+  (** Save a token. *)
+  val save_token                :
+    saved_token                 ->
+    unit
 
-    (** Return the saved token assigned to the client with given ID and
-        value.
-     *)
-    val saved_token_of_id_client_and_value :
-      Os_types.OAuth2.Client.id   ->
-      string                      ->
-      saved_token
+  (** Remove a saved token. *)
+  val remove_saved_token        :
+    saved_token                 ->
+    unit
 
-    (** List all saved tokens *)
-    val list_tokens               :
-      unit                        ->
-      saved_token list
+  (** Return the saved token assigned to the client with given ID and
+      value.
+   *)
+  val saved_token_of_id_client_and_value :
+    Os_types.OAuth2.Client.id   ->
+    string                      ->
+    saved_token
 
-    (** Return the saved token as a JSON. Used to send to the client. *)
-    val saved_token_to_json       :
-      saved_token                 ->
-      Yojson.Safe.json
-  end
+  (** List all saved tokens *)
+  val list_tokens               :
+    unit                        ->
+    saved_token list
+
+  (** Return the saved token as a JSON. Used to send to the client. *)
+  val saved_token_to_json       :
+    saved_token                 ->
+    Yojson.Safe.json
+end
 
 (** Interface for OAuth2.0 servers.
     See also {!MakeServer}.

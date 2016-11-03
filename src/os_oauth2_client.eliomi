@@ -185,22 +185,22 @@ module type TOKEN = sig
   (** [number_of_cycle] is the number of cycle. *)
   val number_of_cycle : int
 
-  (** Returns the OpenID Connect server ID which delivered the token. *)
+  (** Return the OpenID Connect server ID which delivered the token. *)
   val id_server_of_saved_token :
     saved_token ->
     Os_types.OAuth2.Server.id
 
-  (** Returns the token value. *)
+  (** Return the token value. *)
   val value_of_saved_token                 :
     saved_token ->
     string
 
-  (** Returns the token type (for example ["bearer"]). *)
+  (** Return the token type (for example ["bearer"]). *)
   val token_type_of_saved_token            :
     saved_token ->
     string
 
-  (** Returns the number of passed cycles. *)
+  (** Return the number of passed cycles. *)
   val counter_of_saved_token               :
     saved_token  ->
     int ref
@@ -235,7 +235,7 @@ module type TOKEN = sig
     saved_token         ->
     unit
 
-  (** Returns all saved tokens as a list. *)
+  (** Return all saved tokens as a list. *)
   val list_tokens         :
     unit                ->
     saved_token list
@@ -378,7 +378,7 @@ module Basic_scope : sig
   end
 
 (** Basic_token is a {!TOKEN} module representing a basic token (id_server,
-    value and token_type.
+    value and token_type).
     This token representation is used in {!Os_oauth2_server.Basic} so you can to
     use this module if the OAuth2 server is an instance of
     {!Os_oauth2_server.Basic}.

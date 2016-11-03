@@ -19,119 +19,192 @@
  *)
 
 (** OpenID Connect server with default scopes ({!Basic_scope}), ID Tokens
-    ({!Basic_ID_Token}) and client implementation ({!Basic}).
+    ({!Basic_ID_Token}) and server implementation ({!Basic}).
  *)
+
+(** {1 Exceptions. } *)
 
 (** Exception raised when the given token doesn't exist. *)
 exception No_such_saved_token
 
-module type IDTOKEN =
-  sig
-    type scope
+(** {2 Token representation. } *)
 
-    type saved_token
+(** Token interface used by the OpenID Connect server. *)
 
-    val saved_tokens : saved_token list ref
+module type IDTOKEN = sig
+  (** List of permissions. Used to type the [scope] field in {!saved_token} *)
+  type scope
 
-    val cycle_duration  : int
+  (** Token representation. The type is abstract to let the choice of the
+      implementation.
+      A token must contain at least:
+      - the userid to know which user authorized.
+      - the OAuth2.0 client ID to know the client to which the token is
+        assigned. The ID is related to the database.
+      - a value (the token value).
+      - the token type (for example ["bearer"]).
+      - the scopes list (of type {!scope}). Used to know which data the data
+      service must send.
+      - the ID token as a JSON Web Token (JWT).
+      - the secret key used to sign the JWT. It is useful to check if the
+      client sent the right ID token. This is the key used by HS256 to sign
+      the token.
+      - a counter which represents the number of times the token has been
+        checked by the timer.
+   *)
+  type saved_token
 
-    val number_of_cycle : int
+  (** The list of all saved tokens. *)
+  val saved_tokens : saved_token list ref
 
-    val id_client_of_saved_token :
-      saved_token ->
-      Os_types.OAuth2.Client.id
+  (** Tokens must expire after a certain amount of time. For this reason, a
+      timer {!Os_oauth2_shared.update_list_timer} checks all {!cycle_duration}
+      seconds if the token has been generated after {!cycle_duration} *
+      {!number_of_cycle} seconds. If it's the case, the token is removed.
+   *)
 
-    val userid_of_saved_token :
-      saved_token ->
-      Os_types.User.id
+  (** The duration of a cycle. *)
+  val cycle_duration  : int
 
-    val token_type_of_saved_token :
-      saved_token ->
-      string
+  (** The number of cycle. *)
+  val number_of_cycle : int
 
-    val value_of_saved_token :
-      saved_token ->
-      string
+  (** Return the client ID. *)
+  val id_client_of_saved_token :
+    saved_token ->
+    Os_types.OAuth2.Client.id
 
-    val id_token_of_saved_token :
-      saved_token ->
-      Jwt.t
+  (** Return the userid of the user who authorized. *)
+  val userid_of_saved_token :
+    saved_token ->
+    Os_types.User.id
 
-    val scope_of_saved_token :
-      saved_token ->
-      scope list
+  (** Return the token type. *)
+  val token_type_of_saved_token :
+    saved_token ->
+    string
 
-    val secret_key_of_saved_token :
-      saved_token ->
-      string
+  (** Return the token value. *)
+  val value_of_saved_token :
+    saved_token ->
+    string
 
-    val counter_of_saved_token    :
-      saved_token ->
-      int ref
+  (** Return the ID token as a JWT. *)
+  val id_token_of_saved_token :
+    saved_token ->
+    Jwt.t
 
-    (* getters *)
-    (* ------- *)
+  (** Return the scope asked by the client. *)
+  val scope_of_saved_token :
+    saved_token ->
+    scope list
 
-    (* Returns true if the token already exists *)
-    val token_exists              :
-      saved_token                 ->
-      bool
+  (** Return the secret key used to sign the JWT. *)
+  val secret_key_of_saved_token :
+    saved_token ->
+    string
 
-    (* Generate a token value *)
-    val generate_token_value      :
-      unit                        ->
-      string
+  (** Return the number of passed cycle. *)
+  val counter_of_saved_token    :
+    saved_token ->
+    int ref
 
-    (* Generate a new token *)
-    val generate_token            :
-      id_client:Os_types.OAuth2.Client.id ->
-      userid:Os_types.User.id             ->
-      scope:scope list                    ->
-      saved_token Lwt.t
+  (** Return [true] if the token already exists *)
+  val token_exists              :
+    saved_token                 ->
+    bool
 
-    (* Save a token *)
-    val save_token                :
-      saved_token                 ->
-      unit
+  (* Generate a token value *)
+  val generate_token_value      :
+    unit                        ->
+    string
 
-    val remove_saved_token        :
-      saved_token                 ->
-      unit
+  (* Generate a new token *)
+  val generate_token            :
+    id_client:Os_types.OAuth2.Client.id ->
+    userid:Os_types.User.id             ->
+    scope:scope list                    ->
+    saved_token Lwt.t
 
-    val saved_token_of_id_client_and_value :
-      Os_types.OAuth2.Server.id ->
-      string                    ->
-      saved_token
+  (** Save a token *)
+  val save_token                :
+    saved_token                 ->
+    unit
 
-    (* List all saved tokens *)
-    val list_tokens               :
-      unit                        ->
-      saved_token list
+  (** Remove a token. *)
+  val remove_saved_token        :
+    saved_token                 ->
+    unit
 
-    val saved_token_to_json       :
-      saved_token                 ->
-      Yojson.Safe.json
-  end
+  (** Return the saved token assigned to the client with given ID and
+      value.
+   *)
+  val saved_token_of_id_client_and_value :
+    Os_types.OAuth2.Server.id ->
+    string                    ->
+    saved_token
+
+  (* List all saved tokens *)
+  val list_tokens               :
+    unit                        ->
+    saved_token list
+
+  (** Return the saved token as a JSON. Used to send to the client. *)
+  val saved_token_to_json       :
+    saved_token                 ->
+    Yojson.Safe.json
+end
 
 (** Basic module for scopes.
+
     [check_scope_list scope_list] returns [true] if every element in
     [scope_list] is an available scope value.
     If the list contains only [OpenID] or if the list doesn't contain [OpenID]
-    (mandatory scope in RFC), returns [false].
+    (mandatory scope in RFC), it returns [false].
     If an unknown scope value is in list (represented by [Unknown] value),
-     returns [false].
+    it returns [false].
  *)
 
+(** Basic scope *)
 module Basic_scope : Os_oauth2_server.SCOPE
 
+(** MakeIDToken (Scope) returns a module of type {!IDTOKEN} with the type
+    {!IDTOKEN.scope} equals to {!Scope.scope}.
+
+    Tokens are represented as a record with exactly the same fields available in
+    the inferface {!IDTOKEN}.
+
+    The token type is always ["bearer"].
+
+    The related JSON contains the fields:
+    - ["token_type"] with value ["bearer"].
+    - ["token"] with the token value.
+    - ["expires_in"] with the value [cycle_duration * number_of_cycle] i.e. 600
+    seconds.
+    - ["id_token"] with the JWT.
+
+
+    NOTE: If you want to implement another type of tokens, you need to implement
+    another functor (with the [Scope.scope] type dependency) which returns a
+    module of type {!IDTOKEN}. The resulting module can be given as parameter to
+    the function {!Os_oauth2_server.MakeServer}.
+ *)
 module MakeIDToken : functor
   (Scope : Os_oauth2_server.SCOPE) ->
   (IDTOKEN with type scope = Scope.scope)
 
+(** Basic ID Token based on the scope from {!Basic_scope}. *)
 module Basic_ID_token
   : (IDTOKEN with
     type scope = Basic_scope.scope)
 
+(** [Basic (Scope) (Token)] returns a module representing a OpenID Connect
+    server. The available scopes come from {!Scope.scope} and the token related
+    functions, types and representation come from {!Token}.
+
+    As an OpenID Connect server is based on an OAuth2.0, the server is generated
+    with {!Os_oauth2_server.MakeServer}.
+ *)
 module Basic : (Os_oauth2_server.SERVER with
   type scope = Basic_scope.scope and
   type saved_token = Basic_ID_token.saved_token
