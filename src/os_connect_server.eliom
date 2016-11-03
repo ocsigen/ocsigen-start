@@ -118,8 +118,7 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
       id_token   : Jwt.t ;
       scope      : scope list ;
       counter    : int ref ;
-      secret_key : string (* Needed to be able to check if the client sent the
-      right id_token. This is the key used by HS256 to sign the token. *)
+      secret_key : string
     }
 
     let id_client_of_saved_token s  = s.id_client
@@ -251,9 +250,6 @@ module MakeIDToken (Scope : Os_oauth2_server.SCOPE)
         (* What about a refresh_token ? *)
         (* ("refresh_token", `String refresh_token) ;*)
       ]
-
-    (** ---------- Function about token ---------- *)
-    (** ------------------------------------------ *)
   end
 
 module Basic_scope : Os_oauth2_server.SCOPE =

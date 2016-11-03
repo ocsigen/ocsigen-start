@@ -61,17 +61,11 @@ let check_authorization_header client_id header =
   (* if the authorization value is not defined *)
   with Not_found -> Lwt.return_false
 
-(** generate_authorization_code () generates an authorization code.
- * NOTE: Improve the generation by using the userid of the OAuth2 server
- * user, the client_id of OAuth2 client and the scope? *)
+(** Generates an authorization code. *)
 let generate_authorization_code () =
   Os_oauth2_shared.generate_random_string
     Os_oauth2_shared.size_authorization_code
 
-(* A basic OAuth2.0 client is represented by an application name, a description
- * and redirect_uri. When a client is registered, credentials and an ID is
- * assigned and becomes a {registered_client}.
- *)
 type client =
 {
   application_name: string;
@@ -96,9 +90,6 @@ let client_of_id id =
     Lwt.return { application_name ; description ; redirect_uri }
   with Os_db.No_such_resource -> Lwt.fail No_such_client
 
-(* Create a new client by generating credentials. The return value is the ID in
- * the database.
- *)
 let new_client ~application_name ~description ~redirect_uri =
   let credentials = generate_client_credentials () in
   Os_db.OAuth2_server.new_client
@@ -170,267 +161,264 @@ let registered_client_exists_by_client_id client_id =
   Os_db.OAuth2_server.registered_client_exists_by_client_id client_id
 
 
-module type SCOPE =
-  sig
-    type scope
+module type SCOPE = sig
+  type scope
 
-    val scope_of_str :
-      string ->
-      scope
+  val scope_of_str :
+    string ->
+    scope
 
-    val scope_to_str :
-      scope ->
-      string
+  val scope_to_str :
+    scope ->
+    string
 
-    val check_scope_list :
-      scope list ->
-      bool
-  end
+  val check_scope_list :
+    scope list ->
+    bool
+end
 
-module type TOKEN =
-  sig
-    type scope
+module type TOKEN = sig
+  type scope
 
-    type saved_token
+  type saved_token
 
-    val saved_tokens : saved_token list ref
+  val saved_tokens : saved_token list ref
 
-    val cycle_duration  : int
+  val cycle_duration  : int
 
-    val number_of_cycle : int
+  val number_of_cycle : int
 
-    val id_client_of_saved_token  :
-      saved_token ->
-      int64
+  val id_client_of_saved_token  :
+    saved_token ->
+    int64
 
-    val userid_of_saved_token     :
-      saved_token ->
-      int64
+  val userid_of_saved_token     :
+    saved_token ->
+    int64
 
-    val value_of_saved_token      :
-      saved_token ->
-      string
+  val value_of_saved_token      :
+    saved_token ->
+    string
 
-    val token_type_of_saved_token :
-      saved_token ->
-      string
+  val token_type_of_saved_token :
+    saved_token ->
+    string
 
-    val scope_of_saved_token      :
-      saved_token ->
-      scope list
+  val scope_of_saved_token      :
+    saved_token ->
+    scope list
 
 
-    val counter_of_saved_token    :
-      saved_token ->
-      int ref
+  val counter_of_saved_token    :
+    saved_token ->
+    int ref
 
-    val token_exists              :
-      saved_token                 ->
-      bool
+  val token_exists              :
+    saved_token                 ->
+    bool
 
-    val generate_token_value      :
-      unit                        ->
-      string
+  val generate_token_value      :
+    unit                        ->
+    string
 
-    val generate_token            :
-      id_client:int64             ->
-      userid:int64                ->
-      scope:scope list            ->
-      saved_token Lwt.t
+  val generate_token            :
+    id_client:int64             ->
+    userid:int64                ->
+    scope:scope list            ->
+    saved_token Lwt.t
 
-    val save_token                :
-      saved_token                 ->
-      unit
+  val save_token                :
+    saved_token                 ->
+    unit
 
-    val remove_saved_token        :
-      saved_token                 ->
-      unit
+  val remove_saved_token        :
+    saved_token                 ->
+    unit
 
-    val saved_token_of_id_client_and_value :
-      int64                       ->
-      string                      ->
-      saved_token
+  val saved_token_of_id_client_and_value :
+    int64                       ->
+    string                      ->
+    saved_token
 
-    val list_tokens               :
-      unit                        ->
-      saved_token list
+  val list_tokens               :
+    unit                        ->
+    saved_token list
 
-    val saved_token_to_json       :
-      saved_token                 ->
-      Yojson.Safe.json
-  end
+  val saved_token_to_json       :
+    saved_token                 ->
+    Yojson.Safe.json
+end
 
-module type SERVER =
-  sig
-    type scope
+module type SERVER = sig
+  type scope
 
-    val scope_of_str :
-      string ->
-      scope
+  val scope_of_str :
+    string ->
+    scope
 
-    val scope_to_str :
-      scope ->
-      string
+  val scope_to_str :
+    scope ->
+    string
 
-    val scope_list_of_str_list :
-      string list ->
-      scope list
+  val scope_list_of_str_list :
+    string list ->
+    scope list
 
-    val scope_list_to_str_list :
-      scope list ->
-      string list
+  val scope_list_to_str_list :
+    scope list ->
+    string list
 
-    type saved_token
+  type saved_token
 
-    val id_client_of_saved_token  :
-      saved_token ->
-      Os_types.OAuth2.Client.id
+  val id_client_of_saved_token  :
+    saved_token ->
+    Os_types.OAuth2.Client.id
 
-    val userid_of_saved_token     :
-      saved_token ->
-      Os_types.User.id
+  val userid_of_saved_token     :
+    saved_token ->
+    Os_types.User.id
 
-    val value_of_saved_token      :
-      saved_token ->
-      string
+  val value_of_saved_token      :
+    saved_token ->
+    string
 
-    val token_type_of_saved_token :
-      saved_token ->
-      string
+  val token_type_of_saved_token :
+    saved_token ->
+    string
 
-    val scope_of_saved_token      :
-      saved_token ->
-      scope list
+  val scope_of_saved_token      :
+    saved_token ->
+    scope list
 
-    val token_exists              :
-      saved_token           ->
-      bool
+  val token_exists              :
+    saved_token           ->
+    bool
 
-    val save_token                :
-      saved_token           ->
-      unit
+  val save_token                :
+    saved_token           ->
+    unit
 
-    val remove_saved_token        :
-      saved_token           ->
-      unit
+  val remove_saved_token        :
+    saved_token           ->
+    unit
 
-    val saved_token_of_id_client_and_value :
-      Os_types.OAuth2.Client.id   ->
-      string                      ->
-      saved_token
+  val saved_token_of_id_client_and_value :
+    Os_types.OAuth2.Client.id   ->
+    string                      ->
+    saved_token
 
-    val list_tokens               :
-      unit                  ->
-      saved_token list
+  val list_tokens               :
+    unit                  ->
+    saved_token list
 
-    val set_userid_of_request_info_code :
-      string ->
-      string ->
-      Os_types.User.id ->
-      unit
+  val set_userid_of_request_info_code :
+    string ->
+    string ->
+    Os_types.User.id ->
+    unit
 
-    val send_authorization_code :
-      string                    ->
-      Os_types.OAuth2.client_id ->
-      Eliom_registration.Html.page Lwt.t
+  val send_authorization_code :
+    string                    ->
+    Os_types.OAuth2.client_id ->
+    Eliom_registration.Html.page Lwt.t
 
-    val send_authorization_code_error :
-      ?error_description:string option               ->
-      ?error_uri:string option                       ->
-      Os_oauth2_shared.error_authorization_code_type ->
-      string                                         ->
-      Ocsigen_lib.Url.t                              ->
-      Eliom_registration.Html.page Lwt.t
+  val send_authorization_code_error :
+    ?error_description:string option               ->
+    ?error_uri:string option                       ->
+    Os_oauth2_shared.error_authorization_code_type ->
+    string                                         ->
+    Ocsigen_lib.Url.t                              ->
+    Eliom_registration.Html.page Lwt.t
 
-    val rpc_resource_owner_authorize  :
-      (
-        string * Os_types.OAuth2.client_id,
-        Eliom_registration.Html.page
-      )
-      Eliom_client.server_function
+  val rpc_resource_owner_authorize  :
+    (
+      string * Os_types.OAuth2.client_id,
+      Eliom_registration.Html.page
+    )
+    Eliom_client.server_function
 
-    val rpc_resource_owner_decline    :
-      (
-        string * Ocsigen_lib.Url.t,
-        Eliom_registration.Html.page
-      )
-      Eliom_client.server_function
+  val rpc_resource_owner_decline    :
+    (
+      string * Ocsigen_lib.Url.t,
+      Eliom_registration.Html.page
+    )
+    Eliom_client.server_function
 
-    type authorization_service =
-      (string *
-        (Os_types.OAuth2.client_id * (Ocsigen_lib.Url.t * (string * string))
-      ),
-      unit,
-      Eliom_service.get,
-      Eliom_service.att,
-      Eliom_service.non_co,
-      Eliom_service.non_ext,
-      Eliom_service.reg, [ `WithoutSuffix ],
-      [ `One of string ]
+  type authorization_service =
+    (string *
+      (Os_types.OAuth2.client_id * (Ocsigen_lib.Url.t * (string * string))
+    ),
+    unit,
+    Eliom_service.get,
+    Eliom_service.att,
+    Eliom_service.non_co,
+    Eliom_service.non_ext,
+    Eliom_service.reg, [ `WithoutSuffix ],
+    [ `One of string ]
+    Eliom_parameter.param_name *
+    ([ `One of Os_types.OAuth2.client_id ]
+     Eliom_parameter.param_name *
+     ([ `One of Ocsigen_lib.Url.t ]
       Eliom_parameter.param_name *
-      ([ `One of Os_types.OAuth2.client_id ]
+      ([ `One of string ]
        Eliom_parameter.param_name *
-       ([ `One of Ocsigen_lib.Url.t ]
-        Eliom_parameter.param_name *
-        ([ `One of string ]
-         Eliom_parameter.param_name *
-         [ `One of string ]
-         Eliom_parameter.param_name))),
-      unit, Eliom_service.non_ocaml)
-      Eliom_service.t
+       [ `One of string ]
+       Eliom_parameter.param_name))),
+    unit, Eliom_service.non_ocaml)
+    Eliom_service.t
 
-    val authorization_service :
-      Eliom_lib.Url.path ->
-      authorization_service
+  val authorization_service :
+    Eliom_lib.Url.path ->
+    authorization_service
 
-    type authorization_handler  =
-      state:string                        ->
-      client_id:Os_types.OAuth2.client_id ->
-      redirect_uri:Ocsigen_lib.Url.t      ->
-      scope:scope list                    ->
-      Eliom_registration.Html.page Lwt.t (* Returned value of the handler *)
+  type authorization_handler  =
+    state:string                        ->
+    client_id:Os_types.OAuth2.client_id ->
+    redirect_uri:Ocsigen_lib.Url.t      ->
+    scope:scope list                    ->
+    Eliom_registration.Html.page Lwt.t (* Returned value of the handler *)
 
-    val authorization_handler :
-      authorization_handler ->
-      (
-        (string * (Os_types.OAuth2.client_id *
-            (Ocsigen_lib.Url.t * (string * string)))
-        )                                                   ->
-        unit                                                ->
-        Eliom_registration.Html.page Lwt.t
-      )
+  val authorization_handler :
+    authorization_handler ->
+    (
+      (string * (Os_types.OAuth2.client_id *
+          (Ocsigen_lib.Url.t * (string * string)))
+      )                                                   ->
+      unit                                                ->
+      Eliom_registration.Html.page Lwt.t
+    )
 
-    type token_service =
-      (unit,
-      string * (string * (Ocsigen_lib.Url.t * (string *
-        Os_types.OAuth2.client_id))),
-      Eliom_service.post,
-      Eliom_service.att,
-      Eliom_service.non_co,
-      Eliom_service.non_ext,
-      Eliom_service.reg,
-      [ `WithoutSuffix ],
-      unit,
-      [ `One of string ] Eliom_parameter.param_name *
-      ([ `One of string ] Eliom_parameter.param_name *
-        ([ `One of Ocsigen_lib.Url.t ] Eliom_parameter.param_name *
-          ([ `One of string ] Eliom_parameter.param_name *
-            [ `One of Os_types.OAuth2.client_id ] Eliom_parameter.param_name))),
-      Eliom_registration.String.return)
-      Eliom_service.t
+  type token_service =
+    (unit,
+    string * (string * (Ocsigen_lib.Url.t * (string *
+      Os_types.OAuth2.client_id))),
+    Eliom_service.post,
+    Eliom_service.att,
+    Eliom_service.non_co,
+    Eliom_service.non_ext,
+    Eliom_service.reg,
+    [ `WithoutSuffix ],
+    unit,
+    [ `One of string ] Eliom_parameter.param_name *
+    ([ `One of string ] Eliom_parameter.param_name *
+      ([ `One of Ocsigen_lib.Url.t ] Eliom_parameter.param_name *
+        ([ `One of string ] Eliom_parameter.param_name *
+          [ `One of Os_types.OAuth2.client_id ] Eliom_parameter.param_name))),
+    Eliom_registration.String.return)
+    Eliom_service.t
 
-    val token_service :
-      Eliom_lib.Url.path ->
-      token_service
+  val token_service :
+    Eliom_lib.Url.path ->
+    token_service
 
-    val token_handler :
-      (
-        unit                                                           ->
-        (string * (string *
-          (Ocsigen_lib.Url.t * (string * Os_types.OAuth2.client_id)))) ->
-        Eliom_registration.String.result Lwt.t
-      )
-  end
+  val token_handler :
+    (
+      unit                                                           ->
+      (string * (string *
+        (Ocsigen_lib.Url.t * (string * Os_types.OAuth2.client_id)))) ->
+      Eliom_registration.String.result Lwt.t
+    )
+end
 
 module MakeServer
   (Scope : SCOPE)
@@ -492,16 +480,14 @@ module MakeServer
       in
       request_info := (new_state :: (! request_info))
 
-    (** remove_request_info [state] removes the request_info which has [state]
-     * as state.
-     *)
+    (** [remove_request_info state] removes the request_info with [state] *)
     let remove_request_info_by_state_and_client_id state client_id =
       List.filter
         (fun x -> x.state = state && x.client_id = client_id)
         (! request_info)
 
-    (** Get the request info type with [state]. Raise State_not_found if no
-     * request has been done with [state]
+    (** Get the request info type with [state]. Raise [State_not_found] if no
+        request has been done with [state].
      *)
     let request_info_of_state state =
       let rec request_info_of_state_intern l = match l with
@@ -530,9 +516,8 @@ module MakeServer
           )
           states
 
-    (** Returns [true] if the state
-        [state] is already used for the client [client_id]. Else returns
-        [false].
+    (** Returns [true] if the state [state] is already used for the client
+        [client_id]. Else returns [false].
         As the state is used to get the request information between
         authorization and token endpoint, we need to be sure it's unique.
      *)
