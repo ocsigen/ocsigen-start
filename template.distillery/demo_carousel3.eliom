@@ -8,8 +8,6 @@
   open Eliom_content.Html.D
 ]
 
-let%client (carousel_update, carousel_change) = React.E.create ()
-
 let%server service =
   Eliom_service.create
     ~path:(Eliom_service.Path ["demo-carousel3"])
@@ -60,10 +58,14 @@ let%shared page () =
   in
   let carousel_content = List.map (fun p -> D.div [ pcdata p ]) carousel_pages
   in
+  let carousel_change_signal = [%client (React.E.create () : 'a * 'b) ] in
+  let update = [%client fst ~%carousel_change_signal] in
+  let change = [%client fun a -> (snd ~%carousel_change_signal ?step:None a) ]
+  in
   let carousel, pos, swipe_pos =
     Ot_carousel.wheel
       ~a:[ a_class ["demo-carousel3"] ]
-      ~update:[%client carousel_update]
+      ~update
       ~vertical:true
       ~inertia:1.
       ~position:10
@@ -76,9 +78,8 @@ let%shared page () =
     [ p [pcdata "Example of vertical circular carousel (wheel). Try with a touch screen."]
     ; carousel
     ; div [
-        Ot_carousel.previous ~change:[%client carousel_change] ~pos
-          [pcdata "down"];
-        Ot_carousel.next ~change:[%client carousel_change]
+        Ot_carousel.previous ~change ~pos [pcdata "down"];
+        Ot_carousel.next ~change
           ~pos ~size:(Eliom_shared.React.S.const 1) ~length:7
           [pcdata "up"]
       ]
