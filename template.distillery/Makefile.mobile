@@ -115,8 +115,8 @@ endif
         $(CORDOVAPATH)/www/index.html \
         $(CORDOVAPATH)/config.xml
 
-# Get Cordova version to check if it is installed (if not, variable is empty)
-CORDOVA_VERSION := $(shell cordova --version 2>/dev/null)
+# Check whether Cordova is installed (if not, variable is empty)
+CORDOVA_INSTALLED := $(shell command -v cordova > /dev/null)
 
 # Necessary Cordova and static files directories. They are created when
 # creating the Cordova project.
@@ -129,7 +129,7 @@ CORDOVA_DIRS := www www/css www/fonts www/images www/img www/js
 # The CSS, JS, logo, index and config.xml created by the Cordova CLI are removed
 # to be replaced later.
 $(CORDOVAPATH):
-ifdef CORDOVA_VERSION
+ifdef CORDOVA_INSTALLED
 	cordova create $(CORDOVAPATH) $(MOBILE_APP_ID) "$(MOBILE_APP_NAME)"
 	rm -f $(CORDOVAPATH)/www/css/index.css
 	rm -f $(CORDOVAPATH)/www/js/index.js
@@ -138,7 +138,7 @@ ifdef CORDOVA_VERSION
 	rm -f $(CORDOVAPATH)/config.xml
 	$(foreach dir,$(CORDOVA_DIRS),mkdir -p $@/$(dir);)
 else
-	$(warning WARNING_NO_CORDOVA)
+	$(warning $(WARNING_NO_CORDOVA))
 	[ -d $@ ] || mkdir $@
 	$(foreach dir,$(CORDOVA_DIRS),mkdir -p $@/$(dir);)
 endif
