@@ -88,6 +88,17 @@ val error_token_type_to_str               :
 
 (** {5 Parameters types for the different services. } *)
 
+(** Parameters for the authorization service. This service must be registered on
+    the server.
+
+    The parameters are (in order):
+    - the response type. For the moment, only the value ["code"] is
+      supported.
+    - the client ID.
+    - the redirect URI.
+    - the scope as a space separated list.
+    - the state.
+ *)
 val param_authorization_code :
   (
     Eliom_service.get,
@@ -105,6 +116,14 @@ val param_authorization_code :
   )
   Eliom_service.meth
 
+(** Parameters for the authorization code response service. This service must be
+    registered on the client and use by the server to send the code in case
+    of success.
+
+    The parameters are (in order):
+    - the code.
+    - the state.
+ *)
 val param_authorization_code_response :
   (
     Eliom_service.get,
@@ -118,6 +137,16 @@ val param_authorization_code_response :
   )
   Eliom_service.meth
 
+(** Parameters for the authorization code response service. This service must be
+    registered on the client and use by the server to send the response in case
+    of error.
+
+    The parameters are (in order):
+    - the error.
+    - an (optional) error description
+    - an (optional) error URI to describe the error.
+    - the state.
+ *)
 val param_authorization_code_response_error :
   (
     Eliom_service.get,
@@ -133,6 +162,17 @@ val param_authorization_code_response_error :
   )
   Eliom_service.meth
 
+(** Parameters for the token service. This service must be registered on the
+    server.
+
+    The parameters are (in order):
+    - the grant type. For the moment, only the value ["authorization_code"] is
+    supported.
+    - the code.
+    - the redirect URI.
+    - the state.
+    - the client ID.
+ *)
 val param_access_token :
   (
     Eliom_service.post,
@@ -152,6 +192,13 @@ val param_access_token :
 
 (** {6 MISC functions. } *)
 
+(** [update_list_timer seconds fn_check fn_timeout list] creates a Lwt timeout
+    each [seconds] (see <<a_api project="lwt" | Lwt_timeout.create>> and <<a_api
+    project="lwt" | Lwt_timeout.start>>). After this timeout, [fn_timeout] is
+    executed on each element of [list] for which [fn_check] is [true].
+
+    This function is used to remove saved tokens when they are expired.
+ *)
 val update_list_timer :
   int ->
   ('a -> bool) ->
@@ -160,10 +207,19 @@ val update_list_timer :
   unit    ->
   unit
 
+(** [generate_random_string length] generates an alphanumeric string of length
+    [length].
+ *)
 val generate_random_string :
   int  ->
   string
 
+(** [prefix_and_path_of_t url] splits [url] in a couple [(prefix, path)] where
+    [prefix] is ["http(s)://host:port"] and [path] is the path as [string list]
+
+    Example: [prefix_and_path_of_t "http://ocsigen.org:80/tuto/manual"]
+    returns [("http://ocsigen.org:80", ["tuto", "manual"])].
+ *)
 val prefix_and_path_of_url :
   Ocsigen_lib.Url.t ->
   string * string list
