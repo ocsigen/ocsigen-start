@@ -20,8 +20,6 @@
 
 (* GENERAL FIXME: always use HTTPS !!!! *)
 
-open Os_oauth2_shared
-
 exception State_not_found
 
 exception No_such_client
@@ -35,9 +33,13 @@ exception No_such_userid_registered
 let split_scope_list s = Re.split (Re.compile (Re.rep1 Re.space)) s
 
 let generate_client_credentials () =
-  let client_id     = Os_oauth2_shared.generate_random_string size_client_id in
-  let client_secret = Os_oauth2_shared.generate_random_string size_client_id in
-  client_credentials_of_string ~client_id ~client_secret
+  let client_id     =
+    Os_oauth2_shared.generate_random_string Os_oauth2_shared.size_client_id
+    in
+  let client_secret =
+    Os_oauth2_shared.generate_random_string Os_oauth2_shared.size_client_secret
+  in
+  Os_oauth2_shared.client_credentials_of_string ~client_id ~client_secret
 
 (* Check if the client id and the client secret has been set in the header while
  * requesting a token and if they are correct.
@@ -63,7 +65,8 @@ let check_authorization_header client_id header =
  * NOTE: Improve the generation by using the userid of the OAuth2 server
  * user, the client_id of OAuth2 client and the scope? *)
 let generate_authorization_code () =
-  Os_oauth2_shared.generate_random_string size_authorization_code
+  Os_oauth2_shared.generate_random_string
+    Os_oauth2_shared.size_authorization_code
 
 (* A basic OAuth2.0 client is represented by an application name, a description
  * and redirect_uri. When a client is registered, credentials and an ID is
@@ -102,21 +105,20 @@ let new_client ~application_name ~description ~redirect_uri =
     application_name
     description
     redirect_uri
-    (client_id_of_client_credentials credentials)
-    (client_secret_of_client_credentials credentials)
+    (Os_oauth2_shared.client_id_of_client_credentials credentials)
+    (Os_oauth2_shared.client_secret_of_client_credentials credentials)
 
 let remove_client_by_id id =
   Os_db.OAuth2_server.remove_client id
 
 let remove_client_by_client_id client_id =
-  let%lwt id = Os_db.OAuth2_server.id_of_client_id client_id in
-  remove_client_by_id id
+  Os_db.OAuth2_server.remove_client_by_client_id client_id
 
 type registered_client =
 {
-  id          : int64              ;
-  client      : client             ;
-  credentials : client_credentials ;
+  id          : int64                               ;
+  client      : client                              ;
+  credentials : Os_oauth2_shared.client_credentials ;
 }
 
 let id_of_registered_client t          = t.id
@@ -137,7 +139,7 @@ let registered_client_of_client_id client_id =
       client_of_string ~application_name ~description ~redirect_uri
     in
     let credentials =
-      client_credentials_of_string ~client_id ~client_secret
+      Os_oauth2_shared.client_credentials_of_string ~client_id ~client_secret
     in
     Lwt.return (to_registered_client id info credentials)
   with Os_db.No_such_resource -> Lwt.fail No_such_client
@@ -155,7 +157,7 @@ let list_clients ?(min_id=Int64.of_int 0) ?(limit=Int64.of_int 10) () =
             ~redirect_uri
         in
         let credentials =
-          client_credentials_of_string
+          Os_oauth2_shared.client_credentials_of_string
             ~client_id
             ~client_secret
         in
@@ -278,47 +280,27 @@ module type SERVER =
       scope list ->
       string list
 
-    val set_userid_of_request_info_code :
-      string ->
-      string ->
-      int64 ->
-      unit
-
-    val send_authorization_code :
-      string                                ->
-      string                                ->
-      Eliom_registration.Html.page Lwt.t
-
-    val send_authorization_code_error :
-      ?error_description:string option      ->
-      ?error_uri:string option              ->
-      error_authorization_code_type         ->
-      string                                ->
-      Ocsigen_lib.Url.t                     ->
-      Eliom_registration.Html.page Lwt.t
-
-    val rpc_resource_owner_authorize  :
-      (
-        Deriving_Json.Json_string.a *
-        Deriving_Json.Json_string.a,
-        Eliom_registration.Html.page
-      )
-      Eliom_client.server_function
-
-    val rpc_resource_owner_decline    :
-      (
-        Deriving_Json.Json_string.a * Deriving_Json.Json_string.a,
-        Eliom_registration.Html.page
-      )
-      Eliom_client.server_function
-
     type saved_token
 
-    val id_client_of_saved_token  : saved_token -> int64
-    val userid_of_saved_token     : saved_token -> int64
-    val value_of_saved_token      : saved_token -> string
-    val token_type_of_saved_token : saved_token -> string
-    val scope_of_saved_token      : saved_token -> scope list
+    val id_client_of_saved_token  :
+      saved_token ->
+      Os_types.OAuth2.Client.id
+
+    val userid_of_saved_token     :
+      saved_token ->
+      Os_types.User.id
+
+    val value_of_saved_token      :
+      saved_token ->
+      string
+
+    val token_type_of_saved_token :
+      saved_token ->
+      string
+
+    val scope_of_saved_token      :
+      saved_token ->
+      scope list
 
     val token_exists              :
       saved_token           ->
@@ -333,7 +315,7 @@ module type SERVER =
       unit
 
     val saved_token_of_id_client_and_value :
-      int64                       ->
+      Os_types.OAuth2.Client.id   ->
       string                      ->
       saved_token
 
@@ -341,8 +323,43 @@ module type SERVER =
       unit                  ->
       saved_token list
 
+    val set_userid_of_request_info_code :
+      string ->
+      string ->
+      Os_types.User.id ->
+      unit
+
+    val send_authorization_code :
+      string                    ->
+      Os_types.OAuth2.client_id ->
+      Eliom_registration.Html.page Lwt.t
+
+    val send_authorization_code_error :
+      ?error_description:string option               ->
+      ?error_uri:string option                       ->
+      Os_oauth2_shared.error_authorization_code_type ->
+      string                                         ->
+      Ocsigen_lib.Url.t                              ->
+      Eliom_registration.Html.page Lwt.t
+
+    val rpc_resource_owner_authorize  :
+      (
+        string * Os_types.OAuth2.client_id,
+        Eliom_registration.Html.page
+      )
+      Eliom_client.server_function
+
+    val rpc_resource_owner_decline    :
+      (
+        string * Ocsigen_lib.Url.t,
+        Eliom_registration.Html.page
+      )
+      Eliom_client.server_function
+
     type authorization_service =
-      (string * (string * (string * (string * string))),
+      (string *
+        (Os_types.OAuth2.client_id * (Ocsigen_lib.Url.t * (string * string))
+      ),
       unit,
       Eliom_service.get,
       Eliom_service.att,
@@ -351,9 +368,9 @@ module type SERVER =
       Eliom_service.reg, [ `WithoutSuffix ],
       [ `One of string ]
       Eliom_parameter.param_name *
-      ([ `One of string ]
+      ([ `One of Os_types.OAuth2.client_id ]
        Eliom_parameter.param_name *
-       ([ `One of string ]
+       ([ `One of Ocsigen_lib.Url.t ]
         Eliom_parameter.param_name *
         ([ `One of string ]
          Eliom_parameter.param_name *
@@ -367,23 +384,26 @@ module type SERVER =
       authorization_service
 
     type authorization_handler  =
-      state:string          ->
-      client_id:string      ->
-      redirect_uri:string   ->
-      scope:scope list      ->
+      state:string                        ->
+      client_id:Os_types.OAuth2.client_id ->
+      redirect_uri:Ocsigen_lib.Url.t      ->
+      scope:scope list                    ->
       Eliom_registration.Html.page Lwt.t (* Returned value of the handler *)
 
     val authorization_handler :
       authorization_handler ->
       (
-        (string * (string * (string * (string * string))))  ->
+        (string * (Os_types.OAuth2.client_id *
+            (Ocsigen_lib.Url.t * (string * string)))
+        )                                                   ->
         unit                                                ->
         Eliom_registration.Html.page Lwt.t
       )
 
     type token_service =
       (unit,
-      string * (string * (string * (string * string))),
+      string * (string * (Ocsigen_lib.Url.t * (string *
+        Os_types.OAuth2.client_id))),
       Eliom_service.post,
       Eliom_service.att,
       Eliom_service.non_co,
@@ -393,9 +413,9 @@ module type SERVER =
       unit,
       [ `One of string ] Eliom_parameter.param_name *
       ([ `One of string ] Eliom_parameter.param_name *
-        ([ `One of string ] Eliom_parameter.param_name *
+        ([ `One of Ocsigen_lib.Url.t ] Eliom_parameter.param_name *
           ([ `One of string ] Eliom_parameter.param_name *
-            [ `One of string ] Eliom_parameter.param_name))),
+            [ `One of Os_types.OAuth2.client_id ] Eliom_parameter.param_name))),
       Eliom_registration.String.return)
       Eliom_service.t
 
@@ -405,8 +425,9 @@ module type SERVER =
 
     val token_handler :
       (
-        unit                                                  ->
-        (string * (string * (string * (string * string))))    ->
+        unit                                                           ->
+        (string * (string *
+          (Ocsigen_lib.Url.t * (string * Os_types.OAuth2.client_id)))) ->
         Eliom_registration.String.result Lwt.t
       )
   end
@@ -437,13 +458,13 @@ module MakeServer
 
     type request_info =
     {
-      userid        : int64             ;
-      redirect_uri  : Ocsigen_lib.Url.t ;
-      client_id     : string            ;
-      code          : string            ;
-      state         : string            ;
-      scope         : scope list        ;
-      counter       : int ref           ;
+      userid        : int64                     ;
+      redirect_uri  : Ocsigen_lib.Url.t         ;
+      client_id     : Os_types.OAuth2.client_id ;
+      code          : string                    ;
+      state         : string                    ;
+      scope         : scope list                ;
+      counter       : int ref                   ;
     }
 
     let userid_of_request_info c        = c.userid
@@ -456,7 +477,7 @@ module MakeServer
     let request_info : request_info list ref = ref []
 
     let _ =
-      update_list_timer
+      Os_oauth2_shared.update_list_timer
         cycle_duration_request_info
         (fun x -> let c = x.counter in !c >= number_of_cycle_request_info)
         (fun x -> incr x.counter)
@@ -509,10 +530,11 @@ module MakeServer
           )
           states
 
-    (** check_state_already_used [client_id] [state] returns true if the state
-     * [state] is already used for the client [client_id]. Else returns false.
-     * As we use state to get the request information between authorization and
-     * token endpoint, we need to be sure it's unique.
+    (** Returns [true] if the state
+        [state] is already used for the client [client_id]. Else returns
+        [false].
+        As the state is used to get the request information between
+        authorization and token endpoint, we need to be sure it's unique.
      *)
 
     let check_state_already_used client_id state =
@@ -569,6 +591,13 @@ module MakeServer
     (* ---------- request code information --------- *)
     (* --------------------------------------------- *)
 
+    (**
+      NOTE: The example in the RFC is a redirection but it is not mentionned
+      if is mandatory. So we use change_page.
+
+      FIXME: They don't return a page normally. We need to change it for an
+      action.
+    *)
     let send_authorization_code state client_id =
       let request_info_code_tmp =
         request_info_code_of_state_and_client_id state client_id
@@ -584,7 +613,7 @@ module MakeServer
         let service_url = Eliom_service.extern
           ~prefix
           ~path
-          ~meth:param_authorization_code_response
+          ~meth:Os_oauth2_shared.param_authorization_code_response
           ()
         in
         add_request_info
@@ -625,10 +654,12 @@ module MakeServer
       let service_url = Eliom_service.extern
         ~prefix
         ~path
-        ~meth:param_authorization_code_response_error
+        ~meth:Os_oauth2_shared.param_authorization_code_response_error
         ()
       in
-      let error_str = error_authorization_code_type_to_str error in
+      let error_str =
+        Os_oauth2_shared.error_authorization_code_type_to_str error
+      in
       (* It is not mentionned in the RFC if we need to send an error code in the
        * redirection. So a simple change_page does the job.
        *)
@@ -646,8 +677,8 @@ module MakeServer
           Eliom_content.Html.D.(body []);
       )
 
-    (* When resource owner authorizes the client. Normally, you don't need to use
-     * this function: {!rpc_resource_owner_authorize} is enough *)
+    (* When resource owner authorizes the client. Normally, you don't need to
+     * use this function: {!rpc_resource_owner_authorize} is enough *)
     let resource_owner_authorize (state, client_id) =
       send_authorization_code state client_id
 
@@ -669,7 +700,7 @@ module MakeServer
       send_authorization_code_error
         ~error_description:(Some ("The resource owner doesn't authorize you to
         access its data"))
-        Auth_access_denied
+        Os_oauth2_shared.Auth_access_denied
         state
         redirect_uri
 
@@ -703,7 +734,7 @@ module MakeServer
     let authorization_service path =
       Eliom_service.create
         ~path:(Eliom_service.Path path)
-        ~meth:param_authorization_code
+        ~meth:Os_oauth2_shared.param_authorization_code
         ~https:true
         ()
 
@@ -749,7 +780,7 @@ module MakeServer
           if (response_type <> "code") then
             send_authorization_code_error
               ~error_description:(Some (response_type ^ " is not supported."))
-              Auth_invalid_request
+              Os_oauth2_shared.Auth_invalid_request
               state
               redirect_uri
           else if state_already_used then
@@ -757,7 +788,7 @@ module MakeServer
               ~error_description:
                 (Some ("State already used. It is recommended to generate \
                 random state with minimum 30 characters"))
-              Auth_invalid_request
+              Os_oauth2_shared.Auth_invalid_request
               state
               redirect_uri
           else if not authorized then
@@ -765,7 +796,7 @@ module MakeServer
               ~error_description:
                 (Some ("You are an unauthorized client. Please register before \
                 or check your credentials."))
-              Auth_unauthorized_client
+              Os_oauth2_shared.Auth_unauthorized_client
               state
               redirect_uri
           else if not (check_scope_list scope_list) then
@@ -773,7 +804,7 @@ module MakeServer
               ~error_description:
                 (Some ("Some values in scope list are not available or you \
                 forgot some mandatory scope value."))
-              Auth_invalid_scope
+              Os_oauth2_shared.Auth_invalid_scope
               state
               redirect_uri
           else if redirect_uri <> redirect_uri_bdd then
@@ -781,7 +812,7 @@ module MakeServer
             send_authorization_code_error
               ~error_description:
                 (Some ("Check the value of redirect_uri."))
-              Auth_invalid_request
+              Os_oauth2_shared.Auth_invalid_request
               state
               redirect_uri
           )
@@ -809,7 +840,7 @@ module MakeServer
               ~error_description:
                 (Some ("You are an unauthorized client. Please register before \
                 or check your credentials."))
-              Auth_unauthorized_client
+              Os_oauth2_shared.Auth_unauthorized_client
               state
               redirect_uri
         (* Comes from send_authorization_code while trying to get the
@@ -822,7 +853,7 @@ module MakeServer
               ~error_description:
                 (Some ("Error while sending the code. Please check if you \
                 changed the client_id or the state."))
-              Auth_invalid_request
+              Os_oauth2_shared.Auth_invalid_request
               state
               redirect_uri
         (* Comes from send_authorization_code while trying to get the userid of
@@ -833,7 +864,7 @@ module MakeServer
             send_authorization_code_error
               ~error_description:
                 (Some ("Error while sending the code. No user has authorized."))
-              Auth_invalid_request
+              Os_oauth2_shared.Auth_invalid_request
               state
               redirect_uri
 
@@ -868,23 +899,30 @@ module MakeServer
       ?(error_description=None) ?(error_uri=None) error =
       let json_error = match (error_description, error_uri) with
         | (None, None) ->
-            `Assoc [ ("error", `String (error_token_type_to_str error)) ]
+          `Assoc [(
+            "error",
+            `String (Os_oauth2_shared.error_token_type_to_str error)
+          )]
         | (None, Some x) ->
-          `Assoc
-          [
-            ("error", `String (error_token_type_to_str error)) ;
+          `Assoc [
+            (
+              "error",
+              `String (Os_oauth2_shared.error_token_type_to_str error)
+            ) ;
             ("error_uri", `String x)
           ]
         | (Some x, None) ->
-          `Assoc
-          [
-            ("error", `String (error_token_type_to_str error)) ;
+          `Assoc [
+            (
+              "error",
+              `String (Os_oauth2_shared.error_token_type_to_str error)
+            ) ;
             ("error_description", `String x)
           ]
         | (Some x, Some y) ->
           `Assoc
           [
-            ("error", `String (error_token_type_to_str error)) ;
+            ("error", `String (Os_oauth2_shared.error_token_type_to_str error));
             ("error_description", `String x) ;
             ("error_uri", `String y)
           ]
@@ -901,7 +939,7 @@ module MakeServer
       in
       (* NOTE: RFC page 45 *)
       let code = match error with
-      | Token_invalid_client -> 401
+      | Os_oauth2_shared.Token_invalid_client -> 401
       | _ -> 400
       in
 
@@ -933,7 +971,7 @@ module MakeServer
       Eliom_service.t
 
     let token_service path =
-      update_list_timer
+      Os_oauth2_shared.update_list_timer
         Token.cycle_duration
         (fun x -> let c = Token.counter_of_saved_token x in !c >=
           Token.number_of_cycle)
@@ -942,7 +980,7 @@ module MakeServer
         ();
       Eliom_service.create
         ~path:(Eliom_service.Path path)
-        ~meth:param_access_token
+        ~meth:Os_oauth2_shared.param_access_token
         ~https:true
         ()
 
@@ -969,22 +1007,22 @@ module MakeServer
               ~error_description:
                 (Some "Client authentication failed. Please check your client \
                 credentials and if you mentionned it in the request header.")
-              Token_invalid_client
+              Os_oauth2_shared.Token_invalid_client
           else if grant_type <> "authorization_code" then
             send_token_error
               ~error_description:
                 (Some "This authorization grant type is not supported.")
-              Token_unsupported_grant_type
+              Os_oauth2_shared.Token_unsupported_grant_type
           else if code <> code_state then
             send_token_error
               ~error_description:
                 (Some "Wrong code")
-              Token_invalid_grant
+              Os_oauth2_shared.Token_invalid_grant
           else if redirect_uri <> redirect_uri_state then
             send_token_error
               ~error_description:
                 (Some "Wrong redirect_uri")
-              Token_invalid_grant
+              Os_oauth2_shared.Token_invalid_grant
           else
           (
             let%lwt id_client =
@@ -1022,12 +1060,12 @@ module MakeServer
             send_token_error
               ~error_description:
                 (Some "Wrong state")
-              Token_invalid_request
+              Os_oauth2_shared.Token_invalid_request
         | Os_db.No_such_resource ->
             send_token_error
               ~error_description:
                 (Some "Client authentication failed.")
-              Token_invalid_client
+              Os_oauth2_shared.Token_invalid_client
 
   end
 
@@ -1068,9 +1106,9 @@ module MakeBasicToken (Scope : SCOPE) : (TOKEN with type scope = Scope.scope) =
   struct
     type scope = Scope.scope
 
-    let cycle_duration      = 10
+    let cycle_duration      = 60
 
-    let number_of_cycle     = 1
+    let number_of_cycle     = 10
 
     type saved_token =
     {
@@ -1107,7 +1145,7 @@ module MakeBasicToken (Scope : SCOPE) : (TOKEN with type scope = Scope.scope) =
       token_exists_by_id_client_and_value id_client value
 
     let generate_token_value () =
-      Os_oauth2_shared.generate_random_string size_token
+      Os_oauth2_shared.generate_random_string Os_oauth2_shared.size_token
 
     let generate_token ~id_client ~userid ~scope =
       let rec generate_token_if_doesnt_exists id_client =

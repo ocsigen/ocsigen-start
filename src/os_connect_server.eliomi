@@ -115,7 +115,7 @@ module type IDTOKEN =
 
 (** Basic module for scopes.
     [check_scope_list scope_list] returns [true] if every element in
-    [scope_list] is a available scope value.
+    [scope_list] is an available scope value.
     If the list contains only [OpenID] or if the list doesn't contain [OpenID]
     (mandatory scope in RFC), returns [false].
     If an unknown scope value is in list (represented by [Unknown] value),
