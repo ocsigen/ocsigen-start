@@ -46,7 +46,7 @@ endif
 $(LOCAL_CSS): check_sass import-external-css
 ifeq "$(USE_SASS)" "yes"
 	[ -d $(SASSDIR) ] && \
-	SASS_PATH=$(SASS_PATH) sass --style compressed $(SASS_SRC) $(SASS_FILES) $@
+	SASS_PATH=$(SASS_PATH) sass --style compressed $(SASS_SRC) $@
 else
 	cat $(CSS_FILES) > $(LOCAL_CSS)
 endif
