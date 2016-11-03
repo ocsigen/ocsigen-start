@@ -16,6 +16,7 @@
 ELIOMC            := eliomc -w +A-4-7-9-37-38-39-41-42-44-45-48
 ELIOMOPT          := eliomopt
 JS_OF_ELIOM       := js_of_eliom -w +A-4-7-9-37-38-39-41-42-44-45-48
+JS_OF_OCAML       := js_of_ocaml
 ELIOMDEP          := eliomdep
 OCSIGENSERVER     := ocsigenserver
 OCSIGENSERVER.OPT := ocsigenserver.opt
@@ -33,8 +34,8 @@ DEPSDIR := _deps
 ifeq ($(DEBUG),yes)
   GENERATE_DEBUG ?= -g
   RUN_DEBUG ?= "-v"
-  DEBUG_JS ?= -jsopt --noinline -jsopt --disable=shortvar
-  # -jsopt --pretty -jsopt --debuginfo
+  DEBUG_JS ?= --noinline --disable=shortvar --pretty
+      #  --debuginfo
 endif
 
 ##----------------------------------------------------------------------
@@ -259,12 +260,24 @@ CLIENT_OBJS := $(filter %.eliom %.ml, $(CLIENT_FILES))
 CLIENT_OBJS := $(patsubst %.eliom,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
 CLIENT_OBJS := $(patsubst %.ml,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
 
-$(JS_PREFIX).js: $(call objs,$(ELIOM_CLIENT_DIR),cmo,$(CLIENT_FILES)) | $(TEST_PREFIX)$(ELIOMSTATICDIR)
-	${JS_OF_ELIOM} -ppx -o $(JS_PREFIX)_tmp.js $(GENERATE_DEBUG) $(CLIENT_INC) $(DEBUG_JS) \
+$(ELIOM_CLIENT_DIR)/os_prologue.js:
+	${JS_OF_ELIOM} -jsopt --dynlink -o $@ $(GENERATE_DEBUG) $(CLIENT_INC) \
+		${addprefix -jsopt ,$(DEBUG_JS)}
+
+ifeq ($(DEBUG),yes)
+$(JS_PREFIX).js: $(call objs,$(ELIOM_CLIENT_DIR),js,$(CLIENT_FILES)) | $(TEST_PREFIX)$(ELIOMSTATICDIR) $(ELIOM_CLIENT_DIR)/os_prologue.js
+	cat $(ELIOM_CLIENT_DIR)/os_prologue.js $(call depsort,$(ELIOM_CLIENT_DIR),js,-client,$(CLIENT_INC),$(CLIENT_FILES)) > $(JS_PREFIX)_tmp.js && \
+	HASH=`md5sum $(JS_PREFIX)_tmp.js | cut -d ' ' -f 1` && \
+	mv $(JS_PREFIX)_tmp.js $(JS_PREFIX)_$$HASH.js && \
+	ln -sf $(PROJECT_NAME)_$$HASH.js $@
+else
+(JS_PREFIX).js: $(call objs,$(ELIOM_CLIENT_DIR),cmo,$(CLIENT_FILES)) | $(TEST_PREFIX)$(ELIOMSTATICDIR)
+	${JS_OF_ELIOM} -ppx -o $(JS_PREFIX)_tmp.js $(GENERATE_DEBUG) $(CLIENT_INC) ${addprefix -jsopt ,$(DEBUG_JS)} \
           $(call depsort,$(ELIOM_CLIENT_DIR),cmo,-client,$(CLIENT_INC),$(CLIENT_FILES))
 	HASH=`md5sum $(JS_PREFIX)_tmp.js | cut -d ' ' -f 1` && \
 	mv $(JS_PREFIX)_tmp.js $(JS_PREFIX)_$$HASH.js && \
 	ln -sf $(PROJECT_NAME)_$$HASH.js $@
+endif
 
 ${ELIOM_CLIENT_DIR}/%.cmi: %.mli
 	${JS_OF_ELIOM} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
@@ -277,6 +290,9 @@ ${ELIOM_CLIENT_DIR}/%.cmo: %.ml
 
 ${ELIOM_CLIENT_DIR}/%.cmi: %.eliomi
 	${JS_OF_ELIOM} -ppx -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
+
+${ELIOM_CLIENT_DIR}/%.js: ${ELIOM_CLIENT_DIR}/%.cmo
+	${JS_OF_OCAML} $(DEBUG_JS) $<
 
 ##----------------------------------------------------------------------
 
