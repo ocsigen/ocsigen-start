@@ -30,8 +30,10 @@ endef
 
 check_sass:
 ifeq ($(strip $(USE_SASS)),yes)
-ifeq ($(shell sass -v 2> /dev/null),)
+ifeq ($(shell command -v sassc),)
+ifeq ($(shell command -v sass),)
 $(error $(ERROR_SASS))
+endif
 endif
 endif
 
@@ -46,9 +48,10 @@ endif
 $(LOCAL_CSS): check_sass import-external-css
 ifeq "$(USE_SASS)" "yes"
 	[ -d $(SASSDIR) ] && \
-	SASS_PATH=$(SASS_PATH) sass --style compressed $(SASS_SRC) $(SASS_FILES) $@
+	(sassc -t compressed $(addprefix -I ,$(subst :, ,$(SASS_PATH))) $(SASS_SRC) $@ || \
+	SASS_PATH=$(SASS_PATH) sass --style compressed $(SASS_SRC) $@)
 else
-	cat $(CSS_FILES) > $(LOCAL_CSS)
+	cat $(CSS_FILES) > $@
 endif
 
 ##----------------------------------------------------------------------

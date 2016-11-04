@@ -140,16 +140,9 @@ USE_SASS              := yes
 SASSDIR               := sass
 
 # The filename of the main SASS file.
-# It is recommended to use only one SCSS file where you import other stylesheets
-# (with @import "path/filename[.css]"): in this way, you can import stylesheets
-# in the order you want.
+# You can import other stylesheets from this file
+# (with @import "path/filename[.css]").
 SASS_SRC              := $(SASSDIR)/$(PROJECT_NAME).scss
-
-# All external SASS files. It would be compiled at the same time than
-# $(SASS_SRC) and put in the same CSS file.
-# By default, it's empty.
-# The order is important.
-SASS_FILES            :=
 
 # A separated-colon list of path containing CSS and SCSS files. It allows to
 # avoid to write the entire path to a SCSS/CSS file in a @import rule.

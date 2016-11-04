@@ -92,15 +92,6 @@ $(addprefix $(TEST_PREFIX), $(DIST_DIRS)):
 	mkdir -p $@
 
 ##----------------------------------------------------------------------
-## Assets
-
-#$(warning\
-#	$(foreach pkg,$(SERVER_PACKAGES) $(SERVER_ELIOM_PACKAGES),\
-#	$(shell find $(shell ocamlfind query $(pkg))/css ))\
-#	)
-# include Makefile.sass
-
-##----------------------------------------------------------------------
 ## Installing & Running
 
 .PHONY: install install.byte install.byte install.opt install.static install.etc install.lib install.lib.byte install.lib.opt run.byte run.opt
