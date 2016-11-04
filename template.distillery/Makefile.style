@@ -89,4 +89,4 @@ ifneq "$(EXTERNAL_CSS_FILES)" ""
 endif
 
 clean-style:
-	$(RM) $(LOCAL_CSS) $(LOCAL_STATIC_CSS)/$(PROJECT_NAME).map.css
+	$(RM) $(LOCAL_CSS) $(LOCAL_STATIC_CSS)/$(PROJECT_NAME).css.map
