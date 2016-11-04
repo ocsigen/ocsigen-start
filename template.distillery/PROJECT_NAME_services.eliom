@@ -26,7 +26,7 @@ let%server settings_service = Eliom_service.create
 let%server os_github_service =
   Eliom_service.extern
     ~prefix:"http://github.com"
-    ~path:["ocsigen"; "ocsigen Start"]
+    ~path:["ocsigen"; "ocsigen-start"]
     ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
