@@ -1,11 +1,17 @@
+# Database
 local_db
-pg_ctl
+
+# Local server configuration
+local
+
+# Eliom
 .depend
 _client
 _deps
 _server
-local
+
+# Mobile application
 cordova
-scripts/*.byte
-scripts/*.cmi
-scripts/*.cmo
+
+# Style
+.sass-cache
