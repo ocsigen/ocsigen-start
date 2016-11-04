@@ -15,3 +15,6 @@ cordova
 
 # Style
 .sass-cache
+
+static/css/%%%PROJECT_NAME%%%.css.map
+static/css/%%%PROJECT_NAME%%%.css
