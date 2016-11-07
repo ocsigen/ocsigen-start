@@ -127,32 +127,22 @@ let%shared content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
 
     let make_page content =
       let title = match content.title with Some t -> t | None -> C.title in
-      let body_attrs =
+      let connected_attr =
         if Os_current_user.Opt.get_current_userid () <> None
-        then a_class ["os-connected"] :: content.body_attrs
-        else a_class ["os-not-connected"] :: content.body_attrs
+        then a_class ["os-connected"]
+        else a_class ["os-not-connected"]
       in
-      html ~a:(a_onload [%client fun ev -> (
-        let platform () =
-          let uA = Dom_html.window##.navigator##.userAgent in
-          let has s = uA##indexOf(Js.string s) <> -1 in
-          if has "Android"
-          then "os-android"
-          else if has "iPhone" || has "iPad" || has "iPod" || has "iWatch"
-          then "os-ios"
-          else if has "Windows"
-          then "os-windows"
-          else if has "BlackBerry"
-          then "os-blackberry"
-          else "os-unknown-platform"
-        in
-        let p = Js.string @@ platform () in
-        Js.Opt.case (ev##.currentTarget) (fun () -> ())
-          (fun e -> e##.classList##add(p))
-        : unit) ] :: content.html_attrs)
+      let platform_attr = a_onload [%client fun _ -> (
+        let platform = Js.string (Os_platform.css_class (Os_platform.get ())) in
+        Dom_html.document##.documentElement##.classList##add(platform); : unit)]
+      in
+      html ~a:(platform_attr :: content.html_attrs)
         (Eliom_tools.F.head ~title ~css ~js
            ~other:(local_css @ local_js @ content.head @ C.other_head) ())
-        (body ~a:body_attrs content.body)
+        (body
+          ~a:(connected_attr :: content.body_attrs)
+          content.body
+        )
 
     let page
         ?(predicate = C.default_predicate)
