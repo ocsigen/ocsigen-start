@@ -421,7 +421,7 @@ icons-android: $(ANDROID_ICONS)
 icons-ios: $(IOS_ICONS)
 
 $(CORDOVA_RES_PATH): $(CORDOVAPATH)
-	mkdir $(CORDOVA_RES_PATH)
+	mkdir -p $(CORDOVA_RES_PATH)
 
 icons-cp-%: $(MOBILESTATICPATH)/res/% $(CORDOVA_RES_PATH)
 	cp -r $< $(CORDOVA_RES_PATH)
