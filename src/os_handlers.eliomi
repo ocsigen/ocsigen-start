@@ -49,16 +49,25 @@ exception Custom_action_link of
               In that case, you probably want to display a sign-up form,
               and in the other case a login form. *)
 
+(** Exception raised when an account has been already activated and no user is
+    connected.
+ *)
 exception Account_already_activated_unconnected of Os_types.Action_link_key.info
 
+(** Exception raised when the key is oudated. *)
 exception Invalid_action_key of Os_types.Action_link_key.info
 
+(** Exception raised when the requested resource is not available. *)
 exception No_such_resource
 
-[%%server.start]
+[%%shared.start]
 
 (** [action_link_handler userid_o activation_key ()] is the handler for
     activation keys.
+
+    Depending on the error, {!No_such_resource}, {!Custom_action_link},
+    {!Invalid_action_key} or {!Account_already_activated_unconnected} can be
+    raised.
  *)
 val action_link_handler :
   int64 option ->
