@@ -25,7 +25,7 @@ let%shared connect_form () =
                    ()
                ; pcdata "keep me logged in"]
        ; Form.input
-           ~a:[a_class ["button"]]
+           ~a:[a_class ["button" ; "os-sign-in-btn"]]
            ~input_type:`Submit
            ~value:"Sign in"
            Form.string
@@ -64,7 +64,9 @@ let%shared sign_in_button () =
         ] ]
   in
   let button_name = "Sign In" in
-  let button = D.button ~a:[a_class ["button"]] [pcdata button_name] in
+  let button =
+    D.button ~a:[a_class ["button" ; "os-sign-in-btn"]] [pcdata button_name]
+  in
   Os_tools.bind_popup_button
     ~a:[a_class ["os-sign-in"]]
     ~button
@@ -79,7 +81,9 @@ let%shared sign_up_button () =
         ; sign_up_form ()] ]
   in
   let button_name = "Sign Up" in
-  let button = D.button ~a:[a_class ["button"]] [pcdata button_name] in
+  let button =
+    D.button ~a:[a_class ["button" ; "os-sign-up-btn"]] [pcdata button_name]
+  in
   Os_tools.bind_popup_button
     ~a:[a_class ["os-sign-up"]]
     ~button
