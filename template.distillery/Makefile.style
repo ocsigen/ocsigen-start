@@ -30,8 +30,8 @@ endef
 
 check_sass:
 ifeq ($(strip $(USE_SASS)),yes)
-ifeq ($(shell command -v sassc),)
-ifeq ($(shell command -v sass),)
+ifeq ($(shell which sassc),)
+ifeq ($(shell which sass),)
 $(error $(ERROR_SASS))
 endif
 endif
