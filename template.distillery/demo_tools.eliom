@@ -9,6 +9,7 @@
 [%%shared
   module type DemoPage = sig
     val name : string
+    val page_class : string
 
     val service :
       (unit, unit,

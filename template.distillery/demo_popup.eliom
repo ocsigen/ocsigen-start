@@ -17,6 +17,7 @@ let%server service =
 let%client service = ~%service
 
 let%shared name = "Popup Button"
+let%shared page_class = "os-page-demo-popup"
 
 let%shared page () =
   let button =
