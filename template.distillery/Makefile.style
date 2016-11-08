@@ -82,7 +82,7 @@ $(CSSDIR):
 $(CSS_DEST): $(LOCAL_CSS) | $(CSSDIR) check_sed
 	HASH=`cat $< | md5sum | cut -d ' ' -f 1` && \
 	cp $< $(CSS_PREFIX)_$$HASH.css && \
-	$(SED) '1s/^/@charset "UTF-8";/' $(CSS_PREFIX)_$$HASH.css && \
+        $(SED) '1s/^/@charset "UTF-8";/' $(CSS_PREFIX)_$$HASH.css && \
 	ln -sf $(PROJECT_NAME)_$$HASH.css $@
 # Charset is necessary for iOS.
 # Including it in scss does not work because sass removes it.
