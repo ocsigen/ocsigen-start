@@ -18,11 +18,20 @@ define ERROR_SASS
 
 Error: SASS not found.
 
-Ocsigen-start gives the choice to use SASS (a CSS preprocessor) to write
+Ocsigen Start gives the choice to use SASS (a CSS preprocessor) to write
 stylesheets. We encourage you to use SASS and the template needs it by default.
 See https://sass-lang.com for more information.
 If you don't really want to use it, you can change the value of the variable
 USE_SASS to "no" in Makefile.options to use CSS.
+
+endef
+
+define ERROR_POSTCSS
+
+Error: postcss not found.
+
+Ocsigen Start is using postcss to add vendor prefixes in CSS.
+Install postcss or modify the Makefile if you don't want postcss.
 
 endef
 
@@ -37,6 +46,11 @@ endif
 endif
 endif
 
+check_postcss:
+ifeq ($(shell which postcss),)
+$(error $(ERROR_POSTCSS))
+endif
+
 ##----------------------------------------------------------------------
 ## SASS rules
 
@@ -45,11 +59,12 @@ endif
 # If SASS is not activated, it will concatenate all CSS files (listed in
 # $(CSS_FILES)) in $(LOCAL_CSS).
 # In both cases, external CSS files ($(EXTERNAL_CSS_FILES)) are copied.
-$(LOCAL_CSS): check_sass import-external-css
+$(LOCAL_CSS): check_sass check_postcss import-external-css
 ifeq "$(USE_SASS)" "yes"
 	[ -d $(SASSDIR) ] && \
 	(sassc -t compressed $(addprefix -I ,$(subst :, ,$(SASS_PATH))) $(SASS_SRC) $@ || \
 	SASS_PATH=$(SASS_PATH) sass --style compressed $(SASS_SRC) $@)
+	postcss --use autoprefixer --replace $@
 else
 	cat $(CSS_FILES) > $@
 endif
