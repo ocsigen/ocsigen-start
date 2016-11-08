@@ -18,7 +18,7 @@ let () =
     ?unix_domain_socket_dir:!%%%MODULE_NAME%%%_config.os_db_unix_domain_socket_dir
     ()
 
-let () = Os_email.set_mailer "/usr/sbin/sendmail"
+let () = Os_email.set_mailer "sendmail"
 
 (* Create a module for the application. See
  * https://ocsigen.org/eliom/manual/clientserver-applications for more
