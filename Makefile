@@ -222,7 +222,7 @@ $(DEPSDIR):
 
 generate_css: $(CSS_FILES)
 
-$(TEMPLATE_DIR)/static\!css\!%.css: $(TEMPLATE_DIR)/sass!%.scss
+$(TEMPLATE_DIR)/static\!defaultcss\!%.css: $(TEMPLATE_DIR)/sass!%.scss
 	sed s/%%%PROJECT_NAME%%%/$(SASS_TEMPORARY_PROJECT_NAME)/g $< > \
         $(SASS_TEMPORARY_FILENAME).scss
 	sass $(SASS_TEMPORARY_FILENAME).scss $(SASS_TEMPORARY_FILENAME).css
