@@ -81,8 +81,8 @@ include Makefile.$(PROJECT_NAME)
 
 DIST_FILES = $(ELIOMSTATICDIR)/$(PROJECT_NAME).js $(LIBDIR)/$(PROJECT_NAME).cma
 
-.PHONY: test.byte test.opt
-test.byte: $(TEST_CONFIG_FILES) $(addprefix $(TEST_PREFIX),$(DIST_DIRS) $(DIST_FILES)) css
+.PHONY: test.byte test.opt staticfiles
+test.byte: $(TEST_CONFIG_FILES) staticfiles $(addprefix $(TEST_PREFIX),$(DIST_DIRS) $(DIST_FILES)) css
 	@echo "==== The website is available at http://localhost:$(TEST_PORT) ===="
 	$(OCSIGENSERVER) $(RUN_DEBUG) -c $<
 test.opt: $(TEST_CONFIG_FILES) $(addprefix $(TEST_PREFIX),$(DIST_DIRS) $(patsubst %.cma,%.cmxs, $(DIST_FILES))) css
@@ -91,6 +91,9 @@ test.opt: $(TEST_CONFIG_FILES) $(addprefix $(TEST_PREFIX),$(DIST_DIRS) $(patsubs
 
 $(addprefix $(TEST_PREFIX), $(DIST_DIRS)):
 	mkdir -p $@
+
+staticfiles:
+	cp -rf $(LOCAL_STATIC_CSS) $(LOCAL_STATIC_FONTS) $(TEST_PREFIX)$(ELIOMSTATICDIR)
 
 ##----------------------------------------------------------------------
 ## Installing & Running
@@ -105,8 +108,9 @@ install.lib.byte: $(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cma | $(PREFIX)$(LIBDI
 install.lib.opt: $(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cmxs | $(PREFIX)$(LIBDIR)
 	install $< $(PREFIX)$(LIBDIR)
 install.static: $(TEST_PREFIX)$(ELIOMSTATICDIR)/$(PROJECT_NAME).js | $(PREFIX)$(STATICDIR) $(PREFIX)$(ELIOMSTATICDIR)
-	cp -r $(LOCAL_STATIC)/* $(PREFIX)$(STATICDIR)
-	[ -z $(WWWUSER) ] || chown -R $(WWWUSER) $(PREFIX)$(STATICDIR)
+	cp -r $(LOCAL_STATIC_CSS) $(PREFIX)$(FILESDIR)
+	cp -r $(LOCAL_STATIC_FONTS) $(PREFIX)$(FILESDIR)
+	[ -z $(WWWUSER) ] || chown -R $(WWWUSER) $(PREFIX)$(FILESDIR)
 	install $(addprefix -o ,$(WWWUSER)) $< $(PREFIX)$(ELIOMSTATICDIR)
 install.etc: $(TEST_PREFIX)$(ETCDIR)/$(PROJECT_NAME).conf | $(PREFIX)$(ETCDIR)
 	install $< $(PREFIX)$(ETCDIR)/$(PROJECT_NAME).conf
@@ -114,13 +118,12 @@ install.etc: $(TEST_PREFIX)$(ETCDIR)/$(PROJECT_NAME).conf | $(PREFIX)$(ETCDIR)
 .PHONY:
 print-install-files:
 	@echo $(PREFIX)$(LIBDIR)
-	@echo $(PREFIX)$(STATICDIR)
 	@echo $(PREFIX)$(ELIOMSTATICDIR)
 	@echo $(PREFIX)$(ETCDIR)
 
 $(addprefix $(PREFIX),$(ETCDIR) $(LIBDIR)):
 	install -d $@
-$(addprefix $(PREFIX),$(DATADIR) $(LOGDIR) $(STATICDIR) $(ELIOMSTATICDIR) $(shell dirname $(CMDPIPE))):
+$(addprefix $(PREFIX),$(DATADIR) $(LOGDIR) $(ELIOMSTATICDIR) $(shell dirname $(CMDPIPE))):
 	install $(addprefix -o ,$(WWWUSER)) -d $@
 
 run.byte:
@@ -178,10 +181,8 @@ else
 endif
 
 LOCAL_SED_ARGS := -e "s|%%PORT%%|$(TEST_PORT)|g"
-LOCAL_SED_ARGS += -e "s|%%STATICDIR%%|$(LOCAL_STATIC)|g"
 LOCAL_SED_ARGS += -e "s|%%USERGROUP%%||g"
 GLOBAL_SED_ARGS := -e "s|%%PORT%%|$(PORT)|g"
-GLOBAL_SED_ARGS += -e "s|%%STATICDIR%%|%%PREFIX%%$(STATICDIR)|g"
 ifeq ($(WWWUSER)$(WWWGROUP),)
   GLOBAL_SED_ARGS += -e "s|%%USERGROUP%%||g"
 else
