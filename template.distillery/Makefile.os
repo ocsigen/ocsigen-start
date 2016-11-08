@@ -188,10 +188,14 @@ else
   GLOBAL_SED_ARGS += -e "s|%%USERGROUP%%|<user>$(WWWUSER)</user><group>$(WWWGROUP)</group>|g"
 endif
 
-$(CONFIG_FILES): $(TEST_PREFIX)$(ETCDIR)/%.conf: %.conf.in Makefile.options $(JS_PREFIX).js $(CSS_PREFIX).css | $(TEST_PREFIX)$(ETCDIR)
+ifneq ($(DO_NOT_RECOMPILE),yes)
+JS_AND_CSS=$(JS_PREFIX).js $(CSS_PREFIX).css
+endif
+
+$(CONFIG_FILES): $(TEST_PREFIX)$(ETCDIR)/%.conf: %.conf.in Makefile.options $(JS_AND_CSS) | $(TEST_PREFIX)$(ETCDIR)
 	sed $(SED_ARGS) $(GLOBAL_SED_ARGS) $< | sed -e "s|%%PREFIX%%|$(PREFIX)|g" > $@
 
-$(TEST_CONFIG_FILES): $(TEST_PREFIX)$(ETCDIR)/%-test.conf: %.conf.in Makefile.options $(JS_PREFIX).js  $(CSS_PREFIX).css | $(TEST_PREFIX)$(ETCDIR)
+$(TEST_CONFIG_FILES): $(TEST_PREFIX)$(ETCDIR)/%-test.conf: %.conf.in Makefile.options $(JS_AND_CSS) | $(TEST_PREFIX)$(ETCDIR)
 	sed $(SED_ARGS) $(LOCAL_SED_ARGS) $< | sed -e "s|%%PREFIX%%|$(TEST_PREFIX)|g" > $@
 
 ##----------------------------------------------------------------------
