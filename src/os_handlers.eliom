@@ -176,7 +176,6 @@ let%client restart ?url () =
      On a Web app, it is just reloading the page.
      On a mobile app, we want to restart from eliom.html.
   *)
-  print_endline "restarting";
   if Eliom_client.is_client_app () then
     ((match url with
        | Some url ->

@@ -44,6 +44,7 @@ module type Cache_sig = sig
 end
 
 
+(** Functor which creates a module {!Cache_sig}. *)
 module Make : functor
   (M : sig
 

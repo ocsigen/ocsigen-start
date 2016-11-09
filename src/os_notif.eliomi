@@ -40,7 +40,7 @@
     be updated every time the client is notified.
 *)
 
-(** we have two types of notifications ([server_notif], and [client_notif])
+(*  we have two types of notifications ([server_notif], and [client_notif])
     because we might need to serialise and deserialise the notification twice.
     Once for broadcasting it to other servers (in case of a multi-server set-up)
     and once for transferring it to the client (after possibly transforming the
@@ -49,8 +49,13 @@
 *)
 module type S = sig
 
+  (** The key type. *)
   type key
+
+  (** The server notification type. Can be different from [client_notif]. *)
   type server_notif
+
+  (** The client notification type. Can be different from [server_notif]. *)
   type client_notif
 
   (** Make client process listen on data whose index is [key] *)

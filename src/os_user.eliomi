@@ -18,6 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+(** This module provides functions and types about users. *)
+
 [%%shared.start]
 
 (** Type alias to {!Os_types.User.id} to allow to use [Os_user.id]. *)
@@ -32,36 +34,69 @@ type t = Os_types.User.t = {
   } [@@deriving json]
 
 [%%server.start]
+
+(** Exception used if an user already exists. The parameter is the userid of the
+    existing user.
+ *)
 exception Already_exists of Os_types.User.id
+
+(** Exception used if an user doesn't exist. *)
 exception No_such_user
 
-(** Has user set its password? *)
+(** [password_set userid] returns [true] if the user with ID [userid] has set
+    a password. Else [false].
+ *)
 val password_set : Os_types.User.id -> bool Lwt.t
 
 [%%shared.start]
 
-(** The type which represents a user. *)
-
+(** [userid_of_user user] returns the userid of the user [user]. *)
 val userid_of_user : Os_types.User.t -> Os_types.User.id
+
+(** [firstname_of_user user] returns the first name of the user [user] *)
 val firstname_of_user : Os_types.User.t -> string
+
+(** [lastname_of_user user] returns the last name of the user [user] *)
 val lastname_of_user : Os_types.User.t -> string
+
+(** [avatar_of_user user] returns the avatar of the user [user] as [Some
+    avatar_uri]. It returns [None] if the user [user] has no avatar.
+ *)
 val avatar_of_user : Os_types.User.t -> string option
+
+(** [avatar_uri_of_avatar ?absolute_path avatar] returns the URI (absolute or
+    relative) depending on the value of [absolute_path]) of the avatar
+    [avatar].
+ *)
 val avatar_uri_of_avatar :
   ?absolute_path:bool -> string -> Eliom_content.Xml.uri
+
+(** [avatar_uri_of_user user] returns the avatar URI (absolute or relative)
+    depending on the value of [absolute_path]) of the avatar of the user [user].
+    It returns [None] is the user [user] has no avatar.
+ *)
 val avatar_uri_of_user :
   ?absolute_path:bool -> Os_types.User.t -> Eliom_content.Xml.uri option
 
-(** Retrieve the full name of user. *)
+(** Retrieve the full name of user (which is the concatenation of the first name
+    and last name).
+ *)
 val fullname_of_user : Os_types.User.t -> string
 
-(** Returns true if the firstname and the lastname of [Os_types.User.t] has not
-  * been completed yet. *)
+(** [is_complete user] returns [true] if the first name or the last name of
+    {!Os_types.user} has not been completed yet.
+ *)
 val is_complete : Os_types.User.t -> bool
 
 [%%server.start]
 
+(** [emails_of_user user] returns the emails of the user [user]. *)
 val emails_of_user : Os_types.User.t -> string Lwt.t
 
+(** [add_actionlinkkey ?autoconnect ?action ?data ?validity ~act_key ~userid
+    ~email ()] adds the action key in the database.
+ *)
+(* Use {!Os_types.actionlinkkey_info} instead of each parameter? *)
 val add_actionlinkkey :
   (* by default, an action_link key is just an activation key *)
   ?autoconnect:bool -> (** default: false *)
@@ -71,66 +106,99 @@ val add_actionlinkkey :
   ?validity:int64 -> (** default: 1L *)
   act_key:string -> userid:Os_types.User.id -> email:string -> unit -> unit Lwt.t
 
+(** [verify_password email password] verifies if [email] and [password]
+    correspond. It it is the case, it returns the userid of the user with email
+    [email]. Else, it raises the exception {!Os_db.No_such_resource}.
+ *)
 val verify_password : email:string -> password:string -> Os_types.User.id Lwt.t
 
-(** returns user information.
-    Results are cached in memory during page generation. *)
+(** [user_of_userid userid] returns the information about the user with ID
+    [userid].
+ *)
 val user_of_userid : Os_types.User.id -> Os_types.User.t Lwt.t
 
-val get_actionlinkkey_info : string -> Os_types.Action_link_key.info Lwt.t
 (** Retrieve the data corresponding to an action link key, each
-    call decrements the validity of the key by 1 if it exists and
-    validity > 0 (it remains at 0 if it's already 0). It is up to
+    call decrements the validity of the key by [1] if it exists and
+    [validity > 0] (it remains at [0] if it's already [0]). It is up to
     you to adapt the actions according to the value of validity!
-    Raises [Os_db.No_such_resource] if the action link key is not found. *)
+    Raises {!Os_db.No_such_resource} if the action link key is not found.
+ *)
+val get_actionlinkkey_info : string -> Os_types.Action_link_key.info Lwt.t
 
+(** [userid_of_email email] returns the userid of the user with email [email].
+    It raises the exception {!Os_db.No_such_resource} if the email [email] is
+    not used.
+ *)
 val userid_of_email : string -> Os_types.User.id Lwt.t
 
-(** Retrieve e-mails from user id. *)
+(** [emails_of_userid userid] returns the emails list of user with ID
+    [userid].
+ *)
 val emails_of_userid : Os_types.User.id -> string list Lwt.t
 
-(** Retrieve the main e-mail of a user. *)
-val email_of_user : Os_types.User.t -> string Lwt.t
-
-(** Retrieve the main e-mail from user id. *)
+(** [email_of_userid userid] returns the main email of user with ID
+    [userid].
+ *)
 val email_of_userid : Os_types.User.id -> string Lwt.t
 
-(** Retrieve e-mails of a user. *)
+(** [emails_of_user user] returns the emails list of user [user]. *)
 val emails_of_user : Os_types.User.t -> string list Lwt.t
 
-(** Get users who match the [pattern] (useful for completion) *)
+(** [email_of_user user] returns the main email of user [user]. *)
+val email_of_user : Os_types.User.t -> string Lwt.t
+
+(** [get_users ?pattern ()] gets users who match the [pattern] (useful for
+    completion).
+ *)
 val get_users : ?pattern:string -> unit -> Os_types.User.t list Lwt.t
 
-(** Create a new user *)
+(** [create ?password ?avatar ~firstname ~lastname email] creates a new user
+    with the given information. An email is mandatory.
+ *)
 val create :
   ?password:string -> ?avatar:string ->
   firstname:string -> lastname:string -> string -> Os_types.User.t Lwt.t
 
-(** Update the informations of a user. *)
+(** [update ?password ?avatar ~firstname ~lastname userid] update the
+    given information of the user with ID [userid]. Only given information are
+    updated.
+ *)
 val update :
   ?password:string -> ?avatar:string ->
   firstname:string -> lastname:string -> Os_types.User.id -> unit Lwt.t
 
-(** Another version of [update] using a type [Os_types.User.t] instead of
-    label. *)
+(** Another version of [update] using a type {!Os_types.User.t} instead of
+    label.
+ *)
 val update' : ?password:string -> Os_types.User.t -> unit Lwt.t
 
-(** Update the password only *)
+(** [update_password ~userid ~password] updates the password only. [password]
+    must not be hashed: it is done by the function [f_crypt] of the tuple
+    {!Os_db.pwd_crypt_ref}.
+ *)
 val update_password : userid:Os_types.User.id -> password:string -> unit Lwt.t
 
-(** Update the avatar only *)
+(** [update_avatar ~userid ~avatar] updates the avatar of the user with ID
+    [userid].
+ *)
 val update_avatar : userid:Os_types.User.id -> avatar:string -> unit Lwt.t
 
-(** Check wether or not a user exists *)
+(** [is_registered email] returns [true] if a user exists with email [email].
+    Else, it returns [false].
+ *)
 val is_registered : string -> bool Lwt.t
 
-(** Check wether or not a user exists. *)
+(** [is_preregistered email] returns [true] if a user exists with email
+    [email]. Else, it returns [false].
+ *)
 val is_preregistered : string -> bool Lwt.t
 
-(** Add an email into the preregister collections. *)
+(** [add_preregister email] adds an email into the preregister collections. *)
 val add_preregister : string -> unit Lwt.t
 
-(** Rempve an email from the preregister collections. *)
+(** [remove_preregister email] removes an email from the preregister
+    collections.
+ *)
 val remove_preregister : string -> unit Lwt.t
 
 (** Get [limit] (default: 10) emails from the preregister collections. *)
@@ -147,19 +215,23 @@ val all : ?limit:int64 -> unit -> string list Lwt.t
 val set_pwd_crypt_fun : (string -> string) *
                         (Os_types.User.id -> string -> string -> bool) -> unit
 
-(** Removes the email [email] from the user with the id [userid],
-    if the email is registered as the main email for the user it fails
-    with the exception [Main_email_removal_attempt].
+(** [remove_email_from_user ~userid ~email] removes the email [email] from the
+    user with the id [userid]. If the email is registered as the main email for
+    the user it fails with the exception {!Os_db.Main_email_removal_attempt}.
 *)
 val remove_email_from_user : userid:Os_types.User.id -> email:string -> unit Lwt.t
 
-(** Returns whether for a user designated by its id the given email has been
-    validated. *)
+(** [is_email_validated ~userid ~email] returns whether for a user designated by
+    its id the given email has been validated.
+ *)
 val is_email_validated : userid:Os_types.User.id -> email:string -> bool Lwt.t
 
-(** Returns whether an email is the  main email registered for a
-    given user designated by its id. *)
+(** [is_main_email ~userid ~email] returns whether an email is the main email
+    registered for a given user designated by its id.
+ *)
 val is_main_email : userid:Os_types.User.id -> email:string -> bool Lwt.t
 
-(** Sets the main email for a user with the id [userid] as the email [email]. *)
+(** [update_mail_email ~userid ~email] sets the main email for a user with the
+    ID [userid] as the email [email].
+ *)
 val update_main_email : userid:Os_types.User.id -> email:string -> unit Lwt.t

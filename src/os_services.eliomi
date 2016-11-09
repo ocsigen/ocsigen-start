@@ -19,6 +19,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+(** This module provides pre-defined services for connect, disconnect, sign up,
+    add a new email, etc. Each service has a corresponding handler in
+    {!Os_handlers}.
+ *)
 [%%shared.start]
 
 (** The main service. *)
@@ -56,7 +60,8 @@ val preregister_service :
 
 
 (** A POST service when the user forgot his password.
-    See {!Os_handlers.forgot_password_handler} for a default handler. *)
+    See {!Os_handlers.forgot_password_handler} for a default handler.
+ *)
 val forgot_password_service :
   (
     unit,
@@ -74,7 +79,8 @@ val forgot_password_service :
 
 (** A POST service to update the basic user data like first name, last name and
     password.
-    See {!Os_handlers.set_personal_data_handler'} for a default handler. *)
+    See {!Os_handlers.set_personal_data_handler'} for a default handler.
+ *)
 val set_personal_data_service :
   (
     unit,
@@ -92,7 +98,8 @@ val set_personal_data_service :
   ) Eliom_service.t
 
 (** A POST service to sign up with only an email address.
-    See {!Os_handlers.sign_up_handler} for a default handler. *)
+    See {!Os_handlers.sign_up_handler} for a default handler.
+ *)
 val sign_up_service :
   (
     unit,
@@ -109,7 +116,8 @@ val sign_up_service :
   ) Eliom_service.t
 
 (** A POST service to connect a user with username and password.
-    See {!Os_handlers.connect_handler} for a default handler. *)
+    See {!Os_handlers.connect_handler} for a default handler.
+ *)
 val connect_service :
   (
     unit,
@@ -127,7 +135,8 @@ val connect_service :
   ) Eliom_service.t
 
 (** A POST service to disconnect the current user.
-    See {!Os_handlers.disconnect_handler} for a default handler. *)
+    See {!Os_handlers.disconnect_handler} for a default handler.
+ *)
 val disconnect_service :
   (
     unit,
@@ -146,7 +155,8 @@ val disconnect_service :
 (** A GET service for action link keys.
     See {!Os_handlers.action_link_handler} for a default handler and
     {!Os_db.action_link_table} for more information about the action
-    process. *)
+    process.
+ *)
 val action_link_service :
   (
     string,
@@ -164,7 +174,8 @@ val action_link_service :
 
 (** A POST service to update the password. An update password action is
     associated with the confirmation password.
-    See {!Os_handlers.set_password_handler'} for a default handler. *)
+    See {!Os_handlers.set_password_handler'} for a default handler.
+ *)
 val set_password_service :
   (
     unit,
@@ -182,7 +193,8 @@ val set_password_service :
   ) Eliom_service.t
 
 (** A POST service to add an email to a user.
-    See {!Os_handlers.add_email_handler} for a default handler. *)
+    See {!Os_handlers.add_email_handler} for a default handler.
+ *)
 val add_email_service :
   (
     unit,

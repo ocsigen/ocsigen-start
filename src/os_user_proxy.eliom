@@ -18,12 +18,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(*VVV Warning: Os already implements a cache of user, but for
-  Os_types.User.t only. It's ok. *)
+(** This module implements a cache of user using <<a_api project="eliom" |
+    module Eliom_cscache>> which allows to keep synchronized the cache between
+    the client and the server.
+    Even if there is a cache implementing in {!Os_user} to avoid to do database
+    requests, this last one is implementing only server side.
+
+    TODO: This module must be compared to [Os_request_cache], [Eliom_cscache]
+    and [Os_user.MCache]. The idea behind these different modules must be
+    compared.
+ *)
 
 let%server cache : (Os_types.User.id, Os_types.User.t) Eliom_cscache.t =
   Eliom_cscache.create ()
-
 
 let%server get_data_from_db myid_o userid =
   Os_user.user_of_userid userid
@@ -38,9 +45,7 @@ let%server get_data_from_db_for_client myid_o userid =
 let%server get_data_rpc' =
   Os_session.Opt.connected_rpc get_data_from_db_for_client
 
-let%client get_data_rpc' = ()
-
-let get_data_rpc
+let%server get_data_rpc
   : (_, Os_types.User.t) Eliom_client.server_function =
   Eliom_client.server_function ~name:"os_user_proxy.get_data_rpc"
     [%derive.json: Os_types.User.id] get_data_rpc'
