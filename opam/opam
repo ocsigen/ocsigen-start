@@ -18,4 +18,8 @@ depends: [
   "ppx_deriving"
   "yojson"
 ]
+depexts: [
+  [["debian"] ["imagemagick"]]
+  [["ubuntu"] ["imagemagick"]]
+]
 available: [ ocaml-version >= "4.02" ]
