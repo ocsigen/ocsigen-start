@@ -9,7 +9,9 @@
                          https://ssl.gstatic.com
                          'unsafe-eval'
                          'unsafe-inline';
-                       style-src 'self' 'unsafe-inline';
+                       style-src 'self' https://fonts.googleapis.com
+                         'unsafe-inline';
+                       font-src 'self' https://fonts.gstatic.com;
                        connect-src *;
                        img-src *; frame-src *;">
     <meta name="format-detection" content="telephone=no">

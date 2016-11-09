@@ -36,6 +36,7 @@ let%client time_reactive =
   ~%(Eliom_client.server_function [%derive.json: unit] time_reactive)
 
 let%shared name = "TimePicker"
+let%shared page_class = "os-page-demo-timepicker"
 
 let%shared page () =
   let time_picker, _, back_f = Ot_time_picker.make

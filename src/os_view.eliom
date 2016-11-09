@@ -80,7 +80,7 @@ let%shared connect_form ?a ?(email="") () =
         ();
       span [pcdata "keep me logged in"];
       Form.input
-        ~a:[a_class ["button"]]
+        ~a:[a_class ["button" ; "os-sign-in"]]
         ~input_type:`Submit
         ~value:"Sign in"
         Form.string;

@@ -36,6 +36,7 @@ let%client date_reactive =
 
 
 let%shared name = "Calendar"
+let%shared page_class = "os-page-demo-calendar"
 
 let%shared page () =
   let calendar = Ot_calendar.make

@@ -67,9 +67,6 @@ LOGDIR                := var/log/${PROJECT_NAME}
 # Ocsigenserver's persistent data files
 DATADIR               := var/data/${PROJECT_NAME}
 
-# Copy of $(LOCAL_STATIC)
-STATICDIR             := var/www/${PROJECT_NAME}/static
-
 # Project's static files
 FILESDIR              := var/www/${PROJECT_NAME}
 
@@ -85,12 +82,15 @@ ELIOMSTATICDIR        := var/www/${PROJECT_NAME}
 # copied in this directory.
 LOCAL_STATIC          := static
 LOCAL_STATIC_CSS      := $(LOCAL_STATIC)/css
+LOCAL_STATIC_FONTS      := $(LOCAL_STATIC)/fonts
+# Default CSS if not using SASS:
+LOCAL_STATIC_DEFAULTCSS      := $(LOCAL_STATIC)/defaultcss
 
 # Main CSS generated file.
 # If you use SASS, this is the compiled file.
 # If you don't use SASS, all CSS files in $(CSS_FILES) will be concatenate in
 # this file.
-LOCAL_CSS             := $(LOCAL_STATIC_CSS)/$(PROJECT_NAME).css
+LOCAL_CSS             := $(LOCAL_STATIC_DEFAULTCSS)/$(PROJECT_NAME).css
 
 # The OPAM share directory.
 SHAREDIR              := $(shell $(OPAM) config var share)

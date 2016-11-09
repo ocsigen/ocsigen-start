@@ -17,6 +17,7 @@ body {
     margin: 0;
     font-family: 'Raleway', sans-serif;
     font-size: 14px;
+    background-color: white;
 }
 
 a, a:visited {
@@ -154,6 +155,10 @@ a.os-page-header-app-name {
     label {
         font-size: 12px;
     }
+}
+.os-sign-up-btn {
+    background-color: #fb8282;
+    color: white;
 }
 .os-forgot-pwd-link {
     font-size: 12px;

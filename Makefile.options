@@ -44,8 +44,8 @@ TEMPLATE_NAME      := os.pgocaml
 SCSS_FILES         := $(TEMPLATE_DIR)/sass\!os.scss \
                       $(TEMPLATE_DIR)/sass\!demo.scss
 
-CSS_FILES          := $(TEMPLATE_DIR)/static\!css\!os.css \
-                      $(TEMPLATE_DIR)/static\!css\!demo.css
+CSS_FILES          := $(TEMPLATE_DIR)/static\!defaultcss\!os.css \
+                      $(TEMPLATE_DIR)/static\!defaultcss\!demo.css
 
 SASS_TEMPORARY_FILENAME     := .os_temporary_filename
 

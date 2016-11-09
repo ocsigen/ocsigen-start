@@ -17,6 +17,7 @@ let%server service =
 let%client service = ~%service
 
 let%shared name = "Carousel"
+let%shared page_class = "os-page-demo-carousel1"
 
 let%shared page () =
   let make_page name =

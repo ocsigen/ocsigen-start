@@ -27,7 +27,7 @@ let%shared () =
       ~service:D.service
       (%%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
         let%lwt p = D.page () in
-        %%%MODULE_NAME%%%_container.page myid_o p)
+        %%%MODULE_NAME%%%_container.page ~a:[ a_class [D.page_class] ] myid_o p)
   in
   List.iter registerDemo Demo_tools.demos;
   %%%MODULE_NAME%%%_base.App.register

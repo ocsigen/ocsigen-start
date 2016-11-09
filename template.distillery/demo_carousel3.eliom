@@ -17,6 +17,7 @@ let%server service =
 let%client service = ~%service
 
 let%shared name = "Wheel carousel"
+let%shared page_class = "os-page-demo-carousel3"
 
 let%shared page () =
   let carousel_pages =
@@ -56,6 +57,7 @@ let%shared page () =
     ; "Saturday 5"
     ; "=== Last Sunday 5 ===" ]
   in
+  let length = List.length carousel_pages in
   let carousel_content = List.map (fun p -> D.div [ pcdata p ]) carousel_pages
   in
   let carousel_change_signal = [%client (React.E.create () : 'a * 'b) ] in
@@ -78,9 +80,9 @@ let%shared page () =
     [ p [pcdata "Example of vertical circular carousel (wheel). Try with a touch screen."]
     ; carousel
     ; div [
-        Ot_carousel.previous ~change ~pos [pcdata "down"];
-        Ot_carousel.next ~change
-          ~pos ~size:(Eliom_shared.React.S.const 1) ~length:7
-          [pcdata "up"]
+        Ot_carousel.previous ~a:[ a_class ["demo-prev"] ] ~change ~pos [];
+        Ot_carousel.next ~a:[ a_class ["demo-next"] ] ~change
+          ~pos ~size:(Eliom_shared.React.S.const 1) ~length
+          []
       ]
     ]

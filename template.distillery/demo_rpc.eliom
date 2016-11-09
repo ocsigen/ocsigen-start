@@ -49,6 +49,7 @@ let%server service =
 let%client service = ~%service
 
 let%shared name = "RPC Button"
+let%shared page_class = "os-page-demo-rpc"
 
 let%shared page () =
   let button =
