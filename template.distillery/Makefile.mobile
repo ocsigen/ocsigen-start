@@ -149,7 +149,7 @@ endif
 # Function to list files in a given directory $(1), and change prefix directory
 # to the target one $(2)
 # Example: $(call static_targets,$(SOURCE_DIR),$(TARGET_DIR))
-static_targets = $(shell find $(1) -type f -printf "$(2)/%P\n" | grep -v .well-known | grep  -v "/fonts/.*\\([.]svg\\|[.]eot\\|webfont[.]ttf\\)$$")
+static_targets = $(patsubst $(1)%,$(2)%,$(shell find $(1) -type f | grep -v .well-known | grep  -v "/fonts/.*\\([.]svg\\|[.]eot\\|webfont[.]ttf\\)$$"))
 
 # Cordova static files which needs to be copied to the Cordova project
 # directory.
