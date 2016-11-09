@@ -2,8 +2,7 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 [%%shared
-  open Eliom_content.Html
-  open Eliom_content.Html.D
+  open Eliom_content.Html.F
 ]
 
 [%%shared

@@ -4,8 +4,7 @@
 (** carousel demo ************************************************************)
 
 [%%shared
-  open Eliom_content.Html
-  open Eliom_content.Html.D
+  open Eliom_content.Html.F
 ]
 
 let%server service =
@@ -25,16 +24,17 @@ let%shared page () =
                      "demo-carousel1-page-"^name]] [pcdata "Page " ;
                                                     pcdata name]
   in
-  let carousel_change_signal = [%client (React.E.create () : 'a * 'b) ] in
+  let carousel_change_signal =
+    [%client (React.E.create () :
+                ([ `Goto of int | `Next | `Prev ] as 'a) React.E.t
+                * (?step:React.step -> 'a -> unit)) ]
+  in
   let update = [%client fst ~%carousel_change_signal] in
   let change = [%client fun a -> (snd ~%carousel_change_signal ?step:None a) ]
   in
   let carousel_pages = ["1"; "2"; "3"; "4"] in
   let length = List.length carousel_pages in
   let carousel_content = List.map make_page carousel_pages in
-  let bullets_content =
-    List.map (fun n -> [div [p [pcdata n]]]) carousel_pages
-  in
   let carousel, pos, size, _swipe_pos =
     Ot_carousel.make ~update carousel_content
   in
