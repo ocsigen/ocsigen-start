@@ -3,16 +3,28 @@
 {!modules:
 Os_current_user
 Os_date
+Os_db
 Os_email
+Os_group
 Os_handlers
+Os_icons
+Os_lib
 Os_msg
 Os_notif
 Os_page
+Os_platform
+Os_push_notifications
 Os_request_cache
+Os_services
 Os_session
 Os_tips
+Os_tools
+Os_types
+Os_uploader
 Os_user
+Os_userproxy
 Os_userbox
+Os_view
 }
 
 {2 Index}

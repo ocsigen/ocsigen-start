@@ -1,18 +1,27 @@
-{1 Ocsigen-start client API}
+{1 Client API}
 
 {!modules:
 Os_current_user
 Os_date
 Os_email
+Os_group
 Os_handlers
+Os_icons
+Os_lib
 Os_msg
 Os_notif
 Os_page
+Os_platform
 Os_request_cache
+Os_services
 Os_session
 Os_tips
+Os_tools
+Os_types
 Os_user
+Os_user_proxy
 Os_userbox
+Os_view
 }
 
 {2 Index}
