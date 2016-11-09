@@ -116,7 +116,7 @@ endif
         $(CORDOVAPATH)/config.xml
 
 # Check whether Cordova is installed (if not, variable is empty)
-CORDOVA_INSTALLED := $(shell command -v cordova > /dev/null)
+CORDOVA_INSTALLED := $(shell cordova --version 2> /dev/null)
 
 # Necessary Cordova and static files directories. They are created when
 # creating the Cordova project.
