@@ -290,7 +290,7 @@ $(ADD_PLATFORMS): add-%: $(CORDOVAPATH)/platforms/%
 PLATFORMS := android ios browser
 
 # before building, environment variables are checked and assets are copied.
-$(PLATFORMS): %: check-app-env icons-% assets icons-cp-% add-%
+$(PLATFORMS): %: byte check-app-env icons-% assets icons-cp-% add-%
 	cd $(CORDOVAPATH) ;\
 	cordova build $(CORDOVA_FLAGS) $*
 
@@ -305,7 +305,7 @@ $(RELEASE_PLATFORMS): %-release: %
 
 EMULATE_PLATFORMS := emulate-android emulate-ios
 
-$(EMULATE_PLATFORMS): emulate-%: check-app-env icons-% assets icons-cp-% %
+$(EMULATE_PLATFORMS): emulate-%: byte check-app-env icons-% assets icons-cp-% %
 	cd $(CORDOVAPATH) ;\
 	cordova emulate --nobuild $*
 
@@ -316,7 +316,7 @@ RUN_PLATFORMS := run-android run-ios run-browser
 
 # Run the mobile app on a platform
 # run-(android|ios|windows)
-$(RUN_PLATFORMS): run-%: check-app-env icons-% assets %
+$(RUN_PLATFORMS): run-%: byte check-app-env icons-% assets %
 	cd $(CORDOVAPATH) ;\
 	cordova run --nobuild $*
 
