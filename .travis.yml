@@ -1,0 +1,11 @@
+language: c
+sudo: required
+install: wget https://raw.githubusercontent.com/ocaml/ocaml-ci-scripts/master/.travis-opam.sh
+script: bash -ex .travis-opam.sh
+env:
+  - OCAML_VERSION=4.02 PINS="ocsigenserver:https://github.com/ocsigen/ocsigenserver.git reactiveData:https://github.com/ocsigen/reactiveData.git eliom:https://github.com/ocsigen/eliom.git ocsigen-toolkit:https://github.com/ocsigen/ocsigen-toolkit.git" PACKAGE=ocsigen-start
+  - OCAML_VERSION=4.03 PINS="ocsigenserver:https://github.com/ocsigen/ocsigenserver.git reactiveData:https://github.com/ocsigen/reactiveData.git eliom:https://github.com/ocsigen/eliom.git ocsigen-toolkit:https://github.com/ocsigen/ocsigen-toolkit.git" PACKAGE=ocsigen-start
+  - OCAML_VERSION=4.04 PINS="ocsigenserver:https://github.com/ocsigen/ocsigenserver.git reactiveData:https://github.com/ocsigen/reactiveData.git eliom:https://github.com/ocsigen/eliom.git ocsigen-toolkit:https://github.com/ocsigen/ocsigen-toolkit.git" PACKAGE=ocsigen-start
+os:
+  - linux
+  - osx

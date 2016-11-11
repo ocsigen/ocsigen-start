@@ -1,4 +1,7 @@
-#Ocsigen-start
+# Ocsigen-start [![Travis Status][travis-img]][travis]
+
+[travis]:      https://travis-ci.org/ocsigen/ocsigen-start/branches
+[travis-img]:  https://img.shields.io/travis/ocsigen/ocsigen-start/master.svg?label=travis
 
 1. [Getting started](#getting-started)
 
