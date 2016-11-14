@@ -31,17 +31,11 @@ let%shared connect_form () =
            Form.string
        ]) ()
 
-let%shared sign_up_form () =
-  Os_view.generic_email_form ~service:Os_services.sign_up_service ()
-
-let%shared forgot_password_form () =
-  Os_view.generic_email_form ~service:Os_services.forgot_password_service ()
-
 let%shared forgotpwd_button ?(close = [%client (fun () -> () : unit -> unit)])
     () =
   let popup_content = [%client fun _ -> Lwt.return @@
     div [ h2 [ pcdata "Recover password" ]
-        ; forgot_password_form ()] ]
+        ; Os_view.forgot_password_form ()] ]
   in
   let button_name = "Forgot your password?" in
   let button = D.Raw.a ~a:[ a_class ["os-forgot-pwd-link"]
@@ -78,7 +72,7 @@ let%shared sign_in_button () =
 let%shared sign_up_button () =
   let popup_content = [%client fun _ -> Lwt.return @@
     div [ h2 [ pcdata "Sign up" ]
-        ; sign_up_form ()] ]
+        ; Os_view.sign_up_form ()] ]
   in
   let button_name = "Sign Up" in
   let button =
