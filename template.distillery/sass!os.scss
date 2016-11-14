@@ -89,6 +89,10 @@ a.os-page-header-app-name {
 
 .os-drawer-menu {
     padding: 0;
+    margin: 0;
+    overflow-y: auto;
+    height: 100%;
+    touch-action: pan-y;
     &, ul {
         list-style-type: none;
     }
