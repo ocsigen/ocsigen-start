@@ -6,31 +6,6 @@
    open Eliom_content.Html.F
 ]
 
-let%shared connect_form () =
-  D.Form.post_form ~service:Os_services.connect_service
-    (fun ((login, password), keepmeloggedin) ->
-       [ Form.input
-           ~a:[a_placeholder "Your email"]
-           ~name:login
-           ~input_type:`Email
-           Form.string
-       ; Form.input
-           ~a:[a_placeholder "Your password"]
-           ~name:password
-           ~input_type:`Password
-           Form.string
-       ; label [ Form.bool_checkbox_one
-                   ~a:[a_checked ()]
-                   ~name:keepmeloggedin
-                   ()
-               ; pcdata "keep me logged in"]
-       ; Form.input
-           ~a:[a_class ["button" ; "os-sign-in-btn"]]
-           ~input_type:`Submit
-           ~value:"Sign in"
-           Form.string
-       ]) ()
-
 let%shared sign_up_form () =
   Os_view.generic_email_form ~service:Os_services.sign_up_service ()
 
@@ -59,7 +34,7 @@ let%shared forgotpwd_button ?(close = [%client (fun () -> () : unit -> unit)])
 let%shared sign_in_button () =
   let popup_content = [%client fun close -> Lwt.return @@
     div [ h2 [ pcdata "Sign in" ]
-        ; connect_form ()
+        ; Os_view.connect_form ()
         ; forgotpwd_button ~close:(fun () -> Lwt.async close) ()
         ] ]
   in
