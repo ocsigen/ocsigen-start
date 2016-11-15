@@ -13,7 +13,7 @@ database and certain design decisions.
 
 Ocsigen Start is mobile-friendly. The template application readily
 works as an Android and iOS application (via
-[[Cordova|https://cordova.apache.org/]]).
+[[https://cordova.apache.org/|Cordova]]).
 
 ==Implementation overview==
 
@@ -24,14 +24,14 @@ is common across Ocsigen Start applications, while the template can be
 customized for the specific application at hand.
 
 The template additionally contains a demonstration of relevant
-[[Ocsigen Toolkit|https://github.com/ocsigen/ocsigen-toolkit]]
+[[https://github.com/ocsigen/ocsigen-toolkit|Ocsigen Toolkit]]
 widgets. The demo portion can easily be removed.
 
 ===Database===
 
 For implementing users, a database is needed. Specifically, we use
-[[PostgreSQL|https://www.postgresql.org/]] via the
-[[PG'OCaml|http://pgocaml.forge.ocamlcore.org/]] library. The template
+[[https://www.postgresql.org/|PostgreSQL]] via the
+[[http://pgocaml.forge.ocamlcore.org/|PGOCaml]] library. The template
 and the library make common assumptions about the database schema. The
 database thus needs to be instantiated in a certain way; this is
 automatically done by appropriate targets in the template's build
@@ -46,14 +46,14 @@ agent compatible with it) needs to be installed on the host.
 ===Style===
 
 The application provides a standard style matching contemporary
-aesthetics. For this, we use [[SASS|http://sass-lang.com/]]. The style
+aesthetics. For this, we use [[http://sass-lang.com/|SASS]]. The style
 can be customized by modifying the SASS files that are part of the
 template.
 
 ==Installation==
 
 Ocsigen Start can be installed via
-[[OPAM|https://opam.ocaml.org/]]. The package name is {{{ocsigen-start}}}.
+[[https://opam.ocaml.org/|OPAM]]. The package name is {{{ocsigen-start}}}.
 The template application can be instantiated via {{{eliom-distillery}}}:
 
 <<code language="shell"|
@@ -61,4 +61,4 @@ eliom-distillery -name $APP_NAME -template os.pgocaml
 >>
 
 For details on launching the application, refer to the template's
-[[README|https://github.com/ocsigen/ocsigen-start/blob/master/template.distillery/README.md]].
+[[https://github.com/ocsigen/ocsigen-start/blob/master/template.distillery/README.md|README]].
