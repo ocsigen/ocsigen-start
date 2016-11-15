@@ -13,7 +13,7 @@ database and certain design decisions.
 
 Ocsigen Start is mobile-friendly. The template application readily
 works as an Android and iOS application (via
-[[https://cordova.apache.org/|Cordova]]).
+[[Cordova|https://cordova.apache.org/]]).
 
 ==Implementation overview==
 
@@ -53,9 +53,8 @@ template.
 ==Installation==
 
 Ocsigen Start can be installed via
-[[OPAM|https://opam.ocaml.org/]]. The package name
-{{{ocsigen-start}}}. The template application can be instantiated via
-{{{eliom-distillery}}}:
+[[OPAM|https://opam.ocaml.org/]]. The package name is {{{ocsigen-start}}}.
+The template application can be instantiated via {{{eliom-distillery}}}:
 
 <<code language="shell"|
 eliom-distillery -name $APP_NAME -template os.pgocaml
