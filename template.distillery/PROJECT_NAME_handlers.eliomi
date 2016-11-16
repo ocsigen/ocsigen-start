@@ -46,10 +46,9 @@ val set_password_handler : unit -> string * string -> unit Lwt.t
 
 val preregister_handler : unit -> string -> unit Lwt.t
 
-(** The following functions are the handlers for the three main services defined
-    in the navbar (see {!%%%MODULE_NAME%%%_container.os_header}. They are
-    created with {!%%%MODULE_NAME%%%_container.page} which means that a header
-    with a navbar and a footer will be displayed in addition to the main
+(** The following functions are the handlers for the three main services.
+    They are created with {!%%%MODULE_NAME%%%_container.page} which means
+    that a header and a footer will be displayed in addition to the main
     content.
     For each of them, you can personalize the page for a specific user
     by sending the userid as first parameter. *)

@@ -19,8 +19,7 @@ let%shared os_header ?user () = Eliom_content.Html.F.(
   )
 )
 
-(** [os_footer ()] defines a footer. A footer is a navbar which has a fixed
-    position in the bottom. *)
+(** [os_footer ()] defines a footer for the page. *)
 let%shared os_footer () = Eliom_content.Html.F.(
   footer ~a:[a_class ["os-page-footer"]] [
     p [
