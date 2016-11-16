@@ -92,7 +92,7 @@
     <plugin name="cordova-plugin-statusbar" spec="https://github.com/apache/cordova-plugin-statusbar" />
     <!-- use this alternative if you need tap on status bar to scroll up the page:
          <plugin name="cordova-plugin-statusbar" spec="https://github.com/besport/cordova-plugin-statusbar" /> -->
-    <preference name="StatusBarBackgroundColor" value="#FFFFFF" />
+    <preference name="StatusBarBackgroundColor" value="#000000" />
     <preference name="StatusBarStyle" value="default" />
     <preference name="StatusBarOverlaysWebView" value="false" />
     <!-- To be able to reduce the webview instead of having the keyboard push it up -->
