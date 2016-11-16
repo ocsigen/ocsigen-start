@@ -85,7 +85,7 @@ endif
 #
 # - db-delete:
 #   Stop the database (without error if it's not running) and remove
-#   the database directory containing all database data.
+#   the database directory containing all database data and the log file.
 #
 # Depending on the value of the LOCAL variable (defined in Makefile.options),
 # the database is created locally or globally. By default, the database is
@@ -116,6 +116,7 @@ db-status:
 
 db-delete:
 	$(pg_ctl) -D $(PSQL_DIR) -l $(PSQL_LOG) stop || true
+	rm -f $(PSQL_LOG)
 	rm -rf $(PSQL_DIR)
 
 db-snapshot:
