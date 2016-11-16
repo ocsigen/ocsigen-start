@@ -5,7 +5,7 @@
 
 [%%shared
   open Eliom_content.Html
-  open Eliom_content.Html.D
+  open Eliom_content.Html.F
 ]
 
 let%server service =
@@ -19,14 +19,34 @@ let%client service = ~%service
 let%shared name = "Popup Button"
 let%shared page_class = "os-page-demo-popup"
 
+(* The function generating the page can be called either from the server or
+   the cient (shared section). *)
 let%shared page () =
   let button =
+    (* As we are using ~%button (in a client section below)
+       to refer to this precise occurrence of the button in the page,
+       button must be a D node
+       (from module Eliom_content.Html.D,
+       which will add an unique identifier in its attributes),
+       and not a functional node (Eliom_content.Html.F). *)
     D.Form.input
       ~a:[a_class ["button"]]
       ~input_type:`Submit
       ~value:"Click for a popup!"
-      (Form.string)
+      Form.string
   in
+  (* Every time this page is generated,
+     we want to execute the following piece of client-side code.
+     Lwt_js_events.clicks means "For each click on ... do ...".
+     It creates an Lwt thread that never returns.
+     We run it asynchronously using Lwt.async.
+     Lwt_js_events.clicks is expecting a DOM node
+     (i.e. an actual part of the current page).
+     To_dom.of_element will return the DOM node corresponding to the
+     OCaml value ~%button.
+     ~%button refers to the value button, defined outside [%client ] section
+     (possibly on server or client).
+  *)
   ignore
     [%client
       (Lwt.async (fun () ->
@@ -35,11 +55,11 @@ let%shared page () =
            (fun _ _ ->
               let%lwt _ =
                 Ot_popup.popup
-                  ~close_button:[pcdata "close"]
+                  ~close_button:[]
                   (fun _ -> Lwt.return @@ p [pcdata "Popup message"])
               in
               Lwt.return ()))
-       : _)
+       : unit)
     ];
   Lwt.return
     [
