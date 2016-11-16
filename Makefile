@@ -276,7 +276,7 @@ clean:
 	-rm -f *.type_mli
 	-rm -f META
 	-rm -rf ${ELIOM_CLIENT_DIR} ${ELIOM_SERVER_DIR} ${LIBDIR}
-	-rm $(SASS_TEMPORARY_FILENAME).*
+	-rm -f $(SASS_TEMPORARY_FILENAME).*
 	-rm -rf .sass-cache
 
 distclean: clean
