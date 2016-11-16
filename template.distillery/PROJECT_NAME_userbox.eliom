@@ -6,6 +6,29 @@
    open Eliom_content.Html.F
 ]
 
+let%shared bind_popup_button
+    ?a
+    ~button
+    ~(popup_content : ((unit -> unit Lwt.t) -> [< Html_types.div_content ]
+                         Eliom_content.Html.elt Lwt.t) Eliom_client_value.t)
+    ()
+  =
+  ignore
+    [%client
+      (Lwt.async (fun () ->
+         Lwt_js_events.clicks
+           (Eliom_content.Html.To_dom.of_element ~%button)
+           (fun _ _ ->
+              let%lwt _ =
+                Ot_popup.popup
+                  ?a:~%a
+                  ~close_button:[]
+                  ~%popup_content
+              in
+              Lwt.return ()))
+       : _)
+    ]
+
 let%shared connect_form () =
   D.Form.post_form ~service:Os_services.connect_service
     (fun ((login, password), keepmeloggedin) ->
@@ -42,7 +65,7 @@ let%shared forgotpwd_button ?(close = [%client (fun () -> () : unit -> unit)])
                           ; a_onclick [%client fun _ -> ~%close () ] ]
       [pcdata button_name]
   in
-  Os_tools.bind_popup_button
+  bind_popup_button
     ~a:[a_class ["os-forgot-pwd"]]
     ~button
     ~popup_content
@@ -61,7 +84,7 @@ let%shared sign_in_button () =
   let button =
     D.button ~a:[a_class ["button" ; "os-sign-in-btn"]] [pcdata button_name]
   in
-  Os_tools.bind_popup_button
+  bind_popup_button
     ~a:[a_class ["os-sign-in"]]
     ~button
     ~popup_content
@@ -78,7 +101,7 @@ let%shared sign_up_button () =
   let button =
     D.button ~a:[a_class ["button" ; "os-sign-up-btn"]] [pcdata button_name]
   in
-  Os_tools.bind_popup_button
+  bind_popup_button
     ~a:[a_class ["os-sign-up"]]
     ~button
     ~popup_content
