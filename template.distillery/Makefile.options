@@ -107,6 +107,7 @@ SHAREDIR_OT_CSS       := $(SHAREDIR)/ocsigen-toolkit/css
 # These files are copied with every run of make so they must not be modified.
 EXTERNAL_CSS_FILES    := $(SHAREDIR_OT_CSS)/ot_buttons.css \
                          $(SHAREDIR_OT_CSS)/ot_carousel.css \
+                         $(SHAREDIR_OT_CSS)/ot_sticky.css \
                          $(SHAREDIR_OT_CSS)/ot_defaults.css \
                          $(SHAREDIR_OT_CSS)/ot_drawer.css \
                          $(SHAREDIR_OT_CSS)/ot_icons.css \

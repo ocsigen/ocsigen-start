@@ -9,7 +9,7 @@
 
 let%server service =
   Eliom_service.create
-    ~path:(Eliom_service.Path ["demo-carousel"])
+    ~path:(Eliom_service.Path ["demo-carousel1"])
     ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
