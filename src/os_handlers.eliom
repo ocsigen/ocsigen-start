@@ -73,7 +73,7 @@ let%server generate_action_link_key
     ~text
     email =
   let service =
-    Eliom_service.attach_existing
+    Eliom_service.attach
       ~fallback:service
       ~service:Os_services.action_link_service
       ()
