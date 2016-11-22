@@ -35,7 +35,8 @@ let%shared demos = [
   (module Demo_carousel3);
   (module Demo_rpc);
   (module Demo_calendar);
-  (module Demo_timepicker)
+  (module Demo_timepicker);
+  (module Demo_react)
 ]
 
 let%shared drawer_contents () =
