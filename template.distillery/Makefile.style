@@ -28,10 +28,11 @@ endef
 
 define ERROR_POSTCSS
 
-Error: postcss not found.
+Warning: postcss not found.
 
-Ocsigen Start is using postcss to add vendor prefixes in CSS.
-Install postcss or modify the Makefile if you don't want postcss.
+Ocsigen Start is using postcss to add vendor prefixes in CSS. You may
+proceed without postcss, but this may negatively impact how your
+application looks on common browsers.
 
 endef
 
@@ -48,7 +49,10 @@ endif
 
 check_postcss:
 ifeq ($(shell which postcss),)
-$(error $(ERROR_POSTCSS))
+$(warning $(ERROR_POSTCSS))
+POSTCSS=true
+else
+POSTCSS=postcss
 endif
 
 ##----------------------------------------------------------------------
@@ -64,7 +68,7 @@ ifeq "$(USE_SASS)" "yes"
 	[ -d $(SASSDIR) ] && \
 	(sassc -t compressed $(addprefix -I ,$(subst :, ,$(SASS_PATH))) $(SASS_SRC) $@ || \
 	SASS_PATH=$(SASS_PATH) sass --style compressed $(SASS_SRC) $@)
-	postcss --use autoprefixer --replace $@
+	$(POSTCSS) --use autoprefixer --replace $@
 else
 	cp -f $(LOCAL_STATIC_DEFAULTCSS)/* $(LOCAL_STATIC_CSS)
 	cat $(CSS_FILES) > $@
