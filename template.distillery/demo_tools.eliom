@@ -24,7 +24,7 @@
 
     val page :
       unit ->
-      ([> `Input | `P | `Div] Eliom_content.Html.D.elt) list Lwt.t
+      ([`P | `Div | `Input] Eliom_content.Html.D.elt) list Lwt.t
   end
 ]
 
@@ -36,7 +36,8 @@ let%shared demos = [
   (module Demo_rpc);
   (module Demo_calendar);
   (module Demo_timepicker);
-  (module Demo_react)
+  (module Demo_react);
+  (module Demo_notif)
 ]
 
 let%shared drawer_contents () =
