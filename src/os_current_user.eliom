@@ -104,12 +104,6 @@ let%server set_user_client () =
 let%server unset_user_client () =
   ignore [%client ( me := CU_notconnected : unit)]
 
-let%server last_activity : CalendarLib.Calendar.t option Eliom_reference.eref =
-  Eliom_reference.eref
-    ~persistent:"lastactivity"
-    ~scope:Eliom_common.default_group_scope
-    None
-
 let%server () =
   Os_session.on_request (fun myid ->
     (* I initialize current user to CU_notconnected *)
@@ -123,9 +117,7 @@ let%server () =
     Lwt.return ());
   Os_session.on_connected_request (fun myid ->
     Lwt_log.ign_debug ~section "connected request action";
-    let%lwt () = set_user_server myid in
-    let now = CalendarLib.Calendar.now () in
-    Eliom_reference.set last_activity (Some now));
+    set_user_server myid);
   Os_session.on_pre_close_session (fun () ->
     Lwt_log.ign_debug ~section "pre close session action";
     unset_user_client (); (*VVV!!! will affect only current tab!! *)
