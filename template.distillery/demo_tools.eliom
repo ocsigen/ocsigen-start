@@ -37,7 +37,8 @@ let%shared demos = [
   (module Demo_calendar);
   (module Demo_timepicker);
   (module Demo_react);
-  (module Demo_notif)
+  (module Demo_notif);
+  (module Demo_ref)
 ]
 
 let%shared drawer_contents () =
