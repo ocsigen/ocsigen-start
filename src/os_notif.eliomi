@@ -23,12 +23,11 @@
     This module makes possible for client side applications to be
     notified of changes on some indexed data on the server.
 
-    Apply functor [Make] for each type of data you want to be able to listen on.
-    Each client starts listening on one piece of data by calling function
-    [listen] with the index of that piece of data as parameter.
-    Client stops listening by calling function [unlisten],
-    or when the client side state is closed (by timeout or when the user
-    logs out for example).
+    Apply functor [Make] or [Simple] for each type of data you want to be able
+    to listen on. Each client starts listening on one piece of data by calling
+    function [listen] with the index of that piece of data as parameter. Client
+    stops listening by calling function [unlisten], or when the client side
+    state is closed (by timeout or when the user logs out for example).
 
     When the data is modified on server side, call function [notify]
     with the index of the data, and all clients listening to that piece
@@ -40,7 +39,9 @@
     be updated every time the client is notified.
 *)
 
-(*  we have two types of notifications ([server_notif], and [client_notif])
+(** Signature for server-to-client notifications.
+
+    [S] has two types of notifications [server_notif] and [client_notif]
     because we might need to serialise and deserialise the notification twice.
     Once for broadcasting it to other servers (in case of a multi-server set-up)
     and once for transferring it to the client (after possibly transforming the
@@ -99,16 +100,27 @@ module type S = sig
 
 end
 
+(** Use this functor if you have a multi-server set-up, use [Simple] otherwise.
+    In a multi-server set-up notifications might need to be serialised twice,
+    once before broadcasting them to the other servers, and then once more to
+    forward them to the clients. In the second step we might want to block the
+    message or augment it with more information based on the recipient (see
+    [prepare]).
 
+    Note: The communication between servers is not implemented in this module.
+    To `plug in' your method of transporting notifications between servers you
+    can override the [notify] function of [S]. See the manual for an example
+    (coming soon).
+*)
 module Make (A : sig
       type key
       type server_notif
       type client_notif
-      (* [prepare] transforms server notifications into client notifications.
-         It takes the userid as parameter, if a user is connected for this
-         client process. If you do not want to send the notification for this
-         user, for example because he is not allowed to see this data, make
-         function [f] return [None].
+      (** [prepare f] transforms server notifications into client notifications.
+          It provides the userid as a parameter, if a user is connected for this
+          client process. If you do not want to send the notification for this
+          user, for example because he is not allowed to see this data, make
+          [f] return [None].
       *)
       val prepare : int64 option -> server_notif -> client_notif option Lwt.t
     end) :
@@ -116,6 +128,10 @@ module Make (A : sig
      and type server_notif = A.server_notif
      and type client_notif = A.client_notif
 
+(** Use this functor in case messages are to be delivered only to clients
+    connected to the current server, as is always the case in a single-server
+    set-up.
+*)
 module Simple (A : sig
       type key
       type notification
