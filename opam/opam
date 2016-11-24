@@ -20,6 +20,8 @@ depends: [
 ]
 depexts: [
   [["debian"] ["imagemagick"]]
+  [["debian"] ["ruby-sass"]]
   [["ubuntu"] ["imagemagick"]]
+  [["ubuntu"] ["ruby-sass"]]
 ]
 available: [ ocaml-version >= "4.02" ]
