@@ -29,7 +29,11 @@
         password="%%DB_PASSWORD%%"
       />
     </extension>
-    <extension findlib-package="eliom.server"/>
+    <extension findlib-package="eliom.server">
+<!-- Uncomment if you are using https only and want secure cookies:
+       <securecookies value="true" />
+  -->
+    </extension>
     %%% This will include the packages defined as SERVER_PACKAGES in your Makefile:
     %%PACKAGES%%
     <host hostfilter="*">

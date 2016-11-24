@@ -51,6 +51,37 @@
         right: 0;
     }
 }
+.os-page-demo-carousel2 {
+    .demo-carousel2 {
+        margin: 0 -16px;
+    }
+    .ot-carousel {
+        width: 100%;
+        height: auto;
+    }
+    .demo-carousel2-page {
+        padding: 16px;
+        p { text-align: justify; }
+    }
+    .demo-carousel2-page-1 {
+        background-color: white;
+    }
+    .demo-carousel2-page-2 {
+        background-color: #ffffee;
+    }
+    .demo-carousel2-page-3 {
+        background-color: #ffddee;
+    }
+    .demo-carousel2-page-4 {
+        background-color: #ddffee;
+    }
+    .demo-carousel2-tabs {
+        position: sticky;
+        background-color: white;
+        z-index: 1;
+        top: 50px;
+    }
+}
 .os-page-demo-carousel3 {
     .demo-prev, .demo-next {
         width: 20px;
