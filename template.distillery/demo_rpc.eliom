@@ -3,34 +3,34 @@
 
 (* RPC button demo *)
 
-(* page for this demo *)
+(* Service for this demo *)
 let%server service =
   Eliom_service.create
     ~path:(Eliom_service.Path ["demo-rpc"])
     ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
-(* make service available on the client (for mobile app) *)
+(* Make service available on the client *)
 let%client service = ~%service
 
-(* name for demo menu *)
+(* Name for demo menu *)
 let%shared name = "RPC button"
 
-(* class for the page containing this demo (for internal use) *)
+(* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-rpc"
 
-(* a server-side reference that stores data for the current browser *)
+(* A server-side reference that stores data for the current browser *)
 let%server my_ref =
   Eliom_reference.eref ~scope:Eliom_common.default_session_scope 0
 
-(* server-side function that increments my_ref and returns new val *)
+(* Server-side function that increments my_ref and returns new val *)
 let%server incr_my_ref () =
   let%lwt v = Eliom_reference.get my_ref in
   let v = v + 1 in
   let%lwt () = Eliom_reference.set my_ref v in
   Lwt.return v
 
-(* make server-side function available to the client *)
+(* Make server-side function available to the client *)
 let%client incr_my_ref =
   ~%(Eliom_client.server_function [%derive.json : unit] incr_my_ref)
 
@@ -48,7 +48,7 @@ let%shared button msg f =
   ];
   btn
 
-(* page for this demo *)
+(* Page for this demo *)
 let%shared page () =
   let btn =
     button "Click to increase server-side value"
