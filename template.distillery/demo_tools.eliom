@@ -27,18 +27,18 @@ module type Page = sig
 
 end
 
-let demos = [
-  (module Demo_popup : Page);
-  (module Demo_carousel1);
-  (module Demo_carousel2);
-  (module Demo_carousel3);
-  (module Demo_rpc);
-  (module Demo_calendar);
-  (module Demo_timepicker);
-  (module Demo_react);
-  (module Demo_notif);
-  (module Demo_ref)
-]
+let demos =
+  [ (module Demo_popup : Page)
+  ; (module Demo_rpc)
+  ; (module Demo_ref)
+  ; (module Demo_carousel1)
+  ; (module Demo_carousel2)
+  ; (module Demo_carousel3)
+  ; (module Demo_calendar)
+  ; (module Demo_timepicker)
+  ; (module Demo_notif)
+  ; (module Demo_react)
+  ]
 
 let drawer_contents () =
   let open Eliom_content.Html.F in
