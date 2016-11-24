@@ -4,7 +4,6 @@
 (* Calendar demo *)
 
 [%%shared
-  open Eliom_content.Html
   open Eliom_content.Html.D
 ]
 

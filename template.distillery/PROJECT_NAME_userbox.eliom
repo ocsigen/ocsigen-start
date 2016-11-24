@@ -150,4 +150,4 @@ let%shared connection_box () =
 let%shared user_box ?user () =
   match user with
   | None -> connection_box ()
-  | Some user -> Lwt.return (connected_user_box user)
+  | Some user -> Lwt.return (connected_user_box ~user)

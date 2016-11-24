@@ -2,7 +2,6 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 [%%shared
-  open Eliom_content.Html
   open Eliom_content.Html.D
 ]
 
@@ -55,7 +54,7 @@ let%shared page () =
     [%client
       (Lwt.async (fun () ->
          Lwt_js_events.clicks
-           (To_dom.of_element ~%button)
+           (Eliom_content.Html.To_dom.of_element ~%button)
            (fun _ _ ->
               ~%back_f ();
               Lwt.return ()))

@@ -12,7 +12,7 @@
 (*****************************************************************************)
 
 (* This RPC is called when client application is initialized. This way, the
- * server send necessary cookies to the client (the mobile app) early on and
+ * server sends necessary cookies to the client (the mobile app) early on and
  * subsequent requests from the client will contain the proper cookies.
  *
  * The RPC is empty by default, but you can add your own actions to be
