@@ -7,14 +7,16 @@
 ]
 
 
-(** timepicker demo **********************************************************)
+(* Timepicker demo *)
 
+(* Service for this demo *)
 let%server service =
   Eliom_service.create
     ~path:(Eliom_service.Path ["demo-timepicker"])
     ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
+(* Make service available on the client *)
 let%client service = ~%service
 
 let%server s, f = Eliom_shared.React.S.create None
@@ -35,9 +37,13 @@ let%server time_reactive () = Lwt.return @@ time_as_string ()
 let%client time_reactive =
   ~%(Eliom_client.server_function [%derive.json: unit] time_reactive)
 
+(* Name for demo menu *)
 let%shared name = "TimePicker"
+
+(* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-timepicker"
 
+(* Page for this demo *)
 let%shared page () =
   let time_picker, _, back_f = Ot_time_picker.make
       ~h24:true
