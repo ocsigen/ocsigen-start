@@ -20,19 +20,18 @@
 
 (** Server to client notifications.
     
-    This module fixes the types [identity] of [Eliom_notif.S] to
-	  [Os_types.User.id option]. Also it adds the feature [unlisten_user] to
-    [Eliom_notif].
+    This module is a version of [Eliom_notif] that fixes the types [identity] of
+    [Eliom_notif.S] to [Os_types.User.id option]. Also it adds the feature
+    [unlisten_user].
 *)
 
 module type S = sig
   include Eliom_notif.S
     with type identity = Os_types.User.id option
-(*
-  (** Make a user stop listening on data [key] *)
+  (** Make a user stop listening on data [key]
+      TODO: document sitedata *)
   val unlisten_user :
     ?sitedata:Eliom_common.sitedata -> userid:Os_types.User.id -> key -> unit
-*)
 end
 
 (** [MAKE] is for making [Make] *)

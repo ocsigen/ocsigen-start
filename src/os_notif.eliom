@@ -21,10 +21,8 @@
 module type S = sig
   include Eliom_notif.S
     with type identity = Os_types.User.id option
-(*
   val unlisten_user :
     ?sitedata:Eliom_common.sitedata -> userid:Os_types.User.id -> key -> unit
-*)
 end
 
 module type MAKE = sig
@@ -39,36 +37,27 @@ module Make(A : MAKE) : S
   with type key = A.key
    and type server_notif = A.server_notif
    and type client_notif = A.client_notif
-= Eliom_notif.Make (struct
-  type identity = Os_types.User.id option
-  type key = A.key
-  type server_notif = A.server_notif
-  type client_notif = A.client_notif
-  let prepare = A.prepare
-  let equal_key = A.equal_key
-  let equal_identity = (=)
-  let get_identity () = Lwt.return @@ Os_current_user.Opt.get_current_userid ()
-  let max_resource = 1000
-  let max_identity_per_resource = 10
-end)
-(*
+= struct
+  include Eliom_notif.Make (struct
+    type identity = Os_types.User.id option
+    type key = A.key
+    type server_notif = A.server_notif
+    type client_notif = A.client_notif
+    let prepare = A.prepare
+    let equal_key = A.equal_key
+    let equal_identity = (=)
+    let get_identity () = Lwt.return @@ Os_current_user.Opt.get_current_userid ()
+    let max_resource = 1000
+    let max_identity_per_resource = 10
+  end)
   let unlisten_user ?sitedata ~userid (id : A.key) =
     let state =
       Eliom_state.Ext.volatile_data_group_state
         ~scope:Eliom_common.default_group_scope
         (Int64.to_string userid)
     in
-    (* Iterating on all sessions in group: *)
-    Eliom_state.Ext.iter_volatile_sub_states ?sitedata
-      ~state
-      (fun state ->
-         (* Iterating on all client processes in session: *)
-         Eliom_state.Ext.iter_volatile_sub_states ?sitedata
-           ~state
-           (fun state ->
-              let uc = Eliom_reference.Volatile.Ext.get state userchannel2 in
-              I.remove uc id))
-*)
+    Ext.unlisten state id
+end
 
 module type SIMPLE = sig
   type key
