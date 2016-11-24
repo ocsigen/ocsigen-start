@@ -37,41 +37,36 @@ module type S = sig
   val notify : ?notfor:[`Me | `User of User.id] -> key -> server_notif -> unit
 end
 
-(** [MAKE] is for making [Make] *)
-module type MAKE = sig
-  (** see [S.key] *)
+(** [ARG] is for making [Make].
+    It is a simplified version of [Eliom_notif.ARG]. *)
+module type ARG = sig
   type key
-  (** see [S.server_notif] *)
   type server_notif
-  (** see [S.client_notif] *)
   type client_notif
-	(** see [Eliom_notif.MAKE.prepare] *)
   val prepare : User.id option -> server_notif -> client_notif option Lwt.t
-	(** see [Eliom_notif.MAKE.equal_key] *)
   val equal_key : key -> key -> bool
+  val max_resource : int
+  val max_identity_per_resource : int
 end
 
 (** see [Eliom_notif.Make] *)
-module Make (A : MAKE) : S
+module Make (A : ARG) : S
   with type key = A.key
    and type server_notif = A.server_notif
    and type client_notif = A.client_notif
 
-(** [SIMPLE] is for making [Simple] *)
-module type SIMPLE = sig
-  (** see [S.key] *)
+(** [ARG_SIMPLE] is for making [Make_Simple].
+    It is a simplified version of [Eliom_notif.ARG_SIMPLE] *)
+module type ARG_SIMPLE = sig
   type key
-  (** see [S.notification] *)
   type notification
-	(** see [Eliom_notif.MAKE.equal_key] *)
-  val equal_key : key -> key -> bool
 end
 
 (** Use this functor in case messages are to be delivered only to clients
     connected to the current server, as is always the case in a single-server
     set-up.
 *)
-module Simple (A : SIMPLE) : S
+module Make_Simple (A : ARG_SIMPLE) : S
   with type key = A.key
    and type server_notif = A.notification
    and type client_notif = A.notification

@@ -28,15 +28,17 @@ module type S = sig
   val notify : ?notfor:[`Me | `User of User.id] -> key -> server_notif -> unit
 end
 
-module type MAKE = sig
+module type ARG = sig
   type key
   type server_notif
   type client_notif
   val prepare : User.id option -> server_notif -> client_notif option Lwt.t
   val equal_key : key -> key -> bool
+  val max_resource : int
+  val max_identity_per_resource : int
 end
 
-module Make(A : MAKE) : S
+module Make(A : ARG) : S
   with type key = A.key
    and type server_notif = A.server_notif
    and type client_notif = A.client_notif
@@ -50,8 +52,8 @@ module Make(A : MAKE) : S
     let equal_key = A.equal_key
     let equal_identity = (=)
     let get_identity () = Lwt.return @@ Os_current_user.Opt.get_current_userid ()
-    let max_resource = 1000
-    let max_identity_per_resource = 10
+    let max_resource = A.max_resource
+    let max_identity_per_resource = A.max_identity_per_resource
   end)
   let unlisten_user ?sitedata ~userid (id : A.key) =
     let state =
@@ -69,20 +71,21 @@ module Make(A : MAKE) : S
     notify ?notfor key notif
 end
 
-module type SIMPLE = sig
+module type ARG_SIMPLE = sig
   type key
   type notification
-  val equal_key : key -> key -> bool
 end
 
-module Simple (A : SIMPLE) : S
+module Make_Simple (A : ARG_SIMPLE) : S
   with type key = A.key
    and type server_notif = A.notification
    and type client_notif = A.notification
-= Make (struct
-  type key = A.key
-  type server_notif = A.notification
-  type client_notif = A.notification
-  let prepare _ n = Lwt.return (Some n)
-  let equal_key = A.equal_key
-end)
+  = Make (struct
+    type key = A.key
+    type server_notif = A.notification
+    type client_notif = A.notification
+    let prepare _ n = Lwt.return (Some n)
+    let equal_key = (=)
+    let max_resource = 1000
+    let max_identity_per_resource = 10
+  end)
