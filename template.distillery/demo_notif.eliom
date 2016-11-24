@@ -19,6 +19,14 @@ let%shared name = "Notifications"
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-notif"
 
+(* Instanciate function Os_notif.Simple for each kind of notification
+   you need.
+   The key is the resource ID. For example, if you are implementing a
+   messaging application, it can be the chatroom ID
+   (for example type key = int64).
+   In this example, we have only one notification and one resource
+   (type key = unit).
+*)
 module Notif =
   Os_notif.Simple (struct
     type key = unit
@@ -26,8 +34,10 @@ module Notif =
   end)
 
 (* Broadcast message [v] *)
-let%server notify (v : string) =
-  Notif.notify () v;
+let%server notify (v : Notif.notification) =
+  (* Notify all client processes listening on this resource (first paremeter)
+     by sending them message v. *)
+  Notif.notify (() :  Notif.key) v;
   Lwt.return ()
 
 (* Make [notify] available client-side *)
@@ -46,7 +56,7 @@ let%server listen () =
   Lwt.return ()
 
 (* Make a text input field that calls [f s] for each [s] submitted *)
-let%shared input msg f =
+let%shared make_form msg f =
   let inp = Eliom_content.Html.D.Raw.input ()
   and btn = Eliom_content.Html.(
     D.button ~a:[D.a_class ["button"]] [D.pcdata msg]
@@ -73,7 +83,7 @@ let%server page () =
          D.pcdata "Open this page in multiple tabs or browsers.";
          D.br ();
          D.pcdata "Fill in the input form to send a message."];
-    input "send message" [%client (notify : string -> unit Lwt.t)]
+    make_form "send message" [%client (notify : string -> unit Lwt.t)]
   ]
 
 (* Make page available on client-side *)
