@@ -90,3 +90,8 @@
         color: white;
     }
 }
+.os-page-demo-react {
+    input:not([type]) {
+        background-color: #eee;
+    }
+}
