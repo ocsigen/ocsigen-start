@@ -10,7 +10,7 @@ let%server service =
     ~meth:(Eliom_service.Get Eliom_parameter.unit)
     ()
 
-(* Make service available on the client (for mobile app) *)
+(* Make service available on the client *)
 let%client service = ~%service
 
 (* Name for demo menu *)
