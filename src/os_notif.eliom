@@ -18,18 +18,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open Os_types
+
 module type S = sig
   include Eliom_notif.S
-    with type identity = Os_types.User.id option
+    with type identity = User.id option
   val unlisten_user :
-    ?sitedata:Eliom_common.sitedata -> userid:Os_types.User.id -> key -> unit
+    ?sitedata:Eliom_common.sitedata -> userid:User.id -> key -> unit
+  val notify : ?notfor:[`Me | `User of User.id] -> key -> server_notif -> unit
 end
 
 module type MAKE = sig
   type key
   type server_notif
   type client_notif
-  val prepare : Os_types.User.id option -> server_notif -> client_notif option Lwt.t
+  val prepare : User.id option -> server_notif -> client_notif option Lwt.t
   val equal_key : key -> key -> bool
 end
 
@@ -39,7 +42,7 @@ module Make(A : MAKE) : S
    and type client_notif = A.client_notif
 = struct
   include Eliom_notif.Make (struct
-    type identity = Os_types.User.id option
+    type identity = User.id option
     type key = A.key
     type server_notif = A.server_notif
     type client_notif = A.client_notif
@@ -57,6 +60,13 @@ module Make(A : MAKE) : S
         (Int64.to_string userid)
     in
     Ext.unlisten state id
+  let notify ?notfor key notif =
+    let notfor = match notfor with
+      | None -> None
+      | Some `Me -> Some `Me
+      | Some (`User id) -> Some (`Id (Some id))
+    in
+    notify ?notfor key notif
 end
 
 module type SIMPLE = sig
