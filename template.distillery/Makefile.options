@@ -108,7 +108,7 @@ SHAREDIR_OT_CSS       := $(SHAREDIR)/ocsigen-toolkit/css
 EXTERNAL_CSS_FILES    := $(SHAREDIR_OT_CSS)/ot_buttons.css \
                          $(SHAREDIR_OT_CSS)/ot_carousel.css \
                          $(SHAREDIR_OT_CSS)/ot_sticky.css \
-                         $(SHAREDIR_OT_CSS)/ot_defaults.css \
+                         $(SHAREDIR_OT_CSS)/ot_datetime.css \
                          $(SHAREDIR_OT_CSS)/ot_drawer.css \
                          $(SHAREDIR_OT_CSS)/ot_icons.css \
                          $(SHAREDIR_OT_CSS)/ot_picture_uploader.css \
