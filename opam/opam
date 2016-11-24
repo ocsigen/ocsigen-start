@@ -25,6 +25,6 @@ depexts: [
   [["ubuntu"] ["imagemagick"]]
   [["ubuntu"] ["ruby-sass"]]
   [["ubuntu"] ["postgresql"]]
-  [["homebrew"] ["osx"] ["postgresql"]]
+  [["osx" "homebrew"] ["postgresql"]]
 ]
 available: [ ocaml-version >= "4.02" ]
