@@ -35,7 +35,11 @@ For implementing users, a database is needed. Specifically, we use
 and the library make common assumptions about the database schema. The
 database thus needs to be instantiated in a certain way; this is
 automatically done by appropriate targets in the template's build
-system. The database can be
+system.
+
+The same database can used for the specific needs of the application
+at hand. For that, new tables can be added. The original ones should
+remain in place for Ocsigen Start to work correctly.
 
 ===Managing e-mails===
 
@@ -62,3 +66,88 @@ eliom-distillery -name $APP_NAME -template os.pgocaml
 
 For details on launching the application, refer to the template's
 [[https://github.com/ocsigen/ocsigen-start/blob/master/template.distillery/README.md|README]].
+
+==Library overview==
+
+We provide a tour of the Ocsigen Start library. All modules have
+server- and client-side versions. (In the API documentation, there are
+links near the top of each module page for selecting the side.)
+
+The template uses all these modules, and can thus act as a good
+starting guide. Look around!
+
+=== User interface ===
+
+Various modules for producing icons, messages, custom pages, tips,
+connection forms, etc.
+
+* <<a_api subproject="server" | module Os_icons>>
+* <<a_api subproject="server" | module Os_msg>>
+* <<a_api subproject="server" | module Os_page>>
+* <<a_api subproject="server" | module Os_tips>>
+* <<a_api subproject="server" | module Os_userbox>>
+* <<a_api subproject="server" | module Os_view>>
+* <<a_api subproject="server" | module Os_uploader>>
+
+=== Users and groups ===
+
+* <<a_api subproject="server" | module Os_user>>,
+  <<a_api subproject="server" | module Os_current_user>>,
+  <<a_api subproject="server" | module Os_group>>:
+  manage users and groups thereof.
+
+* <<a_api subproject="server" | module Os_db>>:
+  directly access the database. In many cases, it is a better idea to
+  use higher-level modules (e.g.,
+  <<a_api subproject="server" | module Os_user>>).
+
+* <<a_api subproject="server" | module Os_types>>:
+  core types shared by <<a_api subproject="server" | module Os_db>>
+  and the higher-level modules.
+
+=== Communication ===
+
+* <<a_api subproject="server" | module Os_notif>>:
+  send notifications to connected users.
+
+* <<a_api subproject="server" | module Os_email>>:
+  send e-mails.
+
+* <<a_api subproject="server" | module Os_push_notifications>>:
+  send push notifications to mobile devices.
+
+* <<a_api subproject="server" | module Os_comet>>:
+  manage the bi-directional communication channel between client and
+  server. This is a low-level module that you probably don't need.
+
+=== Services, handlers, sessions ===
+
+* <<a_api subproject="server" | module Os_services>>:
+  Eliom services pre-defined by Ocsigen Start. These produce the
+  default user interface of the template.
+  See <<a_manual project="eliom" subproject="server"
+  chapter="server-services" | the Eliom manual page on services>> for
+  a general introduction to Eliom services.
+
+* <<a_api subproject="server" | module Os_handlers>>:
+  The handlers (functions) that implement the services in
+  <<a_api subproject="server" | module Os_services>>.
+  <<a_manual project="eliom" subproject="server"
+  chapter="server-outputs" | The Eliom manual page on service handlers>>
+  explains how to implement handlers.
+
+* <<a_api subproject="server" | module Os_session>>:
+  manage user sessions, e.g., execute actions when users connect or
+  disconnect.
+
+=== Other utilities ===
+
+* <<a_api subproject="server" | module Os_date>>:
+  utilities for manipulating date and time values.
+
+* <<a_api subproject="server" | module Os_platform>>:
+  obtain information about the platform we are on (Android, iOS, ...).
+
+* <<a_api subproject="server" | module Os_request_cache>>,
+  <<a_api subproject="server" | module Os_user_proxy>>:
+  different forms of caching data.
