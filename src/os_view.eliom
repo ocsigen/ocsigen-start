@@ -24,7 +24,7 @@
 ]
 
 let%client check_password_confirmation
-    ?(text_pwd_do_not_match=(Os_i18n.Current.passwords_do_not_match ()))
+    ?(text_pwd_do_not_match="Passwords do not match")
     ~password
     ~confirmation () =
   let password_dom = To_dom.of_input password in
@@ -44,7 +44,7 @@ let%client check_password_confirmation
             Lwt.return ()))
 
 let%shared generic_email_form
-    ?(a_placeholder_email=(Os_i18n.Current.email_address ()))
+    ?(a_placeholder_email="E-mail address")
     ?a
     ?label
     ?(text="Send")
@@ -72,10 +72,10 @@ let%shared generic_email_form
       | Some lab -> F.label [pcdata lab]::l) ()
 
 let%shared connect_form
-    ?(a_placeholder_email=(Os_i18n.Current.your_email ()))
-    ?(a_placeholder_pwd=(Os_i18n.Current.your_password ()))
-    ?(text_keep_me_logged_in=(Os_i18n.Current.keep_me_logged_in ()))
-    ?(text_sign_in=(Os_i18n.Current.sign_in ()))
+    ?(a_placeholder_email="Your email")
+    ?(a_placeholder_pwd="Your password")
+    ?(text_keep_me_logged_in="Keep me logged in")
+    ?(text_sign_in="Sign in")
     ?a
     ?(email="")
     () =
@@ -104,7 +104,7 @@ let%shared connect_form
         Form.string;
     ]) ()
 
-let%shared disconnect_button ?(text_logout=(Os_i18n.Current.log_out ())) ?a () =
+let%shared disconnect_button ?(text_logout="Log out") ?a () =
   Form.post_form ?a ~service:Os_services.disconnect_service
     (fun _ -> [
          Form.button_no_value
@@ -121,11 +121,11 @@ let%shared forgot_password_form ?a () =
     ~service:Os_services.forgot_password_service ()
 
 let%shared information_form
-    ?(a_placeholder_pwd=(Os_i18n.Current.your_password ()))
-    ?(a_placeholder_retype_pwd=(Os_i18n.Current.retype_password ()))
-    ?(text_your_first_name=(Os_i18n.Current.your_first_name ()))
-    ?(text_your_last_name=(Os_i18n.Current.your_last_name ()))
-    ?(text_submit=(Os_i18n.Current.submit ()))
+    ?(a_placeholder_pwd="Your password")
+    ?(a_placeholder_retype_pwd="Your password")
+    ?(text_your_first_name="Your first name")
+    ?(text_your_last_name="Your last name")
+    ?(text_submit="Submit")
     ?a
     ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
     () =
@@ -203,8 +203,8 @@ let%shared username user =
   div ~a:[a_class ["os_username"]] n
 
 let%shared password_form
-    ?(text_password=(Os_i18n.Current.password ()))
-    ?(text_retype_password=(Os_i18n.Current.retype_password ()))
+    ?(text_password="Password")
+    ?(text_retype_password="Retype your password")
     ?a
     ~service
     () =

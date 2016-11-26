@@ -88,7 +88,7 @@ let%shared upload_pic_link
 let%shared reset_tips_service = Os_tips.reset_tips_service
 
 let%shared reset_tips_link
-    ?(text_link=(Os_i18n.Current.see_help_again_from_beginning ()))
+    ?(text_link="See help again from beginning")
     (close : (unit -> unit) Eliom_client_value.t) =
   let l = D.Raw.a [pcdata text_link] in
   ignore [%client (
