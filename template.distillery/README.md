@@ -110,12 +110,17 @@ Build the mobile applications
 
 ### For all mobile platforms:
 
-- Install npm (on Debian and Ubuntu, `sudo apt-get install npm`).
+- Install npm (on Debian and Ubuntu, `sudo apt-get install npm`). If you have
+  issues with your package manager, you can also use
+  [[https://github.com/creationix/nvm|nvm]].
 - Install Cordova (`sudo npm install -g cordova`)
 - Install the needed Cordova plugins:
 ```Shell
 sudo npm install -g cordova-hot-code-push-cli read-package-json xml2js
 ```
+
+If you installed NodeJS and NPM with NVM, you don't need to use `sudo`
+because NVM is installed in your home.
 
 ### For Android:
 
@@ -183,7 +188,8 @@ be created by getting all the necessary files (js, etc) from a server.
 This may be used to create a mobile app for an which has not been
 compiled locally. With `APP_REMOTE=no`, the local files will be used.
 
-Replace ${YOUR_SERVER} by ${YOUR_IP_ADDRESS}:8080 in the following
+The remote server address is given in the variable `APP_SERVER`.
+Replace `${YOUR_SERVER}` by `${YOUR_IP_ADDRESS}:8080` in the following
 commands if you want to test on your local machine.
 
 - To run the application in the emulator, use:
@@ -196,7 +202,7 @@ The above command will attempt to launch your app in the Android emulator that
 you have configured previously. Depending on your setup, you may need to start
 the emulator before running the command.
 
-To run the application on a connected device (through USB), use:
+To run the application on a connected device, use:
 
 ```
 make APP_SERVER=http://${YOUR_SERVER} APP_REMOTE=no run-android
@@ -222,3 +228,23 @@ you update the server:
 ```
 make APP_SERVER=http://${YOUR_SERVER} APP_REMOTE={yes|no} chcp
 ```
+
+## Use Makefile.local file.
+
+You need to define `APP_REMOTE` and `APP_SERVER` each time you want to build
+the mobile application or to update it.
+
+If you don't want to pass the variables `APP_SERVER` and
+`APP_REMOTE` every time, you can change the values of these variables in
+`Makefile.local.example` and rename this file to `Makefile.local`. This way,
+the variables `APP_REMOTE` and `APP_SERVER` are not mandatory when you build
+or update the mobile application. You can use:
+```
+make chcp
+make run-android
+make run-ios
+...
+```
+
+This file is meant for rules and variables that are only relevant for local development
+and it must not be deployed or shared (by default, this file is ignored by Git).
