@@ -260,3 +260,36 @@ val upload_pic_link :
 val reset_tips_link :
   (unit -> unit) Eliom_client_value.t ->
   [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
+
+(** A disconnect button *)
+val disconnect_button :
+  ?text_logout:string ->
+  unit ->
+  [> Html_types.li_content_fun ] Eliom_content.Html.F.elt
+
+(** A link to {!Os_services.disconnect_service}. *)
+val disconnect_link :
+  ?text_logout:string ->
+  ?a:[< Html_types.a_attrib > `OnClick ] Eliom_content.Html.attrib list ->
+  unit ->
+  [> `A of Html_types.flow5_without_interactive ] Eliom_content.Html.F.elt
+
+(** An userbox (in a div with the CSS class ["connected-user-box"]) for connected
+    users with an icon and the username.
+ *)
+val connected_user_box :
+  user:Os_types.User.t -> [> Html_types.div ] Eliom_content.Html.D.elt
+
+(** A box (in a div with the CSS class ["os-connection-box"]) with a sign in and
+    a sign out button.
+ *)
+val connection_box :
+  unit -> [> Html_types.div ] Eliom_content.Html.D.elt Lwt.t
+
+(** Return {!connection_box} if no user is connected (i.e. [user] is [None]).
+    Else {!connected_user_box}.
+ *)
+val user_box :
+  ?user:Os_types.User.t ->
+  unit ->
+  [> Html_types.div ] Eliom_content.Html.F.elt Lwt.t

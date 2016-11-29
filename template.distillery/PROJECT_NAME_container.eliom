@@ -7,7 +7,7 @@
 (** [os_header ?user ()] defines the header for all pages.
     In this template, it's a userbox and the user name is displayed. *)
 let%shared os_header ?user () = Eliom_content.Html.F.(
-  let%lwt user_box = %%%MODULE_NAME%%%_userbox.user_box ?user () in
+  let%lwt user_box = Os_view.user_box ?user () in
   Lwt.return (
     header ~a:[a_class ["os-page-header"]]
       [ a ~a:[a_class ["os-page-header-app-name"]]
