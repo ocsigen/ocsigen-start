@@ -21,6 +21,8 @@
 [%%shared
   open Eliom_content.Html
   open Eliom_content.Html.F
+
+  type uploader = (unit,unit) Ot_picture_uploader.service
 ]
 
 let%client check_password_confirmation ~password ~confirmation =
@@ -60,31 +62,38 @@ let%shared generic_email_form ?a ?label ?(text="Send") ?(email="") ~service () =
       | None -> l
       | Some lab -> F.label [pcdata lab]::l) ()
 
-let%shared connect_form ?a ?(email="") () =
-  D.Form.post_form ?a ~xhr:false ~service:Os_services.connect_service
-    (fun ((login, password), keepmeloggedin) -> [
-      Form.input
-        ~a:[a_placeholder "Your email"]
-        ~name:login
-        ~input_type:`Email
-        ~value:email
-        Form.string;
-      Form.input
-        ~a:[a_placeholder "Your password"]
-        ~name:password
-        ~input_type:`Password
-        Form.string;
-      Form.bool_checkbox_one
-        ~a:[a_checked ()]
-        ~name:keepmeloggedin
-        ();
-      span [pcdata "keep me logged in"];
-      Form.input
-        ~a:[a_class ["button" ; "os-sign-in"]]
-        ~input_type:`Submit
-        ~value:"Sign in"
-        Form.string;
-    ]) ()
+let%shared connect_form
+    ?(a_placeholder_email="Your email")
+    ?(a_placeholder_pwd="Your password")
+    ?(text_keep_me_logged_in="keep me logged in")
+    ?(text_sign_in="Sign in")
+    ?a
+    ?(email="")
+    () =
+  D.Form.post_form ?a ~service:Os_services.connect_service
+    (fun ((login, password), keepmeloggedin) ->
+       [ Form.input
+           ~a:[a_placeholder a_placeholder_email]
+           ~name:login
+           ~input_type:`Email
+           ~value:email
+           Form.string
+       ; Form.input
+           ~a:[a_placeholder a_placeholder_pwd]
+           ~name:password
+           ~input_type:`Password
+           Form.string
+       ; label [ Form.bool_checkbox_one
+                   ~a:[a_checked ()]
+                   ~name:keepmeloggedin
+                   ()
+               ; pcdata text_keep_me_logged_in]
+       ; Form.input
+           ~a:[a_class ["button" ; "os-sign-in"]]
+           ~input_type:`Submit
+           ~value:text_sign_in
+           Form.string
+       ]) ()
 
 let%shared disconnect_button ?a () =
   Form.post_form ?a ~service:Os_services.disconnect_service
@@ -219,3 +228,43 @@ let%shared password_form
            Form.string
        ])
     ()
+
+let%shared upload_pic_link
+    ?(a = [])
+    ?(content=[pcdata "Change profile picture"])
+    ?(crop = Some 1.)
+    ?(input :
+      Html_types.label_attrib Eliom_content.Html.D.Raw.attrib list
+      * Html_types.label_content_fun Eliom_content.Html.D.Raw.elt list
+      = [], []
+    )
+    ?(submit :
+      Html_types.button_attrib Eliom_content.Html.D.Raw.attrib list
+      * Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list
+      = [], [pcdata "Submit"]
+    )
+    (close : (unit -> unit) Eliom_client_value.t)
+    (service : uploader)
+    userid =
+  let content = (content
+                 : Html_types.a_content Eliom_content.Html.D.Raw.elt list) in
+  D.Raw.a ~a:( a_onclick [%client (fun ev -> Lwt.async (fun () ->
+    ~%close () ;
+    let upload ?progress ?cropping file =
+      Ot_picture_uploader.ocaml_service_upload
+        ?progress ?cropping ~service:~%service ~arg:() file in
+    try%lwt ignore @@
+      Ot_popup.popup
+        ~close_button:[ Os_icons.F.close () ]
+        ~onclose:(fun () ->
+          Eliom_client.change_page
+            ~service:Eliom_service.reload_action () ())
+        (fun close -> Ot_picture_uploader.mk_form
+            ~crop:~%crop ~input:~%input ~submit:~%submit
+            ~after_submit:close upload) ;
+      Lwt.return ()
+    with e ->
+      Os_msg.msg ~level:`Err "Error while uploading the picture";
+      Eliom_lib.debug_exn "%s" e "→ ";
+      Lwt.return () ) : _ ) ] :: a) content
+

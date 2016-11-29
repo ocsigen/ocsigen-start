@@ -77,10 +77,18 @@ val generic_email_form :
 
     The data is sent to {!Os_services.connect_service}.
 
+    @param a_placeholder_email text for the placeholder of the email input.
+    @param a_placeholder_pwd text for the placeholder of the password input.
+    @param text_keep_me_logged_in text for the check box to stay connected.
+    @param text_sign_in text for the sign in button.
     @param a attributes of the form.
     @param email the default value of the email input (default is empty).
  *)
 val connect_form :
+  ?a_placeholder_email:string ->
+  ?a_placeholder_pwd:string ->
+  ?text_keep_me_logged_in:string ->
+  ?text_sign_in:string ->
   ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
   ?email:string ->
   unit ->

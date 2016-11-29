@@ -18,13 +18,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+
 [%%shared
   open Eliom_content.Html
   open Eliom_content.Html.F
-]
-
-[%%shared
-  type uploader = (unit,unit) Ot_picture_uploader.service
 ]
 
 let wrong_password =
@@ -44,45 +41,6 @@ let user_already_preregistered =
 
 let action_link_key_outdated =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
-
-let%shared upload_pic_link
-    ?(a = [])
-    ?(content=[pcdata "Change profile picture"])
-    ?(crop = Some 1.)
-    ?(input :
-      Html_types.label_attrib Eliom_content.Html.D.Raw.attrib list
-      * Html_types.label_content_fun Eliom_content.Html.D.Raw.elt list
-      = [], []
-    )
-    ?(submit :
-      Html_types.button_attrib Eliom_content.Html.D.Raw.attrib list
-      * Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list
-      = [], [pcdata "Submit"]
-    )
-    (close : (unit -> unit) Eliom_client_value.t)
-    (service : uploader)
-  =
-  let content = (content
-                 : Html_types.a_content Eliom_content.Html.D.Raw.elt list) in
-  D.Raw.a ~a:( a_onclick [%client (fun ev -> Lwt.async (fun () ->
-    ~%close () ;
-    let upload ?progress ?cropping file =
-      Ot_picture_uploader.ocaml_service_upload
-        ?progress ?cropping ~service:~%service ~arg:() file in
-    try%lwt ignore @@
-      Ot_popup.popup
-        ~close_button:[ Os_icons.F.close () ]
-        ~onclose:(fun () ->
-          Eliom_client.change_page
-            ~service:Eliom_service.reload_action () ())
-        (fun close -> Ot_picture_uploader.mk_form
-            ~crop:~%crop ~input:~%input ~submit:~%submit
-            ~after_submit:close upload) ;
-      Lwt.return ()
-    with e ->
-      Os_msg.msg ~level:`Err "Error while uploading the picture";
-      Eliom_lib.debug_exn "%s" e "→ ";
-      Lwt.return () ) : _ ) ] :: a) content
 
 let%shared reset_tips_service = Os_tips.reset_tips_service
 
