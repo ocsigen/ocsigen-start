@@ -217,3 +217,40 @@ val password_form :
   ) Eliom_service.t ->
   unit ->
   [> Html_types.form ] Eliom_content.Html.D.elt
+
+
+(** [upload_pic_link ?a ?content ?crop ?input ?submit action_after_submit
+    service userid]
+
+    Creates a link with a label and a submit button to upload a picture.
+
+    The client function [action_after_submit] will be called first,
+    for example to close the menu containing the link.
+
+    You can add attributes to the HTML tag with the optional parameter [?a].
+    [?input] and [?submit] are couples [(attributes, content_children)] for the
+    label and the submit button where [attributes] is a list of attributes for
+    the tag and [content_children] is a list of children. By default, they are
+    empty.
+
+    [?content] is the link text. The default value is "Change profile picture".
+
+    [service] is the service called to upload the picture.
+
+    You can crop the picture by giving a value to [?crop].
+ *)
+val upload_pic_link :
+  ?a:[< Html_types.a_attrib > `OnClick ] Eliom_content.Html.D.Raw.attrib list
+  -> ?content:Html_types.a_content Eliom_content.Html.D.Raw.elt list
+  -> ?crop:float option
+  -> ?input:
+    Html_types.label_attrib Eliom_content.Html.D.Raw.attrib list
+     * Html_types.label_content_fun Eliom_content.Html.D.Raw.elt list
+  -> ?submit:
+    Html_types.button_attrib Eliom_content.Html.D.Raw.attrib list
+     * Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list
+  -> (unit -> unit) Eliom_client_value.t
+  -> (unit,unit) Ot_picture_uploader.service
+  -> Os_types.User.id
+  -> [> `A of Html_types.a_content ] Eliom_content.Html.D.Raw.elt
+

@@ -107,11 +107,11 @@ let%shared settings_content () =
         p [pcdata "Change your password:"];
         Os_view.password_form ~service:Os_services.set_password_service ();
         br ();
-        Os_userbox.upload_pic_link
+        Os_view.upload_pic_link
           none
           %%%MODULE_NAME%%%_services.upload_user_avatar_service;
         br ();
-        Os_userbox.reset_tips_link none;
+        Os_view.reset_tips_link none;
         br ();
         p [pcdata "Link a new email to your account:"];
         Os_view.generic_email_form ~service:Os_services.add_email_service ();

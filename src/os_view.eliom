@@ -21,8 +21,6 @@
 [%%shared
   open Eliom_content.Html
   open Eliom_content.Html.F
-
-  type uploader = (unit,unit) Ot_picture_uploader.service
 ]
 
 let%client check_password_confirmation ~password ~confirmation =
@@ -244,7 +242,7 @@ let%shared upload_pic_link
       = [], [pcdata "Submit"]
     )
     (close : (unit -> unit) Eliom_client_value.t)
-    (service : uploader)
+    (service : (unit, unit) Ot_picture_uploader.service)
     userid =
   let content = (content
                  : Html_types.a_content Eliom_content.Html.D.Raw.elt list) in
