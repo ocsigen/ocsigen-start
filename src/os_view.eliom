@@ -178,7 +178,13 @@ let%shared username user =
   in
   div ~a:[a_class ["os_username"]] n
 
-let%shared password_form ?a ~service () =
+let%shared password_form
+    ?(a_placeholder_pwd="password")
+    ?(a_placeholder_confirmation="retype your password")
+    ?(text_send_button="Send")
+    ?a
+    ~service
+    () =
   D.Form.post_form
     ?a
     ~service
@@ -186,27 +192,30 @@ let%shared password_form ?a ~service () =
        let pass1 =
          D.Form.input
            ~a:[a_required ();
-               a_autocomplete false]
-           ~input_type:`Password ~name:pwdn
+               a_autocomplete false;
+               a_placeholder a_placeholder_pwd]
+           ~input_type:`Password
+           ~name:pwdn
            Form.string
        in
        let pass2 =
          D.Form.input
            ~a:[a_required ();
-               a_autocomplete false]
-           ~input_type:`Password ~name:pwd2n
+               a_autocomplete false;
+               a_placeholder a_placeholder_confirmation]
+           ~input_type:`Password
+           ~name:pwd2n
            Form.string
        in
        ignore [%client (
         check_password_confirmation ~password:~%pass1 ~confirmation:~%pass2
        : unit)];
-       [
-         table
-           [
-             tr [td [label [pcdata "Password:"]]; td [pass1]];
-             tr [td [label [pcdata "Retype password:"]]; td [pass2]];
-           ];
-         Form.input ~input_type:`Submit
-           ~a:[ a_class [ "button" ] ] ~value:"Send" Form.string
+       [ pass1
+       ; pass2
+       ; Form.input
+           ~input_type:`Submit
+           ~a:[ a_class ["button" ] ]
+           ~value:text_send_button
+           Form.string
        ])
     ()

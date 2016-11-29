@@ -189,6 +189,9 @@ val username :
     @param a attributes of the form.
     @param service service which the data is sent to. *)
 val password_form :
+  ?a_placeholder_pwd:string ->
+  ?a_placeholder_confirmation:string ->
+  ?text_send_button:string ->
   ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
   service:(
     unit,
