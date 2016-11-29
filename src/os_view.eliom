@@ -266,3 +266,18 @@ let%shared upload_pic_link
       Eliom_lib.debug_exn "%s" e "→ ";
       Lwt.return () ) : _ ) ] :: a) content
 
+
+let%shared reset_tips_link (close : (unit -> unit) Eliom_client_value.t) =
+  let l = D.Raw.a [pcdata "See help again from beginning"] in
+  ignore [%client (
+    Lwt_js_events.(async (fun () ->
+      clicks (To_dom.of_element ~%l)
+        (fun _ _ ->
+           ~%close ();
+           Eliom_client.exit_to
+             ~service:Os_tips.reset_tips_service
+             () ();
+           Lwt.return ()
+        )));
+  : unit)];
+  l

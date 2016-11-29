@@ -254,3 +254,9 @@ val upload_pic_link :
   -> Os_types.User.id
   -> [> `A of Html_types.a_content ] Eliom_content.Html.D.Raw.elt
 
+(** Link to start to see the help from the beginning.
+    The client function given as first parameter will be called first,
+    for example to close the menu containing the link. *)
+val reset_tips_link :
+  (unit -> unit) Eliom_client_value.t ->
+  [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
