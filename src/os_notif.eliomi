@@ -22,7 +22,9 @@
     
     This module is a version of [Eliom_notif] that fixes the types [identity] of
     [Eliom_notif.S] to [Os_types.User.id option] ([option] so that users can be
-    notified that are not logged in). Also it adds the feature [unlisten_user].
+    notified that are not logged in). It takes care of (de)initialisation so
+    [init] and [deinit] need not be called anymore. Also it adds a specialised
+    version of [unlisten_user].
 *)
 
 open Os_types
@@ -30,8 +32,9 @@ open Os_types
 module type S = sig
   include Eliom_notif.S
     with type identity = User.id option
-  (** Make a user stop listening on data [key]
-      TODO: document sitedata *)
+  (** Make a user stop listening on data [key]. This function will work as
+      expected without a value supplied for [sitedata] if called during a
+      request or initialisation. Otherwise a value needs to be supplied. *)
   val unlisten_user :
     ?sitedata:Eliom_common.sitedata -> userid:User.id -> key -> unit
   val notify : ?notfor:[`Me | `User of User.id] -> key -> server_notif -> unit

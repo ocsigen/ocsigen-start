@@ -69,6 +69,11 @@ module Make(A : ARG) : S
       | Some (`User id) -> Some (`Id (Some id))
     in
     notify ?notfor key notif
+  let _ =
+    Os_session.on_start_process init;
+    Os_session.on_start_connected_process (fun _ -> init ());
+    Os_session.on_post_close_session deinit
+
 end
 
 module type ARG_SIMPLE = sig
