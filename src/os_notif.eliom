@@ -55,13 +55,20 @@ module Make(A : ARG) : S
     let max_resource = A.max_resource
     let max_identity_per_resource = A.max_identity_per_resource
   end)
+
   let unlisten_user ?sitedata ~userid (id : A.key) =
     let state =
       Eliom_state.Ext.volatile_data_group_state
         ~scope:Eliom_common.default_group_scope
         (Int64.to_string userid)
     in
-    Ext.unlisten state id
+    Lwt.async @@ fun () ->
+    (* Iterating on all sessions in group: *)
+      Eliom_state.Ext.iter_sub_states ?sitedata ~state @@ fun state ->
+         (* Iterating on all client processes in session: *)
+         Eliom_state.Ext.iter_sub_states ?sitedata ~state
+           (fun state -> Ext.unlisten state id; Lwt.return ())
+
   let notify ?notfor key notif =
     let notfor = match notfor with
       | None -> None
@@ -69,6 +76,7 @@ module Make(A : ARG) : S
       | Some (`User id) -> Some (`Id (Some id))
     in
     notify ?notfor key notif
+
   let _ =
     Os_session.on_start_process init;
     Os_session.on_start_connected_process (fun _ -> init ());
