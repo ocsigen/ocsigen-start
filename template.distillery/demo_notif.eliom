@@ -28,7 +28,7 @@ let%shared page_class = "os-page-demo-notif"
    (type key = unit).
 *)
 module Notif =
-  Os_notif.Simple (struct
+  Os_notif.Make_Simple (struct
     type key = unit
     type notification = string
   end)
@@ -48,7 +48,7 @@ let%client notify =
    every time the event [e = Notif.client_ev ()] happens *)
 let%server listen () =
   Notif.listen ();
-  let e : (unit * string) Eliom_react.Down.t = Notif.client_ev () in
+  let%lwt e : (unit * string) Eliom_react.Down.t Lwt.t = Notif.client_ev () in
   ignore [%client
     ((React.E.map (fun (_, msg) -> Eliom_lib.alert "got %s" msg) ~%e)
      : unit React.E.t)
