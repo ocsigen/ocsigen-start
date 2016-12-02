@@ -79,7 +79,6 @@ module Make(A : ARG) : S
 
   let _ =
     Os_session.on_start_process init;
-    Os_session.on_start_connected_process (fun _ -> init ());
     Os_session.on_post_close_session deinit
 
 end
