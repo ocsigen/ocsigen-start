@@ -19,11 +19,6 @@ module Page_config :
 
     val css : string list list
 
-    val default_error_page : 'a -> 'b -> exn -> Os_page.content Lwt.t
-
-    val default_connected_error_page :
-      Os_types.User.id option -> 'a -> 'b -> exn -> Os_page.content Lwt.t
-
     val title : string
 
     val local_js : 'a list
@@ -39,8 +34,7 @@ module Page_config :
     val default_error_page : 'a -> 'b -> exn -> Os_page.content Lwt.t
 
     val default_connected_error_page :
-      Os_types.User.id option ->
-      'a -> 'b -> exn -> Os_page.content Lwt.t
+      Os_types.User.id option -> 'a -> 'b -> exn -> Os_page.content Lwt.t
   end
 
 val make_page : Os_page.content -> [> Html_types.html ] Eliom_content.Html.elt

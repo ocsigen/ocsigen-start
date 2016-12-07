@@ -4,7 +4,10 @@
 (* Calendar demo *)
 
 [%%shared
+[@@@ocaml.warning "-33"]
+  open Eliom_content.Html
   open Eliom_content.Html.D
+[@@@ocaml.warning "+33"]
 ]
 
 (* Service for this demo *)

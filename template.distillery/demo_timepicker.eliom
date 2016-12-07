@@ -2,7 +2,10 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 [%%shared
+[@@@ocaml.warning "-33"]
+  open Eliom_content.Html
   open Eliom_content.Html.D
+[@@@ocaml.warning "+33"]
 ]
 
 
