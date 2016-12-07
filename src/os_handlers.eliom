@@ -156,7 +156,25 @@ let%client sign_up_handler_rpc =
        sign_up_handler_rpc)
 
 let%client sign_up_handler () v =
-  sign_up_handler_rpc v
+  let error msg =
+    let%lwt _ =
+      Ot_popup.popup
+        ~close_button:[Eliom_content.Html.D.pcdata "close"]
+        (fun _ -> Lwt.return @@
+          Eliom_content.Html.(
+            D.div [D.pcdata msg]
+          )
+        )
+    in
+    Lwt.return ()
+  in
+  try%lwt
+    sign_up_handler_rpc v
+  with
+  | Eliom_client_value.Exception_on_server _ ->
+    error "Exception on server. Have you started the DB?"
+  | _ ->
+    error "Error submitting mail"
 
 (* Forgot password *)
 let%server forgot_password_handler service () email =
