@@ -24,10 +24,11 @@ open Eliom_content.Html.F
   type id = Os_types.User.id [@@deriving json]
 
   type t = Os_types.User.t = {
-      userid : id;
-      fn : string;
-      ln : string;
-      avatar : string option;
+      userid    : id;
+      fn        : string;
+      ln        : string;
+      avatar    : string option;
+      language  : string option;
     } [@@deriving json]
 ]
 
@@ -37,13 +38,14 @@ open Eliom_content.Html.F
 ]
 
 (** Create a user of type [t] using db informations. *)
-let create_user_from_db0 (userid, fn, ln, avatar, pwdset) =
+let create_user_from_db0 (userid, fn, ln, avatar, pwdset, language) =
   Os_types.
   {
-    userid = userid;
-    fn = fn;
-    ln = ln;
-    avatar = avatar;
+    userid    = userid;
+    fn        = fn;
+    ln        = ln;
+    avatar    = avatar;
+    language  = language;
   },
   pwdset
 
@@ -54,6 +56,7 @@ let%shared userid_of_user (u : Os_types.User.t) = Os_types.(u.userid)
 let%shared firstname_of_user u = Os_types.(u.fn)
 let%shared lastname_of_user u = Os_types.(u.ln)
 let%shared avatar_of_user u = Os_types.(u.avatar)
+let%shared language_of_user u = Os_types.(u.language)
 
 let%shared avatar_uri_of_avatar ?absolute_path avatar =
   Eliom_content.Html.F.make_uri ?absolute_path
@@ -74,7 +77,6 @@ let emails_of_user user =
 
 let email_of_user user =
   Os_db.User.email_of_userid (userid_of_user user)
-
 
 include Os_db.User
 
@@ -116,21 +118,21 @@ let password_set userid =
 *)
 
 (** Create new user. May raise [Already_exists] *)
-let create ?password ?avatar ~firstname ~lastname email =
+let create ?password ?avatar ?language ~firstname ~lastname email =
   try%lwt
     let%lwt userid = Os_db.User.userid_of_email email in
     Lwt.fail (Already_exists userid)
   with Os_db.No_such_resource ->
     let%lwt userid =
-      Os_db.User.create ~firstname ~lastname ?password ?avatar email
+      Os_db.User.create ~firstname ~lastname ?language ?password ?avatar email
     in
     user_of_userid userid
 
 (* Overwrites the function [update] of [Os_db.User]
    to reset the cache *)
-let update ?password ?avatar ~firstname ~lastname userid =
+let update ?password ?avatar ?language ~firstname ~lastname userid =
   let%lwt () = Os_db.User.update
-             ?password ?avatar ~firstname ~lastname userid
+             ?password ?avatar ?language ~firstname ~lastname userid
   in
   MCache.reset userid;
   Lwt.return ()
@@ -139,6 +141,7 @@ let update' ?password user =
   update
     ?password
     ?avatar:(avatar_of_user user)
+    ?language:(language_of_user user)
     ~firstname:(firstname_of_user user)
     ~lastname:(lastname_of_user user)
     (userid_of_user user)
@@ -150,6 +153,11 @@ let update_password ~userid ~password =
 
 let update_avatar ~userid ~avatar =
   let%lwt () = Os_db.User.update_avatar userid avatar in
+  MCache.reset userid;
+  Lwt.return ()
+
+let update_language ~userid ~language =
+  let%lwt () = Os_db.User.update_language userid language in
   MCache.reset userid;
   Lwt.return ()
 

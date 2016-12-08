@@ -48,6 +48,7 @@ let action_link_key_outdated =
 let%shared upload_pic_link
     ?(a = [])
     ?(content=[pcdata "Change profile picture"])
+    ?(error_while_uploading_msg="Error while uploading the picture")
     ?(crop = Some 1.)
     ?(input :
       Html_types.label_attrib Eliom_content.Html.D.Raw.attrib list
@@ -80,14 +81,16 @@ let%shared upload_pic_link
             ~after_submit:close upload) ;
       Lwt.return ()
     with e ->
-      Os_msg.msg ~level:`Err "Error while uploading the picture";
+      Os_msg.msg ~level:`Err ~%error_while_uploading_msg;
       Eliom_lib.debug_exn "%s" e "→ ";
       Lwt.return () ) : _ ) ] :: a) content
 
 let%shared reset_tips_service = Os_tips.reset_tips_service
 
-let%shared reset_tips_link (close : (unit -> unit) Eliom_client_value.t) =
-  let l = D.Raw.a [pcdata "See help again from beginning"] in
+let%shared reset_tips_link
+    ?(text_link="See help again from beginning")
+    (close : (unit -> unit) Eliom_client_value.t) =
+  let l = D.Raw.a [pcdata text_link] in
   ignore [%client (
     Lwt_js_events.(async (fun () ->
       clicks (To_dom.of_element ~%l)

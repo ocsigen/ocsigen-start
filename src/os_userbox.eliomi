@@ -47,6 +47,7 @@ type uploader = (unit,unit) Ot_picture_uploader.service
 val upload_pic_link :
   ?a:[< Html_types.a_attrib > `OnClick ] Eliom_content.Html.D.Raw.attrib list
   -> ?content:Html_types.a_content Eliom_content.Html.D.Raw.elt list
+  -> ?error_while_uploading_msg:string
   -> ?crop:float option
   -> ?input:
     Html_types.label_attrib Eliom_content.Html.D.Raw.attrib list
@@ -61,8 +62,12 @@ val upload_pic_link :
 
 (** Link to start to see the help from the beginning.
     The client function given as first parameter will be called first,
-    for example to close the menu containing the link. *)
+    for example to close the menu containing the link.
+    [?text_link] corresponds to the link text (default is
+    {!Os_i18n.Current.see_help_again_from_beginning}).
+ *)
 val reset_tips_link :
+  ?text_link:string                   ->
   (unit -> unit) Eliom_client_value.t ->
   [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
 

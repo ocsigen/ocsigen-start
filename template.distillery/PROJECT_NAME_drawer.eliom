@@ -11,7 +11,7 @@ let%shared item text service =
   li [ a ~a:[ a_class ["os-drawer-item"] ] ~service [pcdata text] () ]
 
 let%shared user_menu () =
-  [ item "Settings" %%%MODULE_NAME%%%_services.settings_service
+  [ item [%i18n S.settings ~capitalize:true] %%%MODULE_NAME%%%_services.settings_service
   ; Eliom_content.Html.F.li
       [ %%%MODULE_NAME%%%_userbox.disconnect_link ~a:[ a_class ["os-drawer-item"] ] () ]
   ]
@@ -23,8 +23,8 @@ let%shared make ?user () =
     else user_menu ()
   in
   let items =
-    item "Home" Os_services.main_service
-    :: item "About" %%%MODULE_NAME%%%_services.about_service
+    item [%i18n S.home] Os_services.main_service
+    :: item [%i18n S.about] %%%MODULE_NAME%%%_services.about_service
     :: Demo_tools.drawer_contents ()
     :: items
   in

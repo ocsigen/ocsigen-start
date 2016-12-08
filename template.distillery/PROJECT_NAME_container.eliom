@@ -23,13 +23,13 @@ let%shared os_header ?user () = Eliom_content.Html.F.(
 let%shared os_footer () = Eliom_content.Html.F.(
   footer ~a:[a_class ["os-page-footer"]] [
     p [
-      pcdata "This application has been generated using ";
+      pcdata [%i18n S.footer_generated];
       a ~service:%%%MODULE_NAME%%%_services.os_github_service
         [ pcdata "Ocsigen Start" ] ();
-      pcdata " and uses the ";
+      pcdata [%i18n S.footer_eliom_distillery];
       a ~service:%%%MODULE_NAME%%%_services.ocsigen_service
         [ pcdata "Ocsigen" ] ();
-      pcdata " technology.";
+      pcdata [%i18n S.footer_technology];
     ]
   ]
 )
@@ -48,15 +48,15 @@ let%shared connected_welcome_box () = Eliom_content.Html.F.(
     match wrong_pdata with
     | None ->
       p [
-        pcdata "Your personal information has not been set yet.";
+        pcdata [%i18n S.personal_information_not_set];
         br ();
-        pcdata "Please take time to enter your name and to set a password."
+        pcdata [%i18n S.take_time_enter_name_password];
       ], (("", ""), ("", ""))
-    | Some wpd -> p [pcdata "Wrong data. Please fix."], wpd
+    | Some wpd -> p [pcdata [%i18n S.wrong_data_fix]], wpd
   in
   Lwt.return @@
     div ~a:[a_class ["os-welcome-box"]] [
-      div [h2 [pcdata ("Welcome!")]; info];
+      div [h2 [%i18n welcome ~capitalize:true]; info];
       Os_view.information_form
         ~firstname:fn ~lastname:ln
         ~password1:p1 ~password2:p2
