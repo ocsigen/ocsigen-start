@@ -139,6 +139,7 @@ endif
 
 db-create:
 	$(ENV_PSQL) createdb --encoding UNICODE $(DB_NAME)
+	$(ENV_PSQL) createdb --encoding UNICODE ocsipersist
 
 db-schema:
 	$(ENV_PSQL) psql -d $(DB_NAME) -f $(PSQL_FILE)
@@ -148,6 +149,7 @@ db-upgrade:
 
 db-drop:
 	$(ENV_PSQL) dropdb $(DB_NAME)
+	$(ENV_PSQL) dropdb ocsipersist
 
 db-psql:
 	$(ENV_PSQL) psql $(DB_NAME)
