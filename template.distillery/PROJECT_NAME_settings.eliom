@@ -84,7 +84,7 @@ let%server ul_of_emails () : [`Ul] Eliom_content.Html.elt Lwt.t =
 let%client ul_of_emails =
   ~%(Eliom_client.server_function [%derive.json : unit] ul_of_emails)
 
-let%shared settings_content myid =
+let%shared settings_content () =
   let none = [%client ((fun () -> ()) : unit -> unit)] in
   let%lwt emails = ul_of_emails () in
   Lwt.return @@
@@ -96,8 +96,7 @@ let%shared settings_content myid =
         br ();
         Os_userbox.upload_pic_link
           none
-          %%%MODULE_NAME%%%_services.upload_user_avatar_service
-          myid;
+          %%%MODULE_NAME%%%_services.upload_user_avatar_service;
         br ();
         Os_userbox.reset_tips_link none;
         br ();

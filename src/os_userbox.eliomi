@@ -25,7 +25,7 @@
 type uploader = (unit,unit) Ot_picture_uploader.service
 
 (** [upload_pic_link ?a ?content ?crop ?input ?submit action_after_submit
-    service userid]
+    service]
 
     Creates a link with a label and a submit button to upload a picture.
 
@@ -56,7 +56,6 @@ val upload_pic_link :
      * Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list
   -> (unit -> unit) Eliom_client_value.t
   -> uploader
-  -> Os_types.User.id
   -> [> `A of Html_types.a_content ] Eliom_content.Html.D.Raw.elt
 
 (** Link to start to see the help from the beginning.
