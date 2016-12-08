@@ -136,7 +136,7 @@ a.os-page-header-app-name {
     text-align: center;
 }
 
-.os-welcome-box, .os-sign-in, .os-sign-up, .os-forgot-pwd {
+.os-welcome-box, .os-settings, .os-sign-in, .os-sign-up, .os-forgot-pwd {
     h2 {
         font-size: 14px;
         margin: 16px 0 4px 0;
@@ -232,4 +232,43 @@ a.os-page-header-app-name {
         }
     }
     .os-page-header { display: block; }
+}
+
+.os-settings p {
+    text-align: center;
+}
+
+.os-emails {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    ul {
+        list-style: none;
+        li {
+            padding: 5px 10px;
+            border-bottom: 1px solid #e5e5e5;
+            display: block;
+            .label {
+                display: inline-block;
+                font-weight: bold;
+                padding: 4px 6px;
+                margin-left: 4px;
+                border-radius: 3px;
+            }
+            .main-email {
+                color: #fff;
+                background-color: #6cc664;
+            }
+            .validated-email {
+                color: #fff;
+                background-color: #25a;
+            }
+            .remove-email-button {
+                box-shadow: none;
+                font-size: 18px;
+                margin: 0px;
+                color: #bd2c00;
+            }
+        }
+    }
 }
