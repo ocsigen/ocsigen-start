@@ -81,13 +81,22 @@ starting guide. Look around!
 Various modules for producing icons, messages, custom pages, tips,
 connection forms, etc.
 
-* <<a_api subproject="server" | module Os_icons>>
-* <<a_api subproject="server" | module Os_msg>>
-* <<a_api subproject="server" | module Os_page>>
-* <<a_api subproject="server" | module Os_tips>>
-* <<a_api subproject="server" | module Os_userbox>>
-* <<a_api subproject="server" | module Os_view>>
-* <<a_api subproject="server" | module Os_uploader>>
+* <<a_api subproject="server" | module Os_icons>>:
+  manage CSS icons.
+* <<a_api subproject="server" | module Os_msg>>:
+  write messages in the browser console.
+* <<a_api subproject="server" | module Os_page>>:
+  utilities for building HTML pages that follow the standard Ocsigen
+  Start layout.
+* <<a_api subproject="server" | module Os_tips>>:
+  display tips to the user.
+* <<a_api subproject="server" | module Os_userbox>>:
+  manage the user connection box.
+* <<a_api subproject="server" | module Os_view>>:
+  functions for creating password forms and other common UI elements
+  appearing in applications.
+* <<a_api subproject="server" | module Os_uploader>>:
+  ImageMagick-based tools for manipulating avatars.
 
 === Users and groups ===
 
