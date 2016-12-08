@@ -67,6 +67,9 @@ val update_main_email : string -> unit Lwt.t
  *)
 val is_email_validated : string -> bool Lwt.t
 
+(** [is_main_email email] returns [true] if [email] is the main email of the current user. *)
+val is_main_email : string -> bool Lwt.t
+
 [%%client.start]
 
 val me : current_user ref

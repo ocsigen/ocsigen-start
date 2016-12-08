@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-let section = Lwt_log.Section.make "os:current_user"
+let%server section = Lwt_log.Section.make "os:current_user"
 
 [%%shared
   type current_user =
@@ -32,7 +32,7 @@ let%shared please_use_connected_fun =
 
 
 (* current user *)
-let me : current_user Eliom_reference.Volatile.eref =
+let%server me : current_user Eliom_reference.Volatile.eref =
   (* This is a request cache of current user *)
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope CU_idontknown
 
@@ -57,13 +57,13 @@ let%client get_current_user () =
    because the user is set at every request from the session cookie value.
    But do not trust a user sent by the client ...
 *)
-let get_current_user () =
+let%server get_current_user () =
   match Eliom_reference.Volatile.get me with
   | CU_user a -> a
   | CU_idontknown -> failwith please_use_connected_fun
   | CU_notconnected -> raise Os_session.Not_connected
 
-let get_current_user_option () =
+let%server get_current_user_option () =
   let u = Eliom_reference.Volatile.get me in
   match u with
   | CU_user a -> Some a
@@ -163,5 +163,16 @@ let%client is_email_validated email =
   ~%(Eliom_client.server_function
       [%derive.json: string]
       (Os_session.connected_wrapper is_email_validated)
+  )
+  email
+
+let%server is_main_email email =
+  let myid = get_current_userid () in
+  Os_user.is_main_email ~userid:myid ~email
+
+let%client is_main_email email =
+  ~%(Eliom_client.server_function
+     [%derive.json: string]
+     (Os_session.connected_wrapper is_main_email)
   )
   email
