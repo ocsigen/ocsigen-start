@@ -13,9 +13,8 @@ depends: [
   "pgocaml" {>= "2.3"}
   "macaque" {>= "0.7.4"}
   "safepass"
-  "eliom" {>= "dev"}
+  "eliom" {>= "6.0"}
   "ocsigen-toolkit" {>= "dev"}
-  "ppx_deriving"
   "yojson"
 ]
 depexts: [
