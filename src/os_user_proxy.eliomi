@@ -38,13 +38,6 @@ val cache : (Os_types.User.id, Os_types.User.t) Eliom_cscache.t
  *)
 val get_data_from_db : 'a -> Os_types.User.id -> Os_types.User.t Lwt.t
 
-(** [get_data userid] returns the user which has ID [userid].
-    For the moment, [myid_o] is not used but it will be use later.
-
-    Data comes from the database, not the cache.
- *)
-val get_data : Os_types.User.id -> Os_types.User.t Lwt.t
-
 (** [get_data_from_db_for_client myid_o userid] returns the user which has ID
     [userid]. For the moment, [myid_o] is not used but it will be use later.
 
@@ -57,11 +50,14 @@ val get_data_from_db_for_client : 'a -> Os_types.User.id -> Os_types.User.t Lwt.
  *)
 val get_data_rpc' : Os_types.User.id -> Os_types.User.t Lwt.t
 
-[%%client.start]
-
-val get_data : Os_types.User.id -> Os_types.User.t Lwt.t
-
 [%%shared.start]
+
+(** [get_data userid] returns the user which has ID [userid].
+    For the moment, [myid_o] is not used but it will be use later.
+
+    Data comes from the database, not the cache.
+ *)
+val get_data : Os_types.User.id -> Os_types.User.t Lwt.t
 
 (** [get_data_rpc] is a RPC to <<a_api subproject="server" | module
     Os_user_proxy.get_data_rpc'>>
