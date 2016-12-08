@@ -60,6 +60,8 @@ val remove_email_from_user : string -> unit Lwt.t
  *)
 val update_main_email : string -> unit Lwt.t
 
+[%%server.start]
+
 (** [is_email_validated email] returns [true] if [email] is a valided email for
     the current user.
     If no user is connected, it fails with {!Os_session.Not_connected}.

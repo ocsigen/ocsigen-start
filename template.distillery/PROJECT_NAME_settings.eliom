@@ -57,36 +57,46 @@ let%shared labels_of_email is_main_email is_validated =
       else "Waiting for confirmation"
   ] in
   if is_main_email
-  then [span ~a:[a_class ["label" ; "main-email"]] [pcdata "Main e-mail"] ; valid_label]
-  else [valid_label]
+  then [ span ~a:[a_class ["label" ; "main-email"]] [pcdata "Main e-mail"]
+       ; valid_label]
+  else [ valid_label ]
 
 (* Return a list element for the given email *)
-let%shared li_of_email main_email email =
+let%shared li_of_email main_email (email, is_validated) =
   let open Eliom_content.Html.D in
-  let%lwt is_validated = Os_current_user.is_email_validated email in
   let is_main_email = (main_email = email) in
   let labels = labels_of_email is_main_email is_validated in
   let buttons = buttons_of_email is_main_email is_validated email in
   let email = span [pcdata email] in
   Lwt.return @@ li (email :: labels @ buttons)
 
-(* Return a list with information about emails *)
-let%server ul_of_emails () : [`Ul] Eliom_content.Html.elt Lwt.t =
+let%shared ul_of_emails (main_email, emails) =
   let open Eliom_content.Html.F in
-  let myid = Os_current_user.get_current_userid () in
-  let%lwt main_email = Os_db.User.email_of_userid myid in
-  let%lwt l = Os_db.User.emails_of_userid myid in
   let li_of_email = li_of_email main_email in
-  let%lwt li_list = Lwt_list.map_s li_of_email l in
+  let%lwt li_list = Lwt_list.map_s li_of_email emails in
   Lwt.return @@ ul li_list
 
 (* Return a list with information about emails *)
-let%client ul_of_emails =
-  ~%(Eliom_client.server_function [%derive.json : unit] ul_of_emails)
+let%server get_emails () =
+  let myid = Os_current_user.get_current_userid () in
+  let%lwt main_email = Os_db.User.email_of_userid myid in
+  let%lwt emails = Os_db.User.emails_of_userid myid in
+  let%lwt emails = Lwt_list.map_s
+      (fun email ->
+         let%lwt v = Os_current_user.is_email_validated email in
+         Lwt.return (email, v))
+      emails
+  in
+  Lwt.return (main_email, emails)
+
+(* Return a list with information about emails *)
+let%client get_emails =
+  ~%(Eliom_client.server_function [%derive.json : unit] get_emails)
 
 let%shared settings_content () =
   let none = [%client ((fun () -> ()) : unit -> unit)] in
-  let%lwt emails = ul_of_emails () in
+  let%lwt emails = get_emails () in
+  let%lwt emails = ul_of_emails emails in
   Lwt.return @@
   Eliom_content.Html.D.(
     [

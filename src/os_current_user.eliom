@@ -159,20 +159,6 @@ let%server is_email_validated email =
   let myid = get_current_userid () in
   Os_user.is_email_validated ~userid:myid ~email
 
-let%client is_email_validated email =
-  ~%(Eliom_client.server_function
-      [%derive.json: string]
-      (Os_session.connected_wrapper is_email_validated)
-  )
-  email
-
 let%server is_main_email email =
   let myid = get_current_userid () in
   Os_user.is_main_email ~userid:myid ~email
-
-let%client is_main_email email =
-  ~%(Eliom_client.server_function
-     [%derive.json: string]
-     (Os_session.connected_wrapper is_main_email)
-  )
-  email
