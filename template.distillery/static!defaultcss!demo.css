@@ -40,10 +40,37 @@
   .demo-carousel1 .ot-car-next {
     right: 0; }
 
+.os-page-demo-carousel2 .demo-carousel2 {
+  margin: 0 -16px; }
+.os-page-demo-carousel2 .ot-carousel {
+  width: 100%;
+  height: auto; }
+.os-page-demo-carousel2 .demo-carousel2-page {
+  padding: 16px; }
+  .os-page-demo-carousel2 .demo-carousel2-page p {
+    text-align: justify; }
+.os-page-demo-carousel2 .demo-carousel2-page-1 {
+  background-color: white; }
+.os-page-demo-carousel2 .demo-carousel2-page-2 {
+  background-color: #ffffee; }
+.os-page-demo-carousel2 .demo-carousel2-page-3 {
+  background-color: #ffddee; }
+.os-page-demo-carousel2 .demo-carousel2-page-4 {
+  background-color: #ddffee; }
+.os-page-demo-carousel2 .demo-carousel2-tabs {
+  position: sticky;
+  background-color: white;
+  z-index: 1;
+  top: 50px; }
+
 .os-page-demo-carousel3 .demo-prev, .os-page-demo-carousel3 .demo-next {
   width: 20px;
   height: 20px;
   background-color: #6ae;
   color: white; }
+
+.os-page-demo-notif input:not([type]),
+.os-page-demo-react input:not([type]) {
+  background-color: #eee; }
 
 /*# sourceMappingURL=.os_temporary_filename.css.map */

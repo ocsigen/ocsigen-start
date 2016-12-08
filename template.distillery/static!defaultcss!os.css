@@ -12,7 +12,8 @@ html {
 body {
   margin: 0;
   font-family: 'Raleway', sans-serif;
-  font-size: 14px; }
+  font-size: 14px;
+  background-color: white; }
 
 a, a:visited {
   text-decoration: none;
@@ -31,7 +32,7 @@ button, input[type="submit"], input[type="button"] {
   background-color: white;
   color: #666;
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: 14px;
   padding: 5px 16px;
   margin: 5px; }
 
@@ -50,14 +51,18 @@ input {
       line-height: 50px; }
 
 .os-page-header {
+  position: fixed;
+  top: 0;
+  z-index: 1;
   height: 50px;
+  width: 100%;
   background-color: #25a;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.28);
-  padding: 0 10px 0 50px; }
+  padding: 0 20px 0 50px; }
   .os-page-header .connected-user-box {
     color: white; }
 
@@ -70,7 +75,11 @@ a.os-page-header-app-name {
   color: white; }
 
 .os-drawer-menu {
-  padding: 0; }
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  height: 100%;
+  touch-action: pan-y; }
   .os-drawer-menu, .os-drawer-menu ul {
     list-style-type: none; }
   .os-drawer-menu .os-drawer-item {
@@ -89,7 +98,7 @@ a.os-page-header-app-name {
     padding: 5px 5px 5px 50px; }
 
 .os-body {
-  padding: 16px; }
+  padding: 66px 16px; }
 
 .os-page-footer {
   position: fixed;
@@ -101,25 +110,25 @@ a.os-page-header-app-name {
   font-size: 10px;
   text-align: center; }
 
-.os-welcome-box h2, .os-sign-in h2, .os-sign-up h2, .os-forgot-pwd h2 {
+.os-welcome-box h2, .os-settings h2, .os-sign-in h2, .os-sign-up h2, .os-forgot-pwd h2 {
   font-size: 14px;
   margin: 16px 0 4px 0; }
-.os-welcome-box form, .os-sign-in form, .os-sign-up form, .os-forgot-pwd form {
+.os-welcome-box form, .os-settings form, .os-sign-in form, .os-sign-up form, .os-forgot-pwd form {
   display: flex;
   margin: 0 auto;
   flex-direction: column;
   background-color: #eee;
   padding: 16px;
   width: 350px; }
-.os-welcome-box input[type="checkbox"], .os-sign-in input[type="checkbox"], .os-sign-up input[type="checkbox"], .os-forgot-pwd input[type="checkbox"] {
+.os-welcome-box input[type="checkbox"], .os-settings input[type="checkbox"], .os-sign-in input[type="checkbox"], .os-sign-up input[type="checkbox"], .os-forgot-pwd input[type="checkbox"] {
   vertical-align: middle; }
-.os-welcome-box input[type="submit"], .os-sign-in input[type="submit"], .os-sign-up input[type="submit"], .os-forgot-pwd input[type="submit"] {
+.os-welcome-box input[type="submit"], .os-settings input[type="submit"], .os-sign-in input[type="submit"], .os-sign-up input[type="submit"], .os-forgot-pwd input[type="submit"] {
   margin: 5px auto; }
-.os-welcome-box input[type="text"], .os-welcome-box input[type="password"], .os-welcome-box input[type="email"], .os-sign-in input[type="text"], .os-sign-in input[type="password"], .os-sign-in input[type="email"], .os-sign-up input[type="text"], .os-sign-up input[type="password"], .os-sign-up input[type="email"], .os-forgot-pwd input[type="text"], .os-forgot-pwd input[type="password"], .os-forgot-pwd input[type="email"] {
+.os-welcome-box input[type="text"], .os-welcome-box input[type="password"], .os-welcome-box input[type="email"], .os-settings input[type="text"], .os-settings input[type="password"], .os-settings input[type="email"], .os-sign-in input[type="text"], .os-sign-in input[type="password"], .os-sign-in input[type="email"], .os-sign-up input[type="text"], .os-sign-up input[type="password"], .os-sign-up input[type="email"], .os-forgot-pwd input[type="text"], .os-forgot-pwd input[type="password"], .os-forgot-pwd input[type="email"] {
   width: 150px;
   display: block;
   margin: 5px auto; }
-.os-welcome-box label, .os-sign-in label, .os-sign-up label, .os-forgot-pwd label {
+.os-welcome-box label, .os-settings label, .os-sign-in label, .os-sign-up label, .os-forgot-pwd label {
   font-size: 12px; }
 
 .os-sign-up-btn {
@@ -178,5 +187,35 @@ a.os-page-header-app-name {
 
   .os-page-header {
     display: block; } }
+.os-settings p {
+  text-align: center; }
+
+.os-emails {
+  text-align: center;
+  display: flex;
+  justify-content: center; }
+  .os-emails ul {
+    list-style: none; }
+    .os-emails ul li {
+      padding: 5px 10px;
+      border-bottom: 1px solid #e5e5e5;
+      display: block; }
+      .os-emails ul li .label {
+        display: inline-block;
+        font-weight: bold;
+        padding: 4px 6px;
+        margin-left: 4px;
+        border-radius: 3px; }
+      .os-emails ul li .main-email {
+        color: #fff;
+        background-color: #6cc664; }
+      .os-emails ul li .validated-email {
+        color: #fff;
+        background-color: #25a; }
+      .os-emails ul li .remove-email-button {
+        box-shadow: none;
+        font-size: 18px;
+        margin: 0px;
+        color: #bd2c00; }
 
 /*# sourceMappingURL=.os_temporary_filename.css.map */
