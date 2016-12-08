@@ -146,9 +146,8 @@ let%shared about_handler myid_o () () = Eliom_content.Html.F.(
 )
 
 let%shared settings_handler myid_o () () =
-  let%lwt user = %%%MODULE_NAME%%%_container.get_user_data myid_o in
-  let%lwt content = match user with
-    | Some user -> %%%MODULE_NAME%%%_settings.settings_content user
+  let%lwt content = match myid_o with
+    | Some myid -> %%%MODULE_NAME%%%_settings.settings_content myid
     | None -> Lwt.return []
   in
   %%%MODULE_NAME%%%_container.page myid_o content

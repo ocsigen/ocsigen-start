@@ -82,28 +82,27 @@ let%server ul_of_emails userid : [`Ul] Eliom_content.Html.elt Lwt.t =
 let%client ul_of_emails =
   ~%(Eliom_client.server_function [%derive.json : int64] ul_of_emails)
 
-let%shared settings_content =
+let%shared settings_content myid =
   let none = [%client ((fun () -> ()) : unit -> unit)] in
-  fun user ->
-    let%lwt emails = ul_of_emails @@ Os_user.userid_of_user user in
-    Lwt.return @@
-    Eliom_content.Html.D.(
-      [
-        div ~a:[a_class ["os-settings"]] [
-          p [pcdata "Change your password:"];
-          Os_view.password_form ~service:Os_services.set_password_service ();
-          br ();
-          Os_userbox.upload_pic_link
-            none
-            %%%MODULE_NAME%%%_services.upload_user_avatar_service
-            (Os_user.userid_of_user user);
-          br ();
-          Os_userbox.reset_tips_link none;
-          br ();
-          p [pcdata "Link a new email to your account:"];
-          Os_view.generic_email_form ~service:Os_services.add_email_service ();
-          p [pcdata "Currently registered emails:"];
-          div ~a:[a_class ["os-emails"]] [emails]
-        ]
+  let%lwt emails = ul_of_emails myid in
+  Lwt.return @@
+  Eliom_content.Html.D.(
+    [
+      div ~a:[a_class ["os-settings"]] [
+        p [pcdata "Change your password:"];
+        Os_view.password_form ~service:Os_services.set_password_service ();
+        br ();
+        Os_userbox.upload_pic_link
+          none
+          %%%MODULE_NAME%%%_services.upload_user_avatar_service
+          myid;
+        br ();
+        Os_userbox.reset_tips_link none;
+        br ();
+        p [pcdata "Link a new email to your account:"];
+        Os_view.generic_email_form ~service:Os_services.add_email_service ();
+        p [pcdata "Currently registered emails:"];
+        div ~a:[a_class ["os-emails"]] [emails]
       ]
-    )
+    ]
+  )
