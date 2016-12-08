@@ -169,7 +169,7 @@ let%shared home_button ?a () =
 let%shared avatar user =
   match Os_user.avatar_uri_of_user user with
   | Some src ->
-    img ~alt:"picture" ~a:[a_class ["os_avatar"]] ~src ()
+    img ~alt:"picture" ~a:[a_class ["os-avatar"]] ~src ()
   | None -> Os_icons.F.user ()
 
 let%shared username user =
