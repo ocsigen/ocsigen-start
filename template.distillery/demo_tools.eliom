@@ -31,6 +31,7 @@ let demos =
   [ (module Demo_popup : Page)
   ; (module Demo_rpc)
   ; (module Demo_ref)
+  ; (module Demo_pgocaml)
   ; (module Demo_carousel1)
   ; (module Demo_carousel2)
   ; (module Demo_carousel3)
