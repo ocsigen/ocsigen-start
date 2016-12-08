@@ -13,17 +13,14 @@
 ## The following part defines some variables by adding the environment variables
 ## to the used binaries.
 
-ENV_PSQL          := PGHOST=$(DB_HOST) PGDATABASE=$(DB_NAME) PGPORT=$(DB_PORT) \
-                     PGUSER=$(DB_USER) PGPASSWORD=$(DB_PASSWORD)
-
-## Overload required binaries
-JS_OF_ELIOM       := $(JS_OF_ELIOM)
-ELIOMC            := $(ENV_PSQL) $(ELIOMC)
-ELIOMOPT          := $(ENV_PSQL) $(ELIOMOPT)
-ELIOMDEP          := $(ENV_PSQL) $(ELIOMDEP)
+export PGHOST     := $(DB_HOST)
+export PGDATABASE := $(DB_NAME)
+export PGPORT     := $(DB_PORT)
+export PGUSER     := $(DB_USER)
+export PGPASSWORD := $(DB_PASSWORD)
 
 # Ocsigenserver uses the DB settings from %%%PROJECT_NAME%%%.conf.in (which
-# should be the same as ENV_PSQL)
+# should be the same as the exported variables above)
 OCSIGENSERVER     := $(OCSIGENSERVER)
 OCSIGENSERVER.OPT := $(OCSIGENSERVER.OPT)
 
@@ -121,7 +118,7 @@ db-delete:
 
 db-snapshot:
 	@echo "# Creating $(DB_SNAPSHOT)"
-	$(ENV_PSQL) $(pg_dump) --clean --create --no-owner --encoding=utf8 \
+	$(pg_dump) --clean --create --no-owner --encoding=utf8 \
         $(DB_NAME) | gzip > $(DB_SNAPSHOT)
 
 else
@@ -138,18 +135,18 @@ db-stop:
 endif
 
 db-create:
-	$(ENV_PSQL) createdb --encoding UNICODE $(DB_NAME)
+	createdb --encoding UNICODE $(DB_NAME)
 
 db-schema:
-	$(ENV_PSQL) psql -d $(DB_NAME) -f $(PSQL_FILE)
+	psql -d $(DB_NAME) -f $(PSQL_FILE)
 
 db-upgrade:
-	$(ENV_PSQL) psql -d $(DB_NAME) -f $(OS_UPGRADE_FILE)
+	psql -d $(DB_NAME) -f $(OS_UPGRADE_FILE)
 
 db-drop:
-	$(ENV_PSQL) dropdb $(DB_NAME)
+	dropdb $(DB_NAME)
 
 db-psql:
-	$(ENV_PSQL) psql $(DB_NAME)
+	psql $(DB_NAME)
 
 ##----------------------------------------------------------------------

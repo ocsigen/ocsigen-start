@@ -64,6 +64,8 @@ The template application can be instantiated via {{{eliom-distillery}}}:
 eliom-distillery -name $APP_NAME -template os.pgocaml
 >>
 
+(Replace $APP_NAME by the name of your application).
+
 For details on launching the application, refer to the template's
 [[https://github.com/ocsigen/ocsigen-start/blob/master/template.distillery/README.md|README]].
 
