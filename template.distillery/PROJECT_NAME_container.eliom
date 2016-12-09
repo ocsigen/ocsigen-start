@@ -7,7 +7,7 @@
 (** [os_header ?user ()] defines the header for all pages.
     In this template, it's a userbox and the user name is displayed. *)
 let%shared os_header ?user () = Eliom_content.Html.F.(
-  let%lwt user_box = %%%MODULE_NAME%%%_userbox.user_box ?user () in
+  let%lwt user_box = Os_user_view.user_box ?user () in
   Lwt.return (
     header ~a:[a_class ["os-page-header"]]
       [ a ~a:[a_class ["os-page-header-app-name"]]
@@ -57,7 +57,7 @@ let%shared connected_welcome_box () = Eliom_content.Html.F.(
   Lwt.return @@
     div ~a:[a_class ["os-welcome-box"]] [
       div [h2 [pcdata ("Welcome!")]; info];
-      Os_view.information_form
+      Os_user_view.information_form
         ~firstname:fn ~lastname:ln
         ~password1:p1 ~password2:p2
         ()
@@ -81,7 +81,7 @@ let%shared page ?html_a ?a ?title ?head myid_o content =
     | Some me when not (Os_user.is_complete me) ->
       let%lwt cwb = connected_welcome_box () in
       Lwt.return @@ cwb :: content
-    | _ ->
+    | None ->
       Lwt.return @@ content
   in
   let%lwt h = os_header ?user:me () in

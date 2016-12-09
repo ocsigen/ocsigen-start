@@ -13,7 +13,7 @@ let%shared item text service =
 let%shared user_menu () =
   [ item "Settings" %%%MODULE_NAME%%%_services.settings_service
   ; Eliom_content.Html.F.li
-      [ %%%MODULE_NAME%%%_userbox.disconnect_link ~a:[ a_class ["os-drawer-item"] ] () ]
+      [ Os_user_view.disconnect_link ~a:[ a_class ["os-drawer-item"] ] () ]
   ]
 
 let%shared make ?user () =
@@ -32,7 +32,7 @@ let%shared make ?user () =
   let contents = match user with
     | None -> [ menu ]
     | Some user ->
-      let user_box = %%%MODULE_NAME%%%_userbox.connected_user_box ~user in
+      let user_box = Os_user_view.connected_user_box ~user in
       [ user_box ; menu ]
   in
   let drawer, _, _ = Ot_drawer.drawer contents in

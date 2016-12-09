@@ -87,13 +87,13 @@ let%shared action_link_handler myid_o akey () =
       if phantom_user
       then
         let page = [ div ~a:[ a_class ["login-signup-box"] ]
-                       [ Os_view.sign_up_form ~email () ] ]
+                       [ Os_user_view.sign_up_form ~email () ] ]
         in
         %%%MODULE_NAME%%%_base.App.send
           (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))
       else
         let page = [ div ~a:[ a_class ["login-signup-box"] ]
-                       [ Os_view.connect_form ~email () ] ]
+                       [ Os_user_view.connect_form ~email () ] ]
         in
         %%%MODULE_NAME%%%_base.App.send
           (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))

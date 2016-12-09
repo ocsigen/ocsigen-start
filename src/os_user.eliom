@@ -36,6 +36,25 @@ open Eliom_content.Html.F
   exception No_such_user
 ]
 
+let%server wrong_password =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
+
+let%server account_not_activated =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
+
+let%server user_already_exists =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
+
+let%server user_does_not_exist =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
+
+let%server user_already_preregistered =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
+
+let%server action_link_key_outdated =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
+
+
 (** Create a user of type [t] using db informations. *)
 let create_user_from_db0 (userid, fn, ln, avatar, pwdset) =
   Os_types.

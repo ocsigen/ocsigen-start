@@ -79,7 +79,7 @@ val action_link_handler :
 
 (** [forgot_password_handler service () email] creates and sends an action link
     to [email] if the user forgot his password and redirects to [service].
-    If [email] doesn't correspond to any user, {!Os_userbox.user_does_not_exist}
+    If [email] doesn't correspond to any user, {!Os_user.user_does_not_exist}
     is set to [true] and {!Os_msg.msg} is called with the level [`Err].
  *)
 val forgot_password_handler :

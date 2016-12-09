@@ -48,6 +48,24 @@ exception No_such_user
  *)
 val password_set : Os_types.User.id -> bool Lwt.t
 
+(** Reference used to remember if a wrong password has been already typed. *)
+val wrong_password : bool Eliom_reference.Volatile.eref
+
+(** Reference used to remember if the account is activated. *)
+val account_not_activated : bool Eliom_reference.Volatile.eref
+
+(** Reference used to remember if the user already exists. *)
+val user_already_exists : bool Eliom_reference.Volatile.eref
+
+(** Reference used to remember if the user exists. *)
+val user_does_not_exist : bool Eliom_reference.Volatile.eref
+
+(** Reference used to remeber if the user is already preregistered. *)
+val user_already_preregistered : bool Eliom_reference.Volatile.eref
+
+(** Reference used to remeber if an action link key is outdated. *)
+val action_link_key_outdated : bool Eliom_reference.Volatile.eref
+
 [%%shared.start]
 
 (** [userid_of_user user] returns the userid of the user [user]. *)

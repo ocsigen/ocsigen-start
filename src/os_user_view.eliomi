@@ -77,10 +77,18 @@ val generic_email_form :
 
     The data is sent to {!Os_services.connect_service}.
 
+    @param a_placeholder_email text for the placeholder of the email input.
+    @param a_placeholder_pwd text for the placeholder of the password input.
+    @param text_keep_me_logged_in text for the check box to stay connected.
+    @param text_sign_in text for the sign in button.
     @param a attributes of the form.
     @param email the default value of the email input (default is empty).
  *)
 val connect_form :
+  ?a_placeholder_email:string ->
+  ?a_placeholder_pwd:string ->
+  ?text_keep_me_logged_in:string ->
+  ?text_sign_in:string ->
   ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
   ?email:string ->
   unit ->
@@ -209,3 +217,78 @@ val password_form :
   ) Eliom_service.t ->
   unit ->
   [> Html_types.form ] Eliom_content.Html.D.elt
+
+
+(** [upload_pic_link ?a ?content ?crop ?input ?submit action_after_submit
+    service userid]
+
+    Creates a link with a label and a submit button to upload a picture.
+
+    The client function [action_after_submit] will be called first,
+    for example to close the menu containing the link.
+
+    You can add attributes to the HTML tag with the optional parameter [?a].
+    [?input] and [?submit] are couples [(attributes, content_children)] for the
+    label and the submit button where [attributes] is a list of attributes for
+    the tag and [content_children] is a list of children. By default, they are
+    empty.
+
+    [?content] is the link text. The default value is "Change profile picture".
+
+    [service] is the service called to upload the picture.
+
+    You can crop the picture by giving a value to [?crop].
+ *)
+val upload_pic_link :
+  ?a:[< Html_types.a_attrib > `OnClick ] Eliom_content.Html.D.Raw.attrib list
+  -> ?content:Html_types.a_content Eliom_content.Html.D.Raw.elt list
+  -> ?crop:float option
+  -> ?input:
+    Html_types.label_attrib Eliom_content.Html.D.Raw.attrib list
+     * Html_types.label_content_fun Eliom_content.Html.D.Raw.elt list
+  -> ?submit:
+    Html_types.button_attrib Eliom_content.Html.D.Raw.attrib list
+     * Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list
+  -> (unit -> unit) Eliom_client_value.t
+  -> (unit,unit) Ot_picture_uploader.service
+  -> [> `A of Html_types.a_content ] Eliom_content.Html.D.Raw.elt
+
+(** Link to start to see the help from the beginning.
+    The client function given as first parameter will be called first,
+    for example to close the menu containing the link. *)
+val reset_tips_link :
+  (unit -> unit) Eliom_client_value.t ->
+  [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
+
+(** A disconnect button *)
+val disconnect_button :
+  ?text_logout:string ->
+  unit ->
+  [> Html_types.li_content_fun ] Eliom_content.Html.F.elt
+
+(** A link to {!Os_services.disconnect_service}. *)
+val disconnect_link :
+  ?text_logout:string ->
+  ?a:[< Html_types.a_attrib > `OnClick ] Eliom_content.Html.attrib list ->
+  unit ->
+  [> `A of Html_types.flow5_without_interactive ] Eliom_content.Html.F.elt
+
+(** An userbox (in a div with the CSS class ["connected-user-box"]) for connected
+    users with an icon and the username.
+ *)
+val connected_user_box :
+  user:Os_types.User.t -> [> Html_types.div ] Eliom_content.Html.D.elt
+
+(** A box (in a div with the CSS class ["os-connection-box"]) with a sign in and
+    a sign out button.
+ *)
+val connection_box :
+  unit -> [> Html_types.div ] Eliom_content.Html.D.elt Lwt.t
+
+(** Return {!connection_box} if no user is connected (i.e. [user] is [None]).
+    Else {!connected_user_box}.
+ *)
+val user_box :
+  ?user:Os_types.User.t ->
+  unit ->
+  [> Html_types.div ] Eliom_content.Html.F.elt Lwt.t

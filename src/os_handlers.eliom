@@ -141,7 +141,7 @@ let%server sign_up_handler () email =
     if not validated
     then send_action_link email userid
     else begin
-      Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
+      Eliom_reference.Volatile.set Os_user.user_already_exists true;
       Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
       Lwt.return ()
     end
@@ -167,7 +167,7 @@ let%server forgot_password_handler service () email =
     send_action_link ~autoconnect:true ~action:`PasswordReset ~validity:1L
       msg service email userid
   with Os_db.No_such_resource ->
-    Eliom_reference.Volatile.set Os_userbox.user_does_not_exist true;
+    Eliom_reference.Volatile.set Os_user.user_does_not_exist true;
     Os_msg.msg ~level:`Err ~onload:true "User does not exist";
     Lwt.return ()
 
@@ -241,11 +241,11 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
     Os_session.connect ~expire:(not keepmeloggedin) userid
   with
   | Os_db.Account_not_activated ->
-      Eliom_reference.Volatile.set Os_userbox.account_not_activated true;
+      Eliom_reference.Volatile.set Os_user.account_not_activated true;
       Os_msg.msg ~level:`Err ~onload:true "Account not activated";
       Lwt.return ()
   | Os_db.No_such_resource ->
-      Eliom_reference.Volatile.set Os_userbox.wrong_password true;
+      Eliom_reference.Volatile.set Os_user.wrong_password true;
       Os_msg.msg ~level:`Err ~onload:true "Wrong password";
       Lwt.return ()
 
@@ -319,13 +319,13 @@ let action_link_handler_common akey =
   | Os_db.No_such_resource ->
     Lwt.return `No_such_resource
   | Invalid_action_key action_link ->
-    Eliom_reference.Volatile.set Os_userbox.action_link_key_outdated true;
+    Eliom_reference.Volatile.set Os_user.action_link_key_outdated true;
     Lwt.return (`Invalid_action_key action_link)
   | Account_already_activated_unconnected action_link ->
-    Eliom_reference.Volatile.set Os_userbox.action_link_key_outdated true;
+    Eliom_reference.Volatile.set Os_user.action_link_key_outdated true;
     Lwt.return (`Account_already_activated_unconnected action_link)
   | Account_already_activated_connected (action_link, _) ->
-    Eliom_reference.Volatile.set Os_userbox.action_link_key_outdated true;
+    Eliom_reference.Volatile.set Os_user.action_link_key_outdated true;
     (* Just reload the page without the GET parameters to get rid of the key.
        If the user wasn't already logged in, let the exception pass to the
        next exception handler. *)
@@ -371,7 +371,7 @@ let preregister_handler () email =
   if not (is_preregistered || is_registered)
    then Os_user.add_preregister email
    else begin
-     Eliom_reference.Volatile.set Os_userbox.user_already_preregistered true;
+     Eliom_reference.Volatile.set Os_user.user_already_preregistered true;
      Os_msg.msg ~level:`Err ~onload:true "E-mail already preregistered";
      Lwt.return ()
    end
@@ -391,7 +391,7 @@ let%server add_email_handler =
       let%lwt () = Os_db.User.add_email_to_user ~userid:myid ~email in
       send_act email myid
     else begin
-      Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
+      Eliom_reference.Volatile.set Os_user.user_already_exists true;
       Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
       Lwt.return_unit
     end

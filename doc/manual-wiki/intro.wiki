@@ -92,11 +92,9 @@ connection forms, etc.
   Start layout.
 * <<a_api subproject="server" | module Os_tips>>:
   display tips to the user.
-* <<a_api subproject="server" | module Os_userbox>>:
-  manage the user connection box.
-* <<a_api subproject="server" | module Os_view>>:
+* <<a_api subproject="server" | module Os_user_view>>:
   functions for creating password forms and other common UI elements
-  appearing in applications.
+  appearing in applications and for managing the user connection box.
 * <<a_api subproject="server" | module Os_uploader>>:
   ImageMagick-based tools for manipulating avatars.
 
