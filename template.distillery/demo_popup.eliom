@@ -60,7 +60,7 @@ let%shared page () =
            (fun _ _ ->
               let%lwt _ =
                 Ot_popup.popup
-                  ~close_button:[]
+                  ~close_button:[ Os_icons.F.close () ]
                   (fun _ -> Lwt.return @@ p [pcdata "Popup message"])
               in
               Lwt.return ()))
