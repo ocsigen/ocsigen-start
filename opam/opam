@@ -9,7 +9,6 @@ build: [ make "-j%{jobs}%" ]
 install: [ make "install" ]
 remove: [ make "uninstall" ]
 depends: [
-  "imagemagick"
   "pgocaml" {>= "2.3"}
   "macaque" {>= "0.7.4"}
   "safepass"

@@ -249,7 +249,7 @@ val upload_pic_link :
   -> ?submit:
     Html_types.button_attrib Eliom_content.Html.D.Raw.attrib list
      * Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list
-  -> (unit -> unit) Eliom_client_value.t
+  -> ?onclick:(unit -> unit) Eliom_client_value.t
   -> (unit,unit) Ot_picture_uploader.service
   -> [> `A of Html_types.a_content ] Eliom_content.Html.D.Raw.elt
 
@@ -257,7 +257,8 @@ val upload_pic_link :
     The client function given as first parameter will be called first,
     for example to close the menu containing the link. *)
 val reset_tips_link :
-  (unit -> unit) Eliom_client_value.t ->
+  ?close: (unit -> unit) Eliom_client_value.t ->
+  unit ->
   [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
 
 (** A disconnect button *)

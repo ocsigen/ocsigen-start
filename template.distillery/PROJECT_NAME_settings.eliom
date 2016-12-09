@@ -97,7 +97,6 @@ let%client get_emails =
        (Os_session.connected_wrapper get_emails))
 
 let%shared settings_content () =
-  let none = [%client ((fun () -> ()) : unit -> unit)] in
   let%lwt emails = get_emails () in
   let%lwt emails = ul_of_emails emails in
   Lwt.return @@
@@ -108,10 +107,10 @@ let%shared settings_content () =
         Os_user_view.password_form ~service:Os_services.set_password_service ();
         br ();
         Os_user_view.upload_pic_link
-          none
+          ~submit:([a_class ["button"]], [pcdata "Submit"])
           %%%MODULE_NAME%%%_services.upload_user_avatar_service;
         br ();
-        Os_user_view.reset_tips_link none;
+        Os_user_view.reset_tips_link ();
         br ();
         p [pcdata "Link a new email to your account:"];
         Os_user_view.generic_email_form ~service:Os_services.add_email_service ();

@@ -241,16 +241,15 @@ let%shared upload_pic_link
       * Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list
       = [], [pcdata "Submit"]
     )
-    (close : (unit -> unit) Eliom_client_value.t)
+    ?(onclick : (unit -> unit) Eliom_client_value.t = [%client (fun () -> () : unit -> unit)])
     (service : (unit, unit) Ot_picture_uploader.service)
   =
-  let content = (content
-                 : Html_types.a_content Eliom_content.Html.D.Raw.elt list) in
   D.Raw.a ~a:( a_onclick [%client (fun ev -> Lwt.async (fun () ->
-    ~%close () ;
-    let upload ?progress ?cropping file =
+    ~%onclick () ;
+    let upload_service ?progress ?cropping file =
       Ot_picture_uploader.ocaml_service_upload
-        ?progress ?cropping ~service:~%service ~arg:() file in
+        ?progress ?cropping ~service:~%service ~arg:() file
+    in
     try%lwt ignore @@
       Ot_popup.popup
         ~close_button:[ Os_icons.F.close () ]
@@ -259,14 +258,16 @@ let%shared upload_pic_link
             ~service:Eliom_service.reload_action () ())
         (fun close -> Ot_picture_uploader.mk_form
             ~crop:~%crop ~input:~%input ~submit:~%submit
-            ~after_submit:close upload) ;
+            ~after_submit:close upload_service) ;
       Lwt.return ()
     with e ->
       Os_msg.msg ~level:`Err "Error while uploading the picture";
       Eliom_lib.debug_exn "%s" e "→ ";
       Lwt.return () ) : _ ) ] :: a) content
 
-let%shared reset_tips_link (close : (unit -> unit) Eliom_client_value.t) =
+let%shared reset_tips_link
+    ?(close : (unit -> unit) Eliom_client_value.t = [%client (fun () -> () : unit -> unit)]) ()
+    =
   let l = D.Raw.a [pcdata "See help again from beginning"] in
   ignore [%client (
     Lwt_js_events.(async (fun () ->

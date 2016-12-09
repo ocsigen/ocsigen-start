@@ -18,22 +18,84 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+exception Error_while_cropping of Unix.process_status
+exception Error_while_resizing of Unix.process_status
+
+let%server resize_image ~src ?(dst = src) ~width ~height =
+  let%lwt resize_unix_result =
+    Lwt_process.exec
+      ("", [|"convert";
+             "+repage" ;
+             "-strip";
+             "-interlace"; "Plane";
+             "-auto-orient";
+             "-define"; Printf.sprintf "jpeg:size=%dx%d" (2 * width) (2 * height);
+             "-resize"; Printf.sprintf "%dx%d!" width height; "-quality"; "85";
+             (* In case of transparent image *)
+             "-background"; "white";
+             "-flatten";
+             src;
+             "jpg:" ^ dst
+           |]
+      )
+  in
+  match resize_unix_result with
+  | Unix.WEXITED status_code when status_code = 0 -> Lwt.return ()
+  | unix_process_status -> Lwt.fail (Error_while_resizing unix_process_status)
+
+let%server get_image_width file =
+  let%lwt width =
+    Lwt_process.pread
+      ("", [| "convert" ;
+              file ;
+              "-print" ; "%w" ;
+              "/dev/null"
+           |]
+      )
+  in
+  Lwt.return (int_of_string width)
+
+let%server get_image_height file =
+  let%lwt height =
+    Lwt_process.pread
+      ("", [| "convert" ;
+              file ;
+              "-print" ; "%h" ;
+              "/dev/null"
+           |]
+      )
+  in
+  Lwt.return (int_of_string height)
+
 let%server crop_image ~src ?(dst = src) ?ratio ~top ~right ~bottom ~left =
-  (* Magick is not cooperative. We use a preemptive thread *)
-  Lwt_preemptive.detach
-    (fun () ->
-       let img = Magick.read_image ~filename:src in
-       let img_height = Magick.get_image_height img in
-       let img_width = Magick.get_image_width img in
-       let x = truncate left * img_width / 100 in
-       let y = truncate top * img_height / 100 in
-       let width = img_width - x - (truncate right * img_width / 100) in
-       let height = match ratio with
-         | None -> img_height - y - (truncate bottom * img_height / 100)
-         | Some ratio -> truncate (float_of_int width /. ratio) in
-       let () = Magick.Imper.crop img ~x ~y ~width ~height in
-       Magick.write_image img ~filename:dst)
-    ()
+  (* Given arguments are in percent. Use this to convert to pixel. The full size
+  is needed to compute the number of pixel *)
+  let pixel_of_percent percent full_size_px =
+    truncate percent * full_size_px / 100
+  in
+  let%lwt width_src = get_image_width src in
+  let%lwt height_src = get_image_height src in
+  let left_px = pixel_of_percent left width_src in
+  let top_px = pixel_of_percent top height_src in
+  let width_cropped = width_src - left_px - (pixel_of_percent right width_src) in
+  let height_cropped = match ratio with
+    | None -> height_src - top_px - (pixel_of_percent bottom height_src)
+    | Some ratio -> truncate ((float_of_int width_cropped) /. ratio)
+  in
+  let%lwt crop_unix_result =
+    Lwt_process.exec
+      ("", [|"convert";
+             "-crop" ;
+             Printf.sprintf "%dx%d+%d+%d" width_cropped height_cropped left_px top_px;
+             src ;
+             dst
+           |]
+      )
+  in
+  match crop_unix_result with
+  | Unix.WEXITED status_code when status_code = 0 ->
+    resize_image ~src:dst ~dst ~width:width_cropped ~height:height_cropped
+  | unix_process_status -> Lwt.fail (Error_while_cropping unix_process_status)
 
 let%server record_image directory ?ratio ?cropping file =
   let make_file_saver cp () =
