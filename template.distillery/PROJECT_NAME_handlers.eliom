@@ -147,7 +147,7 @@ let%shared about_handler myid_o () () = Eliom_content.Html.F.(
 
 let%shared settings_handler myid_o () () =
   let%lwt content = match myid_o with
-    | Some myid -> %%%MODULE_NAME%%%_settings.settings_content myid
-    | None -> Lwt.return []
+    | Some _ -> %%%MODULE_NAME%%%_settings.settings_content ()
+    | None -> Lwt.return [ p [ pcdata "Log in to see this page." ] ]
   in
   %%%MODULE_NAME%%%_container.page myid_o content

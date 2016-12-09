@@ -61,7 +61,7 @@ let%shared upload_pic_link
     )
     (close : (unit -> unit) Eliom_client_value.t)
     (service : uploader)
-    userid =
+  =
   let content = (content
                  : Html_types.a_content Eliom_content.Html.D.Raw.elt list) in
   D.Raw.a ~a:( a_onclick [%client (fun ev -> Lwt.async (fun () ->
