@@ -28,7 +28,7 @@ let%server section = Lwt_log.Section.make "os:current_user"
 ]
 
 let%shared please_use_connected_fun =
-  "Os_current_user is usable only with connected functions"
+  "ERROR: Os_current_user is usable only with connected functions (see Os_session)"
 
 
 (* current user *)
@@ -48,9 +48,13 @@ let%client get_current_user_option () =
 let%client get_current_user () =
   match !me with
   | CU_user a -> a
-  | CU_idontknown -> (* Should never happen *) failwith please_use_connected_fun
+  | CU_idontknown ->
+    (* The programmer forgot connection_wrapper.
+       We ask him to fix his code. *)
+    prerr_endline please_use_connected_fun;
+    failwith please_use_connected_fun
   | _ ->
-    Firebug.console##(log (Js.string "Not connected error in Os_current_user"));
+    prerr_endline "Not connected error in Os_current_user";
     raise Os_session.Not_connected
 
 (* SECURITY: We can trust these functions on server side,
@@ -60,7 +64,9 @@ let%client get_current_user () =
 let%server get_current_user () =
   match Eliom_reference.Volatile.get me with
   | CU_user a -> a
-  | CU_idontknown -> failwith please_use_connected_fun
+  | CU_idontknown ->
+    prerr_endline please_use_connected_fun;
+    failwith please_use_connected_fun
   | CU_notconnected -> raise Os_session.Not_connected
 
 let%server get_current_user_option () =

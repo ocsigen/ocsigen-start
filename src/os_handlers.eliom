@@ -385,11 +385,11 @@ let%server add_email_handler =
   let send_act =
     send_action_link  ~autoconnect:true msg Os_services.main_service
   in
-  let add_email userid () email =
+  let add_email myid () email =
     let%lwt available = Os_db.Email.available email in
     if available then
-      let%lwt () = Os_db.User.add_email_to_user ~userid ~email in
-      send_act email userid
+      let%lwt () = Os_db.User.add_email_to_user ~userid:myid ~email in
+      send_act email myid
     else begin
       Eliom_reference.Volatile.set Os_userbox.user_already_exists true;
       Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
