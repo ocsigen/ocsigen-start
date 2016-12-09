@@ -81,7 +81,7 @@ let%shared page ?html_a ?a ?title ?head myid_o content =
     | Some me when not (Os_user.is_complete me) ->
       let%lwt cwb = connected_welcome_box () in
       Lwt.return @@ cwb :: content
-    | None ->
+    | _ ->
       Lwt.return @@ content
   in
   let%lwt h = os_header ?user:me () in
