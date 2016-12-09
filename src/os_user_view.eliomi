@@ -168,7 +168,7 @@ val home_button :
   [> Html_types.form ] Eliom_content.Html.F.elt
 
 (** [avatar user] creates an image HTML tag (with Eliom_content.HTML.F) with an
-    alt attribute to ["picture"] and with class ["os_avatar"]. If the user has
+    alt attribute to ["picture"] and with class ["os-avatar"]. If the user has
     no avatar, the default icon representing the user (see <<a_api
     project="ocsigen-toolkit" | val Ot_icons.F.user >>) is returned.
 
