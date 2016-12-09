@@ -23,8 +23,8 @@ let%shared update_main_email_button email =
 let%shared delete_email_button email =
   let open Eliom_content.Html in
   let button = D.button
-      ~a:[D.a_class ["button" ; "remove-email-button"]]
-      [%%%MODULE_NAME%%%_icons.D.icon ["fa-trash-o"] ()]
+      ~a:[D.a_class ["button" ; "os-remove-email-button"]]
+      [%%%MODULE_NAME%%%_icons.D.trash ()]
   in
   ignore [%client (Lwt.async (fun () ->
     Lwt_js_events.clicks
@@ -50,14 +50,16 @@ let%shared buttons_of_email is_main_email is_validated email =
 (* Return a list of labels describing the email properties. *)
 let%shared labels_of_email is_main_email is_validated =
   let open Eliom_content.Html.F in
-  let valid_label = span ~a: [a_class ["label" ; "validated-email"]] [
+  let valid_label =
+    span ~a: [a_class ["os-settings-label" ; "os-validated-email"]] [
      pcdata @@
       if is_validated
       then "Validated"
       else "Waiting for confirmation"
   ] in
   if is_main_email
-  then [ span ~a:[a_class ["label" ; "main-email"]] [pcdata "Main e-mail"]
+  then [ span ~a:[a_class ["os-settings-label" ; "os-main-email"]]
+           [pcdata "Main e-mail"]
        ; valid_label]
   else [ valid_label ]
 
@@ -67,7 +69,7 @@ let%shared li_of_email main_email (email, is_validated) =
   let is_main_email = (main_email = email) in
   let labels = labels_of_email is_main_email is_validated in
   let buttons = buttons_of_email is_main_email is_validated email in
-  let email = span [pcdata email] in
+  let email = span ~a:[a_class ["os-settings-email"]] [pcdata email] in
   Lwt.return @@ li (email :: labels @ buttons)
 
 let%shared ul_of_emails (main_email, emails) =

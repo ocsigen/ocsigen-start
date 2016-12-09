@@ -27,6 +27,7 @@ module Make(A : module type of Eliom_content.Html.F) = struct
   let user = icon ["fa-user"; "fa-fw"]
   let signout = icon ["fa-sign-out"; "fa-fw"]
   let close = icon ["fa-close"; "fa-fw"]
+  let trash = icon ["fa-trash-o"; "fa-fw"]
 
   (* Add your own icons here. See http://fontawesome.io/icons/ for the complete
    * list of CSS classes available by default.

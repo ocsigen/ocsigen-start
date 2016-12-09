@@ -239,7 +239,7 @@ a.os-page-header-app-name {
 }
 
 .os-emails {
-    text-align: center;
+    text-align: left;
     display: flex;
     justify-content: center;
     ul {
@@ -247,23 +247,28 @@ a.os-page-header-app-name {
         li {
             padding: 5px 10px;
             border-bottom: 1px solid #e5e5e5;
-            display: block;
-            .label {
-                display: inline-block;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .os-settings-label {
                 font-weight: bold;
-                padding: 4px 6px;
+                padding: 4px 10px;
                 margin-left: 4px;
                 border-radius: 3px;
             }
-            .main-email {
+            .os-settings-email {
+                flex-grow: 2;
+                padding-right: 20px;
+            }
+            .os-main-email {
                 color: #fff;
                 background-color: #6cc664;
             }
-            .validated-email {
+            .os-validated-email {
                 color: #fff;
                 background-color: #25a;
             }
-            .remove-email-button {
+            .os-remove-email-button {
                 box-shadow: none;
                 font-size: 18px;
                 margin: 0px;
