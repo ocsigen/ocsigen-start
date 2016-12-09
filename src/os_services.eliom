@@ -20,7 +20,7 @@
 
 (** This module defines services which are mostly used for actions like the
     signup process, to update user data, when a user forgot his password, etc.
-    Some of them are used in forms defined in Os_view.
+    Some of them are used in forms defined in Os_user_view.
     Predefined handlers for each service are defined in the module
     Os_handlers. *)
 

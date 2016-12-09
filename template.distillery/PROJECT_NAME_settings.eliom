@@ -105,16 +105,16 @@ let%shared settings_content () =
     [
       div ~a:[a_class ["os-settings"]] [
         p [pcdata "Change your password:"];
-        Os_view.password_form ~service:Os_services.set_password_service ();
+        Os_user_view.password_form ~service:Os_services.set_password_service ();
         br ();
-        Os_view.upload_pic_link
+        Os_user_view.upload_pic_link
           none
           %%%MODULE_NAME%%%_services.upload_user_avatar_service;
         br ();
-        Os_view.reset_tips_link none;
+        Os_user_view.reset_tips_link none;
         br ();
         p [pcdata "Link a new email to your account:"];
-        Os_view.generic_email_form ~service:Os_services.add_email_service ();
+        Os_user_view.generic_email_form ~service:Os_services.add_email_service ();
         p [pcdata "Currently registered emails:"];
         div ~a:[a_class ["os-emails"]] [emails]
       ]
