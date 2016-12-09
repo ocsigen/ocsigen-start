@@ -18,9 +18,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(** This module provides functions and types to manage the current user. *)
 
 [%%shared.start]
+
+(** This module provides functions and types to manage the current user. *)
+
+(** On server side, this will work only if the current request in wrapped
+    in {!Os_session.connected_wrapper}, or {!Os_session.connected_fun},
+    etc.
+*)
 
 type current_user =
   | CU_idontknown
