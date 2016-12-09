@@ -297,7 +297,7 @@ let%shared bind_popup_button
               let%lwt _ =
                 Ot_popup.popup
                   ?a:~%a
-                  ~close_button:[]
+                  ~close_button:[ Os_icons.F.close () ]
                   ~%popup_content
               in
               Lwt.return ()))
