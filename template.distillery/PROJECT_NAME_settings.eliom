@@ -91,7 +91,8 @@ let%server get_emails () =
 
 (* Return a list with information about emails *)
 let%client get_emails =
-  ~%(Eliom_client.server_function [%derive.json : unit] get_emails)
+  ~%(Eliom_client.server_function [%derive.json : unit]
+       (Os_session.connected_wrapper get_emails))
 
 let%shared settings_content () =
   let none = [%client ((fun () -> ()) : unit -> unit)] in
