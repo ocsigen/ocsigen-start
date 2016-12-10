@@ -18,8 +18,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-exception Error_while_cropping of Unix.process_status
-exception Error_while_resizing of Unix.process_status
+[%%server
+  exception Error_while_cropping of Unix.process_status
+  exception Error_while_resizing of Unix.process_status
+]
 
 let%server resize_image ~src ?(dst = src) ~width ~height =
   let%lwt resize_unix_result =

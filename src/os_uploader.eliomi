@@ -21,10 +21,13 @@
 
 (** This module defines functions to manipulate images to be uploaded. *)
 
-exception Error_while_cropping of Unix.process_status
-exception Error_while_resizing of Unix.process_status
-
 [%%server.start]
+
+(** Raised if an error occured while cropping a picture. The corresponding code status is given in parameter. *)
+exception Error_while_cropping of Unix.process_status
+
+(** Raised if an error occured while resizing a picture. The corresponding code status is given in parameter. *)
+exception Error_while_resizing of Unix.process_status
 
 (** Return the height of the given image. *)
 val get_image_height : string -> int Lwt.t
