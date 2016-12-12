@@ -133,6 +133,9 @@ let%server sign_up_handler () email =
   try%lwt
     let%lwt user = Os_user.create ~firstname:"" ~lastname:"" email in
     let userid = Os_user.userid_of_user user in
+    Os_msg.msg ~onload:true ~level:`Msg ~duration:6.
+      "An e-mail was sent to this address. \
+       Click on the link it contains to activate your account.";
     send_action_link email userid
   with Os_user.Already_exists userid ->
     (* If email is not validated, the user never logged in,
