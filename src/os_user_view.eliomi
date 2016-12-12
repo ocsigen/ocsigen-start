@@ -51,6 +51,7 @@ val check_password_confirmation :
 val generic_email_form :
   ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
   ?label:string Eliom_content.Html.F.wrap ->
+  ?a_placeholder_email:string ->
   ?text:string ->
   ?email:string ->
   service:(
@@ -100,6 +101,7 @@ val connect_form :
     @param a attributes of the form. *)
 val disconnect_button :
   ?a:[< Html_types.form_attrib ] Eliom_content.Html.F.attrib list ->
+  ?text_logout:string ->
   unit ->
   [> Html_types.form ] Eliom_content.Html.F.elt
 
@@ -111,6 +113,8 @@ val disconnect_button :
  *)
 val sign_up_form :
   ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
+  ?a_placeholder_email:string ->
+  ?text:string ->
   ?email:string ->
   unit ->
   [> Html_types.form ] Eliom_content.Html.D.elt
@@ -133,6 +137,11 @@ val forgot_password_form :
     The data is sent to {!Os_services.set_personal_data_service}.
 
     @param a attributes of the form.
+    @param a_placeholder_password text for the placeholder of the password input.
+    @param a_placeholder_retype_password text for the placeholder of the confirmation password input.
+    @param a_placeholder_firstname text for the placeholder of the firstname input.
+    @param a_placeholder_lastname text for the placeholder of the lastname input.
+    @param text_submit text for the submit button.
     @param firstname the default value for the first name.
     @param lastname the default value for the last name.
     @param password1 the default value for the password1.
@@ -140,6 +149,11 @@ val forgot_password_form :
     password). *)
 val information_form :
   ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
+  ?a_placeholder_password:string ->
+  ?a_placeholder_retype_password:string ->
+  ?a_placeholder_firstname:string ->
+  ?a_placeholder_lastname:string ->
+  ?text_submit:string ->
   ?firstname:string ->
   ?lastname:string ->
   ?password1:string ->
@@ -194,6 +208,9 @@ val username :
     It also checks (client-side) if the passwords match when the send button is
     pressed.
 
+    @param a_placeholder_pwd placeholder test for the password input.
+    @param a_placeholder_confirmation placeholder test for the confirmation input.
+    @param text_send_button text for the send button.
     @param a attributes of the form.
     @param service service which the data is sent to. *)
 val password_form :
@@ -255,10 +272,13 @@ val upload_pic_link :
 
 (** Link to start to see the help from the beginning.
     The client function given as first parameter will be called first,
-    for example to close the menu containing the link. *)
+    for example to close the menu containing the link.
+
+    @param text_link link text.
+ *)
 val reset_tips_link :
+  ?text_link:string ->
   ?close: (unit -> unit) Eliom_client_value.t ->
-  unit ->
   [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
 
 (** A disconnect button *)
@@ -267,7 +287,11 @@ val disconnect_button :
   unit ->
   [> Html_types.li_content_fun ] Eliom_content.Html.F.elt
 
-(** A link to {!Os_services.disconnect_service}. *)
+(** A link to {!Os_services.disconnect_service}.
+
+    @param text_logout the link text.
+    @param a attributes for the link.
+ *)
 val disconnect_link :
   ?text_logout:string ->
   ?a:[< Html_types.a_attrib > `OnClick ] Eliom_content.Html.attrib list ->
@@ -278,18 +302,36 @@ val disconnect_link :
     users with an icon and the username.
  *)
 val connected_user_box :
-  user:Os_types.User.t -> [> Html_types.div ] Eliom_content.Html.D.elt
+  user:Os_types.User.t ->
+  [> Html_types.div ] Eliom_content.Html.D.elt
 
 (** A box (in a div with the CSS class ["os-connection-box"]) with a sign in and
-    a sign out button.
+    a sign out button. [?text_sign_in] (resp. [text_sign_up]) is the text for the
+    sign in (resp. sign up) button, default is ["Sign in"] (resp. ["Sign up"]).
  *)
 val connection_box :
+  ?a_placeholder_email:string ->
+  ?a_placeholder_pwd:string ->
+  ?text_keep_me_logged_in:string ->
+  ?content_popup_forgotpwd:string ->
+  ?text_button_forgotpwd:string ->
+  ?text_sign_in:string ->
+  ?text_sign_up:string ->
+  ?text_send_button:string ->
   unit -> [> Html_types.div ] Eliom_content.Html.D.elt Lwt.t
 
 (** Return {!connection_box} if no user is connected (i.e. [user] is [None]).
     Else {!connected_user_box}.
  *)
 val user_box :
+  ?a_placeholder_email:string ->
+  ?a_placeholder_pwd:string ->
+  ?text_keep_me_logged_in:string ->
+  ?content_popup_forgotpwd:string ->
+  ?text_button_forgotpwd:string ->
+  ?text_sign_in:string ->
+  ?text_sign_up:string ->
+  ?text_send_button:string ->
   ?user:Os_types.User.t ->
   unit ->
   [> Html_types.div ] Eliom_content.Html.F.elt Lwt.t

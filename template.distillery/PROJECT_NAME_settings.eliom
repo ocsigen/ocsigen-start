@@ -104,16 +104,27 @@ let%shared settings_content () =
     [
       div ~a:[a_class ["os-settings"]] [
         p [%i18n change_password ~capitalize:true];
-        Os_user_view.password_form ~service:Os_services.set_password_service ();
+        Os_user_view.password_form
+          ~a_placeholder_pwd:[%i18n S.password]
+          ~a_placeholder_confirmation:[%i18n S.retype_password]
+          ~text_send_button:[%i18n S.send]
+          ~service:Os_services.set_password_service ();
         br ();
         Os_user_view.upload_pic_link
           ~submit:([a_class ["button"]], [pcdata "Submit"])
+          ~content:[%i18n change_profile_picture]
           %%%MODULE_NAME%%%_services.upload_user_avatar_service;
         br ();
-        Os_user_view.reset_tips_link ();
+        Os_user_view.reset_tips_link
+          ~text_link:[%i18n S.see_help_again_from_beginning]
+          ();
         br ();
         p [%i18n link_new_email];
-        Os_user_view.generic_email_form ~service:Os_services.add_email_service ();
+        Os_user_view.generic_email_form
+          ~a_placeholder_email:[%i18n S.email_address]
+          ~text:[%i18n S.send]
+          ~service:Os_services.add_email_service
+          ();
         p [%i18n currently_registered_emails];
         div ~a:[a_class ["os-emails"]] [emails]
       ]

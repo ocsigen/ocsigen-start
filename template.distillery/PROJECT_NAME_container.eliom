@@ -7,7 +7,19 @@
 (** [os_header ?user ()] defines the header for all pages.
     In this template, it's a userbox and the user name is displayed. *)
 let%shared os_header ?user () = Eliom_content.Html.F.(
-  let%lwt user_box = Os_user_view.user_box ?user () in
+  let%lwt user_box =
+    Os_user_view.user_box
+      ~a_placeholder_email:[%i18n S.your_email]
+      ~a_placeholder_pwd:[%i18n S.your_password]
+      ~text_keep_me_logged_in:[%i18n S.keep_logged_in]
+      ~content_popup_forgotpwd:[%i18n S.recover_password ~capitalize:true]
+      ~text_button_forgotpwd:[%i18n S.forgot_your_password_q ~capitalize:true]
+      ~text_sign_in:[%i18n S.sign_in ~capitalize:true]
+      ~text_sign_up:[%i18n S.sign_up ~capitalize:true]
+      ~text_send_button:[%i18n S.end ~capitalize:true]
+      ?user
+      ()
+  in
   Lwt.return (
     header ~a:[a_class ["os-page-header"]]
       [ a ~a:[a_class ["os-page-header-app-name"]]
@@ -59,6 +71,11 @@ let%shared connected_welcome_box () = Eliom_content.Html.F.(
     div ~a:[a_class ["os-welcome-box"]] [
       div [h2 [%i18n welcome ~capitalize:true]; info]; 
       Os_user_view.information_form
+        ~a_placeholder_password:[%i18n S.password]
+        ~a_placeholder_retype_password:[%i18n S.retype_password]
+        ~a_placeholder_firstname:[%i18n S.your_first_name]
+        ~a_placeholder_lastname:[%i18n S.your_last_name]
+        ~text_submit:[%i18n S.submit]
         ~firstname:fn ~lastname:ln
         ~password1:p1 ~password2:p2
         ()
