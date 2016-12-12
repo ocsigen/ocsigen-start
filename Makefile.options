@@ -5,8 +5,8 @@
 
 # Package name for your
 PKG_NAME            := ocsigen-start
-PKG_VERS            := 0.1
-PKG_DESC            := Eliom application skeleton ready to use to build your own application with users, (pre)registration, notifications, etc.
+PKG_VERS            := 0.99
+PKG_DESC            := Skeleton for building your own Eliom application
 
 # Source files for the server
 SERVER_FILES        := $(wildcard \
