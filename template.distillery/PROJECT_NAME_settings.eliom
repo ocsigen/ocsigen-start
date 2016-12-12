@@ -6,7 +6,7 @@
 let%shared update_main_email_button email =
   let open Eliom_content.Html in
   let button =
-    D.button ~a:[D.a_class ["button"]] [D.pcdata "Set as main e-mail"]
+    D.button ~a:[D.a_class ["button"]] [D.pcdata [%i18n S.set_as_main_email ~capitalize:true]]
   in
   ignore [%client (Lwt.async (fun () ->
     Lwt_js_events.clicks
@@ -54,12 +54,12 @@ let%shared labels_of_email is_main_email is_validated =
     span ~a: [a_class ["os-settings-label" ; "os-validated-email"]] [
      pcdata @@
       if is_validated
-      then "Validated"
-      else "Waiting for confirmation"
+      then [%i18n S.validated ~capitalize:true]
+      else [%i18n S.waiting_confirmation ~capitalize:true]
   ] in
   if is_main_email
   then [ span ~a:[a_class ["os-settings-label" ; "os-main-email"]]
-           [pcdata "Main e-mail"]
+           [%i18n main_email ~capitalize:true]
        ; valid_label]
   else [ valid_label ]
 
@@ -103,7 +103,7 @@ let%shared settings_content () =
   Eliom_content.Html.D.(
     [
       div ~a:[a_class ["os-settings"]] [
-        p [pcdata "Change your password:"];
+        p [%i18n change_password ~capitalize:true];
         Os_user_view.password_form ~service:Os_services.set_password_service ();
         br ();
         Os_user_view.upload_pic_link
@@ -112,9 +112,9 @@ let%shared settings_content () =
         br ();
         Os_user_view.reset_tips_link ();
         br ();
-        p [pcdata "Link a new email to your account:"];
+        p [%i18n link_new_email];
         Os_user_view.generic_email_form ~service:Os_services.add_email_service ();
-        p [pcdata "Currently registered emails:"];
+        p [%i18n currently_registered_emails];
         div ~a:[a_class ["os-emails"]] [emails]
       ]
     ]
