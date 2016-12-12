@@ -223,3 +223,18 @@ PSQL_DIR              := local_db
 PSQL_LOG              := $(PSQL_DIR)/log
 
 ##----------------------------------------------------------------------
+
+##----------------------------------------------------------------------
+## The following part is used for the internationalization (i18n).
+
+## The list of supported language, seperated by a comma. Each language will
+## generate a value in a sum type defined in the generate i18n file.
+I18N_LANGUAGES         := Us,Fr
+
+## The default language.
+I18N_DEFAULT_LANGUAGE  := Us
+
+## The TSV file containing all translations.
+I18N_TSV_FILE          := assets/$(PROJECT_NAME)_i18n.tsv
+
+##----------------------------------------------------------------------
