@@ -32,7 +32,8 @@ Warning: postcss not found.
 
 Ocsigen Start is using postcss to add vendor prefixes in CSS. You may
 proceed without postcss, but this may negatively impact how your
-application looks on common browsers.
+application looks on common browsers. You can use NPM to install it globally
+with the command `npm install -g postcss-cli`.
 
 endef
 
