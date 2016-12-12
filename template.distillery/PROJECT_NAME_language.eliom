@@ -63,16 +63,17 @@ let%server _ =
     (fun userid ->
       (* Set language according to user preferences. *)
       let%lwt lang = Os_user.get_language userid in
-      let language = match lang with
-      | Some language -> (language_of_string language)
+      let%lwt language = match lang with
+      | Some language -> Lwt.return (language_of_string language)
       | None ->
+        let%lwt best_language = best_matched_language () in
         (ignore (Os_user.update_language
           ~userid
           ~language:(
-            string_of_language %%%MODULE_NAME%%%_i18n.default_language)
-                )
-        );
-        %%%MODULE_NAME%%%_i18n.default_language
+            string_of_language best_language
+          )
+         ));
+        Lwt.return best_language
       in
       set_language language;
       ignore ([%client (set_language ~%language : unit)]);
