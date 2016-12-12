@@ -55,7 +55,7 @@ let%shared action_link_handler myid_o akey () =
   | Os_handlers.No_such_resource
   | Os_handlers.Invalid_action_key _ ->
     Os_msg.msg ~level:`Err ~onload:true
-      "Invalid action key, please ask for a new one.";
+      [%i18n S.invalid_action_key];
     Eliom_registration.(appl_self_redirect Action.send) ()
   | e ->
     let%lwt (email, phantom_user) =
@@ -127,7 +127,7 @@ let%shared main_service_handler myid_o () () = Eliom_content.Html.F.(
   %%%MODULE_NAME%%%_container.page
     ~a:[ a_class ["os-page-main"] ]
     myid_o (
-    [ p [em [pcdata "Ocsigen Start: Put app content here."]] ]
+    [ p [em [%i18n put_content_here]]]
   )
 )
 
@@ -136,11 +136,9 @@ let%shared about_handler myid_o () () = Eliom_content.Html.F.(
     ~a:[ a_class ["os-page-about"] ]
     myid_o
     [ div
-        [ p [pcdata "This template provides a skeleton \
-                     for an Ocsigen application."]
+        [ p [%i18n about_handler_template]
         ; br ()
-        ; p [pcdata "Feel free to modify the generated code and use it \
-                     or redistribute it as you want."]
+        ; p [%i18n about_handler_license]
         ]
     ]
 )
@@ -148,6 +146,6 @@ let%shared about_handler myid_o () () = Eliom_content.Html.F.(
 let%shared settings_handler myid_o () () =
   let%lwt content = match myid_o with
     | Some _ -> %%%MODULE_NAME%%%_settings.settings_content ()
-    | None -> Lwt.return [ p [ pcdata "Log in to see this page." ] ]
+    | None -> Lwt.return [ p [%i18n log_in_to_see_page ~capitalize:true]]
   in
   %%%MODULE_NAME%%%_container.page myid_o content

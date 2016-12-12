@@ -5,7 +5,7 @@
 
 module type Page = sig
 
-  val name : string
+  val name : unit -> string
 
   val page_class : string
 
@@ -47,7 +47,7 @@ let demos =
 let drawer_contents () =
   let open Eliom_content.Html.F in
   let make_link (module D : Page) =
-    li [ a ~service:D.service [pcdata @@ D.name] () ]
+    li [ a ~service:D.service [pcdata @@ D.name ()] () ]
   in
   let submenu =
     ul ~a:[a_class ["os-drawer-submenu"]] (List.map make_link demos)

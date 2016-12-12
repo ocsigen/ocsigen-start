@@ -23,8 +23,8 @@ let%shared make ?user () =
     else user_menu ()
   in
   let items =
-    item "Home" Os_services.main_service
-    :: item "About" %%%MODULE_NAME%%%_services.about_service
+    item [%i18n S.home ~capitalize:true] Os_services.main_service
+    :: item [%i18n S.about ~capitalize:true] %%%MODULE_NAME%%%_services.about_service
     :: Demo_tools.drawer_contents ()
     :: items
   in

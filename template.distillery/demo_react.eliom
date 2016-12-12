@@ -14,7 +14,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name = "Reactive programming"
+let%shared name () = [%i18n S.demo_reactive_programming]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-react"
@@ -69,16 +69,9 @@ let%shared page () =
       l
   in
   Lwt.return Eliom_content.Html.[
-    F.p [ F.pcdata "This is an example of page with reactive content."]
-  ; F.p [ F.pcdata "It defines a (client-side) reactive list. \
-                    You can add elements in this list via the input form. \
-                    The page is updated automatically \
-                    when the value of the reactive list changes."]
-  ; F.p [ F.pcdata "The reactive page is generated either server-side \
-                    (for example when you are using a Web browser \
-                    and you reload this page) \
-                    or client-side (on mobile app or if you already were \
-                    in this app before coming to this page)."]
+    F.p [ F.pcdata [%i18n S.demo_reactive_programming_1]]
+  ; F.p [ F.pcdata [%i18n S.demo_reactive_programming_2]]
+  ; F.p [ F.pcdata [%i18n S.demo_reactive_programming_3]]
   ; inp
   ; F.div [R.ul l]
   ]
