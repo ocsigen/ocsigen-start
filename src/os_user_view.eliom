@@ -39,12 +39,19 @@ let%client check_password_confirmation ~password ~confirmation =
                else (Js.Unsafe.coerce confirmation_dom)##(setCustomValidity ("")));
             Lwt.return ()))
 
-let%shared generic_email_form ?a ?label ?(text="Send") ?(email="") ~service () =
+let%shared generic_email_form
+    ?a
+    ?label
+    ?(a_placeholder_email="e-mail address")
+    ?(text="Send")
+    ?(email="")
+    ~service
+    () =
   D.Form.post_form ?a ~service
     (fun name ->
       let l = [
         Form.input
-          ~a:[a_placeholder "e-mail address"]
+          ~a:[a_placeholder a_placeholder_email]
           ~input_type:`Email
           ~value:email
           ~name
@@ -93,36 +100,51 @@ let%shared connect_form
            Form.string
        ]) ()
 
-let%shared disconnect_button ?a () =
+let%shared disconnect_button ?a ?(text_logout="Logout") () =
   Form.post_form ?a ~service:Os_services.disconnect_service
     (fun _ -> [
          Form.button_no_value
            ~a:[ a_class ["button"] ]
            ~button_type:`Submit
-           [Os_icons.F.signout (); pcdata "Logout"]
+           [Os_icons.F.signout (); pcdata text_logout]
        ]) ()
 
-let%shared sign_up_form ?a ?email () =
-  generic_email_form ?a ?email ~service:Os_services.sign_up_service ()
+let%shared sign_up_form ?a ?a_placeholder_email ?text ?email () =
+  generic_email_form
+    ?a
+    ?a_placeholder_email
+    ?text
+    ?email
+    ~service:Os_services.sign_up_service
+    ()
 
 let%shared forgot_password_form ?a () =
   generic_email_form ?a
     ~service:Os_services.forgot_password_service ()
 
-let%shared information_form ?a
-    ?(firstname="") ?(lastname="") ?(password1="") ?(password2="")
+let%shared information_form
+    ?a
+    ?(a_placeholder_password="Your password")
+    ?(a_placeholder_retype_password="Retype password")
+    ?(a_placeholder_firstname="Your first name")
+    ?(a_placeholder_lastname="Your last name")
+    ?(text_submit="Submit")
+    ?(firstname="")
+    ?(lastname="")
+    ?(password1="")
+    ?(password2="")
     () =
   D.Form.post_form ?a ~service:Os_services.set_personal_data_service
     (fun ((fname, lname), (passwordn1, passwordn2)) ->
        let pass1 = D.Form.input
-           ~a:[a_placeholder "Your password"]
+           ~a:[a_placeholder a_placeholder_password]
            ~name:passwordn1
            ~value:password1
            ~input_type:`Password
            Form.string
        in
        let pass2 = D.Form.input
-           ~a:[a_placeholder "Re-enter password"]
+           ~a:[a_placeholder a_placeholder_retype_password]
            ~name:passwordn2
            ~value:password2
            ~input_type:`Password
@@ -134,13 +156,13 @@ let%shared information_form ?a
        in
        [
          Form.input
-           ~a:[a_placeholder "Your first name"]
+           ~a:[a_placeholder a_placeholder_firstname]
            ~name:fname
            ~value:firstname
            ~input_type:`Text
            Form.string;
          Form.input
-           ~a:[a_placeholder "Your last name"]
+           ~a:[a_placeholder a_placeholder_lastname]
            ~name:lname
            ~value:lastname
            ~input_type:`Text
@@ -150,7 +172,7 @@ let%shared information_form ?a
          Form.input
            ~a:[a_class ["button"]]
            ~input_type:`Submit
-           ~value:"Submit"
+           ~value:text_submit
            Form.string;
        ]) ()
 
@@ -266,9 +288,10 @@ let%shared upload_pic_link
       Lwt.return () ) : _ ) ] :: a) content
 
 let%shared reset_tips_link
+    ?(text_link="See help again from beginning")
     ?(close : (unit -> unit) Eliom_client_value.t = [%client (fun () -> () : unit -> unit)]) ()
-    =
-  let l = D.Raw.a [pcdata "See help again from beginning"] in
+  =
+  let l = D.Raw.a [pcdata text_link] in
   ignore [%client (
     Lwt_js_events.(async (fun () ->
       clicks (To_dom.of_element ~%l)
@@ -305,13 +328,16 @@ let%shared bind_popup_button
        : _)
     ]
 
-let%shared forgotpwd_button ?(close = [%client (fun () -> () : unit -> unit)])
+let%shared forgotpwd_button
+    ?(content_popup="Recover password")
+    ?(text_button="Forgot your password?")
+    ?(close = [%client (fun () -> () : unit -> unit)])
     () =
   let popup_content = [%client fun _ -> Lwt.return @@
-    div [ h2 [ pcdata "Recover password" ]
+    div [ h2 [ pcdata ~%content_popup ]
         ; forgot_password_form ()] ]
   in
-  let button_name = "Forgot your password?" in
+  let button_name = text_button in
   let button = D.Raw.a ~a:[ a_class ["os-forgot-pwd-link"]
                           ; a_onclick [%client fun _ -> ~%close () ] ]
       [pcdata button_name]
@@ -323,14 +349,30 @@ let%shared forgotpwd_button ?(close = [%client (fun () -> () : unit -> unit)])
     ();
   button
 
-let%shared sign_in_button () =
+let%shared sign_in_button
+    ?(a_placeholder_email="Your email")
+    ?(a_placeholder_pwd="Your password")
+    ?(text_keep_me_logged_in="keep me logged in")
+    ?(text_sign_in="Sign in")
+    ?(content_popup_forgotpwd="Recover password")
+    ?(text_button_forgotpwd="Forgot your password?")
+    ?(text_button="Sign in")
+    () =
   let popup_content = [%client fun close -> Lwt.return @@
-    div [ h2 [ pcdata "Sign in" ]
-        ; connect_form ()
-        ; forgotpwd_button ~close:(fun () -> Lwt.async close) ()
+    div [ h2 [ pcdata ~%text_button ]
+        ; connect_form
+            ~a_placeholder_email:~%a_placeholder_email
+            ~a_placeholder_pwd:~%a_placeholder_pwd
+            ~text_keep_me_logged_in:~%text_keep_me_logged_in
+            ~text_sign_in:~%text_sign_in
+            ()
+        ; forgotpwd_button
+            ~content_popup:~%content_popup_forgotpwd
+            ~text_button:~%text_button_forgotpwd
+            ~close:(fun () -> Lwt.async close) ()
         ] ]
   in
-  let button_name = "Sign In" in
+  let button_name = text_button in
   let button =
     D.button ~a:[a_class ["button" ; "os-sign-in-btn"]] [pcdata button_name]
   in
@@ -341,12 +383,21 @@ let%shared sign_in_button () =
     ();
   button
 
-let%shared sign_up_button () =
+let%shared sign_up_button
+    ?(a_placeholder_email="Your email")
+    ?(text_button="Sign up")
+    ?(text_send_button="Send")
+    () =
   let popup_content = [%client fun _ -> Lwt.return @@
-    div [ h2 [ pcdata "Sign up" ]
-        ; sign_up_form ()] ]
+    div [ h2 [ pcdata ~%text_button ]
+        ; sign_up_form
+            ~a_placeholder_email:~%a_placeholder_email
+            ~text:~%text_send_button
+            ()
+        ]
+  ]
   in
-  let button_name = "Sign Up" in
+  let button_name = text_button in
   let button =
     D.button ~a:[a_class ["button" ; "os-sign-up-btn"]] [pcdata button_name]
   in
@@ -387,15 +438,61 @@ let%shared connected_user_box ~user =
     ; div [ username ]
     ]
 
-let%shared connection_box () =
-  let sign_in    = sign_in_button () in
-  let sign_up    = sign_up_button () in
+let%shared connection_box
+    ?(a_placeholder_email="Your email")
+    ?(a_placeholder_pwd="Your password")
+    ?(text_keep_me_logged_in="keep me logged in")
+    ?(content_popup_forgotpwd="Recover password")
+    ?(text_button_forgotpwd="Forgot your password?")
+    ?(text_sign_in="Sign in")
+    ?(text_sign_up="Sign up")
+    ?(text_send_button="Send")
+    ()
+  =
+  let sign_in    =
+    sign_in_button
+      ~a_placeholder_email
+      ~a_placeholder_pwd
+      ~text_keep_me_logged_in
+      ~text_sign_in
+      ~content_popup_forgotpwd
+      ~text_button_forgotpwd
+      ~text_button:text_sign_in
+      ()
+  in
+  let sign_up    =
+    sign_up_button
+      ~a_placeholder_email
+      ~text_button:text_sign_up
+      ~text_send_button
+      ()
+  in
   Lwt.return @@ div ~a:[ a_class ["os-connection-box"] ]
     [ sign_in
     ; sign_up
     ]
 
-let%shared user_box ?user () =
+let%shared user_box
+    ?(a_placeholder_email="Your email")
+    ?(a_placeholder_pwd="Your password")
+    ?(text_keep_me_logged_in="keep me logged in")
+    ?(content_popup_forgotpwd="Recover password")
+    ?(text_button_forgotpwd="Forgot your password?")
+    ?(text_sign_in="Sign in")
+    ?(text_sign_up="Sign up")
+    ?(text_send_button="Send")
+    ?user
+    () =
   match user with
-  | None -> connection_box ()
+  | None ->
+    connection_box
+      ~a_placeholder_email
+      ~a_placeholder_pwd
+      ~text_keep_me_logged_in
+      ~content_popup_forgotpwd
+      ~text_button_forgotpwd
+      ~text_sign_in
+      ~text_sign_up
+      ~text_send_button
+      ()
   | Some user -> Lwt.return (connected_user_box ~user)

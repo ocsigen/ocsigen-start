@@ -12,6 +12,7 @@ depends: [
   "pgocaml" {>= "2.3"}
   "macaque" {>= "0.7.4"}
   "safepass"
+  "ocsigen-i18n"
   "eliom" {>= "6.0"}
   "ocsigen-toolkit" {>= "0.99"}
   "yojson"
