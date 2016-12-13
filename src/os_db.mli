@@ -3,9 +3,7 @@
  * http://www.ocsigen.org/ocsigen-start
  *
  * Copyright (C) Université Paris Diderot, CNRS, INRIA, Be Sport.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
+ * * This program is free software; you can redistribute it and/or modify * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, with linking exception;
  * either version 2.1 of the License, or (at your option) any later version.
  *
@@ -255,4 +253,160 @@ module Groups : sig
   (** [all ()] returns all groups as list of tuple [(groupid, name,
       description)]. *)
   val all : unit -> (Os_types.Group.id * string * string option) list Lwt.t
+end
+
+module OAuth2_server : sig
+  val new_client :
+    application_name:string ->
+    description:string ->
+    redirect_uri:Ocsigen_lib.Url.t ->
+    client_id:Os_types.OAuth2.client_id ->
+    client_secret:Os_types.OAuth2.client_secret ->
+    Os_types.OAuth2.Server.id Lwt.t
+
+  val client_of_id :
+    Os_types.OAuth2.Server.id ->
+    (string * string * string) Lwt.t
+
+  val registered_client_of_id :
+    Os_types.OAuth2.Server.id ->
+    (
+      Os_types.OAuth2.Server.id *
+      string *
+      string *
+      Ocsigen_lib.Url.t *
+      Os_types.OAuth2.client_id *
+      Os_types.OAuth2.client_secret
+    ) Lwt.t
+
+  val registered_client_of_client_id :
+    Os_types.OAuth2.client_id ->
+    (
+      Os_types.OAuth2.Server.id *
+      string *
+      string *
+      Ocsigen_lib.Url.t *
+      Os_types.OAuth2.client_id *
+      Os_types.OAuth2.client_secret
+    ) Lwt.t
+
+
+  val registered_client_exists_by_client_id :
+    Os_types.OAuth2.client_id ->
+    bool Lwt.t
+
+  val client_secret_of_client_id :
+    Os_types.OAuth2.client_id ->
+    Os_types.OAuth2.client_secret Lwt.t
+
+  val list_clients :
+    ?min_id:Os_types.OAuth2.Server.id ->
+    ?limit:int64 ->
+    unit        ->
+    (
+      Os_types.OAuth2.Server.id *
+      string *
+      string *
+      Ocsigen_lib.Url.t *
+      Os_types.OAuth2.client_id *
+      Os_types.OAuth2.client_secret
+    ) list Lwt.t
+
+  val id_of_client_id :
+    Os_types.OAuth2.client_id ->
+    Os_types.OAuth2.Server.id Lwt.t
+
+  val update_client :
+    Os_types.OAuth2.Server.id ->
+    application_name:string ->
+    description:string ->
+    redirect_uri:Ocsigen_lib.Url.t ->
+    unit Lwt.t
+
+  val update_description :
+    Os_types.OAuth2.Server.id ->
+    string ->
+    unit Lwt.t
+
+  val update_redirect_uri :
+    Os_types.OAuth2.Server.id ->
+    Ocsigen_lib.Url.t ->
+    unit Lwt.t
+
+  val update_client_credentials :
+    Os_types.OAuth2.Server.id ->
+    Os_types.OAuth2.client_id ->
+    Os_types.OAuth2.client_secret ->
+    unit Lwt.t
+
+  val update_application_name :
+    Os_types.OAuth2.Server.id ->
+    string ->
+    unit Lwt.t
+
+  val remove_client :
+    Os_types.OAuth2.Server.id ->
+    unit Lwt.t
+
+  (** Remove a client by using the client ID.
+      Raise an exception {!No_such_resource} if no client has the given client
+      ID.
+   *)
+  val remove_client_by_client_id :
+    Os_types.OAuth2.client_id ->
+    unit Lwt.t
+end
+
+module OAuth2_client : sig
+  val save_server :
+    server_id:Os_types.OAuth2.Client.server_id ->
+    server_authorization_url:Ocsigen_lib.Url.t ->
+    server_token_url:Ocsigen_lib.Url.t ->
+    server_data_url:Ocsigen_lib.Url.t ->
+    client_id:Os_types.OAuth2.client_id ->
+    client_secret:Os_types.OAuth2.client_secret ->
+    Os_types.OAuth2.Client.id Lwt.t
+
+  val remove_server_by_id :
+    Os_types.OAuth2.Client.id ->
+    unit Lwt.t
+
+  val server_id_exists :
+    Os_types.OAuth2.Client.server_id ->
+    bool Lwt.t
+
+  val id_of_server_id :
+    Os_types.OAuth2.Client.server_id ->
+    Os_types.OAuth2.Client.id Lwt.t
+
+  val remove_client_credentials :
+    Os_types.OAuth2.Client.id ->
+    unit Lwt.t
+
+  val get_server_authorization_url :
+    server_id:Os_types.OAuth2.Client.server_id ->
+    Ocsigen_lib.Url.t Lwt.t
+
+  val get_server_token_url :
+    server_id:Os_types.OAuth2.Client.server_id ->
+    Ocsigen_lib.Url.t Lwt.t
+
+  val get_client_credentials :
+    server_id:Os_types.OAuth2.Client.server_id ->
+    (
+      Os_types.OAuth2.client_id *
+      Os_types.OAuth2.client_secret
+    ) Lwt.t
+
+  val list_servers :
+    unit ->
+    (
+      Os_types.OAuth2.Client.id *
+      Os_types.OAuth2.Client.server_id *
+      Ocsigen_lib.Url.t *
+      Ocsigen_lib.Url.t *
+      Ocsigen_lib.Url.t *
+      Os_types.OAuth2.client_id *
+      Os_types.OAuth2.client_secret
+    ) list Lwt.t
 end
