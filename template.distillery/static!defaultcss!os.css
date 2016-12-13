@@ -191,7 +191,7 @@ a.os-page-header-app-name {
   text-align: center; }
 
 .os-emails {
-  text-align: center;
+  text-align: left;
   display: flex;
   justify-content: center; }
   .os-emails ul {
@@ -199,23 +199,34 @@ a.os-page-header-app-name {
     .os-emails ul li {
       padding: 5px 10px;
       border-bottom: 1px solid #e5e5e5;
-      display: block; }
-      .os-emails ul li .label {
-        display: inline-block;
+      display: flex;
+      justify-content: space-between;
+      align-items: center; }
+      .os-emails ul li .os-settings-label {
         font-weight: bold;
-        padding: 4px 6px;
+        padding: 4px 10px;
         margin-left: 4px;
         border-radius: 3px; }
-      .os-emails ul li .main-email {
+      .os-emails ul li .os-settings-email {
+        flex-grow: 2;
+        padding-right: 20px; }
+      .os-emails ul li .os-main-email {
         color: #fff;
         background-color: #6cc664; }
-      .os-emails ul li .validated-email {
+      .os-emails ul li .os-validated-email {
         color: #fff;
         background-color: #25a; }
-      .os-emails ul li .remove-email-button {
+      .os-emails ul li .os-remove-email-button {
         box-shadow: none;
         font-size: 18px;
         margin: 0px;
         color: #bd2c00; }
+
+.os-avatar {
+  margin-right: 15px;
+  width: 35px; }
+
+.ot-dr-left .os-avatar {
+  margin-left: 16px; }
 
 /*# sourceMappingURL=.os_temporary_filename.css.map */
