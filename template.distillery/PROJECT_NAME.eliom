@@ -52,7 +52,7 @@ let%shared () =
     ~service:%%%MODULE_NAME%%%_services.settings_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.settings_handler)
 
-let () =
+let%server () =
   Eliom_registration.Ocaml.register
     ~service:%%%MODULE_NAME%%%_services.upload_user_avatar_service
     (Os_session.connected_fun %%%MODULE_NAME%%%_handlers.upload_user_avatar_handler)
@@ -66,7 +66,7 @@ let () =
    Lwt_log.ign_info ~section "This is an information";
    (or ign_debug, ign_warning, ign_error etc.)
  *)
-let _ =
+let%server _ =
   if Eliom_config.get_debugmode ()
   then begin
     ignore
