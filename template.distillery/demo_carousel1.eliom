@@ -49,7 +49,7 @@ let%shared page () =
   let next = Ot_carousel.next ~change ~pos ~size ~length [] in
   Lwt.return
     [
-      p [pcdata "This is a firts examplel of the Ocsigen Toolkit's carousel."];
+      p [pcdata "This is a first example of Ocsigen Toolkit's carousel."];
       p [pcdata "The carousel displays a number of blocks side-by-side (or \
                  vertically stacked)."];
       p [pcdata "To switch to a different block, either use the buttons \
