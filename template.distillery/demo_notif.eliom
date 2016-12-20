@@ -24,20 +24,24 @@ let%shared page_class = "os-page-demo-notif"
    The key is the resource ID. For example, if you are implementing a
    messaging application, it can be the chatroom ID
    (for example type key = int64).
-   In this example, we have only one notification and one resource
-   (type key = unit).
 *)
 module Notif =
   Os_notif.Make_Simple (struct
-    type key = unit
+    type key = unit (* The resources identifiers.
+                       Here unit because we have only one resource. *)
     type notification = string
   end)
 
 (* Broadcast message [v] *)
 let%server notify v =
-  (* Notify all client processes listening on this resource (first paremeter)
+  (* Notify all client processes listening on this resource
+     (identified by its key, given as first parameter)
      by sending them message v. *)
-  Notif.notify (() :  Notif.key) v;
+  Notif.notify (* ~notfor:`Me *) (() :  Notif.key) v;
+  (* Use ~notfor:`Me to avoid receiving the message in this tab,
+     or ~notfor:(`User myid) to avoid sending to the current user.
+     (Where myid is Os_current_user.get_current_userid ())
+  *)
   Lwt.return ()
 
 (* Make [notify] available client-side *)
