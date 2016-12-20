@@ -41,10 +41,8 @@ endef
 
 check_sass:
 ifeq ($(strip $(USE_SASS)),yes)
-ifeq ($(shell which sassc),)
 ifeq ($(shell which sass),)
 $(error $(ERROR_SASS))
-endif
 endif
 endif
 
@@ -64,6 +62,7 @@ endif
 # If SASS is not activated, it will concatenate all CSS files (listed in
 # $(CSS_FILES)) in $(LOCAL_CSS).
 # In both cases, external CSS files ($(EXTERNAL_CSS_FILES)) are copied.
+# If sassc is not installed, sass is used by default.
 $(LOCAL_CSS): check_sass check_postcss import-external-css
 ifeq "$(USE_SASS)" "yes"
 	[ -d $(SASSDIR) ] && \
