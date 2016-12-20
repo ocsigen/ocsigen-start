@@ -35,7 +35,7 @@ let%client set_personal_data_handler =
 
 (* Forgot password *)
 let%server forgot_password_handler =
-  Os_handlers.forgot_password_handler Os_services.main_service
+  Os_handlers.forgot_password_handler %%%MODULE_NAME%%%_services.settings_service
 
 let%client forgot_password_handler =
   let forgot_password_rpc =
