@@ -23,7 +23,7 @@ let%shared () =
     ~service:Os_services.sign_up_service
     Os_handlers.sign_up_handler;
 
-  Eliom_registration.Unit.register
+  Eliom_registration.Action.register
     ~service:Os_services.connect_service
     Os_handlers.connect_handler;
 
