@@ -101,10 +101,10 @@
     <preference name="KeyboardShrinksView" value="false" />
 
     <!-- For geolocation: -->
-    <!-- This plugin (or another one if you have one) is necessary if you need geolocation in your app:
-    <plugin name="cordova-plugin-geolocation" spec="https://github.com/apache/cordova-plugin-geolocation.git" />
-    -->
-    <!-- If you have troubles with annoying popups on iOS regarding the usage of geolocation features, 
+    <!-- This plugin (or another one if you have one) is necessary if you need geolocation in your app: -->
+    <!-- <plugin name="cordova-plugin-geolocation" spec="https://github.com/apache/cordova-plugin-geolocation.git" /> -->
+    <!-- It might be helpful to know there are bindings for OCaml: https://github.com/dannywillems/ocaml-cordova-plugin-geolocation -->
+    <!-- If you have trouble with annoying popups on iOS regarding the usage of geolocation features, 
          do consider calling the function directly:
          ```
          cordova##exec
