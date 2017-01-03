@@ -149,7 +149,8 @@ let os_action_link_table :
        creationdate timestamptz NOT NULL DEFAULT(current_timestamp ())
            ) >>
 
-let os_groups_groupid_seq = <:sequence< bigserial "ocsigen_start.groupid_seq" >>
+let os_groups_groupid_seq =
+  <:sequence< bigserial "ocsigen_start.groups_groupid_seq" >>
 
 let os_groups_table =
   <:table< ocsigen_start.groups (
