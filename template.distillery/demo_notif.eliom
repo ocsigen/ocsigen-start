@@ -98,5 +98,5 @@ let%server page () =
 let%client page =
   ~%((Eliom_client.server_function [%derive.json: unit] page) :
        (unit,
-        [`Div | `P | `Input] Eliom_content.Html.D.elt list)
+        [ `Div | `P | `Input | `H1 ] Eliom_content.Html.D.elt list)
          Eliom_client.server_function)
