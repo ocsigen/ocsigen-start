@@ -54,14 +54,16 @@ SASS_TEMPORARY_PROJECT_NAME := os_temporary_project_name
 ##----------------------------------------------------------------------
 
 # OCamlfind packages for the server
-SERVER_PACKAGES    := lwt.ppx js_of_ocaml.deriving.ppx calendar safepass \
-                      ocsigen-toolkit.server yojson
+SERVER_PACKAGES    := calendar safepass ocsigen-toolkit.server yojson
+
+SERVER_SYNTAX_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx
 
 SERVER_DB_PACKAGES := pgocaml pgocaml.syntax macaque.syntax calendar safepass
 
 # OCamlfind packages for the client
-CLIENT_PACKAGES    := lwt.ppx js_of_ocaml.deriving.ppx js_of_ocaml.ppx \
-                      calendar ocsigen-toolkit.client
+CLIENT_PACKAGES    := calendar ocsigen-toolkit.client
+
+CLIENT_SYNTAX_PACKAGES := lwt.ppx js_of_ocaml.deriving.ppx js_of_ocaml.ppx
 
 # Debug package (yes/no): Debugging info in compilation
 DEBUG              := yes
