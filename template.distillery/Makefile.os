@@ -256,7 +256,8 @@ CLIENT_OBJS := $(filter %.eliom %.ml, $(CLIENT_FILES))
 CLIENT_OBJS := $(patsubst %.eliom,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
 CLIENT_OBJS := $(patsubst %.ml,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
 
-$(ELIOM_CLIENT_DIR)/os_prologue.js:
+$(ELIOM_CLIENT_DIR)/os_prologue.js: \
+    $(shell ocamlfind query -r -predicates byte -a-format $(CLIENT_PACKAGES))
 	${JS_OF_ELIOM} -jsopt --dynlink -o $@ $(GENERATE_DEBUG) $(CLIENT_INC) \
 		${addprefix -jsopt ,$(DEBUG_JS)}
 
