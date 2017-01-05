@@ -167,6 +167,7 @@ let%server forgot_password_handler service () email =
     let%lwt userid = Os_user.userid_of_email email in
     let msg = "Hi,\r\nTo set a new password, \
                please click on this link: " in
+    Os_msg.msg ~level:`Msg ~onload:true "An email was sent to this address. Click on the link it contains to reset your password.";
     send_action_link ~autoconnect:true ~action:`PasswordReset ~validity:1L
       msg service email userid
   with Os_db.No_such_resource ->
