@@ -49,13 +49,17 @@ let%client notify =
   ~%(Eliom_client.server_function [%derive.json : string]
        (Os_session.connected_wrapper notify))
 
-(* Subscribe for notifications via [Notif.listen ()]; produce an alert
-   every time the event [e = Notif.client_ev ()] happens *)
+(* Subscribe for notifications via [Notif.listen ()];
+   Display a message every time the React event [e = Notif.client_ev ()]
+   happens. *)
 let%server listen () =
   Notif.listen ();
   let e : (unit * string) Eliom_react.Down.t = Notif.client_ev () in
   ignore [%client
-    ((React.E.map (fun (_, msg) -> Eliom_lib.alert "got %s" msg) ~%e)
+    ((React.E.map (fun (_, msg) ->
+       (* Eliom_lib.alert "got %s" msg *)
+       Os_msg.msg ~level:`Msg (Printf.sprintf "got %s" msg)
+     ) ~%e)
      : unit React.E.t)
   ]
 
@@ -94,5 +98,5 @@ let%server page () =
 let%client page =
   ~%((Eliom_client.server_function [%derive.json: unit] page) :
        (unit,
-        [`Div | `P | `Input] Eliom_content.Html.D.elt list)
+        [ `Div | `P | `Input | `H1 ] Eliom_content.Html.D.elt list)
          Eliom_client.server_function)

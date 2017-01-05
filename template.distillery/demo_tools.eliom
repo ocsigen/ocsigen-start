@@ -23,7 +23,7 @@ module type Page = sig
 
   val page :
     unit ->
-    ([`P | `Div | `Input] Eliom_content.Html.D.elt) list Lwt.t
+    ([ `P | `Div | `Input | `H1 ] Eliom_content.Html.D.elt) list Lwt.t
 
 end
 
@@ -33,6 +33,7 @@ let demos =
   ; (module Demo_ref)
   ; (module Demo_spinner)
   ; (module Demo_pgocaml)
+  ; (module Demo_users)
   ; (module Demo_carousel1)
   ; (module Demo_carousel2)
   ; (module Demo_carousel3)
@@ -40,6 +41,7 @@ let demos =
   ; (module Demo_timepicker)
   ; (module Demo_notif)
   ; (module Demo_react)
+  ; (module Demo_cache)
   ]
 
 let drawer_contents () =

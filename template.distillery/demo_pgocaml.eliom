@@ -38,7 +38,10 @@ let%shared page () =
   let%lwt user_block =
     Ot_spinner.with_spinner
       (let%lwt users = get_users () in
-       let users = List.map (fun u -> li [pcdata u]) users in
+       let users = List.map (fun u -> if u = ""
+                              then li [em [pcdata "new user"]]
+                              else li [pcdata u]) users
+       in
        if users = []
        then Lwt.return
            [ p [ em [ pcdata "No user. Create some accounts to test." ]] ]
