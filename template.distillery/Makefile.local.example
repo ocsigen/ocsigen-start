@@ -4,9 +4,9 @@
 ## Makefile.local must be only local: you must not distribute it. It must
 ## contain the local configuration for your development workflow.
 
-# The IP address of your server.
+# The URL address of your Web app.
 # See Makefile.mobile for more information about this variable.
-APP_SERVER       := YOUR_IP_ADDRESS:PORT
+APP_SERVER       := http://YOUR_IP_ADDRESS:PORT
 
 # Use to decide if JS and CSS files must be retrieved from the server or not
 # while building the mobile application.
