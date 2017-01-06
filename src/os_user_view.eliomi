@@ -279,6 +279,7 @@ val upload_pic_link :
 val reset_tips_link :
   ?text_link:string ->
   ?close: (unit -> unit) Eliom_client_value.t ->
+  unit ->
   [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
 
 (** A disconnect button *)
