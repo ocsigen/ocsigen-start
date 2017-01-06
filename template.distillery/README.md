@@ -115,9 +115,9 @@ Build the mobile applications
 
 ### For all mobile platforms:
 
-- Install npm (on Debian and Ubuntu, `sudo apt-get install npm`). If you have
+- Install NPM (on Debian and Ubuntu, `sudo apt-get install npm`). If you have
   issues with your package manager, you can also use
-  [[https://github.com/creationix/nvm|nvm]].
+  [https://github.com/creationix/nvm](nvm).
 - Install Cordova (`sudo npm install -g cordova`)
 - Install the needed Cordova plugins:
 ```Shell
@@ -141,10 +141,10 @@ If you will test on an Android device, you don't need to do anything else.
 
 If you want to emulate an Android device, you need to
 
-- install qemu-kvm
+- install `qemu-kvm`
 - From the tools/android interface, install a system image (e.g., Intel x86 Atom_64) and configure an emulator: go to Tools -> Manage AVDs -> Device definition (for example choose Nexus 6 no skin)
 
-You can install any Android API version you want, depending on the platform you want to target. By default, in ocsigen-start, the minimal version is Android API 15.
+You can install any Android API version you want, depending on the platform you want to target. By default, in ocsigen Start, the minimal version is Android API 15.
 
 ### For iOS:
 
@@ -152,13 +152,13 @@ You can install any Android API version you want, depending on the platform you 
 
 ### For Windows:
 
-Ocsigen-start uses
+Ocsigen Start uses
 [cordova-hot-code-push-plugin](https://github.com/nordnet/cordova-hot-code-push)
 to upload local files (like CSS and JavaScript files, images and logo) when the
 server code changes.
 
 Unfortunately, this plugin is not yet available for Windows Phone. However, as
-ocsigen-start also builds the website part, an idea is to run the website into a
+ocsigen Start also builds the website part, an idea is to run the website into a
 WebView on Windows Phones.
 
 Even if Cordova allows you to build Windows app, it doesn't authorize you to
@@ -171,9 +171,14 @@ also use Windows JavaScript API (no OCaml binding available for the moment) to
 get access to native components. You can create the APPX package (package format
 for Windows app) by using [Manifold JS](http://manifoldjs.com/), even if you are on MacOS X or Linux.
 
-If you are on Windows, you can use [Visual Studio Community](https://www.visualstudio.com/fr/vs/community/). The Visual Studio Community solution is recommended to test and debug. You can see all errors in the JavaScript console provided in Visual Studio.
+If you are on Windows, you can
+use [Visual Studio Community](https://www.visualstudio.com/fr/vs/community/).
+The Visual Studio Community solution is recommended to test and debug. You can
+see all errors in the JavaScript console provided in Visual Studio.
 
-[Here](https://blogs.windows.com/buildingapps/2016/02/17/building-a-great-hosted-web-app/#3mlzw0giKcuGZDeq.97) a complete tutorial from the Windows blog for both versions (with Manifold JS and Visual Studio).
+[Here](https://blogs.windows.com/buildingapps/2016/02/17/building-a-great-hosted-web-app/#3mlzw0giKcuGZDeq.97) a
+complete tutorial from the Windows blog for both versions (with Manifold JS and
+Visual Studio).
 
 If you use the Manifold JS solution, you need to sign the APPX before installing it on a device.
 
