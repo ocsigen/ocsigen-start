@@ -16,7 +16,7 @@ let%shared os_header ?user () = Eliom_content.Html.F.(
       ~text_button_forgotpwd:[%i18n S.forgot_your_password_q ~capitalize:true]
       ~text_sign_in:[%i18n S.sign_in ~capitalize:true]
       ~text_sign_up:[%i18n S.sign_up ~capitalize:true]
-      ~text_send_button:[%i18n S.end ~capitalize:true]
+      ~text_send_button:[%i18n S.send ~capitalize:true]
       ?user
       ()
   in
