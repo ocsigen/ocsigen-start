@@ -78,19 +78,19 @@ open_multiple_tabs_browsers	Open this page in multiple tabs or browsers.	Ouvrez 
 fill_input_form_send_message	Fill in the input form to send a message.	Remplissez le formulaire pour envoyer un message.
 send_message	send message	envoyer le message
 demo_pgocaml	Database request	Requête à la base de données.
-no_user_create_accounts	No user. Create some accounts to test.	Aucun utilisateur. Créer quelques comptes pour tester.
+no_user_create_accounts	No user. Create some accounts to test.	Aucun utilisateur. Créez quelques comptes pour tester.
 demo_pgocaml_users	Users:	Utilisateurs:
 demo_pgocaml_description_1	This page shows signed-up users fetched from the database.	Cette page montre tous les utilisateurs inscrits qui ont été récupérés de la base de données.
 demo_pgocaml_description_2	Have a look at the source code to see how to make a DB request with PGOCaml.	Regardez dans le code source comment réaliser une requête à la base de données en utilisant PGOcaml.
 demo_pgocaml_description_3	We are using Ot_spinner to display the list, which means that, in the case the page is generated client-side, the page will be displayed immediately with a spinner, that will be replaced by the contents when ready. The code contains a 2s sleep to demonstrate the spinner.	Nous utilisons Ot_spinner pour afficher la liste, ce qui signifique que, dans le cas où une page est générée coté client, cette page est affichée immédiatement avec une icone de chargement qui sera remplacée par le contenu quand il sera prêt. Le code contient une pause de 2s pour afficher l'icone de chargement.
 demo_popup	Popup Button	Bouton popup
-demo_popup_click	Click for a popup!	Cliquer pour afficher un popup!
+demo_popup_click	Click for a popup!	Cliquez pour afficher un popup!
 demo_popup_message	Popup message	Message du popup
 demo_popup_content	Here is a button showing a simple popup window when clicked:	Voici un bouton montrant une simple fenêtre popup quand vous cliquez:
 demo_reactive_programming	Reactive programming	Programmation réactive
 demo_reactive_programming_1	This is an example of page with reactive content.	Ceci est un exemple d'une page avec du contenu réactif.
-demo_reactive_programming_2	It defines a (client-side) reactive list. You can add elements in this list via the input form. The page is updated automatically when the value of the reactive list changes.	Il définit une liste réactive (coté client). Vous pouvez ajouter des élements dans cette liste via le formulaire. Cette page sera automatique mise ) jour quand la valeur de la liste réactive changera.
-demo_reactive_programming_3	The reactive page is generated either server-side (for example when you are using a Web browser and you reload this page) or client-side (on mobile app or if you already were in this app before coming to this page).	La page réactive est générée aussi bien du coté serveur (par exemple que vous utilisez le navigateur web et que vous rechargez cette page) que du coté client (sur mobile ou si vous étiez déjà sur dans cette application avant de venir sur cette page).
+demo_reactive_programming_2	It defines a (client-side) reactive list. You can add elements in this list via the input form. The page is updated automatically when the value of the reactive list changes.	Il définit une liste réactive (coté client). Vous pouvez ajouter des élements dans cette liste via le formulaire. Cette page sera automatique mise à jour quand la valeur de la liste réactive changera.
+demo_reactive_programming_3	The reactive page is generated either server-side (for example when you are using a Web browser and you reload this page) or client-side (on mobile app or if you already were in this app before coming to this page).	La page réactive est générée aussi bien du coté serveur (par exemple quand vous utilisez le navigateur web et que vous rechargez cette page) que du coté client (sur mobile ou si vous étiez déjà sur dans cette application avant de venir sur cette page).
 demo_eliom_ref	Eliom references + OS dates	Références Eliom + dates OS
 demo_eliom_ref_first_visit	This is your first visit.	Ceci est votre première visite.
 demo_eliom_ref_last_visit	The last time you visited was:	 La dernière fois que vous avez visité ce lien était: 
@@ -112,6 +112,6 @@ demo_timepicker_back_to_hours	back to hours	revenir aux heures
 demo_timepicker_description	This page shows the timepicker.	Cette page montre le timepicker.
 change_profile_picture	Change profile picture	Changer votre photo de profil.
 demo_widget_ot	This page contains some demos for some widgets from ocsigen-toolkit. Cette contient quelques démonstrations de quelques widgets d'ocsigen-toolkit.
-demo_widget_see_drawer	The different demos are accessible through the drawer menu. To open it click the top left button on the screen.	Ces différentes démonstrations sont accessible à travers le menu. Pour l'ouvrir, cliquer sur le bouton en haut à gauche de l'écran.
+demo_widget_see_drawer	The different demos are accessible through the drawer menu. To open it click the top left button on the screen.	Ces différentes démonstrations sont accessibles à travers le menu. Pour l'ouvrir, cliquez sur le bouton en haut à gauche de l'écran.
 demo_widget_feel_free	Feel free to modify the generated code and use it or redistribute it as you want.	Vous êtes libres de modifier le code généré et de l'utiliser ou de le redistribuer comme vous souhaitez.
 users	Users	Utilisateurs
