@@ -115,3 +115,12 @@ demo_widget_ot	This page contains some demos for some widgets from ocsigen-toolk
 demo_widget_see_drawer	The different demos are accessible through the drawer menu. To open it click the top left button on the screen.	Ces différentes démonstrations sont accessibles à travers le menu. Pour l'ouvrir, cliquez sur le bouton en haut à gauche de l'écran.
 demo_widget_feel_free	Feel free to modify the generated code and use it or redistribute it as you want.	Vous êtes libres de modifier le code généré et de l'utiliser ou de le redistribuer comme vous souhaitez.
 users	Users	Utilisateurs
+you_are_not_connected	You are not connected.	Vous n'êtes pas connecté.
+you_are	You are	Vous êtes
+log_in_to_see_demo	Log in to see the demo.	Connectez-vous pour voir la démonstration.
+your_user_id	Your user id	Votre ID utilisateur
+the_module	The module	Le module
+allows_get_information_currently_connected_user	allows to get information about the currently connected user (server or client side).	vous autorise à obtenir les information de l'utilisateur courant connecté (coté serveur ou coté client).
+these_functions_called_server_or_client_side	These functions can be called either from server or client-side.	Ces fonctions peuvent être appelées aussi bien coté client que coté serveur.
+always_get_current_user_using_module	Always get the current user id using module	Récupérez toujours l'ID de l'utilisateur courant en utilisant le module
+never_trust_client_pending_user_id	Never trust a client sending its own user id!	Ne faites jamais confiance à un client envoyant son propre ID utilisateur !
