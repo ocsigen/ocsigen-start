@@ -14,7 +14,7 @@ I18N_ELIOM_FILE         := $(PROJECT_NAME)_i18n.eliom
 I18N_PPX_REWRITER       := "ocsigen-i18n-rewriter %%%MODULE_NAME%%%_i18n"
 
 ## This rule will update the TSV file.
-i18n-update: $(I18N_TSV_FILE)
+$(I18N_ELIOM_FILE): $(I18N_TSV_FILE)
 # use LC_ALL=C so that all $(I18N_ELIOM_FILE) files are generated the same
 # way.
 	LC_ALL=C $(I18N_GENERATOR) \

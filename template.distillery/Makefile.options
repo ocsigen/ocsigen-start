@@ -12,11 +12,13 @@ PROJECT_NAME          := %%%PROJECT_NAME%%%
 
 # Source files for the server. By default, it's all eliom, eliomi and ml files
 # in the project root directory.
-SERVER_FILES          := $(wildcard *.eliomi *.eliom *.ml)
+SERVER_FILES          := $(wildcard *.eliomi *.eliom *.ml) \
+                         %%%PROJECT_NAME%%%_i18n.eliom
 
 # Source files for the client. By default, it's all eliom and eliomi files
 # in the project root directory.
-CLIENT_FILES          := $(wildcard *.eliomi *.eliom)
+CLIENT_FILES          := $(wildcard *.eliomi *.eliom) \
+                         %%%PROJECT_NAME%%%_i18n.eliom
 
 # OCamlfind packages for the server (for modules which defines services)
 SERVER_ELIOM_PACKAGES := ocsigen-start.server
