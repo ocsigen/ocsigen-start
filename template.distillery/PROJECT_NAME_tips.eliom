@@ -11,7 +11,6 @@ let example_tip () =
     ~content:(fun _ ->
       Lwt.return
         Eliom_content.Html.F.[
-          p [pcdata "This is an example of tip."];
-          p [pcdata
-               "Look at module %%%MODULE_NAME%%%_tips to see how it is defined."]
+          p [%i18n example_tip];
+          p [%i18n look_module_tip]
         ])

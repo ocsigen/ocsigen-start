@@ -6,7 +6,7 @@
 let%shared update_main_email_button email =
   let open Eliom_content.Html in
   let button =
-    D.button ~a:[D.a_class ["button"]] [D.pcdata "Set as main e-mail"]
+    D.button ~a:[D.a_class ["button"]] [D.pcdata [%i18n S.set_as_main_email ~capitalize:true]]
   in
   ignore [%client (Lwt.async (fun () ->
     Lwt_js_events.clicks
@@ -54,12 +54,12 @@ let%shared labels_of_email is_main_email is_validated =
     span ~a: [a_class ["os-settings-label" ; "os-validated-email"]] [
      pcdata @@
       if is_validated
-      then "Validated"
-      else "Waiting for confirmation"
+      then [%i18n S.validated ~capitalize:true]
+      else [%i18n S.waiting_confirmation ~capitalize:true]
   ] in
   if is_main_email
   then [ span ~a:[a_class ["os-settings-label" ; "os-main-email"]]
-           [pcdata "Main e-mail"]
+           [%i18n main_email ~capitalize:true]
        ; valid_label]
   else [ valid_label ]
 
@@ -103,18 +103,29 @@ let%shared settings_content () =
   Eliom_content.Html.D.(
     [
       div ~a:[a_class ["os-settings"]] [
-        p [pcdata "Change your password:"];
-        Os_user_view.password_form ~service:Os_services.set_password_service ();
+        p [%i18n change_password ~capitalize:true];
+        Os_user_view.password_form
+          ~a_placeholder_pwd:[%i18n S.password]
+          ~a_placeholder_confirmation:[%i18n S.retype_password]
+          ~text_send_button:[%i18n S.send]
+          ~service:Os_services.set_password_service ();
         br ();
         Os_user_view.upload_pic_link
           ~submit:([a_class ["button"]], [pcdata "Submit"])
+          ~content:[%i18n change_profile_picture]
           %%%MODULE_NAME%%%_services.upload_user_avatar_service;
         br ();
-        Os_user_view.reset_tips_link ();
+        Os_user_view.reset_tips_link
+          ~text_link:[%i18n S.see_help_again_from_beginning]
+          ();
         br ();
-        p [pcdata "Link a new email to your account:"];
-        Os_user_view.generic_email_form ~service:Os_services.add_email_service ();
-        p [pcdata "Currently registered emails:"];
+        p [%i18n link_new_email];
+        Os_user_view.generic_email_form
+          ~a_placeholder_email:[%i18n S.email_address]
+          ~text:[%i18n S.send]
+          ~service:Os_services.add_email_service
+          ();
+        p [%i18n currently_registered_emails];
         div ~a:[a_class ["os-emails"]] [emails]
       ]
     ]

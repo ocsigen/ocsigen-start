@@ -18,22 +18,22 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name = "Users"
+let%shared name () = [%i18n S.users]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-users"
 
 let%shared display_user_name = function
-  | None -> p [ pcdata "You are not connected." ]
+  | None -> p [%i18n you_are_not_connected]
   | Some user ->
-    p [ pcdata "You are: "
+    p [ pcdata [%i18n S.you_are]
       ; em [ pcdata (Os_user.fullname_of_user user) ]
       ]
 
 let%shared display_user_id = function
-  | None -> p [ pcdata "Log in to see the demo." ]
+  | None -> p [%i18n log_in_to_see_demo]
   | Some userid ->
-    p [ pcdata "Your user id: "
+    p [ pcdata [%i18n S.your_user_id]
       ; em [ pcdata (Int64.to_string userid) ]
       ]
 
@@ -48,17 +48,16 @@ let%shared page () =
   let myid_o = Os_current_user.Opt.get_current_userid () in
   let me_o = Os_current_user.Opt.get_current_user () in
   Lwt.return
-    [ p [ pcdata "Module "
-        ; code [ pcdata "Os_current_user" ]
-        ; pcdata " allows to get information about the currently \
-                  connected user (server or client side). "
+    [ p [ pcdata [%i18n S.the_module]
+        ; code [ pcdata " Os_current_user " ]
+        ; pcdata [%i18n S.allows_get_information_currently_connected_user]
         ]
     ; display_user_name me_o
     ; display_user_id myid_o
-    ; p [ pcdata "These functions can be called either from server or \
-                  client-side."
+    ; p [ pcdata [%i18n S.these_functions_called_server_or_client_side]
         ]
-    ; p [ pcdata "Always get the current user id using module "
-        ; code [ pcdata "Os_current_user" ]
-        ; pcdata ". Never trust a client sending its own user id!" ]
+    ; p [ pcdata [%i18n S.always_get_current_user_using_module]
+        ; code [ pcdata " Os_current_user. " ]
+        ; pcdata [%i18n S.never_trust_client_pending_user_id]
+        ]
     ]

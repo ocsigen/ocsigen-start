@@ -14,7 +14,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name = "RPC button"
+let%shared name () = [%i18n S.demo_rpc_button]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-rpc"
@@ -63,17 +63,16 @@ let%shared button msg f =
 (* Page for this demo *)
 let%shared page () =
   let btn =
-    button "Click to increase server-side value"
+    button [%i18n S.demo_rpc_button_click_increase]
       [%client
         ((fun () ->
            let%lwt v = incr_my_ref () in
-           Eliom_lib.alert "new value: %d" v;
+           Eliom_lib.alert "Update: %d" v;
            Lwt.return ())
          : unit -> unit Lwt.t)
       ]
   in
   Lwt.return Eliom_content.Html.[
-    D.p [D.pcdata "This button performs an RPC to increase a server-side \
-                   value."];
+    D.p [D.pcdata [%i18n S.demo_rpc_button_description]];
     D.p [btn]
   ]
