@@ -37,7 +37,8 @@ let%server date_as_string () : string Eliom_shared.React.S.t =
 let%server date_reactive () = Lwt.return @@ date_as_string ()
 
 let%client date_reactive =
-  ~%(Eliom_client.server_function [%derive.json: unit] date_reactive)
+  ~%(Eliom_client.server_function [%derive.json: unit]
+       (Os_session.connected_wrapper date_reactive))
 
 
 (* Name for demo menu *)
