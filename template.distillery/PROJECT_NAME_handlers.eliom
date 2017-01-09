@@ -107,10 +107,15 @@ let%shared action_link_handler myid_o akey () =
 
 (* Set password *)
 let%server set_password_handler =
-  Os_session.connected_fun Os_handlers.set_password_handler
+  Os_session.connected_fun
+    (fun myid () (pwd, pwd2) ->
+       let%lwt () = Os_handlers.set_password_handler myid () (pwd, pwd2) in
+       Lwt.return
+         (Eliom_registration.Redirection Eliom_service.reload_action))
 
-let%client set_password_handler () =
-  Os_handlers.set_password_rpc
+let%client set_password_handler () (pwd, pwd2) =
+  let%lwt () = Os_handlers.set_password_rpc (pwd, pwd2) in
+  Lwt.return (Eliom_registration.Redirection Eliom_service.reload_action)
 
 (* Preregister *)
 let%server preregister_handler =

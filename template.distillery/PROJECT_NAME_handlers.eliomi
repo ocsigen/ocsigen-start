@@ -42,7 +42,9 @@ val action_link_handler :
     {!Os_handlers.set_password_handler} and gets the user information with
     {!Os_session.connected_fun}.
  *)
-val set_password_handler : unit -> string * string -> unit Lwt.t
+val set_password_handler :
+  unit -> string * string ->
+  Eliom_service.non_ocaml Eliom_registration.redirection Lwt.t
 
 val preregister_handler : unit -> string -> unit Lwt.t
 
