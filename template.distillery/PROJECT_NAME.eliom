@@ -7,7 +7,7 @@ let%shared () =
     ~service:Os_services.set_personal_data_service
     %%%MODULE_NAME%%%_handlers.set_personal_data_handler;
 
-  Eliom_registration.Action.register
+  Eliom_registration.Redirection.register
     ~service:Os_services.set_password_service
     %%%MODULE_NAME%%%_handlers.set_password_handler;
 
