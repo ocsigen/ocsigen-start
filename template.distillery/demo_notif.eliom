@@ -96,7 +96,8 @@ let%server page () =
 
 (* Make page available on client-side *)
 let%client page =
-  ~%((Eliom_client.server_function [%derive.json: unit] page) :
+  ~%((Eliom_client.server_function [%derive.json: unit]
+        (Os_session.connected_wrapper page)) :
        (unit,
         [ `Div | `P | `Input | `H1 ] Eliom_content.Html.D.elt list)
          Eliom_client.server_function)

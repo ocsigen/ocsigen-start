@@ -39,8 +39,7 @@ let get_reset_last_visit () =
 
 (* Make get_reset_last_visit available to the client *)
 let%client get_reset_last_visit =
-  ~%(Eliom_client.server_function
-       [%derive.json : unit]
+  ~%(Eliom_client.server_function [%derive.json : unit]
        (Os_session.connected_wrapper get_reset_last_visit))
 
 (* Call get_reset_last_visit and produce pretty message *)
