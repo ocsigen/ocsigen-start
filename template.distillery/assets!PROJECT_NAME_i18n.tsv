@@ -50,7 +50,8 @@ send	{{{capitalize?S||s}}}end	{{{capitalize?E||e}}}nvoyer
 recover_password	{{{capitalize?R||r}}}ecover password	{{{capitalize?R||r}}}écupérer le mot de passe.
 welcome	{{{capitalize?W||w}}}elcome!	{{{capitalize?B||b}}}ienvenue ! 
 log_in_to_see_page	{{{capitalize?L||l}}}og in to see this page.	{{{capitalize?C||c}}}onnectez-vous pour voir cette page.
-you_click_on	You clicked on %d %d %d	Vous avez cliqué sur %d %d %d
+you_click_on_date	You clicked on {{y}}/{{m}}/{{d}}	Vous avez cliqué sur {{d}}/{{m}}/{{y}}
+you_click_on_time	You clicked on {{h}}:{{m}}	Vous avez cliqué sur {{h}}:{{m}}
 demo_calendar	Calendar	Calendrier
 this_page_show_calendar	This page shows a calendar.	Cette page montre un calendrier.
 demo_carousel_1	Carousel	Carousel

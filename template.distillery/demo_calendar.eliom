@@ -27,10 +27,8 @@ let%client action y m d = ~%f (Some (y, m, d)); Lwt.return ()
 
 let%shared string_of_date = function
   | Some (y, m, d) ->
-    [%i18n S.you_click_on] ^ " " ^
-    (string_of_int y) ^ " " ^
-    (string_of_int m) ^ " " ^
-    (string_of_int d)
+    [%i18n S.you_click_on_date
+        ~y:(string_of_int y) ~m:(string_of_int m) ~d:(string_of_int d) ]
   | None ->
     ""
 
