@@ -188,9 +188,7 @@ let%client restart ?url () =
            (Js.string url)
        | None ->
          ());
-     Eliom_client.exit_to ~absolute:false
-       ~service:(Eliom_service.static_dir ())
-       ["eliom.html"] ())
+     Dom_html.window##.location##.href := Js.string "eliom.html")
   else
     match url with
     | Some url ->
