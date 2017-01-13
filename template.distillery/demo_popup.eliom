@@ -67,6 +67,7 @@ let%shared page () =
        : unit)
     ];
   Lwt.return
-    [ p [%i18n demo_popup_content]
+    [ h1 [%i18n demo_popup]
+    ; p [%i18n demo_popup_content]
     ; p [button]
     ]

@@ -41,7 +41,7 @@ let%client time_reactive =
        (Os_session.connected_wrapper time_reactive))
 
 (* Name for demo menu *)
-let%shared name () = "TimePicker"
+let%shared name () = [%i18n S.demo_timepicker]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-timepicker"
@@ -66,9 +66,9 @@ let%shared page () =
     ];
   let%lwt tr = time_reactive () in
   Lwt.return
-    [
-      p [%i18n demo_timepicker_description];
-      div [time_picker];
-      p [Eliom_content.Html.R.pcdata tr];
-      div [button]
+    [ h1 [%i18n demo_timepicker]
+    ; p [%i18n demo_timepicker_description]
+    ; div [time_picker]
+    ; p [Eliom_content.Html.R.pcdata tr]
+    ; div [button]
     ]

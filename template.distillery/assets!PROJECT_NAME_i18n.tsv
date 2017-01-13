@@ -81,7 +81,7 @@ saturday	Saturday	Samedi
 sunday	Sunday	Dimanche
 demo_carousel_wheel	Wheel carousel	Carousel avec roulette
 demo_carousel_third_example_1	Example of vertical circular carousel (wheel). Try with a touch screen.	Exemple de carousel vertical circulaire (wheel). Essayez avec un écran tactile.
-demo_notification	Notification	Notification
+demo_notification	Notifications	Notifications
 demo_notification_got	got	Reçu
 exchange_msg_between_users	Exchange messages between users.	Échanger des messages entre utilisateurs.
 open_multiple_tabs_browsers	Open this page in multiple tabs or browsers.	Ouvrez cette page dans plusieurs onglets et fenêtres.
@@ -118,6 +118,7 @@ demo_spinner_description_1	We use this widget to integrate into the page an HTML
 demo_spinner_description_2	A spinner is diplayed, which is then replaced with the actual content when this content is ready.	Une icône de chargement est d'abord affichée, puis remplacée par le vrai contenu quand celui-ci est prêt.
 demo_spinner_description_3	For the demo we just sleep for 5 seconds to simulate waiting for the content.	Pour la démonstration, nous avons ajouté un délai de 5 secondes pour simuler l'attente du contenu.
 demo_spinner_generated_client_side	The spinner is generated client-side.	L'icône de chargement est générée côté client.
+demo_timepicker	Time picker	Sélecteur d'heure
 demo_timepicker_back_to_hours	Back to hours	Revenir aux heures
 demo_timepicker_description	This page shows the Ocsigen Toolkit's timepicker.	Cette page montre le sélecteur d'heure d'Ocsigen Toolkit.
 change_profile_picture	Change profile picture	Changer votre photo de profil.

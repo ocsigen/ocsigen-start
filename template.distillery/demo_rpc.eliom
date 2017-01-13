@@ -73,6 +73,7 @@ let%shared page () =
       ]
   in
   Lwt.return Eliom_content.Html.[
-    D.p [D.pcdata [%i18n S.demo_rpc_button_description]];
-    D.p [btn]
+    F.h1 [%i18n demo_rpc_button]
+  ; F.p [F.pcdata [%i18n S.demo_rpc_button_description]]
+  ; F.p [btn]
   ]

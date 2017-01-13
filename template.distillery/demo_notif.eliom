@@ -85,13 +85,14 @@ let%shared make_form msg f =
 (* Page for this demo *)
 let%server page () =
   listen ();
-  Lwt.return Eliom_content.Html.[
-    D.p [D.pcdata [%i18n S.exchange_msg_between_users];
-         D.br ();
-         D.pcdata [%i18n S.open_multiple_tabs_browsers];
-         D.br ();
-         D.pcdata [%i18n S.fill_input_form_send_message]];
-    make_form [%i18n S.send_message] [%client (notify : string -> unit Lwt.t)]
+  Lwt.return Eliom_content.Html.F.[
+    h1 [%i18n demo_notification]
+  ; p [ pcdata [%i18n S.exchange_msg_between_users]
+      ; br ()
+      ; pcdata [%i18n S.open_multiple_tabs_browsers]
+      ; br ()
+      ; pcdata [%i18n S.fill_input_form_send_message]]
+  ; make_form [%i18n S.send_message] [%client (notify : string -> unit Lwt.t)]
   ]
 
 (* Make page available on client-side *)

@@ -34,7 +34,8 @@ let%client make_spinner () =
 (* Page for this demo *)
 let%shared page () =
   Lwt.return Eliom_content.Html.[
-    F.p [ F.pcdata [%i18n S.demo_spinner_description_ot] ]
+    F.h1 [%i18n demo_spinner]
+  ; F.p [ F.pcdata [%i18n S.demo_spinner_description_ot] ]
   ; F.p [ F.pcdata [%i18n S.demo_spinner_description_1] ]
   ; F.p [ F.pcdata [%i18n S.demo_spinner_description_2] ]
   ; F.p [ F.pcdata [%i18n S.demo_spinner_description_3]]

@@ -49,7 +49,8 @@ let%shared page () =
        else Lwt.return [ p [%i18n demo_pgocaml_users]
                        ; ul users ])
   in
-  Lwt.return [ p [%i18n demo_pgocaml_description_1]
+  Lwt.return [ h1 [%i18n demo_pgocaml]
+             ; p [%i18n demo_pgocaml_description_1]
              ; p [%i18n demo_pgocaml_description_2]
              ; p [%i18n demo_pgocaml_description_3]
              ; user_block ]

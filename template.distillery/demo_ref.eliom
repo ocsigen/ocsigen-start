@@ -57,8 +57,9 @@ let%shared get_reset_last_visit_message () =
 let%shared page () =
   let%lwt last_visit_message = get_reset_last_visit_message () in
   Lwt.return Eliom_content.Html.[
-    D.p [D.pcdata [%i18n S.demo_eliom_ref_1]]
-  ; D.p [D.pcdata [%i18n S.demo_eliom_ref_2]]
-  ; D.p [D.pcdata last_visit_message]
-  ; D.p [D.pcdata [%i18n S.demo_eliom_ref_3]]
+    F.h1 [%i18n demo_eliom_ref]
+  ; F.p [F.pcdata [%i18n S.demo_eliom_ref_1]]
+  ; F.p [F.pcdata [%i18n S.demo_eliom_ref_2]]
+  ; F.p [F.pcdata last_visit_message]
+  ; F.p [F.pcdata [%i18n S.demo_eliom_ref_3]]
   ]
