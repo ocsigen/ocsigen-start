@@ -4,7 +4,7 @@
 
 /* Default CSS for Ocsigen Start */
 
-@import url('https://fonts.googleapis.com/css?family=Raleway');
+@import url('https://fonts.googleapis.com/css?family=Quicksand');
 
 $main-color: #25a;
 $dark-color: #445;
@@ -15,9 +15,12 @@ html { box-sizing: border-box; }
 
 body {
     margin: 0;
-    font-family: 'Raleway', sans-serif;
     font-size: 14px;
     background-color: white;
+}
+
+body, input, textarea, keygen, select, button {
+    font-family: 'Quicksand', sans-serif;
 }
 
 a, a:visited {
