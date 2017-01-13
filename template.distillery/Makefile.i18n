@@ -18,8 +18,8 @@ $(I18N_ELIOM_FILE): $(I18N_TSV_FILE)
 # use LC_ALL=C so that all $(I18N_ELIOM_FILE) files are generated the same
 # way.
 	LC_ALL=C $(I18N_GENERATOR) \
-	--langs $(I18N_LANGUAGES) \
-	--default-lang $(I18N_DEFAULT_LANGUAGE) \
+	--languages $(I18N_LANGUAGES) \
+	--default-language $(I18N_DEFAULT_LANGUAGE) \
 	< $(I18N_TSV_FILE) \
 	> $(I18N_ELIOM_FILE)
 
