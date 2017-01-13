@@ -30,18 +30,18 @@ let%server best_matched_language () =
   (* The first language of the list is returned. If the list is empty, the
      default language is returned. *)
   let rec aux = function
-    | (l, _) :: tl -> (try %%%MODULE_NAME%%%_i18n.lang_of_string l
-                       with %%%MODULE_NAME%%%_i18n.Unknown_lang _ -> aux tl)
-    | [] -> %%%MODULE_NAME%%%_i18n.default_lang
+    | (l, _) :: tl -> (try %%%MODULE_NAME%%%_i18n.language_of_string l
+                       with %%%MODULE_NAME%%%_i18n.Unknown_language _ -> aux tl)
+    | [] -> %%%MODULE_NAME%%%_i18n.default_language
   in
   aux lang
 
 let%server update_language lang =
-  let language  = %%%MODULE_NAME%%%_i18n.string_of_lang lang in
+  let language  = %%%MODULE_NAME%%%_i18n.string_of_language lang in
   let myid_o    = Os_current_user.Opt.get_current_userid () in
   (* Update the server and client values *)
-  %%%MODULE_NAME%%%_i18n.set_lang lang;
-  ignore [%client (%%%MODULE_NAME%%%_i18n.set_lang ~%lang : unit)];
+  %%%MODULE_NAME%%%_i18n.set_language lang;
+  ignore [%client (%%%MODULE_NAME%%%_i18n.set_language ~%lang : unit)];
   (* Update in the database if a user is connected *)
   match myid_o with
   | None -> Lwt.return ()
@@ -58,15 +58,15 @@ let%server _ =
     (fun userid ->
        (* Set language according to user preferences. *)
        let%lwt language = match%lwt Os_user.get_language userid with
-         | Some lang -> Lwt.return (%%%MODULE_NAME%%%_i18n.lang_of_string lang)
+         | Some lang -> Lwt.return (%%%MODULE_NAME%%%_i18n.language_of_string lang)
          | None ->
            let%lwt best_language = best_matched_language () in
            ignore
              (Os_user.update_language
                 ~userid
-                ~language:(%%%MODULE_NAME%%%_i18n.string_of_lang best_language));
+                ~language:(%%%MODULE_NAME%%%_i18n.string_of_language best_language));
            Lwt.return best_language
        in
-       %%%MODULE_NAME%%%_i18n.set_lang language;
-       ignore [%client (%%%MODULE_NAME%%%_i18n.set_lang ~%language : unit)];
+       %%%MODULE_NAME%%%_i18n.set_language language;
+       ignore [%client (%%%MODULE_NAME%%%_i18n.set_language ~%language : unit)];
        Lwt.return ())
