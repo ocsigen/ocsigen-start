@@ -18,7 +18,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name = "Database request"
+let%shared name () = [%i18n S.demo_pgocaml]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-pgocaml"
@@ -45,18 +45,11 @@ let%shared page () =
        in
        if users = []
        then Lwt.return
-           [ p [ em [ pcdata "No user. Create some accounts to test." ]] ]
-       else Lwt.return [ p [ pcdata "Users:" ]
+           [ p [ em [%i18n no_user_create_accounts]]]
+       else Lwt.return [ p [%i18n demo_pgocaml_users]
                        ; ul users ])
   in
-  Lwt.return [ p [pcdata "This page shows signed-up users fetched from the \
-                          database."]
-             ; p [pcdata "Have a look at the source code to see how to \
-                          make a DB request with PGOCaml."]
-             ; p [pcdata "We are using Ot_spinner to display the list, \
-                          which means that, in the case the page is generated \
-                          client-side, the page will be displayed immediately \
-                          with a spinner, that will be replaced by the \
-                          contents when ready. The code contains a 2s sleep \
-                          to demonstrate the spinner."]
+  Lwt.return [ p [%i18n demo_pgocaml_description_1]
+             ; p [%i18n demo_pgocaml_description_2]
+             ; p [%i18n demo_pgocaml_description_3]
              ; user_block ]

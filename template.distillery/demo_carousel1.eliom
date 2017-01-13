@@ -18,7 +18,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name = "Carousel"
+let%shared name () = [%i18n S.demo_carousel_1]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-carousel1"
@@ -49,12 +49,10 @@ let%shared page () =
   let next = Ot_carousel.next ~change ~pos ~size ~length [] in
   Lwt.return
     [
-      p [pcdata "This is a first example of Ocsigen Toolkit's carousel."];
-      p [pcdata "The carousel displays a number of blocks side-by-side (or \
-                 vertically stacked)."];
-      p [pcdata "To switch to a different block, either use the buttons \
-                 above or below the carousel."];
-      p [pcdata "On touch screens you can also swipe with your fingers."];
+      p [%i18n ot_carousel_first_example_1];
+      p [%i18n ot_carousel_first_example_2];
+      p [%i18n ot_carousel_first_example_3];
+      p [%i18n ot_carousel_first_example_4];
       div ~a:[a_class ["demo-carousel1"]]
         [ div ~a:[a_class ["demo-carousel1-box"]]
             [ carousel ; prev ; next ; bullets ] ]

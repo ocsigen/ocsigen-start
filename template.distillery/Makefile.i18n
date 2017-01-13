@@ -1,0 +1,30 @@
+##----------------------------------------------------------------------
+## The following part defines rules for i18n.
+## See https://github.com/besport/ocsigen-i18n for more information.
+
+I18N_CHECKER            := ocsigen-i18n-checker
+I18N_GENERATOR          := ocsigen-i18n-generator
+
+## The i18n generated file.
+## IMPROVEME: Due to %%%PROJECT_NAME%%%_language, the module
+## defining all translations must be static.
+I18N_ELIOM_FILE         := $(PROJECT_NAME)_i18n.eliom
+
+## PPX extension to rewrite each file while compiling.
+I18N_PPX_REWRITER       := "ocsigen-i18n-rewriter %%%MODULE_NAME%%%_i18n"
+
+## This rule will update the TSV file.
+$(I18N_ELIOM_FILE): $(I18N_TSV_FILE)
+# use LC_ALL=C so that all $(I18N_ELIOM_FILE) files are generated the same
+# way.
+	LC_ALL=C $(I18N_GENERATOR) \
+	--langs $(I18N_LANGUAGES) \
+	--default-lang $(I18N_DEFAULT_LANGUAGE) \
+	< $(I18N_TSV_FILE) \
+	> $(I18N_ELIOM_FILE)
+
+i18n-check:
+	$(I18N_CHECKER) ./*.eliom < $(I18N_TSV_FILE)
+
+## end of i18n
+##----------------------------------------------------------------------

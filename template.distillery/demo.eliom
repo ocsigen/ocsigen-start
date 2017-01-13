@@ -11,12 +11,9 @@ let%shared handler myid_o () () =
   %%%MODULE_NAME%%%_container.page
     ~a:[ a_class ["os-page-demo"] ]
     myid_o
-    [ p [pcdata "This page contains some demos for some widgets \
-                 from ocsigen-toolkit."]
-    ; p [pcdata "The different demos are accessible through the drawer \
-                 menu. To open it click the top left button on the screen."]
-    ; p [pcdata "Feel free to modify the generated code and use it \
-                 or redistribute it as you want."]
+    [ p [%i18n demo_widget_ot]
+    ; p [%i18n demo_widget_see_drawer]
+    ; p [%i18n demo_widget_feel_free]
     ]
 
 

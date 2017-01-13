@@ -12,11 +12,13 @@ PROJECT_NAME          := %%%PROJECT_NAME%%%
 
 # Source files for the server. By default, it's all eliom, eliomi and ml files
 # in the project root directory.
-SERVER_FILES          := $(wildcard *.eliomi *.eliom *.ml)
+SERVER_FILES          := $(wildcard *.eliomi *.eliom *.ml) \
+                         %%%PROJECT_NAME%%%_i18n.eliom
 
 # Source files for the client. By default, it's all eliom and eliomi files
 # in the project root directory.
-CLIENT_FILES          := $(wildcard *.eliomi *.eliom)
+CLIENT_FILES          := $(wildcard *.eliomi *.eliom) \
+                         %%%PROJECT_NAME%%%_i18n.eliom
 
 # OCamlfind packages for the server (for modules which defines services)
 SERVER_ELIOM_PACKAGES := ocsigen-start.server
@@ -221,5 +223,20 @@ PSQL_DIR              := local_db
 
 ## If the LOCAL variable is set to yes, PSQL_LOG is the log directory.
 PSQL_LOG              := $(PSQL_DIR)/log
+
+##----------------------------------------------------------------------
+
+##----------------------------------------------------------------------
+## The following part is used for the internationalization (i18n).
+
+## The list of supported language, seperated by a comma. Each language will
+## generate a value in a sum type defined in the generate i18n file.
+I18N_LANGUAGES         := En,Fr
+
+## The default language.
+I18N_DEFAULT_LANGUAGE  := En
+
+## The TSV file containing all translations.
+I18N_TSV_FILE          := assets/$(PROJECT_NAME)_i18n.tsv
 
 ##----------------------------------------------------------------------

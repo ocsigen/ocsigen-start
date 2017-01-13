@@ -124,7 +124,8 @@ let os_users_table =
        lastname text NOT NULL,
        main_email citext NOT NULL,
        password text,
-       avatar text
+       avatar text,
+       language text
           ) >>
 
 let os_emails_table =
@@ -201,8 +202,10 @@ module Utils = struct
 
   let avatar_of d = <:value< $d$.avatar>>
 
+  let language_of d = <:value< $d$.language>>
+
   let tupple_of_user_sql u =
-    u#!userid, u#!firstname, u#!lastname, u#?avatar, u#?password <> None
+    u#!userid, u#!firstname, u#!lastname, u#?avatar, u#?password <> None, u#?language
 
 end
 open Utils
@@ -301,7 +304,7 @@ module User = struct
     >> >>= fun l ->
     Lwt.return (List.map (fun a -> a#!email) l)
 
-  let create ?password ?avatar ~firstname ~lastname email =
+  let create ?password ?avatar ?language ~firstname ~lastname email =
     if password = Some "" then Lwt.fail_with "empty password"
     else
       full_transaction_block (fun dbh ->
@@ -309,6 +312,7 @@ module User = struct
           as_sql_string @@ fst !pwd_crypt_ref p) password
         in
         let avatar_o = Eliom_lib.Option.map as_sql_string avatar in
+        let language_o = Eliom_lib.Option.map as_sql_string language in
         lwt () = Lwt_Query.query dbh
           <:insert< $os_users_table$ :=
            { userid     = os_users_table?userid;
@@ -316,7 +320,8 @@ module User = struct
              lastname   = $string:lastname$;
              main_email = $string:email$;
              password   = of_option $password_o$;
-             avatar     = of_option $avatar_o$
+             avatar     = of_option $avatar_o$;
+             language   = of_option $language_o$
             } >>
         in
         lwt userid = Lwt_Query.view_one dbh
@@ -334,7 +339,7 @@ module User = struct
         Lwt.return userid
       )
 
-  let update ?password ?avatar ~firstname ~lastname userid =
+  let update ?password ?avatar ?language ~firstname ~lastname userid =
     if password = Some "" then Lwt.fail_with "empty password"
     else
       let password = match password with
@@ -349,11 +354,18 @@ module User = struct
         | None ->
           avatar_of
       in
+      let language = match language with
+        | Some language ->
+          fun _ -> as_sql_string language
+        | None ->
+          language_of
+      in
       run_query <:update< d in $os_users_table$ :=
        { firstname = $string:firstname$;
-         lastname = $string:lastname$;
-         avatar = $avatar d$;
-         password = $password d$
+         lastname  = $string:lastname$;
+         password  = $password d$;
+         avatar    = $avatar d$;
+         language  = $language d$;
        } |
        d.userid = $int64:userid$
       >>
@@ -380,6 +392,11 @@ module User = struct
        u.userid = $int64:userid$;
        e.userid = u.userid;
        e.validated
+    >>
+
+  let update_language ~userid ~language = run_query
+    <:update< u in $os_users_table$ := { language = $string:language$ }
+     | u.userid = $int64:userid$
     >>
 
   let verify_password ~email ~password =
@@ -495,6 +512,13 @@ module User = struct
            e.email = $string:email$
         >>
 
+  let get_language userid = one run_view
+    ~success:(fun u -> Lwt.return u#?language)
+    ~fail:(Lwt.fail No_such_resource)
+    <:view< { u.language }
+     | u in $os_users_table$;
+       u.userid = $int64:userid$
+    >>
 
   let get_users ?pattern () =
     full_transaction_block (fun dbh ->
@@ -509,7 +533,7 @@ module User = struct
            and I canot use pgocaml syntax extension because
            it requires the db to be created (which is impossible in a lib). *)
         let query = "
-             SELECT userid, firstname, lastname, avatar, password
+             SELECT userid, firstname, lastname, avatar, password, language
              FROM ocsigen_start.users
              WHERE
                firstname <> '' -- avoids email addresses
@@ -522,10 +546,10 @@ module User = struct
         Lwt.return (List.map
                       (function
                         | [Some userid; Some firstname; Some lastname; avatar;
-                           password]
+                           password; language]
                           ->
                           (PGOCaml.int64_of_string userid,
-                           firstname, lastname, avatar, password <> None)
+                           firstname, lastname, avatar, password <> None, language)
                         | _ -> failwith "Os_db.get_users")
                       l))
 

@@ -14,7 +14,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name = "Notifications"
+let%shared name () = [%i18n S.demo_notification]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-notif"
@@ -57,8 +57,8 @@ let%server listen () =
   let e : (unit * string) Eliom_react.Down.t = Notif.client_ev () in
   ignore [%client
     ((React.E.map (fun (_, msg) ->
-       (* Eliom_lib.alert "got %s" msg *)
-       Os_msg.msg ~level:`Msg (Printf.sprintf "got %s" msg)
+       (* Eliom_lib.alert "%s" msg *)
+       Os_msg.msg ~level:`Msg (Printf.sprintf "%s" msg)
      ) ~%e)
      : unit React.E.t)
   ]
@@ -86,12 +86,12 @@ let%shared make_form msg f =
 let%server page () =
   listen ();
   Lwt.return Eliom_content.Html.[
-    D.p [D.pcdata "Exchange messages between users.";
+    D.p [D.pcdata [%i18n S.exchange_msg_between_users];
          D.br ();
-         D.pcdata "Open this page in multiple tabs or browsers.";
+         D.pcdata [%i18n S.open_multiple_tabs_browsers];
          D.br ();
-         D.pcdata "Fill in the input form to send a message."];
-    make_form "send message" [%client (notify : string -> unit Lwt.t)]
+         D.pcdata [%i18n S.fill_input_form_send_message]];
+    make_form [%i18n S.send_message] [%client (notify : string -> unit Lwt.t)]
   ]
 
 (* Make page available on client-side *)

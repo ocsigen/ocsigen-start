@@ -14,7 +14,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name = "Spinner"
+let%shared name () = [%i18n S.demo_spinner]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-spinner"
@@ -27,21 +27,17 @@ let%client make_spinner () =
     (* sleep for 5 seconds to simulate a delay, then return content *)
     (let%lwt () = Lwt_js.sleep 5. in
      Lwt.return Eliom_content.Html.D.[
-       pcdata "The content is ready. ";
-       pcdata "This message has replaced the spinner"
+       pcdata [%i18n S.demo_spinner_content_ready];
+       pcdata [%i18n S.demo_spinner_message_replace_spinner]
      ])
 
 (* Page for this demo *)
 let%shared page () =
   Lwt.return Eliom_content.Html.[
-    F.p [ F.pcdata "This is a demo of the Ocsigen Toolkit spinner widget."]
-  ; F.p [ F.pcdata "We use this widget to integrate into the page an HTML \
-                    fragment that takes a long time to produce, e.g., \
-                    because of a slow server call." ]
-  ; F.p [ F.pcdata "We initially display a spinner. We replace the spinner \
-                    with the actual content when the content is ready." ]
-  ; F.p [ F.pcdata "For the demo we just sleep for 5 seconds to simulate \
-                    waiting for the content." ]
-  ; F.p [ F.pcdata "The spinner is generated client-side." ]
+    F.p [ F.pcdata [%i18n S.demo_spinner_description_ot] ]
+  ; F.p [ F.pcdata [%i18n S.demo_spinner_description_1] ]
+  ; F.p [ F.pcdata [%i18n S.demo_spinner_description_2] ]
+  ; F.p [ F.pcdata [%i18n S.demo_spinner_description_3]]
+  ; F.p [ F.pcdata [%i18n S.demo_spinner_generated_client_side]]
   ; C.node [%client (make_spinner () : [> `Div] Eliom_content.Html.elt) ]
   ]

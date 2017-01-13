@@ -14,7 +14,8 @@ CREATE SCHEMA ocsigen_start
          lastname text NOT NULL,
          main_email citext NOT NULL,
          password text,
-         avatar text
+         avatar text,
+         language text
   )
 
   CREATE TABLE emails ( -- DEFAULT

@@ -14,7 +14,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name = "Eliom references + OS dates"
+let%shared name () = [%i18n S.demo_eliom_ref]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-ref"
@@ -47,19 +47,18 @@ let%shared get_reset_last_visit_message () =
   let%lwt last_visit = get_reset_last_visit () in
   match last_visit with
   | None ->
-    Lwt.return "This is your first visit."
+    Lwt.return [%i18n S.demo_eliom_ref_first_visit]
   | Some last_visit ->
     Lwt.return
-      ("The last time you visited was: "
+      ([%i18n S.demo_eliom_ref_last_visit]
        ^ Os_date.smart_time last_visit)
 
 (* Generate page for this demo *)
 let%shared page () =
   let%lwt last_visit_message = get_reset_last_visit_message () in
   Lwt.return Eliom_content.Html.[
-    D.p [D.pcdata "We use an Eliom reference to record the last time you \
-                   visited this page."]
-  ; D.p [D.pcdata "The value is different for each user."]
+    D.p [D.pcdata [%i18n S.demo_eliom_ref_1]]
+  ; D.p [D.pcdata [%i18n S.demo_eliom_ref_2]]
   ; D.p [D.pcdata last_visit_message]
-  ; D.p [D.pcdata "The reference has been reset. Come back later!"]
+  ; D.p [D.pcdata [%i18n S.demo_eliom_ref_3]]
   ]
