@@ -147,7 +147,19 @@ let%shared main_service_handler myid_o () () = Eliom_content.Html.F.(
   %%%MODULE_NAME%%%_container.page
     ~a:[ a_class ["os-page-main"] ]
     myid_o (
-    [ p [em [%i18n put_content_here]]]
+    [ p [%i18n welcome_text1]
+    ; p [%i18n welcome_text2]
+    ; ul [ li [%i18n welcome_text3]
+         ; li [%i18n welcome_text4]
+         ]
+    ; p [%i18n welcome_text5]
+    ; ul [ li [%i18n welcome_text6]
+         ; li [%i18n welcome_text7]
+         ; li [%i18n welcome_text8]
+         ; li [%i18n welcome_text9]
+         ]
+    ; p [%i18n welcome_text10]
+    ]
   )
 )
 

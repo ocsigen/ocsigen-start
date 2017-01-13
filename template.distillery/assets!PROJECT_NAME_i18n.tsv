@@ -1,4 +1,13 @@
-put_content_here	Ocsigen Start: Put app content here.	Ocsigen Start: insérez votre contenu ici.
+welcome_text1	Welcome to Ocsigen Start. This is a template of application written with Ocsigen (Eliom, Js_of_ocaml, etc.).	Bienvenue dans Ocsigen Start ! Ceci est un template d'application écrite avec Ocsigen (Eliom, Js_of_ocaml, etc.).
+welcome_text2	Use it:	Utilisez-le :
+welcome_text3	As a basis for your own applications.	Comme point de départ pour vos propres applications ;
+welcome_text4	To learn the most important concepts of client-server programming with Ocsigen.	Pour apprendre les principaux concepts de la programmtion client-serveur avec Ocsigen.
+welcome_text5	This application contains:	Cette application contient :
+welcome_text6	Features for user management (log-in form, user registration, activation links, recover password, settings page, etc.).	Des fonctionnalités de gestion des utilisateurs (connexion, création d'utilisateur, liens d'activation, récupération de mot de passe, paramètres de l'utilisateur,...) ;
+welcome_text7	An extensive demo of the most important features you need to write your own app. Read the source code to learn! And remove the demo part when you're ready to start with your own app.	Une démo des plus importantes fonctionnalités dont vous avez besoin pour écrire votre propre application. Lisez le code source pour apprendre ! Ensuite enlevez la partie demo quand vous êtes prêts à commencer votre propre application ;
+welcome_text8	A library with useful features (tips, notifications, etc.).	Un bibliothèque avec de nombeuses fonctionnalités utiles (tips, notifications, etc.) ;
+welcome_text9	A basic responsive CSS.	Une feuille de style "responsive" basique.
+welcome_text10	This application is multi-platform: it can run as a client-server Web application (with server-side generated pages) and as a mobile app (with client-side generated pages) for Android, iOS or Windows. Have a look at the README file to learn how to generate the mobile apps. 	Cette application est multi-plateforme : elle peut tourner comme application Web client-serveur (avec des pages générées côté serveur) ou bien comme application mobile pour iOS, Android ou Windows (avec des pages générées côté client). Regardez le fichier README pour apprendre comment générer les applications mobiles.
 about_handler_template	This template provides a skeleton for an Ocsigen application.	Ce template fournit une base pour une application Ocsigen.
 about_handler_license	Feel free to modify the generated code and use it or redistribute it as you want.	Vous êtes libres de modifier le code généré et de l'utiliser ou le redistribuer comme vous le souhaitez.
 footer_generated	This application has been generated using the	Cette application a été générée en utilisant le template d'
@@ -48,7 +57,7 @@ take_time_enter_name_password	Please take time to enter your name and to set a p
 wrong_data_fix	Wrong data. Please fix.	Données incorrectes. Veuillez corriger.
 send	{{{capitalize?S||s}}}end	{{{capitalize?E||e}}}nvoyer
 recover_password	{{{capitalize?R||r}}}ecover password	{{{capitalize?R||r}}}écupérer le mot de passe.
-welcome	{{{capitalize?W||w}}}elcome!	{{{capitalize?B||b}}}ienvenue ! 
+welcome	{{{capitalize?W||w}}}elcome!	{{{capitalize?B||b}}}ienvenue !
 log_in_to_see_page	{{{capitalize?L||l}}}og in to see this page.	{{{capitalize?C||c}}}onnectez-vous pour voir cette page.
 you_click_on_date	You clicked on {{y}}/{{m}}/{{d}}	Vous avez cliqué sur {{d}}/{{m}}/{{y}}
 you_click_on_time	You clicked on {{h}}:{{m}}	Vous avez cliqué sur {{h}}:{{m}}
@@ -71,7 +80,7 @@ friday	Friday	Vendredi
 saturday	Saturday	Samedi
 sunday	Sunday	Dimanche
 demo_carousel_wheel	Wheel carousel	Carousel avec roulette
-demo_carousel_third_example_1	Example of vertical circular carousel (wheel). Try with a touch screen.	Exemple d'un carousel vertical circulaire (avec roulette). Essayer avec un écran tactile. 
+demo_carousel_third_example_1	Example of vertical circular carousel (wheel). Try with a touch screen.	Exemple d'un carousel vertical circulaire (avec roulette). Essayer avec un écran tactile.
 demo_notification	Notification	Notification
 demo_notification_got	got	Reçu
 exchange_msg_between_users	Exchange messages between users.	Echanger des messages entre utilisateurs.
@@ -94,7 +103,7 @@ demo_reactive_programming_2	It defines a (client-side) reactive list. You can ad
 demo_reactive_programming_3	The reactive page is generated either server-side (for example when you are using a Web browser and you reload this page) or client-side (on mobile app or if you already were in this app before coming to this page).	La page réactive est générée aussi bien du coté serveur (par exemple quand vous utilisez le navigateur web et que vous rechargez cette page) que du coté client (sur mobile ou si vous étiez déjà sur dans cette application avant de venir sur cette page).
 demo_eliom_ref	Eliom references + OS dates	Références Eliom + dates OS
 demo_eliom_ref_first_visit	This is your first visit.	Ceci est votre première visite.
-demo_eliom_ref_last_visit	The last time you visited was:	 La dernière fois que vous avez visité ce lien était: 
+demo_eliom_ref_last_visit	The last time you visited was:	 La dernière fois que vous avez visité ce lien était:
 demo_eliom_ref_1	We use an Eliom reference to record the last time you visited this page.	Nous utilisons les références Eliom pour sauvegarder la dernière fois que vous avez visité cette page.
 demo_eliom_ref_2	The value is different for each user.	La valeur est différente pour chaque utilisateur.
 demo_eliom_ref_3	The reference has been reset. Come back later!	La référence a été réinitialisée. Revenez plus tard !

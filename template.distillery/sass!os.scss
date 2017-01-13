@@ -67,7 +67,6 @@ input {
 }
 
 .os-page-header {
-    position: fixed;
     top: 0;
     z-index: 1;
     height: 50px;
@@ -207,6 +206,9 @@ a.os-page-header-app-name {
             position: absolute;
             top: 30vh;
         }
+    }
+    .os-body {
+        margin-top: 40vh;
     }
 }
 
