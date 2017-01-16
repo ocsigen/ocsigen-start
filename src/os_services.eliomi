@@ -209,3 +209,21 @@ val add_email_service :
     [ `One of string ] Eliom_parameter.param_name,
     Eliom_service.non_ocaml
   ) Eliom_service.t
+
+(** A POST service to update the language of the current user.
+     See {!Os_handlers.update_language_handler} for a default handler.
+*)
+val update_language_service :
+  (
+    unit,
+    string,
+    Eliom_service.post,
+    Eliom_service.non_att,
+    Eliom_service.co,
+    Eliom_service.non_ext,
+    Eliom_service.reg,
+    [ `WithoutSuffix ],
+    unit,
+    [ `One of string ] Eliom_parameter.param_name,
+    Eliom_service.non_ocaml
+  ) Eliom_service.t

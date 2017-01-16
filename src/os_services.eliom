@@ -143,6 +143,14 @@ let%server add_email_service = Eliom_service.create
     Eliom_parameter.string "email"
   )) ()
 
+let%server update_language_service = Eliom_service.create
+    ~name:"update_language"
+    ~path:Eliom_service.No_path
+    ~meth:(Eliom_service.Post (
+      Eliom_parameter.unit,
+      Eliom_parameter.string "language"
+    )) ()
+
 let%client main_service = ~%main_service
 let%client preregister_service = ~%preregister_service
 let%client forgot_password_service = ~%forgot_password_service
@@ -153,3 +161,4 @@ let%client disconnect_service = ~%disconnect_service
 let%client action_link_service = ~%action_link_service
 let%client set_password_service = ~%set_password_service
 let%client add_email_service = ~%add_email_service
+let%client update_language_service = ~%update_language_service

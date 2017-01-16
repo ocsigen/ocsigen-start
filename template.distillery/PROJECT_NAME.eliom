@@ -40,6 +40,10 @@ let%shared () =
     ~service:Os_services.add_email_service
     Os_handlers.add_email_handler;
 
+  Eliom_registration.Action.register
+    ~service:Os_services.update_language_service
+    Os_handlers.update_language_handler;
+
   %%%MODULE_NAME%%%_base.App.register
     ~service:Os_services.main_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.main_service_handler);
