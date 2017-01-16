@@ -26,4 +26,4 @@ depexts: [
   [["ubuntu"] ["postgresql"]]
   [["osx" "homebrew"] ["postgresql"]]
 ]
-available: [ ocaml-version >= "4.02" ]
+available: [ ocaml-version >= "4.03" ]
