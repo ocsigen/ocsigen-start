@@ -4,24 +4,9 @@
 let%server best_matched_language () =
   (* lang contains a list of (language_as_string, quality_value) *)
   let lang = Eliom_request_info.get_accept_language () in
-  (* Get the shortest ISO 639 code and capitalize it
-     so both en-us and en-gb match [En] variant of [%%%MODULE_NAME%%%_i18n.t] *)
-  let lang =
-    List.map (fun (s, q) ->
-      try
-        let i = String.index s '-' in
-        let s = String.sub s 0 i in
-        (String.capitalize_ascii s, q)
-      with Not_found -> (s, q) )
-      lang
-  in
   (* If no quality is given, we suppose it's 1 *)
-  let lang = List.map (fun (s, quality_value) ->
-    let quality_value = match quality_value with
-      | None -> 1.
-      | Some quality_value -> quality_value
-    in
-    (s, quality_value))
+  let lang = List.map (fun (s, q) ->
+    (s, match q with Some q -> q | None -> 1.))
     lang
   in
   (* Increasingly sort based on the quality *)
@@ -30,7 +15,7 @@ let%server best_matched_language () =
   (* The first language of the list is returned. If the list is empty, the
      default language is returned. *)
   let rec aux = function
-    | (l, _) :: tl -> (try %%%MODULE_NAME%%%_i18n.language_of_string l
+    | (l, _) :: tl -> (try %%%MODULE_NAME%%%_i18n.guess_language_of_string l
                        with %%%MODULE_NAME%%%_i18n.Unknown_language _ -> aux tl)
     | [] -> %%%MODULE_NAME%%%_i18n.default_language
   in
@@ -58,7 +43,8 @@ let%server _ =
     (fun userid ->
        (* Set language according to user preferences. *)
        let%lwt language = match%lwt Os_user.get_language userid with
-         | Some lang -> Lwt.return (%%%MODULE_NAME%%%_i18n.language_of_string lang)
+         | Some lang ->
+           Lwt.return (%%%MODULE_NAME%%%_i18n.guess_language_of_string lang)
          | None ->
            let%lwt best_language = best_matched_language () in
            ignore
