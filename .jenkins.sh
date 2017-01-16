@@ -1,7 +1,3 @@
-opam pin add --no-action ocsigenserver 'https://github.com/ocsigen/ocsigenserver.git#master'
-opam pin add --no-action reactiveData 'https://github.com/ocsigen/reactiveData.git#master'
-opam pin add --no-action eliom 'https://github.com/ocsigen/eliom.git'
-opam pin add --no-action ocsigen-toolkit 'https://github.com/ocsigen/ocsigen-toolkit.git#master'
 opam pin add --no-action wikidoc 'https://github.com/ocsigen/wikidoc.git#master'
 opam pin add --no-action ocsigen-start .
 

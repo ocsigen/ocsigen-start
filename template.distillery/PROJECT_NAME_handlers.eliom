@@ -29,18 +29,18 @@ let%client set_personal_data_handler =
   let set_personal_data_rpc =
     ~%(Eliom_client.server_function
          [%derive.json : ((string * string) * (string * string))]
-       @@ set_personal_data_handler ())
+         (Os_session.connected_wrapper (set_personal_data_handler ())))
   in
   fun () -> set_personal_data_rpc
 
 (* Forgot password *)
 let%server forgot_password_handler =
-  Os_handlers.forgot_password_handler Os_services.main_service
+  Os_handlers.forgot_password_handler %%%MODULE_NAME%%%_services.settings_service
 
 let%client forgot_password_handler =
   let forgot_password_rpc =
     ~%(Eliom_client.server_function [%derive.json : string]
-       @@ forgot_password_handler ())
+       (Os_session.connected_wrapper (forgot_password_handler ())))
   in
   fun () -> forgot_password_rpc
 
@@ -55,7 +55,7 @@ let%shared action_link_handler myid_o akey () =
   | Os_handlers.No_such_resource
   | Os_handlers.Invalid_action_key _ ->
     Os_msg.msg ~level:`Err ~onload:true
-      "Invalid action key, please ask for a new one.";
+      [%i18n S.invalid_action_key];
     Eliom_registration.(appl_self_redirect Action.send) ()
   | e ->
     let%lwt (email, phantom_user) =
@@ -87,13 +87,28 @@ let%shared action_link_handler myid_o akey () =
       if phantom_user
       then
         let page = [ div ~a:[ a_class ["login-signup-box"] ]
-                       [ Os_user_view.sign_up_form ~email () ] ]
+                       [ Os_user_view.sign_up_form
+                           ~a_placeholder_email:[%i18n S.your_email]
+                           ~text:[%i18n S.sign_up]
+                           ~email
+                           ()
+                       ]
+                   ]
         in
         %%%MODULE_NAME%%%_base.App.send
           (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))
       else
-        let page = [ div ~a:[ a_class ["login-signup-box"] ]
-                       [ Os_user_view.connect_form ~email () ] ]
+        let page = [ div
+                       ~a:[ a_class ["login-signup-box"] ]
+                       [ Os_user_view.connect_form
+                           ~a_placeholder_email:[%i18n S.your_email]
+                           ~a_placeholder_pwd:[%i18n S.your_password]
+                           ~text_keep_me_logged_in:[%i18n S.keep_logged_in]
+                           ~text_sign_in:[%i18n S.sign_in]
+                           ~email
+                           ()
+                       ]
+                   ]
         in
         %%%MODULE_NAME%%%_base.App.send
           (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))
@@ -107,10 +122,15 @@ let%shared action_link_handler myid_o akey () =
 
 (* Set password *)
 let%server set_password_handler =
-  Os_session.connected_fun Os_handlers.set_password_handler
+  Os_session.connected_fun
+    (fun myid () (pwd, pwd2) ->
+       let%lwt () = Os_handlers.set_password_handler myid () (pwd, pwd2) in
+       Lwt.return
+         (Eliom_registration.Redirection Eliom_service.reload_action))
 
-let%client set_password_handler () =
-  Os_handlers.set_password_rpc
+let%client set_password_handler () (pwd, pwd2) =
+  let%lwt () = Os_handlers.set_password_rpc (pwd, pwd2) in
+  Lwt.return (Eliom_registration.Redirection Eliom_service.reload_action)
 
 (* Preregister *)
 let%server preregister_handler =
@@ -119,7 +139,7 @@ let%server preregister_handler =
 let%client preregister_handler =
   let preregister_rpc =
     ~%(Eliom_client.server_function [%derive.json : string]
-       @@ preregister_handler ())
+       (Os_session.connected_wrapper (preregister_handler ())))
   in
   fun () -> preregister_rpc
 
@@ -127,7 +147,19 @@ let%shared main_service_handler myid_o () () = Eliom_content.Html.F.(
   %%%MODULE_NAME%%%_container.page
     ~a:[ a_class ["os-page-main"] ]
     myid_o (
-    [ p [em [pcdata "Ocsigen Start: Put app content here."]] ]
+    [ p [%i18n welcome_text1]
+    ; p [%i18n welcome_text2]
+    ; ul [ li [%i18n welcome_text3]
+         ; li [%i18n welcome_text4]
+         ]
+    ; p [%i18n welcome_text5]
+    ; ul [ li [%i18n welcome_text6]
+         ; li [%i18n welcome_text7]
+         ; li [%i18n welcome_text8]
+         ; li [%i18n welcome_text9]
+         ]
+    ; p [%i18n welcome_text10]
+    ]
   )
 )
 
@@ -136,11 +168,9 @@ let%shared about_handler myid_o () () = Eliom_content.Html.F.(
     ~a:[ a_class ["os-page-about"] ]
     myid_o
     [ div
-        [ p [pcdata "This template provides a skeleton \
-                     for an Ocsigen application."]
+        [ p [%i18n about_handler_template]
         ; br ()
-        ; p [pcdata "Feel free to modify the generated code and use it \
-                     or redistribute it as you want."]
+        ; p [%i18n about_handler_license]
         ]
     ]
 )
@@ -148,6 +178,6 @@ let%shared about_handler myid_o () () = Eliom_content.Html.F.(
 let%shared settings_handler myid_o () () =
   let%lwt content = match myid_o with
     | Some _ -> %%%MODULE_NAME%%%_settings.settings_content ()
-    | None -> Lwt.return [ p [ pcdata "Log in to see this page." ] ]
+    | None -> Lwt.return [ p [%i18n log_in_to_see_page ~capitalize:true]]
   in
   %%%MODULE_NAME%%%_container.page myid_o content

@@ -40,13 +40,13 @@ let%shared msg
   (message : string) =
   ignore [%client (
     let c = if ~%level = `Msg then [] else ["os-err"] in
-    Eliom_lib.debug "%s" ~%message;
     let message_dom = To_dom.of_p (D.p ~a:[a_class c] [pcdata ~%message]) in
-    let msgbox = msgbox () in
     Lwt.async (fun () ->
       let%lwt () =
         if ~%onload then Eliom_client.lwt_onload () else Lwt.return ()
       in
+      let msgbox = msgbox () in
+      Eliom_lib.debug "%s" ~%message;
       Dom.appendChild msgbox message_dom;
       let%lwt () = Lwt_js.sleep ~%duration in
       Dom.removeChild msgbox message_dom;

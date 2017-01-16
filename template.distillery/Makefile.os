@@ -209,7 +209,7 @@ SERVER_INC  := ${addprefix -package ,${SERVER_PACKAGES} ${SERVER_ELIOM_PACKAGES}
 SERVER_DB_INC  := ${addprefix -package ,${SERVER_PACKAGES} ${SERVER_DB_PACKAGES} ${SERVER_ELIOM_PACKAGES}}
 
 ${ELIOM_TYPE_DIR}/%.type_mli: %.eliom
-	${ELIOMC} -ppx -infer ${SERVER_INC} $<
+	${ELIOMC} -ppx -ppx ${I18N_PPX_REWRITER} -infer ${SERVER_INC} $<
 
 $(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cma: $(call objs,$(ELIOM_SERVER_DIR),cmo,$(SERVER_FILES)) | $(TEST_PREFIX)$(LIBDIR)
 	${ELIOMC} -a -o $@ $(GENERATE_DEBUG) \
@@ -228,21 +228,21 @@ ${ELIOM_SERVER_DIR}/%.cmi: %.mli
 	${ELIOMC} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%.cmi: %.eliomi
-	${ELIOMC} -ppx -c ${SERVER_INC} $(GENERATE_DEBUG) $<
+	${ELIOMC} -ppx -ppx ${I18N_PPX_REWRITER} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%_db.cmo: %_db.ml
 	${ELIOMC} -c ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmo: %.ml
 	${ELIOMC} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmo: %.eliom
-	${ELIOMC} -ppx -c ${SERVER_INC} $(GENERATE_DEBUG) $<
+	${ELIOMC} -ppx -ppx ${I18N_PPX_REWRITER} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%_db.cmx: %_db.ml
 	${ELIOMOPT} -c ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmx: %.ml
 	${ELIOMOPT} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmx: %.eliom
-	${ELIOMOPT} -ppx -c ${SERVER_INC} $(GENERATE_DEBUG) $<
+	${ELIOMOPT} -ppx -ppx ${I18N_PPX_REWRITER} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
 ##----------------------------------------------------------------------
 
@@ -256,7 +256,8 @@ CLIENT_OBJS := $(filter %.eliom %.ml, $(CLIENT_FILES))
 CLIENT_OBJS := $(patsubst %.eliom,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
 CLIENT_OBJS := $(patsubst %.ml,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
 
-$(ELIOM_CLIENT_DIR)/os_prologue.js:
+$(ELIOM_CLIENT_DIR)/os_prologue.js: \
+    $(shell ocamlfind query -r -predicates byte -a-format $(CLIENT_PACKAGES))
 	${JS_OF_ELIOM} -jsopt --dynlink -o $@ $(GENERATE_DEBUG) $(CLIENT_INC) \
 		${addprefix -jsopt ,$(DEBUG_JS)}
 
@@ -279,13 +280,13 @@ ${ELIOM_CLIENT_DIR}/%.cmi: %.mli
 	${JS_OF_ELIOM} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_CLIENT_DIR}/%.cmo: %.eliom
-	${JS_OF_ELIOM} -ppx -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
+	${JS_OF_ELIOM} -ppx -ppx ${I18N_PPX_REWRITER} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_CLIENT_DIR}/%.cmo: %.ml
 	${JS_OF_ELIOM} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_CLIENT_DIR}/%.cmi: %.eliomi
-	${JS_OF_ELIOM} -ppx -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
+	${JS_OF_ELIOM} -ppx -ppx ${I18N_PPX_REWRITER} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_CLIENT_DIR}/%.js: ${ELIOM_CLIENT_DIR}/%.cmo
 	${JS_OF_OCAML} $(DEBUG_JS) $<
@@ -299,8 +300,10 @@ ${ELIOM_CLIENT_DIR}/%.js: ${ELIOM_CLIENT_DIR}/%.cmo
 is_db_command=$(shell echo $(1) | grep -q "db-" && echo "true" || echo "false")
 ifneq ($(call is_db_command,$(MAKECMDGOALS)),true)
 ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),i18n-update) 
 ifneq ($(MAKECMDGOALS),distclean)
 include .depend
+endif
 endif
 endif
 endif
@@ -315,19 +318,19 @@ $(DEPSDIR)/%.mli.server: %.mli | $(DEPSDIR) $(SERVER_FILES)
 	$(ELIOMDEP) -server $(SERVER_DB_INC) $< > $@.tmp && mv $@.tmp $@
 
 $(DEPSDIR)/%.eliom.server: %.eliom | $(DEPSDIR) $(SERVER_FILES)
-	$(ELIOMDEP) -server -ppx $(SERVER_INC_DEP) $< > $@.tmp && mv $@.tmp $@
+	$(ELIOMDEP) -server -ppx -ppx ${I18N_PPX_REWRITER} $(SERVER_INC_DEP) $< > $@.tmp && mv $@.tmp $@
 
 $(DEPSDIR)/%.eliomi.server: %.eliomi | $(DEPSDIR) $(SERVER_FILES)
-	$(ELIOMDEP) -server -ppx $(SERVER_INC_DEP) $< > $@.tmp && mv $@.tmp $@
+	$(ELIOMDEP) -server -ppx -ppx ${I18N_PPX_REWRITER} $(SERVER_INC_DEP) $< > $@.tmp && mv $@.tmp $@
 
 $(DEPSDIR)/%.ml.client: %.ml | $(DEPSDIR)
 	$(ELIOMDEP) -client $(CLIENT_INC) $< > $@.tmp && mv $@.tmp $@
 
 $(DEPSDIR)/%.eliom.client: %.eliom | $(DEPSDIR)
-	$(ELIOMDEP) -client -ppx $(CLIENT_INC) $< > $@.tmp && mv $@.tmp $@
+	$(ELIOMDEP) -client -ppx -ppx ${I18N_PPX_REWRITER} $(CLIENT_INC) $< > $@.tmp && mv $@.tmp $@
 
 $(DEPSDIR)/%.eliomi.client: %.eliomi | $(DEPSDIR)
-	$(ELIOMDEP) -client -ppx $(CLIENT_INC) $< > $@.tmp && mv $@.tmp $@
+	$(ELIOMDEP) -client -ppx -ppx ${I18N_PPX_REWRITER} $(CLIENT_INC) $< > $@.tmp && mv $@.tmp $@
 
 $(DEPSDIR):
 	mkdir $@

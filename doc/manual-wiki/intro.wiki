@@ -41,6 +41,18 @@ The same database can used for the specific needs of the application
 at hand. For that, new tables can be added. The original ones should
 remain in place for Ocsigen Start to work correctly.
 
+===Internationalization (i18n)===
+
+The template is available in multiple languages (English and French) using
+[[https://github.com/besport/ocsigen-i18n|ocsigen-i18n]]. All translations used
+in the template are defined in the file {{assets/PROJECT_NAME_i18n.tsv}}. The
+Makefile rule {{i18n-udpate}} generates the i18n module. You need to use it
+every time the TSV file is updated.
+
+See {{Makefile.i18n}} for rules about i18n and {{Makefile.options}} to
+personalize the internalization of your application (for example add new
+languages, change default language, change TSV filename).
+
 ===Managing e-mails===
 
 The template application keeps track of users' e-mails and implements

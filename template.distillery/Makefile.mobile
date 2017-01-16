@@ -88,7 +88,7 @@ endif
 
 $(APPJS): $(JS_PREFIX).js
 ifeq ($(APP_REMOTE),yes)
-	APPJS_FILE=$$(curl -s -f $(APP_SERVER) | cat | grep -E -o -m 1 '$(PROJECT_NAME)_[a-f0-9]*?\.js') &&\
+	APPJS_FILE=$$(curl -s -f $(APP_SERVER)/ | cat | grep -E -o -m 1 '$(PROJECT_NAME)_[a-f0-9]*?\.js') &&\
 	curl -s -o $@ $(APP_SERVER)/$$APPJS_FILE
 else
 	cp -f $(WWW_PATH)/`readlink $(JS_PREFIX).js` $@
@@ -96,7 +96,7 @@ endif
 
 $(APPCSS):
 ifeq ($(APP_REMOTE),yes)
-	APPCSS_FILE=$$(curl -s -f $(APP_SERVER) | cat | grep -E -o -m 1 '$(PROJECT_NAME)_[a-f0-9]*?\.css') &&\
+	APPCSS_FILE=$$(curl -s -f $(APP_SERVER)/ | cat | grep -E -o -m 1 '$(PROJECT_NAME)_[a-f0-9]*?\.css') &&\
 	curl -s -o $@ $(APP_SERVER)/css/$$APPCSS_FILE
 else
 	cp -f $(WWW_PATH)/css/`readlink $(CSS_PREFIX).css` $@

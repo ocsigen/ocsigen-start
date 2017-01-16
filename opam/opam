@@ -9,12 +9,12 @@ build: [ make "-j%{jobs}%" ]
 install: [ make "install" ]
 remove: [ make "uninstall" ]
 depends: [
-  "imagemagick"
   "pgocaml" {>= "2.3"}
   "macaque" {>= "0.7.4"}
   "safepass"
+  "ocsigen-i18n" {>= "3.0.0"}
   "eliom" {>= "6.0"}
-  "ocsigen-toolkit" {>= "dev"}
+  "ocsigen-toolkit" {>= "0.99"}
   "yojson"
 ]
 depexts: [
@@ -26,4 +26,4 @@ depexts: [
   [["ubuntu"] ["postgresql"]]
   [["osx" "homebrew"] ["postgresql"]]
 ]
-available: [ ocaml-version >= "4.02" ]
+available: [ ocaml-version >= "4.03" ]

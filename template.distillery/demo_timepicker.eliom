@@ -27,7 +27,7 @@ let%client action (h, m) = ~%f (Some (h, m)); Lwt.return ()
 
 let%shared string_of_time = function
   | Some (h, m) ->
-    Printf.sprintf "You clicked on %d:%d" h m
+    [%i18n S.you_click_on_time ~h:(string_of_int h) ~m:(string_of_int m)]
   | None ->
     ""
 
@@ -37,10 +37,11 @@ let%server time_as_string () : string Eliom_shared.React.S.t =
 let%server time_reactive () = Lwt.return @@ time_as_string ()
 
 let%client time_reactive =
-  ~%(Eliom_client.server_function [%derive.json: unit] time_reactive)
+  ~%(Eliom_client.server_function [%derive.json: unit]
+       (Os_session.connected_wrapper time_reactive))
 
 (* Name for demo menu *)
-let%shared name = "TimePicker"
+let%shared name () = [%i18n S.demo_timepicker]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-timepicker"
@@ -52,7 +53,7 @@ let%shared page () =
       ~action:[%client action]
       ()
   in
-  let button = Eliom_content.Html.D.button [pcdata "back to hours"] in
+  let button = Eliom_content.Html.D.button [%i18n demo_timepicker_back_to_hours] in
   ignore
     [%client
       (Lwt.async (fun () ->
@@ -65,9 +66,9 @@ let%shared page () =
     ];
   let%lwt tr = time_reactive () in
   Lwt.return
-    [
-      p [pcdata "This page shows the time picker."];
-      div [time_picker];
-      p [Eliom_content.Html.R.pcdata tr];
-      div [button]
+    [ h1 [%i18n demo_timepicker]
+    ; p [%i18n demo_timepicker_description]
+    ; div [time_picker]
+    ; p [Eliom_content.Html.R.pcdata tr]
+    ; div [button]
     ]

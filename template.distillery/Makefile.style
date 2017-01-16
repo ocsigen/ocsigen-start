@@ -61,7 +61,6 @@ ifeq "$(USE_SASS)" "yes"
 	SASS_PATH=$(SASS_PATH) sass --style compressed $(SASS_SRC) $@)
 	$(POSTCSS) --use autoprefixer --replace $@
 else
-	cp -f $(LOCAL_STATIC_DEFAULTCSS)/* $(LOCAL_STATIC_CSS)
 	cat $(CSS_FILES) > $@
 endif
 

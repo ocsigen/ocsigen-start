@@ -1,0 +1,141 @@
+welcome_text1	Welcome to Ocsigen Start. This is a template of application written with Ocsigen (Eliom, Js_of_ocaml, etc.).	Bienvenue dans Ocsigen Start ! Ceci est un template d'application écrite avec Ocsigen (Eliom, Js_of_ocaml, etc.).
+welcome_text2	Use it:	Utilisez-le :
+welcome_text3	As a basis for your own applications.	Comme point de départ pour vos propres applications ;
+welcome_text4	To learn the most important concepts of client-server programming with Ocsigen.	Pour apprendre les principaux concepts de la programmtion client-serveur avec Ocsigen.
+welcome_text5	This application contains:	Cette application contient :
+welcome_text6	Features for user management (log-in form, user registration, activation links, recover password, settings page, etc.).	Des fonctionnalités de gestion des utilisateurs (connexion, création d'utilisateur, liens d'activation, récupération de mot de passe, paramètres de l'utilisateur,...) ;
+welcome_text7	An extensive demo of the most important features you need to write your own app. Read the source code to learn! And remove the demo part when you're ready to start with your own app.	Une démo des plus importantes fonctionnalités dont vous avez besoin pour écrire votre propre application. Lisez le code source pour apprendre ! Ensuite enlevez la partie demo quand vous êtes prêts à commencer votre propre application ;
+welcome_text8	A library with useful features (tips, notifications, etc.).	Un bibliothèque avec de nombeuses fonctionnalités utiles (tips, notifications, etc.) ;
+welcome_text9	A basic responsive CSS.	Une feuille de style "responsive" basique.
+welcome_text10	This application is multi-platform: it can run as a client-server Web application (with server-side generated pages) and as a mobile app (with client-side generated pages) for Android, iOS or Windows. Have a look at the README file to learn how to generate the mobile apps. 	Cette application est multi-plateforme : elle peut tourner comme application Web client-serveur (avec des pages générées côté serveur) ou bien comme application mobile pour iOS, Android ou Windows (avec des pages générées côté client). Regardez le fichier README pour apprendre comment générer les applications mobiles.
+about_handler_template	This template provides a skeleton for an Ocsigen application.	Ce template fournit une base pour une application Ocsigen.
+about_handler_license	Feel free to modify the generated code and use it or redistribute it as you want.	Vous êtes libres de modifier le code généré et de l'utiliser ou le redistribuer comme vous le souhaitez.
+footer_generated	This application has been generated using the	Cette application a été générée en utilisant le template d'
+footer_eliom_distillery	template for Eliom-distillery and uses the	avec Eliom-distillery et utilise les technologies
+footer_technology	 technology.	.
+home	{{{capitalize?H||h}}}ome	{{{capitalize?H||h}}}ome
+about	{{{capitalize?A||a}}}bout	{{{capitalize?A||a}}} propos
+demo	Demo	Démo
+password	{{{capitalize?P||p}}}assword	{{{capitalize?M||m}}}ot de passe
+retype_password	retype your password	retapez votre mot de passe
+your_email	{{{capitalize?Y||y}}}our email	{{{capitalize?V||v}}}otre e-mail
+your_password	{{{capitalize?Y||y}}}our password	{{{capitalize?V||v}}}otre mot de passe
+keep_logged_in	keep me logged in	rester connecté
+sign_in	{{{capitalize?S||s}}}ign in	{{{capitalize?S||s}}}e connecter
+forgot_your_password_q	{{{capitalize?F||f}}}orgot your password?	{{{capitalize?M||m}}}ot de passe oublié ?
+sign_up	{{{capitalize?S||s}}}ign up	{{{capitalize?S||s}}}'enregistrer
+logout	{{{capitalize?L||l}}}ogout	{{{capitalize?S||s}}}e déconnecter
+set_as_main_email	{{{capitalize?S||s}}}et as main email	{{{capitalize?M||m}}}ettre comme e-mail principal
+validated	{{{capitalize?V||v}}}alidated	{{{capitalize?V||v}}}alidé{{{f?e||}}}
+waiting_confirmation	{{{capitalize?W||w}}}aiting for confirmation	{{{capitalize?E||e}}}n attente de confirmation
+main_email	{{{capitalize?M||m}}}ain email	{{{capitalize?E||e}}}-mail principal
+change_password	{{{capitalize?C||c}}}hange your password:	{{{capitalize?C||c}}}hanger votre mot de passe :
+link_new_email	Link a new email to your account:	Ajouter une adresse e-mail à votre compte :
+currently_registered_emails	Currently registered emails:	E-mails actuellement enregistrés :
+settings	{{{capitalize?S||s}}}ettings	{{{capitalize?P||p}}}aramètres
+error	{{{capitalize?E||e}}}rror	{{{capitalize?E||e}}}rreur
+example_tip	This is an example of tip.	Ceci est un exemple de tip.
+look_module_tip	Look at module %%%MODULE_NAME%%%_tips to see how it is defined.	Regardez le module %%%MODULE_NAME%%%_tips pour voir comment c'est défini.
+passwords_do_not_match	Passwords do not match	Les mots de passe ne correspondent pas
+generate_action_link_key_subject_email	creation	création
+sign_up_email_msg	Welcome!\r\nTo confirm your email address, please click on this link:	Bienvenue !\r\nPour confirmer votre adresse e-mail, cliquer sur ce lien :
+email_already_exists	Email already exists	Cet e-mail existe déjà
+user_does_not_exist	user does not exist	Cet utilisateur n'existe pas
+account_not_activated	Account not activated	Ce compte n'est pas activé
+wrong_password	Wrong password	Mauvais mot de passe
+add_email_msg	Welcome!\r\nTo confirm your email address, please click on this link:	Bienvenue !\r\nPour confirmer votre adresse e-mail, cliquez sur ce lien :
+invalid_action_key	Invalid action key, please ask for a new one.	Clef d'action invalide. Demandez en un nouveau svp.
+forgot_pwd_email_msg	Hi,\r\nTo set a new password, please click on this link: Bonjour,\r\nPour mettre à jour votre mot de passe, cliquez sur ce lien :
+must_be_connected_to_see_page	You must be connected to see this page.	Vous devez être connecté pour voir cette page.
+email_address	Email address	Adresse e-mail
+your_first_name	Your first name	Votre prénom
+your_last_name	Your last name	Votre nom
+submit	{{{capitalize?S||s}}}ubmit	{{{capitalize?E||e}}}nvoyer
+see_help_again_from_beginning	{{{capitalize?S||s}}}ee help again from beginning	{{{capitalize?R||r}}}evoir l'aide depuis le début
+personal_information_not_set	Your personal information has not been set yet.	Vous n'avez pas encore entré vos données personnelles.
+take_time_enter_name_password	Please take time to enter your name and to set a password.	Veuillez entrer votre nom et choisir un mot de passe svp.
+wrong_data_fix	Wrong data. Please fix.	Données incorrectes. Veuillez corriger.
+send	{{{capitalize?S||s}}}end	{{{capitalize?E||e}}}nvoyer
+recover_password	{{{capitalize?R||r}}}ecover password	{{{capitalize?R||r}}}écupérer le mot de passe.
+welcome	{{{capitalize?W||w}}}elcome!	{{{capitalize?B||b}}}ienvenue !
+log_in_to_see_page	{{{capitalize?L||l}}}og in to see this page.	{{{capitalize?C||c}}}onnectez-vous pour voir cette page.
+you_click_on_date	You clicked on {{y}}/{{m}}/{{d}}	Vous avez cliqué sur {{d}}/{{m}}/{{y}}
+you_click_on_time	You clicked on {{h}}:{{m}}	Vous avez cliqué sur {{h}}:{{m}}
+demo_calendar	Calendar	Calendrier
+this_page_show_calendar	This page shows Ocsigen Toolkit's date picker.	Cette page montre le sélecteur de date d'Ocsigen Toolkit.
+demo_carousel_1	Carousel	Carousel
+ot_carousel_first_example_1	This is a first example of the Ocsigen Toolkit's carousel.	Voici le premier exemple du carousel d'Ocsigen Toolkit.
+ot_carousel_first_example_2	The carousel displays a number of blocks side-by-side (or vertically stacked).	Le carousel sert à afficher des blocs côte-à-côte (ou empilés verticalement).
+ot_carousel_first_example_3	To switch to a different block, either use the buttons above or below the carousel.	Pour vous rendre sur un autre bloc, utilisez les boutons au-dessus ou en dessous du carousel.
+ot_carousel_first_example_4	On touch screens you can also swipe with your fingers.	Sur les écrans tactiles, swipez avec les doigts.
+demo_carousel_2	Carousel: page with tabs	Carousel : page avec onglet
+ot_carousel_second_example_1	This page shows how to use Ocsigen Toolkit's carousel to display a page with several tabs.	Cette page montre comment utiliser le carousel d'Ocsigen Toolkit pour afficher une page avec des onglets.
+ot_carousel_second_example_2	Try to swipe on a touch screen.	Sur écran tactile, glissez pour changer d'onglet.
+ot_carousel_second_example_3	Try on a small screen or browser window to see how the tabs stick on top while scrolling the page.	Essayez sur un petit écran pour voir comment la barre d'onglets se fixe en haut de la page quand vous faites défiler la page vers le bas.
+monday	Monday	Lundi
+tuesday	Tuesday	Mardi
+wednesday	Wednesday	Mercredi
+thursday	Thursday	Jeudi
+friday	Friday	Vendredi
+saturday	Saturday	Samedi
+sunday	Sunday	Dimanche
+demo_carousel_wheel	Wheel carousel	Carousel avec roulette
+demo_carousel_third_example_1	Example of vertical circular carousel (wheel). Try with a touch screen.	Exemple de carousel vertical circulaire (wheel). Essayez avec un écran tactile.
+demo_notification	Notifications	Notifications
+demo_notification_got	got	Reçu
+exchange_msg_between_users	Exchange messages between users.	Échanger des messages entre utilisateurs.
+open_multiple_tabs_browsers	Open this page in multiple tabs or browsers.	Ouvrez cette page dans plusieurs onglets et fenêtres.
+fill_input_form_send_message	Fill in the input form to send a message.	Remplissez le formulaire pour envoyer un message.
+send_message	send message	envoyer le message
+demo_pgocaml	Database request	Requête à la base de données.
+no_user_create_accounts	No user. Create some accounts to test.	Aucun utilisateur. Créez quelques comptes pour tester.
+demo_pgocaml_users	Users:	Utilisateurs :
+demo_pgocaml_description_1	This page shows signed-up users fetched from the database.	Cette page montre tous les utilisateurs inscrits qui ont été récupérés de la base de données.
+demo_pgocaml_description_2	Have a look at the source code to see how to make a DB request with PGOCaml.	Regardez dans le code source comment réaliser une requête à la base de données en utilisant PGOcaml.
+demo_pgocaml_description_3	We are using Ot_spinner to display the list, which means that, in the case the page is generated client-side, the page will be displayed immediately with a spinner, that will be replaced by the contents when ready. The code contains a 2s sleep to demonstrate the spinner.	Nous utilisons Ot_spinner pour afficher la liste : dans le cas où une page est générée côté client, cette page est affichée immédiatement avec une icône de chargement qui sera remplacée par le contenu quand il sera prêt. Pour la démonstration, nous avons ajouté une pause de 2s pour laisser le temps de voir l'icône de chargement.
+demo_popup	Popup Button	Bouton popup
+demo_popup_click	Click for a popup!	Cliquez pour afficher un popup!
+demo_popup_message	Popup message	Message du popup
+demo_popup_content	Here is a button showing a simple popup window when clicked:	Voici un bouton affichant une simple fenêtre popup quand vous cliquez dessus :
+demo_reactive_programming	Reactive programming	Programmation réactive
+demo_reactive_programming_1	This is an example of page with reactive content.	Ceci est un exemple d'une page avec du contenu réactif.
+demo_reactive_programming_2	It defines a (client-side) reactive list. You can add elements in this list via the input form. The page is updated automatically when the value of the reactive list changes.	Il définit une liste réactive (côté client). Vous pouvez ajouter des élements dans cette liste via le formulaire. Cette page sera automatique mise à jour quand la valeur de la liste réactive changera.
+demo_reactive_programming_3	The reactive page is generated either server-side (for example when you are using a Web browser and you reload this page) or client-side (on mobile app or if you already were in this app before coming to this page).	La page réactive est générée aussi bien du côté serveur (par exemple quand vous utilisez le navigateur web et que vous rechargez cette page) que du côté client (sur mobile ou si vous étiez déjà sur dans cette application avant de venir sur cette page).
+demo_eliom_ref	Eliom references + OS dates	Références Eliom + dates OS
+demo_eliom_ref_first_visit	This is your first visit.	Ceci est votre première visite.
+demo_eliom_ref_last_visit	The last time you visited was: 	 La dernière fois que vous avez visité ce lien était :
+demo_eliom_ref_1	We use an Eliom reference to record the last time you visited this page.	Nous utilisons les références Eliom pour sauvegarder la date de la dernière fois que vous avez visité cette page.
+demo_eliom_ref_2	The value is different for each user.	La valeur est différente pour chaque utilisateur.
+demo_eliom_ref_3	The reference has been updated. Come back later!	La référence a été mise à jour. Revenez plus tard !
+demo_rpc_button	RPC button	Bouton RPC
+demo_rpc_button_click_increase	Click to increase server-side value	Cliquez pour augmenter la valeur côté serveur.
+demo_rpc_button_description	This button performs an RPC to increase a server-side value.	Ce bouton réalise un appel de fonction distante (RPC) pour augmenter une valeur côté serveur.
+demo_spinner	Spinner	Icône de chargement
+demo_spinner_content_ready	The content is ready. 	Le contenu est prêt.
+demo_spinner_message_replace_spinner	This message has replaced the spinner.	Ce message a remplacé l'icône de chargement.
+demo_spinner_description_ot	This is a demo of the Ocsigen Toolkit spinner widget.	Ceci est la démonstration de l'icône de chargement d'Ocsigen Toolkit.
+demo_spinner_description_1	We use this widget to integrate into the page an HTML block that takes a long time to produce, e.g., because of a slow server call.	Nous utilisons ce widget pour intégrer dans notre page HTML un bloc qui prend un long moment à produire, par exemple, à cause d'un appel serveur lent.
+demo_spinner_description_2	A spinner is diplayed, which is then replaced with the actual content when this content is ready.	Une icône de chargement est d'abord affichée, puis remplacée par le vrai contenu quand celui-ci est prêt.
+demo_spinner_description_3	For the demo we just sleep for 5 seconds to simulate waiting for the content.	Pour la démonstration, nous avons ajouté un délai de 5 secondes pour simuler l'attente du contenu.
+demo_spinner_generated_client_side	The spinner is generated client-side.	L'icône de chargement est générée côté client.
+demo_timepicker	Time picker	Sélecteur d'heure
+demo_timepicker_back_to_hours	Back to hours	Revenir aux heures
+demo_timepicker_description	This page shows the Ocsigen Toolkit's timepicker.	Cette page montre le sélecteur d'heure d'Ocsigen Toolkit.
+change_profile_picture	Change profile picture	Changer votre photo de profil.
+demo_widget_ot	This page contains some demos for some widgets from Ocsigen Toolkit. Cette contient quelques démonstrations de quelques widgets d'Ocsigen Toolkit.
+demo_widget_see_drawer	The different demos are accessible through the drawer menu. To open it click the top left button on the screen.	Ces différentes démonstrations sont accessibles à travers le menu. Pour l'ouvrir, cliquez sur le bouton en haut à gauche de l'écran.
+demo_widget_feel_free	Feel free to modify the generated code and use it or redistribute it as you want.	Vous êtes libres de modifier le code généré et de l'utiliser ou de le redistribuer comme vous souhaitez.
+users	Users	Utilisateurs
+you_are_not_connected	You are not connected.	Vous n'êtes pas connecté.
+you_are	You are	Vous êtes
+log_in_to_see_demo	Log in to see the demo.	Connectez-vous pour voir la démonstration.
+your_user_id	Your user id	Votre ID utilisateur
+the_module	The module	Le module
+allows_get_information_currently_connected_user	allows to get information about the currently connected user (server or client side).	vous autorise à obtenir les information de l'utilisateur courant connecté (côté serveur ou côté client).
+these_functions_called_server_or_client_side	These functions can be called either from server or client-side.	Ces fonctions peuvent être appelées aussi bien côté client que côté serveur.
+always_get_current_user_using_module	Always get the current user id using module	Récupérez toujours l'ID de l'utilisateur courant en utilisant le module
+never_trust_client_pending_user_id	Never trust a client sending its own user id!	Ne faites jamais confiance à un client envoyant son propre ID utilisateur !
+internationalization	{{{capitalize?I||i}}}nternationalization	{{{capitalize?I||i}}}nternationalisation
+internationalization_1	Ocsigen Start is using Ocsigen-i18n for internationalizing your app. Ocsigen-i18n defines a PPX syntax extension for automatically selecting language-dependent texts for each user. The user can choose his favourite language from the settings page. By default the browsers language is used.	Ocsigen Start utilise Ocsigen-i18n for internationaliser les applications. Ocsigen-i18n définit une extension de syntaxe PPX qui sélectionne automatiquement les textes en fonction de la langue de l'utilisateur courant. L'utilisateur peut choisir sa langue préférée dans la page de paramètres. Par défaut, la langue du navigateur est utilisée.
+internationalization_2	Write your translations (as tab-separated-values) in file {{f1}}. File {{f2}} is generated automatically from this file.	Écrivez vos traductions (au format "tab-separated-values") dans le fichier {{f1}}. Le fichier {{f2}} est généré automatiquement à partir de ce fichier.
+internationalization_3	Have a look at the OCaml code of this page to discover some features of module Ocsigen-i18n.	Jetez un coup d'œil au code OCaml de cette page pour découvrir quelques astuces du module Ocsigen-i18n.

@@ -14,7 +14,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name = "Notifications"
+let%shared name () = [%i18n S.demo_notification]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-notif"
@@ -24,36 +24,44 @@ let%shared page_class = "os-page-demo-notif"
    The key is the resource ID. For example, if you are implementing a
    messaging application, it can be the chatroom ID
    (for example type key = int64).
-   In this example, we have only one notification and one resource
-   (type key = unit).
 *)
 module Notif =
   Os_notif.Make_Simple (struct
-    type key = unit
+    type key = unit (* The resources identifiers.
+                       Here unit because we have only one resource. *)
     type notification = string
   end)
 
 (* Broadcast message [v] *)
 let%server notify v =
-  (* Notify all client processes listening on this resource (first paremeter)
+  (* Notify all client processes listening on this resource
+     (identified by its key, given as first parameter)
      by sending them message v. *)
-  Notif.notify (() :  Notif.key) v;
+  Notif.notify (* ~notfor:`Me *) (() :  Notif.key) v;
+  (* Use ~notfor:`Me to avoid receiving the message in this tab,
+     or ~notfor:(`User myid) to avoid sending to the current user.
+     (Where myid is Os_current_user.get_current_userid ())
+  *)
   Lwt.return ()
 
 (* Make [notify] available client-side *)
 let%client notify =
-  ~%(Eliom_client.server_function [%derive.json : string] notify)
+  ~%(Eliom_client.server_function [%derive.json : string]
+       (Os_session.connected_wrapper notify))
 
-(* Subscribe for notifications via [Notif.listen ()]; produce an alert
-   every time the event [e = Notif.client_ev ()] happens *)
+(* Subscribe for notifications via [Notif.listen ()];
+   Display a message every time the React event [e = Notif.client_ev ()]
+   happens. *)
 let%server listen () =
   Notif.listen ();
-  let%lwt e : (unit * string) Eliom_react.Down.t Lwt.t = Notif.client_ev () in
+  let e : (unit * string) Eliom_react.Down.t = Notif.client_ev () in
   ignore [%client
-    ((React.E.map (fun (_, msg) -> Eliom_lib.alert "got %s" msg) ~%e)
+    ((React.E.map (fun (_, msg) ->
+       (* Eliom_lib.alert "%s" msg *)
+       Os_msg.msg ~level:`Msg (Printf.sprintf "%s" msg)
+     ) ~%e)
      : unit React.E.t)
-  ];
-  Lwt.return ()
+  ]
 
 (* Make a text input field that calls [f s] for each [s] submitted *)
 let%shared make_form msg f =
@@ -76,19 +84,21 @@ let%shared make_form msg f =
 
 (* Page for this demo *)
 let%server page () =
-  let%lwt () = listen () in
-  Lwt.return Eliom_content.Html.[
-    D.p [D.pcdata "Exchange messages between users.";
-         D.br ();
-         D.pcdata "Open this page in multiple tabs or browsers.";
-         D.br ();
-         D.pcdata "Fill in the input form to send a message."];
-    make_form "send message" [%client (notify : string -> unit Lwt.t)]
+  listen ();
+  Lwt.return Eliom_content.Html.F.[
+    h1 [%i18n demo_notification]
+  ; p [ pcdata [%i18n S.exchange_msg_between_users]
+      ; br ()
+      ; pcdata [%i18n S.open_multiple_tabs_browsers]
+      ; br ()
+      ; pcdata [%i18n S.fill_input_form_send_message]]
+  ; make_form [%i18n S.send_message] [%client (notify : string -> unit Lwt.t)]
   ]
 
 (* Make page available on client-side *)
 let%client page =
-  ~%((Eliom_client.server_function [%derive.json: unit] page) :
+  ~%((Eliom_client.server_function [%derive.json: unit]
+        (Os_session.connected_wrapper page)) :
        (unit,
-        [`Div | `P | `Input] Eliom_content.Html.D.elt list)
+        [ `Div | `P | `Input | `H1 ] Eliom_content.Html.D.elt list)
          Eliom_client.server_function)

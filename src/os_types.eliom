@@ -39,6 +39,7 @@ module User = struct
       fn : string;
       ln : string;
       avatar : string option;
+      language : string option;
     } [@@deriving json]
 end
 

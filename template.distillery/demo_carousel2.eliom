@@ -25,7 +25,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name = "Carousel : page with tabs"
+let%shared name () = [%i18n S.demo_carousel_2]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-carousel2"
@@ -83,9 +83,10 @@ let%shared page () =
   ];
 
   Lwt.return
-    [ p [pcdata "This page shows how to use Ocsigen Toolkit's carousel to display a page with several tabs."]
-    ; p [pcdata "Try to swipe on a touch screen."]
-    ; p [pcdata "Try on a small screen or browser window to see how the tabs stick on top while scrolling the page."]
+    [ h1 [%i18n demo_carousel_2]
+    ; p [%i18n ot_carousel_second_example_1]
+    ; p [%i18n ot_carousel_second_example_2]
+    ; p [%i18n ot_carousel_second_example_3]
     ; div ~a:[a_class ["demo-carousel2"]]
         [ div ~a:[a_class ["demo-carousel2-box"]]
             [ tabs ; carousel ] ]

@@ -19,7 +19,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name = "Popup Button"
+let%shared name () = [%i18n S.demo_popup]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-popup"
@@ -37,7 +37,7 @@ let%shared page () =
     D.Form.input
       ~a:[a_class ["button"]]
       ~input_type:`Submit
-      ~value:"Click for a popup!"
+      ~value:[%i18n S.demo_popup_click]
       Form.string
   in
   (* Every time this page is generated,
@@ -61,14 +61,13 @@ let%shared page () =
               let%lwt _ =
                 Ot_popup.popup
                   ~close_button:[ Os_icons.F.close () ]
-                  (fun _ -> Lwt.return @@ p [pcdata "Popup message"])
+                  (fun _ -> Lwt.return @@ p [%i18n demo_popup_message])
               in
               Lwt.return ()))
        : unit)
     ];
   Lwt.return
-    [
-      p [pcdata "Here is a button showing a simple popup window when \
-                 clicked:"];
-      p [button]
+    [ h1 [%i18n demo_popup]
+    ; p [%i18n demo_popup_content]
+    ; p [button]
     ]

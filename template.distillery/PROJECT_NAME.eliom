@@ -7,7 +7,7 @@ let%shared () =
     ~service:Os_services.set_personal_data_service
     %%%MODULE_NAME%%%_handlers.set_personal_data_handler;
 
-  Eliom_registration.Action.register
+  Eliom_registration.Redirection.register
     ~service:Os_services.set_password_service
     %%%MODULE_NAME%%%_handlers.set_password_handler;
 
@@ -23,7 +23,7 @@ let%shared () =
     ~service:Os_services.sign_up_service
     Os_handlers.sign_up_handler;
 
-  Eliom_registration.Unit.register
+  Eliom_registration.Action.register
     ~service:Os_services.connect_service
     Os_handlers.connect_handler;
 
@@ -52,7 +52,7 @@ let%shared () =
     ~service:%%%MODULE_NAME%%%_services.settings_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.settings_handler)
 
-let () =
+let%server () =
   Eliom_registration.Ocaml.register
     ~service:%%%MODULE_NAME%%%_services.upload_user_avatar_service
     (Os_session.connected_fun %%%MODULE_NAME%%%_handlers.upload_user_avatar_handler)
@@ -66,7 +66,7 @@ let () =
    Lwt_log.ign_info ~section "This is an information";
    (or ign_debug, ign_warning, ign_error etc.)
  *)
-let _ =
+let%server _ =
   if Eliom_config.get_debugmode ()
   then begin
     ignore
