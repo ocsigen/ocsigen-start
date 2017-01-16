@@ -3,14 +3,18 @@
 # command is needed by $(CSS_DEST). It uses the fact that `sed --version`
 # doesn't exist for the BSD version.
 
+.PHONY: css check_sass clean-style import-external-css
+
+NPM_POSTCSS = node_modules/postcss-cli
+NPM_AUTOPREFIXER = node_modules/autoprefixer
+POSTCSS = node_modules/.bin/postcss
+
 check_sed:
 ifneq ($(shell sed --version 2> /dev/null),)
 SED = sed -i
 else
 SED = sed -i .css
 endif
-
-.PHONY: check_sed
 
 css: import-external-css $(CSS_DEST)
 
@@ -26,18 +30,6 @@ USE_SASS to "no" in Makefile.options to use CSS.
 
 endef
 
-define ERROR_POSTCSS
-
-Warning: postcss not found.
-
-Ocsigen Start is using postcss to add vendor prefixes in CSS. You may
-proceed without postcss, but this may negatively impact how your
-application looks on common browsers. You can use NPM to install it globally
-with the command `npm install -g postcss-cli`.
-
-endef
-
-.PHONY: check_sass clean-style import-external-css
 
 check_sass:
 ifeq ($(strip $(USE_SASS)),yes)
@@ -48,13 +40,11 @@ endif
 endif
 endif
 
-check_postcss:
-ifeq ($(shell which postcss),)
-$(warning $(ERROR_POSTCSS))
-POSTCSS=true
-else
-POSTCSS=postcss
-endif
+$(NPM_POSTCSS):
+	npm install postcss-cli
+
+$(NPM_AUTOPREFIXER):
+	npm install autoprefixer
 
 ##----------------------------------------------------------------------
 ## SASS rules
@@ -64,7 +54,7 @@ endif
 # If SASS is not activated, it will concatenate all CSS files (listed in
 # $(CSS_FILES)) in $(LOCAL_CSS).
 # In both cases, external CSS files ($(EXTERNAL_CSS_FILES)) are copied.
-$(LOCAL_CSS): check_sass check_postcss import-external-css
+$(LOCAL_CSS): check_sass $(NPM_POSTCSS) $(NPM_AUTOPREFIXER) import-external-css
 ifeq "$(USE_SASS)" "yes"
 	[ -d $(SASSDIR) ] && \
 	(sassc -t compressed $(addprefix -I ,$(subst :, ,$(SASS_PATH))) $(SASS_SRC) $@ || \
