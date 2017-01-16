@@ -93,7 +93,7 @@ $(addprefix $(TEST_PREFIX), $(DIST_DIRS)):
 	mkdir -p $@
 
 staticfiles:
-	cp -rf $(LOCAL_STATIC_CSS) $(LOCAL_STATIC_FONTS) $(TEST_PREFIX)$(ELIOMSTATICDIR)
+	cp -rf $(LOCAL_STATIC_CSS) $(LOCAL_STATIC_IMAGES) $(LOCAL_STATIC_FONTS) $(TEST_PREFIX)$(ELIOMSTATICDIR)
 
 ##----------------------------------------------------------------------
 ## Installing & Running
@@ -109,6 +109,7 @@ install.lib.opt: $(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cmxs | $(PREFIX)$(LIBDI
 	install $< $(PREFIX)$(LIBDIR)
 install.static: $(TEST_PREFIX)$(ELIOMSTATICDIR)/$(PROJECT_NAME).js | $(PREFIX)$(STATICDIR) $(PREFIX)$(ELIOMSTATICDIR)
 	cp -r $(LOCAL_STATIC_CSS) $(PREFIX)$(FILESDIR)
+	cp -r $(LOCAL_STATIC_IMAGES) $(PREFIX)$(FILESDIR)
 	cp -r $(LOCAL_STATIC_FONTS) $(PREFIX)$(FILESDIR)
 	[ -z $(WWWUSER) ] || chown -R $(WWWUSER) $(PREFIX)$(FILESDIR)
 	install $(addprefix -o ,$(WWWUSER)) $< $(PREFIX)$(ELIOMSTATICDIR)
@@ -300,7 +301,7 @@ ${ELIOM_CLIENT_DIR}/%.js: ${ELIOM_CLIENT_DIR}/%.cmo
 is_db_command=$(shell echo $(1) | grep -q "db-" && echo "true" || echo "false")
 ifneq ($(call is_db_command,$(MAKECMDGOALS)),true)
 ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(MAKECMDGOALS),i18n-update) 
+ifneq ($(MAKECMDGOALS),i18n-update)
 ifneq ($(MAKECMDGOALS),distclean)
 include .depend
 endif

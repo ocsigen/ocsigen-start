@@ -100,5 +100,5 @@ let%client page =
   ~%((Eliom_client.server_function [%derive.json: unit]
         (Os_session.connected_wrapper page)) :
        (unit,
-        [ `Div | `P | `Input | `H1 ] Eliom_content.Html.D.elt list)
+        Html_types.div_content Eliom_content.Html.D.elt list)
          Eliom_client.server_function)
