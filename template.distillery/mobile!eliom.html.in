@@ -22,7 +22,8 @@
     <link rel="stylesheet" type="text/css" href="css/%%PROJECTNAME%%.css">
     <script>
       //<![CDATA[
-      var __eliom_server = '%%APPSERVER%%';
+      var __eliom_server = '%%APPSERVER%%%%APPPATH%%';
+      var __eliom_path = '%%APPPATH%%';
       var __eliom_app_name = '%%APPNAME%%';
       // var __eliom_debug_mode = true;
       var __css_name = '%%PROJECTNAME%%.css';

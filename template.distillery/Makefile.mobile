@@ -88,16 +88,16 @@ endif
 
 $(APPJS): $(JS_PREFIX).js
 ifeq ($(APP_REMOTE),yes)
-	APPJS_FILE=$$(curl -s -f $(APP_SERVER)/ | cat | grep -E -o -m 1 '$(PROJECT_NAME)_[a-f0-9]*?\.js') &&\
-	curl -s -o $@ $(APP_SERVER)/$$APPJS_FILE
+	APPJS_FILE=$$(curl -s -f $(APP_SERVER)$(APP_PATH)/ | cat | grep -E -o -m 1 '$(PROJECT_NAME)_[a-f0-9]*?\.js') &&\
+	curl -s -o $@ $(APP_SERVER)$(APP_PATH)/$$APPJS_FILE
 else
 	cp -f $(WWW_PATH)/`readlink $(JS_PREFIX).js` $@
 endif
 
 $(APPCSS):
 ifeq ($(APP_REMOTE),yes)
-	APPCSS_FILE=$$(curl -s -f $(APP_SERVER)/ | cat | grep -E -o -m 1 '$(PROJECT_NAME)_[a-f0-9]*?\.css') &&\
-	curl -s -o $@ $(APP_SERVER)/css/$$APPCSS_FILE
+	APPCSS_FILE=$$(curl -s -f $(APP_SERVER)$(APP_PATH)/ | cat | grep -E -o -m 1 '$(PROJECT_NAME)_[a-f0-9]*?\.css') &&\
+	curl -s -o $@ $(APP_SERVER)$(APP_PATH)/css/$$APPCSS_FILE
 else
 	cp -f $(WWW_PATH)/css/`readlink $(CSS_PREFIX).css` $@
 endif
@@ -176,6 +176,7 @@ $(LOCAL_STATIC_FILES): $(CORDOVAPATH)/www/%: $(LOCAL_STATIC)/%
 # This rule generates the config.xml file from mobile/config.xml.in.
 $(CORDOVAPATH)/config.xml: mobile/config.xml.in $(CORDOVAPATH)
 	sed -e "s,%%APPSERVER%%,$(APP_SERVER),g" \
+	    -e "s,%%APPPATH%%,$(APP_PATH),g" \
 	    -e "s,%%APPID%%,$(MOBILE_APP_ID),g" \
 	    -e "s,%%MOBILE_APP_NAME%%,$(MOBILE_APP_NAME),g" \
 	    -e "s,%%MOBILE_APP_VERSION%%,$(MOBILE_APP_VERSION),g" \
@@ -193,6 +194,7 @@ $(CORDOVAPATH)/www/index.html: $(CORDOVAPATH) $(APPJS) mobile/index.html.in
 	HASH=$$(md5sum $(APPJS) | cut -d ' ' -f 1) && \
 	sed -e "s,%%APPNAME%%,$(PROJECT_NAME)_$$HASH,g" \
 	    -e "s,%%APPSERVER%%,$(APP_SERVER),g" \
+	    -e "s,%%APPPATH%%,$(APP_PATH),g" \
 	    -e "s,%%MOBILE_APP_NAME%%,$(MOBILE_APP_NAME),g" \
 	    mobile/index.html.in > \
 	$(CORDOVAPATH)/www/index.html
@@ -204,6 +206,7 @@ $(CORDOVAPATH)/www/eliom.html: $(CORDOVAPATH) \
 	JS_HASH=$$(md5sum $(APPJS) | cut -d ' ' -f 1) && \
 	CSS_HASH=$$(md5sum $(APPCSS) | cut -d ' ' -f 1) && \
 	sed -e "s,%%APPNAME%%,$(PROJECT_NAME)_$$JS_HASH,g" \
+	    -e "s,%%APPPATH%%,$(APP_PATH),g" \
 	    -e "s,%%PROJECTNAME%%,$(PROJECT_NAME),g" \
 	    -e "s,%%APPSERVER%%,$(APP_SERVER),g" \
 	    mobile/eliom.html.in > $@
@@ -246,6 +249,7 @@ $(CORDOVAPATH)/www/chcp.manifest: $(APPJS) $(APPCSS) \
 $(CORDOVAPATH)/www/chcp.json: mobile/chcp.json.in \
                               $(CORDOVAPATH)/www/chcp.manifest
 	sed -e "s,%%APPSERVER%%,$(APP_SERVER),g" \
+	    -e "s,%%APPPATH%%,$(APP_PATH),g" \
 	    -e "s,%%DATE%%,$(TIMESTAMP),g" \
 	    $< > $@
 
