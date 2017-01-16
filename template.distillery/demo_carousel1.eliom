@@ -48,12 +48,12 @@ let%shared page () =
   let prev = Ot_carousel.previous ~change ~pos [] in
   let next = Ot_carousel.next ~change ~pos ~size ~length [] in
   Lwt.return
-    [
-      p [%i18n ot_carousel_first_example_1];
-      p [%i18n ot_carousel_first_example_2];
-      p [%i18n ot_carousel_first_example_3];
-      p [%i18n ot_carousel_first_example_4];
-      div ~a:[a_class ["demo-carousel1"]]
+    [ h1 [%i18n demo_carousel_1]
+    ; p [%i18n ot_carousel_first_example_1]
+    ; p [%i18n ot_carousel_first_example_2]
+    ; p [%i18n ot_carousel_first_example_3]
+    ; p [%i18n ot_carousel_first_example_4]
+    ; div ~a:[a_class ["demo-carousel1"]]
         [ div ~a:[a_class ["demo-carousel1-box"]]
             [ carousel ; prev ; next ; bullets ] ]
     ]

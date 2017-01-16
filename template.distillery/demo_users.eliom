@@ -48,7 +48,8 @@ let%shared page () =
   let myid_o = Os_current_user.Opt.get_current_userid () in
   let me_o = Os_current_user.Opt.get_current_user () in
   Lwt.return
-    [ p [ pcdata [%i18n S.the_module]
+    [ h1 [%i18n users]
+    ; p [ pcdata [%i18n S.the_module]
         ; code [ pcdata " Os_current_user " ]
         ; pcdata [%i18n S.allows_get_information_currently_connected_user]
         ]

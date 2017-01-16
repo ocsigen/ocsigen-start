@@ -87,7 +87,8 @@ let%shared page () =
   in
 
   Lwt.return
-    [ p [%i18n demo_carousel_third_example_1]
+    [ h1 [%i18n demo_carousel_wheel]
+    ; p [%i18n demo_carousel_third_example_1]
     ; carousel
     ; div [
         Ot_carousel.previous ~a:[ a_class ["demo-prev"] ] ~change ~pos [];

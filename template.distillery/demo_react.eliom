@@ -69,7 +69,8 @@ let%shared page () =
       l
   in
   Lwt.return Eliom_content.Html.[
-    F.p [ F.pcdata [%i18n S.demo_reactive_programming_1]]
+    F.h1 [%i18n demo_reactive_programming]
+  ; F.p [ F.pcdata [%i18n S.demo_reactive_programming_1]]
   ; F.p [ F.pcdata [%i18n S.demo_reactive_programming_2]]
   ; F.p [ F.pcdata [%i18n S.demo_reactive_programming_3]]
   ; inp

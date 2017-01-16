@@ -83,7 +83,8 @@ let%shared page () =
   ];
 
   Lwt.return
-    [ p [%i18n ot_carousel_second_example_1]
+    [ h1 [%i18n demo_carousel_2]
+    ; p [%i18n ot_carousel_second_example_1]
     ; p [%i18n ot_carousel_second_example_2]
     ; p [%i18n ot_carousel_second_example_3]
     ; div ~a:[a_class ["demo-carousel2"]]

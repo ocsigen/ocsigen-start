@@ -34,6 +34,7 @@ let demos =
   ; (module Demo_spinner)
   ; (module Demo_pgocaml)
   ; (module Demo_users)
+  ; (module Demo_i18n)
   ; (module Demo_carousel1)
   ; (module Demo_carousel2)
   ; (module Demo_carousel3)
