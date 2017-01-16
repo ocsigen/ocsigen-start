@@ -226,6 +226,13 @@ If you only wants to build the mobile application, you can use:
 make APP_SERVER=http://${YOUR_SERVER} APP_REMOTE=no android
 ```
 
+If you want the application URL to include a path
+(`http://${YOUR_SERVER}${PATH}`),
+you need to provide an additional `APP_PATH` argument, e.g.,
+`APP_PATH=/foo`. You need to include the leading `/`, but no trailing
+`/`. You also need to modify the `%%%PROJECT_NAME%%%.conf.in` with a
+[http://ocsigen.org/ocsigenserver/manual/config#h5o-31](`<site>` tag).
+
 ## Update the mobile application.
 
 The mobile app is updated automatically at launch time, every time the
