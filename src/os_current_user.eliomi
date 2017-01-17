@@ -66,6 +66,11 @@ val remove_email_from_user : string -> unit Lwt.t
  *)
 val update_main_email : string -> unit Lwt.t
 
+(** [update_language language] updates the language of the current user.
+    If no user is connected, it fails with {!Os_session.Not_connected}.
+*)
+val update_language : string -> unit Lwt.t
+
 [%%server.start]
 
 (** [is_email_validated email] returns [true] if [email] is a valided email for

@@ -168,3 +168,14 @@ let%server is_email_validated email =
 let%server is_main_email email =
   let myid = get_current_userid () in
   Os_user.is_main_email ~userid:myid ~email
+
+let%server update_language language =
+  let myid = get_current_userid () in
+  Os_user.update_language myid language
+
+let%client update_language language =
+  ~%(Eliom_client.server_function
+       [%derive.json: string]
+       (Os_session.connected_wrapper update_language)
+    )
+    language

@@ -96,6 +96,38 @@ let%client get_emails =
   ~%(Eliom_client.server_function [%derive.json : unit]
        (Os_session.connected_wrapper get_emails))
 
+let%shared select_language_form =
+  (fun select_language_name ->
+     let open Eliom_content.Html in
+     let current_language = %%%MODULE_NAME%%%_i18n.get_language () in
+     let all_languages_except_current = List.filter
+         (fun l -> l <> current_language)
+                                        %%%MODULE_NAME%%%_i18n.languages
+     in
+     let form_option_of_language language is_current_language =
+       D.Form.Option (
+         [], (* No attributes *)
+         %%%MODULE_NAME%%%_i18n.string_of_language language,
+         None,
+         is_current_language
+       )
+     in
+     [ D.p [D.pcdata [%i18n S.change_language]]
+     ; D.Form.select
+         ~name:select_language_name
+         D.Form.string
+         (form_option_of_language current_language true)
+         (List.map
+            (fun l -> form_option_of_language l false)
+            all_languages_except_current
+         )
+     ; D.Form.input
+         ~input_type:`Submit
+         ~value:[%i18n S.send ~capitalize:true]
+         D.Form.string
+     ]
+  )
+
 let%shared settings_content () =
   let%lwt emails = get_emails () in
   let%lwt emails = ul_of_emails emails in
@@ -126,7 +158,11 @@ let%shared settings_content () =
           ~service:Os_services.add_email_service
           ();
         p [%i18n currently_registered_emails];
-        div ~a:[a_class ["os-emails"]] [emails]
+        div ~a:[a_class ["os-emails"]] [emails];
+        Form.post_form
+          ~service:Os_services.update_language_service
+          select_language_form
+          ()
       ]
     ]
   )

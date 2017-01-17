@@ -364,6 +364,8 @@ let%shared action_link_handler _myid_o akey () =
   | `Account_already_activated_unconnected (action_link) ->
     Lwt.fail (Account_already_activated_unconnected (action_link))
 
+let%shared update_language_handler () language =
+  Os_current_user.update_language language
 
 (* Preregister *)
 let preregister_handler () email =
