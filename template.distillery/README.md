@@ -117,7 +117,7 @@ Build the mobile applications
 
 - Install NPM (on Debian and Ubuntu, `sudo apt-get install npm`). If you have
   issues with your package manager, you can also use
-  [https://github.com/creationix/nvm](nvm).
+  [NVM](https://github.com/creationix/nvm).
 - Install Cordova (`sudo npm install -g cordova`)
 - Install the needed Cordova plugins:
 ```Shell
@@ -231,7 +231,7 @@ If you want the application URL to include a path
 you need to provide an additional `APP_PATH` argument, e.g.,
 `APP_PATH=/foo`. You need to include the leading `/`, but no trailing
 `/`. You also need to modify the `%%%PROJECT_NAME%%%.conf.in` with a
-[http://ocsigen.org/ocsigenserver/manual/config#h5o-31](`<site>` tag).
+[`<site>` tag](http://ocsigen.org/ocsigenserver/manual/config#h5o-31).
 
 ## Update the mobile application.
 
