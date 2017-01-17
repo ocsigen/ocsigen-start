@@ -145,6 +145,7 @@ db-upgrade:
 
 db-drop:
 	dropdb $(DB_NAME)
+	dropdb ocsipersist_%%%PROJECT_NAME%%%
 
 db-psql:
 	psql $(DB_NAME)
