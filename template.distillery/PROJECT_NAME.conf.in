@@ -27,6 +27,7 @@
         port="%%DB_PORT%%"
         user="%%DB_USER%%"
         password="%%DB_PASSWORD%%"
+        database="ocsipersist_%%%PROJECT_NAME%%%"
       />
     </extension>
     <extension findlib-package="eliom.server">

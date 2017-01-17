@@ -2,7 +2,7 @@
 -- Do not remove the field with a `-- DEFAULT` suffix.
 -- That's the default tables/fields needed by Ocsigen-start
 
-CREATE DATABASE ocsipersist;
+CREATE DATABASE ocsipersist_%%%PROJECT_NAME%%%;
 
 CREATE EXTENSION citext; --DEFAULT
 -- You may remove the above line if you use the type TEXT for emails instead of CITEXT
