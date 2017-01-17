@@ -129,7 +129,7 @@ CORDOVA_DIRS := www www/css www/fonts www/images www/img www/js
 # The CSS, JS, logo, index and config.xml created by the Cordova CLI are removed
 # to be replaced later.
 $(CORDOVAPATH):
-ifdef CORDOVA_INSTALLED
+	npm install cordova cordova-hot-code-push-cli read-package-json xml2js
 	cordova create $(CORDOVAPATH) $(MOBILE_APP_ID) "$(MOBILE_APP_NAME)"
 	rm -f $(CORDOVAPATH)/www/css/index.css
 	rm -f $(CORDOVAPATH)/www/js/index.js
@@ -137,11 +137,6 @@ ifdef CORDOVA_INSTALLED
 	rm -f $(CORDOVAPATH)/www/index.html
 	rm -f $(CORDOVAPATH)/config.xml
 	$(foreach dir,$(CORDOVA_DIRS),mkdir -p $@/$(dir);)
-else
-	$(warning $(WARNING_NO_CORDOVA))
-	[ -d $@ ] || mkdir $@
-	$(foreach dir,$(CORDOVA_DIRS),mkdir -p $@/$(dir);)
-endif
 
 ##----------------------------------------------------------------------
 ## Rules for static files.
