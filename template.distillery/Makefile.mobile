@@ -157,7 +157,7 @@ CORDOVA_STATIC_FILES := \
 	$(CORDOVAPATH)/.chcpignore \
 	$(call static_targets,$(MOBILESTATICPATH)/www,$(CORDOVAPATH)/www)
 
-LOCAL_STATIC_FILES := $(call static_targets,$(LOCAL_STATIC)/css,$(CORDOVAPATH)/www/css) $(call static_targets,$(LOCAL_STATIC)/fonts,$(CORDOVAPATH)/www/fonts)
+LOCAL_STATIC_FILES := $(call static_targets,$(LOCAL_STATIC)/css,$(CORDOVAPATH)/www/css) $(call static_targets,$(LOCAL_STATIC)/images,$(CORDOVAPATH)/www/images) $(call static_targets,$(LOCAL_STATIC)/fonts,$(CORDOVAPATH)/www/fonts)
 
 # Static files dependencies: if a file changes in these directory, a new copy
 # of static files will be triggered
