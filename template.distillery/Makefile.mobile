@@ -115,8 +115,13 @@ endif
         $(CORDOVAPATH)/www/index.html \
         $(CORDOVAPATH)/config.xml
 
+ifeq ($(USE_NPM), yes)
 CORDOVA = PATH=$(PWD)/node_modules/cordova/bin:$$PATH cordova
 CORDOVA_HCP = PATH=$(PWD)/node_modules/cordova-hot-code-push-cli/bin:$$PATH cordova-hcp
+else
+CORDOVA = cordova
+CORDOVA_HCP = cordova-hcp
+endif
 
 # Necessary Cordova and static files directories. They are created when
 # creating the Cordova project.
@@ -129,7 +134,9 @@ CORDOVA_DIRS := www www/css www/fonts www/images www/img www/js
 # The CSS, JS, logo, index and config.xml created by the Cordova CLI are removed
 # to be replaced later.
 $(CORDOVAPATH):
+ifeq ($(USE_NPM), yes)
 	npm install cordova cordova-hot-code-push-cli read-package-json xml2js
+endif
 	$(CORDOVA) create $(CORDOVAPATH) $(MOBILE_APP_ID) "$(MOBILE_APP_NAME)"
 	rm -f $(CORDOVAPATH)/www/css/index.css
 	rm -f $(CORDOVAPATH)/www/js/index.js
