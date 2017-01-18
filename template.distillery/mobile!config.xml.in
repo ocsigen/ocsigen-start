@@ -74,7 +74,11 @@
     <!-- Plugins -->
     <plugin name="cordova-plugin-whitelist" spec="1" />
     <!-- <allow-navigation href="*" /> --><!-- this seems to be necessary for outside resources, e.g., outside videos in iframes -->
-    <plugin name="cordova-plugin-crosswalk-webview" spec="~1.6.0" />
+    <!-- The CrossWalk plugin bundles a browser runtime. Enable this
+         if you are facing trouble with old versions of Android (4.x
+         and older). You may also want to enable the CrossWalk
+         settings as they appear later in this file. -->
+    <!-- <plugin name="cordova-plugin-crosswalk-webview" spec="~1.6.0" /> -->
     <plugin name="cordova-hot-code-push-plugin" spec="~1.5.1" />
     <!-- <plugin name="cordova-plugin-facebook4" spec="~1.7.0"> -->
     <!--     <variable name="APP_ID" value="%%FACEBOOK_ID%%" /> -->
@@ -116,13 +120,13 @@
          because webkit's version might take over otherwise.
     -->
 
-
     <!-- CrossWalk settings -->
-    <preference name="xwalkVersion" value="15+" />
-    <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
-    <preference name="xwalkMode" value="embedded" />
-    <preference name="xwalkMultipleApk" value="false" />
-    <preference name="BackgroundColor" value="0xED393900" />
+
+    <!-- <preference name="xwalkVersion" value="15+" /> -->
+    <!-- <preference name="xwalkCommandLine" value="&#45;&#45;disable&#45;pull&#45;to&#45;refresh&#45;effect" /> -->
+    <!-- <preference name="xwalkMode" value="embedded" /> -->
+    <!-- <preference name="xwalkMultipleApk" value="false" /> -->
+    <!-- <preference name="BackgroundColor" value="0xED393900" /> -->
 
     <!-- Hot Code Push settings -->
     <chcp>

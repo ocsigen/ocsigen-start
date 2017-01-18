@@ -115,8 +115,13 @@ endif
         $(CORDOVAPATH)/www/index.html \
         $(CORDOVAPATH)/config.xml
 
-# Check whether Cordova is installed (if not, variable is empty)
-CORDOVA_INSTALLED := $(shell cordova --version 2> /dev/null)
+ifeq ($(USE_NPM), yes)
+CORDOVA = PATH=$(PWD)/node_modules/cordova/bin:$$PATH cordova
+CORDOVA_HCP = PATH=$(PWD)/node_modules/cordova-hot-code-push-cli/bin:$$PATH cordova-hcp
+else
+CORDOVA = cordova
+CORDOVA_HCP = cordova-hcp
+endif
 
 # Necessary Cordova and static files directories. They are created when
 # creating the Cordova project.
@@ -129,19 +134,16 @@ CORDOVA_DIRS := www www/css www/fonts www/images www/img www/js
 # The CSS, JS, logo, index and config.xml created by the Cordova CLI are removed
 # to be replaced later.
 $(CORDOVAPATH):
-ifdef CORDOVA_INSTALLED
-	cordova create $(CORDOVAPATH) $(MOBILE_APP_ID) "$(MOBILE_APP_NAME)"
+ifeq ($(USE_NPM), yes)
+	npm install cordova cordova-hot-code-push-cli read-package-json xml2js
+endif
+	$(CORDOVA) create $(CORDOVAPATH) $(MOBILE_APP_ID) "$(MOBILE_APP_NAME)"
 	rm -f $(CORDOVAPATH)/www/css/index.css
 	rm -f $(CORDOVAPATH)/www/js/index.js
 	rm -f $(CORDOVAPATH)/www/img/logo.png
 	rm -f $(CORDOVAPATH)/www/index.html
 	rm -f $(CORDOVAPATH)/config.xml
 	$(foreach dir,$(CORDOVA_DIRS),mkdir -p $@/$(dir);)
-else
-	$(warning $(WARNING_NO_CORDOVA))
-	[ -d $@ ] || mkdir $@
-	$(foreach dir,$(CORDOVA_DIRS),mkdir -p $@/$(dir);)
-endif
 
 ##----------------------------------------------------------------------
 ## Rules for static files.
@@ -241,7 +243,7 @@ TIMESTAMP := $(shell date +%y%m%d-%H%M%S)
 $(CORDOVAPATH)/www/chcp.manifest: $(APPJS) $(APPCSS) \
                                   $(CORDOVAPATH) $(CORDOVA_STATIC_FILES) \
                                   $(LOCAL_STATIC_FILES)
-	cd $(CORDOVAPATH) ; cordova-hcp build
+	cd $(CORDOVAPATH) ; $(CORDOVA_HCP) build
 	$(RM) $(CORDOVAPATH)/www/chcp.json
 
 # Build the chcp.json based on mobile/chcp.json.in after creating the
@@ -281,7 +283,7 @@ assets: $(CORDOVAPATH) chcp
 # this method is any error will be ignored.
 $(CORDOVAPATH)/platforms/%: check-app-env assets icons-cp-% $(CORDOVAPATH)
 	cd $(CORDOVAPATH) ;\
-	cordova platform add $* ; true
+	$(CORDOVA) platform add $* ; true
 
 ADD_PLATFORMS := add-android add-browser add-ios add-windows
 
@@ -296,7 +298,7 @@ PLATFORMS := android ios browser
 # before building, environment variables are checked and assets are copied.
 $(PLATFORMS): %: byte check-app-env icons-% assets icons-cp-% add-%
 	cd $(CORDOVAPATH) ;\
-	cordova build $(CORDOVA_FLAGS) $*
+	$(CORDOVA) build $(CORDOVA_FLAGS) $*
 
 # release build
 RELEASE_PLATFORMS := android-release ios-release
@@ -311,7 +313,7 @@ EMULATE_PLATFORMS := emulate-android emulate-ios
 
 $(EMULATE_PLATFORMS): emulate-%: byte check-app-env icons-% assets icons-cp-% %
 	cd $(CORDOVAPATH) ;\
-	cordova emulate --nobuild $*
+	$(CORDOVA) emulate --nobuild $*
 
 ##----------------------------------------------------------------------
 ## Cordova run rules.
@@ -322,7 +324,7 @@ RUN_PLATFORMS := run-android run-ios run-browser
 # run-(android|ios|windows)
 $(RUN_PLATFORMS): run-%: byte check-app-env icons-% assets %
 	cd $(CORDOVAPATH) ;\
-	cordova run --nobuild $*
+	$(CORDOVA) run --nobuild $*
 
 ##----------------------------------------------------------------------
 ## Rules for the icons and splashes generation.

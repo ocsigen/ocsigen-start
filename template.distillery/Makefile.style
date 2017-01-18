@@ -5,10 +5,6 @@
 
 .PHONY: css check_sass clean-style import-external-css
 
-NPM_POSTCSS = node_modules/postcss-cli
-NPM_AUTOPREFIXER = node_modules/autoprefixer
-POSTCSS = node_modules/.bin/postcss
-
 check_sed:
 ifneq ($(shell sed --version 2> /dev/null),)
 SED = sed -i
@@ -40,11 +36,21 @@ endif
 endif
 endif
 
+ifeq ($(USE_NPM), yes)
+NPM_POSTCSS = node_modules/postcss-cli
+NPM_AUTOPREFIXER = node_modules/autoprefixer
+POSTCSS = node_modules/.bin/postcss
+
 $(NPM_POSTCSS):
 	npm install postcss-cli
 
 $(NPM_AUTOPREFIXER):
 	npm install autoprefixer
+else
+NPM_POSTCSS =
+NPM_AUTOPREFIXER =
+POSTCSS = postcss
+endif
 
 ##----------------------------------------------------------------------
 ## SASS rules
