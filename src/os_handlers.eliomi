@@ -75,14 +75,6 @@ val action_link_handler :
   unit ->
   'a Eliom_registration.application_content Eliom_registration.kind Lwt.t
 
-(** [update_language_handler () language] is the handler to update the language
-     for the current user.
-*)
-val update_language_handler :
-  unit ->
-  string ->
-  unit Lwt.t
-
 [%%server.start]
 
 (** [forgot_password_handler service () email] creates and sends an action link
