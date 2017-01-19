@@ -299,3 +299,35 @@ a.os-page-header-app-name {
 .ot-dr-left .os-avatar {
     margin-left: 16px;
 }
+
+/* Tips */
+div.os-tip {
+  position: absolute;
+  margin: 20px;
+  box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.2);
+  z-index: 1111;
+  div.os-tip-bec {
+      background-color: white;
+      width: 20px;
+      height: 20px;
+      position: absolute;
+      transform: rotate(45deg);
+      box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.2);
+      z-index: -1;
+  }
+  div.os-tip-content {
+      padding: 30px 20px 30px 20px;
+      background-color: white;
+      height: 100%;
+      width: 100%;
+  }
+  .os-tip-close {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+  }
+  li,
+  p {
+      padding-bottom: 10px;
+  }
+}

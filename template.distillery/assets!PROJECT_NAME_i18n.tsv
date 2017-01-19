@@ -35,7 +35,7 @@ currently_registered_emails	Currently registered emails:	E-mails actuellement en
 settings	{{{capitalize?S||s}}}ettings	{{{capitalize?P||p}}}aramètres
 error	{{{capitalize?E||e}}}rror	{{{capitalize?E||e}}}rreur
 example_tip	This is an example of tip.	Ceci est un exemple de tip.
-look_module_tip	Look at module %%%MODULE_NAME%%%_tips to see how it is defined.	Regardez le module %%%MODULE_NAME%%%_tips pour voir comment c'est défini.
+look_module_tip	Look at the code to see how it is defined.	Regardez le code pour voir comment c'est défini.
 passwords_do_not_match	Passwords do not match	Les mots de passe ne correspondent pas
 generate_action_link_key_subject_email	creation	création
 sign_up_email_msg	Welcome!\r\nTo confirm your email address, please click on this link:	Bienvenue !\r\nPour confirmer votre adresse e-mail, cliquer sur ce lien :
