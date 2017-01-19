@@ -187,4 +187,5 @@ let%server update_language_handler () language =
     (%%%MODULE_NAME%%%_i18n.language_of_string language)
 
 let%client update_language_handler () language =
+  %%%MODULE_NAME%%%_i18n.(set_language (language_of_string language));
   Os_current_user.update_language language
