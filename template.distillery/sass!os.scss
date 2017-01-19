@@ -67,6 +67,7 @@ input {
 }
 
 .os-page-header {
+    position: fixed;
     top: 0;
     z-index: 1;
     height: 50px;
@@ -183,7 +184,7 @@ a.os-page-header-app-name {
     p {
         padding: 50px 0;
         text-align: center;
-        background-color: rgba(200,220,240,0.8);
+        background-color: rgba(200,220,240,0.9);
         &.os-err {
             background-color: rgba(200,0,0,0.7);
             color: white;
@@ -288,6 +289,13 @@ a.os-page-header-app-name {
     width: 35px;
 }
 
+.ot-drawer {
+    display: flex;
+    flex-direction: column;
+    .connected-user-box {
+        flex-shrink: 0;
+    }
+}
 .ot-dr-left .os-avatar {
     margin-left: 16px;
 }
