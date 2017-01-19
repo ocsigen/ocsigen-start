@@ -181,3 +181,10 @@ let%shared settings_handler myid_o () () =
     | None -> Lwt.return [ p [%i18n log_in_to_see_page ~capitalize:true]]
   in
   %%%MODULE_NAME%%%_container.page myid_o content
+
+let%server update_language_handler () language =
+  Os_session.connected_wrapper %%%MODULE_NAME%%%_language.update_language
+    (%%%MODULE_NAME%%%_i18n.language_of_string language)
+
+let%client update_language_handler () language =
+  Os_current_user.update_language language

@@ -77,3 +77,8 @@ val settings_handler :
   unit ->
   unit ->
   Os_page.content Lwt.t
+
+val update_language_handler :
+  unit ->
+  string ->
+  Eliom_registration.Action.page Lwt.t
