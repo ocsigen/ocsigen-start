@@ -14,7 +14,7 @@ footer_generated	This application has been generated using the	Cette application
 footer_eliom_distillery	template for Eliom-distillery and uses the	avec Eliom-distillery et utilise les technologies
 footer_technology	 technology.	.
 home	{{{capitalize?H||h}}}ome	{{{capitalize?H||h}}}ome
-about	{{{capitalize?A||a}}}bout	{{{capitalize?A||a}}} propos
+about	{{{capitalize?A||a}}}bout	{{{capitalize?À||à}}} propos
 demo	Demo	Démo
 password	{{{capitalize?P||p}}}assword	{{{capitalize?M||m}}}ot de passe
 retype_password	retype your password	retapez votre mot de passe
