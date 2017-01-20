@@ -85,7 +85,7 @@ DIST_FILES = $(ELIOMSTATICDIR)/$(PROJECT_NAME).js $(LIBDIR)/$(PROJECT_NAME).cma
 test.byte: $(TEST_CONFIG_FILES) staticfiles $(addprefix $(TEST_PREFIX),$(DIST_DIRS) $(DIST_FILES)) css
 	@echo "==== The website is available at http://localhost:$(TEST_PORT) ===="
 	$(OCSIGENSERVER) $(RUN_DEBUG) -c $<
-test.opt: $(TEST_CONFIG_FILES) $(addprefix $(TEST_PREFIX),$(DIST_DIRS) $(patsubst %.cma,%.cmxs, $(DIST_FILES))) css
+test.opt: $(TEST_CONFIG_FILES) staticfiles $(addprefix $(TEST_PREFIX),$(DIST_DIRS) $(patsubst %.cma,%.cmxs, $(DIST_FILES))) css
 	@echo "==== The website is available at http://localhost:$(TEST_PORT) ===="
 	$(OCSIGENSERVER.OPT) $(RUN_DEBUG) -c $<
 
