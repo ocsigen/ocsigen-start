@@ -163,9 +163,19 @@ let%shared block ?(a = []) ?(recipient = `All) ~name ~content () =
     end
   | _ -> Lwt.return None
 
-(* This thread is used to display only one tip at a time: *)
-let%client waiter =
-  ref (let%lwt _ = Eliom_client.lwt_onload () in Lwt.return ())
+let%client onload_waiter () =
+  let%lwt _  = Eliom_client.lwt_onload () in Lwt.return ()
+
+(* This thread is used to display only one tip at a time *)
+let%client waiter = ref (onload_waiter ())
+
+let%client rec onchangepage_handler () =
+  waiter := onload_waiter ();
+  (* onchangepage handlers are one-off, register ourselves again for
+     next time *)
+  Eliom_client.onchangepage onchangepage_handler
+
+let%client () = Eliom_client.onchangepage onchangepage_handler
 
 (* Display a tip bubble *)
 let%client display_bubble ?(a = [])
