@@ -42,7 +42,7 @@ let%shared () =
 
   Eliom_registration.Action.register
     ~service:Os_services.update_language_service
-    Os_handlers.update_language_handler;
+    %%%MODULE_NAME%%%_handlers.update_language_handler;
 
   %%%MODULE_NAME%%%_base.App.register
     ~service:Os_services.main_service
