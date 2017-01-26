@@ -150,9 +150,11 @@ let%shared block ?(a = []) ?(recipient = `All) ~name ~content () =
         ]
       in
       let%lwt c = content close in
+      let c = [ div ~a:[a_class [ "os-tip-content" ]] c ] in
       let box =
-        D.div ~a:(a_class [ "tip" ; "block" ]::a)
-          (Os_icons.D.close ~a:[ a_onclick [%client fun _ ->
+        D.div ~a:(a_class [ "os-tip" ; "os-tip-block" ]::a)
+          (Os_icons.D.close ~a:[ a_class [ "os-tip-close" ]
+                               ; a_onclick [%client fun _ ->
              Lwt.async ~%close ] ] ()
            :: c)
       in
@@ -161,8 +163,19 @@ let%shared block ?(a = []) ?(recipient = `All) ~name ~content () =
     end
   | _ -> Lwt.return None
 
-(* This thread is used to display only one tip at a time: *)
-let%client waiter = ref (let%lwt _ = Lwt_js_events.onload () in Lwt.return ())
+let%client onload_waiter () =
+  let%lwt _  = Eliom_client.lwt_onload () in Lwt.return ()
+
+(* This thread is used to display only one tip at a time *)
+let%client waiter = ref (onload_waiter ())
+
+let%client rec onchangepage_handler () =
+  waiter := onload_waiter ();
+  (* onchangepage handlers are one-off, register ourselves again for
+     next time *)
+  Eliom_client.onchangepage onchangepage_handler
+
+let%client () = Eliom_client.onchangepage onchangepage_handler
 
 (* Display a tip bubble *)
 let%client display_bubble ?(a = [])
@@ -174,7 +187,7 @@ let%client display_bubble ?(a = [])
   let new_waiter, new_wakener = Lwt.wait () in
   waiter := new_waiter;
   let%lwt () = current_waiter in
-  let bec = D.div ~a:[a_class ["bec"]] [] in
+  let bec = D.div ~a:[a_class ["os-tip-bec"]] [] in
   let box_ref = ref None in
   let close = fun () ->
     let () = match !box_ref with
@@ -183,9 +196,11 @@ let%client display_bubble ?(a = [])
     Lwt.wakeup new_wakener ();
     set_tip_seen (name : string) in
   let%lwt c = content close in
+  let c = [ div ~a:[a_class [ "os-tip-content" ]] c ] in
   let box =
-    D.div ~a:(a_class [ "tip" ; "bubble" ]::a)
-      (Os_icons.D.close ~a:[ a_onclick (fun _ -> Lwt.async close) ] ()
+    D.div ~a:(a_class [ "os-tip" ; "os-tip-bubble" ]::a)
+      (Os_icons.D.close ~a:[ a_class [ "os-tip-close" ]
+                           ; a_onclick (fun _ -> Lwt.async close) ] ()
        :: match arrow with None -> c
                          | _    -> bec :: c)
   in
@@ -219,22 +234,22 @@ let%client display_bubble ?(a = [])
        let bec = To_dom.of_element bec in
        match a with
        | `top i ->
-         bec##.style##.top := Js.string "-11px";
+         bec##.style##.top := Js.string "-10px";
          bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
          bec##.style##.borderBottom := Js.string "none";
          bec##.style##.borderRight := Js.string "none"
        | `left i ->
-         bec##.style##.left := Js.string "-11px";
+         bec##.style##.left := Js.string "-10px";
          bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
          bec##.style##.borderTop := Js.string "none";
          bec##.style##.borderRight := Js.string "none"
        | `bottom i ->
-         bec##.style##.bottom := Js.string "-11px";
+         bec##.style##.bottom := Js.string "-10px";
          bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
          bec##.style##.borderTop := Js.string "none";
          bec##.style##.borderLeft := Js.string "none"
        | `right i ->
-         bec##.style##.right := Js.string "-11px";
+         bec##.style##.right := Js.string "-10px";
          bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
          bec##.style##.borderBottom := Js.string "none";
          bec##.style##.borderLeft := Js.string "none"
@@ -258,10 +273,12 @@ let%shared bubble
   ?(height: int option)
   ?(width: int option)
   ?(parent_node: [< `Body | Html_types.body_content ] Eliom_content.Html.elt
-  option)
+        option)
   ~(name : string)
-  ~(content: ((unit -> unit Lwt.t) Eliom_client_value.t
-           -> Html_types.div_content Eliom_content.Html.elt list Lwt.t))
+  ~(content:
+      ((unit -> unit Lwt.t)
+       -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
+        Eliom_client_value.t)
   () =
   let myid_o = Os_current_user.Opt.get_current_userid () in
   match recipient, myid_o with

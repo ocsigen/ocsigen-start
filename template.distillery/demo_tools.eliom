@@ -36,6 +36,7 @@ let demos =
   ; (module Demo_users)
   ; (module Demo_links)
   ; (module Demo_i18n)
+  ; (module Demo_tips)
   ; (module Demo_carousel1)
   ; (module Demo_carousel2)
   ; (module Demo_carousel3)
