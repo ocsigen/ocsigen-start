@@ -383,14 +383,19 @@ let%server add_email_handler =
     "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: "
   in
-  let send_act =
-    send_action_link  ~autoconnect:true msg Os_services.main_service
+  let send_act () =
+    send_action_link ~autoconnect:true msg
+      (match Os_services.settings_service () with
+       | Some service ->
+         service
+       | None ->
+         Os_services.main_service)
   in
   let add_email myid () email =
     let%lwt available = Os_db.Email.available email in
     if available then
       let%lwt () = Os_db.User.add_email_to_user ~userid:myid ~email in
-      send_act email myid
+      send_act () email myid
     else begin
       Eliom_reference.Volatile.set Os_user.user_already_exists true;
       Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";

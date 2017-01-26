@@ -227,3 +227,41 @@ val update_language_service :
     [ `One of string ] Eliom_parameter.param_name,
     Eliom_service.non_ocaml
   ) Eliom_service.t
+
+[%%server.start]
+
+(** Register the settings service (defined in the app rather than in
+    the OS lib) because we need to perform redirections to it. *)
+val register_settings_service :
+  (
+    unit,
+    unit,
+    Eliom_service.get,
+    Eliom_service.att,
+    Eliom_service.non_co,
+    Eliom_service.non_ext,
+    Eliom_service.reg,
+    [ `WithoutSuffix ],
+    unit,
+    unit,
+    Eliom_service.non_ocaml
+  ) Eliom_service.t ->
+  unit
+
+(**/**)
+
+val settings_service :
+  unit ->
+  (
+    unit,
+    unit,
+    Eliom_service.get,
+    Eliom_service.att,
+    Eliom_service.non_co,
+    Eliom_service.non_ext,
+    Eliom_service.reg,
+    [ `WithoutSuffix ],
+    unit,
+    unit,
+    Eliom_service.non_ocaml
+  ) Eliom_service.t option

@@ -162,3 +162,14 @@ let%client action_link_service = ~%action_link_service
 let%client set_password_service = ~%set_password_service
 let%client add_email_service = ~%add_email_service
 let%client update_language_service = ~%update_language_service
+
+(* [Os_handlers.add_email_handler] needs access to the settings
+   service, but the latter needs to be defined in the template. So we
+   use the reference [settings_service_ref]. The template needs to
+   call [set_settings_service]. *)
+
+let%server settings_service_ref = ref None
+
+let%server register_settings_service s = settings_service_ref := Some s
+
+let%server settings_service () = !settings_service_ref
