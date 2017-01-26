@@ -68,7 +68,7 @@ this_page_show_calendar	This page shows Ocsigen Toolkit's date picker.	Cette pag
 demo_carousel_1	Carousel	Carousel
 ot_carousel_first_example_1	This is a first example of the Ocsigen Toolkit's carousel.	Voici le premier exemple du carousel d'Ocsigen Toolkit.
 ot_carousel_first_example_2	The carousel displays a number of blocks side-by-side (or vertically stacked).	Le carousel sert à afficher des blocs côte-à-côte (ou empilés verticalement).
-ot_carousel_first_example_3	To switch to a different block, either use the buttons above or below the carousel.	Pour vous rendre sur un autre bloc, utilisez les boutons au-dessus ou en dessous du carousel.
+ot_carousel_first_example_3	To switch to a different block, use the buttons in the carousel.	Pour vous rendre sur un autre bloc, utilisez les boutons dans le carousel.
 ot_carousel_first_example_4	On touch screens you can also swipe with your fingers.	Sur les écrans tactiles, swipez avec les doigts.
 demo_carousel_2	Carousel: page with tabs	Carousel : page avec onglet
 ot_carousel_second_example_1	This page shows how to use Ocsigen Toolkit's carousel to display a page with several tabs.	Cette page montre comment utiliser le carousel d'Ocsigen Toolkit pour afficher une page avec des onglets.
@@ -85,9 +85,9 @@ demo_carousel_wheel	Wheel carousel	Carousel avec roulette
 demo_carousel_third_example_1	Example of vertical circular carousel (wheel). Try with a touch screen.	Exemple de carousel vertical circulaire (wheel). Essayez avec un écran tactile.
 demo_notification	Notifications	Notifications
 demo_notification_got	got	Reçu
-exchange_msg_between_users	Exchange messages between users.	Échanger des messages entre utilisateurs.
+exchange_msg_between_users	Module {{os_notif}} makes it possible to send information to client applications (notifications, new messages ...).	Le module {{os_notif}} permet des données aux applications client (notifications, nouveaux messages,...).
 open_multiple_tabs_browsers	Open this page in multiple tabs or browsers.	Ouvrez cette page dans plusieurs onglets et fenêtres.
-fill_input_form_send_message	Fill in the input form to send a message.	Remplissez le formulaire pour envoyer un message.
+fill_input_form_send_message	Fill in the input form to send a message to all other tabs.	Remplissez le formulaire pour envoyer un message à tous vos autres onglets ouverts.
 send_message	send message	envoyer le message
 demo_pgocaml	Database request	Requête à la base de données.
 no_user_create_accounts	No user. Create some accounts to test.	Aucun utilisateur. Créez quelques comptes pour tester.
@@ -96,12 +96,12 @@ demo_pgocaml_description_1	This page shows signed-up users fetched from the data
 demo_pgocaml_description_2	Have a look at the source code to see how to make a DB request with PGOCaml.	Regardez dans le code source comment réaliser une requête à la base de données en utilisant PGOcaml.
 demo_pgocaml_description_3	We are using Ot_spinner to display the list, which means that, in the case the page is generated client-side, the page will be displayed immediately with a spinner, that will be replaced by the contents when ready. The code contains a 2s sleep to demonstrate the spinner.	Nous utilisons Ot_spinner pour afficher la liste : dans le cas où une page est générée côté client, cette page est affichée immédiatement avec une icône de chargement qui sera remplacée par le contenu quand il sera prêt. Pour la démonstration, nous avons ajouté une pause de 2s pour laisser le temps de voir l'icône de chargement.
 demo_popup	Popup Button	Bouton popup
-demo_popup_click	Click for a popup!	Cliquez pour afficher un popup!
+demo_popup_click	Click for a popup!	Cliquez pour afficher un popup !
 demo_popup_message	Popup message	Message du popup
 demo_popup_content	Here is a button showing a simple popup window when clicked:	Voici un bouton affichant une simple fenêtre popup quand vous cliquez dessus :
-demo_reactive_programming	Reactive programming	Programmation réactive
-demo_reactive_programming_1	This is an example of page with reactive content.	Ceci est un exemple d'une page avec du contenu réactif.
-demo_reactive_programming_2	It defines a (client-side) reactive list. You can add elements in this list via the input form. The page is updated automatically when the value of the reactive list changes.	Il définit une liste réactive (côté client). Vous pouvez ajouter des élements dans cette liste via le formulaire. Cette page sera automatique mise à jour quand la valeur de la liste réactive changera.
+demo_reactive_programming	Reactive pages	Pages réactives
+demo_reactive_programming_1	This is an example of page with reactive content. It is a very convenient solution to update pages when data changes.	Ceci est un exemple d'une page avec du contenu réactif. C'est une solution extrêment simple pour mettre à jour une page quand les données changent.
+demo_reactive_programming_2	It defines a (client-side) reactive OCaml list. You can add elements in this list via the input form. The page is updated automatically when the value of the reactive list changes.	Il définit une liste OCaml réactive (côté client). Vous pouvez ajouter des élements dans cette liste via le formulaire. Cette page sera automatique mise à jour quand la valeur de la liste réactive changera.
 demo_reactive_programming_3	The reactive page is generated either server-side (for example when you are using a Web browser and you reload this page) or client-side (on mobile app or if you already were in this app before coming to this page).	La page réactive est générée aussi bien du côté serveur (par exemple quand vous utilisez le navigateur web et que vous rechargez cette page) que du côté client (sur mobile ou si vous étiez déjà sur dans cette application avant de venir sur cette page).
 demo_eliom_ref	Eliom references + OS dates	Références Eliom + dates OS
 demo_eliom_ref_first_visit	This is your first visit.	Ceci est votre première visite.
