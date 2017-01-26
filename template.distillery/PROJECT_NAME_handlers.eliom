@@ -161,8 +161,9 @@ let%shared main_service_handler myid_o () () =
          ; li [%i18n welcome_text7]
          ; li [%i18n welcome_text8]
          ; li [%i18n welcome_text9]
+         ; li [%i18n welcome_text10]
          ]
-    ; p [%i18n welcome_text10]
+    ; p [%i18n welcome_text11]
     ]
   )
 

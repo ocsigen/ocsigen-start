@@ -35,7 +35,8 @@ val disconnect_handler : ?main_page:bool -> unit -> unit -> unit Lwt.t
 (** [sign_up_handler () email] signes up an user with email [email]. *)
 val sign_up_handler : unit -> string -> unit Lwt.t
 
-(** [add_email_handler () email] adds the email. *)
+(** [add_email_handler () email] adds a new e-mail address
+    for the current user and sends an activation link. *)
 val add_email_handler : unit -> string -> unit Lwt.t
 
 (** Exception raised when something went wrong with an action link key. The
