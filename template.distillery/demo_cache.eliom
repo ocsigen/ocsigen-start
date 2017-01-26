@@ -18,7 +18,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name () = "Cache"
+let%shared name () = [%i18n S.demo_cache]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-cache"

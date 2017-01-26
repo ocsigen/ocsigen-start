@@ -61,6 +61,7 @@ welcome	{{{capitalize?W||w}}}elcome!	{{{capitalize?B||b}}}ienvenue !
 log_in_to_see_page	{{{capitalize?L||l}}}og in to see this page.	{{{capitalize?C||c}}}onnectez-vous pour voir cette page.
 you_click_on_date	You clicked on {{y}}/{{m}}/{{d}}	Vous avez cliqué sur {{d}}/{{m}}/{{y}}
 you_click_on_time	You clicked on {{h}}:{{m}}	Vous avez cliqué sur {{h}}:{{m}}
+demo_cache	Cache	Cache
 demo_calendar	Calendar	Calendrier
 this_page_show_calendar	This page shows Ocsigen Toolkit's date picker.	Cette page montre le sélecteur de date d'Ocsigen Toolkit.
 demo_carousel_1	Carousel	Carousel
@@ -121,6 +122,7 @@ demo_spinner_generated_client_side	The spinner is generated client-side.	L'icôn
 demo_timepicker	Time picker	Sélecteur d'heure
 demo_timepicker_back_to_hours	Back to hours	Revenir aux heures
 demo_timepicker_description	This page shows the Ocsigen Toolkit's timepicker.	Cette page montre le sélecteur d'heure d'Ocsigen Toolkit.
+demo_tips	Tips	Aide
 change_profile_picture	Change profile picture	Changer votre photo de profil.
 demo_widget_ot	This page contains some demos for some widgets from Ocsigen Toolkit. Cette contient quelques démonstrations de quelques widgets d'Ocsigen Toolkit.
 demo_widget_see_drawer	The different demos are accessible through the drawer menu. To open it click the top left button on the screen.	Ces différentes démonstrations sont accessibles à travers le menu. Pour l'ouvrir, cliquez sur le bouton en haut à gauche de l'écran.

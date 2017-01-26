@@ -18,7 +18,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name () = "Tips"
+let%shared name () = [%i18n S.demo_tips]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-tips"
