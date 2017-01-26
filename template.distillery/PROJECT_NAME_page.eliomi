@@ -25,7 +25,8 @@ module Page_config :
 
     val local_css : string list list
 
-    val other_head : [> Html_types.head_content ] Eliom_content.Html.F.elt list
+    val other_head :
+      [> Html_types.head_content ] Eliom_content.Html.F.elt list
 
     val default_predicate : 'a -> 'b -> bool Lwt.t
 
@@ -37,7 +38,9 @@ module Page_config :
       Os_types.User.id option -> 'a -> 'b -> exn -> Os_page.content Lwt.t
   end
 
-val make_page : Os_page.content -> [> Html_types.html ] Eliom_content.Html.elt
+val make_page :
+  Os_page.content ->
+  [> Html_types.html ] Eliom_content.Html.elt
 
 val page :
   ?predicate:('a -> 'b -> bool Lwt.t) ->
@@ -51,8 +54,9 @@ module Opt :
       ?allow:Os_types.Group.t list ->
       ?deny:Os_types.Group.t list ->
       ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool Lwt.t) ->
-      ?fallback:(Os_types.User.id option ->
-                 'a -> 'b -> exn -> Os_page.content Lwt.t) ->
+      ?fallback:
+        (Os_types.User.id option ->
+         'a -> 'b -> exn -> Os_page.content Lwt.t) ->
       (Os_types.User.id option -> 'a -> 'b -> Os_page.content Lwt.t) ->
       'a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t
   end
@@ -61,6 +65,9 @@ val connected_page :
   ?allow:Os_types.Group.t list ->
   ?deny:Os_types.Group.t list ->
   ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool Lwt.t) ->
-  ?fallback:(Os_types.User.id option -> 'a -> 'b -> exn -> Os_page.content Lwt.t) ->
+  ?fallback:
+    (Os_types.User.id option ->
+     'a -> 'b -> exn ->
+     Os_page.content Lwt.t) ->
   (Os_types.User.id -> 'a -> 'b -> Os_page.content Lwt.t) ->
   'a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t

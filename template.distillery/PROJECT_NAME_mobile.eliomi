@@ -2,6 +2,7 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 [%%server.start]
+
 val init_request : 'a -> unit -> unit Lwt.t
 
 val init_request_rpc :

@@ -7,17 +7,15 @@
   [@@@ocaml.warning "+33"]
 ]
 
-(*****************************************************************************)
-(* MOBILE APP COOKIES FIX *)
-(*****************************************************************************)
+(* Mobile app cookies fix
 
-(* This RPC is called when client application is initialized. This way, the
- * server sends necessary cookies to the client (the mobile app) early on and
- * subsequent requests from the client will contain the proper cookies.
- *
- * The RPC is empty by default, but you can add your own actions to be
- * performed server side on first client request, if necessary.
- *)
+   This RPC is called when client application is initialized. This
+   way, the server sends necessary cookies to the client (the mobile
+   app) early on and subsequent requests from the client will contain
+   the proper cookies.
+
+   The RPC is empty by default, but you can add your own actions to be
+   performed server side on first client request, if necessary. *)
 let%server init_request _myid_o () =
   Lwt.return ()
 
@@ -55,10 +53,7 @@ let%client _ =
   end
   else Lwt.return ()
 
-(*****************************************************************************)
-(* COMET RESUMING ON NETWORK RECONNECT *)
-(*****************************************************************************)
-
+(* Resume comet on network reconnect *)
 let%client add_listeners () =
   let activate ev =
     ignore @@ Dom.addEventListener Dom_html.document ev
@@ -66,21 +61,16 @@ let%client add_listeners () =
   in
   activate (Dom_html.Event.make "online");
   activate (Dom_html.Event.make "resume")
-    (* FIX: idle mode on offline/pause events? *)
 
 let%client _ =
   Dom.addEventListener Dom_html.document (Dom_html.Event.make "deviceready")
     (Dom_html.handler (fun _ -> add_listeners (); Js._true)) Js._false
 
-(*****************************************************************************)
-(* DEBUGGING *)
-(*****************************************************************************)
-
 (* Enable debugging messages.
- *
- * If you need to display debugging messages in the client side JS debugger
- * console, you can do so by uncommenting the following lines.
- *)
+
+   If you need to display debugging messages in the client side JS
+   debugger console, you can do so by uncommenting the following
+   lines. *)
 (* let%client () = Eliom_config.debug_timings := true *)
 (* let%client () = Lwt_log_core.add_rule "eliom:client*" Lwt_log.Debug *)
 (* let%client () = Lwt_log_core.add_rule "os*" Lwt_log.Debug *)

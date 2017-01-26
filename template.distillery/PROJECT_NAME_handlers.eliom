@@ -22,6 +22,7 @@ let upload_user_avatar_handler myid () ((), (cropping, photo)) =
     Lwt_unix.unlink (Filename.concat avatar_dir old_avatar )
 
 (* Set personal data *)
+
 let%server set_personal_data_handler =
   Os_session.connected_fun Os_handlers.set_personal_data_handler
 
@@ -34,8 +35,10 @@ let%client set_personal_data_handler =
   fun () -> set_personal_data_rpc
 
 (* Forgot password *)
+
 let%server forgot_password_handler =
-  Os_handlers.forgot_password_handler %%%MODULE_NAME%%%_services.settings_service
+  Os_handlers.forgot_password_handler
+    %%%MODULE_NAME%%%_services.settings_service
 
 let%client forgot_password_handler =
   let forgot_password_rpc =
@@ -44,13 +47,13 @@ let%client forgot_password_handler =
   in
   fun () -> forgot_password_rpc
 
-(* Action links are links created to perform an action.
-   They are used for example to send activation links by email,
-   or links to reset a password.
-   You can create your own action links and define their behaviour here.
-*)
+(* Action links are links created to perform an action. They are used
+   for example to send activation links by email, or links to reset a
+   password. You can create your own action links and define their
+   behavior here. *)
 let%shared action_link_handler myid_o akey () =
-  (* We try first the default actions (activation link, reset password) *)
+  (* We try first the default actions (activation link, reset
+     password) *)
   try%lwt Os_handlers.action_link_handler myid_o akey () with
   | Os_handlers.No_such_resource
   | Os_handlers.Invalid_action_key _ ->
@@ -72,16 +75,15 @@ let%shared action_link_handler myid_o akey () =
       | _ ->
         Lwt.fail e
     in
-    (* Define here your custom action links.
-       If phantom_user is true, it means the link has been created for
-       an email that does not correspond to an existing user.
-       By default, we just display a sign up form or phantom users,
-       a login form for others.
-       You don't need to modify this if you are not using custom action links.
+    (* Define here your custom action links. If phantom_user is true,
+       it means the link has been created for an email that does not
+       correspond to an existing user. By default, we just display a
+       sign up form or phantom users, a login form for others.  You
+       don't need to modify this if you are not using custom action
+       links.
 
-       Perhaps personalise the intended behaviour for when you meet
-       [Account_already_activated_unconnected].
-    *)
+       Perhaps personalise the intended behavior for when you meet
+       [Account_already_activated_unconnected].  *)
     if myid_o = None (* Not currently connected, and no autoconnect *)
     then
       if phantom_user
@@ -112,15 +114,16 @@ let%shared action_link_handler myid_o akey () =
         in
         %%%MODULE_NAME%%%_base.App.send
           (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))
-    else (*VVV In that case we must do something more complex.
-            Check whether myid = userid and ask the user
-            what he wants to do. *)
+    else (*VVV In that case we must do something more complex. Check
+               whether myid = userid and ask the user what he wants to
+               do. *)
       Eliom_registration.
         (appl_self_redirect
            Redirection.send
            (Redirection Eliom_service.reload_action))
 
 (* Set password *)
+
 let%server set_password_handler =
   Os_session.connected_fun
     (fun myid () (pwd, pwd2) ->
@@ -133,6 +136,7 @@ let%client set_password_handler () (pwd, pwd2) =
   Lwt.return (Eliom_registration.Redirection Eliom_service.reload_action)
 
 (* Preregister *)
+
 let%server preregister_handler =
   Os_handlers.preregister_handler
 
@@ -143,7 +147,7 @@ let%client preregister_handler =
   in
   fun () -> preregister_rpc
 
-let%shared main_service_handler myid_o () () = Eliom_content.Html.F.(
+let%shared main_service_handler myid_o () () =
   %%%MODULE_NAME%%%_container.page
     ~a:[ a_class ["os-page-main"] ]
     myid_o (
@@ -161,7 +165,6 @@ let%shared main_service_handler myid_o () () = Eliom_content.Html.F.(
     ; p [%i18n welcome_text10]
     ]
   )
-)
 
 let%shared about_handler myid_o () () = Eliom_content.Html.F.(
   %%%MODULE_NAME%%%_container.page
