@@ -123,7 +123,7 @@ demo_spinner_generated_client_side	The spinner is generated client-side.	L'icôn
 demo_timepicker	Time picker	Sélecteur d'heure
 demo_timepicker_back_to_hours	Back to hours	Revenir aux heures
 demo_timepicker_description	This page shows the Ocsigen Toolkit's timepicker.	Cette page montre le sélecteur d'heure d'Ocsigen Toolkit.
-demo_tips	Tips	Aide
+demo_tips	Tips	Astuces
 change_profile_picture	Change profile picture	Changer votre photo de profil.
 demo_widget_ot	This page contains some demos for some widgets from Ocsigen Toolkit. Cette contient quelques démonstrations de quelques widgets d'Ocsigen Toolkit.
 demo_widget_see_drawer	The different demos are accessible through the drawer menu. To open it click the top left button on the screen.	Ces différentes démonstrations sont accessibles à travers le menu. Pour l'ouvrir, cliquez sur le bouton en haut à gauche de l'écran.
@@ -153,3 +153,8 @@ static_files	Static files	Fichiers statiques
 static_files_1	Use service {{static_dir}} (predefined in Eliom) to create links towards static files (images, fonts, etc.). Put static files you want to include in the mobile app in directory {{static}}. They will be stored locally on the mobile device. By default, links are relatives on the Web app and absolute on the mobile app. For example, here is an example of an image stored locally in the mobile app:	Utilisez le service {{static_dir}} (prédéfini dans Eliom) pour faire des liens vers des fichiers statiques (images, fontes, etc.). Les fichiers statiques que vous voulez inclure dans l'application mobile doivent être placés dans le répertoire {{static}}. Ils seront stockés en local sur l'appareil mobile. Par défaut les liens sont relatifs dans l'application Web et absolus dans l'application mobile. Forcez les liens relatifs pour faire des liens vers des fichiers locaux dans l'application mobile. Par exemple voici une image stockée localement dans l'application mobile :
 static_files_2	and a distant image:	et une image distante :
 change_language	Change language	Changer la langue
+tips1	Tips for new users and new features	Astuces pour les nouveaux utilisateurs et nouvelles fonctionnalités
+tips2	Module {{os_tips}} implements a way to display tips in the page to the users who haven't already seen them.	Le module {{os_tips}} implémente une façon d'afficher des astuces dans la page aux utilisateurs qui ne les ont pas déjà vues.
+tips3	This page contains a tip, that you will see only as connected user, until you close it.	Cette page contient une astuce, que vous allez voir seulement en tant qu'utilisateur connecté, jusqu'à ce que vous la fermiez.
+tips4	It is possible to reset the set of already seen tips from the {{set_page}}.	Il est possible de réinitialiser l'ensemble des astuces déjà vues depuis la page {{set_page}}.
+tips5	settings page	page Paramètres
