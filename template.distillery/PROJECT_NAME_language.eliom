@@ -12,8 +12,8 @@ let%server best_matched_language () =
   (* Increasingly sort based on the quality *)
   let lang = List.sort (fun (_, q1) (_, q2) -> compare q2 q1) lang in
   Lwt.return @@
-  (* The first language of the list is returned. If the list is empty, the
-     default language is returned. *)
+  (* The first language of the list is returned. If the list is empty,
+     the default language is returned. *)
   let rec aux = function
     | (l, _) :: tl -> (try %%%MODULE_NAME%%%_i18n.guess_language_of_string l
                        with %%%MODULE_NAME%%%_i18n.Unknown_language _ -> aux tl)

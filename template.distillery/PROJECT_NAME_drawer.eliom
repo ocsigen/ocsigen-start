@@ -5,7 +5,7 @@
    open Eliom_content.Html.F
 ]
 
-(** This modules defines the drawer menu *)
+(** This module defines the drawer menu *)
 
 let%shared item text service =
   li [ a ~a:[ a_class ["os-drawer-item"] ] ~service [pcdata text] () ]

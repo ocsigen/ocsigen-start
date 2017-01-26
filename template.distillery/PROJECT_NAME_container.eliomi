@@ -3,10 +3,15 @@
 
 [%%shared.start]
 
+(** This module defines the default template for application pages *)
+
+(** [os_header ?user ()] defines the header for all pages. In this
+    template, it's a userbox and the user name is displayed. *)
 val os_header :
   ?user:Os_types.User.t ->
   unit -> [> `Header ] Eliom_content.Html.F.elt Lwt.t
 
+(** [os_footer ()] defines a footer for the page. *)
 val os_footer : unit -> [> `Footer ] Eliom_content.Html.F.elt
 
 val connected_welcome_box :
@@ -14,6 +19,10 @@ val connected_welcome_box :
 
 val get_user_data : Os_types.User.id option -> Os_types.User.t option Lwt.t
 
+(** [page userid_o content] returns a page personalized for the user
+    with id [myid_o] and with the content [content]. It adds a header,
+    a footer, and a drawer menu.  If the user profile is not
+    completed, a connected welcome box is added. *)
 val page :
   ?html_a: Html_types.html_attrib Eliom_content.Html.attrib list ->
   ?a : Html_types.body_attrib Eliom_content.Html.attrib list ->
