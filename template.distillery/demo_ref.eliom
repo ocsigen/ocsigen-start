@@ -3,6 +3,10 @@
 
 (* Demo for Eliom references and Os_date *)
 
+[%%shared
+  open Eliom_content.Html.F
+]
+
 (* Service for this demo *)
 let%server service =
   Eliom_service.create
@@ -47,19 +51,20 @@ let%shared get_reset_last_visit_message () =
   let%lwt last_visit = get_reset_last_visit () in
   match last_visit with
   | None ->
-    Lwt.return [%i18n S.demo_eliom_ref_first_visit]
+    Lwt.return [%i18n demo_eliom_ref_first_visit]
   | Some last_visit ->
     Lwt.return
-      ([%i18n S.demo_eliom_ref_last_visit]
-       ^ Os_date.smart_time last_visit)
+      ([%i18n demo_eliom_ref_last_visit]
+       @ [ pcdata " "
+         ; pcdata (Os_date.smart_time last_visit) ])
 
 (* Generate page for this demo *)
 let%shared page () =
   let%lwt last_visit_message = get_reset_last_visit_message () in
-  Lwt.return Eliom_content.Html.[
-    F.h1 [%i18n demo_eliom_ref]
-  ; F.p [F.pcdata [%i18n S.demo_eliom_ref_1]]
-  ; F.p [F.pcdata [%i18n S.demo_eliom_ref_2]]
-  ; F.p [F.pcdata last_visit_message]
-  ; F.p [F.pcdata [%i18n S.demo_eliom_ref_3]]
+  Lwt.return [
+    h1 [%i18n demo_eliom_ref]
+  ; p [pcdata [%i18n S.demo_eliom_ref_1]]
+  ; p [pcdata [%i18n S.demo_eliom_ref_2]]
+  ; p last_visit_message
+  ; p [pcdata [%i18n S.demo_eliom_ref_3]]
   ]

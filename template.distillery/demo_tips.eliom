@@ -43,19 +43,11 @@ let%shared page () =
   (* Call the function defining the tip from the server or the client: *)
   let%lwt () = example_tip () in
   Lwt.return
-    [ h1 [ pcdata "Tips for new users and new features" ]
-    ; p [ pcdata "Module "
-        ; code [ pcdata "Os_tips" ]
-        ; pcdata " implements a way to display tips in the page and \
-                   display them to the user who haven't already seen them."
-        ]
-    ; p [ pcdata "This page contains a tip, that you will see only as \
-                  connected user, until you close it."
-        ]
-    ; p [ pcdata "It is possible to reset the set af already seen tips \
-                  from the "
-        ; a ~service:%%%MODULE_NAME%%%_services.settings_service
-            [pcdata "settings page"] ()
-        ; pcdata "."
+    [ h1 [%i18n tips1]
+    ; p [%i18n tips2 ~os_tips:[code [ pcdata "Os_tips" ]] ]
+    ; p [%i18n tips3 ]
+    ; p [%i18n tips4
+          ~set_page:[a ~service:%%%MODULE_NAME%%%_services.settings_service
+                       [%i18n tips5] ()]
         ]
     ]

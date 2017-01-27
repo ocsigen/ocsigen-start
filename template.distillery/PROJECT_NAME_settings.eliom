@@ -4,7 +4,8 @@
 let%shared update_main_email_button email =
   let open Eliom_content.Html in
   let button =
-    D.button ~a:[D.a_class ["button"]] [D.pcdata [%i18n S.set_as_main_email ~capitalize:true]]
+    D.button ~a:[D.a_class ["button"]]
+      [D.pcdata [%i18n S.set_as_main_email ~capitalize:true]]
   in
   ignore [%client (Lwt.async (fun () ->
     Lwt_js_events.clicks

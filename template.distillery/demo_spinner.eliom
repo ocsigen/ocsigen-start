@@ -27,8 +27,9 @@ let%client make_spinner () =
     (* sleep for 5 seconds to simulate a delay, then return content *)
     (let%lwt () = Lwt_js.sleep 5. in
      Lwt.return Eliom_content.Html.D.[
-       pcdata [%i18n S.demo_spinner_content_ready];
-       pcdata [%i18n S.demo_spinner_message_replace_spinner]
+       pcdata [%i18n S.demo_spinner_content_ready]
+     ; pcdata " "
+     ; pcdata [%i18n S.demo_spinner_message_replace_spinner]
      ])
 
 (* Page for this demo *)

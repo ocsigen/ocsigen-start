@@ -31,8 +31,7 @@ let%shared page () =
         ; code [ pcdata "Eliom_cscache" ]
         ; pcdata " implements a cache of data that is designed for Eliom's \
                   client-server programming model. It makes it possible to \
-                  save a client-side copy of the data. Have look at the of \
-                  of module "
+                  save a client-side copy of the data. Have look at module "
         ; code [ pcdata "Os_user_proxy" ]
         ; pcdata " to see how it works (and use this module for getting \
                  information about Ocsigen Start's users). "
