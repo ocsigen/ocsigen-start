@@ -87,11 +87,13 @@ let%server page () =
   listen ();
   Lwt.return Eliom_content.Html.F.[
     h1 [%i18n demo_notification]
-  ; p [ pcdata [%i18n S.exchange_msg_between_users]
-      ; br ()
-      ; pcdata [%i18n S.open_multiple_tabs_browsers]
-      ; br ()
-      ; pcdata [%i18n S.fill_input_form_send_message]]
+  ; p ([%i18n exchange_msg_between_users
+          ~os_notif:[code [ pcdata "Os_notif" ] ]]
+       @ [ br ()
+         ; pcdata [%i18n S.open_multiple_tabs_browsers]
+         ; br ()
+         ; pcdata [%i18n S.fill_input_form_send_message]
+         ])
   ; make_form [%i18n S.send_message] [%client (notify : string -> unit Lwt.t)]
   ]
 
