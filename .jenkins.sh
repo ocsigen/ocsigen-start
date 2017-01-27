@@ -11,6 +11,7 @@ do_build_doc () {
   cp -Rf doc/client/wiki/*.wiki ${API_DIR}/client
   cp -Rf doc/server/wiki/*.wiki ${API_DIR}/server
   cp -Rf doc/manual-wiki/*.wiki ${MANUAL_SRC_DIR}/
+  cp -Rf doc/index.wiki ${API_DIR}/
 }
 
 do_remove () {
