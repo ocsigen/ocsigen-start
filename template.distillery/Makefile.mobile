@@ -175,10 +175,26 @@ $(LOCAL_STATIC_FILES): $(CORDOVAPATH)/www/%: $(LOCAL_STATIC)/%
 ##----------------------------------------------------------------------
 ## Rules for cordova config files like index.html, eliom_loader.js, etc.
 
+# Parse APP_SERVER and extract host, scheme, port. A bit rudimentary,
+# but it should work for URLs starting with http:// or https://.
+
+APP_SCHEME = $(shell echo $(APP_SERVER) | cut -d : -f 1)
+APP_HOST = $(shell echo $(APP_SERVER) | cut -d / -f 3 | cut -d : -f 1)
+APP_PORT = $(shell echo $(APP_SERVER) | cut -d / -f 3 | cut -d : -f 2)
+
+ifneq ($(APP_PORT),"")
+APP_PORT_ARG="port=\"$(APP_PORT)\""
+else
+APP_PORT_ARG=
+endif
+
 # This rule generates the config.xml file from mobile/config.xml.in.
 $(CORDOVAPATH)/config.xml: mobile/config.xml.in $(CORDOVAPATH)
 	sed -e "s,%%APPSERVER%%,$(APP_SERVER),g" \
 	    -e "s,%%APPPATH%%,$(APP_PATH),g" \
+	    -e "s,%%APPHOST%%,$(APP_HOST),g" \
+	    -e "s,%%APPPORTARG%%,$(APP_PORT_ARG),g" \
+	    -e "s,%%APPSCHEME%%,$(APP_SCHEME),g" \
 	    -e "s,%%APPID%%,$(MOBILE_APP_ID),g" \
 	    -e "s,%%MOBILE_APP_NAME%%,$(MOBILE_APP_NAME),g" \
 	    -e "s,%%MOBILE_APP_VERSION%%,$(MOBILE_APP_VERSION),g" \
