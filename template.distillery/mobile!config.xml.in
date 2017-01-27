@@ -109,6 +109,7 @@
     <universal-links>
       <host name="%%APPHOST%%" scheme="%%APPSCHEME%%" %%APPPORTARG%% />
     </universal-links>
+    <preference name="AndroidLaunchMode" value="singleInstance" />
 
     <!-- For geolocation: -->
     <!-- This plugin (or another one if you have one) is necessary if you need geolocation in your app: -->
