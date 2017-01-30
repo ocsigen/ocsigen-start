@@ -57,5 +57,5 @@ let drawer_contents () =
   in
   li [ a ~a:[ a_class ["os-drawer-item"] ]
          ~service:%%%MODULE_NAME%%%_services.demo_service
-         [pcdata "Demo"] ()
+         [%i18n demo_intro] ()
      ; submenu ]
