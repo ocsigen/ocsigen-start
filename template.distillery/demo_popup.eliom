@@ -8,7 +8,7 @@
   open Eliom_content.Html.F
 ]
 
-(* Service for this demo *)
+(* Service for this demo, defined in the server-side app *)
 let%server service =
   Eliom_service.create
     ~path:(Eliom_service.Path ["demo-popup"])
@@ -18,14 +18,14 @@ let%server service =
 (* Make service available on the client *)
 let%client service = ~%service
 
-(* Name for demo menu *)
+(* Name for demo menu. This value is defined both server and client-side. *)
 let%shared name () = [%i18n S.demo_popup]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-popup"
 
 (* The function generating the page can be called either from the server or
-   the cient (shared section). *)
+   the client (shared section). *)
 let%shared page () =
   let button =
     (* As we are using ~%button (in a client section below)
@@ -53,8 +53,11 @@ let%shared page () =
      (possibly on server or client).
   *)
   ignore
-    [%client
+    [%client (* This client section will be executed after the page is
+                displayed by the browser. *)
       (Lwt.async (fun () ->
+         (* Lwt_js_events.clicks returns a Lwt thread, which never terminates.
+            We run it asynchronously. *)
          Lwt_js_events.clicks
            (To_dom.of_element ~%button)
            (fun _ _ ->
@@ -66,6 +69,10 @@ let%shared page () =
               Lwt.return ()))
        : unit)
     ];
+  (* Page elements, using module Eliom_content.Html.F
+     (as we don't want to add a unique identifier).
+     See internationalization demo for i18n syntax.
+  *)
   Lwt.return
     [ h1 [%i18n demo_popup]
     ; p [%i18n demo_popup_content]
