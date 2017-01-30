@@ -30,8 +30,9 @@ let%shared page () =
     ; p [ pcdata "Module "
         ; code [ pcdata "Eliom_cscache" ]
         ; pcdata " implements a cache of data that is designed for Eliom's \
-                  client-server programming model. It makes it possible to \
-                  save a client-side copy of the data. Have look at module "
+                  client-server programming model. It permits \
+                  saving a client-side copy of the data. Have a look at the \
+                  module "
         ; code [ pcdata "Os_user_proxy" ]
         ; pcdata " to see how it works (and use this module for getting \
                  information about Ocsigen Start's users). "
@@ -40,10 +41,10 @@ let%shared page () =
         ; code [ pcdata "Eliom_cscache" ]
         ; pcdata " from client-side, the request to the server is done only \
                   if the data is not already in the client-side cache. "
-        ; pcdata "On server side, "
+        ; pcdata "On server-side, "
         ; code [ pcdata "Eliom_cscache" ]
         ; pcdata " is using a temporary cache (with \"request\" scope) \
-                  to avoid fetching the data several time from the database \
+                  to avoid fetching the data several times from the database \
                   during the same request. This server-side cache is \
                   automatically sent to the client to fill the client-side \
                   cache. If you want to avoid too many requests from the \
@@ -52,7 +53,7 @@ let%shared page () =
         ]
     ; p [ pcdata "In the near future, "
         ; code [ pcdata "Eliom_cscache" ]
-        ; pcdata " will make it possible to save persistent data, \
+        ; pcdata " will enable saving persistent data, \
                   which is useful for implementing off-line applications."
         ]
     ]
