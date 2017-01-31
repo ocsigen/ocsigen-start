@@ -40,9 +40,9 @@ let%shared page () =
     [ h1 [%i18n links_and_static_files]
     ; h2 [%i18n services]
     ; p [%i18n services_1
-          ~f1:[code [pcdata "%%%MODULE_NAME%%%_services.eliom"]]
-          ~f2:[code [pcdata "%%%MODULE_NAME%%%_handlers.eliom"]]
-          ~f3:[code [pcdata "%%%MODULE_NAME%%%.eliom"]]
+          ~f1:[code [pcdata "%%%PROJECT_NAME%%%_services.eliom"]]
+          ~f2:[code [pcdata "%%%PROJECT_NAME%%%_handlers.eliom"]]
+          ~f3:[code [pcdata "%%%PROJECT_NAME%%%.eliom"]]
       ]
     ; h2 [%i18n links_and_forms]
     ; p [%i18n links_and_forms_1
