@@ -269,7 +269,7 @@ $(JS_PREFIX).js: $(call objs,$(ELIOM_CLIENT_DIR),js,$(CLIENT_FILES)) | $(TEST_PR
 	mv $(JS_PREFIX)_tmp.js $(JS_PREFIX)_$$HASH.js && \
 	ln -sf $(PROJECT_NAME)_$$HASH.js $@
 else
-(JS_PREFIX).js: $(call objs,$(ELIOM_CLIENT_DIR),cmo,$(CLIENT_FILES)) | $(TEST_PREFIX)$(ELIOMSTATICDIR)
+$(JS_PREFIX).js: $(call objs,$(ELIOM_CLIENT_DIR),cmo,$(CLIENT_FILES)) | $(TEST_PREFIX)$(ELIOMSTATICDIR)
 	${JS_OF_ELIOM} -ppx -o $(JS_PREFIX)_tmp.js $(GENERATE_DEBUG) $(CLIENT_INC) ${addprefix -jsopt ,$(DEBUG_JS)} \
           $(call depsort,$(ELIOM_CLIENT_DIR),cmo,-client,$(CLIENT_INC),$(CLIENT_FILES))
 	HASH=`md5sum $(JS_PREFIX)_tmp.js | cut -d ' ' -f 1` && \
