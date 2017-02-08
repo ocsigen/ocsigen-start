@@ -73,4 +73,7 @@
 .os-page-demo-react input:not([type]) {
   background-color: #eee; }
 
+.os-page-demo-links .demo-static-img {
+  width: 300px; }
+
 /*# sourceMappingURL=.os_temporary_filename.css.map */
