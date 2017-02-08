@@ -5,7 +5,7 @@
 
 # Package name for your
 PKG_NAME            := ocsigen-start
-PKG_VERS            := 0.99
+PKG_VERS            := 1.0.0
 PKG_DESC            := Skeleton for building your own Eliom application
 
 # Source files for the server
