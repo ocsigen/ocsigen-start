@@ -89,8 +89,8 @@ let add_user_in_group ~(group : Os_types.Group.t) =
 let remove_user_in_group ~(group : Os_types.Group.t) =
   Os_db.Groups.remove_user_in_group ~groupid:(Os_types.(group.id))
 
-let in_group ~(group : Os_types.Group.t) =
-  Os_db.Groups.in_group ~groupid:(Os_types.(group.id))
+let in_group ?dbh ~(group : Os_types.Group.t) ~userid () =
+  Os_db.Groups.in_group ?dbh ~groupid:(Os_types.(group.id)) ~userid ()
 
 (** Returns all the groups of the database. *)
 let all () =

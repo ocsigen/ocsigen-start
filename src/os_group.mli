@@ -88,8 +88,10 @@ val remove_user_in_group :
 (** [in_group ~group ~userid] returns [true] if the user with ID [userid] is in
     [group]. *)
 val in_group :
+  ?dbh: Os_db.PGOCaml.pa_pg_data Os_db.PGOCaml.t ->
   group:Os_types.Group.t ->
   userid:Os_types.User.id ->
+  unit ->
   bool Lwt.t
 
 (** [all ()] returns all the groups of the database. *)
