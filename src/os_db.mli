@@ -262,8 +262,10 @@ module Groups : sig
   (** [in_group ~groupid ~userid] returns [true] if the user with ID [userid] is
       in the group with ID [groupid]. *)
   val in_group :
+    ?dbh: PGOCaml.pa_pg_data PGOCaml.t ->
     groupid:Os_types.Group.id ->
     userid:Os_types.User.id ->
+    unit ->
     bool Lwt.t
 
   (** [all ()] returns all groups as list of tuple [(groupid, name,

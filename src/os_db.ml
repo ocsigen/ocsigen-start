@@ -182,8 +182,13 @@ module Utils = struct
   let run_query q = full_transaction_block (fun dbh ->
     Lwt_Query.query dbh q)
 
-  let run_view q = full_transaction_block (fun dbh ->
-    Lwt_Query.view dbh q)
+  let run_view ?dbh q =
+    let f dbh = Lwt_Query.view dbh q in
+    match dbh with
+    | Some dbh ->
+      f dbh
+    | None ->
+      full_transaction_block f
 
   let run_view_opt q = full_transaction_block (fun dbh ->
     Lwt_Query.view_opt dbh q)
@@ -581,7 +586,7 @@ module Groups = struct
               r.userid  = $int64:userid$
     >>
 
-  let in_group ~groupid ~userid = one run_view
+  let in_group ?dbh ~groupid ~userid () = one (run_view ?dbh)
     ~success:(fun _ -> Lwt.return_true)
     ~fail:Lwt.return_false
     <:view< t | t in $os_user_groups_table$;

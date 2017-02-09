@@ -163,7 +163,7 @@ let check_allow_deny userid allow deny =
     | Some l -> (* allow only users from one of the groups of list l *)
       Lwt_list.fold_left_s
         (fun b group ->
-           let%lwt b2 = Os_group.in_group ~userid ~group in
+           let%lwt b2 = Os_group.in_group ~userid ~group () in
            Lwt.return (b || b2)) false l
   in
   let%lwt b = match deny with
@@ -172,7 +172,7 @@ let check_allow_deny userid allow deny =
                      in one of the groups of list l *)
       Lwt_list.fold_left_s
         (fun b group ->
-           let%lwt b2 = Os_group.in_group ~userid ~group in
+           let%lwt b2 = Os_group.in_group ~userid ~group () in
            Lwt.return (b && (not b2))) b l
   in
   if b then Lwt.return ()
