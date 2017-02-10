@@ -66,7 +66,7 @@ demo_cache	Cache	Cache
 demo_calendar	Calendar	Calendrier
 this_page_show_calendar	This page shows Ocsigen Toolkit's date picker.	Cette page montre le sélecteur de date d'Ocsigen Toolkit.
 demo_carousel_1	Carousel	Carousel
-ot_carousel_first_example_1	This is a first example of the Ocsigen Toolkit's carousel.	Voici le premier exemple du carousel d'Ocsigen Toolkit.
+ot_carousel_first_example_1	This is a first example of Ocsigen Toolkit's carousel.	Voici le premier exemple du carousel d'Ocsigen Toolkit.
 ot_carousel_first_example_2	The carousel displays a number of blocks side-by-side (or vertically stacked).	Le carousel sert à afficher des blocs côte-à-côte (ou empilés verticalement).
 ot_carousel_first_example_3	To switch to a different block, use the buttons in the carousel.	Pour vous rendre sur un autre bloc, utilisez les boutons dans le carousel.
 ot_carousel_first_example_4	On touch screens you can also swipe with your fingers.	Sur les écrans tactiles, swipez avec les doigts.
