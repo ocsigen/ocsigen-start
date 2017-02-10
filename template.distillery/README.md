@@ -231,8 +231,9 @@ If you only wants to build the mobile application, you can use:
 make APP_SERVER=http://${YOUR_SERVER} APP_REMOTE=no android
 ```
 
-Before uploading on Google Play Store, you'll need to build a release version
-(default is debug version):
+Before uploading on Google Play Store, check the variables in Makefile.options
+(MOBILE_APP_IP, version number, etc).
+You'll need to build a release version (default is debug version):
 ```
 make APP_SERVER=http://${YOUR_SERVER} APP_REMOTE=no android-release
 ```
