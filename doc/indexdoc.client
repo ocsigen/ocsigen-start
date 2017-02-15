@@ -3,8 +3,6 @@
 {!modules:
 Os_current_user
 Os_date
-Os_email
-Os_group
 Os_handlers
 Os_icons
 Os_lib
@@ -16,7 +14,6 @@ Os_request_cache
 Os_services
 Os_session
 Os_tips
-Os_tools
 Os_types
 Os_user
 Os_user_proxy
