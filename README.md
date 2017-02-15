@@ -3,13 +3,14 @@
 [travis]:      https://travis-ci.org/ocsigen/ocsigen-start/branches
 [travis-img]:  https://img.shields.io/travis/ocsigen/ocsigen-start/master.svg?label=travis
 
-1. [Getting started](#getting-started)
+You can try the [online version](https://ocsigen.org/ocsigen-start/demo) and
+download
+the
+[Android application](https://play.google.com/store/apps/details?id=com.osdemo.mobile&hl=en).
 
-##<a id="getting-started"></a>Getting started
 1. [Introduction](#introduction)
 2. [Installation](#install)
 3. [Create your project](#create-your-project)
-4. [Create your database](#create-your-database)
 
 ###<a id="introduction"></a>Introduction
 Ocsigen Start is a set of higher-level libraries for building
@@ -19,9 +20,6 @@ Eliom). It provides modules for
 * managing groups of users,
 * displaying tips, and
 * easily sending notifications to the users.
-
-Ocsigen Start is in an early stage of development. More modules will
-be added and more customizability.
 
 Ocsigen Start comes with an `eliom-distillery` template for an app
 with a database, user management, and session management.  This
@@ -47,8 +45,7 @@ opam install ocsigen-start
 eliom-distillery -name myproject -template os.pgocaml
 ```
 
-###<a id="create-your-database"></a>Create your database
-Have look at the file README in your directory.
-It explains how to configure your database.
+To get started, take a look at the generated README.md.
 
-###<a id="configure-your-project"></a>Configure your project
+You have also the complete manual and API available on
+the [Ocsigen website](http://ocsigen.org/ocsigen-start/)
