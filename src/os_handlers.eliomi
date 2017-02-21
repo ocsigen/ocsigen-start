@@ -18,11 +18,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+[%%shared.start]
+
 (** This module contains pre-defined handlers for connect, disconnect, sign up,
     add a new email, etc. Each handler has a corresponding service in
     {!Os_services}.
  *)
-[%%shared.start]
 
 (** [connect_handler () ((login, password), keepMeLoggedIn)] connects the user
     with [login] and [password] and keeps the user logged in between different
