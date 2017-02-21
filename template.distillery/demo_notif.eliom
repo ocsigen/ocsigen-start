@@ -82,9 +82,20 @@ let%shared make_form msg f =
   ];
   Eliom_content.Html.D.div [inp; btn]
 
+let%server unlisten () = Notif.unlisten () ; Lwt.return ()
+let%client unlisten =
+ ~%(Eliom_client.server_function [%derive.json : unit]
+      (Os_session.connected_wrapper unlisten))
+
 (* Page for this demo *)
 let%server page () =
   listen ();
+
+  (* Unsubscribe from notifications when user leaves this page *)
+  let _ : unit Eliom_client_value.t =
+    [%client Eliom_client.onunload (fun () -> Lwt.async unlisten)]
+  in
+
   Lwt.return Eliom_content.Html.F.[
     h1 [%i18n demo_notification]
   ; p ([%i18n exchange_msg_between_users
