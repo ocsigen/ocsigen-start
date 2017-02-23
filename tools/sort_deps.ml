@@ -65,7 +65,20 @@ let sort l =
       l
   done;
   if Hashtbl.length edges <> 0 then begin
-    Format.eprintf "Dependency loop!@."; exit 1
+    Hashtbl.iter (fun k0 deps ->
+      let h = Hashtbl.create 42 in
+      let rec follow acc k =
+        if k0 = k then
+          (Format.eprintf "Dependency loop: %s@." (String.concat " -> " acc) ;
+           exit 1)
+        else
+        if Hashtbl.mem h k then () else
+          (Hashtbl.add h k () ;
+           try List.iter (follow (k :: acc)) (Hashtbl.find edges k)
+           with Not_found -> () )
+      in
+      List.iter (follow [k0]) deps)
+      edges
   end;
   List.rev !res
 
