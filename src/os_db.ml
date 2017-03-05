@@ -54,7 +54,7 @@ let validate db =
     lwt () = Lwt_PGOCaml.ping db in
     Lwt.return true
   with _ ->
-    Lwt.return false
+    Lwt.return_false
 
 let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Lwt_pool.t ref =
   ref @@ Lwt_pool.create 16 ~validate connect
