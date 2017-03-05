@@ -33,7 +33,7 @@ let%shared make_form msg f =
       let v = Js.to_string inp##.value in
       let%lwt () = ~%f v in
       inp##.value := Js.string "";
-      Lwt.return ())
+      Lwt.return_unit)
      : unit)
   ];
   Eliom_content.Html.D.div [inp; btn]

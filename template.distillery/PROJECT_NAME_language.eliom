@@ -29,7 +29,7 @@ let%server update_language lang =
   ignore [%client (%%%MODULE_NAME%%%_i18n.set_language ~%lang : unit)];
   (* Update in the database if a user is connected *)
   match myid_o with
-  | None -> Lwt.return ()
+  | None -> Lwt.return_unit
   | Some userid -> Os_user.update_language ~userid ~language
 
 let%server _ =
@@ -38,7 +38,7 @@ let%server _ =
        (* Guess a default language. *)
        let%lwt lang = best_matched_language () in
        ignore (update_language lang);
-       Lwt.return ());
+       Lwt.return_unit);
   Os_session.on_start_connected_process
     (fun userid ->
        (* Set language according to user preferences. *)
@@ -55,4 +55,4 @@ let%server _ =
        in
        %%%MODULE_NAME%%%_i18n.set_language language;
        ignore [%client (%%%MODULE_NAME%%%_i18n.set_language ~%language : unit)];
-       Lwt.return ())
+       Lwt.return_unit)

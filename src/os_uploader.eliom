@@ -42,7 +42,7 @@ let%server resize_image ~src ?(dst = src) ~width ~height =
       )
   in
   match resize_unix_result with
-  | Unix.WEXITED status_code when status_code = 0 -> Lwt.return ()
+  | Unix.WEXITED status_code when status_code = 0 -> Lwt.return_unit
   | unix_process_status -> Lwt.fail (Error_while_resizing unix_process_status)
 
 let%server get_image_width file =

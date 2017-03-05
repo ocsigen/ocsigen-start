@@ -66,7 +66,7 @@ let%shared page () =
                   ~close_button:[ Os_icons.F.close () ]
                   (fun _ -> Lwt.return @@ p [%i18n demo_popup_message])
               in
-              Lwt.return ()))
+              Lwt.return_unit))
        : unit)
     ];
   (* Page elements, using module Eliom_content.Html.F

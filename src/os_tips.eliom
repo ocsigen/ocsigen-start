@@ -78,7 +78,7 @@ let%server () = Os_session.on_start_connected_process
        ignore [%client (
          tips_seen_client_ref := ~%tips
        : unit)];
-       Lwt.return ())
+       Lwt.return_unit)
 
 (* notify the server that a user has seen a tip *)
 let set_tip_seen (name : string) =
@@ -164,7 +164,7 @@ let%shared block ?(a = []) ?(recipient = `All) ~name ~content () =
   | _ -> Lwt.return None
 
 let%client onload_waiter () =
-  let%lwt _  = Eliom_client.lwt_onload () in Lwt.return ()
+  let%lwt _  = Eliom_client.lwt_onload () in Lwt.return_unit
 
 (* This thread is used to display only one tip at a time *)
 let%client waiter = ref (onload_waiter ())
@@ -255,7 +255,7 @@ let%client display_bubble ?(a = [])
          bec##.style##.borderLeft := Js.string "none"
     )
     arrow;
-  Lwt.return ()
+  Lwt.return_unit
 
 (* Function to be called on server to display a tip *)
 let%shared bubble
@@ -287,7 +287,7 @@ let%shared bubble
   | `Connected, Some _ ->
     let%lwt seen = get_tips_seen () in
     if Stringset.mem name seen
-    then Lwt.return ()
+    then Lwt.return_unit
     else let _ = [%client ( Lwt.async (fun () ->
       display_bubble ?a:~%a ?arrow:~%arrow
         ?top:~%top ?left:~%left ?right:~%right ?bottom:~%bottom
@@ -298,5 +298,5 @@ let%shared bubble
         ())
                             : unit)]
       in
-      Lwt.return ()
-  | _ -> Lwt.return ()
+      Lwt.return_unit
+  | _ -> Lwt.return_unit

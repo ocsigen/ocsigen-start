@@ -37,7 +37,7 @@ let%client check_password_confirmation ~password ~confirmation =
                  (Js.Unsafe.coerce
                     confirmation_dom)##(setCustomValidity ("Passwords do not match"))
                else (Js.Unsafe.coerce confirmation_dom)##(setCustomValidity ("")));
-            Lwt.return ()))
+            Lwt.return_unit))
 
 let%shared generic_email_form
     ?a
@@ -281,11 +281,11 @@ let%shared upload_pic_link
         (fun close -> Ot_picture_uploader.mk_form
             ~crop:~%crop ~input:~%input ~submit:~%submit
             ~after_submit:close upload_service) ;
-      Lwt.return ()
+      Lwt.return_unit
     with e ->
       Os_msg.msg ~level:`Err "Error while uploading the picture";
       Eliom_lib.debug_exn "%s" e "→ ";
-      Lwt.return () ) : _ ) ] :: a) content
+      Lwt.return_unit ) : _ ) ] :: a) content
 
 let%shared reset_tips_link
     ?(text_link="See help again from beginning")
@@ -300,7 +300,7 @@ let%shared reset_tips_link
            Eliom_client.exit_to
              ~service:Os_tips.reset_tips_service
              () ();
-           Lwt.return ()
+           Lwt.return_unit
         )));
   : unit)];
   l
@@ -324,7 +324,7 @@ let%shared bind_popup_button
                   ~close_button:[ Os_icons.F.close () ]
                   ~%popup_content
               in
-              Lwt.return ()))
+              Lwt.return_unit))
        : _)
     ]
 

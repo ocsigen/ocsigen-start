@@ -17,7 +17,7 @@ let upload_user_avatar_handler myid () ((), (cropping, photo)) =
   let old_avatar = Os_user.avatar_of_user user in
   let%lwt () = Os_user.update_avatar ~userid:myid ~avatar in
   match old_avatar with
-  | None -> Lwt.return ()
+  | None -> Lwt.return_unit
   | Some old_avatar ->
     Lwt_unix.unlink (Filename.concat avatar_dir old_avatar )
 

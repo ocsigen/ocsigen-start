@@ -43,14 +43,14 @@ let%shared msg
     let message_dom = To_dom.of_p (D.p ~a:[a_class c] [pcdata ~%message]) in
     Lwt.async (fun () ->
       let%lwt () =
-        if ~%onload then Eliom_client.lwt_onload () else Lwt.return ()
+        if ~%onload then Eliom_client.lwt_onload () else Lwt.return_unit
       in
       let msgbox = msgbox () in
       Eliom_lib.debug "%s" ~%message;
       Dom.appendChild msgbox message_dom;
       let%lwt () = Lwt_js.sleep ~%duration in
       Dom.removeChild msgbox message_dom;
-      Lwt.return ())
+      Lwt.return_unit)
     : unit)]
 
 let action_link_key_created =

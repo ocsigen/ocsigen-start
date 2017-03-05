@@ -44,7 +44,7 @@ let (on_start_process, start_process_action) =
 (* Call this to add an action to be done
    when the process starts in connected mode, or when the user logs in *)
 let (on_start_connected_process, start_connected_process_action) =
-  let r = ref (fun _ -> Lwt.return ()) in
+  let r = ref (fun _ -> Lwt.return_unit) in
   ((fun f ->
       let oldf = !r in
       r := (fun userid -> let%lwt () = oldf userid in f userid)),
@@ -52,7 +52,7 @@ let (on_start_connected_process, start_connected_process_action) =
 
 (* Call this to add an action to be done at each connected request *)
 let (on_connected_request, connected_request_action) =
-  let r = ref (fun _ -> Lwt.return ()) in
+  let r = ref (fun _ -> Lwt.return_unit) in
   ((fun f ->
       let oldf = !r in
       r := (fun userid -> let%lwt () = oldf userid in f userid)),
@@ -60,7 +60,7 @@ let (on_connected_request, connected_request_action) =
 
 (* Call this to add an action to be done just after openning a session *)
 let (on_open_session, open_session_action) =
-  let r = ref (fun _ -> Lwt.return ()) in
+  let r = ref (fun _ -> Lwt.return_unit) in
   ((fun f ->
       let oldf = !r in
       r := (fun userid -> let%lwt () = oldf userid in f userid)),
@@ -68,7 +68,7 @@ let (on_open_session, open_session_action) =
 
 (* Call this to add an action to be done just after closing the session *)
 let (on_post_close_session, post_close_session_action) =
-  let r = ref (fun _ -> Lwt.return ()) in
+  let r = ref (fun _ -> Lwt.return_unit) in
   ((fun f ->
       let oldf = !r in
       r := (fun () -> let%lwt () = oldf () in f ())),
@@ -76,7 +76,7 @@ let (on_post_close_session, post_close_session_action) =
 
 (* Call this to add an action to be done just before closing the session *)
 let (on_pre_close_session, pre_close_session_action) =
-  let r = ref (fun _ -> Lwt.return ()) in
+  let r = ref (fun _ -> Lwt.return_unit) in
   ((fun f ->
       let oldf = !r in
       r := (fun () -> let%lwt () = oldf () in f ())),
@@ -84,7 +84,7 @@ let (on_pre_close_session, pre_close_session_action) =
 
 (* Call this to add an action to be done just before handling a request *)
 let (on_request, request_action) =
-  let r = ref (fun _ -> Lwt.return ()) in
+  let r = ref (fun _ -> Lwt.return_unit) in
   ((fun f ->
       let oldf = !r in
       r := (fun () -> let%lwt () = oldf () in f ())),
@@ -92,7 +92,7 @@ let (on_request, request_action) =
 
 (* Call this to add an action to be done just for each denied request *)
 let (on_denied_request, denied_request_action) =
-  let r = ref (fun _ -> Lwt.return ()) in
+  let r = ref (fun _ -> Lwt.return_unit) in
   ((fun f ->
       let oldf = !r in
       r := (fun userid_o -> let%lwt () = oldf userid_o in f userid_o)),
@@ -114,7 +114,7 @@ let start_connected_process uid =
   (*   Lwt.async *)
   (*     (fun () -> *)
   (*        Lwt.catch *)
-  (*          (fun () -> Lwt_stream.iter_s (fun () -> Lwt.return ()) %c) *)
+  (*          (fun () -> Lwt_stream.iter_s (fun () -> Lwt.return_unit) %c) *)
   (*          (function *)
   (*            | Eliom_comet.Process_closed -> close_client_process () *)
   (*            | e -> *)
@@ -146,7 +146,7 @@ let connect ?(expire = false) userid =
       Eliom_state.set_volatile_data_cookie_exp_date ~cookie_scope None;
       Eliom_state.set_persistent_data_cookie_exp_date ~cookie_scope None
     end else
-      Lwt.return ()
+      Lwt.return_unit
   in
   connect_string (Int64.to_string userid)
 
@@ -175,7 +175,7 @@ let check_allow_deny userid allow deny =
            let%lwt b2 = Os_group.in_group ~userid ~group () in
            Lwt.return (b && (not b2))) b l
   in
-  if b then Lwt.return ()
+  if b then Lwt.return_unit
   else begin
     let%lwt () = denied_request_action (Some userid) in
     Lwt.fail Permission_denied
@@ -251,11 +251,11 @@ let gen_wrapper ~allow ~deny
          client side process. *)
       let%lwt () = start_process_action () in
       match uid with
-      | None -> Lwt.return ()
+      | None -> Lwt.return_unit
       | Some id -> (* new client process, but already connected *)
         start_connected_process id
     end
-    else Lwt.return ()
+    else Lwt.return_unit
   in
   match uid with
   | None ->

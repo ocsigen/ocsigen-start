@@ -23,7 +23,7 @@ let%client service = ~%service
 
 let%server s, f = Eliom_shared.React.S.create None
 
-let%client action (h, m) = ~%f (Some (h, m)); Lwt.return ()
+let%client action (h, m) = ~%f (Some (h, m)); Lwt.return_unit
 
 let%shared string_of_time = function
   | Some (h, m) ->
@@ -61,7 +61,7 @@ let%shared page () =
            (Eliom_content.Html.To_dom.of_element ~%button)
            (fun _ _ ->
               ~%back_f ();
-              Lwt.return ()))
+              Lwt.return_unit))
        : _)
     ];
   let%lwt tr = time_reactive () in

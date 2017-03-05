@@ -99,7 +99,7 @@ log "Could not get global data";
       add_retry_button wake "No connection available"
     end;
   end;
-  Lwt.return ()
+  Lwt.return_unit
 
 (* Get the URL saved in the JavaScript variables "___eliom_html_url_" defined in
  * index.html and go this location.

@@ -68,7 +68,7 @@ let%shared page () =
         ((fun () ->
            let%lwt v = incr_my_ref () in
            Eliom_lib.alert "Update: %d" v;
-           Lwt.return ())
+           Lwt.return_unit)
          : unit -> unit Lwt.t)
       ]
   in
