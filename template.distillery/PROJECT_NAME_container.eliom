@@ -80,7 +80,7 @@ let%shared get_user_data = function
     Lwt.return_none
   | Some myid ->
     let%lwt u = Os_user_proxy.get_data myid in
-    Lwt.return (Some u)
+    Lwt.return_some (u)
 
 let%shared page ?html_a ?a ?title ?head myid_o content =
   let%lwt me = get_user_data myid_o in

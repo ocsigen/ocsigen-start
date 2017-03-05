@@ -199,9 +199,9 @@ let get_session () =
             We restart the volatile session silently
             (comme si de rien n'était, pom pom pom). *)
          let%lwt () = connect_volatile (Int64.to_string uid) in
-         Lwt.return (Some uid)
+         Lwt.return_some (uid)
        | None -> Lwt.return_none)
-    | Some uid -> Lwt.return (Some uid)
+    | Some uid -> Lwt.return_some (uid)
   in
   (* Check if the user exists in the DB *)
   match uid with
@@ -209,7 +209,7 @@ let get_session () =
   | Some uid ->
     try%lwt
       let%lwt _user = Os_user.user_of_userid uid in
-      Lwt.return (Some uid)
+      Lwt.return_some (uid)
     with
     | Os_user.No_such_user ->
       (* If session exists and no user in DB, close the session *)

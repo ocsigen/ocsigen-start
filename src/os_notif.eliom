@@ -99,7 +99,7 @@ module Make_Simple (A : ARG_SIMPLE) : S
     type key = A.key
     type server_notif = A.notification
     type client_notif = A.notification
-    let prepare _ n = Lwt.return (Some n)
+    let prepare _ n = Lwt.return_some (n)
     let equal_key = (=)
     let max_resource = 1000
     let max_identity_per_resource = 10

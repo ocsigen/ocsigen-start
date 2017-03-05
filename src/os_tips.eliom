@@ -159,7 +159,7 @@ let%shared block ?(a = []) ?(recipient = `All) ~name ~content () =
            :: c)
       in
       box_ref := Some box ;
-      Lwt.return (Some box)
+      Lwt.return_some (box)
     end
   | _ -> Lwt.return_none
 
