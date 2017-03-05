@@ -102,7 +102,7 @@ let view_one_opt rq =
   try_lwt
     lwt rq = rq in
     Lwt.return (Some (view_one rq))
-  with No_such_resource -> Lwt.return None
+  with No_such_resource -> Lwt.return_none
 
 module Lwt_Query = struct
   include Lwt_Query_

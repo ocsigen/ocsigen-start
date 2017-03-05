@@ -200,12 +200,12 @@ let get_session () =
             (comme si de rien n'était, pom pom pom). *)
          let%lwt () = connect_volatile (Int64.to_string uid) in
          Lwt.return (Some uid)
-       | None -> Lwt.return None)
+       | None -> Lwt.return_none)
     | Some uid -> Lwt.return (Some uid)
   in
   (* Check if the user exists in the DB *)
   match uid with
-  | None -> Lwt.return None
+  | None -> Lwt.return_none
   | Some uid ->
     try%lwt
       let%lwt _user = Os_user.user_of_userid uid in
@@ -214,7 +214,7 @@ let get_session () =
     | Os_user.No_such_user ->
       (* If session exists and no user in DB, close the session *)
       let%lwt () = disconnect () in
-      Lwt.return None
+      Lwt.return_none
 
 (** The connection wrapper checks whether the user is connected,
     and calls the page generator accordingly.

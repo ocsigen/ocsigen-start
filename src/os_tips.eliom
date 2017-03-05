@@ -138,7 +138,7 @@ let%shared block ?(a = []) ?(recipient = `All) ~name ~content () =
   | `Connected, Some _ ->
     let%lwt seen = get_tips_seen () in
     if Stringset.mem name seen
-    then Lwt.return None
+    then Lwt.return_none
     else begin
       let box_ref = ref None in
       let close : (unit -> unit Lwt.t) Eliom_client_value.t =
@@ -161,7 +161,7 @@ let%shared block ?(a = []) ?(recipient = `All) ~name ~content () =
       box_ref := Some box ;
       Lwt.return (Some box)
     end
-  | _ -> Lwt.return None
+  | _ -> Lwt.return_none
 
 let%client onload_waiter () =
   let%lwt _  = Eliom_client.lwt_onload () in Lwt.return_unit
