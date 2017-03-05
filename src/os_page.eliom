@@ -84,8 +84,8 @@ let%shared content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
       Lwt.return
         (content [div ~a:[a_class ["errormsg"]] (h2 [pcdata "Error"]::l)])
 
-    let default_predicate _ _ = Lwt.return true
-    let default_connected_predicate _ _ _ = Lwt.return true
+    let default_predicate _ _ = Lwt.return_true
+    let default_connected_predicate _ _ _ = Lwt.return_true
     let default_error_page _ _ exn = err_page exn
     let default_connected_error_page _ _ _ exn = err_page exn
 

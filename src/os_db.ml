@@ -52,7 +52,7 @@ let connect () = Lwt_PGOCaml.connect
 let validate db =
   try_lwt
     lwt () = Lwt_PGOCaml.ping db in
-    Lwt.return true
+    Lwt.return_true
   with _ ->
     Lwt.return_false
 

@@ -159,7 +159,7 @@ let disconnect () =
 
 let check_allow_deny userid allow deny =
   let%lwt b = match allow with
-    | None -> Lwt.return true (* By default allow all *)
+    | None -> Lwt.return_true (* By default allow all *)
     | Some l -> (* allow only users from one of the groups of list l *)
       Lwt_list.fold_left_s
         (fun b group ->
