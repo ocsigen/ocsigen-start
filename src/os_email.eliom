@@ -67,7 +67,7 @@ let default_send ~from_addr ~to_addrs ~subject content =
         (Netsendmail.compose ~from_addr ~to_addrs ~subject content)
     in
     echo "[SUCCESS]: e-mail has been sent!";
-    Lwt.return ()
+    Lwt.return_unit
   with Netchannels.Command_failure (Unix.WEXITED 127) ->
     echo "[FAIL]: e-mail has not been sent!";
     flush ();

@@ -23,7 +23,7 @@ let%client service = ~%service
 (* A reactive value containing the currently selected date *)
 let%server s, f = Eliom_shared.React.S.create None
 
-let%client action y m d = ~%f (Some (y, m, d)); Lwt.return ()
+let%client action y m d = ~%f (Some (y, m, d)); Lwt.return_unit
 
 let%shared string_of_date = function
   | Some (y, m, d) ->

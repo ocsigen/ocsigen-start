@@ -77,10 +77,10 @@ let%shared connected_welcome_box () = Eliom_content.Html.F.(
 
 let%shared get_user_data = function
   | None ->
-    Lwt.return None
+    Lwt.return_none
   | Some myid ->
     let%lwt u = Os_user_proxy.get_data myid in
-    Lwt.return (Some u)
+    Lwt.return_some (u)
 
 let%shared page ?html_a ?a ?title ?head myid_o content =
   let%lwt me = get_user_data myid_o in

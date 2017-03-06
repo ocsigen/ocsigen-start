@@ -42,7 +42,7 @@ let%server notify v =
      or ~notfor:(`User myid) to avoid sending to the current user.
      (Where myid is Os_current_user.get_current_userid ())
   *)
-  Lwt.return ()
+  Lwt.return_unit
 
 (* Make [notify] available client-side *)
 let%client notify =
@@ -77,12 +77,12 @@ let%shared make_form msg f =
       let v = Js.to_string inp##.value in
       let%lwt () = ~%f v in
       inp##.value := Js.string "";
-      Lwt.return ())
+      Lwt.return_unit)
      : unit)
   ];
   Eliom_content.Html.D.div [inp; btn]
 
-let%server unlisten () = Notif.unlisten () ; Lwt.return ()
+let%server unlisten () = Notif.unlisten () ; Lwt.return_unit
 let%client unlisten =
  ~%(Eliom_client.server_function [%derive.json : unit]
       (Os_session.connected_wrapper unlisten))

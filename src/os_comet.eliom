@@ -35,7 +35,7 @@ let%client restart_process () =
 
 
 let%client _ = Eliom_comet.set_handle_exn_function
-    (fun ?exn () -> restart_process (); Lwt.return ())
+    (fun ?exn () -> restart_process (); Lwt.return_unit)
 
 
 
@@ -80,16 +80,16 @@ let%client handle_message = function
     Eliom_lib.debug_exn
       "Exception received on Os_comet's monitor channel: " exn;
     restart_process ();
-    Lwt.return ()
+    Lwt.return_unit
   | Lwt_stream.Value Heartbeat ->
     Eliom_lib.debug "poum";
-    Lwt.return ()
+    Lwt.return_unit
   | Lwt_stream.Value Connection_changed ->
     Os_msg.msg ~level:`Err
       "Connection has changed from outside. Program will restart.";
     let%lwt () = Lwt_js.sleep 2. in
     Eliom_client.exit_to ~service:Eliom_service.reload_action () ();
-    Lwt.return ()
+    Lwt.return_unit
 
 let _ =
   Os_session.on_start_process
@@ -100,7 +100,7 @@ let _ =
          Lwt_stream.iter_s
            handle_message
            (Lwt_stream.map_exn ~%(fst channel))) : unit)];
-       Lwt.return ());
+       Lwt.return_unit);
   let warn c =
     (* User connected or disconnected.
        I want to send the message on all tabs of the browser: *)
@@ -118,7 +118,7 @@ let _ =
              if not (v == cur) then send (Some c)
            | None -> ())
     end;
-    Lwt.return ()
+    Lwt.return_unit
   in
   let warn_connection_change _ = warn Connection_changed in
   Os_session.on_open_session warn_connection_change;

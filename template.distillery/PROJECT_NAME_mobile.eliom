@@ -15,7 +15,7 @@ open %%%MODULE_NAME%%% (* for dependency reasons *)
    The RPC is empty by default, but you can add your own actions to be
    performed server side on first client request, if necessary. *)
 let%server init_request _myid_o () =
-  Lwt.return ()
+  Lwt.return_unit
 
 let%server init_request_rpc : (_, unit) Eliom_client.server_function =
   Eliom_client.server_function ~name:"%%%MODULE_NAME%%%_mobile.init_request"
@@ -66,7 +66,7 @@ let () =
     let%lwt _ = Lwt_js_events.onload () in
     handle_initial_url ()
   else
-    Lwt.return ()
+    Lwt.return_unit
 
 (* Reactivate comet on resume and online events *)
 
@@ -132,9 +132,9 @@ let _ =
               (Js.string "Universal links: got link") (ev##.url);
             change_page_uri (Js.to_string ev##.url)));
     Firebug.console##log (Js.string "Universal links: registered");
-    Lwt.return ()
+    Lwt.return_unit
   | None ->
-    Lwt.return ()
+    Lwt.return_unit
 
 (* Debugging *)
 

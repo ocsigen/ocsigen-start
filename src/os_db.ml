@@ -52,9 +52,9 @@ let connect () = Lwt_PGOCaml.connect
 let validate db =
   try_lwt
     lwt () = Lwt_PGOCaml.ping db in
-    Lwt.return true
+    Lwt.return_true
   with _ ->
-    Lwt.return false
+    Lwt.return_false
 
 let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Lwt_pool.t ref =
   ref @@ Lwt_pool.create 16 ~validate connect
@@ -101,8 +101,8 @@ let view_one_lwt rq =
 let view_one_opt rq =
   try_lwt
     lwt rq = rq in
-    Lwt.return (Some (view_one rq))
-  with No_such_resource -> Lwt.return None
+    Lwt.return_some ((view_one rq))
+  with No_such_resource -> Lwt.return_none
 
 module Lwt_Query = struct
   include Lwt_Query_

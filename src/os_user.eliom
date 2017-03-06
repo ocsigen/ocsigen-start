@@ -155,7 +155,7 @@ let update ?password ?avatar ?language ~firstname ~lastname userid =
              ?password ?avatar ?language ~firstname ~lastname userid
   in
   MCache.reset userid;
-  Lwt.return ()
+  Lwt.return_unit
 
 let update' ?password user =
   update
@@ -169,17 +169,17 @@ let update' ?password user =
 let update_password ~userid ~password =
   let%lwt () = Os_db.User.update_password userid password in
   MCache.reset userid;
-  Lwt.return ()
+  Lwt.return_unit
 
 let update_language ~userid ~language =
   let%lwt () = Os_db.User.update_language userid language in
   MCache.reset userid;
-  Lwt.return ()
+  Lwt.return_unit
 
 let update_avatar ~userid ~avatar =
   let%lwt () = Os_db.User.update_avatar userid avatar in
   MCache.reset userid;
-  Lwt.return ()
+  Lwt.return_unit
 
 let get_language userid =
   Os_db.User.get_language userid

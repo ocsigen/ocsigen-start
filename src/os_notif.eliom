@@ -67,7 +67,7 @@ module Make(A : ARG) : S
       Eliom_state.Ext.iter_sub_states ?sitedata ~state @@ fun state ->
          (* Iterating on all client processes in session: *)
          Eliom_state.Ext.iter_sub_states ?sitedata ~state
-           (fun state -> Ext.unlisten state id; Lwt.return ())
+           (fun state -> Ext.unlisten state id; Lwt.return_unit)
 
   let notify ?notfor key notif =
     let notfor = match notfor with
@@ -82,7 +82,7 @@ module Make(A : ARG) : S
     Os_session.on_start_process init;
     (* When a user is connected (will override the previous one): *)
     Os_session.on_start_connected_process (fun _ -> init ());
-    Os_session.on_post_close_session (fun () -> deinit () ; Lwt.return ())
+    Os_session.on_post_close_session (fun () -> deinit () ; Lwt.return_unit)
 
 end
 
@@ -99,7 +99,7 @@ module Make_Simple (A : ARG_SIMPLE) : S
     type key = A.key
     type server_notif = A.notification
     type client_notif = A.notification
-    let prepare _ n = Lwt.return (Some n)
+    let prepare _ n = Lwt.return_some (n)
     let equal_key = (=)
     let max_resource = 1000
     let max_identity_per_resource = 10

@@ -36,7 +36,7 @@ let%server set_personal_data_handler myid ()
   if firstname = "" || lastname = "" || pwd <> pwd2
   then
     (Eliom_reference.Volatile.set Os_msg.wrong_pdata (Some pd);
-     Lwt.return ())
+     Lwt.return_unit)
   else (
     let%lwt user = Os_user.user_of_userid myid in
     let open Os_types.User in
@@ -52,7 +52,7 @@ let%server set_password_handler myid () (pwd, pwd2) =
   if pwd <> pwd2
   then
     (Os_msg.msg ~level:`Err ~onload:true "Passwords do not match";
-     Lwt.return ())
+     Lwt.return_unit)
   else (
     let%lwt user = Os_user.user_of_userid myid in
     Os_user.update' ~password:pwd user)
@@ -95,7 +95,7 @@ let%server generate_action_link_key
             text;
             act_link;
           ]
-      with _ -> Lwt.return ());
+      with _ -> Lwt.return_unit);
   act_key
 
 
@@ -120,7 +120,7 @@ let%server send_action_link
     Os_user.add_actionlinkkey
       ?autoconnect ?action ?validity ~act_key ~userid ~email ()
   in
-  Lwt.return ()
+  Lwt.return_unit
 
 (* Sign up *)
 let%server sign_up_handler () email =
@@ -146,7 +146,7 @@ let%server sign_up_handler () email =
     else begin
       Eliom_reference.Volatile.set Os_user.user_already_exists true;
       Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
-      Lwt.return ()
+      Lwt.return_unit
     end
 
 let%server sign_up_handler_rpc v =
@@ -173,7 +173,7 @@ let%server forgot_password_handler service () email =
   with Os_db.No_such_resource ->
     Eliom_reference.Volatile.set Os_user.user_does_not_exist true;
     Os_msg.msg ~level:`Err ~onload:true "User does not exist";
-    Lwt.return ()
+    Lwt.return_unit
 
 let%client restart ?url () =
   (* Restart the client.
@@ -220,7 +220,7 @@ let disconnect_handler ?(main_page = false) () () =
                                      ~service:Eliom_service.reload_action ()))
                      ()
                    : unit)];
-  Lwt.return ()
+  Lwt.return_unit
 
 let%server disconnect_handler_rpc main_page =
   disconnect_handler ~main_page () ()
@@ -245,11 +245,11 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
   | Os_db.Account_not_activated ->
       Eliom_reference.Volatile.set Os_user.account_not_activated true;
       Os_msg.msg ~level:`Err ~onload:true "Account not activated";
-      Lwt.return ()
+      Lwt.return_unit
   | Os_db.No_such_resource ->
       Eliom_reference.Volatile.set Os_user.wrong_password true;
       Os_msg.msg ~level:`Err ~onload:true "Wrong password";
-      Lwt.return ()
+      Lwt.return_unit
 
 let%server connect_handler_rpc v = connect_handler () v
 
@@ -374,7 +374,7 @@ let preregister_handler () email =
    else begin
      Eliom_reference.Volatile.set Os_user.user_already_preregistered true;
      Os_msg.msg ~level:`Err ~onload:true "E-mail already preregistered";
-     Lwt.return ()
+     Lwt.return_unit
    end
 
 (* Add email *)

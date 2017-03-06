@@ -68,7 +68,7 @@ let init_client_process_time tz =
   let tz = CalendarLib.Time_Zone.UTC_Plus tz in
   let () = Eliom_reference.Volatile.set user_tz_gr tz in
   let () = Eliom_reference.Volatile.set user_tz_sr tz in
-  Lwt.return ()
+  Lwt.return_unit
 
 let%server init_time_rpc' = init_client_process_time
 
