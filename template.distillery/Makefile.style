@@ -62,9 +62,13 @@ endif
 # In both cases, external CSS files ($(EXTERNAL_CSS_FILES)) are copied.
 $(LOCAL_CSS): check_sass $(NPM_POSTCSS) $(NPM_AUTOPREFIXER) import-external-css
 ifeq "$(USE_SASS)" "yes"
+ifeq ($(shell which sassc),)
 	[ -d $(SASSDIR) ] && \
-	(sassc -t compressed $(addprefix -I ,$(subst :, ,$(SASS_PATH))) $(SASS_SRC) $@ || \
-	SASS_PATH=$(SASS_PATH) sass --style compressed $(SASS_SRC) $@)
+	SASS_PATH=$(SASS_PATH) sass --style compressed $(SASS_SRC) $@
+else
+	[ -d $(SASSDIR) ] && \
+	sassc -t compressed $(addprefix -I ,$(subst :, ,$(SASS_PATH))) $(SASS_SRC) $@
+endif
 	$(POSTCSS) --use autoprefixer --replace $@
 else
 	cat $(CSS_FILES) > $@
