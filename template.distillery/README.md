@@ -246,6 +246,14 @@ you need to provide an additional `APP_PATH` argument, e.g.,
 `/`. You also need to modify the `%%%PROJECT_NAME%%%.conf.in` with a
 [`<site>` tag](http://ocsigen.org/ocsigenserver/manual/config#h5o-31).
 
+Note: if any of the mobile-related targets fails due to the inexistent
+`node` command, you may need to create a symlink from `node` to
+`nodejs`, e.g., as follows:
+
+```
+ln -s /usr/bin/nodejs /usr/local/bin/node
+```
+
 ## Update the mobile application.
 
 The mobile app is updated automatically at launch time, every time the
