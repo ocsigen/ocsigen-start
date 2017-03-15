@@ -74,7 +74,7 @@ let%shared page () =
   let update = [%client fst ~%carousel_change_signal] in
   let change = [%client fun a -> (snd ~%carousel_change_signal ?step:None a) ]
   in
-  let carousel, pos, _swipe_pos =
+  let%lwt carousel, pos, _swipe_pos =
     Ot_carousel.wheel
       ~a:[ a_class ["demo-carousel3"] ]
       ~update
