@@ -58,7 +58,7 @@ let%shared page () =
   ]
   in
   (* We want a "full-height" carousel. See Ot_carousel documentation. *)
-  let carousel, pos, _size, swipe_pos =
+  let {Ot_carousel.elt = carousel; pos; swipe_pos} =
     Ot_carousel.make
       ~update ~full_height:(`Header get_header_height) carousel_content
   in

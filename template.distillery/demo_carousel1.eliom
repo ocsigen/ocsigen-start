@@ -41,7 +41,7 @@ let%shared page () =
   let carousel_pages = ["1"; "2"; "3"; "4"] in
   let length = List.length carousel_pages in
   let carousel_content = List.map make_page carousel_pages in
-  let carousel, pos, size, _swipe_pos =
+  let {Ot_carousel.elt = carousel; pos; vis_elts = size} =
     Ot_carousel.make ~update carousel_content
   in
   let bullets = Ot_carousel.bullets ~change ~pos ~length ~size () in
