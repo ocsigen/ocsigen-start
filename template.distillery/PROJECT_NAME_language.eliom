@@ -3,7 +3,15 @@
 
 let%server best_matched_language () =
   (* lang contains a list of (language_as_string, quality_value) *)
-  let lang = Eliom_request_info.get_accept_language () in
+  let lang =
+    let {Ocsigen_extensions.request_info} =
+      Eliom_request_info.get_request ()
+    in
+    Ocsigen_header.Accept_language.parse
+        (Ocsigen_request.header_multi
+           request_info
+           Ocsigen_header.Name.accept_language)
+  in
   (* If no quality is given, we suppose it's 1 *)
   let lang = List.map (fun (s, q) ->
     (s, match q with Some q -> q | None -> 1.))
