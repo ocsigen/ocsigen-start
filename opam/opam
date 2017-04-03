@@ -15,6 +15,7 @@ depends: [
   "ocsigen-i18n" {>= "3.1.0"}
   "eliom" {>= "6.2"}
   "ocsigen-toolkit" {>= "0.99"}
+  "js_of_ocaml-camlp4"
   "yojson"
 ]
 depexts: [
