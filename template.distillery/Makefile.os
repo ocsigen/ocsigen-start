@@ -15,7 +15,7 @@
 ## Required binaries
 ELIOMC            := eliomc -w +A-4-7-9-37-38-39-41-42-44-45-48
 ELIOMOPT          := eliomopt
-JS_OF_ELIOM       := js_of_eliom -w +A-4-7-9-37-38-39-41-42-44-45-48
+JS_OF_ELIOM       := js_of_eliom -w +A-4-7-9-37-38-39-41-42-44-45-48 -jsopt +base/runtime.js
 JS_OF_OCAML       := js_of_ocaml
 ELIOMDEP          := eliomdep
 OCSIGENSERVER     := ocsigenserver
@@ -290,7 +290,7 @@ ${ELIOM_CLIENT_DIR}/%.cmi: %.eliomi
 	${JS_OF_ELIOM} -ppx -ppx ${I18N_PPX_REWRITER} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_CLIENT_DIR}/%.js: ${ELIOM_CLIENT_DIR}/%.cmo
-	${JS_OF_OCAML} $(DEBUG_JS) $<
+	${JS_OF_OCAML} $(DEBUG_JS) +base/runtime.js $<
 
 ##----------------------------------------------------------------------
 
