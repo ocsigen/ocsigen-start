@@ -69,7 +69,8 @@ SERVER_DIRS     := $(shell echo $(foreach f, $(SERVER_FILES), $(dir $(f))) |  tr
 SERVER_DEP_DIRS := ${addprefix -eliom-inc ,${SERVER_DIRS}}
 SERVER_INC_DIRS := ${addprefix -I $(ELIOM_SERVER_DIR)/, ${SERVER_DIRS}}
 
-SERVER_INC  := ${addprefix -package ,${SERVER_PACKAGES}}
+SERVER_INC  := \
+	${addprefix -package ,${SERVER_PACKAGES} ${SERVER_SYNTAX_PACKAGES}}
 SERVER_DB_INC  := ${addprefix -package ,${SERVER_DB_PACKAGES}}
 
 ${ELIOM_TYPE_DIR}/%.type_mli: %.eliom
@@ -117,8 +118,8 @@ CLIENT_DIRS     := $(shell echo $(foreach f, $(CLIENT_FILES), $(dir $(f))) |  tr
 CLIENT_DEP_DIRS := ${addprefix -eliom-inc ,${CLIENT_DIRS}}
 CLIENT_INC_DIRS := ${addprefix -I $(ELIOM_CLIENT_DIR)/,${CLIENT_DIRS}}
 
-CLIENT_LIBS := ${addprefix -package ,${CLIENT_PACKAGES}}
-CLIENT_INC  := ${addprefix -package ,${CLIENT_PACKAGES}}
+CLIENT_INC  := \
+	${addprefix -package ,${CLIENT_PACKAGES} ${CLIENT_SYNTAX_PACKAGES}}
 
 CLIENT_OBJS := $(filter %.eliom %.ml, $(CLIENT_FILES))
 CLIENT_OBJS := $(patsubst %.eliom,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
@@ -150,7 +151,7 @@ META: META.in
 		-e 's#@@PKG_DESC@@#$(PKG_DESC)#g' \
 		-e 's#@@CLIENT_REQUIRES@@#$(CLIENT_PACKAGES)#g' \
 		-e 's#@@CLIENT_ARCHIVES_BYTE@@#$(CLIENT_CMO_FILENAMES)#g' \
-		-e 's#@@SERVER_REQUIRES@@#$(SERVER_PACKAGES) $(SERVER_DB_PACKAGES)#g' \
+		-e 's#@@SERVER_REQUIRES@@#$(sort $(SERVER_PACKAGES) $(SERVER_DB_PACKAGES))#g' \
 		-e 's#@@SERVER_ARCHIVES_BYTE@@#$(PKG_NAME).server.cma#g' \
 		-e 's#@@SERVER_ARCHIVES_NATIVE@@#$(PKG_NAME).server.cmxa#g' \
 		-e 's#@@SERVER_ARCHIVES_NATIVE_PLUGIN@@#$(PKG_NAME).server.cmxs#g' \
