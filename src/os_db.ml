@@ -27,7 +27,17 @@ let (>>=) = Lwt.bind
 
 module Lwt_thread = struct
   include Lwt
-  include Lwt_chan
+  let close_in = Lwt_io.close
+  let really_input = Lwt_io.read_into_exactly
+  let input_binary_int = Lwt_io.read_int
+  let input_char = Lwt_io.read_char
+  let output_string = Lwt_io.write
+  let output_binary_int = Lwt_io.write_int
+  let output_char = Lwt_io.write_char
+  let flush = Lwt_io.flush
+  let open_connection x = Lwt_io.open_connection x
+  type out_channel = Lwt_io.output_channel
+  type in_channel = Lwt_io.input_channel
 end
 module Lwt_PGOCaml = PGOCaml_generic.Make(Lwt_thread)
 module Lwt_Query_ = Query.Make_with_Db(Lwt_thread)(Lwt_PGOCaml)
