@@ -48,12 +48,7 @@ end) = struct
     Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope MMap.empty
 
   let has k =
-    let table = Eliom_reference.Volatile.get cache in
-    try
-      ignore (MMap.find k table);
-      true
-    with
-      | Not_found -> false
+    MMap.mem k (Eliom_reference.Volatile.get cache)
 
   let set k v =
     let table = Eliom_reference.Volatile.get cache in
