@@ -12,7 +12,7 @@ the
 2. [Installation](#install)
 3. [Create your project](#create-your-project)
 
-###<a id="introduction"></a>Introduction
+### <a id="introduction"></a>Introduction
 Ocsigen Start is a set of higher-level libraries for building
 client-server web applications with Ocsigen (Js_of_ocaml and
 Eliom). It provides modules for
@@ -32,7 +32,7 @@ If Ocsigen Start corresponds to your needs, it will probably help you
 a lot. If not, start with a simpler template. You can still use the
 modules from Ocsigen Start.
 
-###<a id="install"></a>Installation
+### <a id="install"></a>Installation
 
 We recommend using OPAM to install Ocsigen Start. Here is the command:
 
@@ -40,7 +40,7 @@ We recommend using OPAM to install Ocsigen Start. Here is the command:
 opam install ocsigen-start
 ```
 
-###<a id="create-your-project"></a>Create your project
+### <a id="create-your-project"></a>Create your project
 ```
 eliom-distillery -name myproject -template os.pgocaml
 ```
