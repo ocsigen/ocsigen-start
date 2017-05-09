@@ -29,10 +29,10 @@ module Lwt_thread = struct
   include Lwt
   let close_in = Lwt_io.close
   let really_input = Lwt_io.read_into_exactly
-  let input_binary_int = Lwt_io.read_int
+  let input_binary_int = Lwt_io.BE.read_int
   let input_char = Lwt_io.read_char
   let output_string = Lwt_io.write
-  let output_binary_int = Lwt_io.write_int
+  let output_binary_int = Lwt_io.BE.write_int
   let output_char = Lwt_io.write_char
   let flush = Lwt_io.flush
   let open_connection x = Lwt_io.open_connection x
