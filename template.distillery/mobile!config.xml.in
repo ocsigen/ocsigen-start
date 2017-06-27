@@ -152,4 +152,9 @@
         <variable name="SENDER_ID" value="%%MOBILE_NOTIFICATIONS_SENDER_ID%%" />
     </plugin>
     -->
+
+    <!-- If you want to allow videos to play inline:
+    <preference name="AllowInlineMediaPlayback" value="true" />
+    -->
+
 </widget>
