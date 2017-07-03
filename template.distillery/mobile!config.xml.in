@@ -138,7 +138,10 @@
     <!-- <preference name="xwalkCommandLine" value="&#45;&#45;disable&#45;pull&#45;to&#45;refresh&#45;effect" /> -->
     <!-- <preference name="xwalkMode" value="embedded" /> -->
     <!-- <preference name="xwalkMultipleApk" value="false" /> -->
-    <!-- <preference name="BackgroundColor" value="0xED393900" /> -->
+    
+    <!-- BackgroundColor of the app (rarely visible).
+         However if it doesn't do what you expect, make sure you're not simply having trouble with ARGB vs RGBA.  -->
+    <!-- <preference name="BackgroundColor" value="0x00000000" /> -->
 
     <!-- Hot Code Push settings -->
     <chcp>
