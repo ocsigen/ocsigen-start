@@ -16,7 +16,7 @@ the
 Ocsigen Start is a set of higher-level libraries for building
 client-server web applications with Ocsigen (Js_of_ocaml and
 Eliom). It provides modules for
-* user management (session management, registration, activation keys, ...),
+* user management (session management, registration, action — e.g., activation — keys, ...),
 * managing groups of users,
 * displaying tips, and
 * easily sending notifications to the users.
