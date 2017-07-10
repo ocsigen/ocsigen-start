@@ -25,13 +25,34 @@
 
 let%shared __link = () (* to make sure os_comet is linked *)
 
+
+let%client cookies_enabled () =
+  try
+    Dom_html.document##.cookie := Js.string "cookietest=1";
+    let has_cookies =
+      Dom_html.document##.cookie##indexOf (Js.string "cookietest=") <> -1 in
+    Dom_html.document##.cookie :=
+      Js.string "cookietest=1; expires=Thu, 01-Jan-1970 00:00:01 GMT";
+    has_cookies
+  with _ ->
+    false
+
+
+
+
 let%client restart_process () =
   if Eliom_client.is_client_app () then
     Eliom_client.exit_to ~absolute:false
       ~service:(Eliom_service.static_dir ())
       ["index.html"] ()
   else
-    Eliom_client.exit_to ~service:Eliom_service.reload_action () ()
+    (* If cookies do not work,
+       the failed comet is probably due to missing cookies.
+       In that case we do not restart. This happens for example
+       if cookies are deactivated of if the app is running in an iframe
+       and the browser forbids third party cookies. *)
+  if cookies_enabled ()
+  then Eliom_client.exit_to ~service:Eliom_service.reload_action () ()
 
 
 let%client _ = Eliom_comet.set_handle_exn_function
