@@ -170,11 +170,13 @@ install: all META
 	cp $(LIBDIR)/$(PKG_NAME).client.cma $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
 	cp $(LIBDIR)/$(PKG_NAME).server.cm* $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
 	scripts/install.sh $(TEMPLATE_DIR) $(TEMPLATE_NAME)
+	scripts/install.sh $(PWA_TPL_DIR) $(PWA_TPL_NAME)
 
 uninstall:
 	rm -rf $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
 	rm -rf $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
 	scripts/uninstall.sh $(TEMPLATE_NAME)
+	scripts/uninstall.sh $(PWA_TPL_NAME)
 	$(OCAMLFIND) remove $(PKG_NAME)
 
 reinstall:
