@@ -131,7 +131,7 @@ let%server sign_up_handler () email =
     send_action_link ~autoconnect:true msg Os_services.main_service email userid
   in
   try%lwt
-    let%lwt user = Os_user.create ~firstname:"" ~lastname:"" email in
+    let%lwt user = Os_user.create ~firstname:"" ~lastname:"" ~email () in
     let userid = Os_user.userid_of_user user in
     Os_msg.msg ~onload:true ~level:`Msg ~duration:6.
       "An e-mail was sent to this address. \

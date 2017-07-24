@@ -138,15 +138,23 @@ let password_set userid =
 *)
 
 (** Create new user. May raise [Already_exists] *)
-let create ?password ?avatar ?language ~firstname ~lastname email =
-  try%lwt
-    let%lwt userid = Os_db.User.userid_of_email email in
-    Lwt.fail (Already_exists userid)
-  with Os_db.No_such_resource ->
+let create ?password ?avatar ?language ?email ~firstname ~lastname () =
+  let really_create () =
     let%lwt userid =
-      Os_db.User.create ~firstname ~lastname ?password ?avatar ?language email
+      Os_db.User.create
+        ~firstname ~lastname ?password ?avatar ?language ?email ()
     in
     user_of_userid userid
+  in
+  match email with
+  | Some email ->
+    (try%lwt
+       let%lwt userid = Os_db.User.userid_of_email email in
+       Lwt.fail (Already_exists userid)
+     with Os_db.No_such_resource ->
+       really_create ())
+  | None ->
+    really_create ()
 
 (* Overwrites the function [update] of [Os_db.User]
    to reset the cache *)

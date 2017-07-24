@@ -132,7 +132,7 @@ let os_users_table =
        userid bigint NOT NULL DEFAULT(nextval $os_users_userid_seq$),
        firstname text NOT NULL,
        lastname text NOT NULL,
-       main_email citext NOT NULL,
+       main_email citext,
        password text,
        avatar text,
        language text
@@ -319,7 +319,7 @@ module User = struct
     >> >>= fun l ->
     Lwt.return (List.map (fun a -> a#!email) l)
 
-  let create ?password ?avatar ?language ~firstname ~lastname email =
+  let create ?password ?avatar ?language ?email ~firstname ~lastname () =
     if password = Some "" then Lwt.fail_with "empty password"
     else
       full_transaction_block (fun dbh ->
@@ -328,12 +328,13 @@ module User = struct
         in
         let avatar_o = Eliom_lib.Option.map as_sql_string avatar in
         let language_o = Eliom_lib.Option.map as_sql_string language in
+        let email_o = Eliom_lib.Option.map as_sql_string email in
         lwt () = Lwt_Query.query dbh
           <:insert< $os_users_table$ :=
            { userid     = os_users_table?userid;
              firstname  = $string:firstname$;
              lastname   = $string:lastname$;
-             main_email = $string:email$;
+             main_email = of_option $email_o$;
              password   = of_option $password_o$;
              avatar     = of_option $avatar_o$;
              language   = of_option $language_o$
@@ -343,14 +344,21 @@ module User = struct
           <:view< {x = currval $os_users_userid_seq$} >>
         in
         let userid = userid#!x in
-        lwt () = Lwt_Query.query dbh
-          <:insert< $os_emails_table$ :=
-           { email = $string:email$;
-             userid  = $int64:userid$;
-             validated = os_emails_table?validated
-           } >>
+        lwt () =
+          match email with
+          | Some email ->
+            lwt () =
+              Lwt_Query.query dbh
+                <:insert< $os_emails_table$ :=
+                          { email = $string:email$;
+                          userid  = $int64:userid$;
+                          validated = os_emails_table?validated
+                          } >>
+            in
+            remove_preregister email
+          | None ->
+            Lwt.return_unit
         in
-        lwt () = remove_preregister email in
         Lwt.return userid
       )
 
@@ -493,7 +501,7 @@ module User = struct
     >>
 
   let email_of_userid userid = one run_view
-    ~success:(fun u -> Lwt.return u#!main_email)
+    ~success:(fun u -> Lwt.return u#?main_email)
     ~fail:(Lwt.fail No_such_resource)
     <:view< { u.main_email }
      | u in $os_users_table$;

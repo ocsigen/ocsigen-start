@@ -130,7 +130,8 @@ module User : sig
     ?password:string ->
     ?avatar:string ->
     ?language:string ->
-    firstname:string -> lastname:string -> string -> Os_types.User.id Lwt.t
+    ?email:string ->
+    firstname:string -> lastname:string -> unit -> Os_types.User.id Lwt.t
 
   (** [update ?password ?avatar ?language ~firstname ~lastname userid] updates the user
       profile with [userid].
@@ -196,7 +197,7 @@ module User : sig
       If there is no such user, it fails with
       {!No_such_resource}.
       *)
-  val email_of_userid : Os_types.User.id -> string Lwt.t
+  val email_of_userid : Os_types.User.id -> string option Lwt.t
 
   (** [is_main_email ~email ~userid] returns [true] if the main email of the
       user with ID [userid] is [email].
