@@ -208,11 +208,6 @@ module Utils = struct
     | r::_ -> success r
     | _ -> fail
 
-  let all f ~success ~fail q =
-    f q >>= function
-    | [] -> fail
-    | r -> success r
-
   let password_of d = <:value< $d$.password>>
 
   let avatar_of d = <:value< $d$.avatar>>
@@ -490,15 +485,17 @@ module User = struct
         )
     )
 
-  let emails_of_userid userid = Utils.all run_view
-    ~success:(fun r -> Lwt.return @@ List.map (fun a -> a#!email) r)
-    ~fail:(Lwt.fail No_such_resource)
-    <:view< { t2.email }
-     | t1 in $os_users_table$;
-       t2 in $os_emails_table$;
-       t1.userid = t2.userid;
-       t1.userid = $int64:userid$;
-    >>
+  let emails_of_userid userid =
+    lwt r =
+      run_view
+        <:view< { t2.email }
+                | t1 in $os_users_table$;
+                t2 in $os_emails_table$;
+                t1.userid = t2.userid;
+                t1.userid = $int64:userid$;
+        >>
+    in
+    Lwt.return (List.map (fun a -> a#!email) r)
 
   let email_of_userid userid = one run_view
     ~success:(fun u -> Lwt.return u#?main_email)
