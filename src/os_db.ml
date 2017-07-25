@@ -143,7 +143,13 @@ let os_emails_table =
        email citext NOT NULL,
        userid bigint NOT NULL,
        validated boolean NOT NULL DEFAULT(false)
-          ) >>
+           ) >>
+
+let os_phones_table =
+  <:table< ocsigen_start.phones (
+       number citext NOT NULL,
+       userid bigint NOT NULL
+           ) >>
 
 let os_action_link_table :
   (< .. >,
@@ -446,6 +452,26 @@ module User = struct
           Lwt.fail No_such_resource
       )
 
+  let verify_password_phone ~phone ~password =
+    if password = "" then Lwt.fail No_such_resource
+    else
+      one run_view <:view<
+        { t1.userid; t1.password }
+        | t1 in $os_users_table$;
+          t2 in $os_phones_table$;
+          t1.userid = t2.userid;
+          t2.number = $string:phone$
+        >>
+        ~success:(fun r ->
+          let userid = r#!userid in
+          match r#?password with
+          | Some password' when
+              snd !pwd_crypt_ref userid password password' ->
+            Lwt.return userid
+          | _ ->
+            Lwt.fail No_such_resource)
+        ~fail:(Lwt.fail No_such_resource)
+
   let user_of_userid userid = one run_view
     ~success:(fun r -> Lwt.return @@ tupple_of_user_sql r)
     ~fail:(Lwt.fail No_such_resource)
@@ -611,5 +637,38 @@ module Groups = struct
 
   let all () = run_query <:select< r | r in $os_groups_table$; >> >>= fun l ->
     Lwt.return @@ List.map (fun a -> (a#!groupid, a#!name, a#?description)) l
+
+end
+
+module Phone = struct
+
+  let add ~myid number =
+    without_transaction @@ fun dbh -> run_query
+      <:insert< $os_phones_table$ :=
+                { number = $string:number$;
+                  userid = $int64:myid$ } >>
+
+  let exists number =
+    without_transaction @@ fun dbh ->
+    match_lwt
+      run_query
+        <:select< row |
+                  row in $os_phones_table$;
+                  row.number = $string:number$ >>
+    with
+    | _ :: _ ->
+      Lwt.return_true
+    | [] ->
+      Lwt.return_false
+
+  let get_list myid =
+    without_transaction @@ fun dbh ->
+    lwt l =
+      run_view
+        <:view< { row.number } |
+                  row in $os_phones_table$;
+                  row.userid = $int64:myid$ >>
+    in
+    Lwt.return (List.map (fun row -> row#!number) l)
 
 end

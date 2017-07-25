@@ -170,6 +170,13 @@ module User : sig
       or if the password is wrong, it fails with {!No_such_resource}. *)
   val verify_password : email:string -> password:string -> Os_types.User.id Lwt.t
 
+  (** [verify_password_phone ~phone ~password] returns the userid if
+      user with phoen [phone] is registered with the password
+      [password]. If [password] is empty or if the password is wrong,
+      it fails with {!No_such_resource}. *)
+  val verify_password_phone :
+    phone:string -> password:string -> Os_types.User.id Lwt.t
+
   (** [user_of_userid userid] returns a tuple [(userid, firstname, lastname,
       avatar, bool_password, language)] describing the information about
       the user with ID [userid].
@@ -272,4 +279,14 @@ module Groups : sig
   (** [all ()] returns all groups as list of tuple [(groupid, name,
       description)]. *)
   val all : unit -> (Os_types.Group.id * string * string option) list Lwt.t
+end
+
+module Phone : sig
+
+  val add : myid:int64 -> string -> unit Lwt.t
+
+  val exists : string -> bool Lwt.t
+
+  val get_list : int64 -> string list Lwt.t
+
 end
