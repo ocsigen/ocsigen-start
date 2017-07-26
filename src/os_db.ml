@@ -642,11 +642,11 @@ end
 
 module Phone = struct
 
-  let add ~myid number =
+  let add userid number =
     without_transaction @@ fun dbh -> run_query
       <:insert< $os_phones_table$ :=
                 { number = $string:number$;
-                  userid = $int64:myid$ } >>
+                  userid = $int64:userid$ } >>
 
   let exists number =
     without_transaction @@ fun dbh ->
@@ -661,13 +661,19 @@ module Phone = struct
     | [] ->
       Lwt.return_false
 
-  let get_list myid =
+  let delete userid number =
+    without_transaction @@ fun dbh -> run_query
+      <:delete< row in $os_phones_table$ |
+                row.userid = $int64:userid$;
+                row.number = $string:number$ >>
+
+  let get_list userid =
     without_transaction @@ fun dbh ->
     lwt l =
       run_view
         <:view< { row.number } |
                   row in $os_phones_table$;
-                  row.userid = $int64:myid$ >>
+                  row.userid = $int64:userid$ >>
     in
     Lwt.return (List.map (fun row -> row#!number) l)
 

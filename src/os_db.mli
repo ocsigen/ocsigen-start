@@ -283,9 +283,11 @@ end
 
 module Phone : sig
 
-  val add : myid:int64 -> string -> unit Lwt.t
+  val add : int64 -> string -> unit Lwt.t
 
   val exists : string -> bool Lwt.t
+
+  val delete : int64 -> string -> unit Lwt.t
 
   val get_list : int64 -> string list Lwt.t
 
