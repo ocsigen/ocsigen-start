@@ -661,6 +661,19 @@ module Phone = struct
     | [] ->
       Lwt.return_false
 
+  let userid number =
+    without_transaction @@ fun dbh ->
+    match_lwt
+      run_view
+        <:view< { row.userid } |
+                  row in $os_phones_table$;
+                  row.number = $string:number$ >>
+    with
+    | userid :: _ ->
+      Lwt.return (Some userid#!userid)
+    | [] ->
+      Lwt.return None
+
   let delete userid number =
     without_transaction @@ fun dbh -> run_query
       <:delete< row in $os_phones_table$ |

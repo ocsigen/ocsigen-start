@@ -19,7 +19,7 @@
  *)
 
 type%shared sms_error_core = [`Unknown | `Send | `Limit]
-type%shared sms_error = [`Duplicate_number | sms_error_core]
+type%shared sms_error = [`Invalid_number | sms_error_core]
 
 (* adapted from Ocsigen_lib.make_cryptographic_safe_string *)
 let activation_code =
@@ -34,8 +34,8 @@ let activation_code =
 let activation_code_ref =
   Eliom_reference.eref ~scope:Eliom_common.default_process_scope None
 
-let store_activation_code ~attempt ~number code =
-  Eliom_reference.set activation_code_ref (Some (number, code, attempt))
+let reminder_code_ref =
+  Eliom_reference.eref ~scope:Eliom_common.default_process_scope None
 
 let send_sms_handler = ref @@ fun ~number message ->
   Printf.printf "INFO: send SMS %s to %s\n\
@@ -49,34 +49,52 @@ let set_send_sms_handler = (:=) send_sms_handler
 let send_sms ~number message : (unit, sms_error_core) result Lwt.t =
   !send_sms_handler ~number message
 
+let%server request_code reference number =
+  try%lwt
+    let%lwt attempt =
+      match%lwt Eliom_reference.get reference with
+      | Some (_, _, attempt) ->
+        Lwt.return attempt
+      | None ->
+        Lwt.return 0
+    in
+    if attempt <= 3 then
+      let attempt = attempt + 1 and code = activation_code () in
+      let%lwt () =
+        Eliom_reference.set
+          reference
+          (Some (number, code, attempt))
+      in
+      try%lwt
+        (send_sms ~number code :> (unit, sms_error) result Lwt.t)
+      with _ ->
+        Lwt.return (Error `Send)
+    else
+      Lwt.return (Error `Limit)
+  with _ ->
+    Lwt.return (Error `Unknown)
+
 let%server request_activation_code number =
   let%lwt b = Os_db.Phone.exists number in
   if b then
-    Lwt.return (Error `Duplicate_number)
+    Lwt.return (Error `Invalid_number)
   else
-    try%lwt
-      let%lwt attempt =
-        match%lwt Eliom_reference.get activation_code_ref with
-        | Some (_, _, attempt) ->
-          Lwt.return attempt
-        | None ->
-          Lwt.return 0
-      in
-      if attempt <= 3 then
-        let attempt = attempt + 1 and code = activation_code () in
-        let%lwt () = store_activation_code ~number ~attempt code in
-        try%lwt
-          (send_sms ~number code :> (unit, sms_error) result Lwt.t)
-        with _ ->
-          Lwt.return (Error `Send)
-      else
-        Lwt.return (Error `Limit)
-    with _ ->
-      Lwt.return (Error `Unknown)
+    request_code activation_code_ref number
 
 let%client request_activation_code =
   ~%(Eliom_client.server_function [%derive.json : string]
        request_activation_code)
+
+let%server request_reminder_code number =
+  let%lwt b = Os_db.Phone.exists number in
+  if not b then
+    Lwt.return (Error `Invalid_number)
+  else
+    request_code reminder_code_ref number
+
+let%client request_reminder_code =
+  ~%(Eliom_client.server_function [%derive.json : string]
+       request_reminder_code)
 
 let reset_activation_code () =
   let%lwt v  = Eliom_reference.get activation_code_ref in
@@ -117,3 +135,21 @@ let%client connect_with_activation_code =
 let%shared connect_with_activation_code
     ~first_name ~last_name ~code ~password () =
   connect_with_activation_code (first_name, last_name, code, password)
+
+let%server recover_with_code code =
+  match%lwt Eliom_reference.get reminder_code_ref with
+  | Some (number, code', _) when code = code' ->
+    begin
+      match%lwt Os_db.Phone.userid number with
+      | Some userid ->
+        let%lwt () = Os_session.connect userid in
+        Lwt.return_true
+      | None ->
+        Lwt.return_false
+    end
+  | _ ->
+    Lwt.return_false
+
+let%client recover_with_code =
+  ~%(Eliom_client.server_function Deriving_Json.Json_string.t
+       recover_with_code)

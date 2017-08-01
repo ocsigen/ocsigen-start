@@ -287,6 +287,8 @@ module Phone : sig
 
   val exists : string -> bool Lwt.t
 
+  val userid : string -> Os_types.User.id option Lwt.t
+
   val delete : int64 -> string -> unit Lwt.t
 
   val get_list : int64 -> string list Lwt.t

@@ -21,9 +21,11 @@
 [%%shared.start]
 
 type sms_error_core = [`Unknown | `Send | `Limit]
-type sms_error = [`Duplicate_number | sms_error_core]
+type sms_error = [`Invalid_number | sms_error_core]
 
 val request_activation_code : string -> (unit, sms_error) result Lwt.t
+
+val request_reminder_code : string -> (unit, sms_error) result Lwt.t
 
 val confirm_activation_code : string -> bool Lwt.t
 
@@ -31,6 +33,8 @@ val connect_with_activation_code :
   first_name:string -> last_name:string ->
   code:string -> password:string ->
   unit -> bool Lwt.t
+
+val recover_with_code : string -> bool Lwt.t
 
 [%%server.start]
 
