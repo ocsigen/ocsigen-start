@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-type%shared sms_error_core = [`Unknown | `Send | `Limit]
-type%shared sms_error = [`Invalid_number | sms_error_core]
+type%shared sms_error_core = [`Unknown | `Send | `Limit | `Invalid_number]
+type%shared sms_error = [`Ownership | sms_error_core]
 
 (* adapted from Ocsigen_lib.make_cryptographic_safe_string *)
 let activation_code =
@@ -74,10 +74,16 @@ let%server request_code reference number =
   with _ ->
     Lwt.return (Error `Unknown)
 
-let%server request_activation_code number =
+let%shared request_wrapper f number =
+  if Re_str.string_match Os_lib.phone_regexp number 0 then
+    f number
+  else
+    Lwt.return (Error `Invalid_number)
+
+let%server request_activation_code = request_wrapper @@ fun number ->
   let%lwt b = Os_db.Phone.exists number in
   if b then
-    Lwt.return (Error `Invalid_number)
+    Lwt.return (Error `Ownership)
   else
     request_code activation_code_ref number
 
@@ -85,10 +91,10 @@ let%client request_activation_code =
   ~%(Eliom_client.server_function [%derive.json : string]
        request_activation_code)
 
-let%server request_reminder_code number =
+let%server request_reminder_code = request_wrapper @@ fun number ->
   let%lwt b = Os_db.Phone.exists number in
   if not b then
-    Lwt.return (Error `Invalid_number)
+    Lwt.return (Error `Ownership)
   else
     request_code reminder_code_ref number
 
@@ -96,7 +102,7 @@ let%client request_reminder_code =
   ~%(Eliom_client.server_function [%derive.json : string]
        request_reminder_code)
 
-let reset_activation_code () =
+let qreset_activation_code () =
   let%lwt v  = Eliom_reference.get activation_code_ref in
   let%lwt () = Eliom_reference.set activation_code_ref None in
   Lwt.return v

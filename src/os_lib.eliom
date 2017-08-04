@@ -62,6 +62,8 @@ module Email_or_phone = struct
 
   type t = string * y [@@deriving json]
 
+  let to_string = fst
+
   let y = snd
 
   module Almost = struct
@@ -70,6 +72,8 @@ module Email_or_phone = struct
     [@@deriving json]
 
     type t = string * y [@@deriving json]
+
+    let to_string = fst
 
     let y = snd
 

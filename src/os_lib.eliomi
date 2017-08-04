@@ -36,6 +36,10 @@ module Email_or_phone : sig
 
   val y : t -> y
 
+  val to_string : t -> string
+
+  val of_string : string -> t option
+
   module Almost : sig
 
     type t [@@deriving json]
@@ -45,13 +49,13 @@ module Email_or_phone : sig
 
     val y : t -> y
 
+    val to_string : t -> string
+
     val of_string : string -> t
 
   end
 
   val of_almost : Almost.t -> t option
-
-  val of_string : string -> t option
 
 end
 

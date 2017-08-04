@@ -20,8 +20,8 @@
 
 [%%shared.start]
 
-type sms_error_core = [`Unknown | `Send | `Limit]
-type sms_error = [`Invalid_number | sms_error_core]
+type sms_error_core = [`Unknown | `Send | `Limit | `Invalid_number]
+type sms_error = [`Ownership | sms_error_core]
 
 val request_activation_code : string -> (unit, sms_error) result Lwt.t
 
