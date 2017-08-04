@@ -28,11 +28,46 @@ val reload : unit -> unit Lwt.t
 
 [%%shared.start]
 
+module Email_or_phone : sig
+
+  type t [@@deriving json]
+
+  type y = [`Email | `Phone]
+
+  val y : t -> y
+
+  module Almost : sig
+
+    type t [@@deriving json]
+
+    type nonrec y = [ y | `Almost_phone | `Almost_email | `Invalid ]
+    [@@deriving json]
+
+    val y : t -> y
+
+    val of_string : string -> t
+
+  end
+
+  val of_almost : Almost.t -> t option
+
+  val of_string : string -> t option
+
+end
+
+val phone_regexp : Re_str.regexp
+
+val email_regexp : Re_str.regexp
+
 (** [memoizator f ()] caches the returned value of [f ()] *)
 val memoizator :
   (unit -> 'a Lwt.t)  ->
   unit                ->
   'a Lwt.t
+
+val string_repeat : string -> int -> string
+
+val string_filter : (char -> bool) -> string -> string
 
 [%%server.start]
 (** This module contains functions about HTTP request. *)
