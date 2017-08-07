@@ -14,7 +14,7 @@ depends: [
   "safepass"
   "ocsigen-i18n" {>= "3.1.0"}
   "eliom" {>= "6.2"}
-  "ocsigen-toolkit" {>= "0.99"}
+  "ocsigen-toolkit" {>= "dev"}
   "yojson"
 ]
 depexts: [
