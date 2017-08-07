@@ -38,7 +38,7 @@ module Email_or_phone : sig
 
   val to_string : t -> string
 
-  val of_string : string -> t option
+  val of_string : only_mail:bool -> string -> t option
 
   module Almost : sig
 
@@ -51,7 +51,7 @@ module Email_or_phone : sig
 
     val to_string : t -> string
 
-    val of_string : string -> t
+    val of_string : only_mail:bool -> string -> t
 
   end
 

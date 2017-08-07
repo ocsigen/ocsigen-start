@@ -93,18 +93,17 @@ module Email_or_phone = struct
         with Not_found ->
           false
 
-    let of_string s =
+    let of_string ~only_mail s =
       if Re_str.string_match email_regexp s 0 then
         s, `Email
+      else if only_mail || almost_email s then
+        (* We guess that the user intended to provide an e-mail; we
+           will handle this with appropriate messages *)
+        s, `Almost_email
       else if Re_str.string_match phone_regexp s 0 then
         string_filter ((<>) ' ') s, `Phone
       else if almost_phone s then
-        (* the input is not a valid phone, but it is "close"; we
-           will display appropriate message *)
         s, `Almost_phone
-      else if almost_email s then
-        (* same for mails *)
-        s, `Almost_email
       else
         s, `Invalid
 
@@ -116,7 +115,7 @@ module Email_or_phone = struct
     | s, ((`Email | `Phone) as y) ->
       Some (s, y)
 
-  let of_string s = of_almost (Almost.of_string s)
+  let of_string ~only_mail s = of_almost (Almost.of_string ~only_mail s)
 
 end
 
