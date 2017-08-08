@@ -77,6 +77,23 @@ val action_link_handler :
   unit ->
   'a Eliom_registration.application_content Eliom_registration.kind Lwt.t
 
+(** [confirm_code_signup_handler () (first_name, (last_name, (pass,
+    number)))] sends a verification code to [number], displays a popup
+    for confirming the code, and creates the account if all goes
+    well. *)
+val confirm_code_signup_handler :
+    unit -> string * (string * (string * string)) -> unit Lwt.t
+
+(** [confirm_code_extra_handler () number] is like
+    [confirm_code_signup_handler] but for adding an additional number to
+    the account. *)
+val confirm_code_extra_handler : unit -> string -> unit Lwt.t
+
+(** [confirm_code_remind_handler () number] is like
+    [confirm_code_signup_handler] but for recovering a lost
+    password. *)
+val confirm_code_remind_handler : unit -> string -> unit Lwt.t
+
 [%%server.start]
 
 (** [forgot_password_handler service () email] creates and sends an action link

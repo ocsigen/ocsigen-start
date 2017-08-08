@@ -119,7 +119,79 @@ module Email_or_phone = struct
 
 end
 
+let%client on_enter ~f inp =
+  Lwt.async @@ fun () ->
+  Lwt_js_events.keydowns inp @@ fun ev _ ->
+  if ev##.keyCode = 13 then
+    f (Js.to_string inp##.value)
+  else
+    Lwt.return_unit
+
+(* TODO: Build a nice Ot_form module with such functions *)
+let%shared lwt_bind_input_enter
+    ?(validate : (string -> bool) Eliom_client_value.t option)
+    ?button
+    (e : Html_types.input Eliom_content.Html.elt)
+    (f : (string -> unit Lwt.t) Eliom_client_value.t) =
+  ignore [%client (begin
+    let e = Eliom_content.Html.To_dom.of_input ~%e in
+    let f =
+      let f = ~%(f : (string -> unit Lwt.t) Eliom_client_value.t) in
+      match ~%validate with
+      | Some validate ->
+        fun v ->
+          if validate v then
+            e##.classList##remove(Js.string "invalid")
+          else
+            e##.classList##add(Js.string "invalid");
+          f v
+      | None ->
+        f
+    in
+    on_enter ~f e;
+    match
+      ~%(button : [< Html_types.button | Html_types.input ]
+             Eliom_content.Html.elt option)
+    with
+    | Some button ->
+      Lwt.async @@ fun () ->
+      Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element button)
+      @@ fun _ _ -> f (Js.to_string e##.value)
+    | None ->
+      ()
+  end : unit)]
+
+let%shared lwt_bound_input_enter ?(a = []) ?button ?validate f =
+  let e = Eliom_content.Html.D.Raw.input ~a () in
+  lwt_bind_input_enter ?button ?validate e f;
+  e
+
+let%client bind_popup ?(button_label = "OK") f =
+  let content close =
+    let open Eliom_content.Html in
+    let button =
+      D.button ~a:[D.a_class ["button"]]
+        [D.pcdata button_label]
+    in
+    let inp =
+      let f code = let%lwt () = close () in f code in
+      lwt_bound_input_enter ~button f
+    in
+    Lwt.return (D.div [ button ; inp ])
+  in
+  let%lwt _ =
+    Ot_popup.popup
+      ~close_button:[ Os_icons.F.close () ]
+      ~onclose:(fun () ->
+        Eliom_client.change_page
+          ~service:Eliom_service.reload_action
+          () ())
+      content
+  in
+  Lwt.return_unit
+
 [%%server.start]
+
 module Http =
   struct
     let string_of_stream ?(len=16384) contents =

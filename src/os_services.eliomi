@@ -228,7 +228,46 @@ val update_language_service :
     Eliom_service.non_ocaml
   ) Eliom_service.t
 
-[%%server.start]
+(** Confirm SMS activation code and (if valid) register new user. *)
+val confirm_code_signup_service :
+  (unit, string * (string * (string * string)),
+   Eliom_service.post,
+   Eliom_service.non_att,
+   Eliom_service.co,
+   Eliom_service.non_ext,
+   Eliom_service.reg,
+   [ `WithoutSuffix ], unit,
+   [ `One of string ] Eliom_parameter.param_name
+   * ([ `One of string ] Eliom_parameter.param_name
+      * ([ `One of string ] Eliom_parameter.param_name
+         * [ `One of string ] Eliom_parameter.param_name)),
+   Eliom_service.non_ocaml) Eliom_service.t
+
+(** Confirm SMS activation code and (if valid) add new phone number to
+    user's account. *)
+val confirm_code_extra_service :
+  (unit, string,
+   Eliom_service.post,
+   Eliom_service.non_att,
+   Eliom_service.co,
+   Eliom_service.non_ext,
+   Eliom_service.reg,
+   [ `WithoutSuffix ], unit,
+   [ `One of string ] Eliom_parameter.param_name,
+   Eliom_service.non_ocaml) Eliom_service.t
+
+(** Confirm SMS activation code and (if valid) allow the user to set a
+    new password. *)
+val confirm_code_remind_service :
+  (unit, string,
+   Eliom_service.post,
+   Eliom_service.non_att,
+   Eliom_service.co,
+   Eliom_service.non_ext,
+   Eliom_service.reg,
+   [ `WithoutSuffix ], unit,
+   [ `One of string ] Eliom_parameter.param_name,
+   Eliom_service.non_ocaml) Eliom_service.t
 
 (** Register the settings service (defined in the app rather than in
     the OS lib) because we need to perform redirections to it. *)

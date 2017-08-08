@@ -411,3 +411,70 @@ let%client add_email_handler =
   fun () -> rpc
 
 let%shared _ = Os_comet.__link (* to make sure os_comet is linked *)
+
+let%client confirm_code_popup ~dest f =
+  Os_lib.bind_popup @@ fun code ->
+  let%lwt b = f code in
+  if b then begin
+    let service =
+      match dest with
+      | `Settings ->
+        Os_services.settings_service ()
+      | `Main ->
+        Some (Os_services.main_service)
+    in
+    match service with
+    | Some service ->
+      Eliom_client.change_page ~service () ()
+    | None ->
+      Lwt.fail_with "confirm_popup: settings service unknown"
+  end else begin
+    Os_msg.msg ~level:`Err ~duration:2. "Wrong SMS activation code";
+    Lwt.return_unit
+  end
+
+(* We only need confirm_code_*_service to implement the activation
+   UI. Assuming normal user behavior, we will only ever call them via
+   a client-side Eliom_client.change_page, so no server implementation
+   is needed. Currently we can't register a service only on the
+   client.  Until we fix Eliom, we define dummy server-side
+   handlers. *)
+let%server confirm_code_handler _ _ =
+  Lwt.fail_with
+    "Os_handlers.confirm_code_*_handler not implemented on the server"
+
+let%server confirm_code_signup_handler = confirm_code_handler
+let%server confirm_code_extra_handler = confirm_code_handler
+let%server confirm_code_remind_handler = confirm_code_handler
+
+let%client request_activation_code_wrapper number f =
+  match%lwt Os_connect_phone.request_activation_code number with
+  | Ok () ->
+    f ()
+  | Error `Ownership ->
+    Os_msg.msg ~level:`Err ~duration:2. "Phone taken";
+    Lwt.return_unit
+  | Error (`Unknown | `Send | `Limit | `Invalid_number) ->
+    Os_msg.msg ~level:`Err ~duration:2. "SMS error";
+    Lwt.return_unit
+
+let%client confirm_code_signup_handler
+    () (first_name, (last_name, (password, number))) =
+  request_activation_code_wrapper number @@ fun () ->
+  confirm_code_popup ~dest:`Main @@ fun code ->
+  Os_connect_phone.connect_with_activation_code
+    ~first_name ~last_name ~code ~password ()
+
+let%client confirm_code_extra_handler () number =
+  request_activation_code_wrapper number @@ fun () ->
+  confirm_code_popup ~dest:`Settings
+    Os_connect_phone.confirm_activation_code
+
+let%client confirm_code_remind_handler () number =
+  match%lwt Os_connect_phone.request_reminder_code number with
+  | Ok () ->
+    confirm_code_popup ~dest:`Settings
+      Os_connect_phone.recover_with_code
+  | Error (`Unknown | `Send | `Limit | _) ->
+    Os_msg.msg ~level:`Err ~duration:2. "SMS error";
+    Lwt.return ()
