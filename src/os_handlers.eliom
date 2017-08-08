@@ -412,8 +412,33 @@ let%client add_email_handler =
 
 let%shared _ = Os_comet.__link (* to make sure os_comet is linked *)
 
+let%client input_popup ?(button_label = "OK") f =
+  let w, u = Lwt.wait () in
+  let content close =
+    let open Eliom_content.Html in
+    let button =
+      D.button ~a:[D.a_class ["button"]]
+        [D.pcdata button_label]
+    in
+    let inp =
+      let f code =
+        let%lwt () = close () in
+        Lwt.wakeup u ();
+        f code
+      in
+      Os_lib.lwt_bound_input_enter ~button f
+    in
+    Lwt.return (D.div [ button ; inp ])
+  in
+  let%lwt _ =
+    Ot_popup.popup
+      ~close_button:[ Os_icons.F.close () ]
+      content
+  in
+  w
+
 let%client confirm_code_popup ~dest f =
-  Os_lib.bind_popup @@ fun code ->
+  input_popup @@ fun code ->
   let%lwt b = f code in
   if b then begin
     let service =

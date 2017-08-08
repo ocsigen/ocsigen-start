@@ -26,10 +26,6 @@
 (** [reload ()] reloads the current page. *)
 val reload : unit -> unit Lwt.t
 
-(** [bind_popup f] produces a text input in a popup. Once the user
-    submits, we call [f] on the input. *)
-val bind_popup : ?button_label:string -> (string -> unit Lwt.t) -> unit Lwt.t
-
 [%%shared.start]
 
 (** Parse strings that can be e-mails or phones. *)

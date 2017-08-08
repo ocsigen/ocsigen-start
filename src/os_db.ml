@@ -452,7 +452,7 @@ module User = struct
           Lwt.fail No_such_resource
       )
 
-  let verify_password_phone ~phone ~password =
+  let verify_password_phone ~number ~password =
     if password = "" then Lwt.fail No_such_resource
     else
       one run_view <:view<
@@ -460,7 +460,7 @@ module User = struct
         | t1 in $os_users_table$;
           t2 in $os_phones_table$;
           t1.userid = t2.userid;
-          t2.number = $string:phone$
+          t2.number = $string:number$
         >>
         ~success:(fun r ->
           let userid = r#!userid in

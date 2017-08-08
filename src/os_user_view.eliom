@@ -23,6 +23,8 @@
   open Eliom_content.Html.F
 ]
 
+let%shared enable_phone = ref false
+
 let%client check_password_confirmation ~password ~confirmation =
   let password_dom = To_dom.of_input password in
   let confirmation_dom = To_dom.of_input confirmation in
@@ -67,38 +69,95 @@ let%shared generic_email_form
       | None -> l
       | Some lab -> F.label [pcdata lab]::l) ()
 
+let%client form_override_phone phone_input form =
+  let phone_input = To_dom.of_input phone_input
+  and form = To_dom.of_form form in
+  Lwt.async @@ fun () ->
+  Lwt_js_events.submits form @@ fun ev _ ->
+  let number = Js.to_string phone_input##.value in
+  if number <> "" then
+    match%lwt
+      let password =
+        (Js.Unsafe.coerce form)
+        ##.password
+        ##.value
+        |> Js.to_string
+      and keepmeloggedin =
+        (Js.Unsafe.coerce form)
+        ##.keepmeloggedin
+        ##.checked
+        |> Js.to_bool
+      in
+      Dom.preventDefault ev;
+      Os_connect_phone.connect ~keepmeloggedin ~password number
+    with
+    | `Login_ok ->
+      Os_lib.reload ()
+    | `No_such_resource ->
+      Os_msg.msg ~level:`Err "Wrong phone number or password";
+      Lwt.return_unit
+  else
+    Lwt.return_unit
+
 let%shared connect_form
     ?(a_placeholder_email="Your email")
+    ?(a_placeholder_phone="Or your phone")
     ?(a_placeholder_pwd="Your password")
     ?(text_keep_me_logged_in="keep me logged in")
     ?(text_sign_in="Sign in")
     ?a
     ?(email="")
     () =
-  D.Form.post_form ?a ~service:Os_services.connect_service
-    (fun ((login, password), keepmeloggedin) ->
-       [ Form.input
-           ~a:[a_placeholder a_placeholder_email]
-           ~name:login
-           ~input_type:`Email
-           ~value:email
-           Form.string
-       ; Form.input
-           ~a:[a_placeholder a_placeholder_pwd]
-           ~name:password
-           ~input_type:`Password
-           Form.string
-       ; label [ Form.bool_checkbox_one
-                   ~a:[a_checked ()]
-                   ~name:keepmeloggedin
-                   ()
-               ; pcdata text_keep_me_logged_in]
-       ; Form.input
-           ~a:[a_class ["button" ; "os-sign-in"]]
-           ~input_type:`Submit
-           ~value:text_sign_in
-           Form.string
-       ]) ()
+  let phone_input =
+    if !enable_phone then
+      Some (D.input ()
+              ~a:[ a_placeholder a_placeholder_phone
+                 ; a_input_type `Tel ])
+    else
+      None
+  in
+  let form =
+    D.Form.post_form ?a ~service:Os_services.connect_service
+      (fun ((login, password), keepmeloggedin) ->
+         let l =
+           [ Form.input
+               ~a:[a_placeholder a_placeholder_pwd]
+               ~name:password
+               ~input_type:`Password
+               Form.string
+           ; label [ Form.bool_checkbox_one
+                       ~a:[a_checked ()]
+                       ~name:keepmeloggedin
+                       ()
+                   ; pcdata text_keep_me_logged_in]
+           ; Form.input
+               ~a:[a_class ["button" ; "os-sign-in"]]
+               ~input_type:`Submit
+               ~value:text_sign_in
+               Form.string ]
+         and mail_input =
+           Form.input
+             ~a:[a_placeholder a_placeholder_email]
+             ~name:login
+             ~input_type:`Email
+             ~value:email
+             Form.string
+         in
+         match phone_input with
+         | Some phone_input ->
+           mail_input :: phone_input :: l
+         | None ->
+           mail_input :: l)
+      ()
+  in
+  begin
+    match phone_input with
+    | Some phone_input ->
+      ignore @@ [%client (form_override_phone ~%phone_input ~%form : unit)]
+    | None ->
+      ()
+  end;
+  form
 
 let%shared disconnect_button ?a ?(text_logout="Logout") () =
   Form.post_form ?a ~service:Os_services.disconnect_service
@@ -121,6 +180,27 @@ let%shared sign_up_form ?a ?a_placeholder_email ?text ?email () =
 let%shared forgot_password_form ?a () =
   generic_email_form ?a
     ~service:Os_services.forgot_password_service ()
+
+let%client phone_input ~placeholder ~label f =
+  let button = D.button ~a:[a_class ["button"]] [pcdata label] in
+  let inp =
+    Os_lib.lwt_bound_input_enter
+      ~a:[D.a_placeholder placeholder; D.a_input_type `Tel]
+      ~button
+      f
+  in
+  D.div ~a:[D.a_class ["form-like"]] [inp ; button]
+
+let%client sign_up_by_phone_input ~placeholder label =
+  phone_input ~placeholder ~label @@ fun number ->
+  Eliom_client.change_page
+    ~service:Os_services.confirm_code_signup_service
+    () ("", ("", ("", number)))
+
+let%client forgot_password_phone_input ~placeholder label =
+  phone_input ~placeholder ~label
+    (Eliom_client.change_page
+       ~service:Os_services.confirm_code_remind_service ())
 
 let%shared information_form
     ?a
@@ -331,12 +411,22 @@ let%shared bind_popup_button
 let%shared forgotpwd_button
     ?(content_popup="Recover password")
     ?(text_button="Forgot your password?")
+    ?(phone_placeholder="Or your phone")
+    ?(text_send_button="Send")
     ?(close = [%client (fun () -> () : unit -> unit)])
     () =
-  let popup_content = [%client fun _ -> Lwt.return @@
-    div [ h2 [ pcdata ~%content_popup ]
-        ; forgot_password_form ()] ]
-  in
+  let popup_content = [%client fun _ ->
+    let h = h2 [ pcdata ~%content_popup ] in
+    Lwt.return @@ div @@ if !enable_phone then
+      [ h
+      ; forgot_password_form ()
+      ; forgot_password_phone_input
+          ~placeholder:~%phone_placeholder
+          ~%text_send_button
+      ]
+    else
+      [ h ; forgot_password_form () ]
+  ] in
   let button_name = text_button in
   let button = D.Raw.a ~a:[ a_class ["os-forgot-pwd-link"]
                           ; a_onclick [%client fun _ -> ~%close () ] ]
@@ -351,17 +441,20 @@ let%shared forgotpwd_button
 
 let%shared sign_in_button
     ?(a_placeholder_email="Your email")
+    ?(a_placeholder_phone="Or your phone")
     ?(a_placeholder_pwd="Your password")
     ?(text_keep_me_logged_in="keep me logged in")
     ?(text_sign_in="Sign in")
     ?(content_popup_forgotpwd="Recover password")
     ?(text_button_forgotpwd="Forgot your password?")
     ?(text_button="Sign in")
+    ?(text_send_button = "Send")
     () =
   let popup_content = [%client fun close -> Lwt.return @@
     div [ h2 [ pcdata ~%text_button ]
         ; connect_form
             ~a_placeholder_email:~%a_placeholder_email
+            ~a_placeholder_phone:~%a_placeholder_phone
             ~a_placeholder_pwd:~%a_placeholder_pwd
             ~text_keep_me_logged_in:~%text_keep_me_logged_in
             ~text_sign_in:~%text_sign_in
@@ -369,6 +462,7 @@ let%shared sign_in_button
         ; forgotpwd_button
             ~content_popup:~%content_popup_forgotpwd
             ~text_button:~%text_button_forgotpwd
+            ~text_send_button:~%text_send_button
             ~close:(fun () -> Lwt.async close) ()
         ] ]
   in
@@ -385,21 +479,31 @@ let%shared sign_in_button
 
 let%shared sign_up_button
     ?(a_placeholder_email="Your email")
+    ?(a_placeholder_phone="or your phone")
     ?(text_button="Sign up")
     ?(text_send_button="Send")
     () =
-  let popup_content = [%client fun _ -> Lwt.return @@
-    div [ h2 [ pcdata ~%text_button ]
-        ; sign_up_form
-            ~a_placeholder_email:~%a_placeholder_email
-            ~text:~%text_send_button
-            ()
-        ]
-  ]
-  in
-  let button_name = text_button in
+  let popup_content = [%client fun _ ->
+    let l =
+      [ h2 [ pcdata ~%text_button ]
+      ; sign_up_form
+          ~a_placeholder_email:~%a_placeholder_email
+          ~text:~%text_send_button
+          ()
+      ]
+    in
+    Lwt.return @@ div @@ if !enable_phone then
+      l @
+      [ sign_up_by_phone_input
+          ~placeholder:~%a_placeholder_phone
+          ~%text_send_button ]
+    else
+      l
+  ] in
   let button =
-    D.button ~a:[a_class ["button" ; "os-sign-up-btn"]] [pcdata button_name]
+    D.button
+      ~a:[a_class ["button" ; "os-sign-up-btn"]]
+      [pcdata text_button]
   in
   bind_popup_button
     ~a:[a_class ["os-sign-up"]]
@@ -440,6 +544,7 @@ let%shared connected_user_box ~user =
 
 let%shared connection_box
     ?(a_placeholder_email="Your email")
+    ?(a_placeholder_phone="Your phone")
     ?(a_placeholder_pwd="Your password")
     ?(text_keep_me_logged_in="keep me logged in")
     ?(content_popup_forgotpwd="Recover password")
@@ -452,12 +557,14 @@ let%shared connection_box
   let sign_in    =
     sign_in_button
       ~a_placeholder_email
+      ~a_placeholder_phone
       ~a_placeholder_pwd
       ~text_keep_me_logged_in
       ~text_sign_in
       ~content_popup_forgotpwd
       ~text_button_forgotpwd
       ~text_button:text_sign_in
+      ~text_send_button
       ()
   in
   let sign_up    =
@@ -496,3 +603,5 @@ let%shared user_box
       ~text_send_button
       ()
   | Some user -> Lwt.return (connected_user_box ~user)
+
+let%shared enable_phone () = enable_phone := true

@@ -170,12 +170,12 @@ module User : sig
       or if the password is wrong, it fails with {!No_such_resource}. *)
   val verify_password : email:string -> password:string -> Os_types.User.id Lwt.t
 
-  (** [verify_password_phone ~phone ~password] returns the userid if
-      user with phoen [phone] is registered with the password
-      [password]. If [password] is empty or if the password is wrong,
-      it fails with {!No_such_resource}. *)
+  (** [verify_password_phone ~number ~password] returns the userid of
+      the user who owns [number] and whose password is [password]. If
+      [password] is empty or if the password is wrong, it fails with
+      {!No_such_resource}. *)
   val verify_password_phone :
-    phone:string -> password:string -> Os_types.User.id Lwt.t
+    number:string -> password:string -> Os_types.User.id Lwt.t
 
   (** [user_of_userid userid] returns a tuple [(userid, firstname, lastname,
       avatar, bool_password, language)] describing the information about

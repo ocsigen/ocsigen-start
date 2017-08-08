@@ -139,6 +139,7 @@ let password_set userid =
 
 (** Create new user. May raise [Already_exists] *)
 let create ?password ?avatar ?language ?email ~firstname ~lastname () =
+  let password = match password with Some "" -> None | _ -> password in
   let really_create () =
     let%lwt userid =
       Os_db.User.create

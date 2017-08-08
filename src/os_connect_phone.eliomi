@@ -36,6 +36,12 @@ val connect_with_activation_code :
 
 val recover_with_code : string -> bool Lwt.t
 
+val connect :
+  keepmeloggedin:bool ->
+  password:string ->
+  string ->
+  [`Login_ok | `No_such_resource] Lwt.t
+
 [%%server.start]
 
 val set_send_sms_handler :

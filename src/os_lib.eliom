@@ -166,30 +166,6 @@ let%shared lwt_bound_input_enter ?(a = []) ?button ?validate f =
   lwt_bind_input_enter ?button ?validate e f;
   e
 
-let%client bind_popup ?(button_label = "OK") f =
-  let content close =
-    let open Eliom_content.Html in
-    let button =
-      D.button ~a:[D.a_class ["button"]]
-        [D.pcdata button_label]
-    in
-    let inp =
-      let f code = let%lwt () = close () in f code in
-      lwt_bound_input_enter ~button f
-    in
-    Lwt.return (D.div [ button ; inp ])
-  in
-  let%lwt _ =
-    Ot_popup.popup
-      ~close_button:[ Os_icons.F.close () ]
-      ~onclose:(fun () ->
-        Eliom_client.change_page
-          ~service:Eliom_service.reload_action
-          () ())
-      content
-  in
-  Lwt.return_unit
-
 [%%server.start]
 
 module Http =

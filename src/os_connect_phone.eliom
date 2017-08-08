@@ -159,3 +159,22 @@ let%server recover_with_code code =
 let%client recover_with_code =
   ~%(Eliom_client.server_function Deriving_Json.Json_string.t
        recover_with_code)
+
+let%server connect ~keepmeloggedin ~password number =
+  try%lwt
+    let%lwt userid = Os_db.User.verify_password_phone ~password ~number in
+    let%lwt () = Os_session.connect ~expire:(not keepmeloggedin) userid in
+    Lwt.return `Login_ok
+  with
+  | Os_db.No_such_resource ->
+    Lwt.return `No_such_resource
+
+let%client connect =
+  let f =
+    ~%(Eliom_client.server_function ~name:"os_connect_phone.connect"
+         [%derive.json: string * string * bool]
+         (Os_session.Opt.connected_rpc
+            (fun _ (number, password, keepmeloggedin) ->
+               connect ~keepmeloggedin ~password number)))
+  in
+  fun ~keepmeloggedin ~password number -> f (number, password, keepmeloggedin)
