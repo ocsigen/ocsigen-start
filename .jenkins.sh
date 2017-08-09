@@ -1,4 +1,6 @@
 opam pin add --no-action wikidoc 'https://github.com/ocsigen/wikidoc.git#master'
+opam pin add --no-action ocsigenserver 'https://github.com/ocsigen/ocsigenserver.git'
+opam pin add --no-action ocsigen-toolkit 'https://github.com/ocsigen/ocsigen-toolkit.git'
 opam pin add --no-action eliom 'https://github.com/ocsigen/eliom.git'
 opam pin add --no-action ocsigen-start .
 
