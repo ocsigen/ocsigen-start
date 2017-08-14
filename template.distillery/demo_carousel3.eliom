@@ -93,7 +93,7 @@ let%shared page () =
     ; div [
         Ot_carousel.previous ~a:[ a_class ["demo-prev"] ] ~change ~pos [];
         Ot_carousel.next ~a:[ a_class ["demo-next"] ] ~change
-          ~pos ~size:(Eliom_shared.React.S.const 1) ~length
+          ~pos ~vis_elts:(Eliom_shared.React.S.const 1) ~length
           []
       ]
     ]
