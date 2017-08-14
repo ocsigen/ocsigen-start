@@ -470,10 +470,10 @@ let%server confirm_code_handler _ _ =
 
 let%server confirm_code_signup_handler = confirm_code_handler
 let%server confirm_code_extra_handler = confirm_code_handler
-let%server confirm_code_remind_handler = confirm_code_handler
+let%server confirm_code_recovery_handler = confirm_code_handler
 
 let%client request_activation_code_wrapper number f =
-  match%lwt Os_connect_phone.request_activation_code number with
+  match%lwt Os_connect_phone.request_code number with
   | Ok () ->
     f ()
   | Error `Ownership ->
@@ -487,19 +487,19 @@ let%client confirm_code_signup_handler
     () (first_name, (last_name, (password, number))) =
   request_activation_code_wrapper number @@ fun () ->
   confirm_code_popup ~dest:`Main @@ fun code ->
-  Os_connect_phone.connect_with_activation_code
+  Os_connect_phone.confirm_code_signup
     ~first_name ~last_name ~code ~password ()
 
 let%client confirm_code_extra_handler () number =
   request_activation_code_wrapper number @@ fun () ->
   confirm_code_popup ~dest:`Settings
-    Os_connect_phone.confirm_activation_code
+    Os_connect_phone.confirm_code_extra
 
-let%client confirm_code_remind_handler () number =
-  match%lwt Os_connect_phone.request_reminder_code number with
+let%client confirm_code_recovery_handler () number =
+  match%lwt Os_connect_phone.request_recovery_code number with
   | Ok () ->
     confirm_code_popup ~dest:`Settings
-      Os_connect_phone.recover_with_code
+      Os_connect_phone.confirm_code_recovery
   | Error (`Unknown | `Send | `Limit | _) ->
     Os_msg.msg ~level:`Err ~duration:2. "SMS error";
     Lwt.return ()

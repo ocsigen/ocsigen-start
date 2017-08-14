@@ -20,29 +20,44 @@
 
 [%%shared.start]
 
+(** To be used for signalling errors with SMS transmission *)
 type sms_error_core = [`Unknown | `Send | `Limit | `Invalid_number]
+
+[%%server.start]
+
+(** [set_send_sms_handler f] registers [f] as the function to be
+    called to send SMS messages. Used to send activation codes for
+    connectivity by mail. *)
+val set_send_sms_handler :
+  (number:string -> string -> (unit, sms_error_core) result Lwt.t) -> unit
+
+[%%shared.start]
+
 type sms_error = [`Ownership | sms_error_core]
 
-val request_activation_code : string -> (unit, sms_error) result Lwt.t
+(** Send a validation code for a new e-mail address (corresponds to
+    [confirm_code_signup] and [confirm_code_extra]). *)
+val request_code : string -> (unit, sms_error) result Lwt.t
 
-val request_reminder_code : string -> (unit, sms_error) result Lwt.t
+(** Send a validation code for recovering an existing address. *)
+val request_recovery_code : string -> (unit, sms_error) result Lwt.t
 
-val confirm_activation_code : string -> bool Lwt.t
+(** Confirm validation code and add extra phone to account. *)
+val confirm_code_extra : string -> bool Lwt.t
 
-val connect_with_activation_code :
+(** Confirm validation code and complete sign-up with the phone
+    number. *)
+val confirm_code_signup :
   first_name:string -> last_name:string ->
   code:string -> password:string ->
   unit -> bool Lwt.t
 
-val recover_with_code : string -> bool Lwt.t
+(** Confirm validation code and recover account. We redirect to the
+    settings page for setting a new password. *)
+val confirm_code_recovery : string -> bool Lwt.t
 
 val connect :
   keepmeloggedin:bool ->
   password:string ->
   string ->
   [`Login_ok | `No_such_resource] Lwt.t
-
-[%%server.start]
-
-val set_send_sms_handler :
-  (number:string -> string -> (unit, sms_error_core) result Lwt.t) -> unit

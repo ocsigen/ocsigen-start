@@ -281,16 +281,25 @@ module Groups : sig
   val all : unit -> (Os_types.Group.id * string * string option) list Lwt.t
 end
 
+(** Manage user phone numbers *)
 module Phone : sig
 
+  (** [add userid number] associates [number] with the user
+      [userid]. *)
   val add : int64 -> string -> unit Lwt.t
 
+  (** Does the number exist in the database? *)
   val exists : string -> bool Lwt.t
 
+  (** The user corresponding to a phone number (if any). *)
   val userid : string -> Os_types.User.id option Lwt.t
 
+  (** [delete userid number] deletes [number], which has to be
+      associated to [userid]. *)
   val delete : int64 -> string -> unit Lwt.t
 
+  (** [get_list userid] returns the list of number associated to the
+      user. *)
   val get_list : int64 -> string list Lwt.t
 
 end

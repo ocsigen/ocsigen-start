@@ -34,7 +34,7 @@ let activation_code =
 let activation_code_ref =
   Eliom_reference.eref ~scope:Eliom_common.default_process_scope None
 
-let reminder_code_ref =
+let recovery_code_ref =
   Eliom_reference.eref ~scope:Eliom_common.default_process_scope None
 
 let send_sms_handler = ref @@ fun ~number message ->
@@ -80,34 +80,29 @@ let%shared request_wrapper f number =
   else
     Lwt.return (Error `Invalid_number)
 
-let%server request_activation_code = request_wrapper @@ fun number ->
+let%server request_recovery_code = request_wrapper @@ fun number ->
+  let%lwt b = Os_db.Phone.exists number in
+  if not b then
+    Lwt.return (Error `Ownership)
+  else
+    request_code recovery_code_ref number
+
+let%client request_recovery_code =
+  ~%(Eliom_client.server_function [%derive.json : string]
+       request_recovery_code)
+
+let%server request_code = request_wrapper @@ fun number ->
   let%lwt b = Os_db.Phone.exists number in
   if b then
     Lwt.return (Error `Ownership)
   else
     request_code activation_code_ref number
 
-let%client request_activation_code =
+let%client request_code =
   ~%(Eliom_client.server_function [%derive.json : string]
-       request_activation_code)
+       request_code)
 
-let%server request_reminder_code = request_wrapper @@ fun number ->
-  let%lwt b = Os_db.Phone.exists number in
-  if not b then
-    Lwt.return (Error `Ownership)
-  else
-    request_code reminder_code_ref number
-
-let%client request_reminder_code =
-  ~%(Eliom_client.server_function [%derive.json : string]
-       request_reminder_code)
-
-let qreset_activation_code () =
-  let%lwt v  = Eliom_reference.get activation_code_ref in
-  let%lwt () = Eliom_reference.set activation_code_ref None in
-  Lwt.return v
-
-let%server confirm_activation_code =
+let%server confirm_code_extra =
   Os_session.connected_rpc @@ fun myid code ->
   match%lwt Eliom_reference.get activation_code_ref with
   | Some (number, code', _) when code = code' ->
@@ -116,11 +111,11 @@ let%server confirm_activation_code =
   | _ ->
     Lwt.return_false
 
-let%client confirm_activation_code =
+let%client confirm_code_extra =
   ~%(Eliom_client.server_function Deriving_Json.Json_string.t
-       confirm_activation_code)
+       confirm_code_extra)
 
-let%server connect_with_activation_code
+let%server confirm_code_signup
     (firstname, lastname, code, password) =
   match%lwt Eliom_reference.get activation_code_ref with
   | Some (number, code', _) when code = code' ->
@@ -133,17 +128,17 @@ let%server connect_with_activation_code
   | _ ->
     Lwt.return_false
 
-let%client connect_with_activation_code =
+let%client confirm_code_signup =
   ~%(Eliom_client.server_function
        [%derive.json: string * string * string * string]
-       connect_with_activation_code)
+       confirm_code_signup)
 
-let%shared connect_with_activation_code
+let%shared confirm_code_signup
     ~first_name ~last_name ~code ~password () =
-  connect_with_activation_code (first_name, last_name, code, password)
+  confirm_code_signup (first_name, last_name, code, password)
 
-let%server recover_with_code code =
-  match%lwt Eliom_reference.get reminder_code_ref with
+let%server confirm_code_recovery code =
+  match%lwt Eliom_reference.get recovery_code_ref with
   | Some (number, code', _) when code = code' ->
     begin
       match%lwt Os_db.Phone.userid number with
@@ -156,9 +151,9 @@ let%server recover_with_code code =
   | _ ->
     Lwt.return_false
 
-let%client recover_with_code =
+let%client confirm_code_recovery =
   ~%(Eliom_client.server_function Deriving_Json.Json_string.t
-       recover_with_code)
+       confirm_code_recovery)
 
 let%server connect ~keepmeloggedin ~password number =
   try%lwt
