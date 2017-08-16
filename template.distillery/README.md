@@ -155,6 +155,8 @@ You can install any Android API version you want, depending on the platform you 
 
 - Xcode installs all dependencies you need.
 
+- Some iOS-specific code exists. You should check it out. For instance, looking carefully at the [`PROJECT_NAME.conf.in`](PROJECT_NAME.conf.in) file is mandatory if you're building an iOS app.
+
 ### For Windows:
 
 Ocsigen Start uses
