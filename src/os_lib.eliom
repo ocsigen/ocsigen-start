@@ -101,7 +101,20 @@ module Email_or_phone = struct
            will handle this with appropriate messages *)
         s, `Almost_email
       else if Re_str.string_match phone_regexp s 0 then
-        string_filter ((<>) ' ') s, `Phone
+        let s = string_filter ((<>) ' ') s in
+        if String.sub s 0 3 = "+33" then
+          if
+            (* Be a bit more precise for France. We should have +33
+               followed by 9 digits, i.e., 12 characters in total.
+               For cellphones, the 4-th character is either 6 or 7. *)
+            String.length s = 12 &&
+            let s3 = String.get s 3 in s3 = '6' || s3 = '7'
+          then
+            s, `Phone
+          else
+            s, `Almost_phone
+        else
+          s, `Phone
       else if almost_phone s then
         s, `Almost_phone
       else
