@@ -51,7 +51,7 @@ let%shared email_regexp =
   Re_str.regexp "[^@].*@[^.].*\\.[^.]+$"
 
 let%shared phone_regexp =
-  Re_str.regexp ("\\+" ^ string_repeat "[0-9] *" 7 ^ "[0-9 ]*$")
+  Re_str.regexp ("\\(\\+\\|00\\)" ^ string_repeat "[0-9] *" 7 ^ "[0-9 ]*$")
 
 [%%shared.start]
 
@@ -102,6 +102,13 @@ module Email_or_phone = struct
         s, `Almost_email
       else if Re_str.string_match phone_regexp s 0 then
         let s = string_filter ((<>) ' ') s in
+        let s =
+          (* Also accept 00 prefix and normalize to + *)
+          if String.length s >= 2 && String.sub s 0 2 = "00" then
+            "+" ^ String.sub s 2 (String.length s - 2)
+          else
+            s
+        in
         if String.sub s 0 3 = "+33" then
           if
             (* Be a bit more precise for France. We should have +33
