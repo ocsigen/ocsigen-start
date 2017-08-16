@@ -199,6 +199,11 @@ module User : sig
       *)
   val emails_of_userid : Os_types.User.id -> string list Lwt.t
 
+  (** Like [emails_of_userid], but also returns validation
+      status. This way we perform fewer DB queries. *)
+  val emails_of_userid_with_status :
+    Os_types.User.id -> (string * bool) list Lwt.t
+
   (** [email_of_userid userid] returns the main email registered for the user
       with ID [userid].
       If there is no such user, it fails with

@@ -523,6 +523,18 @@ module User = struct
     in
     Lwt.return (List.map (fun a -> a#!email) r)
 
+  let emails_of_userid_with_status userid =
+    lwt r =
+      run_view
+        <:view< { t2.email ; t2.validated }
+                | t1 in $os_users_table$;
+                t2 in $os_emails_table$;
+                t1.userid = t2.userid;
+                t1.userid = $int64:userid$;
+        >>
+    in
+    Lwt.return (List.map (fun a -> a#!email, a#!validated) r)
+
   let email_of_userid userid = one run_view
     ~success:(fun u -> Lwt.return u#?main_email)
     ~fail:(Lwt.fail No_such_resource)
