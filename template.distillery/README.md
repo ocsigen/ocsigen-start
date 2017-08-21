@@ -137,6 +137,7 @@ Make sure you have a working NPM installation. The needed NPM packages
 ### For Android:
 
 - Install JDK 7 or newer (`openjdk-7-jdk` package in Debian/Ubuntu)
+- Install Gradle (`gradle` package in Debian/Ubuntu)
 - Download and untar the [Android SDK](http://developer.android.com) (the smaller version without Android Studio suffices).
 - Run tools/android
 - Using the Android package management interface, install latest versions of SDK Tools, SDK Platform-tools, and SDK Build-tools
