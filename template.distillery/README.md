@@ -18,7 +18,9 @@ opam depext ocsigen-start
 ```
 
 If you have issues with the NPM provided by your distribution, you can
-use [NVM](https://github.com/creationix/nvm).
+use [NVM](https://github.com/creationix/nvm). On Debian, NPM is too old (< 2.0),
+so you can alternatively try updating it with `sudo npm install -g npm` (don't
+forget about Bash which won't examine the $PATH twice!).
 
 Generally, you can compile it and run ocsigenserver on it by
 
