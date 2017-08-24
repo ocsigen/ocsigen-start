@@ -655,10 +655,22 @@ end
 module Phone = struct
 
   let add userid number =
-    without_transaction @@ fun dbh -> run_query
-      <:insert< $os_phones_table$ :=
-                { number = $string:number$;
-                  userid = $int64:userid$ } >>
+    without_transaction @@ fun dbh ->
+    (* low-level PG interface because we want to inspect the result *)
+    let query =
+      "INSERT INTO phones (number, userid) VALUES ($1, $2)
+       ON CONFLICT DO NOTHING
+       RETURNING 0"
+    in
+    lwt () = PGOCaml.prepare dbh ~query () in
+    lwt l  =
+      PGOCaml.execute dbh [
+        Some (PGOCaml.string_of_string number) ;
+        Some (PGOCaml.string_of_int64 userid)
+      ] ()
+    in
+    lwt () = PGOCaml.close_statement dbh () in
+    Lwt.return (match l with | [Some _] :: _ -> true | _ -> false)
 
   let exists number =
     without_transaction @@ fun dbh ->

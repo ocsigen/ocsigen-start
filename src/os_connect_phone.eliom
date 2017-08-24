@@ -106,8 +106,7 @@ let%server confirm_code_extra =
   Os_session.connected_rpc @@ fun myid code ->
   match%lwt Eliom_reference.get activation_code_ref with
   | Some (number, code', _) when code = code' ->
-    let%lwt () = Os_db.Phone.add myid number in
-    Lwt.return_true
+    Os_db.Phone.add myid number
   | _ ->
     Lwt.return_false
 
@@ -122,9 +121,12 @@ let%server confirm_code_signup
     let%lwt () = Eliom_reference.set activation_code_ref None in
     let%lwt user = Os_user.create ~password ~firstname ~lastname () in
     let userid = Os_user.userid_of_user user in
-    let%lwt () = Os_db.Phone.add userid number in
-    let%lwt () = Os_session.connect userid in
-    Lwt.return_true
+    let%lwt b = Os_db.Phone.add userid number in
+    if b then
+      let%lwt () = Os_session.connect userid in
+      Lwt.return_true
+    else
+      Lwt.return_false
   | _ ->
     Lwt.return_false
 

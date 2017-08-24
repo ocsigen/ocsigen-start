@@ -290,8 +290,8 @@ end
 module Phone : sig
 
   (** [add userid number] associates [number] with the user
-      [userid]. *)
-  val add : int64 -> string -> unit Lwt.t
+      [userid]. Returns [true] on success. *)
+  val add : int64 -> string -> bool Lwt.t
 
   (** Does the number exist in the database? *)
   val exists : string -> bool Lwt.t
