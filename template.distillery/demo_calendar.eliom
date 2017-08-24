@@ -21,6 +21,19 @@ let%server service =
 let%client service = ~%service
 
 (* A reactive value containing the currently selected date *)
+(* NOTE: in this example, we define a shared signal on the server side. Its
+   original value can only be read when the server generates the first page
+   (declaring it `%client`-only would obviously not work) and injected to be
+   read-/writable on the (possibly disconnected) client side since any
+   *shared value* is injectable; subsequent updates won't be sent to the server.
+   Declaring this signal as `%shared` wouldn't work either, as you'd end up with
+   two different signals (one for each side): a Reactive `map` in `page` would
+   use the server's signal when it's first generated on the server, while the
+   client-side click event would use its own `f`, so nothing would actually
+   happen. You can observe this duplication by replacing `%server` below with
+   `%shared`: the compiler will emit an error because the type of one of those
+   signals can't be inferred (it remains unknown at the end of the typing pass)
+   since it's never used throughout the program. *)
 let%server s, f = Eliom_shared.React.S.create None
 
 let%client action y m d = ~%f (Some (y, m, d)); Lwt.return_unit
