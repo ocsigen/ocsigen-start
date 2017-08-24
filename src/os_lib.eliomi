@@ -45,7 +45,7 @@ module Email_or_phone : sig
 
     type t [@@deriving json]
 
-    type nonrec y = [ y | `Almost_phone | `Almost_email | `Invalid ]
+    type y = [ `Email | `Phone | `Almost_phone | `Almost_email | `Invalid ]
     [@@deriving json]
 
     val y : t -> y

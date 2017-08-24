@@ -68,7 +68,7 @@ module Email_or_phone = struct
 
   module Almost = struct
 
-    type nonrec y = [ y | `Almost_phone | `Almost_email | `Invalid ]
+    type y = [ `Email | `Phone | `Almost_phone | `Almost_email | `Invalid ]
     [@@deriving json]
 
     type t = string * y [@@deriving json]
