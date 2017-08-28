@@ -144,7 +144,7 @@ a.os-page-header-app-name {
         font-size: 14px;
         margin: 16px 0 4px 0;
     }
-    form {
+    form, .form-like {
         display: flex;
         margin: 0 auto;
         flex-direction: column;
@@ -155,10 +155,11 @@ a.os-page-header-app-name {
     input[type="checkbox"] {
         vertical-align: middle;
     }
-    input[type="submit"] {
+    input[type="submit"], button {
         margin: 5px auto;
     }
-    input[type="text"], input[type="password"], input[type="email"] {
+    input[type="text"], input[type="password"],
+    input[type="email"], input[type="tel"] {
         width: 150px;
         display: block;
         margin: 5px auto;

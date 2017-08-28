@@ -48,4 +48,9 @@ CREATE SCHEMA ocsigen_start
 
   CREATE TABLE preregister (
          email citext NOT NULL
+  )
+
+  CREATE TABLE phones (
+       number citext primary key,
+       userid bigint NOT NULL references users(userid)
   );

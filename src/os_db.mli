@@ -130,7 +130,8 @@ module User : sig
     ?password:string ->
     ?avatar:string ->
     ?language:string ->
-    firstname:string -> lastname:string -> string -> Os_types.User.id Lwt.t
+    ?email:string ->
+    firstname:string -> lastname:string -> unit -> Os_types.User.id Lwt.t
 
   (** [update ?password ?avatar ?language ~firstname ~lastname userid] updates the user
       profile with [userid].
@@ -169,6 +170,13 @@ module User : sig
       or if the password is wrong, it fails with {!No_such_resource}. *)
   val verify_password : email:string -> password:string -> Os_types.User.id Lwt.t
 
+  (** [verify_password_phone ~number ~password] returns the userid of
+      the user who owns [number] and whose password is [password]. If
+      [password] is empty or if the password is wrong, it fails with
+      {!No_such_resource}. *)
+  val verify_password_phone :
+    number:string -> password:string -> Os_types.User.id Lwt.t
+
   (** [user_of_userid userid] returns a tuple [(userid, firstname, lastname,
       avatar, bool_password, language)] describing the information about
       the user with ID [userid].
@@ -191,12 +199,17 @@ module User : sig
       *)
   val emails_of_userid : Os_types.User.id -> string list Lwt.t
 
+  (** Like [emails_of_userid], but also returns validation
+      status. This way we perform fewer DB queries. *)
+  val emails_of_userid_with_status :
+    Os_types.User.id -> (string * bool) list Lwt.t
+
   (** [email_of_userid userid] returns the main email registered for the user
       with ID [userid].
       If there is no such user, it fails with
       {!No_such_resource}.
       *)
-  val email_of_userid : Os_types.User.id -> string Lwt.t
+  val email_of_userid : Os_types.User.id -> string option Lwt.t
 
   (** [is_main_email ~email ~userid] returns [true] if the main email of the
       user with ID [userid] is [email].
@@ -271,4 +284,27 @@ module Groups : sig
   (** [all ()] returns all groups as list of tuple [(groupid, name,
       description)]. *)
   val all : unit -> (Os_types.Group.id * string * string option) list Lwt.t
+end
+
+(** Manage user phone numbers *)
+module Phone : sig
+
+  (** [add userid number] associates [number] with the user
+      [userid]. Returns [true] on success. *)
+  val add : int64 -> string -> bool Lwt.t
+
+  (** Does the number exist in the database? *)
+  val exists : string -> bool Lwt.t
+
+  (** The user corresponding to a phone number (if any). *)
+  val userid : string -> Os_types.User.id option Lwt.t
+
+  (** [delete userid number] deletes [number], which has to be
+      associated to [userid]. *)
+  val delete : int64 -> string -> unit Lwt.t
+
+  (** [get_list userid] returns the list of number associated to the
+      user. *)
+  val get_list : int64 -> string list Lwt.t
+
 end

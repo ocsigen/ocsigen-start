@@ -161,13 +161,13 @@ val emails_of_userid : Os_types.User.id -> string list Lwt.t
 (** [email_of_userid userid] returns the main email of user with ID
     [userid].
  *)
-val email_of_userid : Os_types.User.id -> string Lwt.t
+val email_of_userid : Os_types.User.id -> string option Lwt.t
 
 (** [emails_of_user user] returns the emails list of user [user]. *)
 val emails_of_user : Os_types.User.t -> string list Lwt.t
 
 (** [email_of_user user] returns the main email of user [user]. *)
-val email_of_user : Os_types.User.t -> string Lwt.t
+val email_of_user : Os_types.User.t -> string option Lwt.t
 
 (** [get_language userid] returns the language of the user with ID [userid]. The
     language is retrieved from the database.
@@ -183,8 +183,8 @@ val get_users : ?pattern:string -> unit -> Os_types.User.t list Lwt.t
     with the given information. An email, the first name and the last name are mandatory.
  *)
 val create :
-  ?password:string -> ?avatar:string -> ?language:string ->
-  firstname:string -> lastname:string -> string -> Os_types.User.t Lwt.t
+  ?password:string -> ?avatar:string -> ?language:string -> ?email:string ->
+  firstname:string -> lastname:string -> unit -> Os_types.User.t Lwt.t
 
 (** [update ?password ?avatar ?language ~firstname ~lastname userid] update the
     given information of the user with ID [userid]. Only given information are

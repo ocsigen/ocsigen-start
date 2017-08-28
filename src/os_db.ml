@@ -132,7 +132,7 @@ let os_users_table =
        userid bigint NOT NULL DEFAULT(nextval $os_users_userid_seq$),
        firstname text NOT NULL,
        lastname text NOT NULL,
-       main_email citext NOT NULL,
+       main_email citext,
        password text,
        avatar text,
        language text
@@ -143,7 +143,13 @@ let os_emails_table =
        email citext NOT NULL,
        userid bigint NOT NULL,
        validated boolean NOT NULL DEFAULT(false)
-          ) >>
+           ) >>
+
+let os_phones_table =
+  <:table< ocsigen_start.phones (
+       number citext NOT NULL,
+       userid bigint NOT NULL
+           ) >>
 
 let os_action_link_table :
   (< .. >,
@@ -207,11 +213,6 @@ module Utils = struct
     f q >>= function
     | r::_ -> success r
     | _ -> fail
-
-  let all f ~success ~fail q =
-    f q >>= function
-    | [] -> fail
-    | r -> success r
 
   let password_of d = <:value< $d$.password>>
 
@@ -319,7 +320,7 @@ module User = struct
     >> >>= fun l ->
     Lwt.return (List.map (fun a -> a#!email) l)
 
-  let create ?password ?avatar ?language ~firstname ~lastname email =
+  let create ?password ?avatar ?language ?email ~firstname ~lastname () =
     if password = Some "" then Lwt.fail_with "empty password"
     else
       full_transaction_block (fun dbh ->
@@ -328,12 +329,13 @@ module User = struct
         in
         let avatar_o = Eliom_lib.Option.map as_sql_string avatar in
         let language_o = Eliom_lib.Option.map as_sql_string language in
+        let email_o = Eliom_lib.Option.map as_sql_string email in
         lwt () = Lwt_Query.query dbh
           <:insert< $os_users_table$ :=
            { userid     = os_users_table?userid;
              firstname  = $string:firstname$;
              lastname   = $string:lastname$;
-             main_email = $string:email$;
+             main_email = of_option $email_o$;
              password   = of_option $password_o$;
              avatar     = of_option $avatar_o$;
              language   = of_option $language_o$
@@ -343,14 +345,21 @@ module User = struct
           <:view< {x = currval $os_users_userid_seq$} >>
         in
         let userid = userid#!x in
-        lwt () = Lwt_Query.query dbh
-          <:insert< $os_emails_table$ :=
-           { email = $string:email$;
-             userid  = $int64:userid$;
-             validated = os_emails_table?validated
-           } >>
+        lwt () =
+          match email with
+          | Some email ->
+            lwt () =
+              Lwt_Query.query dbh
+                <:insert< $os_emails_table$ :=
+                          { email = $string:email$;
+                          userid  = $int64:userid$;
+                          validated = os_emails_table?validated
+                          } >>
+            in
+            remove_preregister email
+          | None ->
+            Lwt.return_unit
         in
-        lwt () = remove_preregister email in
         Lwt.return userid
       )
 
@@ -443,6 +452,26 @@ module User = struct
           Lwt.fail No_such_resource
       )
 
+  let verify_password_phone ~number ~password =
+    if password = "" then Lwt.fail No_such_resource
+    else
+      one run_view <:view<
+        { t1.userid; t1.password }
+        | t1 in $os_users_table$;
+          t2 in $os_phones_table$;
+          t1.userid = t2.userid;
+          t2.number = $string:number$
+        >>
+        ~success:(fun r ->
+          let userid = r#!userid in
+          match r#?password with
+          | Some password' when
+              snd !pwd_crypt_ref userid password password' ->
+            Lwt.return userid
+          | _ ->
+            Lwt.fail No_such_resource)
+        ~fail:(Lwt.fail No_such_resource)
+
   let user_of_userid userid = one run_view
     ~success:(fun r -> Lwt.return @@ tupple_of_user_sql r)
     ~fail:(Lwt.fail No_such_resource)
@@ -482,18 +511,32 @@ module User = struct
         )
     )
 
-  let emails_of_userid userid = Utils.all run_view
-    ~success:(fun r -> Lwt.return @@ List.map (fun a -> a#!email) r)
-    ~fail:(Lwt.fail No_such_resource)
-    <:view< { t2.email }
-     | t1 in $os_users_table$;
-       t2 in $os_emails_table$;
-       t1.userid = t2.userid;
-       t1.userid = $int64:userid$;
-    >>
+  let emails_of_userid userid =
+    lwt r =
+      run_view
+        <:view< { t2.email }
+                | t1 in $os_users_table$;
+                t2 in $os_emails_table$;
+                t1.userid = t2.userid;
+                t1.userid = $int64:userid$;
+        >>
+    in
+    Lwt.return (List.map (fun a -> a#!email) r)
+
+  let emails_of_userid_with_status userid =
+    lwt r =
+      run_view
+        <:view< { t2.email ; t2.validated }
+                | t1 in $os_users_table$;
+                t2 in $os_emails_table$;
+                t1.userid = t2.userid;
+                t1.userid = $int64:userid$;
+        >>
+    in
+    Lwt.return (List.map (fun a -> a#!email, a#!validated) r)
 
   let email_of_userid userid = one run_view
-    ~success:(fun u -> Lwt.return u#!main_email)
+    ~success:(fun u -> Lwt.return u#?main_email)
     ~fail:(Lwt.fail No_such_resource)
     <:view< { u.main_email }
      | u in $os_users_table$;
@@ -606,5 +649,69 @@ module Groups = struct
 
   let all () = run_query <:select< r | r in $os_groups_table$; >> >>= fun l ->
     Lwt.return @@ List.map (fun a -> (a#!groupid, a#!name, a#?description)) l
+
+end
+
+module Phone = struct
+
+  let add userid number =
+    without_transaction @@ fun dbh ->
+    (* low-level PG interface because we want to inspect the result *)
+    let query =
+      "INSERT INTO phones (number, userid) VALUES ($1, $2)
+       ON CONFLICT DO NOTHING
+       RETURNING 0"
+    in
+    lwt () = PGOCaml.prepare dbh ~query () in
+    lwt l  =
+      PGOCaml.execute dbh [
+        Some (PGOCaml.string_of_string number) ;
+        Some (PGOCaml.string_of_int64 userid)
+      ] ()
+    in
+    lwt () = PGOCaml.close_statement dbh () in
+    Lwt.return (match l with | [Some _] :: _ -> true | _ -> false)
+
+  let exists number =
+    without_transaction @@ fun dbh ->
+    match_lwt
+      run_query
+        <:select< row |
+                  row in $os_phones_table$;
+                  row.number = $string:number$ >>
+    with
+    | _ :: _ ->
+      Lwt.return_true
+    | [] ->
+      Lwt.return_false
+
+  let userid number =
+    without_transaction @@ fun dbh ->
+    match_lwt
+      run_view
+        <:view< { row.userid } |
+                  row in $os_phones_table$;
+                  row.number = $string:number$ >>
+    with
+    | userid :: _ ->
+      Lwt.return (Some userid#!userid)
+    | [] ->
+      Lwt.return None
+
+  let delete userid number =
+    without_transaction @@ fun dbh -> run_query
+      <:delete< row in $os_phones_table$ |
+                row.userid = $int64:userid$;
+                row.number = $string:number$ >>
+
+  let get_list userid =
+    without_transaction @@ fun dbh ->
+    lwt l =
+      run_view
+        <:view< { row.number } |
+                  row in $os_phones_table$;
+                  row.userid = $int64:userid$ >>
+    in
+    Lwt.return (List.map (fun row -> row#!number) l)
 
 end

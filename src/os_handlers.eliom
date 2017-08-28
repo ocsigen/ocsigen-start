@@ -131,7 +131,7 @@ let%server sign_up_handler () email =
     send_action_link ~autoconnect:true msg Os_services.main_service email userid
   in
   try%lwt
-    let%lwt user = Os_user.create ~firstname:"" ~lastname:"" email in
+    let%lwt user = Os_user.create ~firstname:"" ~lastname:"" ~email () in
     let userid = Os_user.userid_of_user user in
     Os_msg.msg ~onload:true ~level:`Msg ~duration:6.
       "An e-mail was sent to this address. \
@@ -411,3 +411,95 @@ let%client add_email_handler =
   fun () -> rpc
 
 let%shared _ = Os_comet.__link (* to make sure os_comet is linked *)
+
+let%client input_popup ?(button_label = "OK") f =
+  let w, u = Lwt.wait () in
+  let content close =
+    let open Eliom_content.Html in
+    let button =
+      D.button ~a:[D.a_class ["button"]]
+        [D.pcdata button_label]
+    in
+    let inp =
+      let f code =
+        let%lwt () = close () in
+        Lwt.wakeup u ();
+        f code
+      in
+      Os_lib.lwt_bound_input_enter ~button f
+    in
+    Lwt.return (D.div [ button ; inp ])
+  in
+  let%lwt _ =
+    Ot_popup.popup
+      ~close_button:[ Os_icons.F.close () ]
+      content
+  in
+  w
+
+let%client confirm_code_popup ~dest f =
+  input_popup @@ fun code ->
+  let%lwt b = f code in
+  if b then begin
+    let service =
+      match dest with
+      | `Settings ->
+        Os_services.settings_service ()
+      | `Main ->
+        Some (Os_services.main_service)
+    in
+    match service with
+    | Some service ->
+      Eliom_client.change_page ~service () ()
+    | None ->
+      Lwt.fail_with "confirm_popup: settings service unknown"
+  end else begin
+    Os_msg.msg ~level:`Err ~duration:2. "Wrong SMS activation code";
+    Lwt.return_unit
+  end
+
+(* We only need confirm_code_*_service to implement the activation
+   UI. Assuming normal user behavior, we will only ever call them via
+   a client-side Eliom_client.change_page, so no server implementation
+   is needed. Currently we can't register a service only on the
+   client.  Until we fix Eliom, we define dummy server-side
+   handlers. *)
+let%server confirm_code_handler _ _ =
+  Lwt.fail_with
+    "Os_handlers.confirm_code_*_handler not implemented on the server"
+
+let%server confirm_code_signup_handler = confirm_code_handler
+let%server confirm_code_extra_handler = confirm_code_handler
+let%server confirm_code_recovery_handler = confirm_code_handler
+
+let%client request_activation_code_wrapper number f =
+  match%lwt Os_connect_phone.request_code number with
+  | Ok () ->
+    f ()
+  | Error `Ownership ->
+    Os_msg.msg ~level:`Err ~duration:2. "Phone taken";
+    Lwt.return_unit
+  | Error (`Unknown | `Send | `Limit | `Invalid_number) ->
+    Os_msg.msg ~level:`Err ~duration:2. "SMS error";
+    Lwt.return_unit
+
+let%client confirm_code_signup_handler
+    () (first_name, (last_name, (password, number))) =
+  request_activation_code_wrapper number @@ fun () ->
+  confirm_code_popup ~dest:`Main @@ fun code ->
+  Os_connect_phone.confirm_code_signup
+    ~first_name ~last_name ~code ~password ()
+
+let%client confirm_code_extra_handler () number =
+  request_activation_code_wrapper number @@ fun () ->
+  confirm_code_popup ~dest:`Settings
+    Os_connect_phone.confirm_code_extra
+
+let%client confirm_code_recovery_handler () number =
+  match%lwt Os_connect_phone.request_recovery_code number with
+  | Ok () ->
+    confirm_code_popup ~dest:`Settings
+      Os_connect_phone.confirm_code_recovery
+  | Error (`Unknown | `Send | `Limit | _) ->
+    Os_msg.msg ~level:`Err ~duration:2. "SMS error";
+    Lwt.return ()

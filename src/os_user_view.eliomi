@@ -87,6 +87,7 @@ val generic_email_form :
  *)
 val connect_form :
   ?a_placeholder_email:string ->
+  ?a_placeholder_phone:string ->
   ?a_placeholder_pwd:string ->
   ?text_keep_me_logged_in:string ->
   ?text_sign_in:string ->
@@ -112,7 +113,7 @@ val disconnect_button :
     @param email the default value of the email input (default is empty).
  *)
 val sign_up_form :
-  ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
+  ?a:[< Html_types.form_attrib] Eliom_content.Html.D.attrib list ->
   ?a_placeholder_email:string ->
   ?text:string ->
   ?email:string ->
@@ -125,7 +126,7 @@ val sign_up_form :
     @param a attributes of the form.
  *)
 val forgot_password_form :
-  ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
+  ?a:[< Html_types.form_attrib] Eliom_content.Html.D.attrib list ->
   unit ->
   [> Html_types.form ] Eliom_content.Html.D.elt
 
@@ -168,7 +169,8 @@ val information_form :
     @param a attributes of the form.
     @param label label for the email input. *)
 val preregister_form :
-  ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
+  ?a:[< Html_types.form_attrib > `OnSubmit]
+    Eliom_content.Html.D.attrib list ->
   string Eliom_content.Html.F.wrap ->
   [> Html_types.form ] Eliom_content.Html.D.elt
 
@@ -312,6 +314,7 @@ val connected_user_box :
  *)
 val connection_box :
   ?a_placeholder_email:string ->
+  ?a_placeholder_phone:string ->
   ?a_placeholder_pwd:string ->
   ?text_keep_me_logged_in:string ->
   ?content_popup_forgotpwd:string ->
@@ -336,3 +339,7 @@ val user_box :
   ?user:Os_types.User.t ->
   unit ->
   [> Html_types.div ] Eliom_content.Html.F.elt Lwt.t
+
+(**/**)
+
+val enable_phone : unit -> unit (* default : disabled *)

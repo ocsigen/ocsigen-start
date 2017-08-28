@@ -151,6 +151,30 @@ let%server update_language_service = Eliom_service.create
       Eliom_parameter.string "language"
     )) ()
 
+let confirm_code_signup_service =
+  Eliom_service.create
+    ~path:Eliom_service.No_path
+    ~meth:(
+      Eliom_service.Post (
+        unit,
+        string "first_name" ** string "last_name" **
+        string "password" ** string "number"
+      )
+    )
+    ()
+
+let confirm_code_extra_service =
+  Eliom_service.create
+    ~path:Eliom_service.No_path
+    ~meth:(Eliom_service.Post (unit, string "number"))
+    ()
+
+let confirm_code_remind_service =
+  Eliom_service.create
+    ~path:Eliom_service.No_path
+    ~meth:(Eliom_service.Post (unit, string "number"))
+    ()
+
 let%client main_service = ~%main_service
 let%client preregister_service = ~%preregister_service
 let%client forgot_password_service = ~%forgot_password_service
@@ -163,13 +187,17 @@ let%client set_password_service = ~%set_password_service
 let%client add_email_service = ~%add_email_service
 let%client update_language_service = ~%update_language_service
 
+let%client confirm_code_signup_service = ~%confirm_code_signup_service
+let%client confirm_code_extra_service  = ~%confirm_code_extra_service
+let%client confirm_code_remind_service = ~%confirm_code_remind_service
+
 (* [Os_handlers.add_email_handler] needs access to the settings
    service, but the latter needs to be defined in the template. So we
    use the reference [settings_service_ref]. The template needs to
    call [set_settings_service]. *)
 
-let%server settings_service_ref = ref None
+let%shared settings_service_ref = ref None
 
-let%server register_settings_service s = settings_service_ref := Some s
+let%shared register_settings_service s = settings_service_ref := Some s
 
-let%server settings_service () = !settings_service_ref
+let%shared settings_service () = !settings_service_ref

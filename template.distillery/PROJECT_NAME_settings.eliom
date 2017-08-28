@@ -61,20 +61,25 @@ let%shared labels_of_email is_main_email is_validated =
        ; valid_label]
   else [ valid_label ]
 
-(* List element for the given email *)
 let%shared li_of_email main_email (email, is_validated) =
+  let is_main_email =
+    match main_email with
+    | Some main_email ->
+      main_email = email
+    | None ->
+      false
+  in
   let open Eliom_content.Html.D in
-  let is_main_email = (main_email = email) in
-  let labels = labels_of_email is_main_email is_validated in
-  let buttons = buttons_of_email is_main_email is_validated email in
-  let email = span ~a:[a_class ["os-settings-email"]] [pcdata email] in
-  Lwt.return @@ li (email :: labels @ buttons)
+  let labels = labels_of_email is_main_email is_validated
+  and buttons = buttons_of_email is_main_email is_validated email
+  and email = span ~a:[a_class ["os-settings-email"]] [pcdata email] in
+  Lwt.return (li (email :: labels @ buttons))
 
 let%shared ul_of_emails (main_email, emails) =
-  let open Eliom_content.Html.F in
   let li_of_email = li_of_email main_email in
   let%lwt li_list = Lwt_list.map_s li_of_email emails in
-  Lwt.return @@ ul li_list
+  Lwt.return
+    Eliom_content.Html.D.(div ~a:[a_class ["os-emails"]] [ul li_list])
 
 (* List with information about emails *)
 let%server get_emails () =
