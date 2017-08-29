@@ -51,6 +51,7 @@ val is_valid : string -> bool
     Tuples used by [from_addr] and [to_addrs] is of the form [(name, email)].
     *)
 val send :
+  ?url:string ->
   ?from_addr:(string * string) ->
   to_addrs:((string * string) list) ->
   subject:string ->
@@ -61,7 +62,8 @@ val send :
     arguments.
  *)
 val set_send :
-  (from_addr:(string * string) ->
+  (?url:string ->
+   from_addr:(string * string) ->
    to_addrs:((string * string) list) ->
    subject:string ->
    string list ->
