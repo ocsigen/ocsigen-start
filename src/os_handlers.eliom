@@ -91,10 +91,8 @@ let%server generate_action_link_key
         Os_email.send
           ~to_addrs:[("", email)]
           ~subject:"creation"
-          [
-            text;
-            act_link;
-          ]
+          ~url:act_link
+          [ text ]
       with _ -> Lwt.return_unit);
   act_key
 
