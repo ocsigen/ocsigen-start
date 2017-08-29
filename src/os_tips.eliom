@@ -169,11 +169,12 @@ let%client onload_waiter () =
 (* This thread is used to display only one tip at a time *)
 let%client waiter = ref (onload_waiter ())
 
-let%client rec onchangepage_handler () =
+let%client rec onchangepage_handler _ =
   waiter := onload_waiter ();
   (* onchangepage handlers are one-off, register ourselves again for
      next time *)
-  Eliom_client.onchangepage onchangepage_handler
+  Eliom_client.onchangepage onchangepage_handler;
+  Lwt.return_unit
 
 let%client () = Eliom_client.onchangepage onchangepage_handler
 
