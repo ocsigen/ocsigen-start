@@ -92,6 +92,9 @@
 
     <plugin name="cordova-plugin-wkwebview-engine" spec="https://github.com/apache/cordova-plugin-wkwebview-engine.git" />
 
+    <!-- To take screenshots -->
+    <plugin name="com.darktalker.cordova.screenshot" spec="https://github.com/aik9508/cordova-screenshot.git" />
+
     <!-- Status bar colors and other adjustments -->
     <plugin name="cordova-plugin-statusbar" spec="https://github.com/apache/cordova-plugin-statusbar" />
     <!-- use this alternative if you need tap on status bar to scroll up the page:
@@ -115,6 +118,7 @@
       <host name="%%APPHOST%%" scheme="%%APPSCHEME%%" %%APPPORTARG%% />
     </universal-links>
     <preference name="AndroidLaunchMode" value="singleInstance" />
+    <preference name="CrosswalkAnimatable" value="true" />
 
     <!-- For geolocation: -->
     <!-- This plugin (or another one if you have one) is necessary if you need geolocation in your app: -->

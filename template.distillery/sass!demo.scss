@@ -99,3 +99,48 @@
 .os-page-demo-links .demo-static-img {
     width: 300px;
 }
+
+.os-page-demo-transition {
+    .demo-list{
+        padding-left: 0;
+        list-style-type: none;
+    }
+
+    .demo-list-item {
+        width: 100%;
+        height: 150px;
+        font-size: 20px;
+        padding-top: 65px;
+        text-align: center;
+    }
+
+    .demo-list-item>a:visited,
+    .demo-list-item>a {
+        color: white;
+    }
+
+    .demo-list-item.demo-list-item-0 {
+        background-color: #B1EB00
+    }
+    .demo-list-item.demo-list-item-1 {
+        background-color: #53BAF3
+    }
+    .demo-list-item.demo-list-item-2 {
+        background-color: #FF85CB
+    }
+    .demo-list-item.demo-list-item-3 {
+        background-color: #F4402C
+    }
+    .demo-list-item.demo-list-item-4 {
+        background-color: #FFAC00
+    }
+
+    .demo-button {
+        margin: 0 auto;
+        padding: 20px;
+        width: 200px;
+        font-size: 20px;
+        text-align: center;
+        background-color: #ffffee;
+    }
+}

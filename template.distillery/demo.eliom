@@ -35,3 +35,15 @@ let%shared () =
   %%%MODULE_NAME%%%_base.App.register
     ~service:%%%MODULE_NAME%%%_services.demo_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page handler)
+
+let%shared () =
+  let detail_page_handler = 
+    fun myid_o page () ->
+      %%%MODULE_NAME%%%_container.page
+        ~a:[a_class ["os-page-demo-transition"]]
+        myid_o 
+        (Demo_pagetransition.make_detail_page page ()) in
+  %%%MODULE_NAME%%%_base.App.register
+    ~service:Demo_pagetransition.detail_page_service
+    (%%%MODULE_NAME%%%_page.Opt.connected_page detail_page_handler)
+    
