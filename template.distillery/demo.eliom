@@ -36,6 +36,8 @@ let%shared () =
     ~service:%%%MODULE_NAME%%%_services.demo_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page handler)
 
+(* [detail_page_handler] is not registered in [Demo_tools] because we
+   dont't want to show detail pages in the menu. *)
 let%shared () =
   let detail_page_handler = 
     fun myid_o page () ->
