@@ -232,7 +232,7 @@ $(CORDOVAPATH)/www/eliom.html: $(CORDOVAPATH) \
 # Eliom loader is used in the index.html to retrieve update from the server.
 mobile/eliom_loader.byte: mobile/eliom_loader.ml
 	ocamlfind ocamlc \
-	    -package js_of_ocaml,js_of_ocaml.ppx,lwt.ppx \
+	    -package js_of_ocaml,js_of_ocaml-ppx,js_of_ocaml-lwt,lwt.ppx \
 	    -linkpkg -o mobile/eliom_loader.byte \
 	    $<
 

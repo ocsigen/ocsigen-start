@@ -12,6 +12,8 @@
    js_of_ocaml eliom_loader.byte
 *)
 
+module XmlHttpRequest = Js_of_ocaml_lwt.XmlHttpRequest
+
 (* Debug mode. Set to true if you want to use the debug mode. Used by "log".
  *)
 let debug = false
