@@ -28,10 +28,10 @@ let%shared name () = [%i18n S.demo_pagetransition]
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-transition"
 
-[%%client 
+[%%client
   let split uri =
     match (Url.url_of_string uri) with
-    | Some (Url.Http url) | Some (Url.Https url) -> 
+    | Some (Url.Http url) | Some (Url.Https url) ->
       url.Url.hu_host,url.Url.hu_port,url.Url.hu_path
     | Some (Url.File url) -> "",0,url.Url.fu_path
     | None -> raise (Invalid_argument "incorrect url")
@@ -53,17 +53,17 @@ let%shared page_class = "os-page-demo-transition"
     with _ -> false
 
   let animation_type
-      {Eliom_client.in_cache; 
+      {Eliom_client.in_cache;
        current_uri;
        target_uri;
        current_id;
-       target_id} = 
+       target_id} =
     let target_id =
       match target_id with
       | None -> -1
       | Some id -> id in
     let back = target_id > 0 && target_id < current_id in
-    let has_animation = 
+    let has_animation =
       (back && is_subpage target_uri current_uri)
       || (not back && (is_subpage current_uri target_uri) && in_cache) in
     match has_animation,back with
@@ -75,7 +75,7 @@ let%shared page_class = "os-page-demo-transition"
     let take_screenshot ocaml_call_back =
       let call_back error response =
         match error with
-        | None -> 
+        | None ->
           let uri = (Cordova_plugin_screenshot.Response_uri.uri response) in
           ocaml_call_back uri
         | Some e -> Firebug.console##log (Js.string e) in
@@ -88,23 +88,23 @@ let%shared page_class = "os-page-demo-transition"
 ]
 
 let%shared create_item index =
-  F.(li 
+  F.(li
        ~a:[a_class ["demo-list-item";
-                    Printf.sprintf "demo-list-item-%d" (index mod 5)]] 
-       [a ~service:detail_page_service 
-          [pcdata (Printf.sprintf "list%d" index)] index]) 
+                    Printf.sprintf "demo-list-item-%d" (index mod 5)]]
+       [a ~service:detail_page_service
+          [pcdata (Printf.sprintf "list%d" index)] index])
 
-let%shared page () =  
+let%shared page () =
   let l = (fun i -> create_item (i+1))
           |> Array.init 10
-          |> Array.to_list 
+          |> Array.to_list
           |> ul ~a:[a_class ["demo-list"]]
   in
-  let add_button = 
-    div ~a:[a_class ["demo-button"]] 
+  let add_button =
+    div ~a:[a_class ["demo-button"]]
       [%i18n demo_pagetransition_add_button] in
-  ignore 
-    ([%client 
+  ignore
+    ([%client
       ( (* It is the adress of the dom that will be stored in cache, so
            it doesn't matter when [push_history_dom] is called. However,
            it is important that the dom is bound to the right state id.
@@ -112,12 +112,12 @@ let%shared page () =
            when the state id has already been updated and the dom of
            the current page is ready. *)
         Eliom_client.onload Eliom_client.push_history_dom;
-        let counter = 
+        let counter =
           let r = ref 10 in
           fun () -> r := !r +1 ; !r in
-        Lwt_js_events.clicks 
+        Lwt_js_events.clicks
           (To_dom.of_element ~%add_button)
-          (fun _ _ -> 
+          (fun _ _ ->
              Html.Manip.appendChild ~%l (create_item (counter ()));
              Lwt.return_unit ):unit Lwt.t)]) ;
   Lwt.return (
@@ -127,16 +127,16 @@ let%shared page () =
   )
 
 let%shared make_detail_page page () =
-  let back_button = 
-    div ~a:[a_class ["demo-button"]] 
+  let back_button =
+    div ~a:[a_class ["demo-button"]]
       [%i18n demo_pagetransition_back_button] in
   ignore ([%client (
     Lwt.async (fun () ->
-      Lwt_js_events.clicks 
+      Lwt_js_events.clicks
         (To_dom.of_element ~%back_button)
-        (fun _ _ -> 
+        (fun _ _ ->
            Dom_html.window##.history##back;
            Lwt.return_unit )):unit)]);
-  [h1 ([%i18n demo_pagetransition_detail_page] 
+  [h1 ([%i18n demo_pagetransition_detail_page]
        @ [pcdata (Printf.sprintf " %d" page)]);
    back_button]
