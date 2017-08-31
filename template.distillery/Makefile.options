@@ -31,7 +31,11 @@ SERVER_DB_PACKAGES    := pgocaml.syntax
 
 # OCamlfind packages for the client
 CLIENT_PACKAGES       := lwt.ppx js_of_ocaml-ppx js_of_ocaml-ppx.deriving \
-                         ppx_deriving.std ocsigen-start.client base
+                         ppx_deriving.std ocsigen-start.client base \
+                         gen_js_api cordova-plugin-screenshot
+
+CLIENT_LINK_OPT       := -no-check-prims -jsopt +gen_js_api/ojs_runtime.js \
+                         -jsopt +nat.js -jsopt +base/runtime.js
 
 # Automatically install packages via NPM
 USE_NPM               := yes
@@ -122,7 +126,8 @@ EXTERNAL_CSS_FILES    := $(SHAREDIR_OT_CSS)/ot_buttons.css \
                          $(SHAREDIR_OT_CSS)/ot_icons.css \
                          $(SHAREDIR_OT_CSS)/ot_picture_uploader.css \
                          $(SHAREDIR_OT_CSS)/ot_popup.css \
-                         $(SHAREDIR_OT_CSS)/ot_spinner.css
+                         $(SHAREDIR_OT_CSS)/ot_spinner.css \
+                         $(SHAREDIR_OT_CSS)/ot_page_transition.css
 
 # All CSS files which must be concatenated.
 # This variable is only used if SASS is deactivated.

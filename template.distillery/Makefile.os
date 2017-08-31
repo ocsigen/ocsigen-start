@@ -259,7 +259,7 @@ CLIENT_OBJS := $(patsubst %.ml,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
 
 $(ELIOM_CLIENT_DIR)/os_prologue.js: \
     $(shell ocamlfind query -r -predicates byte -a-format $(CLIENT_PACKAGES))
-	${JS_OF_ELIOM} -jsopt --dynlink -o $@ $(GENERATE_DEBUG) $(CLIENT_INC) \
+	${JS_OF_ELIOM} ${CLIENT_LINK_OPT} -jsopt --dynlink -o $@ $(GENERATE_DEBUG) $(CLIENT_INC) \
 		${addprefix -jsopt ,$(DEBUG_JS)}
 
 ifeq ($(DEBUG),yes)
@@ -270,7 +270,7 @@ $(JS_PREFIX).js: $(call objs,$(ELIOM_CLIENT_DIR),js,$(CLIENT_FILES)) | $(TEST_PR
 	ln -sf $(PROJECT_NAME)_$$HASH.js $@
 else
 $(JS_PREFIX).js: $(call objs,$(ELIOM_CLIENT_DIR),cmo,$(CLIENT_FILES)) | $(TEST_PREFIX)$(ELIOMSTATICDIR)
-	${JS_OF_ELIOM} -ppx -o $(JS_PREFIX)_tmp.js $(GENERATE_DEBUG) $(CLIENT_INC) ${addprefix -jsopt ,$(DEBUG_JS)} \
+	${JS_OF_ELIOM} ${CLIENT_LINK_OPT} -ppx -o $(JS_PREFIX)_tmp.js $(GENERATE_DEBUG) $(CLIENT_INC) ${addprefix -jsopt ,$(DEBUG_JS)} \
           $(call depsort,$(ELIOM_CLIENT_DIR),cmo,-client,$(CLIENT_INC),$(CLIENT_FILES))
 	HASH=`md5sum $(JS_PREFIX)_tmp.js | cut -d ' ' -f 1` && \
 	mv $(JS_PREFIX)_tmp.js $(JS_PREFIX)_$$HASH.js && \
