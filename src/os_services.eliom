@@ -169,7 +169,7 @@ let confirm_code_extra_service =
     ~meth:(Eliom_service.Post (unit, string "number"))
     ()
 
-let confirm_code_remind_service =
+let confirm_code_recovery_service =
   Eliom_service.create
     ~path:Eliom_service.No_path
     ~meth:(Eliom_service.Post (unit, string "number"))
@@ -189,7 +189,7 @@ let%client update_language_service = ~%update_language_service
 
 let%client confirm_code_signup_service = ~%confirm_code_signup_service
 let%client confirm_code_extra_service  = ~%confirm_code_extra_service
-let%client confirm_code_remind_service = ~%confirm_code_remind_service
+let%client confirm_code_recovery_service = ~%confirm_code_recovery_service
 
 (* [Os_handlers.add_email_handler] needs access to the settings
    service, but the latter needs to be defined in the template. So we
@@ -201,3 +201,5 @@ let%shared settings_service_ref = ref None
 let%shared register_settings_service s = settings_service_ref := Some s
 
 let%shared settings_service () = !settings_service_ref
+
+let%shared confirm_code_remind_service = confirm_code_recovery_service

@@ -28,8 +28,8 @@ let () = if enable then begin
   Os_user_view.enable_phone () ;
 
   Eliom_registration.Action.register
-    ~service:Os_services.confirm_code_remind_service
-    Os_handlers.confirm_code_remind_handler ;
+    ~service:Os_services.confirm_code_recovery_service
+    Os_handlers.confirm_code_recovery_handler ;
 
   Eliom_registration.Action.register
     ~service:Os_services.confirm_code_extra_service

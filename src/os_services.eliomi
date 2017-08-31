@@ -258,6 +258,19 @@ val confirm_code_extra_service :
 
 (** Confirm SMS activation code and (if valid) allow the user to set a
     new password. *)
+val confirm_code_recovery_service :
+  (unit, string,
+   Eliom_service.post,
+   Eliom_service.non_att,
+   Eliom_service.co,
+   Eliom_service.non_ext,
+   Eliom_service.reg,
+   [ `WithoutSuffix ], unit,
+   [ `One of string ] Eliom_parameter.param_name,
+   Eliom_service.non_ocaml) Eliom_service.t
+
+(** Temporary alternate name for [confirm_code_recovery_handler] to
+    facilite the transition. *)
 val confirm_code_remind_service :
   (unit, string,
    Eliom_service.post,
