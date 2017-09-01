@@ -265,7 +265,7 @@ module Data :
 
         (** Add a badge to the icon of the notification in the launcher. Only
             available for some launcher. The integer parameter is the number of
-            the badge.
+            the badge. For iOS, use [Os_fcm_notif.Notification.Ios.add_badge].
          *)
         val add_badge : int -> t -> t
 
