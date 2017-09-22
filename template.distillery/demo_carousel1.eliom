@@ -5,6 +5,7 @@
 
 [%%shared
   open Eliom_content.Html.F
+  open Eliom_content.Html
 ]
 
 (* Service for this demo *)
@@ -22,6 +23,21 @@ let%shared name () = [%i18n S.demo_carousel_1]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-carousel1"
+
+(* Bind arrow keys *)
+let%shared bind_keys change carousel =
+  ignore [%client
+    (let arrow_thread =
+       (* Wait for the carousel to be in the page
+          (in the case the page is generated client side): *)
+       let%lwt () = Ot_nodeready.nodeready (To_dom.of_element ~%carousel) in
+       Ot_carousel.bind_arrow_keys ~change:~%change Dom_html.document##.body
+     in
+     (* Do not forget to cancel the thread when we remove the carousel
+        (here, when we go to another page): *)
+     Eliom_client.onunload (fun () -> Lwt.cancel arrow_thread)
+     : unit)
+  ]
 
 (* Page for this demo *)
 let%shared page () =
@@ -47,6 +63,7 @@ let%shared page () =
   let bullets = Ot_carousel.bullets ~change ~pos ~length ~size:vis_elts () in
   let prev = Ot_carousel.previous ~change ~pos [] in
   let next = Ot_carousel.next ~change ~pos ~vis_elts ~length [] in
+  bind_keys change carousel;
   Lwt.return
     [ h1 [%i18n demo_carousel_1]
     ; p [%i18n ot_carousel_first_example_1]
