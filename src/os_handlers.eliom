@@ -403,7 +403,9 @@ let%server add_email_handler =
   Os_session.connected_fun add_email
 
 let%client add_email_handler =
-  let rpc = ~%(Eliom_client.server_function [%derive.json: string]
+  let rpc = ~%(Eliom_client.server_function
+                 ~name:"Os_handlers.add_email_handler"
+                 [%derive.json: string]
                  @@ add_email_handler ())
   in
   fun () -> rpc
