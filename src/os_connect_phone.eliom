@@ -88,7 +88,9 @@ let%server request_recovery_code = request_wrapper @@ fun number ->
     request_code recovery_code_ref number
 
 let%client request_recovery_code =
-  ~%(Eliom_client.server_function [%derive.json : string]
+  ~%(Eliom_client.server_function
+       ~name:"Os_connect_phone.request_recovery_code"
+       [%derive.json : string]
        request_recovery_code)
 
 let%server request_code = request_wrapper @@ fun number ->
@@ -99,7 +101,9 @@ let%server request_code = request_wrapper @@ fun number ->
     request_code activation_code_ref number
 
 let%client request_code =
-  ~%(Eliom_client.server_function [%derive.json : string]
+  ~%(Eliom_client.server_function
+       ~name:"Os_connect_phone.request_code"
+       [%derive.json : string]
        request_code)
 
 let%server confirm_code_extra =
@@ -111,7 +115,9 @@ let%server confirm_code_extra =
     Lwt.return_false
 
 let%client confirm_code_extra =
-  ~%(Eliom_client.server_function Deriving_Json.Json_string.t
+  ~%(Eliom_client.server_function
+       ~name:"Os_connect_phone.confirm_code_extra"
+       Deriving_Json.Json_string.t
        confirm_code_extra)
 
 let%server confirm_code_signup
@@ -132,6 +138,7 @@ let%server confirm_code_signup
 
 let%client confirm_code_signup =
   ~%(Eliom_client.server_function
+       ~name:"Os_connect_phone.confirm_code_signup"
        [%derive.json: string * string * string * string]
        confirm_code_signup)
 
@@ -154,7 +161,9 @@ let%server confirm_code_recovery code =
     Lwt.return_false
 
 let%client confirm_code_recovery =
-  ~%(Eliom_client.server_function Deriving_Json.Json_string.t
+  ~%(Eliom_client.server_function
+       ~name:"Os_connect_phone.confirm_code_recovery"
+       Deriving_Json.Json_string.t
        confirm_code_recovery)
 
 let%server connect ~keepmeloggedin ~password number =
@@ -168,7 +177,7 @@ let%server connect ~keepmeloggedin ~password number =
 
 let%client connect =
   let f =
-    ~%(Eliom_client.server_function ~name:"os_connect_phone.connect"
+    ~%(Eliom_client.server_function ~name:"Os_connect_phone.connect"
          [%derive.json: string * string * bool]
          (Os_session.Opt.connected_rpc
             (fun _ (number, password, keepmeloggedin) ->
