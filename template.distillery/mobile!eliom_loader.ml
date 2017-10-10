@@ -64,9 +64,7 @@ let rec add_retry_button wake msg =
   container##.className :=
     Js.string "app-error";
   (* Error message paragraph *)
-  Dom.appendChild p
-    (Dom_html.document##createTextNode
-      (Js.string (msg ^ ". Please try again later.")));
+  Dom.appendChild p (Dom_html.document##createTextNode (Js.string msg));
   p##.id := Js.string "retry-message";
   (* Retry button *)
   Dom.appendChild btn
@@ -98,7 +96,7 @@ log "Got global data";
 log "Could not get global data";
     if not (!update_failed || !data_upload_failed) then begin
       data_upload_failed := true;
-      add_retry_button wake "No connection available"
+      add_retry_button wake "Cannot connect to the server. Please make sure that this app has access to a data connection."
     end;
   end;
   Lwt.return_unit
@@ -143,7 +141,8 @@ let _ =
          update_failed := true;
          if not !data_upload_failed then
            add_retry_button wake_error
-             (Js.to_string (ev##.detail##.error##.description));
+             ((Js.to_string (ev##.detail##.error##.description))
+              ^ ". Please try again later.");
          Js.bool true)
   in
   (* Callback to print a message *)
