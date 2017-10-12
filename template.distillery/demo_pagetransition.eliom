@@ -54,18 +54,18 @@ let%shared page_class = "os-page-demo-transition"
 
   let animation_type
       {Eliom_client.in_cache;
-       current_uri;
+       origin_uri;
        target_uri;
-       current_id;
+       origin_id;
        target_id} =
     let target_id =
       match target_id with
       | None -> -1
       | Some id -> id in
-    let back = target_id > 0 && target_id < current_id in
+    let back = target_id > 0 && target_id < origin_id in
     let has_animation =
-      (back && is_subpage target_uri current_uri)
-      || (not back && (is_subpage current_uri target_uri) && in_cache) in
+      (back && is_subpage target_uri origin_uri)
+      || (not back && (is_subpage origin_uri target_uri) && in_cache) in
     match has_animation,back with
     | false, _ -> Ot_page_transition.Nil
     | true, true -> Ot_page_transition.Backward
