@@ -66,10 +66,10 @@ let validate db =
   with _ ->
     Lwt.return_false
 
-let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Lwt_pool.t ref =
-  ref @@ Lwt_pool.create 16 ~validate connect
+let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Lwt_pool.t option ref =
+  ref None
 
-let set_pool_size n = pool := Lwt_pool.create n ~validate connect
+let set_pool_size n = pool := Some (Lwt_pool.create n ~validate connect)
 
 let init ?host ?port ?user ?password ?database
          ?unix_domain_socket_dir ?pool_size () =
@@ -83,6 +83,15 @@ let init ?host ?port ?user ?password ?database
   | None -> ()
   | Some n -> set_pool_size n
 
+let use f =
+  match !pool with
+  | None ->
+    lwt c = connect () in
+    lwt r = f c in
+    lwt () = Lwt_PGOCaml.close c in
+    Lwt.return r
+  | Some pool -> Lwt_pool.use pool f
+
 let transaction_block db f =
   Lwt_PGOCaml.begin_work db >>= fun _ ->
   try_lwt
@@ -94,9 +103,9 @@ let transaction_block db f =
     Lwt.fail e
 
 let full_transaction_block f =
-  Lwt_pool.use !pool (fun db -> transaction_block db (fun () -> f db))
+  use (fun db -> transaction_block db (fun () -> f db))
 
-let without_transaction f = Lwt_pool.use !pool (fun db -> f db)
+let without_transaction f = use f
 
 let view_one rq =
   try List.hd rq

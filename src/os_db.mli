@@ -32,6 +32,7 @@ exception Account_not_activated
 
 (** [init ?host ?port ?user ?password ?database ?unix_domain_socket_dir ()]
     initializes the variables for the database access.
+    No pool size means no pool at all.
  *)
 val init :
   ?host:string ->
