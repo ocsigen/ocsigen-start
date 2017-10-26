@@ -45,6 +45,9 @@ val to_local : CalendarLib.Calendar.t -> local_calendar
 (** [now ()] returns the current date as a [local_calendar] value. *)
 val now : unit -> local_calendar
 
+(** [user_tz ()] returns current user's timezone. *)
+val user_tz : unit -> CalendarLib.Time_Zone.t
+
 (** Convert a [local_calendar] value to a [CalendarLib.Time.t] value. *)
 val to_local_time : local_calendar -> CalendarLib.Time.t
 
