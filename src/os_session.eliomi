@@ -34,6 +34,9 @@ val on_start_connected_process : (Os_types.User.id -> unit Lwt.t) -> unit
     The function takes the user id as parameter. *)
 val on_connected_request : (Os_types.User.id -> unit Lwt.t) -> unit
 
+(** Call this to add an action to be done at each unconnected request. *)
+val on_unconnected_request : (unit -> unit Lwt.t) -> unit
+
 (** Call this to add an action to be done just after opening a session
     The function takes the user id as parameter. *)
 val on_open_session : (Os_types.User.id -> unit Lwt.t) -> unit
