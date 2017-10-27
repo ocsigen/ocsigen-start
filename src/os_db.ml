@@ -49,15 +49,25 @@ let user_r = ref None
 let password_r = ref None
 let database_r = ref None
 let unix_domain_socket_dir_r = ref None
+let init_r = ref None
 
-let connect () = Lwt_PGOCaml.connect
-  ?host:!host_r
-  ?port:!port_r
-  ?user:!user_r
-  ?password:!password_r
-  ?database:!database_r
-  ?unix_domain_socket_dir:!unix_domain_socket_dir_r
-  ()
+let connect () =
+  lwt h =
+    Lwt_PGOCaml.connect
+    ?host:!host_r
+    ?port:!port_r
+    ?user:!user_r
+    ?password:!password_r
+    ?database:!database_r
+    ?unix_domain_socket_dir:!unix_domain_socket_dir_r
+    ()
+  in
+  match !init_r with
+  | Some init ->
+    lwt () = init h in
+    Lwt.return h
+  | None ->
+    Lwt.return h
 
 let validate db =
   try_lwt
@@ -72,13 +82,14 @@ let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Lwt_pool.t ref =
 let set_pool_size n = pool := Lwt_pool.create n ~validate connect
 
 let init ?host ?port ?user ?password ?database
-         ?unix_domain_socket_dir ?pool_size () =
+         ?unix_domain_socket_dir ?pool_size ?init () =
   host_r := host;
   port_r := port;
   user_r := user;
   password_r := password;
   database_r := database;
   unix_domain_socket_dir_r := unix_domain_socket_dir;
+  init_r := init;
   match pool_size with
   | None -> ()
   | Some n -> set_pool_size n
