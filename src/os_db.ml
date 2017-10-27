@@ -83,6 +83,8 @@ let init ?host ?port ?user ?password ?database
   | None -> ()
   | Some n -> set_pool_size n
 
+let connection_pool () = !pool
+
 let transaction_block db f =
   Lwt_PGOCaml.begin_work db >>= fun _ ->
   try_lwt

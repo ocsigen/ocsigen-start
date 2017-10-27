@@ -56,6 +56,9 @@ val full_transaction_block :
 val without_transaction :
   (PGOCaml.pa_pg_data PGOCaml.t -> 'a Lwt.t) -> 'a Lwt.t
 
+(** Direct access to the connection pool *)
+val connection_pool : unit -> PGOCaml.pa_pg_data PGOCaml.t Lwt_pool.t
+
 (** [pwd_crypt_ref] is a reference to [(f_crypt, f_check)] where
     - [f_crypt pwd] is used to encrypt the password [pwd].
     - [f_check userid pwd hashed_pwd] returns [true] if the hash of [pwd] and
