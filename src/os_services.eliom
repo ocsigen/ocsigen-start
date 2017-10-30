@@ -153,6 +153,7 @@ let%server update_language_service = Eliom_service.create
 
 let confirm_code_signup_service =
   Eliom_service.create
+    ~name:"confirm_code_signup"
     ~path:Eliom_service.No_path
     ~meth:(
       Eliom_service.Post (
@@ -165,12 +166,14 @@ let confirm_code_signup_service =
 
 let confirm_code_extra_service =
   Eliom_service.create
+    ~name:"confirm_code_extra"
     ~path:Eliom_service.No_path
     ~meth:(Eliom_service.Post (unit, string "number"))
     ()
 
 let confirm_code_recovery_service =
   Eliom_service.create
+    ~name:"confirm_code_recovery"
     ~path:Eliom_service.No_path
     ~meth:(Eliom_service.Post (unit, string "number"))
     ()
