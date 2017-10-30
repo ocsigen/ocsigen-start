@@ -58,6 +58,14 @@ let (on_connected_request, connected_request_action) =
       r := (fun userid -> let%lwt () = oldf userid in f userid)),
    (fun userid -> !r userid))
 
+(* Call this to add an action to be done at each unconnected request *)
+let (on_unconnected_request, unconnected_request_action) =
+  let r = ref (fun _ -> Lwt.return_unit) in
+  ((fun f ->
+      let oldf = !r in
+      r := (fun () -> let%lwt () = oldf () in f ())),
+   (fun userid -> !r userid))
+
 (* Call this to add an action to be done just after openning a session *)
 let (on_open_session, open_session_action) =
   let r = ref (fun _ -> Lwt.return_unit) in
@@ -260,7 +268,9 @@ let gen_wrapper ~allow ~deny
   match uid with
   | None ->
     if allow = None
-    then not_connected gp pp
+    then
+      let%lwt () = unconnected_request_action () in
+      not_connected gp pp
     else let%lwt () = denied_request_action None in
       deny_fun None
   | Some id ->
