@@ -136,11 +136,11 @@ let%shared content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
         let platform = Js.string (Os_platform.css_class (Os_platform.get ())) in
         Dom_html.document##.documentElement##.classList##add(platform); : unit)]
       in
-      html ~a:(platform_attr :: content.html_attrs)
+      html ~a:(content.html_attrs)
         (Eliom_tools.F.head ~title ~css ~js
            ~other:(local_css @ local_js @ content.head @ C.other_head) ())
         (body
-          ~a:(connected_attr :: content.body_attrs)
+          ~a:(platform_attr :: connected_attr :: content.body_attrs)
           content.body
         )
 
