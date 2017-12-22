@@ -193,7 +193,10 @@ module Http =
     let string_of_stream ?(len=16384) contents =
       Lwt.try_bind
         (fun () ->
-           Ocsigen_stream.string_of_stream len (Ocsigen_stream.get contents))
+           let%lwt b =
+             Ocsigen_stream.bytes_of_stream len (Ocsigen_stream.get contents)
+           in
+           Lwt.return (Bytes.unsafe_to_string b))
         (fun r ->
            let%lwt () = Ocsigen_stream.finalize contents `Success in
            Lwt.return r)

@@ -17,6 +17,7 @@ depends: [
   "ocsigen-toolkit" {>= "0.99"}
   "js_of_ocaml-camlp4"
   "yojson"
+  "gen_js_api"
 ]
 depexts: [
   [["debian"] ["imagemagick"]]
