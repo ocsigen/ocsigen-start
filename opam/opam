@@ -18,6 +18,7 @@ depends: [
   "js_of_ocaml-camlp4"
   "yojson"
   "gen_js_api"
+  "ocaml-cordova-plugin-screenshot"
 ]
 depexts: [
   [["debian"] ["imagemagick"]]
