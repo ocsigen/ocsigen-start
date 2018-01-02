@@ -22,6 +22,7 @@ exception No_such_resource
 exception Main_email_removal_attempt
 exception Account_not_activated
 
+let section = Lwt_log.Section.make "os:db"
 
 let (>>=) = Lwt.bind
 
@@ -106,7 +107,15 @@ let transaction_block db f =
     lwt () = Lwt_PGOCaml.commit db in
     Lwt.return r
   with e ->
-    lwt () = Lwt_PGOCaml.rollback db in
+    lwt () =
+      try_lwt
+        Lwt_PGOCaml.rollback db
+      with Lwt_PGOCaml.PostgreSQL_Error _ ->
+        (* If the rollback fails, for instance due to a timeout,
+           it seems better to close the connection. *)
+        Lwt_log.ign_error "rollback failed";
+        Lwt_PGOCaml.close db
+    in
     Lwt.fail e
 
 let full_transaction_block f =
