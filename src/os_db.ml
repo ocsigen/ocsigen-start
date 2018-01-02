@@ -22,6 +22,7 @@ exception No_such_resource
 exception Main_email_removal_attempt
 exception Account_not_activated
 
+let section = Lwt_log.Section.make "os:db"
 
 let (>>=) = Lwt.bind
 
@@ -76,8 +77,11 @@ let validate db =
   with _ ->
     Lwt.return_false
 
+let dispose db =
+  Lwt.catch (fun () -> PGOCaml.close db) (fun _ -> Lwt.return_unit)
+
 let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Lwt_pool.t ref =
-  ref @@ Lwt_pool.create 16 ~validate connect
+  ref @@ Lwt_pool.create 16 ~validate ~dispose connect
 
 let set_pool_size n = pool := Lwt_pool.create n ~validate connect
 
@@ -96,6 +100,14 @@ let init ?host ?port ?user ?password ?database
 
 let connection_pool () = !pool
 
+let use_pool f =
+  Lwt_pool.use !pool @@ fun db ->
+  try_lwt
+    f db
+  with Lwt_PGOCaml.Error msg as e ->
+    Lwt_log.ign_error_f ~section "postgresql protocol error: %s" msg;
+    lwt () = Lwt_PGOCaml.close db in Lwt.fail e
+
 let transaction_block db f =
   Lwt_PGOCaml.begin_work db >>= fun _ ->
   try_lwt
@@ -103,13 +115,21 @@ let transaction_block db f =
     lwt () = Lwt_PGOCaml.commit db in
     Lwt.return r
   with e ->
-    lwt () = Lwt_PGOCaml.rollback db in
+    lwt () =
+      try_lwt
+        Lwt_PGOCaml.rollback db
+      with Lwt_PGOCaml.PostgreSQL_Error _ ->
+        (* If the rollback fails, for instance due to a timeout,
+           it seems better to close the connection. *)
+        Lwt_log.ign_error "rollback failed";
+        Lwt_PGOCaml.close db
+    in
     Lwt.fail e
 
 let full_transaction_block f =
-  Lwt_pool.use !pool (fun db -> transaction_block db (fun () -> f db))
+  use_pool (fun db -> transaction_block db (fun () -> f db))
 
-let without_transaction f = Lwt_pool.use !pool (fun db -> f db)
+let without_transaction = use_pool
 
 let view_one rq =
   try List.hd rq
