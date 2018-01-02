@@ -76,8 +76,11 @@ let validate db =
   with _ ->
     Lwt.return_false
 
+let dispose db =
+  Lwt.catch (fun () -> PGOCaml.close db) (fun _ -> Lwt.return_unit)
+
 let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Lwt_pool.t ref =
-  ref @@ Lwt_pool.create 16 ~validate connect
+  ref @@ Lwt_pool.create 16 ~validate ~dispose connect
 
 let set_pool_size n = pool := Lwt_pool.create n ~validate connect
 
