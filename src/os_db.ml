@@ -100,6 +100,14 @@ let init ?host ?port ?user ?password ?database
 
 let connection_pool () = !pool
 
+let use_pool f =
+  Lwt_pool.use !pool @@ fun db ->
+  try_lwt
+    f db
+  with Lwt_PGOCaml.Error msg as e ->
+    Lwt_log.ign_error_f ~section "postgresql protocol error: %s" msg;
+    lwt () = Lwt_PGOCaml.close db in Lwt.fail e
+
 let transaction_block db f =
   Lwt_PGOCaml.begin_work db >>= fun _ ->
   try_lwt
@@ -119,9 +127,9 @@ let transaction_block db f =
     Lwt.fail e
 
 let full_transaction_block f =
-  Lwt_pool.use !pool (fun db -> transaction_block db (fun () -> f db))
+  use_pool (fun db -> transaction_block db (fun () -> f db))
 
-let without_transaction f = Lwt_pool.use !pool (fun db -> f db)
+let without_transaction = use_pool
 
 let view_one rq =
   try List.hd rq
