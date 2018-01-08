@@ -32,7 +32,7 @@ SERVER_DB_PACKAGES    := pgocaml.syntax
 # OCamlfind packages for the client
 CLIENT_PACKAGES       := lwt.ppx js_of_ocaml-ppx js_of_ocaml-ppx.deriving \
                          ppx_deriving.std ocsigen-start.client base \
-                         gen_js_api cordova-plugin-screenshot
+                         gen_js_api
 
 CLIENT_LINK_OPT       := -no-check-prims -jsopt +gen_js_api/ojs_runtime.js \
                          -jsopt +nat.js -jsopt +base/runtime.js

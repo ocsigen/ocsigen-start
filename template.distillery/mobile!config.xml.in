@@ -92,12 +92,6 @@
 
     <plugin name="cordova-plugin-wkwebview-engine" spec="https://github.com/apache/cordova-plugin-wkwebview-engine.git" />
 
-    <!-- This plugin takes screenshot. It is used for the animation of page transition. If no animation is
-         desired, remove this plugin.-->
-    <plugin name="com.darktalker.cordova.screenshot" spec="https://github.com/aik9508/cordova-screenshot.git" />
-    <!-- Assure that the cordova-screenshot plugin works with Android -->
-    <preference name="CrosswalkAnimatable" value="true" />
-
     <!-- Status bar colors and other adjustments -->
     <plugin name="cordova-plugin-statusbar" spec="https://github.com/apache/cordova-plugin-statusbar" />
     <!-- use this alternative if you need tap on status bar to scroll up the page:

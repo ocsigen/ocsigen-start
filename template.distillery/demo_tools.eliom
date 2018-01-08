@@ -45,7 +45,6 @@ let demos =
   ; (module Demo_notif)
   ; (module Demo_react)
   ; (module Demo_cache)
-  ; (module Demo_pagetransition)
   ]
 
 let drawer_contents () =

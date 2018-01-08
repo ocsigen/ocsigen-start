@@ -143,15 +143,6 @@ of Android packages ...
 
 ** Be prepared! You're entering an unstable world! **
 
-
-Install ocaml-cordova-plugin
-
-- [Cordova-screenshot-plugin](https://github.com/aik9508/ocaml-cordova-plugin-screenshot.git) is used in the demo of page transiton. To install the plugin, use opam by pinning its repository with
-
-```
-  opam pin add cordova-plugin-screenshot https://github.com/aik9508/ocaml-cordova-plugin-screenshot.git
-```
-
 ### For Android:
 
 - Install JDK 7 or newer (`openjdk-7-jdk` package in Debian/Ubuntu)
