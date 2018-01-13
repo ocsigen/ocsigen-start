@@ -121,7 +121,7 @@ let transaction_block db f =
       with Lwt_PGOCaml.PostgreSQL_Error _ ->
         (* If the rollback fails, for instance due to a timeout,
            it seems better to close the connection. *)
-        Lwt_log.ign_error "rollback failed";
+        Lwt_log.ign_error ~section "rollback failed";
         Lwt_PGOCaml.close db
     in
     Lwt.fail e
