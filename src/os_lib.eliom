@@ -19,7 +19,8 @@
  *)
 
 let%client reload () =
-  Eliom_client.change_page ~service:Eliom_service.reload_action_hidden () ()
+  Eliom_client.change_page
+    ~replace:true ~service:Eliom_service.reload_action_hidden () ()
 
 let%shared memoizator f =
   let value_ref = ref None in
