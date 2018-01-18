@@ -244,11 +244,12 @@ let get_session () =
     or not to these groups, and call function [deny_fun] otherwise.
     By default, it raises [Permission_denied].
 *)
-let gen_wrapper ~allow ~deny
+let%server gen_wrapper ~allow ~deny ?(force_unconnected = false)
     ?(deny_fun = fun _ -> Lwt.fail Permission_denied)
     connected not_connected gp pp =
-  let new_process = Eliom_reference.Volatile.get new_process_eref in
-  let%lwt uid = get_session () in
+  let new_process =
+    not force_unconnected && Eliom_reference.Volatile.get new_process_eref in
+  let%lwt uid = if force_unconnected then Lwt.return_none else get_session () in
   let%lwt () = request_action () in
   let%lwt () =
     if new_process
@@ -284,10 +285,10 @@ let%client get_current_userid_o = ref (fun () -> assert false)
 
 (* On client-side, we do no security check.
    They are done by the server. *)
-let%client gen_wrapper ~allow ~deny
+let%client gen_wrapper ~allow ~deny ?(force_unconnected = false)
     ?(deny_fun = fun _ -> Lwt.fail Permission_denied)
     connected not_connected gp pp =
-  let myid_o = !get_current_userid_o () in
+  let myid_o = if force_unconnected then None else !get_current_userid_o () in
   match myid_o with
   | None -> not_connected gp pp
   | Some myid -> connected myid gp pp
@@ -306,8 +307,9 @@ let%shared connected_rpc ?allow ?deny ?deny_fun f pp =
     (fun _ _ -> Lwt.fail Not_connected)
     () pp
 
-let%shared connected_wrapper ?allow ?deny ?deny_fun f pp =
+let%shared connected_wrapper ?allow ?deny ?deny_fun ?force_unconnected f pp =
   gen_wrapper
+    ?force_unconnected
     ~allow ~deny ?deny_fun
     (fun myid _ p -> f p)
     (fun _ p -> f p)
@@ -316,15 +318,17 @@ let%shared connected_wrapper ?allow ?deny ?deny_fun f pp =
 [%%shared
   module Opt = struct
 
-    let connected_fun ?allow ?deny ?deny_fun f gp pp =
+    let connected_fun ?allow ?deny ?deny_fun ?force_unconnected f gp pp =
       gen_wrapper
+        ?force_unconnected
         ~allow ~deny ?deny_fun
         (fun myid gp pp -> f (Some myid) gp pp)
         (fun gp pp -> f None gp pp)
         gp pp
 
-    let connected_rpc ?allow ?deny ?deny_fun f pp =
+    let connected_rpc ?allow ?deny ?deny_fun ?force_unconnected f pp =
       gen_wrapper
+        ?force_unconnected
         ~allow ~deny ?deny_fun
         (fun myid _ p -> f (Some myid) p)
         (fun _ p -> f None p)

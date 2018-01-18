@@ -104,6 +104,12 @@ val disconnect : unit -> unit Lwt.t
 
     When called on client side, no security check is done.
 
+    If optional argument [force_unconnected] is [true],
+    it will not try to find session information, and behave as if user were
+    not connected (default is [false]). This allows to use functions
+    from module {!Os_current_user} in functions outside application
+    without failing.
+
     Use only one connection wrapper for each request!
 *)
 val connected_fun :
@@ -128,6 +134,7 @@ val connected_wrapper :
   ?allow:Os_types.Group.t list ->
   ?deny:Os_types.Group.t list ->
   ?deny_fun:(Os_types.User.id option -> 'b Lwt.t) ->
+  ?force_unconnected:bool ->
   ('a -> 'b Lwt.t) ->
   ('a -> 'b Lwt.t)
 
@@ -141,6 +148,7 @@ module Opt : sig
     ?allow:Os_types.Group.t list ->
     ?deny:Os_types.Group.t list ->
     ?deny_fun:(Os_types.User.id option -> 'c Lwt.t) ->
+    ?force_unconnected:bool ->
     (Os_types.User.id option -> 'a -> 'b -> 'c Lwt.t) ->
     ('a -> 'b -> 'c Lwt.t)
 
@@ -152,6 +160,7 @@ module Opt : sig
     ?allow:Os_types.Group.t list ->
     ?deny:Os_types.Group.t list ->
     ?deny_fun:(Os_types.User.id option -> 'b Lwt.t) ->
+    ?force_unconnected:bool ->
     (Os_types.User.id option -> 'a -> 'b Lwt.t) ->
     ('a -> 'b Lwt.t)
 

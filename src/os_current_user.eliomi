@@ -26,6 +26,7 @@
 (** On server side, this will work only if the current request in wrapped
     in {!Os_session.connected_wrapper}, or {!Os_session.connected_fun},
     etc.
+    Otherwise, an exception is raised.
 *)
 
 type current_user =
