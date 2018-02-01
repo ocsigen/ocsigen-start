@@ -104,9 +104,13 @@ let use_pool f =
   Lwt_pool.use !pool @@ fun db ->
   try_lwt
     f db
-  with Lwt_PGOCaml.Error msg as e ->
+  with
+  | Lwt_PGOCaml.Error msg as e ->
     Lwt_log.ign_error_f ~section "postgresql protocol error: %s" msg;
     lwt () = Lwt_PGOCaml.close db in Lwt.fail e
+  | Lwt.Canceled as e ->
+    Lwt_log.ign_error ~section "thread canceled";
+    lwt () = PGOCaml.close db in Lwt.fail e
 
 let transaction_block db f =
   Lwt_PGOCaml.begin_work db >>= fun _ ->
