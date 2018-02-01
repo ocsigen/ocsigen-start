@@ -99,5 +99,5 @@ module Http :
     (** [string_of_stream ?len stream] creates a string of maximum length [len]
         (default is [16384]) from the stream [stream].
      *)
-    val string_of_stream : ?len:int -> string Ocsigen_stream.t -> string Lwt.t
+    val string_of_stream : ?len:int -> bytes Ocsigen_stream.t -> string Lwt.t
   end
