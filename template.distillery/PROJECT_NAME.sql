@@ -12,7 +12,7 @@ CREATE SCHEMA ocsigen_start
          userid bigserial primary key, -- DEFAULT
          firstname text NOT NULL,
          lastname text NOT NULL,
-         main_email citext NOT NULL,
+         main_email citext,
          password text,
          avatar text,
          language text

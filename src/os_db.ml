@@ -691,7 +691,7 @@ module Phone = struct
     without_transaction @@ fun dbh ->
     (* low-level PG interface because we want to inspect the result *)
     let query =
-      "INSERT INTO phones (number, userid) VALUES ($1, $2)
+      "INSERT INTO ocsigen_start.phones (number, userid) VALUES ($1, $2)
        ON CONFLICT DO NOTHING
        RETURNING 0"
     in
