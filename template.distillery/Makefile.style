@@ -37,16 +37,21 @@ endif
 endif
 
 ifeq ($(USE_NPM), yes)
+PACKAGE_JSON = package.json
 NPM_POSTCSS = node_modules/postcss-cli
 NPM_AUTOPREFIXER = node_modules/autoprefixer
 POSTCSS = node_modules/.bin/postcss
 
-$(NPM_POSTCSS):
+$(NPM_POSTCSS): $(PACKAGE_JSON)
 	npm install postcss-cli
 
-$(NPM_AUTOPREFIXER):
+$(NPM_AUTOPREFIXER): $(PACKAGE_JSON)
 	npm install autoprefixer
+
+$(PACKAGE_JSON):
+	npm init --yes
 else
+PACKAGE_JSON =
 NPM_POSTCSS =
 NPM_AUTOPREFIXER =
 POSTCSS = postcss
@@ -60,7 +65,7 @@ endif
 # If SASS is not activated, it will concatenate all CSS files (listed in
 # $(CSS_FILES)) in $(LOCAL_CSS).
 # In both cases, external CSS files ($(EXTERNAL_CSS_FILES)) are copied.
-$(LOCAL_CSS): check_sass $(NPM_POSTCSS) $(NPM_AUTOPREFIXER) import-external-css
+$(LOCAL_CSS): check_sass $(PACKAGE_JSON) $(NPM_POSTCSS) $(NPM_AUTOPREFIXER) import-external-css
 ifeq "$(USE_SASS)" "yes"
 ifeq ($(shell which sassc),)
 	[ -d $(SASSDIR) ] && \
