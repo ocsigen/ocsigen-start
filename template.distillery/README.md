@@ -18,7 +18,7 @@ opam depext ocsigen-start
 ```
 
 If you have issues with the NPM provided by your distribution, you can
-use [NVM](https://github.com/creationix/nvm). On Debian, NPM is too old (< 2.0),
+use [NVM](https://github.com/creationix/nvm). If NPM is too old (< 2.0),
 so you can alternatively try updating it with `sudo npm install -g npm` (don't
 forget about Bash which won't examine the $PATH twice!).
 
@@ -133,6 +133,15 @@ Build the mobile applications
 
 Make sure you have a working NPM installation. The needed NPM packages
 (like Cordova) will be installed automatically.
+
+Warning: NPM packages (and especially Cordova plugin) are very sensitive to
+version changes. You may have to change version numbers in
+mobile/config.xml.in if something goes wrong during app generation.
+You may also have problems with old versions of gradle or wrong versions
+of Android packages ...
+
+** Be prepared! You're entering a instable world! **
+
 
 Install ocaml-cordova-plugin
 
