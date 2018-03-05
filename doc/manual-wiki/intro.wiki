@@ -45,11 +45,11 @@ remain in place for Ocsigen Start to work correctly.
 
 The template is available in multiple languages (English and French) using
 [[https://github.com/besport/ocsigen-i18n|ocsigen-i18n]]. All translations used
-in the template are defined in the file {{assets/PROJECT_NAME_i18n.tsv}}. The
-Makefile rule {{i18n-udpate}} generates the i18n module. You need to use it
+in the template are defined in the file {{{assets/PROJECT_NAME_i18n.tsv}}}. The
+Makefile rule {{{i18n-udpate}}} generates the i18n module. You need to use it
 every time the TSV file is updated.
 
-See {{Makefile.i18n}} for rules about i18n and {{Makefile.options}} to
+See {{{Makefile.i18n}}} for rules about i18n and {{{Makefile.options}}} to
 personalize the internalization of your application (for example add new
 languages, change default language, change TSV filename).
 

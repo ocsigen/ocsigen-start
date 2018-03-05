@@ -190,7 +190,7 @@ MOBILE_DESCRIPTION             := %%%PROJECT_NAME%%% mobile application
 MOBILE_AUTHOR_EMAIL            := developer@domain.com
 MOBILE_AUTHOR_HREF             := http://domain.com
 MOBILE_AUTHOR_DESCRIPTION      := %%%PROJECT_NAME%%% team
-MOBILE_ANDROID_SDK_VERSION     := 15
+MOBILE_ANDROID_SDK_VERSION     := 16
 MOBILE_NOTIFICATIONS_SENDER_ID := 424242424242
 
 ##----------------------------------------------------------------------

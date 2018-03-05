@@ -79,7 +79,7 @@
          and older). You may also want to enable the CrossWalk
          settings as they appear later in this file. -->
     <!-- <plugin name="cordova-plugin-crosswalk-webview" spec="~1.6.0" /> -->
-    <plugin name="cordova-hot-code-push-plugin" spec="~1.5.1" />
+    <plugin name="cordova-hot-code-push-plugin" spec="~1.5.3" />
     <!-- <plugin name="cordova-plugin-facebook4" spec="~1.7.0"> -->
     <!--     <variable name="APP_ID" value="%%FACEBOOK_ID%%" /> -->
     <!--     <variable name="APP_NAME" value="%%MOBILE_APP_NAME%%" /> -->
@@ -116,7 +116,8 @@
     <preference name="KeyboardShrinksView" value="false" />
 
     <!-- Let app handle URLs corresponding to our host -->
-    <plugin name="cordova-universal-links-plugin" spec="~1.2.1" />
+    <!-- Temporarily depend on non official version of cordova-universal-links-plugin because it fixes a bug ... cf https://github.com/nordnet/cordova-universal-links-plugin/issues/133 -->
+    <plugin name="cordova-universal-links-plugin" spec="https://github.com/besport/cordova-universal-links-plugin.git" />
     <universal-links>
       <host name="%%APPHOST%%" scheme="%%APPSCHEME%%" %%APPPORTARG%% />
     </universal-links>
