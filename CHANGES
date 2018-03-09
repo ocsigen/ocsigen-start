@@ -1,3 +1,10 @@
+===== 1.1 (2018-03-09) =====
+
+* Compatibility with Eliom 6.3 and OCaml 4.06
+* Demo for Eliom's DOM caching
+* Registration by phone number
+* Various small fixes and improvements
+
 ===== 1.0 (2017-02-08) =====
 
 * Initial stable version
