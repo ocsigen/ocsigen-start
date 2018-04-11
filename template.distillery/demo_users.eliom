@@ -26,14 +26,14 @@ let%shared page_class = "os-page-demo-users"
 let%shared display_user_name = function
   | None -> p [%i18n you_are_not_connected]
   | Some user ->
-    p [ pcdata [%i18n S.you_are]
+    p [ pcdata ([%i18n S.you_are] ^ " ")
       ; em [ pcdata (Os_user.fullname_of_user user) ]
       ]
 
 let%shared display_user_id = function
   | None -> p [%i18n log_in_to_see_demo]
   | Some userid ->
-    p [ pcdata [%i18n S.your_user_id]
+    p [ pcdata ([%i18n S.your_user_id] ^ " ")
       ; em [ pcdata (Int64.to_string userid) ]
       ]
 
