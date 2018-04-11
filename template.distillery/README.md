@@ -229,6 +229,12 @@ The above command will attempt to launch your app in the Android emulator that
 you have configured previously. Depending on your setup, you may need to start
 the emulator before running the command.
 
+Note: If the emulator does not start on your Linux system because of
+a library problem, you can try to set the environment variable
+`ANDROID_EMULATOR_USE_SYSTEM_LIBS` to `1` to make it start (see
+https://developer.android.com/studio/command-line/variables.html for
+details).
+
 To run the application on a connected device, use:
 
 ```
