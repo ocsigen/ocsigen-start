@@ -239,7 +239,7 @@ address (e.g., `192.168.1.x`), not to `127.0.0.1` (neither to `localhost`). The
 reason is that the address will be used by the Android emulator/device, inside
 which `127.0.0.1` has different meaning; it points to the Android host itself.
 
-If you only wants to build the mobile application, you can use:
+If you only want to build the mobile application, you can use:
 ```
 make APP_SERVER=http://${YOUR_SERVER} APP_REMOTE=no android
 ```
