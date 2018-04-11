@@ -148,7 +148,7 @@ of Android packages ...
 - Install JDK 7 or newer (`openjdk-7-jdk` package in Debian/Ubuntu)
 - Install Gradle (`gradle` package in Debian/Ubuntu)
 - Download and untar the [Android SDK](http://developer.android.com) (the smaller version without Android Studio suffices), rename it so that you have a `$HOME/android-sdk-linux/tools` folder.
-- Using the Android package management interface (or `sdkmanager`), install latest versions of SDK Tools (`tools`), SDK Platform-tools (`platform-tools`), and SDK Build-tools (`build_tools;XXX`)
+- Using the Android package management interface (or `sdkmanager`), install latest versions of SDK Tools (`tools`), SDK Platform-tools (`platform-tools`), and SDK Build-tools (`build-tools;XXX`)
 - Install recent Android API: SDK Platform (`platforms;XXX`).
 - From Extras, enable the Android Support Repository and the Google Repository.
 - For convenience, add the SDK directories platform-tools and tools in your $PATH
@@ -229,6 +229,12 @@ The above command will attempt to launch your app in the Android emulator that
 you have configured previously. Depending on your setup, you may need to start
 the emulator before running the command.
 
+Note: If the emulator does not start on your Linux system because of
+a library problem, you can try to set the environment variable
+`ANDROID_EMULATOR_USE_SYSTEM_LIBS` to `1` to make it start (see
+https://developer.android.com/studio/command-line/variables.html for
+details).
+
 To run the application on a connected device, use:
 
 ```
@@ -239,7 +245,7 @@ address (e.g., `192.168.1.x`), not to `127.0.0.1` (neither to `localhost`). The
 reason is that the address will be used by the Android emulator/device, inside
 which `127.0.0.1` has different meaning; it points to the Android host itself.
 
-If you only wants to build the mobile application, you can use:
+If you only want to build the mobile application, you can use:
 ```
 make APP_SERVER=http://${YOUR_SERVER} APP_REMOTE=no android
 ```
