@@ -23,6 +23,15 @@
 
 include module type of Os_core_db
 
+(** Exception raised when no ressource corresponds to the database request. *)
+exception No_such_resource
+
+(** Exception raised when there is an attempt to remove the main email. *)
+exception Main_email_removal_attempt
+
+(** Exception raised when the account is not activated. *)
+exception Account_not_activated
+
 (** [pwd_crypt_ref] is a reference to [(f_crypt, f_check)] where
     - [f_crypt pwd] is used to encrypt the password [pwd].
     - [f_check userid pwd hashed_pwd] returns [true] if the hash of [pwd] and

@@ -18,10 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-exception No_such_resource
-exception Main_email_removal_attempt
-exception Account_not_activated
-
 let section = Lwt_log.Section.make "os:db"
 
 let (>>=) = Lwt.bind

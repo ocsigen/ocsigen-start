@@ -21,15 +21,6 @@
 
 (** This module defines low level functions for database requests. *)
 
-(** Exception raised when no ressource corresponds to the database request. *)
-exception No_such_resource
-
-(** Exception raised when there is an attempt to remove the main email. *)
-exception Main_email_removal_attempt
-
-(** Exception raised when the account is not activated. *)
-exception Account_not_activated
-
 (** Lwt version of PGOCaml *)
 module PGOCaml : PGOCaml_generic.PGOCAML_GENERIC with type 'a monad = 'a Lwt.t
 

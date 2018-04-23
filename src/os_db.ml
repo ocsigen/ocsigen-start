@@ -20,6 +20,10 @@
 
 include Os_core_db
 
+exception No_such_resource
+exception Main_email_removal_attempt
+exception Account_not_activated
+
 let (>>=) = Lwt.bind
 
 module Lwt_thread = struct
