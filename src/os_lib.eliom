@@ -19,7 +19,15 @@
  *)
 
 let%client reload () =
-  Eliom_client.change_page ~service:Eliom_service.reload_action_hidden () ()
+  let uri =
+    if Eliom_client.is_client_app ()
+    && Js.Unsafe.global##.___eliom_server_ <> Js.undefined
+    then Format.sprintf "%s/%s"
+        Js.(to_string Unsafe.global##.___eliom_server_)
+        !Eliom_client.current_uri
+    else Eliom_lib.Url.resolve !Eliom_client.current_uri
+  in
+  Eliom_client.change_page_uri ~replace:true uri
 
 let%shared memoizator f =
   let value_ref = ref None in
