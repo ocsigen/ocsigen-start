@@ -47,6 +47,9 @@ let database_r = ref None
 let unix_domain_socket_dir_r = ref None
 let init_r = ref None
 
+let dispose db =
+  Lwt.catch (fun () -> PGOCaml.close db) (fun _ -> Lwt.return_unit)
+
 let connect () =
   lwt h =
     Lwt_PGOCaml.connect
@@ -60,7 +63,13 @@ let connect () =
   in
   match !init_r with
   | Some init ->
-    lwt () = init h in
+    lwt () =
+      try_lwt
+        init h
+      with exn ->
+        lwt () = dispose h in
+        Lwt.fail exn
+    in
     Lwt.return h
   | None ->
     Lwt.return h
@@ -71,9 +80,6 @@ let validate db =
     Lwt.return_true
   with _ ->
     Lwt.return_false
-
-let dispose db =
-  Lwt.catch (fun () -> PGOCaml.close db) (fun _ -> Lwt.return_unit)
 
 let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Lwt_pool.t ref =
   ref @@ Lwt_pool.create 16 ~validate ~dispose connect
