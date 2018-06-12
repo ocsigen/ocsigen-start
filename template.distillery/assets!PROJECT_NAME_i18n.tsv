@@ -63,6 +63,10 @@ log_in_to_see_page	{{{capitalize?L||l}}}og in to see this page.	{{{capitalize?C|
 you_click_on_date	You clicked on {{y}}/{{m}}/{{d}}	Vous avez cliqué sur {{d}}/{{m}}/{{y}}
 you_click_on_time	You clicked on {{h}}:{{m}}	Vous avez cliqué sur {{h}}:{{m}}
 demo_cache	Cache	Cache
+demo_cache_1	Caching the data	Mise en cache des données
+demo_cache_2	Module {{eliom_cscache}} implements a cache of data that is designed for Eliom's client-server programming model. It permits saving a client-side copy of the data. Have a look at the module {{os_user_proxy}} to see how it works (and use this module for getting information about Ocsigen Start's users).	Le module {{eliom_cscache}} implémente un cache de données construit pour le modèle client-serveur d'Eliom. Il permet de sauvegarder une copie des données du client. Jetez un oeil au module {{os_user_proxy}} pour comprendre son fonctionnement (et utilisez ce module pour obtenir des informations sur les utilisateurs d'Ocsigen Start).
+demo_cache_3	When you get a piece of data through {{eliom_cscache}} from client-side, the request to the server is done only if the data is not already in the client-side cache. On server-side, {{eliom_cscache}} is using a temporary cache (with \"request\" scope) to avoid fetching the data several times from the database during the same request. This server-side cache is automatically sent to the client to fill the client-side cache. If you want to avoid too many requests from the client, prefill the server-side cache with the data the client program will need.	Quand une donnée du client est obtenue via {{eliom_cscache}}, la requête vers le serveur est faite uniquement si la donnée ne se trouve pas déjà dans le cache côté client. Du côté serveur, {{eliom_cscache}} utilise un cache temporaire (avec une portée de type "request") afin d'éviter de récupérer les données de la base de données plusieurs fois sur une même requête. Ce cache côté serveur est automatiquement envoyé au client pour remplir son cache. Pour éviter un trop grand nombre de requêtes côté client, pré-remplissez le cache côté serveur avec les données dont le programme côté client a besoin.
+demo_cache_4	In the near future, {{eliom_cscache}} will enable saving persistent data, which is useful for implementing off-line applications.	Prochainement, {{eliom_cscache}} permettra de sauvegarder des données de manière persistante, ce qui peut être utile pour implémenter des applications hors ligne.
 demo_calendar	Calendar	Calendrier
 this_page_show_calendar	This page shows Ocsigen Toolkit's date picker.	Cette page montre le sélecteur de date d'Ocsigen Toolkit.
 demo_carousel_1	Carousel	Carousel
@@ -85,7 +89,7 @@ demo_carousel_wheel	Wheel carousel	Carousel avec roulette
 demo_carousel_third_example_1	Example of a vertical circular carousel (wheel). Try with a touch screen.	Exemple de carousel vertical circulaire (wheel). Essayez avec un écran tactile.
 demo_notification	Notifications	Notifications
 demo_notification_got	got	Reçu
-exchange_msg_between_users	Module {{os_notif}} enables sending information to client applications (notifications, new messages ...).	Le module {{os_notif}} permet des données aux applications client (notifications, nouveaux messages,...).
+exchange_msg_between_users	Module {{os_notif}} enables sending information to client applications (notifications, new messages ...).	Le module {{os_notif}} permet d'envoyer des données aux applications client (notifications, nouveaux messages,...).
 open_multiple_tabs_browsers	Open this page in multiple tabs or browsers.	Ouvrez cette page dans plusieurs onglets et fenêtres.
 fill_input_form_send_message	Fill in the input form to send a message to all other tabs.	Remplissez le formulaire pour envoyer un message à tous vos autres onglets ouverts.
 send_message	send message	envoyer le message
@@ -103,6 +107,7 @@ demo_reactive_programming	Reactive pages	Pages réactives
 demo_reactive_programming_1	This is an example of a page with reactive content. It is a very convenient solution to update pages when data changes.	Ceci est un exemple d'une page avec du contenu réactif. C'est une solution extrêment simple pour mettre à jour une page quand les données changent.
 demo_reactive_programming_2	It defines a (client-side) reactive OCaml list. You can add elements in this list via the input form. The page is updated automatically when the value of the reactive list changes.	Il définit une liste OCaml réactive (côté client). Vous pouvez ajouter des élements dans cette liste via le formulaire. Cette page sera automatique mise à jour quand la valeur de la liste réactive changera.
 demo_reactive_programming_3	The reactive page is generated either server-side (for example when you are using a Web browser and you reload this page) or client-side (in a mobile app or if you were already in the app before coming to this page).	La page réactive est générée aussi bien du côté serveur (par exemple quand vous utilisez le navigateur web et que vous rechargez cette page) que du côté client (sur mobile ou si vous étiez déjà sur dans cette application avant de venir sur cette page).
+demo_reactive_programming_button	add	ajouter
 demo_eliom_ref	Eliom references + OS dates	Références Eliom + dates OS
 demo_eliom_ref_first_visit	This is your first visit.	Ceci est votre première visite.
 demo_eliom_ref_last_visit	The last time you visited was: 	 La dernière fois que vous avez visité ce lien était :

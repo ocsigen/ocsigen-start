@@ -49,7 +49,7 @@ let%shared page () =
   let l, h = Eliom_shared.ReactiveData.RList.create [] in
   let inp =
     (* Form that performs a cons (client-side). *)
-    make_form "add"
+    make_form [%i18n S.demo_reactive_programming_button]
       [%client
         ((fun v -> Lwt.return (Eliom_shared.ReactiveData.RList.cons v ~%h))
          : string -> unit Lwt.t)
