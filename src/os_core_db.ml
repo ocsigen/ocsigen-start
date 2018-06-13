@@ -84,7 +84,7 @@ let validate db =
 let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Lwt_pool.t ref =
   ref @@ Lwt_pool.create 16 ~validate ~dispose connect
 
-let set_pool_size n = pool := Lwt_pool.create n ~validate connect
+let set_pool_size n = pool := Lwt_pool.create n ~validate ~dispose connect
 
 let init ?host ?port ?user ?password ?database
          ?unix_domain_socket_dir ?pool_size ?init () =
