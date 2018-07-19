@@ -105,8 +105,8 @@ val language_of_user : Os_types.User.t -> string option
  *)
 val fullname_of_user : Os_types.User.t -> string
 
-(** [is_complete user] returns [true] if the first name or the last name of
-    {!Os_types.user} has not been completed yet.
+(** [is_complete user] returns [true] if the first name and the last name of
+    {!Os_types.user} have been completed yet.
  *)
 val is_complete : Os_types.User.t -> bool
 
