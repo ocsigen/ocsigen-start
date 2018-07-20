@@ -34,6 +34,8 @@
 <!-- Uncomment if you are using https only and want secure cookies:
        <securecookies value="true" />
   -->
+       <!-- Serve pages as xhtml (make it possible to have nested anchors): -->
+       <htmlcontenttype value="application/xhtml+xml"/>
     </extension>
     %%% This will include the packages defined as SERVER_PACKAGES in your Makefile:
     %%PACKAGES%%
