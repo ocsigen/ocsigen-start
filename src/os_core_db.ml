@@ -81,10 +81,10 @@ let validate db =
   with _ ->
     Lwt.return_false
 
-let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Lwt_pool.t ref =
-  ref @@ Lwt_pool.create 16 ~validate ~dispose connect
+let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Resource_pool.t ref =
+  ref @@ Resource_pool.create 16 ~validate ~dispose connect
 
-let set_pool_size n = pool := Lwt_pool.create n ~validate ~dispose connect
+let set_pool_size n = pool := Resource_pool.create n ~validate ~dispose connect
 
 let init ?host ?port ?user ?password ?database
          ?unix_domain_socket_dir ?pool_size ?init () =
@@ -102,7 +102,7 @@ let init ?host ?port ?user ?password ?database
 let connection_pool () = !pool
 
 let use_pool f =
-  Lwt_pool.use !pool @@ fun db ->
+  Resource_pool.use !pool @@ fun db ->
   try_lwt
     f db
   with
