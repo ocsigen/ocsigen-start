@@ -57,7 +57,8 @@ SASS_TEMPORARY_PROJECT_NAME := os_temporary_project_name
 SERVER_PACKAGES    := lwt.ppx js_of_ocaml-ppx.deriving calendar safepass \
                       ocsigen-toolkit.server yojson re.str
 
-SERVER_DB_PACKAGES := pgocaml pgocaml.syntax macaque.syntax calendar safepass
+SERVER_DB_PACKAGES := pgocaml pgocaml.syntax macaque.syntax \
+                      calendar safepass resource-pooling
 
 # OCamlfind packages for the client
 CLIENT_PACKAGES    := lwt.ppx js_of_ocaml-ppx.deriving js_of_ocaml-ppx \

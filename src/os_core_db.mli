@@ -52,4 +52,4 @@ val without_transaction :
   (PGOCaml.pa_pg_data PGOCaml.t -> 'a Lwt.t) -> 'a Lwt.t
 
 (** Direct access to the connection pool *)
-val connection_pool : unit -> PGOCaml.pa_pg_data PGOCaml.t Lwt_pool.t
+val connection_pool : unit -> PGOCaml.pa_pg_data PGOCaml.t Resource_pool.t

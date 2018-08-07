@@ -17,6 +17,7 @@ depends: [
   "ocsigen-toolkit" {>= "1.1"}
   "js_of_ocaml-camlp4"
   "yojson"
+  "resource-pooling"
 ]
 depexts: [
   [["debian"] ["imagemagick"]]
