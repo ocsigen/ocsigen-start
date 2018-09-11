@@ -48,7 +48,7 @@ let%shared string_filter f s =
   Buffer.contents b
 
 let%shared email_regexp =
-  Re_str.regexp "[^@].*@[^.].*\\.[^.]+$"
+  Re_str.regexp "[^ @][^ ]*@[^ .][^ ]*\\.[^ .]+$"
 
 let%shared phone_regexp =
   Re_str.regexp ("\\(\\+\\|00\\)" ^ string_repeat "[0-9] *" 7 ^ "[0-9 ]*$")
