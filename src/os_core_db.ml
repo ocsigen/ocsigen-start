@@ -114,8 +114,8 @@ let use_pool f =
     lwt () = PGOCaml.close db in Lwt.fail e
 
 let transaction_block db f =
-  Lwt_PGOCaml.begin_work db >>= fun _ ->
   try_lwt
+    Lwt_PGOCaml.begin_work db >>= fun _ ->
     lwt r = f () in
     lwt () = Lwt_PGOCaml.commit db in
     Lwt.return r
