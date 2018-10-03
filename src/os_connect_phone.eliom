@@ -21,15 +21,7 @@
 type%shared sms_error_core = [`Unknown | `Send | `Limit | `Invalid_number]
 type%shared sms_error = [`Ownership | sms_error_core]
 
-(* adapted from Ocsigen_lib.make_cryptographic_safe_string *)
-let activation_code =
-  let rng = Cryptokit.Random.device_rng "/dev/urandom" in
-  fun () ->
-    let random_number = Cryptokit.Random.string rng 20 in
-    let to_b64 = Cryptokit.Base64.encode_compact () in
-    (* CHECKME: is this cryptographically safe? probably not *)
-    String.uppercase_ascii
-      (String.sub (Cryptokit.transform_string to_b64 random_number) 0 6)
+let activation_code () = Printf.sprintf "%04d" (Random.int 9_999)
 
 let activation_code_ref =
   Eliom_reference.eref ~scope:Eliom_common.default_process_scope None
