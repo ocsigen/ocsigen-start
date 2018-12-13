@@ -47,13 +47,13 @@ val bubble :
   ?arrow: [< `left of int
           | `right of int
           | `top of int
-          | `bottom of int ] ->
-  ?top:int ->
-  ?left:int ->
-  ?right:int ->
-  ?bottom:int ->
-  ?height:int ->
-  ?width:int ->
+          | `bottom of int ] Eliom_client_value.t ->
+  ?top:int Eliom_client_value.t ->
+  ?left:int Eliom_client_value.t ->
+  ?right:int Eliom_client_value.t ->
+  ?bottom:int Eliom_client_value.t ->
+  ?height:int Eliom_client_value.t ->
+  ?width:int Eliom_client_value.t ->
   ?parent_node:[< `Body | Html_types.body_content ] Eliom_content.Html.elt ->
   name:string ->
   content:((unit -> unit Lwt.t)

@@ -266,13 +266,13 @@ let%shared bubble
   ?(arrow: [< `left of int
           | `right of int
           | `top of int
-          | `bottom of int ] option)
-  ?(top: int option)
-  ?(left: int option)
-  ?(right: int option)
-  ?(bottom: int option)
-  ?(height: int option)
-  ?(width: int option)
+          | `bottom of int ] Eliom_client_value.t option)
+  ?(top: int Eliom_client_value.t option)
+  ?(left: int Eliom_client_value.t option)
+  ?(right: int Eliom_client_value.t option)
+  ?(bottom: int Eliom_client_value.t option)
+  ?(height: int Eliom_client_value.t option)
+  ?(width: int Eliom_client_value.t option)
   ?(parent_node: [< `Body | Html_types.body_content ] Eliom_content.Html.elt
         option)
   ~(name : string)
