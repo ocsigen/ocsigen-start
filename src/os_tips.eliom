@@ -233,24 +233,26 @@ let%client display_bubble ?(a = [])
   Eliom_lib.Option.iter
     (fun a ->
        let bec = To_dom.of_element bec in
+       let bec_size = bec##.offsetWidth in
+       let offset = Printf.sprintf "-%dpx" (bec_size / 2) in
        match a with
        | `top i ->
-         bec##.style##.top := Js.string "-10px";
+         bec##.style##.top := Js.string offset;
          bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
          bec##.style##.borderBottom := Js.string "none";
          bec##.style##.borderRight := Js.string "none"
        | `left i ->
-         bec##.style##.left := Js.string "-10px";
+         bec##.style##.left := Js.string offset;
          bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
          bec##.style##.borderTop := Js.string "none";
          bec##.style##.borderRight := Js.string "none"
        | `bottom i ->
-         bec##.style##.bottom := Js.string "-10px";
+         bec##.style##.bottom := Js.string offset;
          bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
          bec##.style##.borderTop := Js.string "none";
          bec##.style##.borderLeft := Js.string "none"
        | `right i ->
-         bec##.style##.right := Js.string "-10px";
+         bec##.style##.right := Js.string offset;
          bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
          bec##.style##.borderBottom := Js.string "none";
          bec##.style##.borderLeft := Js.string "none"
