@@ -39,6 +39,7 @@
     - [?recipient] makes it possible to decide whether the tip will be displayed
     for connected users only, non-connected users only, or all (default).
     Tips for non-connected users will reapear everytime the session is closed.
+    - [?delay] adds a delay before displaying the tip (in seconds)
 
 *)
 val bubble :
@@ -55,6 +56,7 @@ val bubble :
   ?height:int Eliom_client_value.t ->
   ?width:int Eliom_client_value.t ->
   ?parent_node:[< `Body | Html_types.body_content ] Eliom_content.Html.elt ->
+  ?delay:float ->
   name:string ->
   content:((unit -> unit Lwt.t)
            -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)

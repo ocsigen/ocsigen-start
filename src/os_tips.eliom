@@ -181,7 +181,7 @@ let%client () = Eliom_client.onchangepage onchangepage_handler
 (* Display a tip bubble *)
 let%client display_bubble ?(a = [])
     ?arrow ?top ?left ?right ?bottom ?height ?width
-    ?(parent_node : _ elt option)
+    ?(parent_node : _ elt option) ?(delay = 0.0)
     ~name ~content ()
   =
   let current_waiter = !waiter in
@@ -210,6 +210,7 @@ let%client display_bubble ?(a = [])
     | None -> Dom_html.document##.body
     | Some p -> To_dom.of_element p
   in
+  let%lwt () = Lwt_js.sleep delay in
   let box = To_dom.of_element box in
   Dom.appendChild parent_node box;
   box##.style##.opacity := Js.def (Js.string "0");
@@ -280,6 +281,7 @@ let%shared bubble
   ?(width: int Eliom_client_value.t option)
   ?(parent_node: [< `Body | Html_types.body_content ] Eliom_content.Html.elt
         option)
+  ?delay
   ~(name : string)
   ~(content:
       ((unit -> unit Lwt.t)
@@ -299,6 +301,7 @@ let%shared bubble
         ?top:~%top ?left:~%left ?right:~%right ?bottom:~%bottom
         ?height:~%height ?width:~%width
         ?parent_node:~%parent_node
+        ?delay:~%delay
         ~name:(~%name : string)
         ~content:~%content
         ())
