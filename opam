@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "ocsigen-start"
-version: "dev"
+version: "1.2.0"
 authors: "dev@ocsigen.org"
 maintainer: "dev@ocsigen.org"
 synopsis: "An Eliom application skeleton ready to use to build your own application with users, (pre)registration, notifications, etc"
@@ -13,16 +13,16 @@ build: [ make "-j%{jobs}%" ]
 install: [ make "install" ]
 remove: [ make "uninstall" ]
 depends: [
-  "ocaml" {>= "4.03"}
+  "ocaml" {>= "4.06.1"}
   "pgocaml" {>= "2.3"}
   "macaque" {>= "0.7.4"}
-  "safepass"
+  "safepass" {>= "3.0"}
   "ocsigen-i18n" {>= "3.1.0"}
-  "eliom" {>= "6.3"}
-  "ocsigen-toolkit" {>= "1.1"}
-  "js_of_ocaml-camlp4"
-  "yojson"
-  "resource-pooling"
+  "eliom" {>= "6.4.0"}
+  "ocsigen-toolkit" {>= "2.0.0"}
+  "js_of_ocaml-camlp4" {>= "3.1.0"}
+  "yojson" {>= "1.4.1"}
+  "resource-pooling" {>= "0.5.2"}
 ]
 depexts: [
   ["imagemagick"] {os-distribution = "debian"}
