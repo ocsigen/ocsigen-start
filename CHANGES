@@ -1,3 +1,11 @@
+===== 1.2.0 (2018-12-19) =====
+
+* Correct time zone handling (taking into account DST)
+* Improve and fix Android build instructions
+* Os_core_db: rollback if begin_work fails
+* rely on the resource-pooling package instead of Lwt_pool
+* Make sure users.main_email is synchronized with emails.email
+
 ===== 1.1 (2018-03-09) =====
 
 * Compatibility with Eliom 6.3 and OCaml 4.06
