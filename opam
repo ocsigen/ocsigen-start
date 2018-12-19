@@ -36,6 +36,3 @@ depexts: [
   ["npm"] {os-distribution = "ubuntu"}
   ["postgresql"] {os = "macos" & os-distribution = "homebrew"}
 ]
-url {
-  src: "git+https://github.com/ocsigen/ocsigen-start.git"
-}
