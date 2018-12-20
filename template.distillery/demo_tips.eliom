@@ -29,8 +29,9 @@ let%shared example_tip () =
   (* Have a look at the API documentation of module Os_tips for
      more options. *)
   Os_tips.bubble ()
-    ~top:40 ~right:0 ~width:300 ~height:180
-    ~arrow:(`top 250)
+    ~top:[%client 40 ] ~right:[%client 0 ]
+    ~width:[%client 300 ] ~height:[%client 180 ]
+    ~arrow:[%client `top 250 ]
     ~name:"example"
     ~content:[%client (fun _ ->
       Lwt.return

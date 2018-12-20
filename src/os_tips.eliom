@@ -181,7 +181,7 @@ let%client () = Eliom_client.onchangepage onchangepage_handler
 (* Display a tip bubble *)
 let%client display_bubble ?(a = [])
     ?arrow ?top ?left ?right ?bottom ?height ?width
-    ?(parent_node : _ elt option)
+    ?(parent_node : _ elt option) ?(delay = 0.0)
     ~name ~content ()
   =
   let current_waiter = !waiter in
@@ -210,8 +210,11 @@ let%client display_bubble ?(a = [])
     | None -> Dom_html.document##.body
     | Some p -> To_dom.of_element p
   in
-  Dom.appendChild parent_node (To_dom.of_element box);
+  let%lwt () = Ot_nodeready.nodeready parent_node in
+  let%lwt () = Lwt_js.sleep delay in
   let box = To_dom.of_element box in
+  Dom.appendChild parent_node box;
+  box##.style##.opacity := Js.def (Js.string "0");
   Eliom_lib.Option.iter
     (fun v -> box##.style##.top := Js.string (Printf.sprintf "%ipx" v))
     top;
@@ -233,29 +236,33 @@ let%client display_bubble ?(a = [])
   Eliom_lib.Option.iter
     (fun a ->
        let bec = To_dom.of_element bec in
+       let bec_size = bec##.offsetWidth in
+       let offset = Printf.sprintf "-%dpx" (bec_size / 2) in
        match a with
        | `top i ->
-         bec##.style##.top := Js.string "-10px";
+         bec##.style##.top := Js.string offset;
          bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
          bec##.style##.borderBottom := Js.string "none";
          bec##.style##.borderRight := Js.string "none"
        | `left i ->
-         bec##.style##.left := Js.string "-10px";
+         bec##.style##.left := Js.string offset;
          bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
          bec##.style##.borderTop := Js.string "none";
          bec##.style##.borderRight := Js.string "none"
        | `bottom i ->
-         bec##.style##.bottom := Js.string "-10px";
+         bec##.style##.bottom := Js.string offset;
          bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
          bec##.style##.borderTop := Js.string "none";
          bec##.style##.borderLeft := Js.string "none"
        | `right i ->
-         bec##.style##.right := Js.string "-10px";
+         bec##.style##.right := Js.string offset;
          bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
          bec##.style##.borderBottom := Js.string "none";
          bec##.style##.borderLeft := Js.string "none"
     )
     arrow;
+  let%lwt () = Lwt_js_events.request_animation_frame () in
+  box##.style##.opacity := Js.def (Js.string "1");
   Lwt.return_unit
 
 (* Function to be called on server to display a tip *)
@@ -266,15 +273,16 @@ let%shared bubble
   ?(arrow: [< `left of int
           | `right of int
           | `top of int
-          | `bottom of int ] option)
-  ?(top: int option)
-  ?(left: int option)
-  ?(right: int option)
-  ?(bottom: int option)
-  ?(height: int option)
-  ?(width: int option)
+          | `bottom of int ] Eliom_client_value.t option)
+  ?(top: int Eliom_client_value.t option)
+  ?(left: int Eliom_client_value.t option)
+  ?(right: int Eliom_client_value.t option)
+  ?(bottom: int Eliom_client_value.t option)
+  ?(height: int Eliom_client_value.t option)
+  ?(width: int Eliom_client_value.t option)
   ?(parent_node: [< `Body | Html_types.body_content ] Eliom_content.Html.elt
         option)
+  ?delay
   ~(name : string)
   ~(content:
       ((unit -> unit Lwt.t)
@@ -294,6 +302,7 @@ let%shared bubble
         ?top:~%top ?left:~%left ?right:~%right ?bottom:~%bottom
         ?height:~%height ?width:~%width
         ?parent_node:~%parent_node
+        ?delay:~%delay
         ~name:(~%name : string)
         ~content:~%content
         ())
