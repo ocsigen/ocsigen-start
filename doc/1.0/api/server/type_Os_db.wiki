@@ -1,0 +1,247 @@
+<<code language="ocaml" | sig
+  exception No_such_resource
+  exception Main_email_removal_attempt
+  exception Account_not_activated
+  val init :
+    ?host:string ->
+    ?port:int ->
+    ?user:string ->
+    ?password:string ->
+    ?database:string ->
+    ?unix_domain_socket_dir:string -> ?pool_size:int -> unit -> unit
+  module PGOCaml :
+    sig
+      type 'a t
+      type 'a monad = 'a Lwt.t
+      type isolation =
+          [ `Read_committed
+          | `Read_uncommitted
+          | `Repeatable_read
+          | `Serializable ]
+      type access = [ `Read_only | `Read_write ]
+      exception Error of string
+      exception PostgreSQL_Error of string * (char * string) list
+      val connect :
+        ?host:string ->
+        ?port:int ->
+        ?user:string ->
+        ?password:string ->
+        ?database:string ->
+        ?unix_domain_socket_dir:string -> unit -> 'a t monad
+      val close : 'a t -> unit monad
+      val ping : 'a t -> unit monad
+      val alive : 'a t -> bool monad
+      val begin_work :
+        ?isolation:isolation ->
+        ?access:access -> ?deferrable:bool -> 'a t -> unit monad
+      val commit : 'a t -> unit monad
+      val rollback : 'a t -> unit monad
+      val transact :
+        'a t ->
+        ?isolation:isolation ->
+        ?access:access -> ?deferrable:bool -> ('a t -> 'b monad) -> 'b monad
+      val serial : 'a t -> string -> int64 monad
+      val serial4 : 'a t -> string -> int32 monad
+      val serial8 : 'a t -> string -> int64 monad
+      val max_message_length : int ref
+      val verbose : int ref
+      val set_private_data : 'a t -> 'a -> unit
+      val private_data : 'a t -> 'a
+      val uuid : 'a t -> string
+      type pa_pg_data = (string, bool) Hashtbl.t
+      type oid = int32
+      type param = string option
+      type result = string option
+      type row = result list
+      val prepare :
+        'a t ->
+        query:string -> ?name:string -> ?types:oid list -> unit -> unit monad
+      val execute_rev :
+        'a t ->
+        ?name:string ->
+        ?portal:string -> params:param list -> unit -> row list monad
+      val execute :
+        'a t ->
+        ?name:string ->
+        ?portal:string -> params:param list -> unit -> row list monad
+      val cursor :
+        'a t ->
+        ?name:string ->
+        ?portal:string ->
+        params:param list -> (row -> unit monad) -> unit monad
+      val close_statement : 'a t -> ?name:string -> unit -> unit monad
+      val close_portal : 'a t -> ?portal:string -> unit -> unit monad
+      val inject : 'a t -> ?name:string -> string -> row list monad
+      val alter : 'a t -> ?name:string -> string -> unit monad
+      type row_description = result_description list
+      and result_description = {
+        name : string;
+        table : oid option;
+        column : int option;
+        field_type : oid;
+        length : int;
+        modifier : int32;
+      }
+      type params_description = param_description list
+      and param_description = { param_type : oid; }
+      val describe_statement :
+        'a t ->
+        ?name:string ->
+        unit -> (params_description * row_description option) monad
+      val describe_portal :
+        'a t -> ?portal:string -> unit -> row_description option monad
+      val name_of_type : ?modifier:int32 -> oid -> string
+      type inet = Unix.inet_addr * int
+      type timestamptz = CalendarLib.Calendar.t * CalendarLib.Time_Zone.t
+      type int16 = int
+      type bytea = string
+      type point = float * float
+      type hstore = (string * string option) list
+      type numeric = string
+      type uuid = string
+      type jsonb = string
+      type bool_array = bool option list
+      type int32_array = int32 option list
+      type int64_array = int64 option list
+      type string_array = string option list
+      type float_array = float option list
+      val string_of_oid : oid -> string
+      val string_of_bool : bool -> string
+      val string_of_int : int -> string
+      val string_of_int16 : int16 -> string
+      val string_of_int32 : int32 -> string
+      val string_of_int64 : int64 -> string
+      val string_of_float : float -> string
+      val string_of_point : point -> string
+      val string_of_hstore : hstore -> string
+      val string_of_numeric : numeric -> string
+      val string_of_uuid : uuid -> string
+      val string_of_jsonb : jsonb -> string
+      val string_of_inet : inet -> string
+      val string_of_timestamp : CalendarLib.Calendar.t -> string
+      val string_of_timestamptz : timestamptz -> string
+      val string_of_date : CalendarLib.Date.t -> string
+      val string_of_time : CalendarLib.Time.t -> string
+      val string_of_interval : CalendarLib.Calendar.Period.t -> string
+      val string_of_bytea : bytea -> string
+      val string_of_string : string -> string
+      val string_of_unit : unit -> string
+      val string_of_bool_array : bool_array -> string
+      val string_of_int32_array : int32_array -> string
+      val string_of_int64_array : int64_array -> string
+      val string_of_string_array : string_array -> string
+      val string_of_float_array : float_array -> string
+      val oid_of_string : string -> oid
+      val bool_of_string : string -> bool
+      val int_of_string : string -> int
+      val int16_of_string : string -> int16
+      val int32_of_string : string -> int32
+      val int64_of_string : string -> int64
+      val float_of_string : string -> float
+      val point_of_string : string -> point
+      val hstore_of_string : string -> hstore
+      val numeric_of_string : string -> numeric
+      val uuid_of_string : string -> uuid
+      val jsonb_of_string : string -> jsonb
+      val inet_of_string : string -> inet
+      val timestamp_of_string : string -> CalendarLib.Calendar.t
+      val timestamptz_of_string : string -> timestamptz
+      val date_of_string : string -> CalendarLib.Date.t
+      val time_of_string : string -> CalendarLib.Time.t
+      val interval_of_string : string -> CalendarLib.Calendar.Period.t
+      val bytea_of_string : string -> bytea
+      val unit_of_string : string -> unit
+      val bool_array_of_string : string -> bool_array
+      val int32_array_of_string : string -> int32_array
+      val int64_array_of_string : string -> int64_array
+      val string_array_of_string : string -> string_array
+      val float_array_of_string : string -> float_array
+      val bind : 'a monad -> ('a -> 'b monad) -> 'b monad
+      val return : 'a -> 'a monad
+    end
+  val full_transaction_block :
+    (Os_db.PGOCaml.pa_pg_data Os_db.PGOCaml.t -> 'a Lwt.t) -> 'a Lwt.t
+  val without_transaction :
+    (Os_db.PGOCaml.pa_pg_data Os_db.PGOCaml.t -> 'a Lwt.t) -> 'a Lwt.t
+  val pwd_crypt_ref :
+    ((string -> string) * (Os_types.User.id -> string -> string -> bool))
+    Pervasives.ref
+  module Email : sig val available : string -> bool Lwt.t end
+  module User :
+    sig
+      exception Invalid_action_link_key of Os_types.User.id
+      val userid_of_email : string -> Os_types.User.id Lwt.t
+      val is_registered : string -> bool Lwt.t
+      val is_email_validated : Os_types.User.id -> string -> bool Lwt.t
+      val set_email_validated : Os_types.User.id -> string -> unit Lwt.t
+      val add_actionlinkkey :
+        ?autoconnect:bool ->
+        ?action:[< `AccountActivation | `Custom of string | `PasswordReset
+                 > `AccountActivation ] ->
+        ?data:string ->
+        ?validity:int64 ->
+        act_key:string ->
+        userid:Os_types.User.id -> email:string -> unit -> unit Lwt.t
+      val add_preregister : string -> unit Lwt.t
+      val remove_preregister : string -> unit Lwt.t
+      val is_preregistered : string -> bool Lwt.t
+      val all : ?limit:int64 -> unit -> string list Lwt.t
+      val create :
+        ?password:string ->
+        ?avatar:string ->
+        ?language:string ->
+        firstname:string ->
+        lastname:string -> string -> Os_types.User.id Lwt.t
+      val update :
+        ?password:string ->
+        ?avatar:string ->
+        ?language:string ->
+        firstname:string -> lastname:string -> Os_types.User.id -> unit Lwt.t
+      val update_password :
+        userid:Os_types.User.id -> password:string -> unit Lwt.t
+      val update_avatar :
+        userid:Os_types.User.id -> avatar:string -> unit Lwt.t
+      val update_main_email :
+        userid:Os_types.User.id -> email:string -> unit Lwt.t
+      val update_language :
+        userid:Os_types.User.id -> language:string -> unit Lwt.t
+      val verify_password :
+        email:string -> password:string -> Os_types.User.id Lwt.t
+      val user_of_userid :
+        Os_types.User.id ->
+        (Os_types.User.id * string * string * string option * bool *
+         string option)
+        Lwt.t
+      val get_actionlinkkey_info :
+        string -> Os_types.Action_link_key.info Lwt.t
+      val emails_of_userid : Os_types.User.id -> string list Lwt.t
+      val email_of_userid : Os_types.User.id -> string Lwt.t
+      val is_main_email :
+        userid:Os_types.User.id -> email:string -> bool Lwt.t
+      val add_email_to_user :
+        userid:Os_types.User.id -> email:string -> unit Lwt.t
+      val remove_email_from_user :
+        userid:Os_types.User.id -> email:string -> unit Lwt.t
+      val get_language : Os_types.User.id -> string option Lwt.t
+      val get_users :
+        ?pattern:string ->
+        unit ->
+        (Os_types.User.id * string * string * string option * bool *
+         string option)
+        list Lwt.t
+    end
+  module Groups :
+    sig
+      val create : ?description:string -> string -> unit Lwt.t
+      val group_of_name :
+        string -> (Os_types.Group.id * string * string option) Lwt.t
+      val add_user_in_group :
+        groupid:Os_types.Group.id -> userid:Os_types.User.id -> unit Lwt.t
+      val remove_user_in_group :
+        groupid:Os_types.Group.id -> userid:Os_types.User.id -> unit Lwt.t
+      val in_group :
+        groupid:Os_types.Group.id -> userid:Os_types.User.id -> bool Lwt.t
+      val all :
+        unit -> (Os_types.Group.id * string * string option) list Lwt.t
+    end
+end >>

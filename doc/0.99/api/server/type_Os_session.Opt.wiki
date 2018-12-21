@@ -1,0 +1,12 @@
+<<code language="ocaml" | sig
+  val connected_fun :
+    ?allow:Os_types.Group.t list ->
+    ?deny:Os_types.Group.t list ->
+    ?deny_fun:(Os_types.User.id option -> 'c Lwt.t) ->
+    (Os_types.User.id option -> 'a -> 'b -> 'c Lwt.t) -> 'a -> 'b -> 'c Lwt.t
+  val connected_rpc :
+    ?allow:Os_types.Group.t list ->
+    ?deny:Os_types.Group.t list ->
+    ?deny_fun:(Os_types.User.id option -> 'b Lwt.t) ->
+    (Os_types.User.id option -> 'a -> 'b Lwt.t) -> 'a -> 'b Lwt.t
+end >>

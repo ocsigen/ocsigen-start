@@ -1,0 +1,34 @@
+<<code language="ocaml" | sig
+  exception Not_connected
+  exception Permission_denied
+  val connected_fun :
+    ?allow:Os_types.Group.t list ->
+    ?deny:Os_types.Group.t list ->
+    ?deny_fun:(Os_types.User.id option -> 'c Lwt.t) ->
+    (Os_types.User.id -> 'a -> 'b -> 'c Lwt.t) -> 'a -> 'b -> 'c Lwt.t
+  val connected_rpc :
+    ?allow:Os_types.Group.t list ->
+    ?deny:Os_types.Group.t list ->
+    ?deny_fun:(Os_types.User.id option -> 'b Lwt.t) ->
+    (Os_types.User.id -> 'a -> 'b Lwt.t) -> 'a -> 'b Lwt.t
+  val connected_wrapper :
+    ?allow:Os_types.Group.t list ->
+    ?deny:Os_types.Group.t list ->
+    ?deny_fun:(Os_types.User.id option -> 'b Lwt.t) ->
+    ('a -> 'b Lwt.t) -> 'a -> 'b Lwt.t
+  module Opt :
+    sig
+      val connected_fun :
+        ?allow:Os_types.Group.t list ->
+        ?deny:Os_types.Group.t list ->
+        ?deny_fun:(Os_types.User.id option -> 'c Lwt.t) ->
+        (Os_types.User.id option -> 'a -> 'b -> 'c Lwt.t) ->
+        'a -> 'b -> 'c Lwt.t
+      val connected_rpc :
+        ?allow:Os_types.Group.t list ->
+        ?deny:Os_types.Group.t list ->
+        ?deny_fun:(Os_types.User.id option -> 'b Lwt.t) ->
+        (Os_types.User.id option -> 'a -> 'b Lwt.t) -> 'a -> 'b Lwt.t
+    end
+  val get_current_userid_o : (unit -> Os_types.User.id option) Pervasives.ref
+end >>

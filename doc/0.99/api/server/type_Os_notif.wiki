@@ -1,0 +1,95 @@
+<<code language="ocaml" | sig
+  module type S =
+    sig
+      type identity = Os_types.User.id option
+      type key
+      type server_notif
+      type client_notif
+      val init : unit -> unit Lwt.t
+      val deinit : unit -> unit Lwt.t
+      val listen : key -> unit
+      val unlisten : key -> unit
+      module Ext :
+        sig
+          val unlisten :
+            ?sitedata:Eliom_common.sitedata ->
+            ([< `Client_process ], [< `Data | `Pers ]) Eliom_state.Ext.state ->
+            key -> unit
+        end
+      val client_ev : unit -> (key * client_notif) Eliom_react.Down.t Lwt.t
+      val clean : unit -> unit Lwt.t
+      val unlisten_user :
+        ?sitedata:Eliom_common.sitedata ->
+        userid:Os_types.User.id -> key -> unit
+      val notify :
+        ?notfor:[ `Me | `User of Os_types.User.id ] ->
+        key -> server_notif -> unit
+    end
+  module type ARG =
+    sig
+      type key
+      type server_notif
+      type client_notif
+      val prepare :
+        Os_types.User.id option ->
+        Os_notif.ARG.server_notif -> Os_notif.ARG.client_notif option Lwt.t
+      val equal_key : Os_notif.ARG.key -> Os_notif.ARG.key -> bool
+      val max_resource : int
+      val max_identity_per_resource : int
+    end
+  module Make :
+    functor (A : ARG) ->
+      sig
+        type identity = Os_types.User.id option
+        type key = A.key
+        type server_notif = A.server_notif
+        type client_notif = A.client_notif
+        val init : unit -> unit Lwt.t
+        val deinit : unit -> unit Lwt.t
+        val listen : key -> unit
+        val unlisten : key -> unit
+        module Ext :
+          sig
+            val unlisten :
+              ?sitedata:Eliom_common.sitedata ->
+              ([< `Client_process ], [< `Data | `Pers ])
+              Eliom_state.Ext.state -> key -> unit
+          end
+        val client_ev : unit -> (key * client_notif) Eliom_react.Down.t Lwt.t
+        val clean : unit -> unit Lwt.t
+        val unlisten_user :
+          ?sitedata:Eliom_common.sitedata ->
+          userid:Os_types.User.id -> key -> unit
+        val notify :
+          ?notfor:[ `Me | `User of Os_types.User.id ] ->
+          key -> server_notif -> unit
+      end
+  module type ARG_SIMPLE = sig type key type notification end
+  module Make_Simple :
+    functor (A : ARG_SIMPLE) ->
+      sig
+        type identity = Os_types.User.id option
+        type key = A.key
+        type server_notif = A.notification
+        type client_notif = A.notification
+        val init : unit -> unit Lwt.t
+        val deinit : unit -> unit Lwt.t
+        val listen : key -> unit
+        val unlisten : key -> unit
+        module Ext :
+          sig
+            val unlisten :
+              ?sitedata:Eliom_common.sitedata ->
+              ([< `Client_process ], [< `Data | `Pers ])
+              Eliom_state.Ext.state -> key -> unit
+          end
+        val client_ev : unit -> (key * client_notif) Eliom_react.Down.t Lwt.t
+        val clean : unit -> unit Lwt.t
+        val unlisten_user :
+          ?sitedata:Eliom_common.sitedata ->
+          userid:Os_types.User.id -> key -> unit
+        val notify :
+          ?notfor:[ `Me | `User of Os_types.User.id ] ->
+          key -> server_notif -> unit
+      end
+end >>

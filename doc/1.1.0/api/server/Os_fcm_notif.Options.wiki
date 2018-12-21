@@ -1,0 +1,44 @@
+=Module <<a_api_type subproject="server" | module Os_fcm_notif.Options >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Options>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_fcm_notif.Options >><<span class="ocsforge_color_keyword"|end>>>>
+----
+<<pre class="ocsforge_color odocwiki_code" id="TYPEt"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|t>>>><<div class="odocwiki_info"|~The type representing an option~.
+>>
+<<pre id="VALto_list" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|to~_list>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >> <<span class="ocsforge_color_delimiter"| -> >> <<span class="ocsforge_color_delimiter"| ( >>string * <<span class="ocsforge_color_uid"|Yojson>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Safe>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|json>><<span class="ocsforge_color_delimiter"| ) >> list>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|to~_list option>> returns the representation of the options as a list of
+        tuples <<span class="odocwiki_inlinecode"|~(option~_name~, json~_value~)>>~.
+>>
+<<pre id="VALcreate" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|create>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string list <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|create registered~_ids>> creates a new option where <<span class="odocwiki_inlinecode"|registered~_ids>> is
+        the ~I~D of mobile devices you want to send the notifications to~.
+>>
+<<pre id="VALadd_to" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|add~_to>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_to to options>> specifies the recipient of a message~.
+
+
+        ~The value must be a registration token~, notification key~, or topic~. ~Do
+        not set this field when sending to multiple topics~.
+>>
+<<pre id="VALadd_condition" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|add~_condition>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_condition condition options>> specifies a logical expression of
+        conditions that determine the message target~.
+>>
+<<pre id="VALadd_collapse_key" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|add~_collapse~_key>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_collapse~_key collapse~_key options>> identifies a group of
+        messages ~(e~.g~.~, with collapse~_key~: "~Updates ~Available"~) that can be
+        collapsed~, so that only the last message gets sent when delivery can be
+        resumed~.
+>>
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<a_api subproject="server" text="Priority" | module Os_fcm_notif.Options.Priority >> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_fcm_notif.Options.Priority >><<span class="ocsforge_color_keyword"|end>>>><<div class="odocwiki_info"|~This modules defines a type for priorities for the notifications~.
+>>
+<<pre id="VALadd_priority" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|add~_priority>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<a_api subproject="server" text="Priority.t" | type Os_fcm_notif.Options.Priority.t >> <<span class="ocsforge_color_delimiter"| -> >>\\  <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_priority priority options>> sets the priority of the message~.
+>>
+<<pre id="VALadd_content_available" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|add~_content~_available>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|bool <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_content~_available value options>>~. ~On i~O~S~, if <<span class="odocwiki_inlinecode"|value>> is set to
+        <<span class="odocwiki_inlinecode"|true>>~, an inactive client app is awoken~. ~On ~Android~, data messages wake
+        the app by default~.
+>>
+<<pre id="VALadd_time_to_live" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|add~_time~_to~_live>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|int <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_time~_to~_live time~_in~_seconds options>> specifies how long ~(in
+        seconds~) the message should be kept in ~F~C~M storage if the device is
+        offline~.
+>>
+<<pre id="VALadd_restricted_package_name" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|add~_restricted~_package~_name>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_restricted~_package~_name package~_name options>> specifies the
+        package name of the application where the registration tokens must match
+        in order to receive the message~.
+>>
+<<pre id="VALadd_dry_run" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|add~_dry~_run>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|bool <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="t" | type Os_fcm_notif.Options.t >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_dry~_run value options>>~. ~When set to <<span class="odocwiki_inlinecode"|true>>~, allows developers to
+        test a request without actually sending a message~. ~Default is <<span class="odocwiki_inlinecode"|false>>~.
+>>

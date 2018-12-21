@@ -1,0 +1,38 @@
+=Module <<a_api_type subproject="server" | module Os_user_proxy >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Os_user_proxy>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_user_proxy >><<span class="ocsforge_color_keyword"|end>>>>~This module implements a cache of user using ~<~<a~_api project~="eliom" ~|
+    module ~Eliom~_cscache~>~> which allows to keep synchronized the cache between
+    the client and the server~.
+    ~Even if there is a cache implemented in <<a_api subproject="server" | module Os_user >> to avoid to do database
+    requests~, this last one is implementing only server side~. ~Same for
+    <<a_api subproject="server" | module Os_request_cache >> which is also only server~-side~.
+
+----
+<<pre id="VALcache" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|cache>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_delimiter"| ( >><<a_api subproject="server" text="Os_types.User.id" | type Os_types.User.id >>, <<a_api subproject="server" text="Os_types.User.t" | type Os_types.User.t >><<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_uid"|Eliom_cscache>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|~Cache keeping userid and user information as a <<span class="odocwiki_inlinecode"|~Os~_types~.user>> type~.
+>>
+<<pre id="VALget_data_from_db" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|get~_data~_from~_db>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|'a <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_types.User.id" | type Os_types.User.id >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_types.User.t" | type Os_types.User.t >> <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data~_from~_db myid~_o userid>> returns the user which has ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
+    ~For the moment~, <<span class="odocwiki_inlinecode"|myid~_o>> is not used but it will be use later~.
+
+
+    ~Data comes from the database~, not the cache~.
+>>
+<<pre id="VALget_data_from_db_for_client" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|get~_data~_from~_db~_for~_client>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  'a <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_types.User.id" | type Os_types.User.id >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_types.User.t" | type Os_types.User.t >> <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data~_from~_db~_for~_client myid~_o userid>> returns the user which has ~I~D
+    <<span class="odocwiki_inlinecode"|userid>>~. ~For the moment~, <<span class="odocwiki_inlinecode"|myid~_o>> is not used but it will be use later~.
+
+
+    ~Data comes from the database~, not the cache~.
+>>
+<<pre id="VALget_data_rpc'" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|get~_data~_rpc~'>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="server" text="Os_types.User.id" | type Os_types.User.id >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_types.User.t" | type Os_types.User.t >> <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data~_rpc~' userid>> returns the user which has ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
+    ~Use <<span class="odocwiki_inlinecode"|~Os~_connected~_rpc>> and <<a_api subproject="server" | val Os_user_proxy.get_data_from_db_for_client >>~.
+>>
+<<pre id="VALget_data" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|get~_data>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="server" text="Os_types.User.id" | type Os_types.User.id >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_types.User.t" | type Os_types.User.t >> <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data userid>> returns the user which has ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
+    ~For the moment~, <<span class="odocwiki_inlinecode"|myid~_o>> is not used but it will be use later~.
+
+
+    ~Data comes from the database~, not the cache~.
+>>
+<<pre id="VALget_data_rpc" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|get~_data~_rpc>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_delimiter"| ( >><<a_api subproject="server" text="Os_types.User.id" | type Os_types.User.id >>, <<a_api subproject="server" text="Os_types.User.t" | type Os_types.User.t >><<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_uid"|Eliom_client>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|server_function>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data~_rpc>> is a ~R~P~C to ~<~<a~_api subproject~="server" ~| module
+    ~Os~_user~_proxy~.get~_data~_rpc~'~>~>
+>>
+<<pre id="VALget_data_from_cache" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|get~_data~_from~_cache>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="server" text="Os_types.User.id" | type Os_types.User.id >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_types.User.t" | type Os_types.User.t >> <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data~_from~_cache userid>> returns the user with ~I~D <<span class="odocwiki_inlinecode"|userid>> saved in
+    cache~.
+>>

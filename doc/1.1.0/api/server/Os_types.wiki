@@ -1,0 +1,16 @@
+=Module <<a_api_type subproject="server" | module Os_types >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Os_types>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_types >><<span class="ocsforge_color_keyword"|end>>>>~Data types
+
+
+    ~This module defines types used in ocsigen~-start in multiple files~. ~It
+    gives a more readable interface ~(for example by using <<span class="odocwiki_inlinecode"|~Os~_types~.~User~.id>>
+    instead of <<span class="odocwiki_inlinecode"|int~6~4>>~)~. ~Put all most used types in this file avoids to have
+    dependencies between different modules for only one type~.
+
+
+----
+
+~Types related to users~.
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<a_api subproject="server" text="User" | module Os_types.User >> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_types.User >><<span class="ocsforge_color_keyword"|end>>>>
+~Types related to action link keys
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<a_api subproject="server" text="Action_link_key" | module Os_types.Action_link_key >> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_types.Action_link_key >><<span class="ocsforge_color_keyword"|end>>>><<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<a_api subproject="server" text="Group" | module Os_types.Group >> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_types.Group >><<span class="ocsforge_color_keyword"|end>>>>

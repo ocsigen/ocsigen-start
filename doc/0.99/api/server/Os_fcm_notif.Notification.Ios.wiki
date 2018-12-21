@@ -1,0 +1,6 @@
+=Module <<a_api_type subproject="server" | module Os_fcm_notif.Notification.Ios >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Ios>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_fcm_notif.Notification.Ios >><<span class="ocsforge_color_keyword"|end>>>>
+----
+<<pre id="VALadd_badge" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|add~_badge>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  int <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_fcm_notif.Notification.t" | type Os_fcm_notif.Notification.t >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_fcm_notif.Notification.t" | type Os_fcm_notif.Notification.t >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_badge nb~_badge notification>> indicates the badge on the client
+            app home icon~.
+>>

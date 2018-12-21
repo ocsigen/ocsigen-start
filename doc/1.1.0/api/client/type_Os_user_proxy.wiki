@@ -1,0 +1,6 @@
+<<code language="ocaml" | sig
+  val get_data : Os_types.User.id -> Os_types.User.t Lwt.t
+  val get_data_rpc :
+    (Os_types.User.id, Os_types.User.t) Eliom_client.server_function
+  val get_data_from_cache : Os_types.User.id -> Os_types.User.t Lwt.t
+end >>

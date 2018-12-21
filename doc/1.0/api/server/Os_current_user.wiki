@@ -1,0 +1,36 @@
+=Module <<a_api_type subproject="server" | module Os_current_user >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Os_current_user>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_current_user >><<span class="ocsforge_color_keyword"|end>>>>~This module provides functions and types to manage the current user~.
+
+----
+
+~On server side~, this will work only if the current request in wrapped
+    in <<a_api subproject="server" | val Os_session.connected_wrapper >>~, or <<a_api subproject="server" | val Os_session.connected_fun >>~,
+    etc~.
+<<pre class="ocsforge_color odocwiki_code" id="TYPEcurrent_user"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|current~_user>> <<span class="ocsforge_color_delimiter"|~=>> <<span class="odocwiki_variants"|<<span class="odocwiki_variant"|<<span class="odocwiki_variant_constr"|<<span class="ocsforge_color_keyword"| ~|>> <<span class="ocsforge_color_uid"|CU_idontknown>>>>>><<span class="odocwiki_variant"|<<span class="odocwiki_variant_constr"|<<span class="ocsforge_color_keyword"| ~|>> <<span class="ocsforge_color_uid"|CU_notconnected>>>>>><<span class="odocwiki_variant"|<<span class="odocwiki_variant_constr"|<<span class="ocsforge_color_keyword"| ~|>> <<span class="ocsforge_color_uid"|CU_user>> <<span class="ocsforge_color_keyword"|of>> <<span class="odocwiki_type"|<<a_api subproject="server" text="Os_types.User.t" | type Os_types.User.t >>>>>>>>>>>><<pre id="VALget_current_user" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|get~_current~_user>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|unit <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_types.User.t" | type Os_types.User.t >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_current~_user ~(~)>> returns the current user as a <<a_api subproject="server" | type Os_types.User.t >> type~.
+    ~If no user is connected~, it fails with <<a_api subproject="server" | exception Os_session.Not_connected >>~.
+>>
+<<pre id="VALget_current_userid" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|get~_current~_userid>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|unit <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_types.User.id" | type Os_types.User.id >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_current~_userid ~(~)>> returns the ~I~D of the current user~.
+    ~If no user is connected~, it fails with <<a_api subproject="server" | exception Os_session.Not_connected >>~.
+>>
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<a_api subproject="server" text="Opt" | module Os_current_user.Opt >> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_current_user.Opt >><<span class="ocsforge_color_keyword"|end>>>><<div class="odocwiki_info"|~Instead of exception~, the module <<span class="odocwiki_inlinecode"|~Opt>> returns an option~.
+>>
+<<pre id="VALremove_email_from_user" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|remove~_email~_from~_user>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string <<span class="ocsforge_color_delimiter"| -> >> unit <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|remove~_email~_from~_user email>> removes the email <<span class="odocwiki_inlinecode"|email>> of the current
+    user~.
+    ~If no user is connected~, it fails with <<a_api subproject="server" | exception Os_session.Not_connected >>~. ~If
+    <<span class="odocwiki_inlinecode"|email>> is the main email of the current user~, it fails with
+    <<a_api subproject="server" | exception Os_db.Main_email_removal_attempt >>~.
+>>
+<<pre id="VALupdate_main_email" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|update~_main~_email>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string <<span class="ocsforge_color_delimiter"| -> >> unit <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|update~_main~_email email>> sets the main email of the current user to
+    <<span class="odocwiki_inlinecode"|email>>~.
+    ~If no user is connected~, it fails with <<a_api subproject="server" | exception Os_session.Not_connected >>~.
+>>
+<<pre id="VALupdate_language" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|update~_language>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string <<span class="ocsforge_color_delimiter"| -> >> unit <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|update~_language language>> updates the language of the current user~.
+    ~If no user is connected~, it fails with <<a_api subproject="server" | exception Os_session.Not_connected >>~.
+>>
+<<pre id="VALis_email_validated" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|is~_email~_validated>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string <<span class="ocsforge_color_delimiter"| -> >> bool <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|is~_email~_validated email>> returns <<span class="odocwiki_inlinecode"|true>> if <<span class="odocwiki_inlinecode"|email>> is a valided email for
+    the current user~.
+    ~If no user is connected~, it fails with <<a_api subproject="server" | exception Os_session.Not_connected >>~.
+    ~It returns <<span class="odocwiki_inlinecode"|false>> in all other cases~.
+>>
+<<pre id="VALis_main_email" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|is~_main~_email>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string <<span class="ocsforge_color_delimiter"| -> >> bool <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|is~_main~_email email>> returns <<span class="odocwiki_inlinecode"|true>> if <<span class="odocwiki_inlinecode"|email>> is the main email of the current user~.
+>>

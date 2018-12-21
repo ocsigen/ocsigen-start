@@ -1,0 +1,172 @@
+=Index of modules=
+
+|@@ @style="tet-align: left;"@@\\A|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Action"| module Os_fcm_notif.Data.PhoneGap.Action >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data.PhoneGap >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Action_link_key"| module Os_types.Action_link_key >> ~[<<a_api subproject="server" | module Os_types >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Almost"| module Os_lib.Email_or_phone.Almost >> ~[<<a_api subproject="server" | module Os_lib.Email_or_phone >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Android"| module Os_fcm_notif.Notification.Android >> ~[<<a_api subproject="server" | module Os_fcm_notif.Notification >>~]||
+|@@ @style="tet-align: left;"@@\\D|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="D"| module Os_icons.D >> ~[<<a_api subproject="server" | module Os_icons >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Data"| module Os_fcm_notif.Data >> ~[<<a_api subproject="server" | module Os_fcm_notif >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Default_config"| module Os_page.Default_config >> ~[<<a_api subproject="server" | module Os_page >>~]|<<div class="odocwiki_info"|~A default configuration for pages~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\E|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Email"| module Os_db.Email >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~This module is used for low~-level email management with database~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Email_or_phone"| module Os_lib.Email_or_phone >> ~[<<a_api subproject="server" | module Os_lib >>~]|<<div class="odocwiki_info"|~Parse strings that can be e~-mails or phones~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\F|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="F"| module Os_icons.F >> ~[<<a_api subproject="server" | module Os_icons >>~]||
+|@@ @style="tet-align: left;"@@\\G|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Group"| module Os_types.Group >> ~[<<a_api subproject="server" | module Os_types >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Groups"| module Os_db.Groups >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~This module is low~-level and used to manage groups of user~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\H|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Http"| module Os_lib.Http >> ~[<<a_api subproject="server" | module Os_lib >>~]|<<div class="odocwiki_info"|~This module contains functions about ~H~T~T~P request~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\I|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ios"| module Os_fcm_notif.Notification.Ios >> ~[<<a_api subproject="server" | module Os_fcm_notif.Notification >>~]||
+|@@ @style="tet-align: left;"@@\\M|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Make"| module Os_request_cache.Make >> ~[<<a_api subproject="server" | module Os_request_cache >>~]|<<div class="odocwiki_info"|~Functor which creates a module <<a_api subproject="server" | module type Os_request_cache.Cache_sig >>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Make"| module Os_page.Make >> ~[<<a_api subproject="server" | module Os_page >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Make"| module Os_notif.Make >> ~[<<a_api subproject="server" | module Os_notif >>~]|<<div class="odocwiki_info"|see <<span class="odocwiki_inlinecode"|~Eliom~_notif~.~Make>>
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Make_Simple"| module Os_notif.Make_Simple >> ~[<<a_api subproject="server" | module Os_notif >>~]|<<div class="odocwiki_info"|~Use this functor in case messages are to be delivered only to clients
+    connected to the current server~, as is always the case in a single~-server
+    set~-up~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\N|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Notification"| module Os_fcm_notif.Notification >> ~[<<a_api subproject="server" | module Os_fcm_notif >>~]|<<div class="odocwiki_info"|~This module provides an interface to create the ~J~S~O~N for the notification
+    key~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\O|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Opt"| module Os_session.Opt >> ~[<<a_api subproject="server" | module Os_session >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Opt"| module Os_page.Make.Opt >> ~[<<a_api subproject="server" | module Os_page.Make >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Opt"| module Os_current_user.Opt >> ~[<<a_api subproject="server" | module Os_current_user >>~]|<<div class="odocwiki_info"|~Instead of exception~, the module <<span class="odocwiki_inlinecode"|~Opt>> returns an option~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Options"| module Os_fcm_notif.Options >> ~[<<a_api subproject="server" | module Os_fcm_notif >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_comet"| module Os_comet >> |<<div class="odocwiki_info"|~This module provides function to monitor communications between the server
+    clients~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_connect_phone"| module Os_connect_phone >> |<<div class="odocwiki_info"|~To be used for signalling errors with ~S~M~S transmission
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_current_user"| module Os_current_user >> |<<div class="odocwiki_info"|~This module provides functions and types to manage the current user~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_date"| module Os_date >> |<<div class="odocwiki_info"|~Time zone and date management for ~Web applications~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_db"| module Os_db >> |<<div class="odocwiki_info"|~This module defines low level functions for database requests~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_email"| module Os_email >> |<<div class="odocwiki_info"|~Basic module for sending e~-mail messages to users~,
+    using some local sendmail program~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_fcm_notif"| module Os_fcm_notif >> |<<div class="odocwiki_info"|~Send push notifications to ~Android and i~O~S mobile devices~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_group"| module Os_group >> |<<div class="odocwiki_info"|~Groups of users~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_handlers"| module Os_handlers >> |<<div class="odocwiki_info"|~This module contains pre~-defined handlers for connect~, disconnect~, sign up~,
+    add a new email~, etc~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_icons"| module Os_icons >> |<<div class="odocwiki_info"|~The icons used internally by ~Ocsigen ~Start~'s library~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_lib"| module Os_lib >> |<<div class="odocwiki_info"|~This module aims to provide common utilities functions~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_msg"| module Os_msg >> |<<div class="odocwiki_info"|~This module provides functions to display messages ~(client~-side or
+    server~-side~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_notif"| module Os_notif >> |<<div class="odocwiki_info"|~Server to client notifications~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_page"| module Os_page >> |<<div class="odocwiki_info"|~Functor defining wrappers for services handlers returning pages~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_platform"| module Os_platform >> |<<div class="odocwiki_info"|~About device platform~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_request_cache"| module Os_request_cache >> |<<div class="odocwiki_info"|~Caching request data to avoid doing the same computation several times
+    during the same request~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_services"| module Os_services >> |<<div class="odocwiki_info"|~This module provides pre~-defined services for connect~, disconnect~, sign up~,
+    add a new email~, etc~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_session"| module Os_session >> |<<div class="odocwiki_info"|~Connection and disconnection of users~,
+    restrict access to services or server functions~,
+    define actions to be executed at some points of the session~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_tips"| module Os_tips >> |<<div class="odocwiki_info"|~Tips for new users and new features~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_types"| module Os_types >> |<<div class="odocwiki_info"|~Data types
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_uploader"| module Os_uploader >> |<<div class="odocwiki_info"|~This module defines functions to manipulate images to be uploaded~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_user"| module Os_user >> |<<div class="odocwiki_info"|~This module provides functions and types about users~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_user_proxy"| module Os_user_proxy >> |<<div class="odocwiki_info"|~This module implements a cache of user using ~<~<a~_api project~="eliom" ~|
+    module ~Eliom~_cscache~>~> which allows to keep synchronized the cache between
+    the client and the server~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_user_view"| module Os_user_view >> |<<div class="odocwiki_info"|~This module defines functions to create password forms~, connection forms~,
+    settings buttons and other common contents arising in applications~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\P|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="PGOCaml"| module Os_db.PGOCaml >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Lwt version of ~P~G~O~Caml
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Phone"| module Os_db.Phone >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Manage user phone numbers
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="PhoneGap"| module Os_fcm_notif.Data.PhoneGap >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data >>~]|<<div class="odocwiki_info"|~The ~Cordova plugin phonegap~-plugin~-push interprets some payloads defined
+        in the data key~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Priority"| module Os_fcm_notif.Options.Priority >> ~[<<a_api subproject="server" | module Os_fcm_notif.Options >>~]|<<div class="odocwiki_info"|~This modules defines a type for priorities for the notifications~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Priority"| module Os_fcm_notif.Data.PhoneGap.Priority >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data.PhoneGap >>~]||
+|@@ @style="tet-align: left;"@@\\R|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Register"| module Os_icons.Register >> ~[<<a_api subproject="server" | module Os_icons >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Response"| module Os_fcm_notif.Response >> ~[<<a_api subproject="server" | module Os_fcm_notif >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Results"| module Os_fcm_notif.Response.Results >> ~[<<a_api subproject="server" | module Os_fcm_notif.Response >>~]|<<div class="odocwiki_info"|~The type representing a ~F~C~M response
+>>
+|
+|@@ @style="tet-align: left;"@@\\S|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Style"| module Os_fcm_notif.Data.PhoneGap.Style >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data.PhoneGap >>~]||
+|@@ @style="tet-align: left;"@@\\U|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="User"| module Os_types.User >> ~[<<a_api subproject="server" | module Os_types >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="User"| module Os_db.User >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~This module is used for low~-level user management with database~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\V|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Visibility"| module Os_fcm_notif.Data.PhoneGap.Visibility >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data.PhoneGap >>~]||
+\\

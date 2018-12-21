@@ -1,0 +1,9 @@
+<<code language="ocaml" | sig
+  type id = int64
+  type t = {
+    userid : Os_types.User.id;
+    fn : string;
+    ln : string;
+    avatar : string option;
+  }
+end >>

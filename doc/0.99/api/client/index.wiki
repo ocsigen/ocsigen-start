@@ -1,0 +1,76 @@
+==
+
+=@@id="1_ClientAPI"@@~Client ~A~P~I=
+
+
+
+
+|<<a_api subproject="client" | module Os_current_user >>|<<div class="odocwiki_info"|~This module provides functions and types to manage the current user~.
+>>
+|
+|<<a_api subproject="client" | module Os_date >>|<<div class="odocwiki_info"|~Type representing a local calendar~.
+>>
+|
+|<<a_api subproject="client" | module Os_email >>||
+|Os_group||
+|<<a_api subproject="client" | module Os_handlers >>|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|connect~_handler ~(~) ~(~(login~, password~)~, keep~Me~Logged~In~)>> connects the user
+    with <<span class="odocwiki_inlinecode"|login>> and <<span class="odocwiki_inlinecode"|password>> and keeps the user logged in between different
+    session if <<span class="odocwiki_inlinecode"|keep~Me~Logged~In>> is set to <<span class="odocwiki_inlinecode"|true>>~.
+>>
+|
+|<<a_api subproject="client" | module Os_icons >>||
+|<<a_api subproject="client" | module Os_lib >>|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|reload ~(~)>> reloads the current page~.
+>>
+|
+|<<a_api subproject="client" | module Os_msg >>|<<div class="odocwiki_info"|~Call this function either from client or server side
+    to display an error message in the page~.
+>>
+|
+|<<a_api subproject="client" | module Os_notif >>||
+|<<a_api subproject="client" | module Os_page >>|<<div class="odocwiki_info"|~Functor defining wrappers for services handlers returning pages~.
+>>
+|
+|<<a_api subproject="client" | module Os_platform >>|<<div class="odocwiki_info"|~Platform type~.
+>>
+|
+|<<a_api subproject="client" | module Os_request_cache >>||
+|<<a_api subproject="client" | module Os_services >>|<<div class="odocwiki_info"|~The main service~.
+>>
+|
+|<<a_api subproject="client" | module Os_session >>|<<div class="odocwiki_info"|~Wrapper for service handlers that fetches automatically connection
+    information~.
+>>
+|
+|<<a_api subproject="client" | module Os_tips >>|<<div class="odocwiki_info"|~Display tips in pages~, as a speech bubble~.
+>>
+|
+|Os_tools||
+|<<a_api subproject="client" | module Os_types >>|<<div class="odocwiki_info"|~Types related to users~.
+>>
+|
+|<<a_api subproject="client" | module Os_user >>|<<div class="odocwiki_info"|~Type alias to <<a_api subproject="client" | type Os_types.User.id >> to allow to use <<span class="odocwiki_inlinecode"|~Os~_user~.id>>~.
+>>
+|
+|<<a_api subproject="client" | module Os_user_proxy >>|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data userid>> returns the user which has ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
+>>
+|
+|<<a_api subproject="client" | module Os_user_view >>|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|check~_password~_confirmation ~~password ~~confirmation>> adds a listener to
+    the element <<span class="odocwiki_inlinecode"|confirmation>> which checks if the value of <<span class="odocwiki_inlinecode"|password>> and
+    <<span class="odocwiki_inlinecode"|confirmation>> match~.
+>>
+|
+
+
+
+
+
+==@@id="2_Index"@@~Index==
+
+
+
+* <<a_api subproject="client" text="Index of types" | index types >>
+* <<a_api subproject="client" text="Index of exceptions" | index exceptions >>
+* <<a_api subproject="client" text="Index of values" | index values >>
+* <<a_api subproject="client" text="Index of modules" | index modules >>
+* <<a_api subproject="client" text="Index of module types" | index module types >>
+

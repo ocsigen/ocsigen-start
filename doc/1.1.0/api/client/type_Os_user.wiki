@@ -1,0 +1,22 @@
+<<code language="ocaml" | sig
+  type id = Os_types.User.id
+  type t =
+    Os_types.User.t = {
+    userid : Os_user.id;
+    fn : string;
+    ln : string;
+    avatar : string option;
+    language : string option;
+  }
+  val userid_of_user : Os_types.User.t -> Os_types.User.id
+  val firstname_of_user : Os_types.User.t -> string
+  val lastname_of_user : Os_types.User.t -> string
+  val avatar_of_user : Os_types.User.t -> string option
+  val avatar_uri_of_avatar :
+    ?absolute_path:bool -> string -> Eliom_content.Xml.uri
+  val avatar_uri_of_user :
+    ?absolute_path:bool -> Os_types.User.t -> Eliom_content.Xml.uri option
+  val language_of_user : Os_types.User.t -> string option
+  val fullname_of_user : Os_types.User.t -> string
+  val is_complete : Os_types.User.t -> bool
+end >>

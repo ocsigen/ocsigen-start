@@ -1,0 +1,31 @@
+<<code language="ocaml" | sig
+  val connect_handler : unit -> (string * string) * bool -> unit Lwt.t
+  val disconnect_handler : ?main_page:bool -> unit -> unit -> unit Lwt.t
+  val sign_up_handler : unit -> string -> unit Lwt.t
+  val add_email_handler : unit -> string -> unit Lwt.t
+  exception Custom_action_link of Os_types.Action_link_key.info * bool
+  exception Account_already_activated_unconnected of
+              Os_types.Action_link_key.info
+  exception Invalid_action_key of Os_types.Action_link_key.info
+  exception No_such_resource
+  val action_link_handler :
+    int64 option ->
+    string ->
+    unit ->
+    'a Eliom_registration.application_content Eliom_registration.kind Lwt.t
+  val confirm_code_signup_handler :
+    unit -> string * (string * (string * string)) -> unit Lwt.t
+  val confirm_code_extra_handler : unit -> string -> unit Lwt.t
+  val confirm_code_recovery_handler : unit -> string -> unit Lwt.t
+  val forgot_password_handler :
+    (unit, unit, Eliom_service.get, Eliom_service.att, 'a,
+     Eliom_service.non_ext, 'b, [< `WithSuffix | `WithoutSuffix ], unit,
+     unit, 'c)
+    Eliom_service.t -> unit -> string -> unit Lwt.t
+  val preregister_handler : unit -> string -> unit Lwt.t
+  val set_password_handler :
+    Os_types.User.id -> unit -> string * string -> unit Lwt.t
+  val set_personal_data_handler :
+    Os_types.User.id ->
+    unit -> (string * string) * (string * string) -> unit Lwt.t
+end >>

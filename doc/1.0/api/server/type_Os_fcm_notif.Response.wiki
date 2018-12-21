@@ -1,0 +1,37 @@
+<<code language="ocaml" | sig
+  module Results :
+    sig
+      type success
+      val message_id_of_success :
+        Os_fcm_notif.Response.Results.success -> string
+      val registration_id_of_success :
+        Os_fcm_notif.Response.Results.success -> string option
+      type error =
+          Missing_registration
+        | Invalid_registration
+        | Unregistered_device
+        | Invalid_package_name
+        | Authentication_failed
+        | Mismatch_sender_id
+        | Invalid_JSON
+        | Message_too_big
+        | Invalid_data_key
+        | Invalid_time_to_live
+        | Timeout
+        | Internal_server
+        | Device_message_rate_exceeded
+        | Topics_message_rate_exceeded
+        | Unknown
+      val string_of_error : Os_fcm_notif.Response.Results.error -> string
+      type t =
+          Success of Os_fcm_notif.Response.Results.success
+        | Error of Os_fcm_notif.Response.Results.error
+    end
+  type t
+  val multicast_id_of_t : Os_fcm_notif.Response.t -> string
+  val success_of_t : Os_fcm_notif.Response.t -> int
+  val failure_of_t : Os_fcm_notif.Response.t -> int
+  val canonical_ids_of_t : Os_fcm_notif.Response.t -> int
+  val results_of_t :
+    Os_fcm_notif.Response.t -> Os_fcm_notif.Response.Results.t list
+end >>

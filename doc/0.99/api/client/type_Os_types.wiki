@@ -1,0 +1,32 @@
+<<code language="ocaml" | sig
+  module User :
+    sig
+      type id = int64
+      type t = {
+        userid : Os_types.User.id;
+        fn : string;
+        ln : string;
+        avatar : string option;
+      }
+    end
+  module Action_link_key :
+    sig
+      type info = {
+        userid : Os_types.User.id;
+        email : string;
+        validity : int64;
+        autoconnect : bool;
+        action : [ `AccountActivation | `Custom of string | `PasswordReset ];
+        data : string;
+      }
+    end
+  module Group :
+    sig
+      type id = int64
+      type t = {
+        id : Os_types.Group.id;
+        name : string;
+        desc : string option;
+      }
+    end
+end >>

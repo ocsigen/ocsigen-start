@@ -1,0 +1,9 @@
+<<code language="ocaml" | sig
+  val msg :
+    ?level:[ `Err | `Msg ] ->
+    ?duration:float -> ?onload:bool -> string -> unit
+  val action_link_key_created : bool Eliom_reference.Volatile.eref
+  val wrong_pdata :
+    ((string * string) * (string * string)) option
+    Eliom_reference.Volatile.eref
+end >>

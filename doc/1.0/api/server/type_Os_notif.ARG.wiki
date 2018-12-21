@@ -1,0 +1,11 @@
+<<code language="ocaml" | sig
+  type key
+  type server_notif
+  type client_notif
+  val prepare :
+    Os_types.User.id option ->
+    Os_notif.ARG.server_notif -> Os_notif.ARG.client_notif option Lwt.t
+  val equal_key : Os_notif.ARG.key -> Os_notif.ARG.key -> bool
+  val max_resource : int
+  val max_identity_per_resource : int
+end >>
