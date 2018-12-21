@@ -43,11 +43,11 @@ cat >$f <<EOF
     "project": "ocsigen-start",
     "api": "api",
     "menu": true,
-    "templates": ["docs/template.wiki"],
+    "templates": ["doc/template.wiki"],
     "manual": "manual"
 }
 EOF
-quickdop -f docs _doc -t json -c $f -viu
+quickdop -f doc _doc -t json -c $f -viu
 
 make-redir "$LATEST/manual/intro" _doc/index.html
 
