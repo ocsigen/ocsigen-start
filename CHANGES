@@ -1,3 +1,8 @@
+===== 1.3.0 (2018-12-26) =====
+
+* Os_tips: additional features
+* change Bs_lib.reload to replace the current page
+
 ===== 1.2.0 (2018-12-19) =====
 
 * Correct time zone handling (taking into account DST)
