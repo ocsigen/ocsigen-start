@@ -174,6 +174,7 @@ let%client onload_waiter () =
 let%client waiter = ref (onload_waiter ())
 
 let%client rec onchangepage_handler _ =
+  Lwt.cancel !waiter;
   waiter := onload_waiter ();
   (* onchangepage handlers are one-off, register ourselves again for
      next time *)
@@ -189,7 +190,7 @@ let%client display_bubble ?(a = [])
     ~name ~content ()
   =
   let current_waiter = !waiter in
-  let new_waiter, new_wakener = Lwt.wait () in
+  let new_waiter, new_wakener = Lwt.task () in
   waiter := new_waiter;
   let%lwt () = current_waiter in
   let bec = D.div ~a:[a_class ["os-tip-bec"]] [] in
