@@ -1,0 +1,11 @@
+<<code language="ocaml" | sig
+  type key
+  type value
+  val has : Os_request_cache.Cache_sig.key -> bool
+  val set :
+    Os_request_cache.Cache_sig.key ->
+    Os_request_cache.Cache_sig.value -> unit
+  val reset : Os_request_cache.Cache_sig.key -> unit
+  val get :
+    Os_request_cache.Cache_sig.key -> Os_request_cache.Cache_sig.value Lwt.t
+end >>

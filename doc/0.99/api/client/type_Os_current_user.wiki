@@ -1,0 +1,16 @@
+<<code language="ocaml" | sig
+  type current_user =
+      CU_idontknown
+    | CU_notconnected
+    | CU_user of Os_types.User.t
+  val get_current_user : unit -> Os_types.User.t
+  val get_current_userid : unit -> Os_types.User.id
+  module Opt :
+    sig
+      val get_current_user : unit -> Os_types.User.t option
+      val get_current_userid : unit -> Os_types.User.id option
+    end
+  val remove_email_from_user : string -> unit Lwt.t
+  val update_main_email : string -> unit Lwt.t
+  val me : Os_current_user.current_user Pervasives.ref
+end >>

@@ -1,0 +1,1 @@
+<<code language="ocaml" | sig val available : string -> bool Lwt.t end >>

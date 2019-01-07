@@ -1,0 +1,175 @@
+<<code language="ocaml" | sig
+  exception FCM_empty_response
+  exception FCM_no_json_response of string
+  exception FCM_missing_field of string
+  exception FCM_unauthorized
+  module Notification :
+    sig
+      type t
+      val to_json : Os_fcm_notif.Notification.t -> Yojson.Safe.json
+      val empty : unit -> Os_fcm_notif.Notification.t
+      val add_title :
+        string -> Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
+      val add_body :
+        string -> Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
+      val add_sound :
+        string -> Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
+      val add_click_action :
+        string -> Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
+      val add_raw_string :
+        string ->
+        string -> Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
+      val add_raw_json :
+        string ->
+        Yojson.Safe.json ->
+        Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
+      module Ios :
+        sig
+          val add_badge :
+            int -> Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
+        end
+      module Android :
+        sig
+          val add_icon :
+            string ->
+            Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
+          val add_tag :
+            string ->
+            Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
+          val add_color :
+            red:int ->
+            green:int ->
+            blue:int ->
+            Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
+        end
+    end
+  module Data :
+    sig
+      type t
+      val to_list : Os_fcm_notif.Data.t -> (string * Yojson.Safe.json) list
+      val empty : unit -> Os_fcm_notif.Data.t
+      val add_raw_string :
+        string -> string -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+      val add_raw_json :
+        string ->
+        Yojson.Safe.json -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+      module PhoneGap :
+        sig
+          val add_message :
+            string -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          val add_title :
+            string -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          val add_image :
+            string -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          val add_soundname :
+            string -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          val add_notification_id :
+            int -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          module Style : sig type t = Inbox | Picture end
+          val add_style :
+            Os_fcm_notif.Data.PhoneGap.Style.t ->
+            Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          val add_summary_text :
+            string -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          module Action :
+            sig
+              type t
+              val to_json :
+                Os_fcm_notif.Data.PhoneGap.Action.t -> Yojson.Safe.json
+              val create :
+                string ->
+                string ->
+                string -> bool -> Os_fcm_notif.Data.PhoneGap.Action.t
+            end
+          val add_actions :
+            Os_fcm_notif.Data.PhoneGap.Action.t ->
+            Os_fcm_notif.Data.PhoneGap.Action.t ->
+            Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          val add_led_color :
+            int ->
+            int -> int -> int -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          val add_vibration_pattern :
+            int list -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          val add_badge : int -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          module Priority :
+            sig type t = Minimum | Low | Default | High | Maximum end
+          val add_priority :
+            Os_fcm_notif.Data.PhoneGap.Priority.t ->
+            Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          val add_picture :
+            string -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          val add_info : string -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          module Visibility : sig type t = Secret | Private | Public end
+          val add_visibility :
+            Os_fcm_notif.Data.PhoneGap.Visibility.t ->
+            Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+        end
+    end
+  module Options :
+    sig
+      type t
+      val to_list :
+        Os_fcm_notif.Options.t -> (string * Yojson.Safe.json) list
+      val create : string list -> Os_fcm_notif.Options.t
+      val add_to : string -> Os_fcm_notif.Options.t -> Os_fcm_notif.Options.t
+      val add_condition :
+        string -> Os_fcm_notif.Options.t -> Os_fcm_notif.Options.t
+      val add_collapse_key :
+        string -> Os_fcm_notif.Options.t -> Os_fcm_notif.Options.t
+      module Priority : sig type t = Normal | High end
+      val add_priority :
+        Os_fcm_notif.Options.Priority.t ->
+        Os_fcm_notif.Options.t -> Os_fcm_notif.Options.t
+      val add_content_available :
+        bool -> Os_fcm_notif.Options.t -> Os_fcm_notif.Options.t
+      val add_time_to_live :
+        int -> Os_fcm_notif.Options.t -> Os_fcm_notif.Options.t
+      val add_restricted_package_name :
+        string -> Os_fcm_notif.Options.t -> Os_fcm_notif.Options.t
+      val add_dry_run :
+        bool -> Os_fcm_notif.Options.t -> Os_fcm_notif.Options.t
+    end
+  module Response :
+    sig
+      module Results :
+        sig
+          type success
+          val message_id_of_success :
+            Os_fcm_notif.Response.Results.success -> string
+          val registration_id_of_success :
+            Os_fcm_notif.Response.Results.success -> string option
+          type error =
+              Missing_registration
+            | Invalid_registration
+            | Unregistered_device
+            | Invalid_package_name
+            | Authentication_failed
+            | Mismatch_sender_id
+            | Invalid_JSON
+            | Message_too_big
+            | Invalid_data_key
+            | Invalid_time_to_live
+            | Timeout
+            | Internal_server
+            | Device_message_rate_exceeded
+            | Topics_message_rate_exceeded
+            | Unknown
+          val string_of_error : Os_fcm_notif.Response.Results.error -> string
+          type t =
+              Success of Os_fcm_notif.Response.Results.success
+            | Error of Os_fcm_notif.Response.Results.error
+        end
+      type t
+      val multicast_id_of_t : Os_fcm_notif.Response.t -> string
+      val success_of_t : Os_fcm_notif.Response.t -> int
+      val failure_of_t : Os_fcm_notif.Response.t -> int
+      val canonical_ids_of_t : Os_fcm_notif.Response.t -> int
+      val results_of_t :
+        Os_fcm_notif.Response.t -> Os_fcm_notif.Response.Results.t list
+    end
+  val send :
+    string ->
+    Os_fcm_notif.Notification.t ->
+    ?data:Os_fcm_notif.Data.t ->
+    Os_fcm_notif.Options.t -> Os_fcm_notif.Response.t Lwt.t
+end >>

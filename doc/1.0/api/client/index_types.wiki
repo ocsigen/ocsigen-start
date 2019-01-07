@@ -1,0 +1,32 @@
+=Index of types=
+
+|@@ @style="tet-align: left;"@@\\C|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="content"| type Os_page.content >> ~[<<a_api subproject="client" | module Os_page >>~]|<<div class="odocwiki_info"|~An abstract type describing the content of a page
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="current_user"| type Os_current_user.current_user >> ~[<<a_api subproject="client" | module Os_current_user >>~]||
+|@@ @style="tet-align: left;"@@\\I|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="id"| type Os_user.id >> ~[<<a_api subproject="client" | module Os_user >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="id"| type Os_types.Group.id >> ~[<<a_api subproject="client" | module Os_types.Group >>~]|<<div class="odocwiki_info"|~Type representing a group ~I~D
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="id"| type Os_types.User.id >> ~[<<a_api subproject="client" | module Os_types.User >>~]|<<div class="odocwiki_info"|~Type representing a user ~I~D
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="info"| type Os_types.Action_link_key.info >> ~[<<a_api subproject="client" | module Os_types.Action_link_key >>~]|<<div class="odocwiki_info"|~Type representing information about the action link key
+>>
+|
+|@@ @style="tet-align: left;"@@\\L|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="local_calendar"| type Os_date.local_calendar >> ~[<<a_api subproject="client" | module Os_date >>~]||
+|@@ @style="tet-align: left;"@@\\T|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="t"| type Os_user.t >> ~[<<a_api subproject="client" | module Os_user >>~]|<<div class="odocwiki_info"|~Type alias to <<a_api subproject="client" | type Os_types.User.t >> to allow to use <<span class="odocwiki_inlinecode"|~Os~_user~.t>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="t"| type Os_types.Group.t >> ~[<<a_api subproject="client" | module Os_types.Group >>~]|<<div class="odocwiki_info"|~Type representing a group~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="t"| type Os_types.User.t >> ~[<<a_api subproject="client" | module Os_types.User >>~]|<<div class="odocwiki_info"|~Type representing a user~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="t"| type Os_platform.t >> ~[<<a_api subproject="client" | module Os_platform >>~]||
+\\

@@ -1,0 +1,115 @@
+<<code language="ocaml" | sig
+  val generic_email_form :
+    ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
+    ?label:string Eliom_content.Html.F.wrap ->
+    ?a_placeholder_email:string ->
+    ?text:string ->
+    ?email:string ->
+    service:(unit, 'a, Eliom_service.post, 'b, 'c, 'd, 'e,
+             [< `WithSuffix | `WithoutSuffix ], 'f,
+             [< string Eliom_parameter.setoneradio ]
+             Eliom_parameter.param_name, Eliom_service.non_ocaml)
+            Eliom_service.t ->
+    unit -> [> Html_types.form ] Eliom_content.Html.D.elt
+  val connect_form :
+    ?a_placeholder_email:string ->
+    ?a_placeholder_phone:string ->
+    ?a_placeholder_pwd:string ->
+    ?text_keep_me_logged_in:string ->
+    ?text_sign_in:string ->
+    ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
+    ?email:string -> unit -> [> Html_types.form ] Eliom_content.Html.D.elt
+  val sign_up_form :
+    ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
+    ?a_placeholder_email:string ->
+    ?text:string ->
+    ?email:string -> unit -> [> Html_types.form ] Eliom_content.Html.D.elt
+  val forgot_password_form :
+    ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
+    unit -> [> Html_types.form ] Eliom_content.Html.D.elt
+  val information_form :
+    ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
+    ?a_placeholder_password:string ->
+    ?a_placeholder_retype_password:string ->
+    ?a_placeholder_firstname:string ->
+    ?a_placeholder_lastname:string ->
+    ?text_submit:string ->
+    ?firstname:string ->
+    ?lastname:string ->
+    ?password1:string ->
+    ?password2:string ->
+    unit -> [> Html_types.form ] Eliom_content.Html.D.elt
+  val preregister_form :
+    ?a:[< Html_types.form_attrib > `OnSubmit ] Eliom_content.Html.D.attrib
+       list ->
+    string Eliom_content.Html.F.wrap ->
+    [> Html_types.form ] Eliom_content.Html.D.elt
+  val home_button :
+    ?a:[< Html_types.form_attrib ] Eliom_content.Html.F.attrib list ->
+    unit -> [> Html_types.form ] Eliom_content.Html.F.elt
+  val avatar : Os_types.User.t -> [> `I | `Img ] Eliom_content.Html.F.elt
+  val username :
+    Os_types.User.t -> [> Html_types.div ] Eliom_content.Html.F.elt
+  val password_form :
+    ?a_placeholder_pwd:string ->
+    ?a_placeholder_confirmation:string ->
+    ?text_send_button:string ->
+    ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
+    service:(unit, 'a, Eliom_service.post, 'b, 'c, 'd, 'e,
+             [< `WithSuffix | `WithoutSuffix ], 'f,
+             [< string Eliom_parameter.setoneradio ]
+             Eliom_parameter.param_name *
+             [< string Eliom_parameter.setoneradio ]
+             Eliom_parameter.param_name, Eliom_service.non_ocaml)
+            Eliom_service.t ->
+    unit -> [> Html_types.form ] Eliom_content.Html.D.elt
+  val upload_pic_link :
+    ?a:[< Html_types.a_attrib > `OnClick ] Eliom_content.Html.D.Raw.attrib
+       list ->
+    ?content:Html_types.a_content Eliom_content.Html.D.Raw.elt list ->
+    ?crop:float option ->
+    ?input:Html_types.label_attrib Eliom_content.Html.D.Raw.attrib list *
+           Html_types.label_content_fun Eliom_content.Html.D.Raw.elt list ->
+    ?submit:Html_types.button_attrib Eliom_content.Html.D.Raw.attrib list *
+            Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list ->
+    ?onclick:(unit -> unit) Eliom_client_value.t ->
+    (unit, unit) Ot_picture_uploader.service ->
+    [> `A of Html_types.a_content ] Eliom_content.Html.D.Raw.elt
+  val reset_tips_link :
+    ?text_link:string ->
+    ?close:(unit -> unit) Eliom_client_value.t ->
+    unit -> [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
+  val disconnect_button :
+    ?text_logout:string ->
+    unit -> [> Html_types.li_content_fun ] Eliom_content.Html.F.elt
+  val disconnect_link :
+    ?text_logout:string ->
+    ?a:[< Html_types.a_attrib > `OnClick ] Eliom_content.Html.attrib list ->
+    unit ->
+    [> `A of Html_types.flow5_without_interactive ] Eliom_content.Html.F.elt
+  val connected_user_box :
+    user:Os_types.User.t -> [> Html_types.div ] Eliom_content.Html.D.elt
+  val connection_box :
+    ?a_placeholder_email:string ->
+    ?a_placeholder_phone:string ->
+    ?a_placeholder_pwd:string ->
+    ?text_keep_me_logged_in:string ->
+    ?content_popup_forgotpwd:string ->
+    ?text_button_forgotpwd:string ->
+    ?text_sign_in:string ->
+    ?text_sign_up:string ->
+    ?text_send_button:string ->
+    unit -> [> Html_types.div ] Eliom_content.Html.D.elt Lwt.t
+  val user_box :
+    ?a_placeholder_email:string ->
+    ?a_placeholder_pwd:string ->
+    ?text_keep_me_logged_in:string ->
+    ?content_popup_forgotpwd:string ->
+    ?text_button_forgotpwd:string ->
+    ?text_sign_in:string ->
+    ?text_sign_up:string ->
+    ?text_send_button:string ->
+    ?user:Os_types.User.t ->
+    unit -> [> Html_types.div ] Eliom_content.Html.F.elt Lwt.t
+  val enable_phone : unit -> unit
+end >>

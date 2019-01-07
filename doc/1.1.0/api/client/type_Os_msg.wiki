@@ -1,0 +1,5 @@
+<<code language="ocaml" | sig
+  val msg :
+    ?level:[ `Err | `Msg ] ->
+    ?duration:float -> ?onload:bool -> string -> unit
+end >>

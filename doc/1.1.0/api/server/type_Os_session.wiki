@@ -1,0 +1,49 @@
+<<code language="ocaml" | sig
+  val on_start_process : (unit -> unit Lwt.t) -> unit
+  val on_start_connected_process : (Os_types.User.id -> unit Lwt.t) -> unit
+  val on_connected_request : (Os_types.User.id -> unit Lwt.t) -> unit
+  val on_unconnected_request : (unit -> unit Lwt.t) -> unit
+  val on_open_session : (Os_types.User.id -> unit Lwt.t) -> unit
+  val on_pre_close_session : (unit -> unit Lwt.t) -> unit
+  val on_post_close_session : (unit -> unit Lwt.t) -> unit
+  val on_request : (unit -> unit Lwt.t) -> unit
+  val on_denied_request : (Os_types.User.id option -> unit Lwt.t) -> unit
+  val user_indep_state_hierarchy : Eliom_common.scope_hierarchy
+  val user_indep_process_scope : Eliom_common.client_process_scope
+  val user_indep_session_scope : Eliom_common.session_scope
+  exception Not_connected
+  exception Permission_denied
+  val connect : ?expire:bool -> Os_types.User.id -> unit Lwt.t
+  val disconnect : unit -> unit Lwt.t
+  val connected_fun :
+    ?allow:Os_types.Group.t list ->
+    ?deny:Os_types.Group.t list ->
+    ?deny_fun:(Os_types.User.id option -> 'c Lwt.t) ->
+    (Os_types.User.id -> 'a -> 'b -> 'c Lwt.t) -> 'a -> 'b -> 'c Lwt.t
+  val connected_rpc :
+    ?allow:Os_types.Group.t list ->
+    ?deny:Os_types.Group.t list ->
+    ?deny_fun:(Os_types.User.id option -> 'b Lwt.t) ->
+    (Os_types.User.id -> 'a -> 'b Lwt.t) -> 'a -> 'b Lwt.t
+  val connected_wrapper :
+    ?allow:Os_types.Group.t list ->
+    ?deny:Os_types.Group.t list ->
+    ?deny_fun:(Os_types.User.id option -> 'b Lwt.t) ->
+    ?force_unconnected:bool -> ('a -> 'b Lwt.t) -> 'a -> 'b Lwt.t
+  module Opt :
+    sig
+      val connected_fun :
+        ?allow:Os_types.Group.t list ->
+        ?deny:Os_types.Group.t list ->
+        ?deny_fun:(Os_types.User.id option -> 'c Lwt.t) ->
+        ?force_unconnected:bool ->
+        (Os_types.User.id option -> 'a -> 'b -> 'c Lwt.t) ->
+        'a -> 'b -> 'c Lwt.t
+      val connected_rpc :
+        ?allow:Os_types.Group.t list ->
+        ?deny:Os_types.Group.t list ->
+        ?deny_fun:(Os_types.User.id option -> 'b Lwt.t) ->
+        ?force_unconnected:bool ->
+        (Os_types.User.id option -> 'a -> 'b Lwt.t) -> 'a -> 'b Lwt.t
+    end
+end >>

@@ -1,0 +1,60 @@
+=Index of exceptions=
+
+|@@ @style="tet-align: left;"@@\\A|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Account_already_activated_unconnected"| exception Os_handlers.Account_already_activated_unconnected >> ~[<<a_api subproject="server" | module Os_handlers >>~]|<<div class="odocwiki_info"|~Exception raised when an account has been already activated and no user is
+    connected~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Account_not_activated"| exception Os_db.Account_not_activated >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Exception raised when the account is not activated~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Already_exists"| exception Os_user.Already_exists >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|~Exception used if an user already exists~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\C|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Custom_action_link"| exception Os_handlers.Custom_action_link >> ~[<<a_api subproject="server" | module Os_handlers >>~]|<<div class="odocwiki_info"|~Exception raised when something went wrong with an action link key~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\E|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Error_while_cropping"| exception Os_uploader.Error_while_cropping >> ~[<<a_api subproject="server" | module Os_uploader >>~]|<<div class="odocwiki_info"|~Raised if an error occured while cropping a picture~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Error_while_resizing"| exception Os_uploader.Error_while_resizing >> ~[<<a_api subproject="server" | module Os_uploader >>~]|<<div class="odocwiki_info"|~Raised if an error occured while resizing a picture~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\F|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="FCM_empty_response"| exception Os_fcm_notif.FCM_empty_response >> ~[<<a_api subproject="server" | module Os_fcm_notif >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="FCM_missing_field"| exception Os_fcm_notif.FCM_missing_field >> ~[<<a_api subproject="server" | module Os_fcm_notif >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="FCM_no_json_response"| exception Os_fcm_notif.FCM_no_json_response >> ~[<<a_api subproject="server" | module Os_fcm_notif >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="FCM_unauthorized"| exception Os_fcm_notif.FCM_unauthorized >> ~[<<a_api subproject="server" | module Os_fcm_notif >>~]||
+|@@ @style="tet-align: left;"@@\\I|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Invalid_action_key"| exception Os_handlers.Invalid_action_key >> ~[<<a_api subproject="server" | module Os_handlers >>~]|<<div class="odocwiki_info"|~Exception raised when the key is oudated~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Invalid_action_link_key"| exception Os_db.User.Invalid_action_link_key >> ~[<<a_api subproject="server" | module Os_db.User >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Invalid_mailer"| exception Os_email.Invalid_mailer >> ~[<<a_api subproject="server" | module Os_email >>~]|<<div class="odocwiki_info"|~Exception raised if the mailer is invalid~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\M|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Main_email_removal_attempt"| exception Os_db.Main_email_removal_attempt >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Exception raised when there is an attempt to remove the main email~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\N|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="No_such_group"| exception Os_group.No_such_group >> ~[<<a_api subproject="server" | module Os_group >>~]|<<div class="odocwiki_info"|~Exception raised when no there is no group corresponding to the request ~(for
+    example wrong ~I~D or name~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="No_such_resource"| exception Os_handlers.No_such_resource >> ~[<<a_api subproject="server" | module Os_handlers >>~]|<<div class="odocwiki_info"|~Exception raised when the requested resource is not available~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="No_such_resource"| exception Os_db.No_such_resource >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Exception raised when no ressource corresponds to the database request~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="No_such_user"| exception Os_user.No_such_user >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|~Exception used if an user doesn~'t exist~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Not_connected"| exception Os_session.Not_connected >> ~[<<a_api subproject="server" | module Os_session >>~]||
+|@@ @style="tet-align: left;"@@\\P|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Permission_denied"| exception Os_session.Permission_denied >> ~[<<a_api subproject="server" | module Os_session >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Predicate_failed"| exception Os_page.Predicate_failed >> ~[<<a_api subproject="server" | module Os_page >>~]||
+\\

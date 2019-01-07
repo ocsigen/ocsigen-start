@@ -1,0 +1,115 @@
+<<code language="ocaml" | sig
+  val bubble :
+    ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.D.attrib list ->
+    ?recipient:[> `All | `Connected | `Not_connected ] ->
+    ?arrow:[< `bottom of int | `left of int | `right of int | `top of int ] ->
+    ?top:int ->
+    ?left:int ->
+    ?right:int ->
+    ?bottom:int ->
+    ?height:int ->
+    ?width:int ->
+    ?parent_node:[< `A of Html_types.flow5_without_interactive
+                  | `Abbr
+                  | `Address
+                  | `Article
+                  | `Aside
+                  | `Audio of Html_types.flow5_without_media
+                  | `Audio_interactive of Html_types.flow5_without_media
+                  | `B
+                  | `Bdo
+                  | `Blockquote
+                  | `Body
+                  | `Br
+                  | `Button
+                  | `Canvas of Html_types.flow5
+                  | `Cite
+                  | `Code
+                  | `Command
+                  | `Datalist
+                  | `Del of Html_types.flow5
+                  | `Details
+                  | `Dfn
+                  | `Div
+                  | `Dl
+                  | `Em
+                  | `Embed
+                  | `Fieldset
+                  | `Figure
+                  | `Footer
+                  | `Form
+                  | `H1
+                  | `H2
+                  | `H3
+                  | `H4
+                  | `H5
+                  | `H6
+                  | `Header
+                  | `Hgroup
+                  | `Hr
+                  | `I
+                  | `Iframe
+                  | `Img
+                  | `Img_interactive
+                  | `Input
+                  | `Ins of Html_types.flow5
+                  | `Kbd
+                  | `Keygen
+                  | `Label
+                  | `Main
+                  | `Map of Html_types.flow5
+                  | `Mark
+                  | `Menu
+                  | `Meter
+                  | `Nav
+                  | `Noscript of Html_types.flow5_without_noscript
+                  | `Object of Html_types.flow5
+                  | `Object_interactive of Html_types.flow5
+                  | `Ol
+                  | `Output
+                  | `P
+                  | `PCDATA
+                  | `Pre
+                  | `Progress
+                  | `Q
+                  | `Ruby
+                  | `Samp
+                  | `Script
+                  | `Section
+                  | `Select
+                  | `Small
+                  | `Span
+                  | `Strong
+                  | `Style
+                  | `Sub
+                  | `Sup
+                  | `Svg
+                  | `Table
+                  | `Textarea
+                  | `Time
+                  | `U
+                  | `Ul
+                  | `Var
+                  | `Video of Html_types.flow5_without_media
+                  | `Video_interactive of Html_types.flow5_without_media
+                  | `Wbr ]
+                 Eliom_content.Html.elt ->
+    name:string ->
+    content:((unit -> unit Lwt.t) Eliom_client_value.t ->
+             Html_types.div_content Eliom_content.Html.elt list Lwt.t) ->
+    unit -> unit Lwt.t
+  val block :
+    ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.D.attrib list ->
+    ?recipient:[> `All | `Connected | `Not_connected ] ->
+    name:string ->
+    content:((unit -> unit Lwt.t) Eliom_client_value.t ->
+             Html_types.div_content Eliom_content.Html.elt list Lwt.t) ->
+    unit -> [> `Div ] Eliom_content.Html.elt option Lwt.t
+  val set_tip_seen : string -> unit Lwt.t
+  val reset_tips_service :
+    (unit, unit, Eliom_service.post, Eliom_service.non_att, Eliom_service.co,
+     Eliom_service.non_ext, Eliom_service.reg, [ `WithoutSuffix ], unit,
+     unit, Eliom_service.non_ocaml)
+    Eliom_service.t
+  val reset_tips : unit -> unit Lwt.t
+end >>

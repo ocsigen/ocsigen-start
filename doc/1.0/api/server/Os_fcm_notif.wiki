@@ -1,0 +1,78 @@
+=Module <<a_api_type subproject="server" | module Os_fcm_notif >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Os_fcm_notif>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_fcm_notif >><<span class="ocsforge_color_keyword"|end>>>>~Send push notifications to ~Android and i~O~S mobile devices~.
+
+
+    ~This module provides a simple ~O~Caml interface to ~Firebase ~Cloud ~Messaging
+    ~(~F~C~M~) to send push notifications to ~Android and i~O~S mobile devices by using
+    downstream ~H~T~T~P messages in ~J~S~O~N~.
+
+
+    ~You can find all informations abou ~F~C~M at this address~:
+        https~:~/~/firebase~.google~.com~/docs~/cloud~-messaging~/
+
+
+    ~Before using this module~, you need to register your mobile application in
+    ~F~C~M and save the server key ~F~C~M will give you~. ~You need to pass this key to
+    <<a_api subproject="server" | val Os_fcm_notif.send >> when you want to send a notification~.
+
+
+    ~On the client~, you will need first to register the device on ~F~C~M~.
+    ~See
+* for i~O~S~: https~:~/~/firebase~.google~.com~/docs~/cloud~-messaging~/ios~/client
+* for ~Android~: https~:~/~/firebase~.google~.com~/docs~/cloud~-messaging~/android~/client
+
+    ~If you use this module to send push notifications to mobile devices created
+    with ocsigen~-start~, you can use one of these plugins~.
+* cordova~-plugin~-fcm ~(binding ocaml~-cordova~-plugin~-fcm~)~.
+* phonegap~-plugin~-push ~(binding ocaml~-cordova~-plugin~-push~-notifications~)~.
+    ~If you use one of them and if you want to add extra data~, you need to
+    use <<a_api subproject="server" | val Os_fcm_notif.Data.add_raw_string >> or <<a_api subproject="server" | val Os_fcm_notif.Data.add_raw_json >> depending on the type of
+    the value~.
+
+    ~F~C~M works with tokens which represents a device~. ~This token is used to
+    target the device when you send a notification~. ~The token is retrieved
+    client~-side~.
+
+
+    ~To send a notification~, you need to use
+    <<span class="odocwiki_inlinecode"|send server~_key notification ~?data options>>
+    where
+* <<span class="odocwiki_inlinecode"|notification>> is of type <<a_api subproject="server" | type Os_fcm_notif.Notification.t >> and represents the
+    notification payload in the ~J~S~O~N sent to ~F~C~M~.
+* <<span class="odocwiki_inlinecode"|data>> is an optional value of type <<a_api subproject="server" | type Os_fcm_notif.Data.t >> and represents the data
+    payload in the ~J~S~O~N sent to ~F~C~M~. ~By default~, it~'s empty~.
+* <<span class="odocwiki_inlinecode"|options>> is of type <<a_api subproject="server" | type Os_fcm_notif.Options.t >> and represents options in the ~F~C~M
+    documentation~.
+
+    ~The type <<a_api subproject="server" | type Os_fcm_notif.Options.t >> contains the list of registered
+    ~I~D you want to send the notification <<span class="odocwiki_inlinecode"|notification>> to~.
+    ~You can create a value of type <<a_api subproject="server" | type Os_fcm_notif.Options.t >> with
+    <<a_api subproject="server" | val Os_fcm_notif.Options.create >> which needs a list of client ~I~D~. ~These ~I~D~'s are the
+    devices you want to send the notification to~.
+    ~You can add some parameters like priorities~, restricted package name~,
+    condition~, etc~.
+
+
+    ~The type <<a_api subproject="server" | type Os_fcm_notif.Notification.t >> contains the notification payloads~. ~The
+    description is given here~:
+    https~:~/~/firebase~.google~.com~/docs~/cloud~-messaging~/http~-server~-ref
+
+
+    ~You can create an empty value of type <<a_api subproject="server" | type Os_fcm_notif.Notification.t >> with
+    <<a_api subproject="server" | val Os_fcm_notif.Notification.empty >>~. ~As described in the link given above~, you can add a
+    title~, a body~, etc to the notification~. ~In general~, to add the payload
+    <<span class="odocwiki_inlinecode"|payload>>~, you can use the function <<span class="odocwiki_inlinecode"|add~_~(payload~)>>~. ~The notification value
+    is at the end to be able to use the pipe~. ~For example~, to add a title and a
+    message~, you can use~:
+    <<code language="ocaml" |
+      Notification.empty () |>
+      add_title "Hello, World!" |>
+      add_body "Message to the world!"
+    >> 
+
+----
+<<pre id="EXCEPTIONFCM_empty_response" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|exception>> <<span class="odocwiki_name"|FCM_empty_response>>>><<pre id="EXCEPTIONFCM_no_json_response" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|exception>> <<span class="odocwiki_name"|FCM_no_json_response>> <<span class="ocsforge_color_keyword"|of>> <<span class="odocwiki_type"|string>>>><<pre id="EXCEPTIONFCM_missing_field" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|exception>> <<span class="odocwiki_name"|FCM_missing_field>> <<span class="ocsforge_color_keyword"|of>> <<span class="odocwiki_type"|string>>>><<pre id="EXCEPTIONFCM_unauthorized" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|exception>> <<span class="odocwiki_name"|FCM_unauthorized>>>><<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<a_api subproject="server" text="Notification" | module Os_fcm_notif.Notification >> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_fcm_notif.Notification >><<span class="ocsforge_color_keyword"|end>>>><<div class="odocwiki_info"|~This module provides an interface to create the ~J~S~O~N for the notification
+    key~.
+>>
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<a_api subproject="server" text="Data" | module Os_fcm_notif.Data >> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_fcm_notif.Data >><<span class="ocsforge_color_keyword"|end>>>><<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<a_api subproject="server" text="Options" | module Os_fcm_notif.Options >> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_fcm_notif.Options >><<span class="ocsforge_color_keyword"|end>>>><<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<a_api subproject="server" text="Response" | module Os_fcm_notif.Response >> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_fcm_notif.Response >><<span class="ocsforge_color_keyword"|end>>>><<pre id="VALsend" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|send>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  string <<span class="ocsforge_color_delimiter"| -> >>\\  <<a_api subproject="server" text="Notification.t" | type Os_fcm_notif.Notification.t >> <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?data: >><<a_api subproject="server" text="Data.t" | type Os_fcm_notif.Data.t >> <<span class="ocsforge_color_delimiter"| -> >>\\  <<a_api subproject="server" text="Options.t" | type Os_fcm_notif.Options.t >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Response.t" | type Os_fcm_notif.Response.t >> <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|send server~_key notification options>>
+>>

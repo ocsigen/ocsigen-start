@@ -1,0 +1,89 @@
+=Index of types=
+
+|@@ @style="tet-align: left;"@@\\C|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="client_notif"| type Os_notif.ARG.client_notif >> ~[<<a_api subproject="server" | module Os_notif.ARG >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="content"| type Os_page.content >> ~[<<a_api subproject="server" | module Os_page >>~]|<<div class="odocwiki_info"|~An abstract type describing the content of a page
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="current_user"| type Os_current_user.current_user >> ~[<<a_api subproject="server" | module Os_current_user >>~]||
+|@@ @style="tet-align: left;"@@\\E|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="error"| type Os_fcm_notif.Response.Results.error >> ~[<<a_api subproject="server" | module Os_fcm_notif.Response.Results >>~]|<<div class="odocwiki_info"|~Sum type to represent errors~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\I|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="id"| type Os_user.id >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|~Type alias to <<a_api subproject="server" | type Os_types.User.id >> to allow to use <<span class="odocwiki_inlinecode"|~Os~_user~.id>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="id"| type Os_types.Group.id >> ~[<<a_api subproject="server" | module Os_types.Group >>~]|<<div class="odocwiki_info"|~Type representing a group ~I~D
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="id"| type Os_types.User.id >> ~[<<a_api subproject="server" | module Os_types.User >>~]|<<div class="odocwiki_info"|~Type representing a user ~I~D
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="id"| type Os_group.id >> ~[<<a_api subproject="server" | module Os_group >>~]|<<div class="odocwiki_info"|~Type alias to <<a_api subproject="server" | type Os_types.Group.id >> to allow to use <<span class="odocwiki_inlinecode"|~Os~_group~.id>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="info"| type Os_types.Action_link_key.info >> ~[<<a_api subproject="server" | module Os_types.Action_link_key >>~]|<<div class="odocwiki_info"|~Type representing information about the action link key
+>>
+|
+|@@ @style="tet-align: left;"@@\\K|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="key"| type Os_request_cache.Cache_sig.key >> ~[<<a_api subproject="server" | module Os_request_cache.Cache_sig >>~]|<<div class="odocwiki_info"|~The type of the key
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="key"| type Os_notif.ARG_SIMPLE.key >> ~[<<a_api subproject="server" | module Os_notif.ARG_SIMPLE >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="key"| type Os_notif.ARG.key >> ~[<<a_api subproject="server" | module Os_notif.ARG >>~]||
+|@@ @style="tet-align: left;"@@\\L|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="local_calendar"| type Os_date.local_calendar >> ~[<<a_api subproject="server" | module Os_date >>~]|<<div class="odocwiki_info"|~Type representing a local calendar~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\N|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="notification"| type Os_notif.ARG_SIMPLE.notification >> ~[<<a_api subproject="server" | module Os_notif.ARG_SIMPLE >>~]||
+|@@ @style="tet-align: left;"@@\\S|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="server_notif"| type Os_notif.ARG.server_notif >> ~[<<a_api subproject="server" | module Os_notif.ARG >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="success"| type Os_fcm_notif.Response.Results.success >> ~[<<a_api subproject="server" | module Os_fcm_notif.Response.Results >>~]|<<div class="odocwiki_info"|~The type representing a success result~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\T|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_user.t >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|~Type alias to <<a_api subproject="server" | type Os_types.User.t >> to allow to use <<span class="odocwiki_inlinecode"|~Os~_user~.t>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_types.Group.t >> ~[<<a_api subproject="server" | module Os_types.Group >>~]|<<div class="odocwiki_info"|~Type representing a group~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_types.User.t >> ~[<<a_api subproject="server" | module Os_types.User >>~]|<<div class="odocwiki_info"|~Type representing a user~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_platform.t >> ~[<<a_api subproject="server" | module Os_platform >>~]|<<div class="odocwiki_info"|~Platform type~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_group.t >> ~[<<a_api subproject="server" | module Os_group >>~]|<<div class="odocwiki_info"|~Type alias to <<a_api subproject="server" | type Os_types.Group.t >> to allow to use <<span class="odocwiki_inlinecode"|~Os~_group~.t>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_fcm_notif.Response.Results.t >> ~[<<a_api subproject="server" | module Os_fcm_notif.Response.Results >>~]|<<div class="odocwiki_info"|~The type representing a result~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_fcm_notif.Response.t >> ~[<<a_api subproject="server" | module Os_fcm_notif.Response >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_fcm_notif.Options.Priority.t >> ~[<<a_api subproject="server" | module Os_fcm_notif.Options.Priority >>~]|<<div class="odocwiki_info"|~Priority of the message~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_fcm_notif.Options.t >> ~[<<a_api subproject="server" | module Os_fcm_notif.Options >>~]|<<div class="odocwiki_info"|~The type representing an option~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_fcm_notif.Data.PhoneGap.Visibility.t >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data.PhoneGap.Visibility >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_fcm_notif.Data.PhoneGap.Priority.t >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data.PhoneGap.Priority >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|~Maximum>> means the notification will be displayed on the screen
+                above all views during ~2 or ~3 seconds~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_fcm_notif.Data.PhoneGap.Action.t >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data.PhoneGap.Action >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_fcm_notif.Data.PhoneGap.Style.t >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data.PhoneGap.Style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_fcm_notif.Data.t >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data >>~]|<<div class="odocwiki_info"|~The type representing a data payload~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_fcm_notif.Notification.t >> ~[<<a_api subproject="server" | module Os_fcm_notif.Notification >>~]|<<div class="odocwiki_info"|~The type representing a notification
+>>
+|
+|@@ @style="tet-align: left;"@@\\V|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="value"| type Os_request_cache.Cache_sig.value >> ~[<<a_api subproject="server" | module Os_request_cache.Cache_sig >>~]|<<div class="odocwiki_info"|~The type of the value
+>>
+|
+\\

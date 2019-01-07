@@ -1,0 +1,28 @@
+=Functor <<a_api_type subproject="server" | module Os_request_cache.Make >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Make>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_sig_block"|<<span class="ocsforge_color_keyword"|functor>> <<span class="ocsforge_color_delimiter"|(>>M <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<span class="odocwiki_sig_block"|<<span class="ocsforge_color odocwiki_code" id="TYPEkey"|      <<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|key>>>><<div class="odocwiki_info"|~The type of your key~.
+>>
+<<span class="ocsforge_color odocwiki_code" id="TYPEvalue"|      <<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|value>>>><<div class="odocwiki_info"|~The type of the stored value~.
+>>
+<<span id="VALcompare" class="ocsforge_color odocwiki_code"|      <<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|compare>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\        <<span class="ocsforge_color_lid"|key>> <<span class="ocsforge_color_delimiter"| -> >>\\        <<span class="ocsforge_color_lid"|key>> <<span class="ocsforge_color_delimiter"| -> >> int>>>><<div class="odocwiki_info"|~The function used to compare keys~.
+>>
+<<span id="VALget" class="ocsforge_color odocwiki_code"|      <<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|get>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\        <<span class="ocsforge_color_lid"|key>> <<span class="ocsforge_color_delimiter"| -> >>\\        <<span class="ocsforge_color_lid"|value>> <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|~This function is called when the value corresponding to a key
+         is not yet stored into the cache~.
+>>
+>><<span class="ocsforge_color_keyword"|end>><<span class="ocsforge_color_delimiter"|)>> <<span class="ocsforge_color_delimiter"|-~>>> \\  <<span class="odocwiki_type"|<<a_api subproject="server" text="Cache_sig" | module Os_request_cache.Cache_sig >>>><<span class="odocwiki_type"|  with type key = M.key and type value = M.value>>>>>>~Functor which creates a module <<a_api subproject="server" | module type Os_request_cache.Cache_sig >>~.
+<<div class="odocwiki_module_param_list" | <<span class="odocwiki_param_title" |Parameters :>><<div|
+|@@class="odocwiki_paramstable"@ @class="centertop fifteen code"@@{{{M}}}|@@class="centertop"@@:|<<span class="odocwiki_type"|\\sig\\\\     (** The type of your key. *)\\     type key\\\\     (** The type of the stored value. *)\\     type value\\\\     (** The function used to compare keys. *)\\     val compare : key -> key -> int\\\\     (** This function is called when the value corresponding to a key\\         is not yet stored into the cache. *)\\     val get : key -> value Lwt.t\\\\   end>>|
+>>>>
+
+----
+<<pre class="ocsforge_color odocwiki_code" id="TYPEkey"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|key>>>><<div class="odocwiki_info"|~The type of the key
+>>
+<<pre class="ocsforge_color odocwiki_code" id="TYPEvalue"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|value>>>><<div class="odocwiki_info"|~The type of the value
+>>
+<<pre id="VALhas" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|has>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="server" text="key" | type Os_request_cache.Cache_sig.key >> <<span class="ocsforge_color_delimiter"| -> >> bool>>>><<div class="odocwiki_info"|~Returns <<span class="odocwiki_inlinecode"|true>> if the key has been stored into the cache~.
+>>
+<<pre id="VALset" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|set>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<a_api subproject="server" text="key" | type Os_request_cache.Cache_sig.key >> <<span class="ocsforge_color_delimiter"| -> >>\\  <<a_api subproject="server" text="value" | type Os_request_cache.Cache_sig.value >> <<span class="ocsforge_color_delimiter"| -> >> unit>>>><<div class="odocwiki_info"|~Set the corresponding <<span class="odocwiki_inlinecode"|value>> for a key~.
+>>
+<<pre id="VALreset" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|reset>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="server" text="key" | type Os_request_cache.Cache_sig.key >> <<span class="ocsforge_color_delimiter"| -> >> unit>>>><<div class="odocwiki_info"|~Remove a <<span class="odocwiki_inlinecode"|value>> for the given key~.
+>>
+<<pre id="VALget" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|get>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<a_api subproject="server" text="key" | type Os_request_cache.Cache_sig.key >> <<span class="ocsforge_color_delimiter"| -> >>\\  <<a_api subproject="server" text="value" | type Os_request_cache.Cache_sig.value >> <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|~Get the value corresponding to the given key~.
+>>

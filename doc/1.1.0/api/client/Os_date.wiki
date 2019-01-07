@@ -1,0 +1,78 @@
+=Module <<a_api_type subproject="client" | module Os_date >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Os_date>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="client" text=".." | module Os_date >><<span class="ocsforge_color_keyword"|end>>>>~Type representing a local calendar~.
+
+----
+<<pre class="ocsforge_color odocwiki_code" id="TYPElocal_calendar"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|local~_calendar>>>><<pre id="VALto_utc" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|to~_utc>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >> <<span class="ocsforge_color_uid"|CalendarLib>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Calendar>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|~Convert a local calendar to a ~U~T~C calendar
+>>
+<<pre id="VALto_local" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|to~_local>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_uid"|CalendarLib>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Calendar>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >>>>>><<div class="odocwiki_info"|~Convert any type of calendar to a local calendar~.
+>>
+<<pre id="VALnow" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|now>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|unit <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|now ~(~)>> returns the current date as a <<span class="odocwiki_inlinecode"|local~_calendar>> value~.
+>>
+<<pre id="VALuser_tz" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|user~_tz>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|unit <<span class="ocsforge_color_delimiter"| -> >> <<span class="ocsforge_color_uid"|CalendarLib>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Time_Zone>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|user~_tz ~(~)>> returns current user~'s timezone~.
+>>
+<<pre id="VALto_local_time" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|to~_local~_time>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >> <<span class="ocsforge_color_uid"|CalendarLib>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Time>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|~Convert a <<span class="odocwiki_inlinecode"|local~_calendar>> value to a <<span class="odocwiki_inlinecode"|~Calendar~Lib~.~Time~.t>> value~.
+>>
+<<pre id="VALto_local_date" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|to~_local~_date>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >> <<span class="ocsforge_color_uid"|CalendarLib>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Date>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|~Convert a <<span class="odocwiki_inlinecode"|local~_calendar>> value to a <<span class="odocwiki_inlinecode"|~Calendar~Lib~.~Date~.t>> value~.
+>>
+<<pre id="VALlocal_to_calendar" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|local~_to~_calendar>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >> <<span class="ocsforge_color_uid"|CalendarLib>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Calendar>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|~Convert a <<span class="odocwiki_inlinecode"|local~_calendar>> value to a <<span class="odocwiki_inlinecode"|~Calendar~Lib~.~Calendar~.t>> value~.
+>>
+<<pre id="VALlocal_from_calendar" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|local~_from~_calendar>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_uid"|CalendarLib>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Calendar>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >>>>>><<div class="odocwiki_info"|~Convert a <<span class="odocwiki_inlinecode"|~Calendar~Lib~.~Calendar~.t>> value to a <<span class="odocwiki_inlinecode"|local~_calendar>> value~.
+>>
+<<pre id="VALunknown_timezone" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|unknown~_timezone>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|unit <<span class="ocsforge_color_delimiter"| -> >> bool>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|unknown~_timezone ~(~)>> returns <<span class="odocwiki_inlinecode"|true>> if the timezone is unknown~. ~Else
+    returns <<span class="odocwiki_inlinecode"|false>>~.
+>>
+<<pre id="VALsmart_time" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|smart~_time>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_label"| ?now: >><<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >> string>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|smart~_time ~~now date>> returns a smart description of
+    <<span class="odocwiki_inlinecode"|local~_date>> comparing to <<span class="odocwiki_inlinecode"|now>> ~(default value of now is the current time
+    when the function is called~)~. ~It does the same job than <<a_api subproject="client" | val Os_date.smart_date >> but
+    « at ~%hour » is added at the end where ~%hour is computed from
+    <<a_api subproject="client" | val Os_date.smart_hours_minutes >>~.
+>>
+<<pre id="VALsmart_date" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|smart~_date>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_label"| ?now: >><<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >> string>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|smart~_date ~~now local~_date>> returns a smart description of <<span class="odocwiki_inlinecode"|local~_date>>
+    comparing to <<span class="odocwiki_inlinecode"|now>> ~(default value of now is the current time when the
+    function is called~)~.
+    ~Smart means
+* if <<span class="odocwiki_inlinecode"|local~_date>> is the day before <<span class="odocwiki_inlinecode"|now>>~, <<span class="odocwiki_inlinecode"|"~Yesterday">> is returned~.
+* if <<span class="odocwiki_inlinecode"|local~_date>> is the same day than <<span class="odocwiki_inlinecode"|now>>~, <<span class="odocwiki_inlinecode"|"~Today">> is returned~.
+* if <<span class="odocwiki_inlinecode"|local~_date>> is the day after <<span class="odocwiki_inlinecode"|now>>~, <<span class="odocwiki_inlinecode"|"~Tomorrow">> is returned~.
+* if <<span class="odocwiki_inlinecode"|now>> and <<span class="odocwiki_inlinecode"|local~_date>> has the same year~, it returns the date in
+      the format~: <<span class="odocwiki_inlinecode"|"~%~A ~%~B ~%d">>~.
+* else the year is added at the end in the same format than the previous
+      case~.
+
+>>
+<<pre id="VALsmart_hours_minutes" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|smart~_hours~_minutes>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >> string>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|smart~_hours~_minutes date>> returns the time in the format <<span class="odocwiki_inlinecode"|"~%~I~:~%~M~%~P">>~.
+    ~If the timezone is unknown~, ~G~M~T is added~.
+>>
+<<pre id="VALsmart_interval" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|smart~_interval>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| ?now: >><<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >>\\  <<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >> string>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|smart~_interval ~?now start~_date end~_date>> returns a smart description of
+    <<span class="odocwiki_inlinecode"|start~_date>> comparing to <<span class="odocwiki_inlinecode"|end~_date>> of the year~, month~, day~, hour and
+    minutes ~(compared to <<a_api subproject="client" | val Os_date.smart_date_interval >>~, information about the hour and
+    minutes is given~)~.
+
+
+    ~The year is not used if <<span class="odocwiki_inlinecode"|start~_date>> and <<span class="odocwiki_inlinecode"|end~_date>> or if <<span class="odocwiki_inlinecode"|start~_date>> and
+    <<span class="odocwiki_inlinecode"|now>> have the same year~.
+
+
+    ~The final output is the concatenation of <<span class="odocwiki_inlinecode"|smart~_start~_date>> and
+    <<span class="odocwiki_inlinecode"|smart~_end~_date>> with a dash between them~.
+
+
+    <<span class="odocwiki_inlinecode"|smart~_start~_date>> and <<span class="odocwiki_inlinecode"|smart~_end~_date>> in in the format <<span class="odocwiki_inlinecode"|"~%~B ~%d~, ~%~Y">> if
+    year is needed and <<span class="odocwiki_inlinecode"|"~%~B ~%d">> if not~.
+>>
+<<pre id="VALsmart_date_interval" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|smart~_date~_interval>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| ?now: >><<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >>\\  <<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="client" text="local_calendar" | type Os_date.local_calendar >> <<span class="ocsforge_color_delimiter"| -> >> string>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|smart~_date~_interval ~?now start~_date end~_date>> returns a smart description
+    of <<span class="odocwiki_inlinecode"|start~_date>> comparing to <<span class="odocwiki_inlinecode"|end~_date>> of the year~, month and day
+    ~(compared to <<a_api subproject="client" | val Os_date.smart_interval >>~, no information about the hour and
+    minutes is given~)~.
+
+
+    ~The year is not used if <<span class="odocwiki_inlinecode"|start~_date>> and <<span class="odocwiki_inlinecode"|end~_date>> or if <<span class="odocwiki_inlinecode"|start~_date>> and
+    <<span class="odocwiki_inlinecode"|now>> have the same year~.
+
+
+    ~The final output is the concatenation of <<span class="odocwiki_inlinecode"|smart~_start~_date>> and
+    <<span class="odocwiki_inlinecode"|smart~_end~_date>> with a dash between them~.
+    <<span class="odocwiki_inlinecode"|smart~_start~_date>> ~(resp~. <<span class="odocwiki_inlinecode"|smart~_end~_date>>~) is <<span class="odocwiki_inlinecode"|start~_date>> ~(resp~.
+    <<span class="odocwiki_inlinecode"|end~_date>>~) in the format <<span class="odocwiki_inlinecode"|"~%~B ~%d~, ~%~Y~, ~%~I~:~%~M~%~P">> if year is needed and <<span class="odocwiki_inlinecode"|"~%~B
+    ~%d~, ~%~I~:~%~M~%~P">> if not~.
+>>

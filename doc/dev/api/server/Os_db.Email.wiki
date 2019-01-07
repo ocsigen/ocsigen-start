@@ -1,0 +1,7 @@
+=Module <<a_api_type subproject="server" | module Os_db.Email >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Email>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_db.Email >><<span class="ocsforge_color_keyword"|end>>>>~This module is used for low~-level email management with database~.
+
+----
+<<pre id="VALavailable" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|available>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string <<span class="ocsforge_color_delimiter"| -> >> bool <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|available email>> returns <<span class="odocwiki_inlinecode"|true>> if <<span class="odocwiki_inlinecode"|email>> is not already used~. ~Else~, it
+      returns <<span class="odocwiki_inlinecode"|false>>~.
+>>

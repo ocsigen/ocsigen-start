@@ -1,0 +1,38 @@
+=Module <<a_api_type subproject="server" | module Os_msg >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Os_msg>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_msg >><<span class="ocsforge_color_keyword"|end>>>>~This module provides functions to display messages ~(client~-side or
+    server~-side~)~.
+
+----
+<<pre id="VALmsg" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|msg>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| ?level: >>[ `Err | `Msg ] <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?duration: >>float <<span class="ocsforge_color_delimiter"| -> >> <<span class="ocsforge_color_label"| ?onload: >>bool <<span class="ocsforge_color_delimiter"| -> >> string <<span class="ocsforge_color_delimiter"| -> >> unit>>>><<div class="odocwiki_info"|~Call this function either from client or server side
+    to display an error message in the page~.
+
+
+    ~The message is displayed in a special box ~(a <<span class="odocwiki_inlinecode"|"div">> with id <<span class="odocwiki_inlinecode"|"os~_msg">>
+    created automatically in the body of the page~)~.
+
+
+    ~It is displayed during a short amount of time then disappears~. ~You may
+    change the duration in seconds with the parameter <<span class="odocwiki_inlinecode"|duration>> ~(default ~2
+    seconds~)~.
+
+
+    ~The two levels correspond to different classes that you can
+    personalize by modifying the ~C~S~S class <<span class="odocwiki_inlinecode"|"os~_err">> ~(added for error messages
+    to the box with ~I~D <<span class="odocwiki_inlinecode"|"os~_msg">>~)~.
+
+
+    ~If <<span class="odocwiki_inlinecode"|~?onload>> is <<span class="odocwiki_inlinecode"|true>>~, the message is displayed after the next page
+    is displayed ~(default <<span class="odocwiki_inlinecode"|false>>~)~. ~When called on server side~, this is
+    always the case~.
+>>
+<<pre id="VALaction_link_key_created" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|action~_link~_key~_created>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|bool <<span class="ocsforge_color_uid"|Eliom_reference>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Volatile>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|eref>>>>>><<div class="odocwiki_info"|~Set to <<span class="odocwiki_inlinecode"|true>> if an action link key has been already created and sent to the
+    user email~, else <<span class="odocwiki_inlinecode"|false>>~. ~Default is <<span class="odocwiki_inlinecode"|false>>~.
+>>
+<<pre id="VALwrong_pdata" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|wrong~_pdata>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_delimiter"| ( >><<span class="ocsforge_color_delimiter"| ( >>string * string<<span class="ocsforge_color_delimiter"| ) >> * <<span class="ocsforge_color_delimiter"| ( >>string * string<<span class="ocsforge_color_delimiter"| ) >><<span class="ocsforge_color_delimiter"| ) >> option\\  <<span class="ocsforge_color_uid"|Eliom_reference>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Volatile>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|eref>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|~(~(firstname~, lastname~)~, ~(password~, password~_confirmation~)~) option>>
+    is a reference used to remember information about the user during a
+    request when something went wrong ~(for example in a form when the password
+    and password confirmation are not the same~)~.
+
+
+    ~If the value is <<span class="odocwiki_inlinecode"|~None>>~, no user data has been set~. ~Default is <<span class="odocwiki_inlinecode"|~None>>~.
+>>

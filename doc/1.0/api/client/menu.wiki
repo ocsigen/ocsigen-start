@@ -1,0 +1,27 @@
+=~Client ~A~P~I
+==[[client/Os_current_user|Os_current_user]]
+==[[client/Os_date|Os_date]]
+==[[client/Os_email|Os_email]]
+==[[client/Os_group|Os_group]]
+==[[client/Os_handlers|Os_handlers]]
+==[[client/Os_icons|Os_icons]]
+==[[client/Os_lib|Os_lib]]
+==[[client/Os_msg|Os_msg]]
+==[[client/Os_notif|Os_notif]]
+==[[client/Os_page|Os_page]]
+==[[client/Os_platform|Os_platform]]
+==[[client/Os_request_cache|Os_request_cache]]
+==[[client/Os_services|Os_services]]
+==[[client/Os_session|Os_session]]
+==[[client/Os_tips|Os_tips]]
+==[[client/Os_tools|Os_tools]]
+==[[client/Os_types|Os_types]]
+==[[client/Os_user|Os_user]]
+==[[client/Os_user_proxy|Os_user_proxy]]
+==[[client/Os_user_view|Os_user_view]]
+==~Index
+=== <<a_api subproject="client" text="Index of types" | index types >>
+=== <<a_api subproject="client" text="Index of exceptions" | index exceptions >>
+=== <<a_api subproject="client" text="Index of values" | index values >>
+=== <<a_api subproject="client" text="Index of modules" | index modules >>
+=== <<a_api subproject="client" text="Index of module types" | index module types >>

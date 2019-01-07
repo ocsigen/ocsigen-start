@@ -1,0 +1,46 @@
+=Module <<a_api_type subproject="client" | module Os_page.Default_config >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Default_config>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="client" text="PAGE" | module Os_page.PAGE >>>><<span class="odocwiki_type"| >>>>~A default configuration for pages~.
+* no ~C~S~S and ~J~S files are included~.
+* no meta data are added in head
+* error page prints debug information about the exception~.
+* a div is returned in case of an error with class <<span class="odocwiki_inlinecode"|"errormsg">> containing a
+    h~2 with value <<span class="odocwiki_inlinecode"|"~Error">> and a paragraph if the exception is
+    <<a_api subproject="client" | exception Os_session.Not_connected >>~.
+
+
+----
+<<pre id="VALtitle" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|title>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|title>> corresponds to the html tag ~<title~>~, it will be inserted on all
+      pages~.
+>>
+<<pre id="VALjs" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|js>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string list list>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|js>> corresponds to the ~Java~Script files to include into each page~.
+      ~Os will automatically preprend the suffix <<span class="odocwiki_inlinecode"|"js~/">> as directory~.
+>>
+<<pre id="VALlocal_js" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|local~_js>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string list list>>>><<div class="odocwiki_info"|~Use <<span class="odocwiki_inlinecode"|local~_js>> instead of <<span class="odocwiki_inlinecode"|js>> for local scripts if you are building
+      a mobile application~.
+      ~Os will automatically preprend the suffix <<span class="odocwiki_inlinecode"|"js~/">> as directory~.
+>>
+<<pre id="VALcss" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|css>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string list list>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|css>> ~(same as <<span class="odocwiki_inlinecode"|js>> but for style sheet files~)~.
+      ~Os will automatically prepend the suffix <<span class="odocwiki_inlinecode"|"css~/">> as directory~.
+>>
+<<pre id="VALlocal_css" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|local~_css>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string list list>>>><<div class="odocwiki_info"|~Use <<span class="odocwiki_inlinecode"|local~_css>> instead of <<span class="odocwiki_inlinecode"|css>> for local stylesheets if you are building
+      a mobile application~.
+      ~Os will automatically prepend the suffix <<span class="odocwiki_inlinecode"|"css~/">> as directory~.
+>>
+<<pre id="VALother_head" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|other~_head>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_uid"|Html_types>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|head_content_fun>> <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> list>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|other~_head>> is a list of custom elements to add in the head section~.
+      ~It can be used to add ~<meta~> elements~, for example~.
+>>
+<<pre id="VALdefault_error_page" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|default~_error~_page>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|'a <<span class="ocsforge_color_delimiter"| -> >> 'b <<span class="ocsforge_color_delimiter"| -> >> exn <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="client" text="Os_page.content" | type Os_page.content >> <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|default~_error~_page get~_param post~_param exn>> is the default error page~.
+      <<span class="odocwiki_inlinecode"|get~_param>> ~(resp~. <<span class="odocwiki_inlinecode"|post~_param>>~) is the ~G~E~T ~(resp~. ~P~O~S~T~) parameters sent
+      to the error page~.
+
+
+      <<span class="odocwiki_inlinecode"|exn>> is the exception which must be caught when something went wrong~.
+>>
+<<pre id="VALdefault_connected_error_page" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|default~_connected~_error~_page>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<a_api subproject="client" text="Os_types.User.id" | type Os_types.User.id >> option <<span class="ocsforge_color_delimiter"| -> >> 'a <<span class="ocsforge_color_delimiter"| -> >> 'b <<span class="ocsforge_color_delimiter"| -> >> exn <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="client" text="Os_page.content" | type Os_page.content >> <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|default~_connected~_error~_page userid~_o get~_param post~_param exn>> is the
+      default error page for connected pages~.
+>>
+<<pre id="VALdefault_predicate" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|default~_predicate>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|'a <<span class="ocsforge_color_delimiter"| -> >> 'b <<span class="ocsforge_color_delimiter"| -> >> bool <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|default~_predicate get~_param post~_param>> is the default predicate~.
+>>
+<<pre id="VALdefault_connected_predicate" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|default~_connected~_predicate>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<a_api subproject="client" text="Os_types.User.id" | type Os_types.User.id >> option <<span class="ocsforge_color_delimiter"| -> >> 'a <<span class="ocsforge_color_delimiter"| -> >> 'b <<span class="ocsforge_color_delimiter"| -> >> bool <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|default~_connected~_predicate userid~_o get~_param post~_param>> is the default
+      predicate for connected pages~.
+>>

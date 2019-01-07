@@ -1,0 +1,174 @@
+=Introduction=
+
+Ocsigen Start is the fastest way to get started with Ocsigen. It
+consists of a library and an associated application template that
+combined implement standard functionality like users and
+notifications. The programmer can thus focus on the specificities of
+their application domain and quickly obtain a Minimum Viable Product
+(MVP).
+
+Ocsigen Start is built on Eliom. Eliom focuses on the core machinery,
+while Ocsigen Start provides higher-level concepts that require a
+database and certain design decisions.
+
+Ocsigen Start is mobile-friendly. The template application readily
+works as an Android and iOS application (via
+[[https://cordova.apache.org/|Cordova]]).
+
+==Implementation overview==
+
+===Template===
+
+The library portion of Ocsigen Start contains core functionality that
+is common across Ocsigen Start applications, while the template can be
+customized for the specific application at hand.
+
+The template additionally contains a demonstration of relevant
+[[https://github.com/ocsigen/ocsigen-toolkit|Ocsigen Toolkit]]
+widgets. The demo portion can easily be removed.
+
+===Database===
+
+For implementing users, a database is needed. Specifically, we use
+[[https://www.postgresql.org/|PostgreSQL]] via the
+[[http://pgocaml.forge.ocamlcore.org/|PGOCaml]] library. The template
+and the library make common assumptions about the database schema. The
+database thus needs to be instantiated in a certain way; this is
+automatically done by appropriate targets in the template's build
+system.
+
+The same database can used for the specific needs of the application
+at hand. For that, new tables can be added. The original ones should
+remain in place for Ocsigen Start to work correctly.
+
+===Internationalization (i18n)===
+
+The template is available in multiple languages (English and French) using
+[[https://github.com/besport/ocsigen-i18n|ocsigen-i18n]]. All translations used
+in the template are defined in the file {{assets/PROJECT_NAME_i18n.tsv}}. The
+Makefile rule {{i18n-udpate}} generates the i18n module. You need to use it
+every time the TSV file is updated.
+
+See {{Makefile.i18n}} for rules about i18n and {{Makefile.options}} to
+personalize the internalization of your application (for example add new
+languages, change default language, change TSV filename).
+
+===Managing e-mails===
+
+The template application keeps track of users' e-mails and implements
+e-mail validation. For that, {{{sendmail}}} (or another mail transfer
+agent compatible with it) needs to be installed on the host.
+
+===Style===
+
+The application provides a standard style matching contemporary
+aesthetics. For this, we use [[http://sass-lang.com/|SASS]]. The style
+can be customized by modifying the SASS files that are part of the
+template.
+
+==Installation==
+
+Ocsigen Start can be installed via
+[[https://opam.ocaml.org/|OPAM]]. The package name is {{{ocsigen-start}}}.
+The template application can be instantiated via {{{eliom-distillery}}}:
+
+<<code language="shell"|
+eliom-distillery -name $APP_NAME -template os.pgocaml
+>>
+
+(Replace $APP_NAME by the name of your application).
+
+For details on launching the application, refer to the template's
+[[https://github.com/ocsigen/ocsigen-start/blob/master/template.distillery/README.md|README]].
+
+==Library overview==
+
+We provide a tour of the Ocsigen Start library. All modules have
+server- and client-side versions. (In the API documentation, there are
+links near the top of each module page for selecting the side.)
+
+The template uses all these modules, and can thus act as a good
+starting guide. Look around!
+
+=== User interface ===
+
+Various modules for producing icons, messages, custom pages, tips,
+connection forms, etc.
+
+* <<a_api subproject="server" | module Os_icons>>:
+  manage CSS icons.
+* <<a_api subproject="server" | module Os_msg>>:
+  write messages in the browser console.
+* <<a_api subproject="server" | module Os_page>>:
+  utilities for building HTML pages that follow the standard Ocsigen
+  Start layout.
+* <<a_api subproject="server" | module Os_tips>>:
+  display tips to the user.
+* <<a_api subproject="server" | module Os_user_view>>:
+  functions for creating password forms and other common UI elements
+  appearing in applications and for managing the user connection box.
+* <<a_api subproject="server" | module Os_uploader>>:
+  ImageMagick-based tools for manipulating avatars.
+
+=== Users and groups ===
+
+* <<a_api subproject="server" | module Os_user>>,
+  <<a_api subproject="server" | module Os_current_user>>,
+  <<a_api subproject="server" | module Os_group>>:
+  manage users and groups thereof.
+
+* <<a_api subproject="server" | module Os_db>>:
+  directly access the database. In many cases, it is a better idea to
+  use higher-level modules (e.g.,
+  <<a_api subproject="server" | module Os_user>>).
+
+* <<a_api subproject="server" | module Os_types>>:
+  core types shared by <<a_api subproject="server" | module Os_db>>
+  and the higher-level modules.
+
+=== Communication ===
+
+* <<a_api subproject="server" | module Os_notif>>:
+  send notifications to connected users.
+
+* <<a_api subproject="server" | module Os_email>>:
+  send e-mails.
+
+* <<a_api subproject="server" | module Os_fcm_notif>>:
+  send push notifications to mobile devices.
+
+* <<a_api subproject="server" | module Os_comet>>:
+  manage the bi-directional communication channel between client and
+  server. This is a low-level module that you probably don't need.
+
+=== Services, handlers, sessions ===
+
+* <<a_api subproject="server" | module Os_services>>:
+  Eliom services pre-defined by Ocsigen Start. These produce the
+  default user interface of the template.
+  See <<a_manual project="eliom" subproject="server"
+  chapter="server-services" | the Eliom manual page on services>> for
+  a general introduction to Eliom services.
+
+* <<a_api subproject="server" | module Os_handlers>>:
+  The handlers (functions) that implement the services in
+  <<a_api subproject="server" | module Os_services>>.
+  <<a_manual project="eliom" subproject="server"
+  chapter="server-outputs" | The Eliom manual page on service handlers>>
+  explains how to implement handlers.
+
+* <<a_api subproject="server" | module Os_session>>:
+  manage user sessions, e.g., execute actions when users connect or
+  disconnect.
+
+=== Other utilities ===
+
+* <<a_api subproject="server" | module Os_date>>:
+  utilities for manipulating date and time values.
+
+* <<a_api subproject="server" | module Os_platform>>:
+  obtain information about the platform we are on (Android, iOS, ...).
+
+* <<a_api subproject="server" | module Os_request_cache>>,
+  <<a_api subproject="server" | module Os_user_proxy>>:
+  different forms of caching data.

@@ -1,0 +1,49 @@
+=Module <<a_api_type subproject="client" | module Os_session >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Os_session>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="client" text=".." | module Os_session >><<span class="ocsforge_color_keyword"|end>>>>~Wrapper for service handlers that fetches automatically connection
+    information~.
+    ~Register <<span class="odocwiki_inlinecode"|~(connected~_fun f~)>> as handler for your services~,
+    where <<span class="odocwiki_inlinecode"|f>> is a function taking user id~, ~G~E~T parameters and ~P~O~S~T parameters~.
+    ~If no user is connected~, the service will fail by raising <<span class="odocwiki_inlinecode"|~Not~_connected>>~.
+    ~Otherwise it calls function <<span class="odocwiki_inlinecode"|f>>~.
+    ~To provide another behaviour in case the user is not connected~,
+    have a look at <<a_api subproject="client" | val Os_session.Opt.connected_fun >> or module <<a_api subproject="client" | module Os_page >>~.
+
+
+    ~Arguments <<span class="odocwiki_inlinecode"|~?allow>> and <<span class="odocwiki_inlinecode"|~?deny>> make possible to restrict access to some
+    user groups~. ~If access is denied~, function <<span class="odocwiki_inlinecode"|~?deny~_fun>> will be called~.
+    ~By default~, it raises <<span class="odocwiki_inlinecode"|~Permission denied>>~.
+
+
+    ~When called on client side~, no security check is done~.
+
+
+    ~Use only one connection wrapper for each request!
+
+----
+<<pre id="EXCEPTIONNot_connected" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|exception>> <<span class="odocwiki_name"|Not_connected>>>><<pre id="EXCEPTIONPermission_denied" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|exception>> <<span class="odocwiki_name"|Permission_denied>>>><<pre id="VALconnected_fun" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|connected~_fun>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| ?allow: >><<a_api subproject="client" text="Os_types.Group.t" | type Os_types.Group.t >> list <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?deny: >><<a_api subproject="client" text="Os_types.Group.t" | type Os_types.Group.t >> list <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?deny_fun: >><<span class="ocsforge_color_delimiter"| ( >><<a_api subproject="client" text="Os_types.User.id" | type Os_types.User.id >> option <<span class="ocsforge_color_delimiter"| -> >> 'c <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>><<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_delimiter"| ( >><<a_api subproject="client" text="Os_types.User.id" | type Os_types.User.id >> <<span class="ocsforge_color_delimiter"| -> >> 'a <<span class="ocsforge_color_delimiter"| -> >> 'b <<span class="ocsforge_color_delimiter"| -> >> 'c <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>><<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_delimiter"| -> >> 'a <<span class="ocsforge_color_delimiter"| -> >> 'b <<span class="ocsforge_color_delimiter"| -> >> 'c <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|~Wrapper for service handlers that fetches automatically connection
+    information~.
+    ~Register <<span class="odocwiki_inlinecode"|~(connected~_fun f~)>> as handler for your services~,
+    where <<span class="odocwiki_inlinecode"|f>> is a function taking user id~, ~G~E~T parameters and ~P~O~S~T parameters~.
+    ~If no user is connected~, the service will fail by raising <<span class="odocwiki_inlinecode"|~Not~_connected>>~.
+    ~Otherwise it calls function <<span class="odocwiki_inlinecode"|f>>~.
+    ~To provide another behaviour in case the user is not connected~,
+    have a look at <<a_api subproject="client" | val Os_session.Opt.connected_fun >> or module <<a_api subproject="client" | module Os_page >>~.
+
+
+    ~Arguments <<span class="odocwiki_inlinecode"|~?allow>> and <<span class="odocwiki_inlinecode"|~?deny>> make possible to restrict access to some
+    user groups~. ~If access is denied~, function <<span class="odocwiki_inlinecode"|~?deny~_fun>> will be called~.
+    ~By default~, it raises <<span class="odocwiki_inlinecode"|~Permission denied>>~.
+
+
+    ~When called on client side~, no security check is done~.
+
+
+    ~Use only one connection wrapper for each request!
+>>
+<<pre id="VALconnected_rpc" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|connected~_rpc>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| ?allow: >><<a_api subproject="client" text="Os_types.Group.t" | type Os_types.Group.t >> list <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?deny: >><<a_api subproject="client" text="Os_types.Group.t" | type Os_types.Group.t >> list <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?deny_fun: >><<span class="ocsforge_color_delimiter"| ( >><<a_api subproject="client" text="Os_types.User.id" | type Os_types.User.id >> option <<span class="ocsforge_color_delimiter"| -> >> 'b <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>><<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_delimiter"| ( >><<a_api subproject="client" text="Os_types.User.id" | type Os_types.User.id >> <<span class="ocsforge_color_delimiter"| -> >> 'a <<span class="ocsforge_color_delimiter"| -> >> 'b <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>><<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_delimiter"| -> >> 'a <<span class="ocsforge_color_delimiter"| -> >> 'b <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|~Wrapper for server functions ~(see <<a_api subproject="client" | val Os_session.connected_fun >>~)~.
+>>
+<<pre id="VALconnected_wrapper" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|connected~_wrapper>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| ?allow: >><<a_api subproject="client" text="Os_types.Group.t" | type Os_types.Group.t >> list <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?deny: >><<a_api subproject="client" text="Os_types.Group.t" | type Os_types.Group.t >> list <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?deny_fun: >><<span class="ocsforge_color_delimiter"| ( >><<a_api subproject="client" text="Os_types.User.id" | type Os_types.User.id >> option <<span class="ocsforge_color_delimiter"| -> >> 'b <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>><<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_delimiter"| ( >>'a <<span class="ocsforge_color_delimiter"| -> >> 'b <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>><<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_delimiter"| -> >> 'a <<span class="ocsforge_color_delimiter"| -> >> 'b <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|~Wrapper for server functions when you do not need userid
+    ~(see <<a_api subproject="client" | val Os_session.connected_fun >>~)~.
+    ~It is recommended to use this wrapper for all your server functions!
+>>
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<a_api subproject="client" text="Opt" | module Os_session.Opt >> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="client" text=".." | module Os_session.Opt >><<span class="ocsforge_color_keyword"|end>>>>

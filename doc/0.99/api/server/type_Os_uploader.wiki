@@ -1,0 +1,12 @@
+<<code language="ocaml" | sig
+  val crop_image :
+    src:string ->
+    ?dst:string ->
+    ?ratio:float ->
+    top:float -> right:float -> bottom:float -> left:float -> unit Lwt.t
+  val record_image :
+    string ->
+    ?ratio:float ->
+    ?cropping:float * float * float * float ->
+    Ocsigen_extensions.file_info -> string Lwt.t
+end >>
