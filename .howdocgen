@@ -44,7 +44,9 @@ cat >$f <<EOF
     "api": "api",
     "menu": true,
     "templates": ["doc/template.wiki"],
-    "manual": "manual"
+    "manual": "manual",
+    "assets": "manual/files",
+    "images": "manual/files"
 }
 EOF
 quickdop -f doc _doc -t json -c $f -viu
