@@ -49,9 +49,14 @@ cat >$f <<EOF
     "images": "manual/files"
 }
 EOF
-quickdop -f doc _doc -t json -c $f -viu
+ret=0
+if ! quickdop -f doc _doc -t json -c $f -viu; then
+    ret=1
+fi
 
 make-redir "$LATEST/manual/intro" _doc/index.html
 
 # TODO Also remove that line.
 mv tmp _doc
+
+exit $ret
