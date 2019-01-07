@@ -55,6 +55,8 @@ if ! quickdop -f doc _doc -t json -c $f -viu; then
 fi
 
 make-redir "$LATEST/manual/intro" _doc/index.html
+mkdir -p _doc/demo
+make-redir "http://ocsigen-1.inria.fr/ocsigen-start/demo/" _doc/demo/index.html
 
 # TODO Also remove that line.
 mv tmp _doc
