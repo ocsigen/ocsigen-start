@@ -26,13 +26,13 @@ for iOS or Android (via [[https://cordova.apache.org/|Cordova]])..
 ==Demo==
 
 If you want to test the demo application before installing Ocsigen Start,
-a working version is running [[wiki(81):demo/|here]].
+a working version is running [[wiki(ocsigen-start):demo/|here]].
 You can also download the mobile app
 [[https://play.google.com/store/apps/details?id=com.osdemo.mobile|on Google Play store]] (for Android)
 or download the
-[[wiki(81):files/osdemo.apk|APK for Android]]
+[[files/osdemo.apk|APK for Android]]
 or the
-[[wiki(81):files/osdemo-ios.tgz|iOS version]] (to be installed using XCode).
+[[files/osdemo-ios.tgz|iOS version]] (to be installed using XCode).
 
 <<div class="screenshots"|
 [[files/screenshots/start1.png|
