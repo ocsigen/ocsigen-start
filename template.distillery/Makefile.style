@@ -3,7 +3,7 @@
 # command is needed by $(CSS_DEST). It uses the fact that `sed --version`
 # doesn't exist for the BSD version.
 
-.PHONY: css check_sass clean-style import-external-css
+.PHONY: css check_sass clean-style
 
 check_sed:
 ifneq ($(shell sed --version 2> /dev/null),)
@@ -12,7 +12,7 @@ else
 SED = sed -i .css
 endif
 
-css: import-external-css $(CSS_DEST)
+css: $(CSS_DEST)
 
 define ERROR_SASS
 
@@ -65,7 +65,7 @@ endif
 # If SASS is not activated, it will concatenate all CSS files (listed in
 # $(CSS_FILES)) in $(LOCAL_CSS).
 # In both cases, external CSS files ($(EXTERNAL_CSS_FILES)) are copied.
-$(LOCAL_CSS): check_sass $(PACKAGE_JSON) $(NPM_POSTCSS) $(NPM_AUTOPREFIXER) import-external-css
+$(LOCAL_CSS): $(PACKAGE_JSON) $(NPM_POSTCSS) $(NPM_AUTOPREFIXER) $(LOCAL_STATIC_CSS)/.import-external-css | check_sass
 ifeq "$(USE_SASS)" "yes"
 ifeq ($(shell which sassc),)
 	[ -d $(SASSDIR) ] && \
@@ -108,10 +108,11 @@ $(CSS_DEST): $(LOCAL_CSS) | $(CSSDIR) check_sed
 # up-to-date and it allows to add other external CSS files between two
 # compilation processes.
 
-import-external-css:
+$(LOCAL_STATIC_CSS)/.import-external-css: $(EXTERNAL_CSS_FILES)
 ifneq "$(EXTERNAL_CSS_FILES)" ""
 	cp $(EXTERNAL_CSS_FILES) $(LOCAL_STATIC_CSS)
 endif
+	touch $(LOCAL_STATIC_CSS)/.import-external-css
 
 clean-style:
 	$(RM) $(LOCAL_CSS) $(LOCAL_STATIC_CSS)/$(PROJECT_NAME).css.map
