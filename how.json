@@ -1,0 +1,9 @@
+{
+    "project": "ocsigen-start",
+    "api": "api",
+    "menu": true,
+    "templates": ["how_template/template.wiki"],
+    "manual": "manual",
+    "assets": "manual/files",
+    "images": "manual/files"
+}
