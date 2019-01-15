@@ -1,0 +1,4 @@
+=Module <<a_api_type subproject="server" | module Os_db.PGOCaml >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|PGOCaml>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_uid"|PGOCaml_generic.PGOCAML_GENERIC>>>><<span class="odocwiki_type"|  with type 'a monad = 'a Lwt.t>>>>~Lwt version of ~P~G~O~Caml
+
+----

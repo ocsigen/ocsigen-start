@@ -1,0 +1,29 @@
+<<code language="ocaml" | functor (C : PAGE) ->
+  sig
+    val make_page :
+      Os_page.content -> [> Html_types.html ] Eliom_content.Html.elt
+    val page :
+      ?predicate:('a -> 'b -> bool Lwt.t) ->
+      ?fallback:('a -> 'b -> exn -> Os_page.content Lwt.t) ->
+      ('a -> 'b -> Os_page.content Lwt.t) ->
+      'a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t
+    module Opt :
+      sig
+        val connected_page :
+          ?allow:Os_types.Group.t list ->
+          ?deny:Os_types.Group.t list ->
+          ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool Lwt.t) ->
+          ?fallback:(Os_types.User.id option ->
+                     'a -> 'b -> exn -> Os_page.content Lwt.t) ->
+          (Os_types.User.id option -> 'a -> 'b -> Os_page.content Lwt.t) ->
+          'a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t
+      end
+    val connected_page :
+      ?allow:Os_types.Group.t list ->
+      ?deny:Os_types.Group.t list ->
+      ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool Lwt.t) ->
+      ?fallback:(Os_types.User.id option ->
+                 'a -> 'b -> exn -> Os_page.content Lwt.t) ->
+      (Os_types.User.id -> 'a -> 'b -> Os_page.content Lwt.t) ->
+      'a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t
+  end >>

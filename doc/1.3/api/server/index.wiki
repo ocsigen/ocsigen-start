@@ -1,0 +1,98 @@
+==
+
+=@@id="1_ServerAPI"@@~Server ~A~P~I=
+
+
+
+
+|<<a_api subproject="server" | module Os_current_user >>|<<div class="odocwiki_info"|~This module provides functions and types to manage the current user~.
+>>
+|
+|<<a_api subproject="server" | module Os_date >>|<<div class="odocwiki_info"|~Time zone and date management for ~Web applications~.
+>>
+|
+|<<a_api subproject="server" | module Os_db >>|<<div class="odocwiki_info"|~This module defines low level functions for database requests~.
+>>
+|
+|<<a_api subproject="server" | module Os_email >>|<<div class="odocwiki_info"|~Basic module for sending e~-mail messages to users~,
+    using some local sendmail program~.
+>>
+|
+|<<a_api subproject="server" | module Os_fcm_notif >>|<<div class="odocwiki_info"|~Send push notifications to ~Android and i~O~S mobile devices~.
+>>
+|
+|<<a_api subproject="server" | module Os_group >>|<<div class="odocwiki_info"|~Groups of users~.
+>>
+|
+|<<a_api subproject="server" | module Os_handlers >>|<<div class="odocwiki_info"|~This module contains pre~-defined handlers for connect~, disconnect~, sign up~,
+    add a new email~, etc~.
+>>
+|
+|<<a_api subproject="server" | module Os_icons >>|<<div class="odocwiki_info"|~The icons used internally by ~Ocsigen ~Start~'s library~.
+>>
+|
+|<<a_api subproject="server" | module Os_lib >>|<<div class="odocwiki_info"|~This module aims to provide common utilities functions~.
+>>
+|
+|<<a_api subproject="server" | module Os_msg >>|<<div class="odocwiki_info"|~This module provides functions to display messages ~(client~-side or
+    server~-side~)~.
+>>
+|
+|<<a_api subproject="server" | module Os_notif >>|<<div class="odocwiki_info"|~Server to client notifications~.
+>>
+|
+|<<a_api subproject="server" | module Os_page >>|<<div class="odocwiki_info"|~Functor defining wrappers for services handlers returning pages~.
+>>
+|
+|<<a_api subproject="server" | module Os_platform >>|<<div class="odocwiki_info"|~About device platform~.
+>>
+|
+|<<a_api subproject="server" | module Os_request_cache >>|<<div class="odocwiki_info"|~Caching request data to avoid doing the same computation several times
+    during the same request~.
+>>
+|
+|<<a_api subproject="server" | module Os_services >>|<<div class="odocwiki_info"|~This module provides pre~-defined services for connect~, disconnect~, sign up~,
+    add a new email~, etc~.
+>>
+|
+|<<a_api subproject="server" | module Os_session >>|<<div class="odocwiki_info"|~Connection and disconnection of users~,
+    restrict access to services or server functions~,
+    define actions to be executed at some points of the session~.
+>>
+|
+|<<a_api subproject="server" | module Os_tips >>|<<div class="odocwiki_info"|~Tips for new users and new features~.
+>>
+|
+|<<a_api subproject="server" | module Os_types >>|<<div class="odocwiki_info"|~Data types
+>>
+|
+|<<a_api subproject="server" | module Os_uploader >>|<<div class="odocwiki_info"|~This module defines functions to manipulate images to be uploaded~.
+>>
+|
+|<<a_api subproject="server" | module Os_user >>|<<div class="odocwiki_info"|~This module provides functions and types about users~.
+>>
+|
+|<<a_api subproject="server" | module Os_user_proxy >>|<<div class="odocwiki_info"|~This module implements a cache of user using ~<~<a~_api project~="eliom" ~|
+    module ~Eliom~_cscache~>~> which allows to keep synchronized the cache between
+    the client and the server~.
+>>
+|
+|<<a_api subproject="server" | module Os_user_view >>|<<div class="odocwiki_info"|~This module defines functions to create password forms~, connection forms~,
+    settings buttons and other common contents arising in applications~.
+>>
+|
+
+
+
+
+
+==@@id="2_Index"@@~Index==
+
+
+
+* <<a_api subproject="server" text="Index of types" | index types >>
+* <<a_api subproject="server" text="Index of exceptions" | index exceptions >>
+* <<a_api subproject="server" text="Index of values" | index values >>
+* <<a_api subproject="server" text="Index of modules" | index modules >>
+* <<a_api subproject="server" text="Index of module types" | index module types >>
+

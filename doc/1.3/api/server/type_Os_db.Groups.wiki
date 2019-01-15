@@ -1,0 +1,14 @@
+<<code language="ocaml" | sig
+  val create : ?description:string -> string -> unit Lwt.t
+  val group_of_name :
+    string -> (Os_types.Group.id * string * string option) Lwt.t
+  val add_user_in_group :
+    groupid:Os_types.Group.id -> userid:Os_types.User.id -> unit Lwt.t
+  val remove_user_in_group :
+    groupid:Os_types.Group.id -> userid:Os_types.User.id -> unit Lwt.t
+  val in_group :
+    ?dbh:Os_db.PGOCaml.pa_pg_data Os_db.PGOCaml.t ->
+    groupid:Os_types.Group.id ->
+    userid:Os_types.User.id -> unit -> bool Lwt.t
+  val all : unit -> (Os_types.Group.id * string * string option) list Lwt.t
+end >>

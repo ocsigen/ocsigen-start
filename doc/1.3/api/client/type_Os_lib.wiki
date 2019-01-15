@@ -1,0 +1,41 @@
+<<code language="ocaml" | sig
+  val reload : unit -> unit Lwt.t
+  module Email_or_phone :
+    sig
+      type t
+      type y = [ `Email | `Phone ]
+      val y : Os_lib.Email_or_phone.t -> Os_lib.Email_or_phone.y
+      val to_string : Os_lib.Email_or_phone.t -> string
+      val of_string :
+        only_mail:bool -> string -> Os_lib.Email_or_phone.t option
+      module Almost :
+        sig
+          type t
+          type y =
+              [ `Almost_email | `Almost_phone | `Email | `Invalid | `Phone ]
+          val y :
+            Os_lib.Email_or_phone.Almost.t -> Os_lib.Email_or_phone.Almost.y
+          val to_string : Os_lib.Email_or_phone.Almost.t -> string
+          val of_string :
+            only_mail:bool -> string -> Os_lib.Email_or_phone.Almost.t
+        end
+      val of_almost :
+        Os_lib.Email_or_phone.Almost.t -> Os_lib.Email_or_phone.t option
+    end
+  val phone_regexp : Re_str.regexp
+  val email_regexp : Re_str.regexp
+  val memoizator : (unit -> 'a Lwt.t) -> unit -> 'a Lwt.t
+  val string_repeat : string -> int -> string
+  val string_filter : (char -> bool) -> string -> string
+  val lwt_bound_input_enter :
+    ?a:[< Html_types.input_attrib ] Eliom_content.Html.attrib list ->
+    ?button:[< Html_types.button ] Eliom_content.Html.elt ->
+    ?validate:(string -> bool) Eliom_client_value.t ->
+    (string -> unit Lwt.t) Eliom_client_value.t ->
+    [> `Input ] Eliom_content.Html.elt
+  val lwt_bind_input_enter :
+    ?validate:(string -> bool) Eliom_client_value.t ->
+    ?button:[< `Button | `Input ] Eliom_content.Html.elt ->
+    Html_types.input Eliom_content.Html.elt ->
+    (string -> unit Lwt.t) Eliom_client_value.t -> unit
+end >>

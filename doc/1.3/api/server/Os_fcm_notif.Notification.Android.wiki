@@ -1,0 +1,21 @@
+=Module <<a_api_type subproject="server" | module Os_fcm_notif.Notification.Android >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Android>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_fcm_notif.Notification.Android >><<span class="ocsforge_color_keyword"|end>>>>
+----
+<<pre id="VALadd_icon" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|add~_icon>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  string <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_fcm_notif.Notification.t" | type Os_fcm_notif.Notification.t >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_fcm_notif.Notification.t" | type Os_fcm_notif.Notification.t >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_icon icon notification>> indicates notification icon~. ~Sets value
+            to <<span class="odocwiki_inlinecode"|myicon>> for drawable resource <<span class="odocwiki_inlinecode"|myicon>>~.
+>>
+<<pre id="VALadd_tag" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|add~_tag>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  string <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_fcm_notif.Notification.t" | type Os_fcm_notif.Notification.t >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_fcm_notif.Notification.t" | type Os_fcm_notif.Notification.t >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_tag tag notification>> indicates whether each notification
+            results in a new entry in the notification drawer on ~Android~.
+            ~If two notifications has the same tag~, the last one will replace the
+            first one~.
+            ~Two different tags produce two different notifications in the
+            notification area~.
+>>
+<<pre id="VALadd_color" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|add~_color>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| red: >>int <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| green: >>int <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| blue: >>int <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_fcm_notif.Notification.t" | type Os_fcm_notif.Notification.t >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_fcm_notif.Notification.t" | type Os_fcm_notif.Notification.t >>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_color ~~red ~~green ~~blue notification>> indicates color of the icon~,
+            expressed in ~#rrggbb format~.
+
+
+            ~Positive values are used modulo ~2~5~6 i~.e~. <<span class="odocwiki_inlinecode"|add~_color ~2~5~7 ~1~0~0 ~2~5~7
+            notification>> is equivalent to <<span class="odocwiki_inlinecode"|add~_color ~1 ~1~0~0 ~1>>~.
+            ~N~O~T~E~: ~Don~'t use negative number~.
+>>
