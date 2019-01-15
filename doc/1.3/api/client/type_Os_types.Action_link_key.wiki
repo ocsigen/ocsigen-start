@@ -1,0 +1,10 @@
+<<code language="ocaml" | sig
+  type info = {
+    userid : Os_types.User.id;
+    email : string;
+    validity : int64;
+    autoconnect : bool;
+    action : [ `AccountActivation | `Custom of string | `PasswordReset ];
+    data : string;
+  }
+end >>

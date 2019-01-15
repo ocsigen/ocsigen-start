@@ -1,0 +1,17 @@
+=Module <<a_api_type subproject="server" | module Os_db.Phone >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Phone>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_db.Phone >><<span class="ocsforge_color_keyword"|end>>>>~Manage user phone numbers
+
+----
+<<pre id="VALadd" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|add>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|int64 <<span class="ocsforge_color_delimiter"| -> >> string <<span class="ocsforge_color_delimiter"| -> >> bool <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add userid number>> associates <<span class="odocwiki_inlinecode"|number>> with the user
+      <<span class="odocwiki_inlinecode"|userid>>~. ~Returns <<span class="odocwiki_inlinecode"|true>> on success~.
+>>
+<<pre id="VALexists" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|exists>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string <<span class="ocsforge_color_delimiter"| -> >> bool <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|~Does the number exist in the database~?
+>>
+<<pre id="VALuserid" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|userid>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|string <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Os_types.User.id" | type Os_types.User.id >> option <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|~The user corresponding to a phone number ~(if any~)~.
+>>
+<<pre id="VALdelete" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|delete>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|int64 <<span class="ocsforge_color_delimiter"| -> >> string <<span class="ocsforge_color_delimiter"| -> >> unit <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|delete userid number>> deletes <<span class="odocwiki_inlinecode"|number>>~, which has to be
+      associated to <<span class="odocwiki_inlinecode"|userid>>~.
+>>
+<<pre id="VALget_list" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|get~_list>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|int64 <<span class="ocsforge_color_delimiter"| -> >> string list <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_list userid>> returns the list of number associated to the
+      user~.
+>>

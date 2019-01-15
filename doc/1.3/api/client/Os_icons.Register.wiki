@@ -1,0 +1,7 @@
+=Functor <<a_api_type subproject="client" | module Os_icons.Register >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Register>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_sig_block"|<<span class="ocsforge_color_keyword"|functor>> <<span class="ocsforge_color_delimiter"|(>>FF <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="client" text="ICSIG" | module Os_icons.ICSIG >>>><<span class="ocsforge_color_delimiter"|)>> <<span class="ocsforge_color_delimiter"|-~>>> \\  <<span class="odocwiki_sig_block"|<<span class="ocsforge_color_keyword"|functor>> <<span class="ocsforge_color_delimiter"|(>>DD <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="client" text="ICSIG" | module Os_icons.ICSIG >>>><<span class="ocsforge_color_delimiter"|)>> <<span class="ocsforge_color_delimiter"|-~>>> \\  <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="client" text=".." | module Os_icons.Register >><<span class="ocsforge_color_keyword"|end>>>>>>>><<div class="odocwiki_module_param_list" | <<span class="odocwiki_param_title" |Parameters :>><<div|
+|@@class="odocwiki_paramstable"@ @class="centertop fifteen code"@@{{{FF}}}|@@class="centertop"@@:|<<span class="odocwiki_type"|Os_icons.ICSIG>>|
+|@@class="centertop fifteen code"@@{{{DD}}}|@@class="centertop"@@:|<<span class="odocwiki_type"|Os_icons.ICSIG>>|
+>>>>
+
+----

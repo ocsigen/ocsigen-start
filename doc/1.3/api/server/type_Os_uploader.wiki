@@ -1,0 +1,18 @@
+<<code language="ocaml" | sig
+  exception Error_while_cropping of Unix.process_status
+  exception Error_while_resizing of Unix.process_status
+  val get_image_height : string -> int Lwt.t
+  val get_image_width : string -> int Lwt.t
+  val resize_image :
+    src:string -> ?dst:string -> width:int -> height:int -> unit Lwt.t
+  val crop_image :
+    src:string ->
+    ?dst:string ->
+    ?ratio:float ->
+    top:float -> right:float -> bottom:float -> left:float -> unit Lwt.t
+  val record_image :
+    string ->
+    ?ratio:float ->
+    ?cropping:float * float * float * float ->
+    Ocsigen_extensions.file_info -> string Lwt.t
+end >>
