@@ -87,7 +87,9 @@ val reset_tips : unit -> unit Lwt.t
 *)
 val set_tip_seen : string -> unit Lwt.t
 
-[%%shared.start]
+(** Returns whether a tip has been seen or not. *)
+val tip_seen : string -> bool Lwt.t
+
 (** A non-attached service that will reset tips.
     Call it with [Eliom_client.exit_to] to restart the application and
     see tips again. *)

@@ -96,6 +96,10 @@ let%client set_tip_seen name =
        (Os_session.connected_wrapper set_tip_seen))
   name
 
+let%shared tip_seen name =
+  let%lwt seen = get_tips_seen () in
+  Lwt.return @@ Stringset.mem name seen
+
 (* I want to see the tips again *)
 let%server reset_tips_user myid_o =
   match myid_o with

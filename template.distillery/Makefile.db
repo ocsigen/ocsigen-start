@@ -36,10 +36,9 @@ pg_dump = pg_dump
 ifeq ($(shell psql --version 2> /dev/null),)
 $(error "PostgreSQL is not installed")
 else
-PSQL_VERSION := $(shell psql --version | cut -d' ' -f 3 | cut -d'.' -f 1-2)
-pg_ctl       := $(shell \
-                  sh -c "which pg_ctl" || \
-                  sh -c "echo /usr/lib/postgresql/$(PSQL_VERSION)/bin/pg_ctl")
+pg_ctl       = $(shell which pg_ctl || \
+                       ls /usr/lib/postgresql/*/bin/pg_ctl | \
+                       sort -nr -t / -k 5 | head -n 1)
 endif
 
 ##----------------------------------------------------------------------
