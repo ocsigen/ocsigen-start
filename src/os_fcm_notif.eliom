@@ -137,6 +137,9 @@ module Data =
 
         let add_soundname str t = add_raw_string "soundname" str t
 
+        let add_notification_channel_id id t =
+          ("android_channel_id", `String id) :: t
+        
         let add_notification_id id t =
           ("notId", `Int id) :: t
 

@@ -177,6 +177,8 @@ module Data :
     (** The type representing a data payload. *)
     type t
 
+    val to_json : t -> Yojson.Safe.json
+
     (** [to_list data] returns the representation of the data as a list of
         tuples [(data_key, json_value)]. *)
     val to_list : t -> (string * Yojson.Safe.json) list
@@ -222,9 +224,11 @@ module Data :
             notification area instead of one. If a new notification has the same
             ID as an older one, the new one will replace it. It is useful for
             chats for example.
-         *)
+        *)
         val add_notification_id : int -> t -> t
 
+        val add_notification_channel_id : string -> t -> t
+        
         module Style :
           sig
             type t = Inbox | Picture
