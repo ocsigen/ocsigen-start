@@ -228,7 +228,7 @@ module Data :
         val add_notification_id : int -> t -> t
 
         val add_notification_channel_id : string -> t -> t
-        
+
         module Style :
           sig
             type t = Inbox | Picture
