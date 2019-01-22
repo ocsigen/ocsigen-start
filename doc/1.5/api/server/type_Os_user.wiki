@@ -1,0 +1,81 @@
+<<code language="ocaml" | sig
+  type id = Os_types.User.id
+  type t =
+    Os_types.User.t = {
+    userid : Os_user.id;
+    fn : string;
+    ln : string;
+    avatar : string option;
+    language : string option;
+  }
+  exception Already_exists of Os_types.User.id
+  exception No_such_user
+  val password_set : Os_types.User.id -> bool Lwt.t
+  val wrong_password : bool Eliom_reference.Volatile.eref
+  val account_not_activated : bool Eliom_reference.Volatile.eref
+  val user_already_exists : bool Eliom_reference.Volatile.eref
+  val user_does_not_exist : bool Eliom_reference.Volatile.eref
+  val user_already_preregistered : bool Eliom_reference.Volatile.eref
+  val action_link_key_outdated : bool Eliom_reference.Volatile.eref
+  val userid_of_user : Os_types.User.t -> Os_types.User.id
+  val firstname_of_user : Os_types.User.t -> string
+  val lastname_of_user : Os_types.User.t -> string
+  val avatar_of_user : Os_types.User.t -> string option
+  val avatar_uri_of_avatar :
+    ?absolute_path:bool -> string -> Eliom_content.Xml.uri
+  val avatar_uri_of_user :
+    ?absolute_path:bool -> Os_types.User.t -> Eliom_content.Xml.uri option
+  val language_of_user : Os_types.User.t -> string option
+  val fullname_of_user : Os_types.User.t -> string
+  val is_complete : Os_types.User.t -> bool
+  val add_actionlinkkey :
+    ?autoconnect:bool ->
+    ?action:[ `AccountActivation | `Custom of string | `PasswordReset ] ->
+    ?data:string ->
+    ?validity:int64 ->
+    act_key:string ->
+    userid:Os_types.User.id -> email:string -> unit -> unit Lwt.t
+  val verify_password :
+    email:string -> password:string -> Os_types.User.id Lwt.t
+  val user_of_userid : Os_types.User.id -> Os_types.User.t Lwt.t
+  val get_actionlinkkey_info : string -> Os_types.Action_link_key.info Lwt.t
+  val userid_of_email : string -> Os_types.User.id Lwt.t
+  val emails_of_userid : Os_types.User.id -> string list Lwt.t
+  val email_of_userid : Os_types.User.id -> string option Lwt.t
+  val emails_of_user : Os_types.User.t -> string list Lwt.t
+  val email_of_user : Os_types.User.t -> string option Lwt.t
+  val get_language : Os_types.User.id -> string option Lwt.t
+  val get_users : ?pattern:string -> unit -> Os_types.User.t list Lwt.t
+  val create :
+    ?password:string ->
+    ?avatar:string ->
+    ?language:string ->
+    ?email:string ->
+    firstname:string -> lastname:string -> unit -> Os_types.User.t Lwt.t
+  val update :
+    ?password:string ->
+    ?avatar:string ->
+    ?language:string ->
+    firstname:string -> lastname:string -> Os_types.User.id -> unit Lwt.t
+  val update' : ?password:string -> Os_types.User.t -> unit Lwt.t
+  val update_password :
+    userid:Os_types.User.id -> password:string -> unit Lwt.t
+  val update_avatar : userid:Os_types.User.id -> avatar:string -> unit Lwt.t
+  val update_language :
+    userid:Os_types.User.id -> language:string -> unit Lwt.t
+  val is_registered : string -> bool Lwt.t
+  val is_preregistered : string -> bool Lwt.t
+  val add_preregister : string -> unit Lwt.t
+  val remove_preregister : string -> unit Lwt.t
+  val all : ?limit:int64 -> unit -> string list Lwt.t
+  val set_pwd_crypt_fun :
+    (string -> string) * (Os_types.User.id -> string -> string -> bool) ->
+    unit
+  val remove_email_from_user :
+    userid:Os_types.User.id -> email:string -> unit Lwt.t
+  val is_email_validated :
+    userid:Os_types.User.id -> email:string -> bool Lwt.t
+  val is_main_email : userid:Os_types.User.id -> email:string -> bool Lwt.t
+  val update_main_email :
+    userid:Os_types.User.id -> email:string -> unit Lwt.t
+end >>

@@ -1,0 +1,23 @@
+<<code language="ocaml" | sig
+  type local_calendar
+  val to_utc : Os_date.local_calendar -> CalendarLib.Calendar.t
+  val to_local : CalendarLib.Calendar.t -> Os_date.local_calendar
+  val now : unit -> Os_date.local_calendar
+  val user_tz : unit -> CalendarLib.Time_Zone.t
+  val to_local_time : Os_date.local_calendar -> CalendarLib.Time.t
+  val to_local_date : Os_date.local_calendar -> CalendarLib.Date.t
+  val local_to_calendar : Os_date.local_calendar -> CalendarLib.Calendar.t
+  val local_from_calendar : CalendarLib.Calendar.t -> Os_date.local_calendar
+  val unknown_timezone : unit -> bool
+  val smart_time :
+    ?now:Os_date.local_calendar -> Os_date.local_calendar -> string
+  val smart_date :
+    ?now:Os_date.local_calendar -> Os_date.local_calendar -> string
+  val smart_hours_minutes : Os_date.local_calendar -> string
+  val smart_interval :
+    ?now:Os_date.local_calendar ->
+    Os_date.local_calendar -> Os_date.local_calendar -> string
+  val smart_date_interval :
+    ?now:Os_date.local_calendar ->
+    Os_date.local_calendar -> Os_date.local_calendar -> string
+end >>

@@ -1,0 +1,24 @@
+=Index of exceptions=
+
+|@@ @style="tet-align: left;"@@\\A|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Account_already_activated_unconnected"| exception Os_handlers.Account_already_activated_unconnected >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|~Exception raised when an account has been already activated and no user is
+    connected~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\C|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Custom_action_link"| exception Os_handlers.Custom_action_link >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|~Exception raised when something went wrong with an action link key~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\I|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Invalid_action_key"| exception Os_handlers.Invalid_action_key >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|~Exception raised when the key is oudated~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\N|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="No_such_resource"| exception Os_handlers.No_such_resource >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|~Exception raised when the requested resource is not available~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Not_connected"| exception Os_session.Not_connected >> ~[<<a_api subproject="client" | module Os_session >>~]||
+|@@ @style="tet-align: left;"@@\\P|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Permission_denied"| exception Os_session.Permission_denied >> ~[<<a_api subproject="client" | module Os_session >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Predicate_failed"| exception Os_page.Predicate_failed >> ~[<<a_api subproject="client" | module Os_page >>~]||
+\\

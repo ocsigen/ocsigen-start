@@ -1,0 +1,90 @@
+=Index of modules=
+
+|@@ @style="tet-align: left;"@@\\A|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Action_link_key"| module Os_types.Action_link_key >> ~[<<a_api subproject="client" | module Os_types >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Almost"| module Os_lib.Email_or_phone.Almost >> ~[<<a_api subproject="client" | module Os_lib.Email_or_phone >>~]||
+|@@ @style="tet-align: left;"@@\\D|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="D"| module Os_icons.D >> ~[<<a_api subproject="client" | module Os_icons >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Default_config"| module Os_page.Default_config >> ~[<<a_api subproject="client" | module Os_page >>~]|<<div class="odocwiki_info"|~A default configuration for pages~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\E|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Email_or_phone"| module Os_lib.Email_or_phone >> ~[<<a_api subproject="client" | module Os_lib >>~]|<<div class="odocwiki_info"|~Parse strings that can be e~-mails or phones~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\F|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="F"| module Os_icons.F >> ~[<<a_api subproject="client" | module Os_icons >>~]||
+|@@ @style="tet-align: left;"@@\\G|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Group"| module Os_types.Group >> ~[<<a_api subproject="client" | module Os_types >>~]||
+|@@ @style="tet-align: left;"@@\\M|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Make"| module Os_page.Make >> ~[<<a_api subproject="client" | module Os_page >>~]||
+|@@ @style="tet-align: left;"@@\\O|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Opt"| module Os_session.Opt >> ~[<<a_api subproject="client" | module Os_session >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Opt"| module Os_page.Make.Opt >> ~[<<a_api subproject="client" | module Os_page.Make >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Opt"| module Os_current_user.Opt >> ~[<<a_api subproject="client" | module Os_current_user >>~]|<<div class="odocwiki_info"|~Instead of exception~, the module <<span class="odocwiki_inlinecode"|~Opt>> returns an option~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_comet"| module Os_comet >> |<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|restart~_process ~(~)>> restarts the client~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_connect_phone"| module Os_connect_phone >> |<<div class="odocwiki_info"|~To be used for signalling errors with ~S~M~S transmission
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_current_user"| module Os_current_user >> |<<div class="odocwiki_info"|~This module provides functions and types to manage the current user~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_date"| module Os_date >> |<<div class="odocwiki_info"|~Type representing a local calendar~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_email"| module Os_email >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_fcm_notif"| module Os_fcm_notif >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_handlers"| module Os_handlers >> |<<div class="odocwiki_info"|~This module contains pre~-defined handlers for connect~, disconnect~, sign up~,
+    add a new email~, etc~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_icons"| module Os_icons >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_lib"| module Os_lib >> |<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|reload ~(~)>> reloads the current page~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_msg"| module Os_msg >> |<<div class="odocwiki_info"|~Call this function either from client or server side
+    to display an error message in the page~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_notif"| module Os_notif >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_page"| module Os_page >> |<<div class="odocwiki_info"|~Functor defining wrappers for services handlers returning pages~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_platform"| module Os_platform >> |<<div class="odocwiki_info"|~Platform type~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_request_cache"| module Os_request_cache >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_services"| module Os_services >> |<<div class="odocwiki_info"|~The main service~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_session"| module Os_session >> |<<div class="odocwiki_info"|~Wrapper for service handlers that fetches automatically connection
+    information~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_tips"| module Os_tips >> |<<div class="odocwiki_info"|~Display tips in pages~, as a speech bubble~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_types"| module Os_types >> |<<div class="odocwiki_info"|~Types related to users~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_uploader"| module Os_uploader >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_user"| module Os_user >> |<<div class="odocwiki_info"|~Type alias to <<a_api subproject="client" | type Os_types.User.id >> to allow to use <<span class="odocwiki_inlinecode"|~Os~_user~.id>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_user_proxy"| module Os_user_proxy >> |<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data userid>> returns the user which has ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_user_view"| module Os_user_view >> |<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|check~_password~_confirmation ~~password ~~confirmation>> adds a listener to
+    the element <<span class="odocwiki_inlinecode"|confirmation>> which checks if the value of <<span class="odocwiki_inlinecode"|password>> and
+    <<span class="odocwiki_inlinecode"|confirmation>> match~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\R|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Register"| module Os_icons.Register >> ~[<<a_api subproject="client" | module Os_icons >>~]||
+|@@ @style="tet-align: left;"@@\\U|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="User"| module Os_types.User >> ~[<<a_api subproject="client" | module Os_types >>~]||
+\\

@@ -1,0 +1,449 @@
+=Index of values=
+
+|@@ @style="tet-align: left;"@@\\|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="__link"| value Os_comet.__link >> ~[<<a_api subproject="client" | module Os_comet >>~]||
+|@@ @style="tet-align: left;"@@\\A|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="action_link_handler"| value Os_handlers.action_link_handler >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|action~_link~_handler userid~_o activation~_key ~(~)>> is the handler for
+    activation keys~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="action_link_service"| value Os_services.action_link_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~A ~G~E~T service for action link keys~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="add_email_handler"| value Os_handlers.add_email_handler >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_email~_handler ~(~) email>> adds a new e~-mail address
+    for the current user and sends an activation link~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="add_email_service"| value Os_services.add_email_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~A ~P~O~S~T service to add an email to a user~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="avatar"| value Os_user_view.avatar >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|avatar user>> creates an image ~H~T~M~L tag ~(with ~Eliom~_content~.~H~T~M~L~.~F~) with an
+    alt attribute to <<span class="odocwiki_inlinecode"|"picture">> and with class <<span class="odocwiki_inlinecode"|"os~-avatar">>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="avatar_of_user"| value Os_user.avatar_of_user >> ~[<<a_api subproject="client" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|avatar~_of~_user user>> returns the avatar of the user <<span class="odocwiki_inlinecode"|user>> as <<span class="odocwiki_inlinecode"|~Some
+    avatar~_uri>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="avatar_uri_of_avatar"| value Os_user.avatar_uri_of_avatar >> ~[<<a_api subproject="client" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|avatar~_uri~_of~_avatar ~?absolute~_path avatar>> returns the ~U~R~I ~(absolute or
+    relative~) depending on the value of <<span class="odocwiki_inlinecode"|absolute~_path>>~) of the avatar
+    <<span class="odocwiki_inlinecode"|avatar>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="avatar_uri_of_user"| value Os_user.avatar_uri_of_user >> ~[<<a_api subproject="client" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|avatar~_uri~_of~_user user>> returns the avatar ~U~R~I ~(absolute or relative~)
+    depending on the value of <<span class="odocwiki_inlinecode"|absolute~_path>>~) of the avatar of the user <<span class="odocwiki_inlinecode"|user>>~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\B|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="block"| value Os_tips.block >> ~[<<a_api subproject="client" | module Os_tips >>~]|<<div class="odocwiki_info"|~Return a box containing a tip~, to be inserted where you want in a page~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="bubble"| value Os_tips.bubble >> ~[<<a_api subproject="client" | module Os_tips >>~]||
+|@@ @style="tet-align: left;"@@\\C|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="check_password_confirmation"| value Os_user_view.check_password_confirmation >> ~[<<a_api subproject="client" | module Os_user_view >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="close"| value Os_icons.ICSIG.close >> ~[<<a_api subproject="client" | module Os_icons.ICSIG >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="confirm_code_extra"| value Os_connect_phone.confirm_code_extra >> ~[<<a_api subproject="client" | module Os_connect_phone >>~]|<<div class="odocwiki_info"|~Confirm validation code and add extra phone to account~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="confirm_code_extra_handler"| value Os_handlers.confirm_code_extra_handler >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|confirm~_code~_extra~_handler ~(~) number>> is like
+    <<span class="odocwiki_inlinecode"|confirm~_code~_signup~_handler>> but for adding an additional number to
+    the account~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="confirm_code_extra_service"| value Os_services.confirm_code_extra_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~Confirm ~S~M~S activation code and ~(if valid~) add new phone number to
+    user~'s account~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="confirm_code_recovery"| value Os_connect_phone.confirm_code_recovery >> ~[<<a_api subproject="client" | module Os_connect_phone >>~]|<<div class="odocwiki_info"|~Confirm validation code and recover account~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="confirm_code_recovery_handler"| value Os_handlers.confirm_code_recovery_handler >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|confirm~_code~_recovery~_handler ~(~) number>> is like
+    <<span class="odocwiki_inlinecode"|confirm~_code~_signup~_handler>> but for recovering a lost
+    password~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="confirm_code_recovery_service"| value Os_services.confirm_code_recovery_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~Confirm ~S~M~S activation code and ~(if valid~) allow the user to set a
+    new password~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="confirm_code_remind_service"| value Os_services.confirm_code_remind_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~Temporary alternate name for <<span class="odocwiki_inlinecode"|confirm~_code~_recovery~_handler>> to
+    facilite the transition~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="confirm_code_signup"| value Os_connect_phone.confirm_code_signup >> ~[<<a_api subproject="client" | module Os_connect_phone >>~]|<<div class="odocwiki_info"|~Confirm validation code and complete sign~-up with the phone
+    number~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="confirm_code_signup_handler"| value Os_handlers.confirm_code_signup_handler >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|confirm~_code~_signup~_handler ~(~) ~(first~_name~, ~(last~_name~, ~(pass~,
+    number~)~)~)>> sends a verification code to <<span class="odocwiki_inlinecode"|number>>~, displays a popup
+    for confirming the code~, and creates the account if all goes
+    well~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="confirm_code_signup_service"| value Os_services.confirm_code_signup_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~Confirm ~S~M~S activation code and ~(if valid~) register new user~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="connect"| value Os_connect_phone.connect >> ~[<<a_api subproject="client" | module Os_connect_phone >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="connect_form"| value Os_user_view.connect_form >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|connect~_form ~?a ~?email ~(~)>> creates a ~P~O~S~T login form with email~, password~,
+    a checkbox to stay logged in ~(with default text to <<span class="odocwiki_inlinecode"|"keep me logged in">> in
+    a span~) and a submit button~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="connect_handler"| value Os_handlers.connect_handler >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|connect~_handler ~(~) ~(~(login~, password~)~, keep~Me~Logged~In~)>> connects the user
+    with <<span class="odocwiki_inlinecode"|login>> and <<span class="odocwiki_inlinecode"|password>> and keeps the user logged in between different
+    session if <<span class="odocwiki_inlinecode"|keep~Me~Logged~In>> is set to <<span class="odocwiki_inlinecode"|true>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="connect_service"| value Os_services.connect_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~A ~P~O~S~T service to connect a user with username and password~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="connected_fun"| value Os_session.Opt.connected_fun >> ~[<<a_api subproject="client" | module Os_session.Opt >>~]|<<div class="odocwiki_info"|~Same as <<a_api subproject="client" | val Os_session.Opt.connected_fun >> but instead of failing in case the user is
+      not connected~, the function given as parameter takes an <<span class="odocwiki_inlinecode"|~Os~_types~.~User~.id
+      option>> for user id~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="connected_fun"| value Os_session.connected_fun >> ~[<<a_api subproject="client" | module Os_session >>~]|<<div class="odocwiki_info"|~Wrapper for service handlers that fetches automatically connection
+    information~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="connected_page"| value Os_page.Make.Opt.connected_page >> ~[<<a_api subproject="client" | module Os_page.Make.Opt >>~]|<<div class="odocwiki_info"|~Wrapper for pages that first checks if the user is connected~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="connected_page"| value Os_page.Make.connected_page >> ~[<<a_api subproject="client" | module Os_page.Make >>~]|<<div class="odocwiki_info"|~Wrapper for pages that first checks if the user is connected~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="connected_rpc"| value Os_session.Opt.connected_rpc >> ~[<<a_api subproject="client" | module Os_session.Opt >>~]|<<div class="odocwiki_info"|~Same as <<a_api subproject="client" | val Os_session.Opt.connected_rpc >> but instead of failing in case the user is
+      not connected~, the function given as parameter takes an <<span class="odocwiki_inlinecode"|~Os~_types~.~User~.id
+      option>> for user id~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="connected_rpc"| value Os_session.connected_rpc >> ~[<<a_api subproject="client" | module Os_session >>~]|<<div class="odocwiki_info"|~Wrapper for server functions ~(see <<a_api subproject="client" | val Os_session.connected_fun >>~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="connected_user_box"| value Os_user_view.connected_user_box >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|~An userbox ~(in a div with the ~C~S~S class <<span class="odocwiki_inlinecode"|"connected~-user~-box">>~) for connected
+    users with an icon and the username~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="connected_wrapper"| value Os_session.connected_wrapper >> ~[<<a_api subproject="client" | module Os_session >>~]|<<div class="odocwiki_info"|~Wrapper for server functions when you do not need userid
+    ~(see <<a_api subproject="client" | val Os_session.connected_fun >>~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="connection_box"| value Os_user_view.connection_box >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|~A box ~(in a div with the ~C~S~S class <<span class="odocwiki_inlinecode"|"os~-connection~-box">>~) with a sign in and
+    a sign out button~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="content"| value Os_page.content >> ~[<<a_api subproject="client" | module Os_page >>~]|<<div class="odocwiki_info"|~Specifies a page with an optional title ~(with the argument <<span class="odocwiki_inlinecode"|~?title>>~)~, some
+    optional extra metadata ~(with the argument <<span class="odocwiki_inlinecode"|~?head>>~) and a given body~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="css"| value Os_page.PAGE.css >> ~[<<a_api subproject="client" | module Os_page.PAGE >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|css>> ~(same as <<span class="odocwiki_inlinecode"|js>> but for style sheet files~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="css_class"| value Os_platform.css_class >> ~[<<a_api subproject="client" | module Os_platform >>~]|<<div class="odocwiki_info"|~Return <<span class="odocwiki_inlinecode"|"os~-platform">> where <<span class="odocwiki_inlinecode"|platform>> is the device platform~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\D|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="default_connected_error_page"| value Os_page.PAGE.default_connected_error_page >> ~[<<a_api subproject="client" | module Os_page.PAGE >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|default~_connected~_error~_page userid~_o get~_param post~_param exn>> is the
+      default error page for connected pages~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="default_connected_predicate"| value Os_page.PAGE.default_connected_predicate >> ~[<<a_api subproject="client" | module Os_page.PAGE >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|default~_connected~_predicate userid~_o get~_param post~_param>> is the default
+      predicate for connected pages~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="default_error_page"| value Os_page.PAGE.default_error_page >> ~[<<a_api subproject="client" | module Os_page.PAGE >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|default~_error~_page get~_param post~_param exn>> is the default error page~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="default_predicate"| value Os_page.PAGE.default_predicate >> ~[<<a_api subproject="client" | module Os_page.PAGE >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|default~_predicate get~_param post~_param>> is the default predicate~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="disconnect_button"| value Os_user_view.disconnect_button >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|disconnect~_button ~?a ~(~)>> creates a disconnect ~P~O~S~T form with a button
+    without value~, a signout icon and a text message <<span class="odocwiki_inlinecode"|"logout">>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="disconnect_handler"| value Os_handlers.disconnect_handler >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|disconnect~_handler ~?main~_page ~(~) ~(~)>> disconnects the current user~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="disconnect_link"| value Os_user_view.disconnect_link >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|~A link to <<a_api subproject="client" | val Os_services.disconnect_service >>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="disconnect_service"| value Os_services.disconnect_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~A ~P~O~S~T service to disconnect the current user~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\E|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="email_regexp"| value Os_lib.email_regexp >> ~[<<a_api subproject="client" | module Os_lib >>~]||
+|@@ @style="tet-align: left;"@@\\F|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="firstname_of_user"| value Os_user.firstname_of_user >> ~[<<a_api subproject="client" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|firstname~_of~_user user>> returns the first name of the user <<span class="odocwiki_inlinecode"|user>>
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="forgot_password_form"| value Os_user_view.forgot_password_form >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|forgot~_password~_form ~~a ~(~)>> creates a <<a_api subproject="client" | val Os_user_view.generic_email_form >> with the
+    service <<a_api subproject="client" | val Os_services.forgot_password_service >>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="forgot_password_service"| value Os_services.forgot_password_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~A ~P~O~S~T service when the user forgot his password~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="fullname_of_user"| value Os_user.fullname_of_user >> ~[<<a_api subproject="client" | module Os_user >>~]|<<div class="odocwiki_info"|~Retrieve the full name of user ~(which is the concatenation of the first name
+    and last name~)~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\G|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="generic_email_form"| value Os_user_view.generic_email_form >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|generic~_email~_form ~?a ~?label ~?text ~?email ~~service ~(~)>> creates an email
+    ~P~O~S~T form with an input of type email and a submit button~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get"| value Os_platform.get >> ~[<<a_api subproject="client" | module Os_platform >>~]|<<div class="odocwiki_info"|~Return the platform as a type <<a_api subproject="client" | type Os_platform.t >>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_current_user"| value Os_current_user.Opt.get_current_user >> ~[<<a_api subproject="client" | module Os_current_user.Opt >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_current~_user ~(~)>> returns the current user as a <<span class="odocwiki_inlinecode"|~Os~_types~.~User~.t option>>
+      type~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_current_user"| value Os_current_user.get_current_user >> ~[<<a_api subproject="client" | module Os_current_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_current~_user ~(~)>> returns the current user as a <<a_api subproject="client" | type Os_types.User.t >> type~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_current_userid"| value Os_current_user.Opt.get_current_userid >> ~[<<a_api subproject="client" | module Os_current_user.Opt >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_current~_userid ~(~)>> returns the ~I~D of the current user as an option~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_current_userid"| value Os_current_user.get_current_userid >> ~[<<a_api subproject="client" | module Os_current_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_current~_userid ~(~)>> returns the ~I~D of the current user~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_data"| value Os_user_proxy.get_data >> ~[<<a_api subproject="client" | module Os_user_proxy >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_data_from_cache"| value Os_user_proxy.get_data_from_cache >> ~[<<a_api subproject="client" | module Os_user_proxy >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data~_from~_cache userid>> returns the user with ~I~D <<span class="odocwiki_inlinecode"|userid>> saved in
+    cache~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_data_rpc"| value Os_user_proxy.get_data_rpc >> ~[<<a_api subproject="client" | module Os_user_proxy >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data~_rpc>> is a ~R~P~C to ~<~<a~_api subproject~="server" ~| module
+    ~Os~_user~_proxy~.get~_data~_rpc~'~>~>
+>>
+|
+|@@ @style="tet-align: left;"@@\\H|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="home_button"| value Os_user_view.home_button >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|home~_button ~~a ~(~)>> creates an input button with value "home" which
+    redirects to the main service~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\I|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="information_form"| value Os_user_view.information_form >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|information~_form ~~a ~~firstname ~~lastname ~~password~1 ~~password~2 ~(~)>> creates
+    a ~P~O~S~T form to update the user information like first name~, last name and
+    password~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="is_complete"| value Os_user.is_complete >> ~[<<a_api subproject="client" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|is~_complete user>> returns <<span class="odocwiki_inlinecode"|true>> if the first name or the last name of
+    <<span class="odocwiki_inlinecode"|~Os~_types~.user>> has not been completed yet~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\J|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="js"| value Os_page.PAGE.js >> ~[<<a_api subproject="client" | module Os_page.PAGE >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|js>> corresponds to the ~Java~Script files to include into each page~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\L|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="language_of_user"| value Os_user.language_of_user >> ~[<<a_api subproject="client" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|language~_of~_user user>> returns the language of the user <<span class="odocwiki_inlinecode"|user>>
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="lastname_of_user"| value Os_user.lastname_of_user >> ~[<<a_api subproject="client" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|lastname~_of~_user user>> returns the last name of the user <<span class="odocwiki_inlinecode"|user>>
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="local_css"| value Os_page.PAGE.local_css >> ~[<<a_api subproject="client" | module Os_page.PAGE >>~]|<<div class="odocwiki_info"|~Use <<span class="odocwiki_inlinecode"|local~_css>> instead of <<span class="odocwiki_inlinecode"|css>> for local stylesheets if you are building
+      a mobile application~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="local_from_calendar"| value Os_date.local_from_calendar >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|~Convert a <<span class="odocwiki_inlinecode"|~Calendar~Lib~.~Calendar~.t>> value to a <<span class="odocwiki_inlinecode"|local~_calendar>> value~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="local_js"| value Os_page.PAGE.local_js >> ~[<<a_api subproject="client" | module Os_page.PAGE >>~]|<<div class="odocwiki_info"|~Use <<span class="odocwiki_inlinecode"|local~_js>> instead of <<span class="odocwiki_inlinecode"|js>> for local scripts if you are building
+      a mobile application~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="local_to_calendar"| value Os_date.local_to_calendar >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|~Convert a <<span class="odocwiki_inlinecode"|local~_calendar>> value to a <<span class="odocwiki_inlinecode"|~Calendar~Lib~.~Calendar~.t>> value~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="lwt_bind_input_enter"| value Os_lib.lwt_bind_input_enter >> ~[<<a_api subproject="client" | module Os_lib >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|lwt~_bound~_input~_enter inp f>> calls f whenever the user submits
+    the contents of <<span class="odocwiki_inlinecode"|inp>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="lwt_bound_input_enter"| value Os_lib.lwt_bound_input_enter >> ~[<<a_api subproject="client" | module Os_lib >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|lwt~_bound~_input~_enter f>> produces an input element bound to <<span class="odocwiki_inlinecode"|f>>~,
+    i~.e~.~, when the user submits the input~, we call <<span class="odocwiki_inlinecode"|f>>~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\M|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="main_service"| value Os_services.main_service >> ~[<<a_api subproject="client" | module Os_services >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="make_page"| value Os_page.Make.make_page >> ~[<<a_api subproject="client" | module Os_page.Make >>~]|<<div class="odocwiki_info"|~Builds a valid html page from body content by adding headers
+      for this app
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="me"| value Os_current_user.me >> ~[<<a_api subproject="client" | module Os_current_user >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="memoizator"| value Os_lib.memoizator >> ~[<<a_api subproject="client" | module Os_lib >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|memoizator f ~(~)>> caches the returned value of <<span class="odocwiki_inlinecode"|f ~(~)>>
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="msg"| value Os_msg.msg >> ~[<<a_api subproject="client" | module Os_msg >>~]||
+|@@ @style="tet-align: left;"@@\\N|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="now"| value Os_date.now >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|now ~(~)>> returns the current date as a <<span class="odocwiki_inlinecode"|local~_calendar>> value~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\O|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="of_almost"| value Os_lib.Email_or_phone.of_almost >> ~[<<a_api subproject="client" | module Os_lib.Email_or_phone >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="of_string"| value Os_lib.Email_or_phone.Almost.of_string >> ~[<<a_api subproject="client" | module Os_lib.Email_or_phone.Almost >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="of_string"| value Os_lib.Email_or_phone.of_string >> ~[<<a_api subproject="client" | module Os_lib.Email_or_phone >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="other_head"| value Os_page.PAGE.other_head >> ~[<<a_api subproject="client" | module Os_page.PAGE >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|other~_head>> is a list of custom elements to add in the head section~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\P|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="page"| value Os_page.Make.page >> ~[<<a_api subproject="client" | module Os_page.Make >>~]|<<div class="odocwiki_info"|~Default wrapper for service handler generating pages~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="password_form"| value Os_user_view.password_form >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|password~_form ~~a ~~service ~(~)>> defines a ~P~O~S~T form with two inputs for a
+    password form ~(password and password confirmation~) and a send button~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="phone_regexp"| value Os_lib.phone_regexp >> ~[<<a_api subproject="client" | module Os_lib >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="preregister_form"| value Os_user_view.preregister_form >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|preregister~_form ~~a label>> creates a <<a_api subproject="client" | val Os_user_view.generic_email_form >> with the service
+    <<a_api subproject="client" | val Os_services.preregister_service >> and add the label <<span class="odocwiki_inlinecode"|label>> to the email
+    input form~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="preregister_service"| value Os_services.preregister_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~A ~P~O~S~T service to preregister a user~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\R|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="register_settings_service"| value Os_services.register_settings_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~Register the settings service ~(defined in the app rather than in
+    the ~O~S lib~) because we need to perform redirections to it~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="reload"| value Os_lib.reload >> ~[<<a_api subproject="client" | module Os_lib >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="remove_email_from_user"| value Os_current_user.remove_email_from_user >> ~[<<a_api subproject="client" | module Os_current_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|remove~_email~_from~_user email>> removes the email <<span class="odocwiki_inlinecode"|email>> of the current
+    user~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="request_code"| value Os_connect_phone.request_code >> ~[<<a_api subproject="client" | module Os_connect_phone >>~]|<<div class="odocwiki_info"|~Send a validation code for a new e~-mail address ~(corresponds to
+    <<span class="odocwiki_inlinecode"|confirm~_code~_signup>> and <<span class="odocwiki_inlinecode"|confirm~_code~_extra>>~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="request_recovery_code"| value Os_connect_phone.request_recovery_code >> ~[<<a_api subproject="client" | module Os_connect_phone >>~]|<<div class="odocwiki_info"|~Send a validation code for recovering an existing address~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="reset_tips"| value Os_tips.reset_tips >> ~[<<a_api subproject="client" | module Os_tips >>~]|<<div class="odocwiki_info"|~Call this function to reset tips for current user~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="reset_tips_link"| value Os_user_view.reset_tips_link >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|~Link to start to see the help from the beginning~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="reset_tips_service"| value Os_tips.reset_tips_service >> ~[<<a_api subproject="client" | module Os_tips >>~]|<<div class="odocwiki_info"|~A non~-attached service that will reset tips~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="restart"| value Os_handlers.restart >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|restart ~?url ~(~)>> restarts the client and redirects to the url <<span class="odocwiki_inlinecode"|url>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="restart_process"| value Os_comet.restart_process >> ~[<<a_api subproject="client" | module Os_comet >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|restart~_process ~(~)>> restarts the client~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\S|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_password_rpc"| value Os_handlers.set_password_rpc >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|set~_password~_rpc ~(password~, confirmation~_password~)>> is a ~R~P~C to
+    <<span class="odocwiki_inlinecode"|set~_password>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_password_service"| value Os_services.set_password_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~A ~P~O~S~T service to update the password~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_personal_data_service"| value Os_services.set_personal_data_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~A ~P~O~S~T service to update the basic user data like first name~, last name and
+    password~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_tip_seen"| value Os_tips.set_tip_seen >> ~[<<a_api subproject="client" | module Os_tips >>~]|<<div class="odocwiki_info"|~Call this function to mark a tip as "already seen" by current user~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="sign_up_form"| value Os_user_view.sign_up_form >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|sign~_up~_form ~?a ~?email ~(~)>> creates a <<a_api subproject="client" | val Os_user_view.generic_email_form >> with the service
+    <<a_api subproject="client" | val Os_services.sign_up_service >>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="sign_up_handler"| value Os_handlers.sign_up_handler >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|sign~_up~_handler ~(~) email>> signes up an user with email <<span class="odocwiki_inlinecode"|email>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="sign_up_service"| value Os_services.sign_up_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~A ~P~O~S~T service to sign up with only an email address~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="signout"| value Os_icons.ICSIG.signout >> ~[<<a_api subproject="client" | module Os_icons.ICSIG >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="smart_date"| value Os_date.smart_date >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|smart~_date ~~now local~_date>> returns a smart description of <<span class="odocwiki_inlinecode"|local~_date>>
+    comparing to <<span class="odocwiki_inlinecode"|now>> ~(default value of now is the current time when the
+    function is called~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="smart_date_interval"| value Os_date.smart_date_interval >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|smart~_date~_interval ~?now start~_date end~_date>> returns a smart description
+    of <<span class="odocwiki_inlinecode"|start~_date>> comparing to <<span class="odocwiki_inlinecode"|end~_date>> of the year~, month and day
+    ~(compared to <<a_api subproject="client" | val Os_date.smart_interval >>~, no information about the hour and
+    minutes is given~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="smart_hours_minutes"| value Os_date.smart_hours_minutes >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|smart~_hours~_minutes date>> returns the time in the format <<span class="odocwiki_inlinecode"|"~%~I~:~%~M~%~P">>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="smart_interval"| value Os_date.smart_interval >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|smart~_interval ~?now start~_date end~_date>> returns a smart description of
+    <<span class="odocwiki_inlinecode"|start~_date>> comparing to <<span class="odocwiki_inlinecode"|end~_date>> of the year~, month~, day~, hour and
+    minutes ~(compared to <<a_api subproject="client" | val Os_date.smart_date_interval >>~, information about the hour and
+    minutes is given~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="smart_time"| value Os_date.smart_time >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|smart~_time ~~now date>> returns a smart description of
+    <<span class="odocwiki_inlinecode"|local~_date>> comparing to <<span class="odocwiki_inlinecode"|now>> ~(default value of now is the current time
+    when the function is called~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="string_filter"| value Os_lib.string_filter >> ~[<<a_api subproject="client" | module Os_lib >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="string_of_t"| value Os_platform.string_of_t >> ~[<<a_api subproject="client" | module Os_platform >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="string_repeat"| value Os_lib.string_repeat >> ~[<<a_api subproject="client" | module Os_lib >>~]||
+|@@ @style="tet-align: left;"@@\\T|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="t_of_string"| value Os_platform.t_of_string >> ~[<<a_api subproject="client" | module Os_platform >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="title"| value Os_page.PAGE.title >> ~[<<a_api subproject="client" | module Os_page.PAGE >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|title>> corresponds to the html tag ~<title~>~, it will be inserted on all
+      pages~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="to_local"| value Os_date.to_local >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|~Convert any type of calendar to a local calendar~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="to_local_date"| value Os_date.to_local_date >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|~Convert a <<span class="odocwiki_inlinecode"|local~_calendar>> value to a <<span class="odocwiki_inlinecode"|~Calendar~Lib~.~Date~.t>> value~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="to_local_time"| value Os_date.to_local_time >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|~Convert a <<span class="odocwiki_inlinecode"|local~_calendar>> value to a <<span class="odocwiki_inlinecode"|~Calendar~Lib~.~Time~.t>> value~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="to_string"| value Os_lib.Email_or_phone.Almost.to_string >> ~[<<a_api subproject="client" | module Os_lib.Email_or_phone.Almost >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="to_string"| value Os_lib.Email_or_phone.to_string >> ~[<<a_api subproject="client" | module Os_lib.Email_or_phone >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="to_utc"| value Os_date.to_utc >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|~Convert a local calendar to a ~U~T~C calendar
+>>
+|
+|@@ @style="tet-align: left;"@@\\U|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="unknown_timezone"| value Os_date.unknown_timezone >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|unknown~_timezone ~(~)>> returns <<span class="odocwiki_inlinecode"|true>> if the timezone is unknown~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="update_language"| value Os_current_user.update_language >> ~[<<a_api subproject="client" | module Os_current_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|update~_language language>> updates the language of the current user~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="update_language_service"| value Os_services.update_language_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~A ~P~O~S~T service to update the language of the current user~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="update_main_email"| value Os_current_user.update_main_email >> ~[<<a_api subproject="client" | module Os_current_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|update~_main~_email email>> sets the main email of the current user to
+    <<span class="odocwiki_inlinecode"|email>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="upload_pic_link"| value Os_user_view.upload_pic_link >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|upload~_pic~_link ~?a ~?content ~?crop ~?input ~?submit action~_after~_submit
+    service userid>>
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="user"| value Os_icons.ICSIG.user >> ~[<<a_api subproject="client" | module Os_icons.ICSIG >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="user_box"| value Os_user_view.user_box >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|~Return <<a_api subproject="client" | val Os_user_view.connection_box >> if no user is connected ~(i~.e~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="user_tz"| value Os_date.user_tz >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|user~_tz ~(~)>> returns current user~'s timezone~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="userid_of_user"| value Os_user.userid_of_user >> ~[<<a_api subproject="client" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|userid~_of~_user user>> returns the userid of the user <<span class="odocwiki_inlinecode"|user>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="username"| value Os_user_view.username >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|username user>> creates a div with class <<span class="odocwiki_inlinecode"|"os~_username">> containing~: <<span class="odocwiki_inlinecode"|firstname>> <<span class="odocwiki_inlinecode"|lastname>> if the user has a firstname~.~, <<span class="odocwiki_inlinecode"|"~User ">> concatenated with the userid in other cases~.
+    ~F~I~X~M~E~/~I~M~P~R~O~V~E~M~E~: use an option for the case the user has no firstname~?
+    ~Firstname must be empty because it must be optional~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\Y|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="y"| value Os_lib.Email_or_phone.Almost.y >> ~[<<a_api subproject="client" | module Os_lib.Email_or_phone.Almost >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="y"| value Os_lib.Email_or_phone.y >> ~[<<a_api subproject="client" | module Os_lib.Email_or_phone >>~]||
+\\

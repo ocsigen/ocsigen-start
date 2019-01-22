@@ -1,0 +1,17 @@
+<<code language="ocaml" | sig
+  type sms_error_core = [ `Invalid_number | `Limit | `Send | `Unknown ]
+  type sms_error =
+      [ `Invalid_number | `Limit | `Ownership | `Send | `Unknown ]
+  val request_code :
+    string -> (unit, Os_connect_phone.sms_error) Pervasives.result Lwt.t
+  val request_recovery_code :
+    string -> (unit, Os_connect_phone.sms_error) Pervasives.result Lwt.t
+  val confirm_code_extra : string -> bool Lwt.t
+  val confirm_code_signup :
+    first_name:string ->
+    last_name:string -> code:string -> password:string -> unit -> bool Lwt.t
+  val confirm_code_recovery : string -> bool Lwt.t
+  val connect :
+    keepmeloggedin:bool ->
+    password:string -> string -> [ `Login_ok | `No_such_resource ] Lwt.t
+end >>

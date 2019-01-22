@@ -1,0 +1,19 @@
+<<code language="ocaml" | sig
+  type t
+  type y = [ `Email | `Phone ]
+  val y : Os_lib.Email_or_phone.t -> Os_lib.Email_or_phone.y
+  val to_string : Os_lib.Email_or_phone.t -> string
+  val of_string : only_mail:bool -> string -> Os_lib.Email_or_phone.t option
+  module Almost :
+    sig
+      type t
+      type y = [ `Almost_email | `Almost_phone | `Email | `Invalid | `Phone ]
+      val y :
+        Os_lib.Email_or_phone.Almost.t -> Os_lib.Email_or_phone.Almost.y
+      val to_string : Os_lib.Email_or_phone.Almost.t -> string
+      val of_string :
+        only_mail:bool -> string -> Os_lib.Email_or_phone.Almost.t
+    end
+  val of_almost :
+    Os_lib.Email_or_phone.Almost.t -> Os_lib.Email_or_phone.t option
+end >>
