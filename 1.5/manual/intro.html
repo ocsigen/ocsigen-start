@@ -31,7 +31,7 @@ div.screenshots img {
 //<![CDATA[
 
 //]]>
-</script></head><body><div class="project-page"><div class="page-header"><p class="logo-ocsigen"><a href=".././../../" class="ocsimore_phrasing_link"><img src=".././../../img/ocsigen-white.svg" alt="Ocsigen"/></a>
+</script></head><body class="intro ocsigen-start"><div class="project-page"><div class="page-header"><p class="logo-ocsigen"><a href=".././../../" class="ocsimore_phrasing_link"><img src=".././../../img/ocsigen-white.svg" alt="Ocsigen"/></a>
 </p><p class="logo-subproject">Start</p><div class="mainmenu"><p class="mainmenu-home"><a href=".././../../" class="ocsimore_phrasing_link">Home</a></p><p class="mainmenu-doc"><a href=".././../../tuto/" class="ocsimore_phrasing_link">Doc</a></p><p><a href=".././../../eliom/" class="ocsimore_phrasing_link">Eliom</a></p><p><a href=".././../../js_of_ocaml/" class="ocsimore_phrasing_link">Js_of_ocaml</a></p><p><a href=".././../../lwt/" class="ocsimore_phrasing_link">Lwt</a></p><p><a href=".././../../tyxml/" class="ocsimore_phrasing_link">Tyxml</a></p><p class="mainmenu-current"><a href=".././../../ocsigen-start/" class="ocsimore_phrasing_link">Start</a></p></div><form id="googlesearch" action="https://google.com/search"><input name="q" id="gsearch-box" placeholder="Search using Google"/><label for="gsearch-box"><img src="/img/search.svg" alt="" id="gsearch-icon"/></label><input type="submit" id="gsearch-submit" onclick="document.getElementById('gsearch-box').value += ' site:ocsigen.org';"/></form><aside class="how-drawer"><input id="how-drawer-toggle" type="checkbox"/><label for="how-drawer-toggle" id="how-drawer-label"><span class="how-drawer-icon"></span></label><nav class="how-drawer-content"><ul class="drawermainmenu"><li class="drawermainmenu-home"><a href=".././../../" class="ocsimore_phrasing_link">Home</a>
 </li><li class="drawermainmenu-doc"><a href=".././../../tuto/" class="ocsimore_phrasing_link">Doc</a>
 </li><li class="drawermainmenu-project"><a href=".././../../eliom/" class="ocsimore_phrasing_link">Eliom</a>
@@ -62,7 +62,7 @@ It is probably the fastest way to get started with Ocsigen.
 </p><p>The application is cross-platform: it works as a Web app or as a mobile app
 for iOS or Android (via <a href="https://cordova.apache.org/" class="ocsimore_phrasing_link">Cordova</a>)..
 </p><h2>Demo</h2><p>If you want to test the demo application before installing Ocsigen Start,
-a working version is running <a href=".././../../ocsigen-start/demo/" class="ocsimore_phrasing_link">here</a>.
+a live version is running <a href=".././../../ocsigen-start/demo/" class="ocsimore_phrasing_link">here</a>.
 You can also download the mobile app
 <a href="https://play.google.com/store/apps/details?id=com.osdemo.mobile" class="ocsimore_phrasing_link">on Google Play store</a> (for Android)
 or download the
@@ -117,10 +117,10 @@ at hand. For that, new tables can be added. The original ones should
 remain in place for Ocsigen Start to work correctly.
 </p><h3>Internationalization (i18n)</h3><p>The template is available in multiple languages (English and French) using
 <a href="https://github.com/besport/ocsigen-i18n" class="ocsimore_phrasing_link">ocsigen-i18n</a>. All translations used
-in the template are defined in the file {{assets/PROJECT_NAME_i18n.tsv}}. The
-Makefile rule {{i18n-udpate}} generates the i18n module. You need to use it
+in the template are defined in the file <span class="teletype">assets/PROJECT_NAME_i18n.tsv</span>. The
+Makefile rule <span class="teletype">i18n-udpate</span> generates the i18n module. You need to use it
 every time the TSV file is updated.
-</p><p>See {{Makefile.i18n}} for rules about i18n and {{Makefile.options}} to
+</p><p>See <span class="teletype">Makefile.i18n</span> for rules about i18n and <span class="teletype">Makefile.options</span> to
 personalize the internalization of your application (for example add new
 languages, change default language, change TSV filename).
 </p><h3>Managing e-mails</h3><p>The template application keeps track of users' e-mails and implements
