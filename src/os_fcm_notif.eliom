@@ -249,7 +249,7 @@ module Response =
         | Internal_server
         | Device_message_rate_exceeded
         | Topics_message_rate_exceeded
-        | Unknown
+        | Unknown of int * string
 
         (* Internal use. See
            https://developers.google.com/cloud-messaging/http-server-ref
@@ -273,7 +273,7 @@ module Response =
             when (code = 500 || code = 200)  -> Internal_server
         | (200, "DeviceMessageRateExceeded") -> Device_message_rate_exceeded
         | (200, "TopicsMessageRateExceeded") -> Topics_message_rate_exceeded
-        | _                                  -> Unknown
+        | (code, msg)                        -> Unknown (code, msg)
 
         let string_of_error = function
         | Missing_registration         -> "Missing registration"
@@ -290,7 +290,8 @@ module Response =
         | Internal_server              -> "Interval server error"
         | Device_message_rate_exceeded -> "Device message rate exceeded"
         | Topics_message_rate_exceeded -> "Topics message rate exceeded"
-        | Unknown                      -> "Unknown"
+        | Unknown (code, msg) ->
+          Printf.sprintf "Unknown (%d / %s)" code msg
 
         (* If no error occured, the JSON in the results attribute contains a
            mandatory field message_id and an optional field registration_id.

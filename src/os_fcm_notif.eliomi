@@ -415,7 +415,7 @@ module Response :
         | Internal_server
         | Device_message_rate_exceeded
         | Topics_message_rate_exceeded
-        | Unknown
+        | Unknown of int * string
 
         (** [string_of_error error] returns a string representation of the
             error [error].
