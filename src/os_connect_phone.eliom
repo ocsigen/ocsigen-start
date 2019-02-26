@@ -25,11 +25,13 @@ type%shared sms_error = [`Ownership | sms_error_core]
 let activation_code =
   let rng = Cryptokit.Random.device_rng "/dev/urandom" in
   fun () ->
-    let random_number = Cryptokit.Random.string rng 20 in
-    let to_b64 = Cryptokit.Base64.encode_compact () in
-    (* CHECKME: is this cryptographically safe? probably not *)
-    String.uppercase_ascii
-      (String.sub (Cryptokit.transform_string to_b64 random_number) 0 6)
+    let random_number = Cryptokit.Random.string rng 5 in
+    let n = ref 0L in
+    for i = 0 to String.length random_number - 1 do
+      n := Int64.(add (shift_left !n 8) (of_int (Char.code random_number.[i])))
+    done;
+    let n = Int64.(shift_right (Int64.mul !n 10000L) 40) in
+    Printf.sprintf "%04Ld" n
 
 let activation_code_ref =
   Eliom_reference.eref ~scope:Eliom_common.default_process_scope None
