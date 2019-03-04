@@ -224,7 +224,7 @@ $(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cmxa: $(call objs,$(ELIOM_SERVER_DIR),cm
 	$(ELIOMOPT) -shared -linkall -o $@ $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%_db.cmi: %_db.mli
-	${ELIOMC} -c ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
+	${ELIOMC} -c -ppx ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmi: %.mli
 	${ELIOMC} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
@@ -232,14 +232,14 @@ ${ELIOM_SERVER_DIR}/%.cmi: %.eliomi
 	${ELIOMC} -ppx -ppx ${I18N_PPX_REWRITER} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%_db.cmo: %_db.ml
-	${ELIOMC} -c ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
+	${ELIOMC} -c -ppx ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmo: %.ml
 	${ELIOMC} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmo: %.eliom
 	${ELIOMC} -ppx -ppx ${I18N_PPX_REWRITER} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%_db.cmx: %_db.ml
-	${ELIOMOPT} -c ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
+	${ELIOMOPT} -c -ppx ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmx: %.ml
 	${ELIOMOPT} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmx: %.eliom
@@ -313,10 +313,10 @@ endif
 	@cat $^ > $@
 
 $(DEPSDIR)/%.ml.server: %.ml | $(DEPSDIR) $(SERVER_FILES)
-	$(ELIOMDEP) -server $(SERVER_DB_INC) $< > $@.tmp && mv $@.tmp $@
+	$(ELIOMDEP) -server -ppx $(SERVER_DB_INC) $< > $@.tmp && mv $@.tmp $@
 
 $(DEPSDIR)/%.mli.server: %.mli | $(DEPSDIR) $(SERVER_FILES)
-	$(ELIOMDEP) -server $(SERVER_DB_INC) $< > $@.tmp && mv $@.tmp $@
+	$(ELIOMDEP) -server -ppx $(SERVER_DB_INC) $< > $@.tmp && mv $@.tmp $@
 
 $(DEPSDIR)/%.eliom.server: %.eliom | $(DEPSDIR) $(SERVER_FILES)
 	$(ELIOMDEP) -server -ppx -ppx ${I18N_PPX_REWRITER} $(SERVER_INC_DEP) $< > $@.tmp && mv $@.tmp $@
