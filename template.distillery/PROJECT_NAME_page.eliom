@@ -3,6 +3,7 @@
 
 [%%shared
   open Eliom_content.Html.F
+  open Js_of_ocaml
 ]
 
 [%%client
