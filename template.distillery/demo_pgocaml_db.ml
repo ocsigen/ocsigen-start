@@ -5,7 +5,7 @@ open Os_db
 
 (* We are using PGOCaml to make type safe DB requests to Postgresql.
    The Makefile automatically compiles
-   all files *_db.ml with PGOCaml's camlp4 syntax extension.
+   all files *_db.ml with PGOCaml's ppx syntax extension.
 *)
 
 let get () =
