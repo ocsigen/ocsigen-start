@@ -42,7 +42,7 @@ let%shared create_item index =
        ~a:[a_class ["demo-list-item";
                     Printf.sprintf "demo-list-item-%d" (index mod 5)]]
        [a ~service:detail_page_service
-          [pcdata (Printf.sprintf "list%d" index)] index])
+          [txt (Printf.sprintf "list%d" index)] index])
 
 let%shared page () =
   let l = (fun i -> create_item (i+1))
@@ -86,8 +86,8 @@ let%shared make_detail_page page () =
       Lwt_js_events.clicks
         (To_dom.of_element ~%back_button)
         (fun _ _ ->
-           Dom_html.window##.history##back;
+           Js_of_ocaml.Dom_html.window##.history##back;
            Lwt.return_unit )):unit)]);
   [h1 ([%i18n demo_pagetransition_detail_page]
-       @ [pcdata (Printf.sprintf " %d" page)]);
+       @ [txt (Printf.sprintf " %d" page)]);
    back_button]

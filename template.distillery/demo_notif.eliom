@@ -67,16 +67,16 @@ let%server listen () =
 let%shared make_form msg f =
   let inp = Eliom_content.Html.D.Raw.input ()
   and btn = Eliom_content.Html.(
-    D.button ~a:[D.a_class ["button"]] [D.pcdata msg]
+    D.button ~a:[D.a_class ["button"]] [D.txt msg]
   ) in
   ignore [%client
     ((Lwt.async @@ fun () ->
       let btn = Eliom_content.Html.To_dom.of_element ~%btn
       and inp = Eliom_content.Html.To_dom.of_input ~%inp in
       Lwt_js_events.clicks btn @@ fun _ _ ->
-      let v = Js.to_string inp##.value in
+      let v = Js_of_ocaml.Js.to_string inp##.value in
       let%lwt () = ~%f v in
-      inp##.value := Js.string "";
+      inp##.value := Js_of_ocaml.Js.string "";
       Lwt.return_unit)
      : unit)
   ];
@@ -99,11 +99,11 @@ let%server page () =
   Lwt.return Eliom_content.Html.F.[
     h1 [%i18n demo_notification]
   ; p ([%i18n exchange_msg_between_users
-          ~os_notif:[code [ pcdata "Os_notif" ] ]]
+          ~os_notif:[code [ txt "Os_notif" ] ]]
        @ [ br ()
-         ; pcdata [%i18n S.open_multiple_tabs_browsers]
+         ; txt [%i18n S.open_multiple_tabs_browsers]
          ; br ()
-         ; pcdata [%i18n S.fill_input_form_send_message]
+         ; txt [%i18n S.fill_input_form_send_message]
          ])
   ; make_form [%i18n S.send_message] [%client (notify : string -> unit Lwt.t)]
   ]

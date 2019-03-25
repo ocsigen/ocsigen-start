@@ -37,8 +37,8 @@ let%shared page () =
     [ h1 [%i18n internationalization ~capitalize:true]
     ; p [%i18n internationalization_1]
     ; p [%i18n internationalization_2
-          ~f1:[code [pcdata "assets/%%%PROJECT_NAME%%%_i18n.tsv"]]
-          ~f2:[code [pcdata "%%%PROJECT_NAME%%%_i18n.eliom"]]
+          ~f1:[code [txt "assets/%%%PROJECT_NAME%%%_i18n.tsv"]]
+          ~f2:[code [txt "%%%PROJECT_NAME%%%_i18n.eliom"]]
       ]
-    ; p [pcdata [%i18n S.internationalization_3] ]
+    ; p [txt [%i18n S.internationalization_3] ]
     ]

@@ -28,13 +28,13 @@ let%shared page () =
   Lwt.return
     [ h1 [%i18n demo_cache_1]
     ; p [%i18n demo_cache_2
-        ~eliom_cscache:[code [ pcdata "Eliom_cscache" ]]
-        ~os_user_proxy:[code [ pcdata "Os_user_proxy" ]]
+        ~eliom_cscache:[code [ txt "Eliom_cscache" ]]
+        ~os_user_proxy:[code [ txt "Os_user_proxy" ]]
       ]
     ; p [%i18n demo_cache_3
-        ~eliom_cscache:[code [ pcdata "Eliom_cscache" ]]
+        ~eliom_cscache:[code [ txt "Eliom_cscache" ]]
       ]
     ; p [%i18n demo_cache_4
-        ~eliom_cscache:[code [ pcdata "Eliom_cscache" ]]
+        ~eliom_cscache:[code [ txt "Eliom_cscache" ]]
       ]
     ]

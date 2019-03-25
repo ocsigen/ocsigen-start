@@ -64,7 +64,7 @@ let%shared page () =
     ; [%i18n S.sunday] ^ " 5" ]
   in
   let length = List.length carousel_pages in
-  let carousel_content = List.map (fun p -> D.div [ pcdata p ]) carousel_pages
+  let carousel_content = List.map (fun p -> D.div [ txt p ]) carousel_pages
   in
   let carousel_change_signal =
     [%client (React.E.create () :

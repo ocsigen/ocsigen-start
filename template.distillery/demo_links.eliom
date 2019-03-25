@@ -40,9 +40,9 @@ let%shared page () =
     [ h1 [%i18n links_and_static_files]
     ; h2 [%i18n services]
     ; p [%i18n services_1
-          ~f1:[code [pcdata "%%%PROJECT_NAME%%%_services.eliom"]]
-          ~f2:[code [pcdata "%%%PROJECT_NAME%%%_handlers.eliom"]]
-          ~f3:[code [pcdata "%%%PROJECT_NAME%%%.eliom"]]
+          ~f1:[code [txt "%%%PROJECT_NAME%%%_services.eliom"]]
+          ~f2:[code [txt "%%%PROJECT_NAME%%%_handlers.eliom"]]
+          ~f3:[code [txt "%%%PROJECT_NAME%%%.eliom"]]
       ]
     ; h2 [%i18n links_and_forms]
     ; p [%i18n links_and_forms_1
@@ -52,8 +52,8 @@ let%shared page () =
       ]
     ; h2 [%i18n static_files]
     ; p [%i18n static_files_1
-          ~static:[code [pcdata "static"]]
-          ~static_dir:[code [pcdata "static_dir"]]]
+          ~static:[code [txt "static"]]
+          ~static_dir:[code [txt "static_dir"]]]
     ; img ~a:[ a_class [ "demo-static-img" ] ]
         ~alt:"local_img"
         ~src:(Eliom_content.Html.F.make_uri

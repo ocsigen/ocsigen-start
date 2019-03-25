@@ -45,7 +45,7 @@ let%shared page () =
   let%lwt () = example_tip () in
   Lwt.return
     [ h1 [%i18n tips1]
-    ; p [%i18n tips2 ~os_tips:[code [ pcdata "Os_tips" ]] ]
+    ; p [%i18n tips2 ~os_tips:[code [ txt "Os_tips" ]] ]
     ; p [%i18n tips3 ]
     ; p [%i18n tips4
           ~set_page:[a ~service:%%%MODULE_NAME%%%_services.settings_service

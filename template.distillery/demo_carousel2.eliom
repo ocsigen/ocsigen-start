@@ -9,9 +9,9 @@
 ]
 
 let%shared lorem_ipsum =
-  [ p [ pcdata "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Hanc ergo intuens debet institutum illud quasi signum absolvere. Animi enim quoque dolores percipiet omnibus partibus maiores quam corporis. Atque haec ita iustitiae propria sunt, ut sint virtutum reliquarum communia. Sed ad bona praeterita redeamus. Duarum enim vitarum nobis erunt instituta capienda. Nunc ita separantur, ut disiuncta sint, quo nihil potest esse perversius. Hoc est non dividere, sed frangere. Duo Reges: constructio interrete. Satis est ad hoc responsum." ]
-  ; p [ pcdata "Traditur, inquit, ab Epicuro ratio neglegendi doloris. Quod quidem iam fit etiam in Academia. Quodcumque in mentem incideret, et quodcumque tamquam occurreret. Immo vero, inquit, ad beatissime vivendum parum est, ad beate vero satis. Re mihi non aeque satisfacit, et quidem locis pluribus." ]
-  ; p [ pcdata "Amicitiam autem adhibendam esse censent, quia sit ex eo genere, quae prosunt. Hoc loco tenere se Triarius non potuit. Facile est hoc cernere in primis puerorum aetatulis. Sed in rebus apertissimis nimium longi sumus. Utrum igitur tibi litteram videor an totas paginas commovere? Quid de Platone aut de Democrito loquar?" ]
+  [ p [ txt "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Hanc ergo intuens debet institutum illud quasi signum absolvere. Animi enim quoque dolores percipiet omnibus partibus maiores quam corporis. Atque haec ita iustitiae propria sunt, ut sint virtutum reliquarum communia. Sed ad bona praeterita redeamus. Duarum enim vitarum nobis erunt instituta capienda. Nunc ita separantur, ut disiuncta sint, quo nihil potest esse perversius. Hoc est non dividere, sed frangere. Duo Reges: constructio interrete. Satis est ad hoc responsum." ]
+  ; p [ txt "Traditur, inquit, ab Epicuro ratio neglegendi doloris. Quod quidem iam fit etiam in Academia. Quodcumque in mentem incideret, et quodcumque tamquam occurreret. Immo vero, inquit, ad beatissime vivendum parum est, ad beate vero satis. Re mihi non aeque satisfacit, et quidem locis pluribus." ]
+  ; p [ txt "Amicitiam autem adhibendam esse censent, quia sit ex eo genere, quae prosunt. Hoc loco tenere se Triarius non potuit. Facile est hoc cernere in primis puerorum aetatulis. Sed in rebus apertissimis nimium longi sumus. Utrum igitur tibi litteram videor an totas paginas commovere? Quid de Platone aut de Democrito loquar?" ]
   ]
 
 (* Service for this demo *)
@@ -35,11 +35,11 @@ let%shared page () =
   let make_page name =
     let c = if name = "1" then lorem_ipsum else [] in
     div ~a:[a_class ["demo-carousel2-page" ;
-                     "demo-carousel2-page-"^name]] (p [ pcdata "Page "
-                                                      ; pcdata name ]
+                     "demo-carousel2-page-"^name]] (p [ txt "Page "
+                                                      ; txt name ]
                                                     :: c)
   in
-  let make_tab name = [pcdata "Page " ; pcdata name] in
+  let make_tab name = [txt "Page " ; txt name] in
   let carousel_change_signal =
     [%client (React.E.create () :
                 ([ `Goto of int | `Next | `Prev ] as 'a) React.E.t

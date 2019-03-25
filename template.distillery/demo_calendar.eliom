@@ -73,5 +73,5 @@ let%shared page () =
     [ h1 [%i18n demo_calendar]
     ; p [%i18n this_page_show_calendar]
     ; div ~a:[a_class ["os-calendar"]] [calendar]
-    ; p [Eliom_content.Html.R.pcdata dr]
+    ; p [Eliom_content.Html.R.txt dr]
     ]

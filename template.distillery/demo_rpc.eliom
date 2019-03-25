@@ -49,7 +49,7 @@ let%client incr_my_ref =
 let%shared button msg f =
   let btn =
     Eliom_content.Html.
-      (D.button ~a:[D.a_class ["button"]] [D.pcdata msg])
+      (D.button ~a:[D.a_class ["button"]] [D.txt msg])
   in
   ignore [%client
     ((Lwt.async @@ fun () ->
@@ -74,6 +74,6 @@ let%shared page () =
   in
   Lwt.return Eliom_content.Html.[
     F.h1 [%i18n demo_rpc_button]
-  ; F.p [F.pcdata [%i18n S.demo_rpc_button_description]]
+  ; F.p [F.txt [%i18n S.demo_rpc_button_description]]
   ; F.p [btn]
   ]

@@ -3,10 +3,11 @@
 
 (* Carousel demo *)
 
-[%%shared
-  open Eliom_content.Html.F
-  open Eliom_content.Html
-]
+  [%%shared
+   open Eliom_content.Html
+          
+   open Eliom_content.Html.F
+  ]
 
 (* Service for this demo *)
 let%server service =
@@ -31,7 +32,7 @@ let%shared bind_keys change carousel =
        (* Wait for the carousel to be in the page
           (in the case the page is generated client side): *)
        let%lwt () = Ot_nodeready.nodeready (To_dom.of_element ~%carousel) in
-       Ot_carousel.bind_arrow_keys ~change:~%change Dom_html.document##.body
+       Ot_carousel.bind_arrow_keys ~change:~%change Js_of_ocaml.Dom_html.document##.body
      in
      (* Do not forget to cancel the thread when we remove the carousel
         (here, when we go to another page): *)
@@ -43,8 +44,8 @@ let%shared bind_keys change carousel =
 let%shared page () =
   let make_page name =
     div ~a:[a_class ["demo-carousel1-page" ;
-                     "demo-carousel1-page-"^name]] [pcdata "Page " ;
-                                                    pcdata name]
+                     "demo-carousel1-page-"^name]] [txt "Page " ;
+                                                    txt name]
   in
   let carousel_change_signal =
     [%client (React.E.create () :

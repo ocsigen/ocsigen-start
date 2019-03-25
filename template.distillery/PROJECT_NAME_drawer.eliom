@@ -8,7 +8,7 @@
 (** This module defines the drawer menu *)
 
 let%shared item text service =
-  li [ a ~a:[ a_class ["os-drawer-item"] ] ~service [pcdata text] () ]
+  li [ a ~a:[ a_class ["os-drawer-item"] ] ~service [txt text] () ]
 
 let%shared user_menu () =
   [ item [%i18n S.settings ~capitalize:true] %%%MODULE_NAME%%%_services.settings_service

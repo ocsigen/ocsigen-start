@@ -55,16 +55,16 @@ let%shared get_reset_last_visit_message () =
   | Some last_visit ->
     Lwt.return
       ([%i18n demo_eliom_ref_last_visit]
-       @ [ pcdata " "
-         ; pcdata (Os_date.smart_time last_visit) ])
+       @ [ txt " "
+         ; txt (Os_date.smart_time last_visit) ])
 
 (* Generate page for this demo *)
 let%shared page () =
   let%lwt last_visit_message = get_reset_last_visit_message () in
   Lwt.return [
     h1 [%i18n demo_eliom_ref]
-  ; p [pcdata [%i18n S.demo_eliom_ref_1]]
-  ; p [pcdata [%i18n S.demo_eliom_ref_2]]
+  ; p [txt [%i18n S.demo_eliom_ref_1]]
+  ; p [txt [%i18n S.demo_eliom_ref_2]]
   ; p last_visit_message
-  ; p [pcdata [%i18n S.demo_eliom_ref_3]]
+  ; p [txt [%i18n S.demo_eliom_ref_3]]
   ]

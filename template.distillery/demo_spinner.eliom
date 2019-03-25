@@ -27,19 +27,19 @@ let%client make_spinner () =
     (* sleep for 5 seconds to simulate a delay, then return content *)
     (let%lwt () = Lwt_js.sleep 5. in
      Lwt.return Eliom_content.Html.D.[
-       pcdata [%i18n S.demo_spinner_content_ready]
-     ; pcdata " "
-     ; pcdata [%i18n S.demo_spinner_message_replace_spinner]
+       txt [%i18n S.demo_spinner_content_ready]
+     ; txt " "
+     ; txt [%i18n S.demo_spinner_message_replace_spinner]
      ])
 
 (* Page for this demo *)
 let%shared page () =
   Lwt.return Eliom_content.Html.[
     F.h1 [%i18n demo_spinner]
-  ; F.p [ F.pcdata [%i18n S.demo_spinner_description_ot] ]
-  ; F.p [ F.pcdata [%i18n S.demo_spinner_description_1] ]
-  ; F.p [ F.pcdata [%i18n S.demo_spinner_description_2] ]
-  ; F.p [ F.pcdata [%i18n S.demo_spinner_description_3]]
-  ; F.p [ F.pcdata [%i18n S.demo_spinner_generated_client_side]]
+  ; F.p [ F.txt [%i18n S.demo_spinner_description_ot] ]
+  ; F.p [ F.txt [%i18n S.demo_spinner_description_1] ]
+  ; F.p [ F.txt [%i18n S.demo_spinner_description_2] ]
+  ; F.p [ F.txt [%i18n S.demo_spinner_description_3]]
+  ; F.p [ F.txt [%i18n S.demo_spinner_generated_client_side]]
   ; C.node [%client (make_spinner () : [> `Div] Eliom_content.Html.elt) ]
   ]
