@@ -23,16 +23,16 @@ let%shared page_class = "os-page-demo-react"
 let%shared make_form msg f =
   let inp = Eliom_content.Html.D.Raw.input ()
   and btn = Eliom_content.Html.(
-    D.button ~a:[D.a_class ["button"]] [D.pcdata msg]
+    D.button ~a:[D.a_class ["button"]] [D.txt msg]
   ) in
   ignore [%client
     ((Lwt.async @@ fun () ->
       let btn = Eliom_content.Html.To_dom.of_element ~%btn
       and inp = Eliom_content.Html.To_dom.of_input ~%inp in
       Lwt_js_events.clicks btn @@ fun _ _ ->
-      let v = Js.to_string inp##.value in
+      let v = Js_of_ocaml.Js.to_string inp##.value in
       let%lwt () = ~%f v in
-      inp##.value := Js.string "";
+      inp##.value := Js_of_ocaml.Js.string "";
       Lwt.return_unit)
      : unit)
   ];
@@ -63,16 +63,16 @@ let%shared page () =
     Eliom_shared.ReactiveData.RList.map
       [%shared
         ((fun s -> Eliom_content.Html.(
-           D.li [D.pcdata s]
+           D.li [D.txt s]
          )) : _ -> _)
       ]
       l
   in
   Lwt.return Eliom_content.Html.[
     F.h1 [%i18n demo_reactive_programming]
-  ; F.p [ F.pcdata [%i18n S.demo_reactive_programming_1]]
-  ; F.p [ F.pcdata [%i18n S.demo_reactive_programming_2]]
-  ; F.p [ F.pcdata [%i18n S.demo_reactive_programming_3]]
+  ; F.p [ F.txt [%i18n S.demo_reactive_programming_1]]
+  ; F.p [ F.txt [%i18n S.demo_reactive_programming_2]]
+  ; F.p [ F.txt [%i18n S.demo_reactive_programming_3]]
   ; inp
   ; F.div [R.ul l]
   ]

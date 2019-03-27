@@ -29,10 +29,10 @@ let to_lwt f =
 
 let ondeviceready =
   to_lwt (fun cont ->
-    ignore @@ Dom.addEventListener Dom_html.document
-      (Dom_html.Event.make "deviceready")
-      (Dom_html.handler (fun _ -> cont (); Js._true))
-      Js._false)
+    ignore @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
+      (Js_of_ocaml.Dom_html.Event.make "deviceready")
+      (Js_of_ocaml.Dom_html.handler (fun _ -> cont (); Js_of_ocaml.Js._true))
+      Js_of_ocaml.Js._false)
 
 let app_started = ref false
 
@@ -71,12 +71,12 @@ let () =
 (* Reactivate comet on resume and online events *)
 
 let () =
-  Firebug.console##log (Js.string "adding resume/online listeners");
+  Firebug.console##log (Js_of_ocaml.Js.string "adding resume/online listeners");
   let activate ev =
-    ignore @@ Dom.addEventListener Dom_html.document (Dom_html.Event.make ev)
-      (Dom_html.handler (fun _ ->
-         Firebug.console##log(Js.string ev);
-         Eliom_comet.activate (); Js._true)) Js._false
+    ignore @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document (Js_of_ocaml.Dom_html.Event.make ev)
+      (Js_of_ocaml.Dom_html.handler (fun _ ->
+         Firebug.console##log(Js_of_ocaml.Js.string ev);
+         Eliom_comet.activate (); Js_of_ocaml.Js._true)) Js_of_ocaml.Js._false
   in
   activate "online";
   activate "resume"
@@ -84,54 +84,54 @@ let () =
 (* Restart on a given URL *)
 
 let storage () =
-  Js.Optdef.case (Dom_html.window##.localStorage)
+  Js_of_ocaml.Js.Optdef.case (Js_of_ocaml.Dom_html.window##.localStorage)
     (fun () -> failwith "Browser storage not supported")
     (fun v -> v)
 
 let () =
   let st = storage () in
-  let lc = Js.string "__os_restart_url" in
-  Js.Opt.case
+  let lc = Js_of_ocaml.Js.string "__os_restart_url" in
+  Js_of_ocaml.Js.Opt.case
     (st##getItem(lc))
     (fun () -> ())
     (fun url ->
        st##removeItem(lc);
-       change_page_uri (Js.to_string url))
+       change_page_uri (Js_of_ocaml.Js.to_string url))
 
 (* Handle universal links *)
 
 type event =
-  < url : Js.js_string Js.t Js.readonly_prop;
-    scheme : Js.js_string Js.t Js.readonly_prop;
-    host : Js.js_string Js.t Js.readonly_prop;
-    path : Js.js_string Js.t Js.readonly_prop;
-    params : 'a. 'a Js.t Js.readonly_prop
+  < url : Js_of_ocaml.Js.js_string Js_of_ocaml.Js.t Js_of_ocaml.Js.readonly_prop;
+    scheme : Js_of_ocaml.Js.js_string Js_of_ocaml.Js.t Js_of_ocaml.Js.readonly_prop;
+    host : Js_of_ocaml.Js.js_string Js_of_ocaml.Js.t Js_of_ocaml.Js.readonly_prop;
+    path : Js_of_ocaml.Js.js_string Js_of_ocaml.Js.t Js_of_ocaml.Js.readonly_prop;
+    params : 'a. 'a Js_of_ocaml.Js.t Js_of_ocaml.Js.readonly_prop
   >
 
 let universal_links () =
   let%lwt () = ondeviceready in
-  Lwt.return @@ Js.Optdef.to_option @@
-  (Js.Unsafe.global##.universalLinks :
+  Lwt.return @@ Js_of_ocaml.Js.Optdef.to_option @@
+  (Js_of_ocaml.Js.Unsafe.global##.universalLinks :
      < subscribe :
-         Js.js_string Js.opt ->
-         (event Js.t -> unit) Js.callback ->
-         unit Js.meth;
+         Js_of_ocaml.Js.js_string Js_of_ocaml.Js.opt ->
+         (event Js_of_ocaml.Js.t -> unit) Js_of_ocaml.Js.callback ->
+         unit Js_of_ocaml.Js.meth;
        unsubscribe :
-         Js.js_string Js.opt ->
-         unit Js.meth
-     > Js.t Js.Optdef.t)
+         Js_of_ocaml.Js.js_string Js_of_ocaml.Js.opt ->
+         unit Js_of_ocaml.Js.meth
+     > Js_of_ocaml.Js.t Js_of_ocaml.Js.Optdef.t)
 
 let _ =
   match%lwt universal_links () with
   | Some universal_links ->
-    Firebug.console##log (Js.string "Universal links: registering");
-    universal_links##subscribe Js.null
-      (Js.wrap_callback
-         (fun (ev : event Js.t) ->
-            Firebug.console##log_2
-              (Js.string "Universal links: got link") (ev##.url);
-            change_page_uri (Js.to_string ev##.url)));
-    Firebug.console##log (Js.string "Universal links: registered");
+    Js_of_ocaml.Firebug.console##log (Js_of_ocaml.Js.string "Universal links: registering");
+    universal_links##subscribe Js_of_ocaml.Js.null
+      (Js_of_ocaml.Js.wrap_callback
+         (fun (ev : event Js_of_ocaml.Js.t) ->
+            Js_of_ocaml.Firebug.console##log_2
+              (Js_of_ocaml.Js.string "Universal links: got link") (ev##.url);
+            change_page_uri (Js_of_ocaml.Js.to_string ev##.url)));
+    Js_of_ocaml.Firebug.console##log (Js_of_ocaml.Js.string "Universal links: registered");
     Lwt.return_unit
   | None ->
     Lwt.return_unit

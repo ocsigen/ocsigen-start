@@ -69,6 +69,6 @@ let%shared page () =
     [ h1 [%i18n demo_timepicker]
     ; p [%i18n demo_timepicker_description]
     ; div [time_picker]
-    ; p [Eliom_content.Html.R.pcdata tr]
+    ; p [Eliom_content.Html.R.txt tr]
     ; div [button]
     ]

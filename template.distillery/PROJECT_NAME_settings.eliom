@@ -5,7 +5,7 @@ let%shared update_main_email_button email =
   let open Eliom_content.Html in
   let button =
     D.button ~a:[D.a_class ["button"]]
-      [D.pcdata [%i18n S.set_as_main_email ~capitalize:true]]
+      [D.txt [%i18n S.set_as_main_email ~capitalize:true]]
   in
   ignore [%client (Lwt.async (fun () ->
     Lwt_js_events.clicks
@@ -50,7 +50,7 @@ let%shared labels_of_email is_main_email is_validated =
   let open Eliom_content.Html.F in
   let valid_label =
     span ~a: [a_class ["os-settings-label" ; "os-validated-email"]] [
-     pcdata @@
+     txt @@
       if is_validated
       then [%i18n S.validated ~capitalize:true]
       else [%i18n S.waiting_confirmation ~capitalize:true]
@@ -72,7 +72,7 @@ let%shared li_of_email main_email (email, is_validated) =
   let open Eliom_content.Html.D in
   let labels = labels_of_email is_main_email is_validated
   and buttons = buttons_of_email is_main_email is_validated email
-  and email = span ~a:[a_class ["os-settings-email"]] [pcdata email] in
+  and email = span ~a:[a_class ["os-settings-email"]] [txt email] in
   Lwt.return (li (email :: labels @ buttons))
 
 let%shared ul_of_emails (main_email, emails) =
@@ -116,7 +116,7 @@ let%shared select_language_form =
          is_current_language
        )
      in
-     [ D.p [D.pcdata [%i18n S.change_language]]
+     [ D.p [D.txt [%i18n S.change_language]]
      ; D.Form.select
          ~name:select_language_name
          D.Form.string
@@ -147,7 +147,7 @@ let%shared settings_content () =
           ~service:Os_services.set_password_service ();
         br ();
         Os_user_view.upload_pic_link
-          ~submit:([a_class ["button"]], [pcdata "Submit"])
+          ~submit:([a_class ["button"]], [txt "Submit"])
           ~content:[%i18n change_profile_picture]
           %%%MODULE_NAME%%%_services.upload_user_avatar_service;
         br ();

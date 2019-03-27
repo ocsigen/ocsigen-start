@@ -40,8 +40,8 @@ let%shared page () =
     Ot_spinner.with_spinner
       (let%lwt users = get_users () in
        let users = List.map (fun u -> if u = ""
-                              then li [em [pcdata "new user"]]
-                              else li [pcdata u]) users
+                              then li [em [txt "new user"]]
+                              else li [txt u]) users
        in
        if users = []
        then Lwt.return

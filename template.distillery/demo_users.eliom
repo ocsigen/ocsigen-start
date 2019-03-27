@@ -26,15 +26,15 @@ let%shared page_class = "os-page-demo-users"
 let%shared display_user_name = function
   | None -> p [%i18n you_are_not_connected]
   | Some user ->
-    p [ pcdata ([%i18n S.you_are] ^ " ")
-      ; em [ pcdata (Os_user.fullname_of_user user) ]
+    p [ txt ([%i18n S.you_are] ^ " ")
+      ; em [ txt (Os_user.fullname_of_user user) ]
       ]
 
 let%shared display_user_id = function
   | None -> p [%i18n log_in_to_see_demo]
   | Some userid ->
-    p [ pcdata ([%i18n S.your_user_id] ^ " ")
-      ; em [ pcdata (Int64.to_string userid) ]
+    p [ txt ([%i18n S.your_user_id] ^ " ")
+      ; em [ txt (Int64.to_string userid) ]
       ]
 
 (* Page for this demo *)
@@ -49,16 +49,16 @@ let%shared page () =
   let me_o = Os_current_user.Opt.get_current_user () in
   Lwt.return
     [ h1 [%i18n users]
-    ; p [ pcdata [%i18n S.the_module]
-        ; code [ pcdata " Os_current_user " ]
-        ; pcdata [%i18n S.allows_get_information_currently_connected_user]
+    ; p [ txt [%i18n S.the_module]
+        ; code [ txt " Os_current_user " ]
+        ; txt [%i18n S.allows_get_information_currently_connected_user]
         ]
     ; display_user_name me_o
     ; display_user_id myid_o
-    ; p [ pcdata [%i18n S.these_functions_called_server_or_client_side]
+    ; p [ txt [%i18n S.these_functions_called_server_or_client_side]
         ]
-    ; p [ pcdata [%i18n S.always_get_current_user_using_module]
-        ; code [ pcdata " Os_current_user. " ]
-        ; pcdata [%i18n S.never_trust_client_pending_user_id]
+    ; p [ txt [%i18n S.always_get_current_user_using_module]
+        ; code [ txt " Os_current_user. " ]
+        ; txt [%i18n S.never_trust_client_pending_user_id]
         ]
     ]

@@ -12,7 +12,7 @@
 ]
 
 let%server css_name = !%%%MODULE_NAME%%%_config.css_name
-let%client css_name = try Js.to_string (Js.Unsafe.global##.___css_name_)
+let%client css_name = try Js_of_ocaml.Js.to_string (Js_of_ocaml.Js.Unsafe.global##.___css_name_)
   with _ -> ""
 
 let%server css_name_script =
@@ -58,14 +58,14 @@ let%shared the_local_css = [
     let default_error_page _ _ exn =
       %%%MODULE_NAME%%%_container.page None
         (if Ocsigen_config.get_debugmode ()
-         then [p [pcdata (Printexc.to_string exn)]]
-         else [p [pcdata "Error"]])
+         then [p [txt (Printexc.to_string exn)]]
+         else [p [txt "Error"]])
 
     let default_connected_error_page myid_o _ _ exn =
       %%%MODULE_NAME%%%_container.page myid_o
         (if Ocsigen_config.get_debugmode ()
-         then [p [pcdata (Printexc.to_string exn)]]
-         else [p [pcdata "Error"]])
+         then [p [txt (Printexc.to_string exn)]]
+         else [p [txt "Error"]])
 
   end
 
