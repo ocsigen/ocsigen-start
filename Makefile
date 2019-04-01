@@ -171,16 +171,6 @@ install: all META
 	cp $(LIBDIR)/$(PKG_NAME).server.cm* $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
 	scripts/install.sh $(TEMPLATE_DIR) $(TEMPLATE_NAME)
 
-uninstall:
-	rm -rf $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
-	rm -rf $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
-	scripts/uninstall.sh $(TEMPLATE_NAME)
-	$(OCAMLFIND) remove $(PKG_NAME)
-
-reinstall:
-	$(MAKE) uninstall
-	$(MAKE) install
-
 ##----------------------------------------------------------------------
 ## Dependencies
 
