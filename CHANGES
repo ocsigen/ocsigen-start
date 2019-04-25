@@ -1,3 +1,6 @@
+===== 1.7.0 (2019-04-25) =====
+* compatibility with js_of_ocaml.3.4.0
+
 ===== 1.6.0 (2019-03-29) =====
 * use PPX syntax for PGOCaml code
 * remove deprecation warnings

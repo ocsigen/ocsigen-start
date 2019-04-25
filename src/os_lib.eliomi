@@ -60,9 +60,9 @@ module Email_or_phone : sig
 
 end
 
-val phone_regexp : Re_str.regexp
+val phone_regexp : Re.Str.regexp
 
-val email_regexp : Re_str.regexp
+val email_regexp : Re.Str.regexp
 
 (** [memoizator f ()] caches the returned value of [f ()] *)
 val memoizator :

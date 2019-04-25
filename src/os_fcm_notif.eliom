@@ -29,7 +29,7 @@ module Notification =
      * is the attribute name and [value] the attribute value in the JSON sent to
      * the server.
      *)
-    type t = (string * Yojson.Safe.json) list
+    type t = (string * Yojson.Safe.t) list
 
     let to_json t =
       `Assoc t
@@ -70,7 +70,7 @@ module Notification =
 
 module Options =
   struct
-    type t = (string * Yojson.Safe.json) list
+    type t = (string * Yojson.Safe.t) list
 
     let to_list t = t
 
@@ -112,7 +112,7 @@ module Options =
 
 module Data =
   struct
-    type t = (string * Yojson.Safe.json) list
+    type t = (string * Yojson.Safe.t) list
 
     let to_list t = t
 
@@ -159,7 +159,7 @@ module Data =
 
         module Action =
           struct
-            type t = Yojson.Safe.json
+            type t = Yojson.Safe.t
 
             let to_json t = t
 

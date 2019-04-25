@@ -18,10 +18,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared
-  open Eliom_content.Html
-  open Eliom_content.Html.F
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
+open%client Js_of_ocaml
 
+[%%shared
   exception Predicate_failed of (exn option)
 
   type content =
@@ -72,17 +73,17 @@ let%shared content ?(html_a=[]) ?(a=[]) ?title ?(head = []) body =
 
     let err_page exn =
       let de = if ~%(Ocsigen_config.get_debugmode ())
-               then [p [pcdata "Debug info: ";
-                        em [pcdata (Printexc.to_string exn)]]]
+               then [p [txt "Debug info: ";
+                        em [txt (Printexc.to_string exn)]]]
                else []
       in
       let l = match exn with
         | Os_session.Not_connected ->
-          p [pcdata "You must be connected to see this page."]::de
+          p [txt "You must be connected to see this page."]::de
         | _ -> de
       in
       Lwt.return
-        (content [div ~a:[a_class ["errormsg"]] (h2 [pcdata "Error"]::l)])
+        (content [div ~a:[a_class ["errormsg"]] (h2 [txt "Error"]::l)])
 
     let default_predicate _ _ = Lwt.return_true
     let default_connected_predicate _ _ _ = Lwt.return_true

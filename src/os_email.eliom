@@ -19,6 +19,7 @@
  *)
 
 open Printf
+open%client Js_of_ocaml
 
 let%shared email_pattern = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]+$"
 

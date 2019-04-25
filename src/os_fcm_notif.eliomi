@@ -96,7 +96,7 @@ module Notification :
     (** The type representing a notification *)
     type t
 
-    val to_json : t -> Yojson.Safe.json
+    val to_json : t -> Yojson.Safe.t
 
     (** [empty ()] creates an empty notification *)
     val empty : unit -> t
@@ -135,7 +135,7 @@ module Notification :
     val add_raw_string : string -> string -> t -> t
 
     (** [add_raw_json key content_json notification] *)
-    val add_raw_json : string -> Yojson.Safe.json -> t -> t
+    val add_raw_json : string -> Yojson.Safe.t -> t -> t
 
     module Ios :
       sig
@@ -177,11 +177,11 @@ module Data :
     (** The type representing a data payload. *)
     type t
 
-    val to_json : t -> Yojson.Safe.json
+    val to_json : t -> Yojson.Safe.t
 
     (** [to_list data] returns the representation of the data as a list of
         tuples [(data_key, json_value)]. *)
-    val to_list : t -> (string * Yojson.Safe.json) list
+    val to_list : t -> (string * Yojson.Safe.t) list
 
     (** [empty ()] creates an empty data value. *)
     val empty : unit -> t
@@ -190,7 +190,7 @@ module Data :
     val add_raw_string : string -> string -> t -> t
 
     (** [add_raw_json key content_json data] *)
-    val add_raw_json : string -> Yojson.Safe.json -> t -> t
+    val add_raw_json : string -> Yojson.Safe.t -> t -> t
 
     (** The Cordova plugin phonegap-plugin-push interprets some payloads defined
         in the data key. The following module defines an interface to these
@@ -243,7 +243,7 @@ module Data :
           sig
             type t
 
-            val to_json : t -> Yojson.Safe.json
+            val to_json : t -> Yojson.Safe.t
 
             (** [create icon title callback foreground] *)
             (* NOTE: The callback is the function name as string to call when
@@ -309,7 +309,7 @@ module Options :
 
     (** [to_list option] returns the representation of the options as a list of
         tuples [(option_name, json_value)]. *)
-    val to_list : t -> (string * Yojson.Safe.json) list
+    val to_list : t -> (string * Yojson.Safe.t) list
 
     (** [create registered_ids] creates a new option where [registered_ids] is
         the ID of mobile devices you want to send the notifications to. *)

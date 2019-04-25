@@ -18,11 +18,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared
-  open Eliom_content.Html
-  open Eliom_content.Html.F
-  module Stringset = Set.Make(String)
-]
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
+open%client Js_of_ocaml
+open%client Js_of_ocaml_lwt
+module%shared Stringset = Set.Make(String)
 
 (* tips_seen is a group persistent reference recording which tips have
    already been seen by user *)

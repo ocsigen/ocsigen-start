@@ -25,6 +25,8 @@
 
 *)
 
+open%client Js_of_ocaml
+
 let%client timezone =
   (* Use Intl API if available. Revert to using the time zone offset
      otherwise. *)

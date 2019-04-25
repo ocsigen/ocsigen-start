@@ -18,10 +18,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared
-  open Eliom_content.Html
-  open Eliom_content.Html.F
-]
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
+open%client Js_of_ocaml
+open%client Js_of_ocaml_lwt
 
 let%shared enable_phone = ref false
 
@@ -52,22 +52,22 @@ let%shared generic_email_form
   D.Form.post_form ?a ~service
     (fun name ->
       let l = [
-        Form.input
+        D.Form.input
           ~a:[a_placeholder a_placeholder_email]
           ~input_type:`Email
           ~value:email
           ~name
-          Form.string;
-        Form.input
+          D.Form.string;
+        D.Form.input
           ~a:[a_class ["button"]]
           ~input_type:`Submit
           ~value:text
-          Form.string;
+          D.Form.string;
       ]
       in
       match label with
       | None -> l
-      | Some lab -> F.label [pcdata lab]::l) ()
+      | Some lab -> F.label [txt lab]::l) ()
 
 let%client form_override_phone phone_input form =
   let phone_input = To_dom.of_input phone_input
@@ -120,28 +120,28 @@ let%shared connect_form
     D.Form.post_form ?a ~service:Os_services.connect_service
       (fun ((login, password), keepmeloggedin) ->
          let l =
-           [ Form.input
+           [ D.Form.input
                ~a:[a_placeholder a_placeholder_pwd]
                ~name:password
                ~input_type:`Password
-               Form.string
-           ; label [ Form.bool_checkbox_one
+               D.Form.string
+           ; label [ D.Form.bool_checkbox_one
                        ~a:[a_checked ()]
                        ~name:keepmeloggedin
                        ()
-                   ; pcdata text_keep_me_logged_in]
-           ; Form.input
+                   ; txt text_keep_me_logged_in]
+           ; D.Form.input
                ~a:[a_class ["button" ; "os-sign-in"]]
                ~input_type:`Submit
                ~value:text_sign_in
-               Form.string ]
+               D.Form.string ]
          and mail_input =
-           Form.input
+           D.Form.input
              ~a:[a_placeholder a_placeholder_email]
              ~name:login
              ~input_type:`Email
              ~value:email
-             Form.string
+             D.Form.string
          in
          match phone_input with
          | Some phone_input ->
@@ -160,12 +160,12 @@ let%shared connect_form
   form
 
 let%shared disconnect_button ?a ?(text_logout="Logout") () =
-  Form.post_form ?a ~service:Os_services.disconnect_service
+  D.Form.post_form ?a ~service:Os_services.disconnect_service
     (fun _ -> [
-         Form.button_no_value
+         D.Form.button_no_value
            ~a:[ a_class ["button"] ]
            ~button_type:`Submit
-           [Os_icons.F.signout (); pcdata text_logout]
+           [Os_icons.F.signout (); txt text_logout]
        ]) ()
 
 let%shared sign_up_form ?a ?a_placeholder_email ?text ?email () =
@@ -182,7 +182,7 @@ let%shared forgot_password_form ?a () =
     ~service:Os_services.forgot_password_service ()
 
 let%client phone_input ~placeholder ~label f =
-  let button = D.button ~a:[a_class ["button"]] [pcdata label] in
+  let button = D.button ~a:[a_class ["button"]] [txt label] in
   let inp =
     Os_lib.lwt_bound_input_enter
       ~a:[D.a_placeholder placeholder; D.a_input_type `Tel]
@@ -221,51 +221,51 @@ let%shared information_form
            ~name:passwordn1
            ~value:password1
            ~input_type:`Password
-           Form.string
+           D.Form.string
        in
        let pass2 = D.Form.input
            ~a:[a_placeholder a_placeholder_retype_password]
            ~name:passwordn2
            ~value:password2
            ~input_type:`Password
-           Form.string
+           D.Form.string
        in
        let _ = [%client (
          check_password_confirmation ~password:~%pass1 ~confirmation:~%pass2
        : unit)]
        in
        [
-         Form.input
+         D.Form.input
            ~a:[a_placeholder a_placeholder_firstname]
            ~name:fname
            ~value:firstname
            ~input_type:`Text
-           Form.string;
-         Form.input
+           D.Form.string;
+         D.Form.input
            ~a:[a_placeholder a_placeholder_lastname]
            ~name:lname
            ~value:lastname
            ~input_type:`Text
-           Form.string;
+           D.Form.string;
          pass1;
          pass2;
-         Form.input
+         D.Form.input
            ~a:[a_class ["button"]]
            ~input_type:`Submit
            ~value:text_submit
-           Form.string;
+           D.Form.string;
        ]) ()
 
 let%shared preregister_form ?a label =
   generic_email_form ?a ~service:Os_services.preregister_service ~label ()
 
 let%shared home_button ?a () =
-  Form.get_form ?a ~service:Os_services.main_service
+  D.Form.get_form ?a ~service:Os_services.main_service
     (fun _ -> [
-      Form.input
+      D.Form.input
         ~input_type:`Submit
         ~value:"home"
-        Form.string;
+        D.Form.string;
     ])
 
 let%shared avatar user =
@@ -278,11 +278,11 @@ let%shared username user =
   let n = match Os_user.firstname_of_user user with
     | "" ->
       let userid = Os_user.userid_of_user user in
-      [pcdata ("User "^Int64.to_string userid)]
+      [txt ("User "^Int64.to_string userid)]
     | s ->
-      [pcdata s;
-       pcdata " ";
-       pcdata (Os_user.lastname_of_user user);
+      [txt s;
+       txt " ";
+       txt (Os_user.lastname_of_user user);
       ]
   in
   div ~a:[a_class ["os_username"]] n
@@ -305,7 +305,7 @@ let%shared password_form
                a_placeholder a_placeholder_pwd]
            ~input_type:`Password
            ~name:pwdn
-           Form.string
+           D.Form.string
        in
        let pass2 =
          D.Form.input
@@ -314,24 +314,24 @@ let%shared password_form
                a_placeholder a_placeholder_confirmation]
            ~input_type:`Password
            ~name:pwd2n
-           Form.string
+           D.Form.string
        in
        ignore [%client (
         check_password_confirmation ~password:~%pass1 ~confirmation:~%pass2
        : unit)];
        [ pass1
        ; pass2
-       ; Form.input
+       ; D.Form.input
            ~input_type:`Submit
            ~a:[ a_class ["button" ] ]
            ~value:text_send_button
-           Form.string
+           D.Form.string
        ])
     ()
 
 let%shared upload_pic_link
     ?(a = [])
-    ?(content=[pcdata "Change profile picture"])
+    ?(content=[txt "Change profile picture"])
     ?(crop = Some 1.)
     ?(input :
       Html_types.label_attrib Eliom_content.Html.D.Raw.attrib list
@@ -341,7 +341,7 @@ let%shared upload_pic_link
     ?(submit :
       Html_types.button_attrib Eliom_content.Html.D.Raw.attrib list
       * Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list
-      = [], [pcdata "Submit"]
+      = [], [txt "Submit"]
     )
     ?(onclick : (unit -> unit) Eliom_client_value.t = [%client (fun () -> () : unit -> unit)])
     (service : (unit, unit) Ot_picture_uploader.service)
@@ -371,7 +371,7 @@ let%shared reset_tips_link
     ?(text_link="See help again from beginning")
     ?(close : (unit -> unit) Eliom_client_value.t = [%client (fun () -> () : unit -> unit)]) ()
   =
-  let l = D.Raw.a [pcdata text_link] in
+  let l = D.Raw.a [txt text_link] in
   ignore [%client (
     Lwt_js_events.(async (fun () ->
       clicks (To_dom.of_element ~%l)
@@ -416,7 +416,7 @@ let%shared forgotpwd_button
     ?(close = [%client (fun () -> () : unit -> unit)])
     () =
   let popup_content = [%client fun _ ->
-    let h = h2 [ pcdata ~%content_popup ] in
+    let h = h2 [ txt ~%content_popup ] in
     Lwt.return @@ div @@ if !enable_phone then
       [ h
       ; forgot_password_form ()
@@ -430,7 +430,7 @@ let%shared forgotpwd_button
   let button_name = text_button in
   let button = D.Raw.a ~a:[ a_class ["os-forgot-pwd-link"]
                           ; a_onclick [%client fun _ -> ~%close () ] ]
-      [pcdata button_name]
+      [txt button_name]
   in
   bind_popup_button
     ~a:[a_class ["os-forgot-pwd"]]
@@ -451,7 +451,7 @@ let%shared sign_in_button
     ?(text_send_button = "Send")
     () =
   let popup_content = [%client fun close -> Lwt.return @@
-    div [ h2 [ pcdata ~%text_button ]
+    div [ h2 [ txt ~%text_button ]
         ; connect_form
             ~a_placeholder_email:~%a_placeholder_email
             ~a_placeholder_phone:~%a_placeholder_phone
@@ -468,7 +468,7 @@ let%shared sign_in_button
   in
   let button_name = text_button in
   let button =
-    D.button ~a:[a_class ["button" ; "os-sign-in-btn"]] [pcdata button_name]
+    D.button ~a:[a_class ["button" ; "os-sign-in-btn"]] [txt button_name]
   in
   bind_popup_button
     ~a:[a_class ["os-sign-in"]]
@@ -485,7 +485,7 @@ let%shared sign_up_button
     () =
   let popup_content = [%client fun _ ->
     let l =
-      [ h2 [ pcdata ~%text_button ]
+      [ h2 [ txt ~%text_button ]
       ; sign_up_form
           ~a_placeholder_email:~%a_placeholder_email
           ~text:~%text_send_button
@@ -503,7 +503,7 @@ let%shared sign_up_button
   let button =
     D.button
       ~a:[a_class ["button" ; "os-sign-up-btn"]]
-      [pcdata text_button]
+      [txt text_button]
   in
   bind_popup_button
     ~a:[a_class ["os-sign-up"]]
@@ -517,10 +517,10 @@ let%shared disconnect_button
     () =
   D.Form.post_form ~service:Os_services.disconnect_service
     (fun _ -> [
-         Form.button_no_value
+         D.Form.button_no_value
            ~a:[ a_class ["button"] ]
            ~button_type:`Submit
-           [ Os_icons.F.signout (); pcdata text_logout]
+           [ Os_icons.F.signout (); txt text_logout]
        ]) ()
 
 let%shared disconnect_link
@@ -533,7 +533,7 @@ let%shared disconnect_link
         Eliom_client.change_page ~service:Os_services.disconnect_service () ())
     ]
         ::a)
-    [ Os_icons.F.signout (); pcdata text_logout]
+    [ Os_icons.F.signout (); txt text_logout]
 
 let%shared connected_user_box ~user =
   let username = username user in

@@ -20,10 +20,9 @@
 
 (** Registration of default services *)
 
-[%%shared
-  open Eliom_content.Html
-  open Eliom_content.Html.F
-]
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
+open%client Js_of_ocaml
 
 let%client storage () =
   Js.Optdef.case (Dom_html.window##.localStorage)
@@ -418,7 +417,7 @@ let%client input_popup ?(button_label = "OK") f =
     let open Eliom_content.Html in
     let button =
       D.button ~a:[D.a_class ["button"]]
-        [D.pcdata button_label]
+        [D.txt button_label]
     in
     let inp =
       let f code =

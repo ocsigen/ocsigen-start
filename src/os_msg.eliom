@@ -18,10 +18,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared
-  open Eliom_content.Html
-  open Eliom_content.Html.F
-]
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
+open%client Js_of_ocaml
 
 let%client msgbox () =
   let id = "os-msg" in
@@ -40,7 +39,7 @@ let%shared msg
   (message : string) =
   ignore [%client (
     let c = if ~%level = `Msg then [] else ["os-err"] in
-    let message_dom = To_dom.of_p (D.p ~a:[a_class c] [pcdata ~%message]) in
+    let message_dom = To_dom.of_p (D.p ~a:[a_class c] [txt ~%message]) in
     Lwt.async (fun () ->
       let%lwt () =
         if ~%onload then Eliom_client.lwt_onload () else Lwt.return_unit
@@ -48,7 +47,7 @@ let%shared msg
       let msgbox = msgbox () in
       Eliom_lib.debug "%s" ~%message;
       Dom.appendChild msgbox message_dom;
-      let%lwt () = Lwt_js.sleep ~%duration in
+      let%lwt () = Js_of_ocaml_lwt.Lwt_js.sleep ~%duration in
       Dom.removeChild msgbox message_dom;
       Lwt.return_unit)
     : unit)]

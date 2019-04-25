@@ -18,6 +18,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open%client Js_of_ocaml
+open%client Js_of_ocaml_lwt
+
 let%client reload () =
   Eliom_client.change_page
     ~replace:true ~service:Eliom_service.reload_action_hidden () ()
@@ -49,10 +52,10 @@ let%shared string_filter f s =
   Buffer.contents b
 
 let%shared email_regexp =
-  Re_str.regexp "[^ @][^ ]*@[^ .][^ ]*\\.[^ .]+$"
+  Re.Str.regexp "[^ @][^ ]*@[^ .][^ ]*\\.[^ .]+$"
 
 let%shared phone_regexp =
-  Re_str.regexp ("\\(\\+\\|00\\)" ^ string_repeat "[0-9] *" 7 ^ "[0-9 ]*$")
+  Re.Str.regexp ("\\(\\+\\|00\\)" ^ string_repeat "[0-9] *" 7 ^ "[0-9 ]*$")
 
 [%%shared.start]
 
@@ -86,22 +89,22 @@ module Email_or_phone = struct
         false
 
     let almost_phone =
-      let r = Re_str.regexp "[0-9] *[0-9] *[0-9]" in
+      let r = Re.Str.regexp "[0-9] *[0-9] *[0-9]" in
       fun s ->
         try
-          ignore (Re_str.search_forward r s 0);
+          ignore (Re.Str.search_forward r s 0);
           true
         with Not_found ->
           false
 
     let of_string ~only_mail s =
-      if Re_str.string_match email_regexp s 0 then
+      if Re.Str.string_match email_regexp s 0 then
         s, `Email
       else if only_mail || almost_email s then
         (* We guess that the user intended to provide an e-mail; we
            will handle this with appropriate messages *)
         s, `Almost_email
-      else if Re_str.string_match phone_regexp s 0 then
+      else if Re.Str.string_match phone_regexp s 0 then
         let s = string_filter ((<>) ' ') s in
         let s =
           (* Also accept 00 prefix and normalize to + *)

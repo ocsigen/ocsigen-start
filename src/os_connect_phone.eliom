@@ -77,7 +77,7 @@ let%server request_code reference number =
     Lwt.return (Error `Unknown)
 
 let%shared request_wrapper f number =
-  if Re_str.string_match Os_lib.phone_regexp number 0 then
+  if Re.Str.string_match Os_lib.phone_regexp number 0 then
     f number
   else
     Lwt.return (Error `Invalid_number)
