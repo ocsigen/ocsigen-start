@@ -56,7 +56,7 @@ let%server action_link_key_outdated =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
 
-(** Create a user of type [t] using db informations. *)
+(** Create a user of type [t] using db information. *)
 let create_user_from_db0 (userid, fn, ln, avatar, pwdset, language) =
   Os_types.
   {
@@ -131,7 +131,7 @@ let password_set userid =
 
 (* -----------------------------------------------------------------
 
-   All the followings functions are only helpers/wrappers around db
+   All the following functions are only helpers/wrappers around db
    functions ones. They generally use the type [t] of the module
    and get rid of the part of picking each field of the record [t].
 

@@ -55,9 +55,9 @@ val on_request : (unit -> unit Lwt.t) -> unit
 val on_denied_request : (Os_types.User.id option -> unit Lwt.t) -> unit
 
 
-(** Scopes that are independant from user connection.
+(** Scopes that are independent from user connection.
     Use this scopes for example when you want to store
-    server side data for one browser or tab, but not user dependant.
+    server side data for one browser or tab, but not user dependent.
     (Remains when user logs out).
 *)
 val user_indep_state_hierarchy : Eliom_common.scope_hierarchy
@@ -82,7 +82,7 @@ val connect : ?expire:bool -> Os_types.User.id -> unit Lwt.t
 (** Close a session by discarding server side states for current browser
     (session and session group), current client process (tab) and current
     request.
-    Only default Eliom scopes are affected, but not user independant scopes.
+    Only default Eliom scopes are affected, but not user independent scopes.
     The actions registered for session close (by {!on_close_session})
     will be executed just before the session is actually closed.
 *)

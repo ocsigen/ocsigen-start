@@ -66,7 +66,7 @@ let (on_unconnected_request, unconnected_request_action) =
       r := (fun () -> let%lwt () = oldf () in f ())),
    (fun () -> !r ()))
 
-(* Call this to add an action to be done just after openning a session *)
+(* Call this to add an action to be done just after opening a session *)
 let (on_open_session, open_session_action) =
   let r = ref (fun _ -> Lwt.return_unit) in
   ((fun f ->

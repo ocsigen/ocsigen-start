@@ -64,7 +64,7 @@ val group_of_name : string -> Os_types.Group.t Lwt.t
 
 (* -----------------------------------------------------------------
 
-   All the followings functions are only helpers/wrappers around db
+   All the following functions are only helpers/wrappers around db
    functions ones. They generally use the type {!Os_types.group} of the module
    and get rid of the part of picking each field of the record
    {!os_types.group}.

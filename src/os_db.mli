@@ -23,7 +23,7 @@
 
 include module type of Os_core_db
 
-(** Exception raised when no ressource corresponds to the database request. *)
+(** Exception raised when no resource corresponds to the database request. *)
 exception No_such_resource
 
 (** Exception raised when there is an attempt to remove the main email. *)

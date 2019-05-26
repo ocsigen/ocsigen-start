@@ -38,7 +38,7 @@
     and return the content of the tip div.
     - [?recipient] makes it possible to decide whether the tip will be displayed
     for connected users only, non-connected users only, or all (default).
-    Tips for non-connected users will reapear everytime the session is closed.
+    Tips for non-connected users will reappear every time the session is closed.
     - [?delay] adds a delay before displaying the tip (in seconds)
 
 *)
