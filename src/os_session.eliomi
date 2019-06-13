@@ -30,6 +30,10 @@ val on_start_process : (unit -> unit Lwt.t) -> unit
     when the process starts in connected mode, or when the user logs in *)
 val on_start_connected_process : (Os_types.User.id -> unit Lwt.t) -> unit
 
+(** Call this to add an action to be done on server side
+    when the process starts but only when not in connected mode *)
+val on_start_unconnected_process : (unit -> unit Lwt.t) -> unit
+
 (** Call this to add an action to be done at each connected request.
     The function takes the user id as parameter. *)
 val on_connected_request : (Os_types.User.id -> unit Lwt.t) -> unit

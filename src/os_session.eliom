@@ -50,6 +50,15 @@ let (on_start_connected_process, start_connected_process_action) =
       r := (fun userid -> let%lwt () = oldf userid in f userid)),
    (fun userid -> !r userid))
 
+(* Call this to add an action to be done on server side
+   when the process starts but only when not in connected mode *)
+let (on_start_unconnected_process, start_unconnected_process_action) =
+  let r = ref Lwt.return in
+  ((fun f ->
+      let oldf = !r in
+      r := (fun () -> let%lwt () = oldf () in f ())),
+   (fun () -> !r ()))
+
 (* Call this to add an action to be done at each connected request *)
 let (on_connected_request, connected_request_action) =
   let r = ref (fun _ -> Lwt.return_unit) in
@@ -260,7 +269,7 @@ let%server gen_wrapper ~allow ~deny ?(force_unconnected = false)
          client side process. *)
       let%lwt () =
         match uid with
-        | None -> Lwt.return_unit
+        | None -> start_unconnected_process_action ()
         | Some id -> (* new client process, but already connected *)
           start_connected_process id
       in
