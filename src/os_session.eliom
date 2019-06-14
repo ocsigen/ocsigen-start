@@ -258,11 +258,14 @@ let%server gen_wrapper ~allow ~deny ?(force_unconnected = false)
       (* client side process:
          Now we want to do some computation only when we start a
          client side process. *)
-      let%lwt () = start_process_action () in
-      match uid with
-      | None -> Lwt.return_unit
-      | Some id -> (* new client process, but already connected *)
-        start_connected_process id
+      let%lwt () =
+        match uid with
+        | None -> Lwt.return_unit
+        | Some id -> (* new client process, but already connected *)
+          start_connected_process id
+      in
+      (* has to be called after Os_current_user.set_user_client (); *)
+      start_process_action ()
     end
     else Lwt.return_unit
   in
