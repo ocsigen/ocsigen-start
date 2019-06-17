@@ -28,7 +28,7 @@ type t = Os_types.Group.t = {
   desc  : string option;
 } [@@deriving json]
 
-(** Create a group of type [Os_types.Group.t] using db informations. *)
+(** Create a group of type [Os_types.Group.t] using db information. *)
 let create_group_from_db (groupid, name, description) : Os_types.Group.t =
   let open Os_types in {
   id = groupid;
@@ -77,7 +77,7 @@ let group_of_name = MCache.get
 
 (* -----------------------------------------------------------------
  *
- * All the followings functions are only helpers/wrappers around db
+ * All the following functions are only helpers/wrappers around db
  * functions ones. They generally use the type [Os_types.Group.t] of the module
  * and get rid of the part of picking each field of the record [Os_types.Group.t].
  *

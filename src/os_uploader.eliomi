@@ -23,10 +23,10 @@
 
 [%%server.start]
 
-(** Raised if an error occured while cropping a picture. The corresponding code status is given in parameter. *)
+(** Raised if an error occurred while cropping a picture. The corresponding code status is given in parameter. *)
 exception Error_while_cropping of Unix.process_status
 
-(** Raised if an error occured while resizing a picture. The corresponding code status is given in parameter. *)
+(** Raised if an error occurred while resizing a picture. The corresponding code status is given in parameter. *)
 exception Error_while_resizing of Unix.process_status
 
 (** Return the height of the given image. *)
@@ -36,7 +36,7 @@ val get_image_height : string -> int Lwt.t
 val get_image_width : string -> int Lwt.t
 
 (** Resize the given image ([src]) and save it to [dst] (default is the source
-   file). If an error occured, it raises the exception [Error_while_resizing]
+   file). If an error occurred, it raises the exception [Error_while_resizing]
    with the corresponding unix process status.
 *)
 val resize_image :
@@ -51,7 +51,7 @@ val resize_image :
     [top], [right], [bottom] and [left] are the number of pixels the image must
     be truncated on the specific side. The [ratio] is used after truncating the
     image.
-    If an error occured, it raises the exception [Error_while_resizing] or
+    If an error occurred, it raises the exception [Error_while_resizing] or
     [Error_while_cropping] with the corresponding unix process status.
  *)
 val crop_image :
@@ -66,7 +66,7 @@ val crop_image :
 
 (** [record_image directory ?ratio ?cropping:(top, right, bottom, left) file]
     crops the image like [crop_image] and save it in the directory [directory].
-    If an error occured, it raises the exception [Error_while_resizing] or
+    If an error occurred, it raises the exception [Error_while_resizing] or
     [Error_while_cropping] with the corresponding unix process status.
  *)
 val record_image :

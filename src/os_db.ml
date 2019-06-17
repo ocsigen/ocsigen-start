@@ -533,7 +533,7 @@ module User = struct
         let pattern = "(^"^pattern^")|(.* "^pattern^")" in
         (* Here I'm using the low-level pgocaml interface
            because macaque is missing some features
-           and I canot use pgocaml syntax extension because
+           and I cannot use pgocaml syntax extension because
            it requires the db to be created (which is impossible in a lib). *)
         let query = "
              SELECT userid, firstname, lastname, avatar, password, language

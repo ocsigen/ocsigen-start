@@ -66,7 +66,7 @@ endef
 
 
 ##----------------------------------------------------------------------
-## Environment variables definiton.
+## Environment variables definition.
 
 APPJS  := $(CORDOVAPATH)/www/$(PROJECT_NAME).js
 APPCSS := $(CORDOVAPATH)/www/css/$(PROJECT_NAME).css

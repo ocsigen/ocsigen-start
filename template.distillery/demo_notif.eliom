@@ -19,7 +19,7 @@ let%shared name () = [%i18n S.demo_notification]
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-notif"
 
-(* Instanciate function Os_notif.Simple for each kind of notification
+(* Instantiate function Os_notif.Simple for each kind of notification
    you need.
    The key is the resource ID. For example, if you are implementing a
    messaging application, it can be the chatroom ID

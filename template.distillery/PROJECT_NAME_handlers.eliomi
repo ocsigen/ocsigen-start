@@ -26,7 +26,7 @@ val upload_user_avatar_handler :
 val set_personal_data_handler :
   unit -> (string * string) * (string * string) -> unit Lwt.t
 
-(** Reset forgotten pasword password. It uses the default OS handler
+(** Reset forgotten password. It uses the default OS handler
     {!Os_handlers.forgot_password_handler} with the main service. *)
 val forgot_password_handler :
   unit -> string -> unit Lwt.t

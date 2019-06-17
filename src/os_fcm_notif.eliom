@@ -231,7 +231,7 @@ module Response =
   struct
     module Results =
       struct
-        (* If an error occured, one of these sum types is returned (based on the
+        (* If an error occurred, one of these sum types is returned (based on the
            couple (code, error_as_string), see [error_of_string_and_code].
          *)
         type error =
@@ -292,7 +292,7 @@ module Response =
         | Topics_message_rate_exceeded -> "Topics message rate exceeded"
         | Unknown                      -> "Unknown"
 
-        (* If no error occured, the JSON in the results attribute contains a
+        (* If no error occurred, the JSON in the results attribute contains a
            mandatory field message_id and an optional field registration_id.
          *)
         type success =
@@ -311,7 +311,7 @@ module Response =
           let open Yojson.Basic in
           match Util.member "message_id" json with
             (* If the field [message_id] is present, we are in the case of a
-               successfull message
+               successful message
              *)
             | `String x ->
                 let message_id = x in
@@ -346,7 +346,7 @@ module Response =
         results       : Results.t list
       }
 
-      (* Get the HTTP code. We mention explicitely the module to avoid
+      (* Get the HTTP code. We mention explicitly the module to avoid
          warnings *)
       let code_of_http_response http_response =
         let http_header = http_response.Ocsigen_http_frame.frame_header in
@@ -392,7 +392,7 @@ module Response =
 
       (* Build a type t from the raw HTTP response. The HTTP response code is
          computed to pass it to [t_of_json] and to [results_of_json] to be used
-         if an error occured.
+         if an error occurred.
        *)
       let t_of_http_response http_response =
         try%lwt

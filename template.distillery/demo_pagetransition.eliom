@@ -55,7 +55,7 @@ let%shared page () =
       [%i18n demo_pagetransition_add_button] in
   ignore
     ([%client
-      ( (* It is the adress of the dom that will be stored in cache, so
+      ( (* It is the address of the dom that will be stored in cache, so
            it doesn't matter when [push_history_dom] is called. However,
            it is important that the dom is bound to the right state id.
            So it is better to call [push_history_dom] in Eliom_client.onload,

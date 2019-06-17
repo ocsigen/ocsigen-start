@@ -24,7 +24,7 @@
     (FCM) to send push notifications to Android and iOS mobile devices by using
     downstream HTTP messages in JSON.
 
-    You can find all informations abou FCM at this address:
+    You can find all information abou FCM at this address:
         https://firebase.google.com/docs/cloud-messaging/
 
     Before using this module, you need to register your mobile application in
@@ -377,7 +377,7 @@ module Response :
     module Results :
       sig
         (** The type representing a success result.
-            If no error occured, the JSON in the results attribute contains a
+            If no error occurred, the JSON in the results attribute contains a
             mandatory field [message_id] and an optional field
             [registration_id].
          *)

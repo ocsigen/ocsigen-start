@@ -1,8 +1,8 @@
 /**
  * This file is used in index.html when the mobile application starts.
  * - *app* and *blink* classes defines the style for the app loader image.
- * - *retry-button* and *app-error* is used when an error occures while updating
- * the application. If an error occures, *app-error* will replace *app*.
+ * - *retry-button* and *app-error* is used when an error occurs while updating
+ * the application. If an error occurs, *app-error* will replace *app*.
  * - the logo (saved in img/logo.png) is set as background of the DOM elements
  * which contains *app* or *app-error* class.
  *
@@ -81,7 +81,7 @@ body {
 }
 
 /* --------------------------------------------------------------- */
-/* Style for the retry button when an error occures while updating */
+/* Style for the retry button when an error occurs while updating */
 
 #retry-button {
     width: 100%;
