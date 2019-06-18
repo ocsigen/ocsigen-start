@@ -78,10 +78,7 @@ module Make(A : ARG) : S
     notify ?notfor key notif
 
   let _ =
-    (* In case no user is connected: *)
     Os_session.on_start_process init;
-    (* When a user is connected (will override the previous one): *)
-    Os_session.on_start_connected_process (fun _ -> init ());
     Os_session.on_post_close_session (fun () -> deinit () ; Lwt.return_unit)
 
 end
