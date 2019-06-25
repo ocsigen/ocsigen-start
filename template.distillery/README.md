@@ -148,8 +148,19 @@ of Android packages ...
 - Install JDK 7 or newer (`openjdk-7-jdk` package in Debian/Ubuntu)
 - Install Gradle (`gradle` package in Debian/Ubuntu)
 - Download and untar the [Android SDK](http://developer.android.com) (the smaller version without Android Studio suffices), rename it so that you have a `$HOME/android-sdk-linux/tools` folder.
-- Using the Android package management interface (or `sdkmanager`), install latest versions of SDK Tools (`tools`), SDK Platform-tools (`platform-tools`), and SDK Build-tools (`build-tools;XXX`)
-- Install recent Android API: SDK Platform (`platforms;XXX`).
+- Using the Android package management interface (or `sdkmanager`), install latest versions of SDK Tools (`tools`), SDK Platform-tools (`platform-tools`), and SDK Build-tools (`build-tools;XXX`). Don't forget to replace `XXX` by current version (for example `29.0.0`). From your `android-sdk-linux/tools` :
+```Shell
+ bin/sdkmanager "extras;android;m2repository"
+ bin/sdkmanager "extras;google;m2respository"
+ bin/sdkmanager "extras;google;google_play_services"
+ bin/sdkmanager "build-tools;X.X.X"
+ bin/sdkmanager "patcher;v4"
+ bin/sdkmanager "platform-tools"
+```
+- Install recent Android API: SDK Platform :
+```Shell
+ bin/sdkmanager "platforms;android-X"
+ ```
 - From Extras, enable the Android Support Repository and the Google Repository.
 - For convenience, add the SDK directories platform-tools and tools in your $PATH
 
