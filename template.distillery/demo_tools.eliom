@@ -44,6 +44,7 @@ let demos =
   ; (module Demo_timepicker)
   ; (module Demo_notif)
   ; (module Demo_react)
+  ; (module Demo_pulltorefresh)
   ; (module Demo_cache)
   ; (module Demo_pagetransition)
   ]
