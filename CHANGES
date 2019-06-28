@@ -1,3 +1,8 @@
+===== 1.8.0 (2019-06-28) =====
+* change version of Sdk from 16 to 19
+* Os_notif: fix race condition during initialisation
+* Ot_pulltorefresh demo
+
 ===== 1.7.0 (2019-04-25) =====
 * compatibility with js_of_ocaml.3.4.0
 
