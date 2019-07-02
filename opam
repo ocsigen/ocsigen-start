@@ -23,6 +23,7 @@ depends: [
   "js_of_ocaml-camlp4" {>= "3.1.0"}
   "yojson" {>= "1.4.1"}
   "resource-pooling" {>= "0.5.2"}
+  "conf-npm" {>= "1"}
 ]
 depexts: [
   ["imagemagick"] {os-distribution = "debian"}
@@ -33,6 +34,5 @@ depexts: [
   ["ruby-sass"] {os-distribution = "ubuntu"}
   ["postgresql"] {os-distribution = "ubuntu"}
   ["postgresql-common"] {os-distribution = "ubuntu"}
-  ["npm"] {os-distribution = "ubuntu"}
   ["postgresql"] {os = "macos" & os-distribution = "homebrew"}
 ]
