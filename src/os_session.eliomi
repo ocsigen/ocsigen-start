@@ -24,7 +24,7 @@
 
 (** Call this to add an action to be done on server side
     when the process starts *)
-val on_start_process : (unit -> unit Lwt.t) -> unit
+val on_start_process : (Os_types.User.id option -> unit Lwt.t) -> unit
 
 (** Call this to add an action to be done
     when the process starts in connected mode, or when the user logs in *)
