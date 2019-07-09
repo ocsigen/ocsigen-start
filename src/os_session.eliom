@@ -35,29 +35,25 @@ let new_process_eref =
 (* Call this to add an action to be done on server side
    when the process starts *)
 let (on_start_process, start_process_action) =
-  let r = ref Lwt.return in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun () -> let%lwt () = oldf () in f ())),
-   (fun () -> !r ()))
-
-(* Call this to add an action to be done
-   when the process starts in connected mode, or when the user logs in *)
-let (on_start_connected_process, start_connected_process_action) =
   let r = ref (fun _ -> Lwt.return_unit) in
   ((fun f ->
       let oldf = !r in
-      r := (fun userid -> let%lwt () = oldf userid in f userid)),
-   (fun userid -> !r userid))
+      r := (fun userid_o -> let%lwt () = oldf userid_o in f userid_o)),
+   (fun userid_o -> !r userid_o))
 
-(* Call this to add an action to be done on server side
-   when the process starts but only when not in connected mode *)
-let (on_start_unconnected_process, start_unconnected_process_action) =
-  let r = ref Lwt.return in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun () -> let%lwt () = oldf () in f ())),
-   (fun () -> !r ()))
+let on_start_connected_process f =
+  on_start_process (fun myid_o ->
+    match myid_o with
+      | Some myid -> f myid
+      | None -> Lwt.return_unit
+  )
+
+let on_start_unconnected_process f =
+  on_start_process (fun myid_o ->
+    match myid_o with
+      | Some myid -> Lwt.return_unit
+      | None -> f ()
+  )
 
 (* Call this to add an action to be done at each connected request *)
 let (on_connected_request, connected_request_action) =
@@ -121,26 +117,6 @@ let (on_denied_request, denied_request_action) =
   exception Permission_denied
 ]
 
-let start_connected_process uid =
-  (* We want to warn the client when the server side process state is closed.
-     To do that, we listen on a channel and wait for exception. *)
-  (* let c : unit Eliom_comet.Channel.t = *)
-  (*   Eliom_comet.Channel.create (fst (Lwt_stream.create ())) *)
-  (* in *)
-  (* ignore {unit{ *)
-  (*   Lwt.async *)
-  (*     (fun () -> *)
-  (*        Lwt.catch *)
-  (*          (fun () -> Lwt_stream.iter_s (fun () -> Lwt.return_unit) %c) *)
-  (*          (function *)
-  (*            | Eliom_comet.Process_closed -> close_client_process () *)
-  (*            | e -> *)
-  (*              Eliom_lib.debug_exn "comet exception: " e; *)
-  (*              close_client_process () *)
-  (*              (\* Lwt.fail e *\))) *)
-  (* }}; *)
-  start_connected_process_action uid
-
 let connect_volatile uid =
   Eliom_state.set_volatile_data_session_group
     ~scope:Eliom_common.default_session_scope uid;
@@ -152,7 +128,7 @@ let connect_string uid =
     ~scope:Eliom_common.default_session_scope uid in
   let%lwt () = connect_volatile uid in
   let uid = Int64.of_string uid in
-  start_connected_process uid
+  start_process_action (Some uid)
 
 let connect ?(expire = false) userid =
   let%lwt () =
@@ -264,17 +240,7 @@ let%server gen_wrapper ~allow ~deny ?(force_unconnected = false)
     if new_process
     then begin
       Eliom_reference.Volatile.set new_process_eref false;
-      (* client side process:
-         Now we want to do some computation only when we start a
-         client side process. *)
-      let%lwt () =
-        match uid with
-        | None -> start_unconnected_process_action ()
-        | Some id -> (* new client process, but already connected *)
-          start_connected_process id
-      in
-      (* has to be called after Os_current_user.set_user_client (); *)
-      start_process_action ()
+      start_process_action uid
     end
     else Lwt.return_unit
   in

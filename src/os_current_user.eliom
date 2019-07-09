@@ -129,7 +129,7 @@ let%server () =
     unset_user_client (); (*VVV!!! will affect only current tab!! *)
     unset_user_server (); (* ok this is a request reference *)
     Lwt.return_unit);
-  Os_session.on_start_process (fun () ->
+  Os_session.on_start_process (fun _ ->
     Lwt_log.ign_debug ~section "start process action";
     Lwt.return_unit);
   Os_session.on_open_session (fun _ ->

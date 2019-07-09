@@ -114,7 +114,7 @@ let%client handle_message = function
 
 let _ =
   Os_session.on_start_process
-    (fun () ->
+    (fun _ ->
        let channel = create_monitor_channel () in
        Eliom_reference.Volatile.set monitor_channel_ref (Some channel);
        ignore [%client ( Lwt.async (fun () ->

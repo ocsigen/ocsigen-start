@@ -78,7 +78,7 @@ module Make(A : ARG) : S
     notify ?notfor key notif
 
   let _ =
-    Os_session.on_start_process init;
+    Os_session.on_start_process (fun _ -> init ());
     Os_session.on_post_close_session (fun () -> deinit () ; Lwt.return_unit)
 
 end
