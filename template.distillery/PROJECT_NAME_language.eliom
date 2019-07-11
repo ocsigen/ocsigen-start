@@ -34,7 +34,7 @@ let%server update_language lang =
 
 let%server _ =
   Os_session.on_start_process
-    (fun () ->
+    (fun _ ->
        (* Guess a default language. *)
        let%lwt lang = best_matched_language () in
        ignore (update_language lang);
