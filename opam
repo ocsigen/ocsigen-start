@@ -24,6 +24,7 @@ depends: [
   "yojson" {>= "1.4.1"}
   "resource-pooling" {>= "0.5.2"}
   "conf-npm" {>= "1"}
+  "ocamlnet"
 ]
 depexts: [
   ["imagemagick"] {os-distribution = "debian"}
