@@ -25,6 +25,7 @@ depends: [
   "resource-pooling" {>= "0.5.2"}
   "cohttp-lwt-unix"
   "conf-npm" {>= "1"}
+  "ocamlnet"
 ]
 depexts: [
   ["imagemagick"] {os-distribution = "debian"}
