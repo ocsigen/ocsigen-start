@@ -3,11 +3,8 @@
 
 (* Carousel demo *)
 
-  [%%shared
-   open Eliom_content.Html
-          
-   open Eliom_content.Html.F
-  ]
+open%client Eliom_content.Html
+open%shared Eliom_content.Html.F
 
 (* Service for this demo *)
 let%server service =
