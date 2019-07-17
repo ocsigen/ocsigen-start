@@ -346,14 +346,6 @@ module Response =
         results       : Results.t list
       }
 
-      (* Get the HTTP code. We mention explicitly the module to avoid
-         warnings *)
-      let code_of_http_response http_response =
-        let http_header = http_response.Ocsigen_http_frame.frame_header in
-        match Ocsigen_http_frame.Http_header.(http_header.mode) with
-        | Ocsigen_http_frame.Http_header.Answer code -> code
-        | _ -> assert false
-
      (* Build a type t from the JSON representation of the FCM response. Used
         by [t_of_http_response]. *)
       let t_of_json code json =
@@ -394,27 +386,22 @@ module Response =
          computed to pass it to [t_of_json] and to [results_of_json] to be used
          if an error occurred.
        *)
-      let t_of_http_response http_response =
+      let t_of_http_response (r, b) =
         try%lwt
-          let code = code_of_http_response http_response in
-          let%lwt content_str =
-            match Ocsigen_http_frame.(http_response.frame_content) with
-            (* Must never be the case because it seems FCM always sends a body
-               content *)
-            | None -> Lwt.fail FCM_empty_response
-            (* FIXME: is it enough to read a string of length 16384? *)
-            | Some x -> Os_lib.Http.string_of_stream x
-          in
-          let content_basic_json =
-            Yojson.Safe.to_basic (Yojson.Safe.from_string content_str)
-          in
-          Lwt.return (t_of_json code content_basic_json)
+          let status = Cohttp.(Code.code_of_status (Response.status r)) in
+          let%lwt b = Cohttp_lwt.Body.to_string b in
+          Yojson.Safe.from_string b
+          |> Yojson.Safe.to_basic
+          |> t_of_json status
+          |> Lwt.return
         with
         (* Could be the case if the server key is wrong or if it's not
            registered only in FCM and not in FCM (since September 2016).
          *)
-        | Yojson.Json_error _ -> Lwt.fail (FCM_no_json_response "It could come \
-        from your server key.")
+        | Yojson.Json_error _ ->
+          Lwt.fail
+            (FCM_no_json_response
+               "It could come from your server key.")
 
       let multicast_id_of_t response  = response.multicast_id
 
@@ -429,26 +416,26 @@ module Response =
   end
 
 let send server_key notification ?(data=Data.empty ()) options =
-  let gcm_url = "https://fcm.googleapis.com/fcm/send" in
-  let headers =
-    Http_headers.empty |>
-    Http_headers.add Http_headers.authorization ("key=" ^ server_key)
-  in
+  let gcm_url = Uri.of_string "https://fcm.googleapis.com/fcm/send"
+  and headers =
+    Cohttp.Header.of_list [
+      "Authorization", ("key=" ^ server_key) ;
+      "Content-Type", "application/json"
+    ]
   (* Data is optional, so we use an option type and a pattern matching *)
-  let content = Yojson.Safe.to_string (
-    `Assoc
-    (
+  and body =
+    `Assoc (
       ("notification", Notification.to_json notification) ::
       ("data", Data.to_json data) ::
-      (Options.to_list options)
-    )
-  )
+      Options.to_list options)
+    |> Yojson.Safe.to_string
+    |> Cohttp_lwt.Body.of_string
   in
-  let%lwt http_response =
-    Ocsigen_http_client.post_string_url
+  let%lwt response =
+    Cohttp_lwt_unix.Client.call
       ~headers
-      ~content_type:("application", "json")
-      ~content
+      ~body
+      `POST
       gcm_url
   in
-  (Response.t_of_http_response http_response)
+  Response.t_of_http_response response
