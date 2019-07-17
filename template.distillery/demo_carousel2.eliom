@@ -3,10 +3,8 @@
 
 (* Page with several tabs *)
 
-[%%shared
-  open Eliom_content.Html
-  open Eliom_content.Html.F
-]
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
 
 let%shared lorem_ipsum =
   [ p [ txt "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Hanc ergo intuens debet institutum illud quasi signum absolvere. Animi enim quoque dolores percipiet omnibus partibus maiores quam corporis. Atque haec ita iustitiae propria sunt, ut sint virtutum reliquarum communia. Sed ad bona praeterita redeamus. Duarum enim vitarum nobis erunt instituta capienda. Nunc ita separantur, ut disiuncta sint, quo nihil potest esse perversius. Hoc est non dividere, sed frangere. Duo Reges: constructio interrete. Satis est ad hoc responsum." ]

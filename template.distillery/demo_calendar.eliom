@@ -3,12 +3,7 @@
 
 (* Calendar demo *)
 
-[%%shared
-[@@@ocaml.warning "-33"]
-  open Eliom_content.Html
-  open Eliom_content.Html.D
-[@@@ocaml.warning "+33"]
-]
+open%shared Eliom_content.Html.D
 
 (* Service for this demo *)
 let%server service =

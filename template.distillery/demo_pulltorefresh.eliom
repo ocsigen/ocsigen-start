@@ -3,8 +3,7 @@
 
 (** Demo for refreshable content *)
 
-[%%shared
-open Eliom_content.Html]
+open%shared Eliom_content.Html
 
 (* Service for this demo *)
 let%server service =

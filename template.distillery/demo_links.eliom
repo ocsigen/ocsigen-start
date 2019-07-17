@@ -3,9 +3,7 @@
 
 (* Static files demo *)
 
-[%%shared
-  open Eliom_content.Html.F
-]
+open%shared Eliom_content.Html.F
 
 (* Service for this demo *)
 let%server service =

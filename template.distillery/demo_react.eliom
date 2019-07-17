@@ -3,6 +3,8 @@
 
 (** Demo for shared reactive content *)
 
+open%client Js_of_ocaml_lwt
+
 (* Service for this demo *)
 let%server service =
   Eliom_service.create

@@ -3,10 +3,9 @@
 
 (* Popup button demo *)
 
-[%%shared
-  open Eliom_content.Html
-  open Eliom_content.Html.F
-]
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
+open%client Js_of_ocaml_lwt
 
 (* Service for this demo, defined in the server-side app *)
 let%server service =
