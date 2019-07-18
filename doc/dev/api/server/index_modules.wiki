@@ -63,6 +63,9 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_connect_phone"| module Os_connect_phone >> |<<div class="odocwiki_info"|~To be used for signalling errors with ~S~M~S transmission
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_core_db"| module Os_core_db >> |<<div class="odocwiki_info"|~This module defines low level functions for database requests~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_current_user"| module Os_current_user >> |<<div class="odocwiki_info"|~This module provides functions and types to manage the current user~.
 >>
 |
@@ -140,7 +143,7 @@
 >>
 |
 |@@ @style="tet-align: left;"@@\\P|
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="PGOCaml"| module Os_db.PGOCaml >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Lwt version of ~P~G~O~Caml
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="PGOCaml"| module Os_core_db.PGOCaml >> ~[<<a_api subproject="server" | module Os_core_db >>~]|<<div class="odocwiki_info"|~Lwt version of ~P~G~O~Caml
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Phone"| module Os_db.Phone >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Manage user phone numbers

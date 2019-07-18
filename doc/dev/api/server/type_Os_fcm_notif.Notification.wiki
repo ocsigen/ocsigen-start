@@ -1,6 +1,6 @@
 <<code language="ocaml" | sig
   type t
-  val to_json : Os_fcm_notif.Notification.t -> Yojson.Safe.json
+  val to_json : Os_fcm_notif.Notification.t -> Yojson.Safe.t
   val empty : unit -> Os_fcm_notif.Notification.t
   val add_title :
     string -> Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
@@ -15,7 +15,7 @@
     string -> Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
   val add_raw_json :
     string ->
-    Yojson.Safe.json ->
+    Yojson.Safe.t ->
     Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
   module Ios :
     sig

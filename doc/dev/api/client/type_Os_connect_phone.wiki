@@ -3,9 +3,9 @@
   type sms_error =
       [ `Invalid_number | `Limit | `Ownership | `Send | `Unknown ]
   val request_code :
-    string -> (unit, Os_connect_phone.sms_error) Pervasives.result Lwt.t
+    string -> (unit, Os_connect_phone.sms_error) Stdlib.result Lwt.t
   val request_recovery_code :
-    string -> (unit, Os_connect_phone.sms_error) Pervasives.result Lwt.t
+    string -> (unit, Os_connect_phone.sms_error) Stdlib.result Lwt.t
   val confirm_code_extra : string -> bool Lwt.t
   val confirm_code_signup :
     first_name:string ->

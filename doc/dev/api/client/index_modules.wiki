@@ -24,9 +24,7 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Opt"| module Os_current_user.Opt >> ~[<<a_api subproject="client" | module Os_current_user >>~]|<<div class="odocwiki_info"|~Instead of exception~, the module <<span class="odocwiki_inlinecode"|~Opt>> returns an option~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_comet"| module Os_comet >> |<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|restart~_process ~(~)>> restarts the client~.
->>
-|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_comet"| module Os_comet >> ||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_connect_phone"| module Os_connect_phone >> |<<div class="odocwiki_info"|~To be used for signalling errors with ~S~M~S transmission
 >>
 |
@@ -61,10 +59,7 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_services"| module Os_services >> |<<div class="odocwiki_info"|~The main service~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_session"| module Os_session >> |<<div class="odocwiki_info"|~Wrapper for service handlers that fetches automatically connection
-    information~.
->>
-|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_session"| module Os_session >> ||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_tips"| module Os_tips >> |<<div class="odocwiki_info"|~Display tips in pages~, as a speech bubble~.
 >>
 |

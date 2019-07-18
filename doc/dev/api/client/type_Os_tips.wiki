@@ -2,13 +2,14 @@
   val bubble :
     ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.D.attrib list ->
     ?recipient:[> `All | `Connected | `Not_connected ] ->
-    ?arrow:[< `bottom of int | `left of int | `right of int | `top of int ] ->
-    ?top:int ->
-    ?left:int ->
-    ?right:int ->
-    ?bottom:int ->
-    ?height:int ->
-    ?width:int ->
+    ?arrow:[< `bottom of int | `left of int | `right of int | `top of int ]
+           Eliom_client_value.t ->
+    ?top:int Eliom_client_value.t ->
+    ?left:int Eliom_client_value.t ->
+    ?right:int Eliom_client_value.t ->
+    ?bottom:int Eliom_client_value.t ->
+    ?height:int Eliom_client_value.t ->
+    ?width:int Eliom_client_value.t ->
     ?parent_node:[< `A of Html_types.flow5_without_interactive
                   | `Abbr
                   | `Address
@@ -68,7 +69,7 @@
                   | `Ol
                   | `Output
                   | `P
-                  | `TXT
+                  | `PCDATA
                   | `Pre
                   | `Progress
                   | `Q
@@ -94,6 +95,7 @@
                   | `Video_interactive of Html_types.flow5_without_media
                   | `Wbr ]
                  Eliom_content.Html.elt ->
+    ?delay:float ->
     name:string ->
     content:((unit -> unit Lwt.t) ->
              Html_types.div_content Eliom_content.Html.elt list Lwt.t)
@@ -107,6 +109,7 @@
              Html_types.div_content Eliom_content.Html.elt list Lwt.t) ->
     unit -> [> `Div ] Eliom_content.Html.elt option Lwt.t
   val set_tip_seen : string -> unit Lwt.t
+  val tip_seen : string -> bool Lwt.t
   val reset_tips_service :
     (unit, unit, Eliom_service.post, Eliom_service.non_att, Eliom_service.co,
      Eliom_service.non_ext, Eliom_service.reg, [ `WithoutSuffix ], unit,

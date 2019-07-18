@@ -13,5 +13,5 @@
   val remove_email_from_user : string -> unit Lwt.t
   val update_main_email : string -> unit Lwt.t
   val update_language : string -> unit Lwt.t
-  val me : Os_current_user.current_user Pervasives.ref
+  val me : Os_current_user.current_user Stdlib.ref
 end >>

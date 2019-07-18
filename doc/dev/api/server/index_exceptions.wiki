@@ -16,10 +16,10 @@
 >>
 |
 |@@ @style="tet-align: left;"@@\\E|
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Error_while_cropping"| exception Os_uploader.Error_while_cropping >> ~[<<a_api subproject="server" | module Os_uploader >>~]|<<div class="odocwiki_info"|~Raised if an error occured while cropping a picture~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Error_while_cropping"| exception Os_uploader.Error_while_cropping >> ~[<<a_api subproject="server" | module Os_uploader >>~]|<<div class="odocwiki_info"|~Raised if an error occurred while cropping a picture~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Error_while_resizing"| exception Os_uploader.Error_while_resizing >> ~[<<a_api subproject="server" | module Os_uploader >>~]|<<div class="odocwiki_info"|~Raised if an error occured while resizing a picture~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Error_while_resizing"| exception Os_uploader.Error_while_resizing >> ~[<<a_api subproject="server" | module Os_uploader >>~]|<<div class="odocwiki_info"|~Raised if an error occurred while resizing a picture~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\F|
@@ -47,7 +47,7 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="No_such_resource"| exception Os_handlers.No_such_resource >> ~[<<a_api subproject="server" | module Os_handlers >>~]|<<div class="odocwiki_info"|~Exception raised when the requested resource is not available~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="No_such_resource"| exception Os_db.No_such_resource >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Exception raised when no ressource corresponds to the database request~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="No_such_resource"| exception Os_db.No_such_resource >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Exception raised when no resource corresponds to the database request~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="No_such_user"| exception Os_user.No_such_user >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|~Exception used if an user doesn~'t exist~.

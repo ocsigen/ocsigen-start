@@ -6,7 +6,7 @@
   module Notification :
     sig
       type t
-      val to_json : Os_fcm_notif.Notification.t -> Yojson.Safe.json
+      val to_json : Os_fcm_notif.Notification.t -> Yojson.Safe.t
       val empty : unit -> Os_fcm_notif.Notification.t
       val add_title :
         string -> Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
@@ -21,7 +21,7 @@
         string -> Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
       val add_raw_json :
         string ->
-        Yojson.Safe.json ->
+        Yojson.Safe.t ->
         Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
       module Ios :
         sig
@@ -46,13 +46,13 @@
   module Data :
     sig
       type t
-      val to_list : Os_fcm_notif.Data.t -> (string * Yojson.Safe.json) list
+      val to_json : Os_fcm_notif.Data.t -> Yojson.Safe.t
+      val to_list : Os_fcm_notif.Data.t -> (string * Yojson.Safe.t) list
       val empty : unit -> Os_fcm_notif.Data.t
       val add_raw_string :
         string -> string -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
       val add_raw_json :
-        string ->
-        Yojson.Safe.json -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+        string -> Yojson.Safe.t -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
       module PhoneGap :
         sig
           val add_message :
@@ -65,6 +65,8 @@
             string -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
           val add_notification_id :
             int -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
+          val add_notification_channel_id :
+            string -> Os_fcm_notif.Data.t -> Os_fcm_notif.Data.t
           module Style : sig type t = Inbox | Picture end
           val add_style :
             Os_fcm_notif.Data.PhoneGap.Style.t ->
@@ -75,7 +77,7 @@
             sig
               type t
               val to_json :
-                Os_fcm_notif.Data.PhoneGap.Action.t -> Yojson.Safe.json
+                Os_fcm_notif.Data.PhoneGap.Action.t -> Yojson.Safe.t
               val create :
                 string ->
                 string ->
@@ -108,8 +110,7 @@
   module Options :
     sig
       type t
-      val to_list :
-        Os_fcm_notif.Options.t -> (string * Yojson.Safe.json) list
+      val to_list : Os_fcm_notif.Options.t -> (string * Yojson.Safe.t) list
       val create : string list -> Os_fcm_notif.Options.t
       val add_to : string -> Os_fcm_notif.Options.t -> Os_fcm_notif.Options.t
       val add_condition :

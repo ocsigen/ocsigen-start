@@ -34,10 +34,7 @@
 |<<a_api subproject="client" | module Os_services >>|<<div class="odocwiki_info"|~The main service~.
 >>
 |
-|<<a_api subproject="client" | module Os_session >>|<<div class="odocwiki_info"|~Wrapper for service handlers that fetches automatically connection
-    information~.
->>
-|
+|<<a_api subproject="client" | module Os_session >>||
 |<<a_api subproject="client" | module Os_tips >>|<<div class="odocwiki_info"|~Display tips in pages~, as a speech bubble~.
 >>
 |

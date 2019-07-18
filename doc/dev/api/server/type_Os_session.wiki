@@ -1,6 +1,7 @@
 <<code language="ocaml" | sig
-  val on_start_process : (unit -> unit Lwt.t) -> unit
+  val on_start_process : (Os_types.User.id option -> unit Lwt.t) -> unit
   val on_start_connected_process : (Os_types.User.id -> unit Lwt.t) -> unit
+  val on_start_unconnected_process : (unit -> unit Lwt.t) -> unit
   val on_connected_request : (Os_types.User.id -> unit Lwt.t) -> unit
   val on_unconnected_request : (unit -> unit Lwt.t) -> unit
   val on_open_session : (Os_types.User.id -> unit Lwt.t) -> unit

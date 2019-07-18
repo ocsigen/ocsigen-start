@@ -32,5 +32,5 @@
         ?force_unconnected:bool ->
         (Os_types.User.id option -> 'a -> 'b Lwt.t) -> 'a -> 'b Lwt.t
     end
-  val get_current_userid_o : (unit -> Os_types.User.id option) Pervasives.ref
+  val get_current_userid_o : (unit -> Os_types.User.id option) Stdlib.ref
 end >>

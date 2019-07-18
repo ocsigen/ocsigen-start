@@ -7,7 +7,7 @@
     downstream ~H~T~T~P messages in ~J~S~O~N~.
 
 
-    ~You can find all informations abou ~F~C~M at this address~:
+    ~You can find all information abou ~F~C~M at this address~:
         https~:~/~/firebase~.google~.com~/docs~/cloud~-messaging~/
 
 

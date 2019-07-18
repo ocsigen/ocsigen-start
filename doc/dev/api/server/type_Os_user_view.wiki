@@ -78,7 +78,7 @@
   val reset_tips_link :
     ?text_link:string ->
     ?close:(unit -> unit) Eliom_client_value.t ->
-    unit -> [> `A of [> `TXT ] ] Eliom_content.Html.D.Raw.elt
+    unit -> [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
   val disconnect_button :
     ?text_logout:string ->
     unit -> [> Html_types.li_content_fun ] Eliom_content.Html.F.elt

@@ -7,7 +7,7 @@
   val remove_user_in_group :
     groupid:Os_types.Group.id -> userid:Os_types.User.id -> unit Lwt.t
   val in_group :
-    ?dbh:Os_db.PGOCaml.pa_pg_data Os_db.PGOCaml.t ->
+    ?dbh:PGOCaml.pa_pg_data PGOCaml.t ->
     groupid:Os_types.Group.id ->
     userid:Os_types.User.id -> unit -> bool Lwt.t
   val all : unit -> (Os_types.Group.id * string * string option) list Lwt.t

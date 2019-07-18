@@ -21,8 +21,8 @@
       val of_almost :
         Os_lib.Email_or_phone.Almost.t -> Os_lib.Email_or_phone.t option
     end
-  val phone_regexp : Re_str.regexp
-  val email_regexp : Re_str.regexp
+  val phone_regexp : Re.Str.regexp
+  val email_regexp : Re.Str.regexp
   val memoizator : (unit -> 'a Lwt.t) -> unit -> 'a Lwt.t
   val string_repeat : string -> int -> string
   val string_filter : (char -> bool) -> string -> string

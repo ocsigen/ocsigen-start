@@ -228,8 +228,8 @@
     password~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="is_complete"| value Os_user.is_complete >> ~[<<a_api subproject="client" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|is~_complete user>> returns <<span class="odocwiki_inlinecode"|true>> if the first name or the last name of
-    <<span class="odocwiki_inlinecode"|~Os~_types~.user>> has not been completed yet~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="is_complete"| value Os_user.is_complete >> ~[<<a_api subproject="client" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|is~_complete user>> returns <<span class="odocwiki_inlinecode"|true>> if the first name and the last name of
+    <<span class="odocwiki_inlinecode"|~Os~_types~.user>> have been completed yet~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\J|
@@ -392,6 +392,9 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="string_repeat"| value Os_lib.string_repeat >> ~[<<a_api subproject="client" | module Os_lib >>~]||
 |@@ @style="tet-align: left;"@@\\T|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="t_of_string"| value Os_platform.t_of_string >> ~[<<a_api subproject="client" | module Os_platform >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="tip_seen"| value Os_tips.tip_seen >> ~[<<a_api subproject="client" | module Os_tips >>~]|<<div class="odocwiki_info"|~Returns whether a tip has been seen or not~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="title"| value Os_page.PAGE.title >> ~[<<a_api subproject="client" | module Os_page.PAGE >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|title>> corresponds to the html tag ~<title~>~, it will be inserted on all
       pages~.
 >>

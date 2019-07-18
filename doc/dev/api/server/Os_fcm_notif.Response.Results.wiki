@@ -3,7 +3,7 @@
 
 ----
 <<pre class="ocsforge_color odocwiki_code" id="TYPEsuccess"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|success>>>><<div class="odocwiki_info"|~The type representing a success result~.
-            ~If no error occured~, the ~J~S~O~N in the results attribute contains a
+            ~If no error occurred~, the ~J~S~O~N in the results attribute contains a
             mandatory field <<span class="odocwiki_inlinecode"|message~_id>> and an optional field
             <<span class="odocwiki_inlinecode"|registration~_id>>~.
 >>

@@ -14,7 +14,7 @@
     user email~, else <<span class="odocwiki_inlinecode"|false>>~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="action_link_key_outdated"| value Os_user.action_link_key_outdated >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|~Reference used to remeber if an action link key is outdated~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="action_link_key_outdated"| value Os_user.action_link_key_outdated >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|~Reference used to remember if an action link key is outdated~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="action_link_service"| value Os_services.action_link_service >> ~[<<a_api subproject="server" | module Os_services >>~]|<<div class="odocwiki_info"|~A ~G~E~T service for action link keys~.
@@ -91,6 +91,7 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="add_message"| value Os_fcm_notif.Data.PhoneGap.add_message >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data.PhoneGap >>~]|<<div class="odocwiki_info"|~Add a message attribute to the notification
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="add_notification_channel_id"| value Os_fcm_notif.Data.PhoneGap.add_notification_channel_id >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data.PhoneGap >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="add_notification_id"| value Os_fcm_notif.Data.PhoneGap.add_notification_id >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data.PhoneGap >>~]|<<div class="odocwiki_info"|~Add a notification ~I~D~.
 >>
 |
@@ -312,7 +313,7 @@
     a sign out button~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="connection_pool"| value Os_db.connection_pool >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Direct access to the connection pool
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="connection_pool"| value Os_core_db.connection_pool >> ~[<<a_api subproject="server" | module Os_core_db >>~]|<<div class="odocwiki_info"|~Direct access to the connection pool
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="content"| value Os_page.content >> ~[<<a_api subproject="server" | module Os_page >>~]|<<div class="odocwiki_info"|~Specifies a page with an optional title ~(with the argument <<span class="odocwiki_inlinecode"|~?title>>~)~, some
@@ -452,7 +453,7 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="forgot_password_service"| value Os_services.forgot_password_service >> ~[<<a_api subproject="server" | module Os_services >>~]|<<div class="odocwiki_info"|~A ~P~O~S~T service when the user forgot his password~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="full_transaction_block"| value Os_db.full_transaction_block >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|full~_transaction~_block f>> executes function <<span class="odocwiki_inlinecode"|f>> within a database
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="full_transaction_block"| value Os_core_db.full_transaction_block >> ~[<<a_api subproject="server" | module Os_core_db >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|full~_transaction~_block f>> executes function <<span class="odocwiki_inlinecode"|f>> within a database
     transaction~.
 >>
 |
@@ -572,13 +573,13 @@
     password~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="init"| value Os_db.init >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|init ~?host ~?port ~?user ~?password ~?database ~?unix~_domain~_socket~_dir ~?init ~(~)>>
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="init"| value Os_core_db.init >> ~[<<a_api subproject="server" | module Os_core_db >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|init ~?host ~?port ~?user ~?password ~?database ~?unix~_domain~_socket~_dir ~?init ~(~)>>
     initializes the variables for the database access and register a
     function <<span class="odocwiki_inlinecode"|init>> invoked each time a connection is created~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="is_complete"| value Os_user.is_complete >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|is~_complete user>> returns <<span class="odocwiki_inlinecode"|true>> if the first name or the last name of
-    <<span class="odocwiki_inlinecode"|~Os~_types~.user>> has not been completed yet~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="is_complete"| value Os_user.is_complete >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|is~_complete user>> returns <<span class="odocwiki_inlinecode"|true>> if the first name and the last name of
+    <<span class="odocwiki_inlinecode"|~Os~_types~.user>> have been completed yet~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="is_email_validated"| value Os_user.is_email_validated >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|is~_email~_validated ~~userid ~~email>> returns whether for a user designated by
@@ -716,6 +717,10 @@
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="on_start_process"| value Os_session.on_start_process >> ~[<<a_api subproject="server" | module Os_session >>~]|<<div class="odocwiki_info"|~Call this to add an action to be done on server side
     when the process starts
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="on_start_unconnected_process"| value Os_session.on_start_unconnected_process >> ~[<<a_api subproject="server" | module Os_session >>~]|<<div class="odocwiki_info"|~Call this to add an action to be done on server side
+    when the process starts but only when not in connected mode
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="on_unconnected_request"| value Os_session.on_unconnected_request >> ~[<<a_api subproject="server" | module Os_session >>~]|<<div class="odocwiki_info"|~Call this to add an action to be done at each unconnected request~.
@@ -925,11 +930,15 @@
 |
 |@@ @style="tet-align: left;"@@\\T|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t_of_string"| value Os_platform.t_of_string >> ~[<<a_api subproject="server" | module Os_platform >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="tip_seen"| value Os_tips.tip_seen >> ~[<<a_api subproject="server" | module Os_tips >>~]|<<div class="odocwiki_info"|~Returns whether a tip has been seen or not~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="title"| value Os_page.PAGE.title >> ~[<<a_api subproject="server" | module Os_page.PAGE >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|title>> corresponds to the html tag ~<title~>~, it will be inserted on all
       pages~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="to_json"| value Os_fcm_notif.Data.PhoneGap.Action.to_json >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data.PhoneGap.Action >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="to_json"| value Os_fcm_notif.Data.to_json >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="to_json"| value Os_fcm_notif.Notification.to_json >> ~[<<a_api subproject="server" | module Os_fcm_notif.Notification >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="to_list"| value Os_fcm_notif.Options.to_list >> ~[<<a_api subproject="server" | module Os_fcm_notif.Options >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|to~_list option>> returns the representation of the options as a list of
         tuples <<span class="odocwiki_inlinecode"|~(option~_name~, json~_value~)>>~.
@@ -950,7 +959,7 @@
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="to_string"| value Os_lib.Email_or_phone.Almost.to_string >> ~[<<a_api subproject="server" | module Os_lib.Email_or_phone.Almost >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="to_string"| value Os_lib.Email_or_phone.to_string >> ~[<<a_api subproject="server" | module Os_lib.Email_or_phone >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="to_utc"| value Os_date.to_utc >> ~[<<a_api subproject="server" | module Os_date >>~]|<<div class="odocwiki_info"|~Convert a local calendar to a ~U~T~C calendar
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="to_utc"| value Os_date.to_utc >> ~[<<a_api subproject="server" | module Os_date >>~]|<<div class="odocwiki_info"|~Convert a local calendar to a ~U~T~C calendar~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\U|
@@ -1021,7 +1030,7 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user_already_exists"| value Os_user.user_already_exists >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|~Reference used to remember if the user already exists~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user_already_preregistered"| value Os_user.user_already_preregistered >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|~Reference used to remeber if the user is already preregistered~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user_already_preregistered"| value Os_user.user_already_preregistered >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|~Reference used to remember if the user is already preregistered~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user_box"| value Os_user_view.user_box >> ~[<<a_api subproject="server" | module Os_user_view >>~]|<<div class="odocwiki_info"|~Return <<a_api subproject="server" | val Os_user_view.connection_box >> if no user is connected ~(i~.e~.
@@ -1032,7 +1041,7 @@
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user_indep_process_scope"| value Os_session.user_indep_process_scope >> ~[<<a_api subproject="server" | module Os_session >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user_indep_session_scope"| value Os_session.user_indep_session_scope >> ~[<<a_api subproject="server" | module Os_session >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user_indep_state_hierarchy"| value Os_session.user_indep_state_hierarchy >> ~[<<a_api subproject="server" | module Os_session >>~]|<<div class="odocwiki_info"|~Scopes that are independant from user connection~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user_indep_state_hierarchy"| value Os_session.user_indep_state_hierarchy >> ~[<<a_api subproject="server" | module Os_session >>~]|<<div class="odocwiki_info"|~Scopes that are independent from user connection~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user_of_userid"| value Os_user.user_of_userid >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|user~_of~_userid userid>> returns the information about the user with ~I~D
@@ -1079,7 +1088,7 @@
 >>
 |
 |@@ @style="tet-align: left;"@@\\W|
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="without_transaction"| value Os_db.without_transaction >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|without~_transaction f>> executes function <<span class="odocwiki_inlinecode"|f>> outside a database
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="without_transaction"| value Os_core_db.without_transaction >> ~[<<a_api subproject="server" | module Os_core_db >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|without~_transaction f>> executes function <<span class="odocwiki_inlinecode"|f>> outside a database
     transaction~.
 >>
 |
