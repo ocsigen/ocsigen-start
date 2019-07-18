@@ -1,0 +1,10 @@
+=Module <<a_api_type subproject="client" | module Os_current_user.Opt >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Opt>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="client" text=".." | module Os_current_user.Opt >><<span class="ocsforge_color_keyword"|end>>>>~Instead of exception~, the module <<span class="odocwiki_inlinecode"|~Opt>> returns an option~.
+
+----
+<<pre id="VALget_current_user" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|get~_current~_user>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|unit <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="client" text="Os_types.User.t" | type Os_types.User.t >> option>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_current~_user ~(~)>> returns the current user as a <<span class="odocwiki_inlinecode"|~Os~_types~.~User~.t option>>
+      type~. ~If no user is connected~, <<span class="odocwiki_inlinecode"|~None>> is returned~.
+>>
+<<pre id="VALget_current_userid" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|get~_current~_userid>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|unit <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="client" text="Os_types.User.id" | type Os_types.User.id >> option>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_current~_userid ~(~)>> returns the ~I~D of the current user as an option~.
+      ~If no user is connected~, <<span class="odocwiki_inlinecode"|~None>> is returned~.
+>>

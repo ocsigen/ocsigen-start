@@ -1,0 +1,7 @@
+=Module <<a_api_type subproject="server" | module Os_comet >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Os_comet>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_comet >><<span class="ocsforge_color_keyword"|end>>>>~This module provides function to monitor communications between the server
+    clients~.
+    ~It~'s only defined for internal uses so not a lot of things are exported~.
+
+----
+<<pre id="VAL__link" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|~_~_link>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|unit>>>>

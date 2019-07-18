@@ -1,0 +1,25 @@
+=Module <<a_api_type subproject="server" | module Os_fcm_notif.Response >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Response>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_fcm_notif.Response >><<span class="ocsforge_color_keyword"|end>>>>
+----
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<a_api subproject="server" text="Results" | module Os_fcm_notif.Response.Results >> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_fcm_notif.Response.Results >><<span class="ocsforge_color_keyword"|end>>>><<div class="odocwiki_info"|~The type representing a ~F~C~M response
+>>
+<<pre class="ocsforge_color odocwiki_code" id="TYPEt"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|t>>>><<pre id="VALmulticast_id_of_t" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|multicast~_id~_of~_t>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="server" text="t" | type Os_fcm_notif.Response.t >> <<span class="ocsforge_color_delimiter"| -> >> string>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|multicast~_id~_of~_t response>> returns the unique ~I~D identifying the
+        multicast message~.
+
+
+        ~N~O~T~E~: ~In ~F~C~M documentation~, it is defined as a number but the ~I~D is
+        sometimes too big to be considered as an ~O~Caml integer~.
+>>
+<<pre id="VALsuccess_of_t" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|success~_of~_t>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="server" text="t" | type Os_fcm_notif.Response.t >> <<span class="ocsforge_color_delimiter"| -> >> int>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|success~_of~_t response>> returns the number of messages that were
+        processed without an error~.
+>>
+<<pre id="VALfailure_of_t" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|failure~_of~_t>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="server" text="t" | type Os_fcm_notif.Response.t >> <<span class="ocsforge_color_delimiter"| -> >> int>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|failure~_of~_t response>> returns the number of messages that could not
+        be processed~.
+>>
+<<pre id="VALcanonical_ids_of_t" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|canonical~_ids~_of~_t>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="server" text="t" | type Os_fcm_notif.Response.t >> <<span class="ocsforge_color_delimiter"| -> >> int>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|canonical~_ids~_of~_t response>> returns the number of results that contain
+        a canonical registration token~. ~See
+        https~:~/~/developers~.google~.com~/cloud~-messaging~/registration~#canonical~-ids
+        for more discussion of this topic~.
+>>
+<<pre id="VALresults_of_t" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|results~_of~_t>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="server" text="t" | type Os_fcm_notif.Response.t >> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="server" text="Results.t" | type Os_fcm_notif.Response.Results.t >> list>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|results~_of~_t response>> returns the status of the messages processed~.
+>>
