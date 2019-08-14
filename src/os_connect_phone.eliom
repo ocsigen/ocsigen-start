@@ -174,8 +174,10 @@ let%server connect ~keepmeloggedin ~password number =
     let%lwt () = Os_session.connect ~expire:(not keepmeloggedin) userid in
     Lwt.return `Login_ok
   with
-  | Os_db.No_such_resource ->
-    Lwt.return `No_such_resource
+  | Os_db.Empty_password
+  | Os_db.Wrong_password -> Lwt.return `Wrong_password
+  | Os_db.No_such_user -> Lwt.return `No_such_user
+  | Os_db.Password_not_set -> Lwt.return `Password_not_set
 
 let%client connect =
   let f =

@@ -26,6 +26,18 @@ include module type of Os_core_db
 (** Exception raised when no resource corresponds to the database request. *)
 exception No_such_resource
 
+(** Exception raised when password do not match. *)
+exception Wrong_password
+
+(** Exception raised when user has no password. *)
+exception Password_not_set
+
+(** Exception raised when users attempts to connect with unknown identifier. *)
+exception No_such_user
+
+(** Exception raised when user attempts to connect with empty password. *)
+exception Empty_password
+
 (** Exception raised when there is an attempt to remove the main email. *)
 exception Main_email_removal_attempt
 
@@ -142,14 +154,24 @@ module User : sig
   val update_language : userid:Os_types.User.id -> language:string -> unit Lwt.t
 
   (** [verify_password ~email ~password] returns the userid if user with email
-      [email] is registered with the password [password]. If [password] is empty
-      or if the password is wrong, it fails with {!No_such_resource}. *)
+      [email] is registered with the password [password].
+      If [password] the password is wrong,
+      it fails with exception {!Wrong_password}.
+      If user exists but account is not validated,
+      it fails with exception {!Account_not_activated}.
+      If user has no password, it fails with exception {!Password_not_set}.
+      If user is not found, it fails with exception {!No_such_user}.
+      If password is empty, it fails with exception {!Empty_password}. *)
   val verify_password : email:string -> password:string -> Os_types.User.id Lwt.t
 
-  (** [verify_password_phone ~number ~password] returns the userid of
-      the user who owns [number] and whose password is [password]. If
-      [password] is empty or if the password is wrong, it fails with
-      {!No_such_resource}. *)
+  (** [verify_password_phone ~number ~password]
+      returns the userid if user
+      who owns [number] and whose password is [password].
+      If [password] the password is wrong,
+      it fails with exception {!Wrong_password}.
+      If user has no password, it fails with exception {!Password_not_set}.
+      If user is not found, it fails with exception {!No_such_user}.
+      If password is empty, it fails with exception {!Empty_password}. *)
   val verify_password_phone :
     number:string -> password:string -> Os_types.User.id Lwt.t
 

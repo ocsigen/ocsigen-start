@@ -40,6 +40,9 @@ open Eliom_content.Html.F
 let%server wrong_password =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
+let%server no_such_user =
+  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
+
 let%server account_not_activated =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 

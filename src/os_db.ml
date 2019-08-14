@@ -21,6 +21,10 @@
 include Os_core_db
 
 exception No_such_resource
+exception Wrong_password
+exception Password_not_set
+exception No_such_user
+exception Empty_password
 exception Main_email_removal_attempt
 exception Account_not_activated
 
@@ -369,36 +373,34 @@ module User = struct
     >>
 
   let verify_password ~email ~password =
-    if password = "" then Lwt.fail No_such_resource
+    if password = "" then Lwt.fail Empty_password
     else
-      full_transaction_block (fun dbh ->
-        lwt r = Lwt_Query.view_one dbh <:view<
-              { t1.userid; t1.password; t2.validated }
-                 | t1 in $os_users_table$;
-                   t2 in $os_emails_table$;
-                   t1.userid = t2.userid;
-                   t2.email = $string:email$
-             >>
-       (* We fail for non-validated e-mails,
-          because we don't want the user to log in with a non-validated
-          email address. For example if the sign-up form contains
-          a password field. *)
-        in
-        let (userid, password', validated) =
-          (r#!userid, r#?password, r#!validated)
-        in
-        match password' with
-        | Some password' when snd !pwd_crypt_ref userid password password' ->
-          if validated then
-            Lwt.return userid
-          else
-            Lwt.fail Account_not_activated
-        | _ ->
-          Lwt.fail No_such_resource
-      )
+      one run_view <:view<
+        { t1.userid; t1.password; t2.validated }
+        | t1 in $os_users_table$;
+          t2 in $os_emails_table$;
+          t1.userid = t2.userid;
+          t2.email = $string:email$
+        >>
+        ~success:(fun r ->
+          (* We fail for non-validated e-mails,
+             because we don't want the user to log in with a non-validated
+             email address. For example if the sign-up form contains
+             a password field. *)
+          let (userid, password', validated) =
+            (r#!userid, r#?password, r#!validated)
+          in
+          match password' with
+          | Some password' when snd !pwd_crypt_ref userid password password' ->
+            if validated
+            then Lwt.return userid
+            else Lwt.fail Account_not_activated
+          | Some _ -> Lwt.fail Wrong_password
+          | _ -> Lwt.fail Password_not_set)
+        ~fail:(Lwt.fail No_such_user)
 
   let verify_password_phone ~number ~password =
-    if password = "" then Lwt.fail No_such_resource
+    if password = "" then Lwt.fail Empty_password
     else
       one run_view <:view<
         { t1.userid; t1.password }
@@ -413,9 +415,9 @@ module User = struct
           | Some password' when
               snd !pwd_crypt_ref userid password password' ->
             Lwt.return userid
-          | _ ->
-            Lwt.fail No_such_resource)
-        ~fail:(Lwt.fail No_such_resource)
+          | Some _ -> Lwt.fail Wrong_password
+          | _ -> Lwt.fail Password_not_set)
+        ~fail:(Lwt.fail No_such_user)
 
   let user_of_userid userid = one run_view
     ~success:(fun r -> Lwt.return @@ tupple_of_user_sql r)
