@@ -60,4 +60,4 @@ val connect :
   keepmeloggedin:bool ->
   password:string ->
   string ->
-  [`Login_ok | `No_such_resource] Lwt.t
+  [`Login_ok | `No_such_user | `Wrong_password | `Password_not_set] Lwt.t

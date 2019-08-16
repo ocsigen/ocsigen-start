@@ -93,8 +93,11 @@ let%client form_override_phone phone_input form =
     with
     | `Login_ok ->
       Os_lib.reload ()
-    | `No_such_resource ->
-      Os_msg.msg ~level:`Err "Wrong phone number or password";
+    | `Wrong_password ->
+      Os_msg.msg ~level:`Err "Wrong password";
+      Lwt.return_unit
+    | `No_such_user ->
+      Os_msg.msg ~level:`Err "No such user";
       Lwt.return_unit
   else
     Lwt.return_unit

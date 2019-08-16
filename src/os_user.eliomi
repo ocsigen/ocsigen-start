@@ -52,6 +52,9 @@ val password_set : Os_types.User.id -> bool Lwt.t
 (** Reference used to remember if a wrong password has been already typed. *)
 val wrong_password : bool Eliom_reference.Volatile.eref
 
+(** Reference used to remember if a wrong user has already been typed. *)
+val no_such_user : bool Eliom_reference.Volatile.eref
+
 (** Reference used to remember if the account is activated. *)
 val account_not_activated : bool Eliom_reference.Volatile.eref
 
@@ -128,10 +131,15 @@ val add_actionlinkkey :
   ?validity:int64 -> (** default: 1L *)
   act_key:string -> userid:Os_types.User.id -> email:string -> unit -> unit Lwt.t
 
-(** [verify_password email password] verifies if [email] and [password]
-    correspond. It it is the case, it returns the userid of the user with email
-    [email]. Else, it raises the exception {!Os_db.No_such_resource}.
- *)
+(** [verify_password ~email ~password] returns the userid if user with email
+    [email] is registered with the password [password].
+    If [password] the password is wrong,
+    it fails with exception {!Wrong_password}.
+    If user exists but account is not validated,
+    it fails with exception {!Account_not_activated}.
+    If user has no password, it fails with exception {!Password_not_set}.
+    If user is not found, it fails with exception {!No_such_user}.
+    If password is empty, it fails with exception {!Empty_password}. *)
 val verify_password : email:string -> password:string -> Os_types.User.id Lwt.t
 
 (** [user_of_userid userid] returns the information about the user with ID

@@ -243,9 +243,15 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
       Eliom_reference.Volatile.set Os_user.account_not_activated true;
       Os_msg.msg ~level:`Err ~onload:true "Account not activated";
       Lwt.return_unit
-  | Os_db.No_such_resource ->
+  | Os_db.Empty_password
+  | Os_db.Password_not_set
+  | Os_db.Wrong_password ->
       Eliom_reference.Volatile.set Os_user.wrong_password true;
       Os_msg.msg ~level:`Err ~onload:true "Wrong password";
+      Lwt.return_unit
+  | Os_db.No_such_user ->
+      Eliom_reference.Volatile.set Os_user.no_such_user true;
+      Os_msg.msg ~level:`Err ~onload:true "No such user";
       Lwt.return_unit
 
 let%server connect_handler_rpc v = connect_handler () v
