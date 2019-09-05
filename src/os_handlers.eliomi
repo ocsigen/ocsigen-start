@@ -37,7 +37,10 @@ val disconnect_handler : ?main_page:bool -> unit -> unit -> unit Lwt.t
 val sign_up_handler : unit -> string -> unit Lwt.t
 
 (** [add_email_handler () email] adds a new e-mail address
-    for the current user and sends an activation link. *)
+    for the current user and sends an activation link.
+    Eliom reference [Os_user.user_already_exists] is set
+    to [true] if the e-mail address already exists in database.
+*)
 val add_email_handler : unit -> string -> unit Lwt.t
 
 (** Exception raised when something went wrong with an action link key. The
