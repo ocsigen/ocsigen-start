@@ -1,3 +1,20 @@
+===== 2.4.0 (2019-09-09) =====
+
+* improved email error handling
+
+===== 2.3.0 (2019-08-16) =====
+
+* User connection: more detailed explanation of failed login
+
+===== 2.2.0 (2019-07-17) =====
+
+* implement Os_fcm_notif with Cohttp APIs
+
+===== 2.0.0 (2019-07-09) =====
+
+* rework scheduling of handlers for functions in Os_session:
+  on_start_(un)connected_process, on_start_process
+
 ===== 1.8.0 (2019-06-28) =====
 * change version of Sdk from 16 to 19
 * Os_notif: fix race condition during initialisation
