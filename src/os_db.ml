@@ -188,8 +188,7 @@ module Email = struct
       <:select< row
                 | row in $os_emails_table$; row2 in $os_users_table$;
                 row.email = $string:email$;
-                row2.userid = row.userid;
-                is_not_null (row2.password) || row.validated
+                row2.userid = row.userid
       >>
 
 end

@@ -401,7 +401,6 @@ let%server add_email_handler =
       send_act () email myid
     else begin
       Eliom_reference.Volatile.set Os_user.user_already_exists true;
-      Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
       Lwt.return_unit
     end
   in
