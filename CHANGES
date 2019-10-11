@@ -1,3 +1,8 @@
+===== 2.7.0 (2019-10-17) =====
+* Os_date.now: Make it possible to specify the timezone server side
+* Request cache: use cache only if during a request
+* compatibility with resource-pooling.1.0
+
 ===== 2.4.0 (2019-09-09) =====
 
 * improved email error handling
