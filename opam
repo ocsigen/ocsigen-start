@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "ocsigen-start"
-version: "2.5.0"
+version: "2.6.0"
 authors: "dev@ocsigen.org"
 maintainer: "dev@ocsigen.org"
 synopsis: "An Eliom application skeleton ready to use to build your own application with users, (pre)registration, notifications, etc"
@@ -22,7 +22,7 @@ depends: [
   "js_of_ocaml" {>= "3.4.0"}
   "js_of_ocaml-camlp4" {>= "3.1.0"}
   "yojson" {>= "1.4.1"}
-  "resource-pooling" {>= "0.5.2"}
+  "resource-pooling" {>= "1.0" & < "2.0"}
   "cohttp-lwt-unix"
   "conf-npm" {>= "1"}
   "ocamlnet"

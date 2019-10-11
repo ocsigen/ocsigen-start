@@ -18,6 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open Resource_pooling
+
 let section = Lwt_log.Section.make "os:db"
 
 let (>>=) = Lwt.bind

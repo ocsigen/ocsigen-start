@@ -21,7 +21,7 @@
 
 (** This module defines low level functions for database requests. *)
 
-(** Lwt version of PGOCaml *)
+open Resource_pooling
 module PGOCaml : PGOCaml_generic.PGOCAML_GENERIC with type 'a monad = 'a Lwt.t
 
 (** [init ?host ?port ?user ?password ?database ?unix_domain_socket_dir ?init ()]
