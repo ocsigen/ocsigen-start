@@ -46,6 +46,11 @@ val to_utc : ?timezone:string -> local_calendar -> CalendarLib.Calendar.t
     timezone unless the optional [timezone] argument is provided.*)
 val to_local : ?timezone:string -> CalendarLib.Calendar.t -> local_calendar
 
+(** [now ()] returns the current date as a [local_calendar] value.  Use
+    the client's timezone unless the optional [timezone] argument is
+    provided.  *)
+val now : ?timezone:string -> unit -> local_calendar
+
 [%%client.start]
 
 (** Convert a local calendar to a UTC calendar *)
@@ -54,10 +59,10 @@ val to_utc : local_calendar -> CalendarLib.Calendar.t
 (** Convert any type of calendar to a local calendar. *)
 val to_local : CalendarLib.Calendar.t -> local_calendar
 
-[%%shared.start]
-
 (** [now ()] returns the current date as a [local_calendar] value. *)
 val now : unit -> local_calendar
+
+[%%shared.start]
 
 (** [user_tz ()] returns current user's timezone. *)
 val user_tz : unit -> string

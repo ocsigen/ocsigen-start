@@ -169,7 +169,9 @@ let%client to_utc d =
      else
        d +. float o' *. 60.) (* Assume other DST status *)
 
-let%shared now () = to_local (CalendarLib.Calendar.now ())
+let%server now ?timezone () = to_local ?timezone (CalendarLib.Calendar.now ())
+
+let%client now () = to_local (CalendarLib.Calendar.now ())
 
 let%shared to_local_time = CalendarLib.Calendar.to_time
 
