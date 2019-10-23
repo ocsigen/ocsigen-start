@@ -92,6 +92,13 @@ val connect : ?expire:bool -> Os_types.User.id -> unit Lwt.t
 *)
 val disconnect : unit -> unit Lwt.t
 
+(** Close all sessions of current user (or [userid] if present).
+    If [?user_indep] is [true]
+    (default), will also affect [user_indep_session_scope].
+*)
+val disconnect_all :
+  ?userid:Os_types.User.id -> ?user_indep:bool -> unit -> unit Lwt.t
+
 [%%shared.start]
 (** Wrapper for service handlers that fetches automatically connection
     information.
