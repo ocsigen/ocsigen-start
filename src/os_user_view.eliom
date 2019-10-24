@@ -388,6 +388,24 @@ let%shared reset_tips_link
   : unit)];
   l
 
+let%shared disconnect_all_link
+    ?(text_link="Logout on all my devices")
+    ()
+  =
+  let l = D.Raw.a [txt text_link] in
+  ignore [%client (
+    Lwt_js_events.(async (fun () ->
+      clicks (To_dom.of_element ~%l)
+        (fun _ _ ->
+           let%lwt () = Os_session.disconnect_all () in
+           Eliom_client.exit_to
+             ~service:Eliom_service.reload_action
+             () ();
+           Lwt.return_unit
+        )))
+  : unit)];
+  l
+
 let%shared bind_popup_button
     ?a
     ~button
