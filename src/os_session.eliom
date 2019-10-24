@@ -159,6 +159,11 @@ let disconnect () =
   let%lwt () = Eliom_state.discard ~scope:Eliom_common.request_scope () in
   post_close_session_action ()
 
+let set_warn_connection_change, warn_connection_changed =
+  let r = ref (fun _ -> ()) in
+  (fun f -> r := f),
+  (fun state -> !r state; Lwt.return_unit)
+
 let disconnect_all ?userid ?(user_indep = true) () =
   let close_my_sessions = userid = None in
   let%lwt () = if close_my_sessions
@@ -219,6 +224,13 @@ let disconnect_all ?userid ?(user_indep = true) () =
       then post_close_session_action ()
       else Lwt.return_unit
     in
+    (* Warn every client process that the session is closed: *)
+    let%lwt () =
+      Lwt_list.iter_s
+        (fun state -> Eliom_state.Ext.iter_sub_states ~state
+            warn_connection_changed)
+        ui_states
+    in
     (* Closing user_indep states, if requested: *)
     if user_indep
     then
@@ -226,7 +238,6 @@ let disconnect_all ?userid ?(user_indep = true) () =
         (fun state -> Eliom_state.Ext.discard_state ~state)
         ui_states
     else Lwt.return_unit
-
 
 
 let check_allow_deny userid allow deny =

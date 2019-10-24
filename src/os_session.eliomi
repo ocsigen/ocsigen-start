@@ -182,3 +182,8 @@ end
 [%%client.start]
    (** internal. Do not use *)
 val get_current_userid_o : (unit -> Os_types.User.id option) ref
+
+[%%server.start]
+val set_warn_connection_change :
+  (([ `Session ], [ `Data ]) Eliom_state.Ext.state -> unit) ->
+  unit
