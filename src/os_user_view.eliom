@@ -99,6 +99,9 @@ let%client form_override_phone phone_input form =
     | `No_such_user ->
       Os_msg.msg ~level:`Err "No such user";
       Lwt.return_unit
+    | `Password_not_set ->
+      Os_msg.msg ~level:`Err "User password not set";
+      Lwt.return_unit
   else
     Lwt.return_unit
 
