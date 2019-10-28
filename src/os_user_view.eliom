@@ -99,6 +99,9 @@ let%client form_override_phone phone_input form =
     | `No_such_user ->
       Os_msg.msg ~level:`Err "No such user";
       Lwt.return_unit
+    | `Password_not_set ->
+      Os_msg.msg ~level:`Err "User password not set";
+      Lwt.return_unit
   else
     Lwt.return_unit
 
@@ -385,6 +388,24 @@ let%shared reset_tips_link
              () ();
            Lwt.return_unit
         )));
+  : unit)];
+  l
+
+let%shared disconnect_all_link
+    ?(text_link="Logout on all my devices")
+    ()
+  =
+  let l = D.Raw.a [txt text_link] in
+  ignore [%client (
+    Lwt_js_events.(async (fun () ->
+      clicks (To_dom.of_element ~%l)
+        (fun _ _ ->
+           let%lwt () = Os_session.disconnect_all () in
+           Eliom_client.exit_to
+             ~service:Eliom_service.reload_action
+             () ();
+           Lwt.return_unit
+        )))
   : unit)];
   l
 

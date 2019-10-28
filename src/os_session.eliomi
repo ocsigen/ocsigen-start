@@ -83,6 +83,21 @@ exception Permission_denied
 *)
 val connect : ?expire:bool -> Os_types.User.id -> unit Lwt.t
 
+(** Close all sessions of current user (or [userid] if present).
+    If [?user_indep] is [true]
+    (default), will also affect [user_indep_session_scope].
+*)
+val disconnect_all :
+  ?userid:Os_types.User.id -> ?user_indep:bool -> unit -> unit Lwt.t
+
+[%%client.start]
+(** Close all sessions of current user.
+    If [?user_indep] is [true] (default),
+    will also affect [user_indep_session_scope].
+*)
+val disconnect_all : ?user_indep:bool -> unit -> unit Lwt.t
+
+[%%shared.start]
 (** Close a session by discarding server side states for current browser
     (session and session group), current client process (tab) and current
     request.
@@ -92,7 +107,6 @@ val connect : ?expire:bool -> Os_types.User.id -> unit Lwt.t
 *)
 val disconnect : unit -> unit Lwt.t
 
-[%%shared.start]
 (** Wrapper for service handlers that fetches automatically connection
     information.
     Register [(connected_fun f)] as handler for your services,
@@ -175,3 +189,8 @@ end
 [%%client.start]
    (** internal. Do not use *)
 val get_current_userid_o : (unit -> Os_types.User.id option) ref
+
+[%%server.start]
+val set_warn_connection_change :
+  (([ `Session ], [ `Data ]) Eliom_state.Ext.state -> unit) ->
+  unit

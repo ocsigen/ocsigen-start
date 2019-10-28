@@ -157,6 +157,10 @@ let%shared settings_content () =
           ~text_link:[%i18n S.see_help_again_from_beginning]
           ();
         br ();
+        Os_user_view.disconnect_all_link
+          ~text_link:[%i18n S.disconnect_all]
+          ();
+        br ();
         p [%i18n link_new_email];
         Os_user_view.generic_email_form
           ~a_placeholder_email:[%i18n S.email_address]

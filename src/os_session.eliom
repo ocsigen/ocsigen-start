@@ -27,6 +27,12 @@ let user_indep_state_hierarchy = Eliom_common.create_scope_hierarchy "userindep"
 let user_indep_process_scope = `Client_process user_indep_state_hierarchy
 let user_indep_session_scope = `Session user_indep_state_hierarchy
 
+(* We make it possible to acces the user_indep scope from connected scope *)
+let current_user_indep_session_state =
+  Eliom_reference.Volatile.eref
+    ~scope:Eliom_common.default_session_scope
+    None
+
 let new_process_eref =
   Eliom_reference.Volatile.eref
     ~scope:user_indep_process_scope
@@ -121,6 +127,9 @@ let connect_volatile uid =
   Eliom_state.set_volatile_data_session_group
     ~scope:Eliom_common.default_session_scope uid;
   let uid = Int64.of_string uid in
+  Eliom_reference.Volatile.set current_user_indep_session_state
+    (Some (Eliom_state.Ext.current_volatile_session_state
+             ~scope:user_indep_session_scope ()));
   open_session_action uid
 
 let connect_string uid =
@@ -149,6 +158,87 @@ let disconnect () =
   let%lwt () = Eliom_state.discard ~scope:Eliom_common.default_process_scope () in
   let%lwt () = Eliom_state.discard ~scope:Eliom_common.request_scope () in
   post_close_session_action ()
+
+let set_warn_connection_change, warn_connection_changed =
+  let r = ref (fun _ -> ()) in
+  (fun f -> r := f),
+  (fun state -> !r state; Lwt.return_unit)
+
+let disconnect_all ?userid ?(user_indep = true) () =
+  let close_my_sessions = userid = None in
+  let%lwt () = if close_my_sessions
+    then pre_close_session_action ()
+    else Lwt.return_unit
+  in
+  let userid = match userid with
+    | None ->
+        (let uid = Eliom_state.get_volatile_data_session_group () in
+         try Eliom_lib.Option.map Int64.of_string uid
+         with Failure _ -> None)
+    | Some userid -> Some userid
+  in
+  match userid with
+  | None -> Lwt.return_unit
+  | Some userid ->
+    (* We do not close the group, as it may contain user data.
+       We close all sessions from group instead. *)
+    let group_name = Int64.to_string userid in
+    let states =
+      [Eliom_state.Ext.volatile_data_group_state
+         ~scope:Eliom_common.default_group_scope
+         group_name;
+       Eliom_state.Ext.persistent_data_group_state
+         ~scope:Eliom_common.default_group_scope
+         group_name;
+       Eliom_state.Ext.service_group_state
+         ~scope:Eliom_common.default_group_scope
+         group_name]
+    in
+    let%lwt ui_states =
+      List.fold_left (fun acc state ->
+        match%lwt
+          Eliom_reference.Ext.get state
+            (current_user_indep_session_state
+             :> ([< `Session_group | `Session | `Client_process ],
+                 [< `Data | `Pers ]) Eliom_state.Ext.state option
+                 Eliom_reference.eref)
+        with None -> acc
+           | Some s -> let%lwt acc = acc in Lwt.return (s::acc))
+        Lwt.return_nil
+        (Eliom_state.Ext.fold_volatile_sub_states
+           ~state:(Eliom_state.Ext.volatile_data_group_state
+                     ~scope:Eliom_common.default_group_scope
+                     group_name)
+           (fun acc s -> s::acc)
+           []
+        )
+    in
+    (* Closing all sessions: *)
+    let%lwt () =
+      Lwt_list.iter_s
+        (fun state -> Eliom_state.Ext.iter_sub_states ~state @@ fun state ->
+          Eliom_state.Ext.discard_state ~state)
+        states
+    in
+    let%lwt () = if close_my_sessions
+      then post_close_session_action ()
+      else Lwt.return_unit
+    in
+    (* Warn every client process that the session is closed: *)
+    let%lwt () =
+      Lwt_list.iter_s
+        (fun state -> Eliom_state.Ext.iter_sub_states ~state
+            warn_connection_changed)
+        ui_states
+    in
+    (* Closing user_indep states, if requested: *)
+    if user_indep
+    then
+      Lwt_list.iter_s
+        (fun state -> Eliom_state.Ext.discard_state ~state)
+        ui_states
+    else Lwt.return_unit
+
 
 let check_allow_deny userid allow deny =
   let%lwt b = match allow with
@@ -314,3 +404,15 @@ let%shared connected_wrapper ?allow ?deny ?deny_fun ?force_unconnected f pp =
 
   end
 ]
+
+let%client disconnect =
+  ~%(Eliom_client.server_function ~name:"Os_session.disconnect"
+       [%derive.json: unit]
+       (connected_wrapper disconnect))
+
+let%client disconnect_all ?(user_indep = true) () =
+  ~%(Eliom_client.server_function ~name:"Os_session.disconnect_all"
+       [%derive.json: bool]
+       (connected_wrapper
+          (fun user_indep -> disconnect_all ~user_indep ())))
+    user_indep

@@ -284,6 +284,15 @@ val reset_tips_link :
   unit ->
   [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
 
+(** Link to disconnect all user sessions.
+
+    @param text_link link text.
+ *)
+val disconnect_all_link :
+  ?text_link:string ->
+  unit ->
+  [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
+
 (** A disconnect button *)
 val disconnect_button :
   ?text_logout:string ->

@@ -112,7 +112,15 @@ let%client handle_message = function
     Eliom_client.exit_to ~service:Eliom_service.reload_action () ();
     Lwt.return_unit
 
-let _ =
+let%server warn_state c state =
+  match Eliom_reference.Volatile.Ext.get state monitor_channel_ref with
+  | Some (_, send) as v -> send (Some c)
+  | None -> ()
+
+let%server _ =
+  Os_session.set_warn_connection_change (warn_state Connection_changed)
+
+let%server _ =
   Os_session.on_start_process
     (fun _ ->
        let channel = create_monitor_channel () in
