@@ -27,7 +27,7 @@ SERVER_ELIOM_PACKAGES := ocsigen-start.server
 SERVER_PACKAGES       := lwt_ppx js_of_ocaml-ppx.deriving ppx_deriving.std pgocaml
 
 # OCamlfind packages for database access
-SERVER_DB_PACKAGES    := pgocaml pgocaml.ppx
+SERVER_DB_PACKAGES    := pgocaml pgocaml_ppx
 
 # OCamlfind packages for the client
 CLIENT_PACKAGES       := lwt_ppx js_of_ocaml-ppx js_of_ocaml-ppx.deriving \
