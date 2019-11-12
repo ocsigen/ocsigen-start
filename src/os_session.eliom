@@ -232,12 +232,16 @@ let disconnect_all ?userid ?(user_indep = true) () =
         ui_states
     in
     (* Closing user_indep states, if requested: *)
-    if user_indep
-    then
-      Lwt_list.iter_s
-        (fun state -> Eliom_state.Ext.discard_state ~state)
-        ui_states
-    else Lwt.return_unit
+    let%lwt () =
+      if user_indep
+      then
+        Lwt_list.iter_s
+          (fun state -> Eliom_state.Ext.discard_state ~state)
+          ui_states
+      else Lwt.return_unit
+    in
+    let _ = [%client (Os_handlers.restart () : unit) ] in
+    Lwt.return_unit
 
 
 let check_allow_deny userid allow deny =
