@@ -32,7 +32,7 @@ let%server time_as_string () : string Eliom_shared.React.S.t =
 let%server time_reactive () = Lwt.return @@ time_as_string ()
 
 let%client time_reactive =
-  ~%(Eliom_client.server_function [%derive.json: unit]
+  ~%(Eliom_client.server_function [%json: unit]
        (Os_session.connected_wrapper time_reactive))
 
 (* Name for demo menu *)

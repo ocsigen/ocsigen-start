@@ -98,7 +98,7 @@ let%server get_emails () =
 
 (* List with information about emails *)
 let%client get_emails =
-  ~%(Eliom_client.server_function [%derive.json : unit]
+  ~%(Eliom_client.server_function [%json : unit]
        (Os_session.connected_wrapper get_emails))
 
 let%shared select_language_form =

@@ -48,7 +48,7 @@ let%server notify v =
 
 (* Make [notify] available client-side *)
 let%client notify =
-  ~%(Eliom_client.server_function [%derive.json : string]
+  ~%(Eliom_client.server_function [%json : string]
        (Os_session.connected_wrapper notify))
 
 (* Subscribe for notifications via [Notif.listen ()];
@@ -86,7 +86,7 @@ let%shared make_form msg f =
 
 let%server unlisten () = Notif.unlisten () ; Lwt.return_unit
 let%client unlisten =
- ~%(Eliom_client.server_function [%derive.json : unit]
+ ~%(Eliom_client.server_function [%json : unit]
       (Os_session.connected_wrapper unlisten))
 
 (* Page for this demo *)
@@ -112,7 +112,7 @@ let%server page () =
 
 (* Make page available on client-side *)
 let%client page =
-  ~%((Eliom_client.server_function [%derive.json: unit]
+  ~%((Eliom_client.server_function [%json: unit]
         (Os_session.connected_wrapper page)) :
        (unit,
         Html_types.div_content Eliom_content.Html.D.elt list)

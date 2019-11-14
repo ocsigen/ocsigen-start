@@ -86,7 +86,7 @@ let initialize tz =
 (** When the browser is loaded, we init the timezone *)
 let init_time_rpc : (_, unit) Eliom_client.server_function =
   Eliom_client.server_function ~name:"os_date.init_time_rpc"
-    [%derive.json: string]
+    [%json: string]
     (fun tz -> initialize tz; Lwt.return_unit)
 
 let%client init_time_rpc = ~%init_time_rpc

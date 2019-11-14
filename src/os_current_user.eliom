@@ -146,7 +146,7 @@ let%server remove_email_from_user email =
 let%client remove_email_from_user email =
   ~%(Eliom_client.server_function
        ~name:"Os_current_user.remove_email_from_user"
-       [%derive.json: string]
+       [%json: string]
        (Os_session.connected_wrapper remove_email_from_user)
   )
   email
@@ -158,7 +158,7 @@ let%server update_main_email email =
 let%client update_main_email email =
   ~%(Eliom_client.server_function
        ~name:"Os_current_user.update_main_email"
-       [%derive.json: string]
+       [%json: string]
        (Os_session.connected_wrapper update_main_email)
   )
   email
@@ -178,7 +178,7 @@ let%server update_language language =
 let%client update_language language =
   ~%(Eliom_client.server_function
        ~name:"Os_current_user.update_language"
-       [%derive.json: string]
+       [%json: string]
        (Os_session.connected_wrapper update_language)
     )
     language
