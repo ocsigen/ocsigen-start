@@ -92,7 +92,7 @@ let%server request_recovery_code = request_wrapper @@ fun number ->
 let%client request_recovery_code =
   ~%(Eliom_client.server_function
        ~name:"Os_connect_phone.request_recovery_code"
-       [%derive.json : string]
+       [%json : string]
        request_recovery_code)
 
 let%server request_code = request_wrapper @@ fun number ->
@@ -105,7 +105,7 @@ let%server request_code = request_wrapper @@ fun number ->
 let%client request_code =
   ~%(Eliom_client.server_function
        ~name:"Os_connect_phone.request_code"
-       [%derive.json : string]
+       [%json : string]
        request_code)
 
 let%server confirm_code_extra =
@@ -148,7 +148,7 @@ let%server confirm_code_signup (first_name, last_name, code, password) =
 let%client confirm_code_signup =
   ~%(Eliom_client.server_function
        ~name:"Os_connect_phone.confirm_code_signup"
-       [%derive.json: string * string * string * string]
+       [%json: string * string * string * string]
        confirm_code_signup)
 
 let%shared confirm_code_signup
@@ -189,7 +189,7 @@ let%server connect ~keepmeloggedin ~password number =
 let%client connect =
   let f =
     ~%(Eliom_client.server_function ~name:"Os_connect_phone.connect"
-         [%derive.json: string * string * bool]
+         [%json: string * string * bool]
          (Os_session.Opt.connected_rpc
             (fun _ (number, password, keepmeloggedin) ->
                connect ~keepmeloggedin ~password number)))

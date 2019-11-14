@@ -48,7 +48,7 @@ let%server get_data_rpc' =
 let%server get_data_rpc
   : (_, Os_types.User.t) Eliom_client.server_function =
   Eliom_client.server_function ~name:"os_user_proxy.get_data_rpc"
-    [%derive.json: Os_types.User.id] get_data_rpc'
+    [%json: Os_types.User.id] get_data_rpc'
 
 let%client get_data_rpc = ~%get_data_rpc
 
