@@ -145,7 +145,7 @@ of Android packages ...
 
 ### For Android:
 
-- Install JDK 7 or newer (`openjdk-7-jdk` package in Debian/Ubuntu)
+- Install JDK 8 (`openjdk-8-jdk` package in Debian/Ubuntu)
 - Install Gradle (`gradle` package in Debian/Ubuntu)
 - Download and untar the [Android SDK](http://developer.android.com) (the smaller version without Android Studio suffices), rename it so that you have a `$HOME/android-sdk-linux/tools` folder.
 - Using the Android package management interface (or `sdkmanager`), install latest versions of SDK Tools (`tools`), SDK Platform-tools (`platform-tools`), and SDK Build-tools (`build-tools;XXX`). Don't forget to replace `XXX` by current version (for example `29.0.0`). From your `android-sdk-linux/tools` :
