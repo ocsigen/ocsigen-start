@@ -31,6 +31,12 @@ type sms_error_core = [`Unknown | `Send | `Limit | `Invalid_number]
 val set_send_sms_handler :
   (number:string -> string -> (unit, sms_error_core) result Lwt.t) -> unit
 
+(** Confirm validation code and create corresponding user. *)
+val confirm_code_signup_no_connect :
+  first_name:string -> last_name:string ->
+  code:string -> password:string ->
+  unit -> Os_types.User.id option Lwt.t
+
 [%%shared.start]
 
 type sms_error = [`Ownership | sms_error_core]
