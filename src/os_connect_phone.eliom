@@ -122,21 +122,28 @@ let%client confirm_code_extra =
        Deriving_Json.Json_string.t
        confirm_code_extra)
 
-let%server confirm_code_signup
-    (firstname, lastname, code, password) =
+let%server confirm_code_signup_no_connect
+      ~first_name ~last_name ~code ~password () =
   match%lwt Eliom_reference.get activation_code_ref with
   | Some (number, code', _) when code = code' ->
     let%lwt () = Eliom_reference.set activation_code_ref None in
-    let%lwt user = Os_user.create ~password ~firstname ~lastname () in
+    let%lwt user =
+      Os_user.create ~password ~firstname:first_name ~lastname:last_name () in
     let userid = Os_user.userid_of_user user in
     let%lwt b = Os_db.Phone.add userid number in
-    if b then
-      let%lwt () = Os_session.connect userid in
-      Lwt.return_true
-    else
-      Lwt.return_false
+    Lwt.return_some userid
   | _ ->
-    Lwt.return_false
+    Lwt.return_none
+
+let%server confirm_code_signup (first_name, last_name, code, password) =
+  match%lwt
+    confirm_code_signup_no_connect ~first_name ~last_name ~code ~password ()
+  with
+  | None ->
+     Lwt.return_false
+  | Some userid ->
+    let%lwt () = Os_session.connect userid in
+    Lwt.return_true
 
 let%client confirm_code_signup =
   ~%(Eliom_client.server_function
