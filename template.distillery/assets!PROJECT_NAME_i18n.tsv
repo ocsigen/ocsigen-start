@@ -47,7 +47,7 @@ wrong_password	Wrong password	Mauvais mot de passe
 no_such_user	No such user	Cet utilisateur n'existe pas
 add_email_msg	Welcome!\r\nTo confirm your email address, please click on this link:	Bienvenue !\r\nPour confirmer votre adresse e-mail, cliquez sur ce lien :
 invalid_action_key	Invalid action key, please ask for a new one.	Clef d'action invalide. Demandez en une nouvelle svp.
-forgot_pwd_email_msg	Hi,\r\nTo set a new password, please click on this link: Bonjour,\r\nPour mettre à jour votre mot de passe, cliquez sur ce lien :
+forgot_pwd_email_msg	Hi,\r\nTo set a new password, please click on this link:	Bonjour,\r\nPour mettre à jour votre mot de passe, cliquez sur ce lien :
 must_be_connected_to_see_page	You must be connected to see this page.	Vous devez être connecté pour voir cette page.
 email_address	Email address	Adresse e-mail
 your_first_name	Your first name	Votre prénom
