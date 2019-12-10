@@ -1,3 +1,7 @@
+===== 2.11.0 (2019-12-10) =====
+* Os_tips: add ?onclose parameter
+* Os_connect_phone: function to confirm a code without performing a sign-up
+
 ===== 2.8.0 (2019-11-15) =====
 * restart app after disconnecting all my sessions
 * add "disconnect all sessions" button in parameters page
