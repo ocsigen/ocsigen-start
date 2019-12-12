@@ -53,7 +53,7 @@ let dispose db =
   Lwt.catch (fun () -> PGOCaml.close db) (fun _ -> Lwt.return_unit)
 
 let connect () =
-  lwt h =
+  let%lwt h =
     Lwt_PGOCaml.connect
     ?host:!host_r
     ?port:!port_r
@@ -65,11 +65,11 @@ let connect () =
   in
   match !init_r with
   | Some init ->
-    lwt () =
-      try_lwt
+    let%lwt () =
+      try%lwt
         init h
       with exn ->
-        lwt () = dispose h in
+        let%lwt () = dispose h in
         Lwt.fail exn
     in
     Lwt.return h
@@ -77,8 +77,8 @@ let connect () =
     Lwt.return h
 
 let validate db =
-  try_lwt
-    lwt () = Lwt_PGOCaml.ping db in
+  try%lwt
+    let%lwt () = Lwt_PGOCaml.ping db in
     Lwt.return_true
   with _ ->
     Lwt.return_false
@@ -105,25 +105,25 @@ let connection_pool () = !pool
 
 let use_pool f =
   Resource_pool.use !pool @@ fun db ->
-  try_lwt
+  try%lwt
     f db
   with
   | Lwt_PGOCaml.Error msg as e ->
     Lwt_log.ign_error_f ~section "postgresql protocol error: %s" msg;
-    lwt () = Lwt_PGOCaml.close db in Lwt.fail e
+    let%lwt () = Lwt_PGOCaml.close db in Lwt.fail e
   | Lwt.Canceled as e ->
     Lwt_log.ign_error ~section "thread canceled";
-    lwt () = PGOCaml.close db in Lwt.fail e
+    let%lwt () = PGOCaml.close db in Lwt.fail e
 
 let transaction_block db f =
-  try_lwt
+  try%lwt
     Lwt_PGOCaml.begin_work db >>= fun _ ->
-    lwt r = f () in
-    lwt () = Lwt_PGOCaml.commit db in
+    let%lwt r = f () in
+    let%lwt () = Lwt_PGOCaml.commit db in
     Lwt.return r
   with e ->
-    lwt () =
-      try_lwt
+    let%lwt () =
+      try%lwt
         Lwt_PGOCaml.rollback db
       with Lwt_PGOCaml.PostgreSQL_Error _ ->
         (* If the rollback fails, for instance due to a timeout,
