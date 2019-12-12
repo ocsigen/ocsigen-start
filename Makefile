@@ -44,6 +44,12 @@ all: byte $(OPT_RULE)
 byte:: $(LIBDIR)/${PKG_NAME}.server.cma $(LIBDIR)/${PKG_NAME}.client.cma
 opt:: $(LIBDIR)/${PKG_NAME}.server.cmxs
 
+rebuild-os-db:
+	[ ! -z "$(PGHOST)" ] || exit 1
+	(echo '(* GENERATED CODE, DO NOT EDIT! *)'; \
+         `ocamlfind query  -format "%d/ppx.exe" pgocaml_ppx` \
+		src/os_db.ppx.ml ) > src/os_db.ml
+
 ##----------------------------------------------------------------------
 ## Aux
 
@@ -87,7 +93,7 @@ $(LIBDIR)/$(PKG_NAME).server.cmxa: $(call objs,$(ELIOM_SERVER_DIR),cmx,$(SERVER_
 	$(ELIOMOPT) -ppx -shared -linkall -o $@ $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%_db.cmi: %_db.mli
-	${ELIOMC} -c ${SERVER_DB_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
+	${ELIOMC} -ppx -c ${SERVER_DB_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmi: %.mli
 	${ELIOMC} -ppx -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 
@@ -95,14 +101,14 @@ ${ELIOM_SERVER_DIR}/%.cmi: %.eliomi
 	${ELIOMC} -ppx -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%_db.cmo: %_db.ml
-	${ELIOMC} -c ${SERVER_DB_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
+	${ELIOMC} -ppx -c ${SERVER_DB_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmo: %.ml
 	${ELIOMC} -ppx -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmo: %.eliom
 	${ELIOMC} -ppx -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 
 ${ELIOM_SERVER_DIR}/%_db.cmx: %_db.ml
-	${ELIOMOPT} -c ${SERVER_DB_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
+	${ELIOMOPT} -ppx -c ${SERVER_DB_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmx: %.ml
 	${ELIOMOPT} -ppx -c ${SERVER_INC} ${SERVER_INC_DIRS} $(GENERATE_DEBUG) $<
 ${ELIOM_SERVER_DIR}/%.cmx: %.eliom
@@ -186,9 +192,6 @@ endif
 
 .depend: $(patsubst %,$(DEPSDIR)/%.server,$(SERVER_FILES)) $(patsubst %,$(DEPSDIR)/%.client,$(CLIENT_FILES))
 	cat $^ > $@
-
-$(DEPSDIR)/%_db.ml.server: %_db.ml | $(DEPSDIR)
-	$(ELIOMDEP) -server $(SERVER_DB_INC) $(SERVER_DEP_DIRS) $< > $@
 
 $(DEPSDIR)/%.server: % | $(DEPSDIR)
 	$(ELIOMDEP) -server -ppx $(SERVER_INC) $(SERVER_DEP_DIRS) $< > $@
