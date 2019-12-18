@@ -101,9 +101,3 @@ val reset_tips_service :
    [ `WithoutSuffix ], unit, unit,
    Eliom_service.non_ocaml)
     Eliom_service.t
-
-[%%client.start]
-(** Call this function to reset tips for current users.
-    Tips will be shown again from the beginning.
-*)
-val reset_tips : unit -> unit Lwt.t
