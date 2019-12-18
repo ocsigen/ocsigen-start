@@ -298,6 +298,8 @@ let%shared bubble
        -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
         Eliom_client_value.t)
   () =
+  let delay : float option = delay in
+  let onclose : (unit -> unit) Eliom_client_value.t option = onclose in
   let myid_o = Os_current_user.Opt.get_current_userid () in
   match recipient, myid_o with
   | `All, _
