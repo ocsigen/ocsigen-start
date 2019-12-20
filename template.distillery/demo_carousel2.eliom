@@ -76,7 +76,8 @@ let%shared page () =
   *)
   ignore [%client (
     Lwt.async (fun () ->
-      Ot_sticky.make_sticky ~ios_html_scroll_hack:true ~dir:`Top ~%tabs)
+      Lwt.map ignore
+        (Ot_sticky.make_sticky ~ios_html_scroll_hack:true ~dir:`Top ~%tabs))
     : unit)
   ];
 
