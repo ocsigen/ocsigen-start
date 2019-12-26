@@ -96,6 +96,22 @@ let%client set_tip_seen name =
        (Os_session.connected_wrapper set_tip_seen))
   name
 
+(* counterpart of set_tip_seen *)
+let unset_tip_seen name  =
+  let%lwt prev = Eliom_reference.Volatile.get seen_by_user in
+  let newset = Stringset.remove name prev in
+  match Os_current_user.Opt.get_current_userid () with
+  | None -> Eliom_reference.set tips_seen_not_connected newset
+  | _ -> Eliom_reference.set tips_seen newset
+
+let%client unset_tip_seen name =
+  tips_seen_client_ref := Stringset.remove name !tips_seen_client_ref;
+  ~%(Eliom_client.server_function
+       ~name:"Os_tips.unset_tip_seen"
+       [%derive.json: string]
+       (Os_session.connected_wrapper set_tip_seen))
+    name
+
 let%shared tip_seen name =
   let%lwt seen = get_tips_seen () in
   Lwt.return @@ Stringset.mem name seen
@@ -298,6 +314,8 @@ let%shared bubble
        -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
         Eliom_client_value.t)
   () =
+  let delay : float option = delay in
+  let onclose : (unit -> unit) Eliom_client_value.t option = onclose in
   let myid_o = Os_current_user.Opt.get_current_userid () in
   match recipient, myid_o with
   | `All, _
