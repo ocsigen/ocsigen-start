@@ -78,28 +78,27 @@ let%client user_tz () = timezone
 
 (* This function is called once by each client process to record on server
    the time zone of the client *)
-let init_client_process_time tz =
+let initialize tz =
   let tz = Some tz in
-  let () = Eliom_reference.Volatile.set user_tz_gr tz in
-  let () = Eliom_reference.Volatile.set user_tz_sr tz in
-  Lwt.return_unit
-
-let%server init_time_rpc' = init_client_process_time
-
-let%client init_time_rpc' = ()
+  Eliom_reference.Volatile.set user_tz_gr tz;
+  Eliom_reference.Volatile.set user_tz_sr tz
 
 (** When the browser is loaded, we init the timezone *)
 let init_time_rpc : (_, unit) Eliom_client.server_function =
   Eliom_client.server_function ~name:"os_date.init_time_rpc"
     [%derive.json: string]
-    init_time_rpc'
+    (fun tz -> initialize tz; Lwt.return_unit)
 
 let%client init_time_rpc = ~%init_time_rpc
+
+let%client auto_init = ref true
+
+let%client disable_auto_init () = auto_init := false
 
 let%client _ =
   (* We wait for the client process to be fully loaded: *)
   Eliom_client.onload (fun () ->
-    Lwt.async (fun () -> init_time_rpc timezone))
+    if !auto_init then Lwt.async (fun () -> init_time_rpc timezone))
 
 
 [%%shared
