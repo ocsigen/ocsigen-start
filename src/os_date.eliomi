@@ -51,6 +51,10 @@ val to_local : ?timezone:string -> CalendarLib.Calendar.t -> local_calendar
     provided.  *)
 val now : ?timezone:string -> unit -> local_calendar
 
+(** You can use [initialize timezone] to communicate the client's
+   timezone to the client when the auto-initialization is disabled *)
+val initialize : string -> unit
+
 [%%client.start]
 
 (** Convert a local calendar to a UTC calendar *)
@@ -61,6 +65,9 @@ val to_local : CalendarLib.Calendar.t -> local_calendar
 
 (** [now ()] returns the current date as a [local_calendar] value. *)
 val now : unit -> local_calendar
+
+(** Disable auto-initialization *)
+val disable_auto_init : unit -> unit
 
 [%%shared.start]
 

@@ -14,10 +14,11 @@ open%client Js_of_ocaml_lwt
    app) early on and subsequent requests from the client will contain
    the proper cookies.
 
-   The RPC is empty by default, but you can add your own actions to be
-   performed server side on first client request, if necessary. *)
-let%server init_request _myid_o () =
-  Lwt.return_unit
+   The RPC only initializes Os_date by default, but you can add your
+   own actions to be performed server side on first client request, if
+   necessary. *)
+let%server init_request _myid_o tz =
+  Os_date.initialize tz; Lwt.return_unit
 
 let%server init_request_rpc : (_, unit) Eliom_client.server_function =
   Eliom_client.server_function ~name:"%%%MODULE_NAME%%%_mobile.init_request"
@@ -62,12 +63,13 @@ let handle_initial_url () =
 
 let () =
   Lwt.async @@ fun () ->
-  if Eliom_client.is_client_app () then
+  if Eliom_client.is_client_app () then begin
     (* Initialize the application server-side; there should be a
        single initial request for that. *)
+    Os_date.disable_auto_init ();
     let%lwt _ = Lwt_js_events.onload () in
     handle_initial_url ()
-  else
+  end else
     Lwt.return_unit
 
 (* Reactivate comet on resume and online events *)
