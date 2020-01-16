@@ -51,7 +51,8 @@ let change_page_uri uri =
   change_page_gen (fun () -> Eliom_client.change_page_uri uri)
 
 let handle_initial_url () =
-  let%lwt () = ~%init_request_rpc () in
+  let tz = Os_date.user_tz () in
+  let%lwt () = ~%init_request_rpc tz in
   let%lwt () = ondeviceready in
   app_started := true;
   match !initial_change_page with
