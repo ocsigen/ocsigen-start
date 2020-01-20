@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "ocsigen-start"
-version: "2.14.0"
+version: "2.15.0"
 authors: "dev@ocsigen.org"
 maintainer: "dev@ocsigen.org"
 synopsis: "An Eliom application skeleton ready to use to build your own application with users, (pre)registration, notifications, etc"
@@ -15,7 +15,6 @@ depends: [
   "ocaml" {>= "4.06.1"}
   "pgocaml" {>= "4.0"}
   "pgocaml_ppx" {>= "4.0"}
-  "macaque" {>= "0.7.4"}
   "safepass" {>= "3.0"}
   "ocsigen-i18n" {>= "3.1.0"}
   "eliom" {>= "6.4.0"}
@@ -28,7 +27,6 @@ depends: [
   "cohttp-lwt-unix"
   "conf-npm" {>= "1"}
   "ocamlnet"
-  "lwt_camlp4"
 ]
 depexts: [
 	["imagemagick" "ruby-sass" "postgresql" "postgresql-common"] {os-family = "debian"}

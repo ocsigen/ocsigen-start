@@ -1,663 +1,3115 @@
-(* Ocsigen-start
- * http://www.ocsigen.org/ocsigen-start
- *
- * Copyright (C) Université Paris Diderot, CNRS, INRIA, Be Sport.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
-
+(* GENERATED CODE, DO NOT EDIT! *)
 include Os_core_db
-
-exception No_such_resource
-exception Wrong_password
-exception Password_not_set
-exception No_such_user
-exception Empty_password
-exception Main_email_removal_attempt
-exception Account_not_activated
-
+exception No_such_resource 
+exception Wrong_password 
+exception Password_not_set 
+exception No_such_user 
+exception Empty_password 
+exception Main_email_removal_attempt 
+exception Account_not_activated 
 let (>>=) = Lwt.bind
-
-module Lwt_thread = struct
-  include Lwt
-  let close_in = Lwt_io.close
-  let really_input = Lwt_io.read_into_exactly
-  let input_binary_int = Lwt_io.BE.read_int
-  let input_char = Lwt_io.read_char
-  let output_string = Lwt_io.write
-  let output_binary_int = Lwt_io.BE.write_int
-  let output_char = Lwt_io.write_char
-  let flush = Lwt_io.flush
-  let open_connection x = Lwt_io.open_connection x
-  type out_channel = Lwt_io.output_channel
-  type in_channel = Lwt_io.input_channel
-end
-
-module Lwt_Query_ = Query.Make_with_Db(Lwt_thread)(PGOCaml)
-
-let view_one rq =
-  try List.hd rq
-  with Failure _ -> raise No_such_resource
-
-let view_one_lwt rq =
-  try_lwt
-    lwt rq = rq in
-    Lwt.return (view_one rq)
-  with No_such_resource -> Lwt.fail No_such_resource
-
-let view_one_opt rq =
-  try_lwt
-    lwt rq = rq in
-    Lwt.return_some ((view_one rq))
-  with No_such_resource -> Lwt.return_none
-
-module Lwt_Query = struct
-  include Lwt_Query_
-  let view_one dbh rq =
-    try_lwt
-      view_one dbh rq
-    with Failure _ -> Lwt.fail No_such_resource
-end
-
-
-(*****************************************************************************)
-(* tables, for Macaque *)
-let os_users_userid_seq = <:sequence< bigserial "ocsigen_start.users_userid_seq" >>
-
-let os_users_table =
-  <:table< ocsigen_start.users (
-       userid bigint NOT NULL DEFAULT(nextval $os_users_userid_seq$),
-       firstname text NOT NULL,
-       lastname text NOT NULL,
-       main_email citext,
-       password text,
-       avatar text,
-       language text
-          ) >>
-
-let os_emails_table =
-  <:table< ocsigen_start.emails (
-       email citext NOT NULL,
-       userid bigint NOT NULL,
-       validated boolean NOT NULL DEFAULT(false)
-           ) >>
-
-let os_phones_table =
-  <:table< ocsigen_start.phones (
-       number citext NOT NULL,
-       userid bigint NOT NULL
-           ) >>
-
-let os_action_link_table :
-  (< .. >,
-   < creationdate : < nul : Sql.non_nullable; .. > Sql.t > Sql.writable)
-    Sql.view =
-  <:table< ocsigen_start.activation (
-       activationkey text NOT NULL,
-       userid bigint NOT NULL,
-       email citext NOT NULL,
-       autoconnect boolean NOT NULL,
-       validity bigint NOT NULL,
-       action text NOT NULL,
-       data text NOT NULL,
-       creationdate timestamptz NOT NULL DEFAULT(current_timestamp ())
-           ) >>
-
-let os_groups_groupid_seq =
-  <:sequence< bigserial "ocsigen_start.groups_groupid_seq" >>
-
-let os_groups_table =
-  <:table< ocsigen_start.groups (
-       groupid bigint NOT NULL DEFAULT(nextval $os_groups_groupid_seq$),
-       name text NOT NULL,
-       description text
-          ) >>
-
-let os_user_groups_table =
-  <:table< ocsigen_start.user_groups (
-       userid bigint NOT NULL,
-       groupid bigint NOT NULL
-          ) >>
-
-let os_preregister_table =
-  <:table< ocsigen_start.preregister (
-       email citext NOT NULL
-          ) >>
-
-
-
-(*****************************************************************************)
-
-module Utils = struct
-
-  let as_sql_string v = <:value< $string:v$>>
-
-  let run_query q = full_transaction_block (fun dbh ->
-    Lwt_Query.query dbh q)
-
-  let run_view ?dbh q =
-    let f dbh = Lwt_Query.view dbh q in
-    match dbh with
-    | Some dbh ->
-      f dbh
-    | None ->
-      full_transaction_block f
-
-  let run_view_opt q = full_transaction_block (fun dbh ->
-    Lwt_Query.view_opt dbh q)
-
-  let one f ~success ~fail q =
-    f q >>= function
-    | r::_ -> success r
-    | _ -> fail
-
-  let password_of d = <:value< $d$.password>>
-
-  let avatar_of d = <:value< $d$.avatar>>
-
-  let language_of d = <:value< $d$.language>>
-
-  let tupple_of_user_sql u =
-    u#!userid, u#!firstname, u#!lastname, u#?avatar, u#?password <> None, u#?language
-
-end
-open Utils
-
-let pwd_crypt_ref = ref
+let one f ~success  ~fail  q =
+  (f q) >>= (function | r::_ -> success r | _ -> fail)
+let pwd_crypt_ref =
+  ref
     ((fun password -> Bcrypt.string_of_hash (Bcrypt.hash password)),
-     (fun _ password1 password2 ->
-        Bcrypt.verify password1 (Bcrypt.hash_of_string password2)))
-
-module Email = struct
-
-  let available email = one run_query
-      ~success:(fun _ -> Lwt.return_false)
-      ~fail:Lwt.return_true
-      <:select< row
-                | row in $os_emails_table$; row2 in $os_users_table$;
-                row.email = $string:email$;
-                row2.userid = row.userid
-      >>
-
-end
-
-module User = struct
-
-  exception Invalid_action_link_key of Os_types.User.id
-
-  let userid_of_email email = one run_view
-    ~success:(fun u -> Lwt.return u#!userid)
-    ~fail:(Lwt.fail No_such_resource)
-    <:view< { t1.userid }
-     | t1 in $os_users_table$;
-       t2 in $os_emails_table$;
-       t1.userid = t2.userid;
-       t2.email = $string:email$
-    >>
-
-  let is_registered email =
-    try_lwt
-      lwt _ = userid_of_email email in
-      Lwt.return_true
-    with No_such_resource -> Lwt.return_false
-
-  let is_email_validated userid email = one run_query
-    ~success:(fun _ -> Lwt.return_true)
-    ~fail:Lwt.return_false
-    <:select< row |
-      row in $os_emails_table$;
-      row.userid = $int64:userid$;
-      row.email  = $string:email$;
-      row.validated
-    >>
-
-  let set_email_validated userid email = run_query
-    <:update< e in $os_emails_table$ := {validated = $bool:true$}
-     | e.userid = $int64:userid$;
-       e.email  = $string:email$
-    >>
-
-  let add_actionlinkkey ?(autoconnect=false)
-      ?(action=`AccountActivation) ?(data="") ?(validity=1L)
-      ~act_key ~userid ~email () =
-    let action = match action with
-      | `AccountActivation -> "activation"
-      | `PasswordReset -> "passwordreset"
-      | `Custom s -> s in
-    run_query
-     <:insert< $os_action_link_table$ :=
-      { userid = $int64:userid$;
-        email  = $string:email$;
-        action = $string:action$;
-        autoconnect = $bool:autoconnect$;
-        data   = $string:data$;
-        validity = $int64:validity$;
-        activationkey  = $string:act_key$;
-        creationdate   = os_action_link_table?creationdate }
-      >>
-
-
-  let add_preregister email = run_query
-  <:insert< $os_preregister_table$ := { email = $string:email$ } >>
-
-  let remove_preregister email = run_query
-    <:delete< r in $os_preregister_table$ | r.email = $string:email$ >>
-
-  let is_preregistered email = one run_view
-    ~success:(fun _ -> Lwt.return_true)
-    ~fail:Lwt.return_false
-    <:view< { r.email }
-     | r in $os_preregister_table$;
-       r.email = $string:email$ >>
-
-  let all ?(limit = 10L) () = run_query
-    <:select< { email = a.email } limit $int64:limit$
-    | a in $os_preregister_table$;
-    >> >>= fun l ->
-    Lwt.return (List.map (fun a -> a#!email) l)
-
-  let create ?password ?avatar ?language ?email ~firstname ~lastname () =
-    if password = Some "" then Lwt.fail_with "empty password"
-    else
-      full_transaction_block (fun dbh ->
-        let password_o = Eliom_lib.Option.map (fun p ->
-          as_sql_string @@ fst !pwd_crypt_ref p) password
-        in
-        let avatar_o = Eliom_lib.Option.map as_sql_string avatar in
-        let language_o = Eliom_lib.Option.map as_sql_string language in
-        let email_o = Eliom_lib.Option.map as_sql_string email in
-        lwt () = Lwt_Query.query dbh
-          <:insert< $os_users_table$ :=
-           { userid     = os_users_table?userid;
-             firstname  = $string:firstname$;
-             lastname   = $string:lastname$;
-             main_email = of_option $email_o$;
-             password   = of_option $password_o$;
-             avatar     = of_option $avatar_o$;
-             language   = of_option $language_o$
-            } >>
-        in
-        lwt userid = Lwt_Query.view_one dbh
-          <:view< {x = currval $os_users_userid_seq$} >>
-        in
-        let userid = userid#!x in
-        lwt () =
-          match email with
-          | Some email ->
-            lwt () =
-              Lwt_Query.query dbh
-                <:insert< $os_emails_table$ :=
-                          { email = $string:email$;
-                          userid  = $int64:userid$;
-                          validated = os_emails_table?validated
-                          } >>
-            in
-            remove_preregister email
-          | None ->
-            Lwt.return_unit
-        in
-        Lwt.return userid
-      )
-
-  let update ?password ?avatar ?language ~firstname ~lastname userid =
-    if password = Some "" then Lwt.fail_with "empty password"
-    else
-      let password = match password with
-        | Some password ->
-          fun _ -> as_sql_string @@ fst !pwd_crypt_ref password
-        | None ->
-          password_of
-      in
-      let avatar = match avatar with
-        | Some avatar ->
-          fun _ -> as_sql_string avatar
-        | None ->
-          avatar_of
-      in
-      let language = match language with
-        | Some language ->
-          fun _ -> as_sql_string language
-        | None ->
-          language_of
-      in
-      run_query <:update< d in $os_users_table$ :=
-       { firstname = $string:firstname$;
-         lastname  = $string:lastname$;
-         password  = $password d$;
-         avatar    = $avatar d$;
-         language  = $language d$;
-       } |
-       d.userid = $int64:userid$
-      >>
-
-  let update_password ~userid ~password =
-    if password = "" then Lwt.fail_with "empty password"
-    else
-      let password = as_sql_string @@ fst !pwd_crypt_ref password in
-      run_query <:update< d in $os_users_table$ :=
-        { password = $password$ }
-        | d.userid = $int64:userid$
-       >>
-
-  let update_avatar ~userid ~avatar = run_query
-    <:update< d in $os_users_table$ :=
-     { avatar = $string:avatar$ }
-     | d.userid = $int64:userid$
-     >>
-
-  let update_main_email ~userid ~email = run_query
-    <:update< u in $os_users_table$ := { main_email = $string:email$ }
-     | e in $os_emails_table$;
-       e.email = $string:email$;
-       u.userid = $int64:userid$;
-       e.userid = u.userid;
-       e.validated
-    >>
-
-  let update_language ~userid ~language = run_query
-    <:update< u in $os_users_table$ := { language = $string:language$ }
-     | u.userid = $int64:userid$
-    >>
-
-  let verify_password ~email ~password =
-    if password = "" then Lwt.fail Empty_password
-    else
-      one run_view <:view<
-        { t1.userid; t1.password; t2.validated }
-        | t1 in $os_users_table$;
-          t2 in $os_emails_table$;
-          t1.userid = t2.userid;
-          t2.email = $string:email$
-        >>
-        ~success:(fun r ->
-          (* We fail for non-validated e-mails,
-             because we don't want the user to log in with a non-validated
-             email address. For example if the sign-up form contains
-             a password field. *)
-          let (userid, password', validated) =
-            (r#!userid, r#?password, r#!validated)
-          in
-          match password' with
-          | Some password' when snd !pwd_crypt_ref userid password password' ->
-            if validated
-            then Lwt.return userid
-            else Lwt.fail Account_not_activated
-          | Some _ -> Lwt.fail Wrong_password
-          | _ -> Lwt.fail Password_not_set)
-        ~fail:(Lwt.fail No_such_user)
-
-  let verify_password_phone ~number ~password =
-    if password = "" then Lwt.fail Empty_password
-    else
-      one run_view <:view<
-        { t1.userid; t1.password }
-        | t1 in $os_users_table$;
-          t2 in $os_phones_table$;
-          t1.userid = t2.userid;
-          t2.number = $string:number$
-        >>
-        ~success:(fun r ->
-          let userid = r#!userid in
-          match r#?password with
-          | Some password' when
-              snd !pwd_crypt_ref userid password password' ->
-            Lwt.return userid
-          | Some _ -> Lwt.fail Wrong_password
-          | _ -> Lwt.fail Password_not_set)
-        ~fail:(Lwt.fail No_such_user)
-
-  let user_of_userid userid = one run_view
-    ~success:(fun r -> Lwt.return @@ tupple_of_user_sql r)
-    ~fail:(Lwt.fail No_such_resource)
-    <:view< t | t in $os_users_table$; t.userid = $int64:userid$ >>
-
-  let get_actionlinkkey_info act_key =
-    full_transaction_block (fun dbh ->
-      one (Lwt_Query.view dbh)
+      (fun _ ->
+         fun password1 ->
+           fun password2 ->
+             Bcrypt.verify password1 (Bcrypt.hash_of_string password2)))
+module Email =
+  struct
+    let available email =
+      one full_transaction_block ~success:(fun _ -> Lwt.return_false)
+        ~fail:Lwt.return_true
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_string)) email)]] in
+              let split =
+                [`Text
+                   "SELECT 1\n             FROM ocsigen_start.emails\n             JOIN ocsigen_start.users USING (userid)\n             WHERE email = ";
+                `Var ("email", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows ->
+                PGOCaml.return
+                  (let original_query =
+                     "SELECT 1\n             FROM ocsigen_start.emails\n             JOIN ocsigen_start.users USING (userid)\n             WHERE email = $email" in
+                   List.rev_map
+                     (fun row ->
+                        match row with
+                        | c0::[] ->
+                            PGOCaml_aux.Option.map
+                              (let open PGOCaml in int32_of_string) c0
+                        | _ ->
+                            let msg =
+                              "ppx_pgsql: internal error: " ^
+                                ("Incorrect number of columns returned from query: "
+                                   ^
+                                   (original_query ^
+                                      (".  Columns are: " ^
+                                         (String.concat "; "
+                                            (List.map
+                                               (function
+                                                | Some str ->
+                                                    Printf.sprintf "%S" str
+                                                | None -> "NULL") row))))) in
+                            raise (PGOCaml.Error msg)) _rows)))
+  end
+module User =
+  struct
+    exception Invalid_action_link_key of Os_types.User.id 
+    let userid_of_email email =
+      one full_transaction_block ~success:(fun userid -> Lwt.return userid)
         ~fail:(Lwt.fail No_such_resource)
-        <:view< t
-                | t in $os_action_link_table$;
-                t.activationkey = $string:act_key$ >>
-        ~success:(fun t ->
-          let userid = t#!userid in
-          let email  = t#!email in
-          let validity = t#!validity in
-          let autoconnect = t#!autoconnect in
-          let action = match t#!action with
-            | "activation" -> `AccountActivation
-            | "passwordreset" -> `PasswordReset
-            | c -> `Custom c in
-          let data = t#!data in
-          let v  = max 0L (Int64.pred validity) in
-          lwt () = Lwt_Query.query dbh
-              <:update< r in $os_action_link_table$ := {validity = $int64:v$} |
-                        r.activationkey = $string:act_key$ >>
-          in
-          Lwt.return
-            Os_types.Action_link_key.{
-              userid;
-              email;
-              validity;
-              action;
-              data;
-              autoconnect
-            }
-        )
-    )
-
-  let emails_of_userid userid =
-    lwt r =
-      run_view
-        <:view< { t2.email }
-                | t1 in $os_users_table$;
-                t2 in $os_emails_table$;
-                t1.userid = t2.userid;
-                t1.userid = $int64:userid$;
-        >>
-    in
-    Lwt.return (List.map (fun a -> a#!email) r)
-
-  let emails_of_userid_with_status userid =
-    lwt r =
-      run_view
-        <:view< { t2.email ; t2.validated }
-                | t1 in $os_users_table$;
-                t2 in $os_emails_table$;
-                t1.userid = t2.userid;
-                t1.userid = $int64:userid$;
-        >>
-    in
-    Lwt.return (List.map (fun a -> a#!email, a#!validated) r)
-
-  let email_of_userid userid = one run_view
-    ~success:(fun u -> Lwt.return u#?main_email)
-    ~fail:(Lwt.fail No_such_resource)
-    <:view< { u.main_email }
-     | u in $os_users_table$;
-       u.userid = $int64:userid$
-    >>
-
-   let is_main_email ~userid ~email = one run_view
-     ~success:(fun _ -> Lwt.return_true)
-     ~fail:Lwt.return_false
-     <:view< { u.main_email }
-      | u in $os_users_table$;
-        u.userid = $int64:userid$;
-        u.main_email = $string:email$
-     >>
-
-  let add_email_to_user ~userid ~email = run_query
-    <:insert< $os_emails_table$ :=
-      { email = $string:email$;
-        userid  = $int64:userid$;
-        validated = os_emails_table?validated
-      } >>
-
-  let remove_email_from_user ~userid ~email =
-    lwt b = is_main_email ~userid ~email in
-    if b then Lwt.fail Main_email_removal_attempt else
-      run_query
-        <:delete< e in $os_emails_table$
-         | u in $os_users_table$;
-           u.userid = $int64:userid$;
-           e.userid = u.userid;
-           e.email = $string:email$
-        >>
-
-  let get_language userid = one run_view
-    ~success:(fun u -> Lwt.return u#?language)
-    ~fail:(Lwt.fail No_such_resource)
-    <:view< { u.language }
-     | u in $os_users_table$;
-       u.userid = $int64:userid$
-    >>
-
-  let get_users ?pattern () =
-    full_transaction_block (fun dbh ->
-      match pattern with
-      | None ->
-        lwt l = Lwt_Query.view dbh <:view< r | r in $os_users_table$ >> in
-        Lwt.return @@ List.map tupple_of_user_sql l
-      | Some pattern ->
-        let pattern = "(^"^pattern^")|(.* "^pattern^")" in
-        (* Here I'm using the low-level pgocaml interface
-           because macaque is missing some features
-           and I cannot use pgocaml syntax extension because
-           it requires the db to be created (which is impossible in a lib). *)
-        let query = "
-             SELECT userid, firstname, lastname, avatar, password, language
-             FROM ocsigen_start.users
-             WHERE
-               firstname <> '' -- avoids email addresses
-             AND CONCAT_WS(' ', firstname, lastname) ~* $1
-         "
-        in
-        lwt () = PGOCaml.prepare dbh ~query () in
-        lwt l = PGOCaml.execute dbh [Some pattern] () in
-        lwt () = PGOCaml.close_statement dbh () in
-        Lwt.return (List.map
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_string)) email)]] in
+              let split =
+                [`Text
+                   "SELECT userid\n           FROM ocsigen_start.users JOIN ocsigen_start.emails USING (userid)\n           WHERE email = ";
+                `Var ("email", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows ->
+                PGOCaml.return
+                  (let original_query =
+                     "SELECT userid\n           FROM ocsigen_start.users JOIN ocsigen_start.emails USING (userid)\n           WHERE email = $email" in
+                   List.rev_map
+                     (fun row ->
+                        match row with
+                        | c0::[] ->
+                            (let open PGOCaml in int64_of_string)
+                              (try PGOCaml_aux.Option.get c0
+                               with
+                               | _ ->
+                                   failwith
+                                     "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")
+                        | _ ->
+                            let msg =
+                              "ppx_pgsql: internal error: " ^
+                                ("Incorrect number of columns returned from query: "
+                                   ^
+                                   (original_query ^
+                                      (".  Columns are: " ^
+                                         (String.concat "; "
+                                            (List.map
+                                               (function
+                                                | Some str ->
+                                                    Printf.sprintf "%S" str
+                                                | None -> "NULL") row))))) in
+                            raise (PGOCaml.Error msg)) _rows)))
+    let is_registered email =
+      [%lwt
+        try [%lwt let _ = userid_of_email email in Lwt.return_true]
+        with | No_such_resource -> Lwt.return_false]
+    let is_email_validated userid email =
+      one full_transaction_block ~success:(fun _ -> Lwt.return_true)
+        ~fail:Lwt.return_false
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_int64)) userid)];
+                [Some (((let open PGOCaml in string_of_string)) email)]] in
+              let split =
+                [`Text
+                   "SELECT 1 FROM ocsigen_start.emails\n           WHERE userid = ";
+                `Var ("userid", false, false);
+                `Text " AND email = ";
+                `Var ("email", false, false);
+                `Text " AND validated"] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows ->
+                PGOCaml.return
+                  (let original_query =
+                     "SELECT 1 FROM ocsigen_start.emails\n           WHERE userid = $userid AND email = $email AND validated" in
+                   List.rev_map
+                     (fun row ->
+                        match row with
+                        | c0::[] ->
+                            PGOCaml_aux.Option.map
+                              (let open PGOCaml in int32_of_string) c0
+                        | _ ->
+                            let msg =
+                              "ppx_pgsql: internal error: " ^
+                                ("Incorrect number of columns returned from query: "
+                                   ^
+                                   (original_query ^
+                                      (".  Columns are: " ^
+                                         (String.concat "; "
+                                            (List.map
+                                               (function
+                                                | Some str ->
+                                                    Printf.sprintf "%S" str
+                                                | None -> "NULL") row))))) in
+                            raise (PGOCaml.Error msg)) _rows)))
+    let set_email_validated userid email =
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_int64)) userid)];
+                [Some (((let open PGOCaml in string_of_string)) email)]] in
+              let split =
+                [`Text
+                   "UPDATE ocsigen_start.emails SET validated = true\n         WHERE userid = ";
+                `Var ("userid", false, false);
+                `Text " AND email = ";
+                `Var ("email", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows -> PGOCaml.return ()))
+    let add_actionlinkkey ?(autoconnect= false)  ?(action=
+      `AccountActivation)  ?(data= "")  ?(validity= 1L)  ~act_key  ~userid 
+      ~email  () =
+      let action =
+        match action with
+        | `AccountActivation -> "activation"
+        | `PasswordReset -> "passwordreset"
+        | `Custom s -> s in
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_int64)) userid)];
+                [Some (((let open PGOCaml in string_of_string)) email)];
+                [Some (((let open PGOCaml in string_of_string)) action)];
+                [Some (((let open PGOCaml in string_of_bool)) autoconnect)];
+                [Some (((let open PGOCaml in string_of_string)) data)];
+                [Some (((let open PGOCaml in string_of_int64)) validity)];
+                [Some (((let open PGOCaml in string_of_string)) act_key)]] in
+              let split =
+                [`Text
+                   "INSERT INTO ocsigen_start.activation\n           (userid, email, action, autoconnect, data,\n            validity, activationkey)\n         VALUES (";
+                `Var ("userid", false, false);
+                `Text ", ";
+                `Var ("email", false, false);
+                `Text ", ";
+                `Var ("action", false, false);
+                `Text ", ";
+                `Var ("autoconnect", false, false);
+                `Text ", ";
+                `Var ("data", false, false);
+                `Text ",\n                 ";
+                `Var ("validity", false, false);
+                `Text ", ";
+                `Var ("act_key", false, false);
+                `Text ")"] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows -> PGOCaml.return ()))
+    let add_preregister email =
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_string)) email)]] in
+              let split =
+                [`Text
+                   "INSERT INTO ocsigen_start.preregister (email) VALUES (";
+                `Var ("email", false, false);
+                `Text ")"] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows -> PGOCaml.return ()))
+    let remove_preregister email =
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_string)) email)]] in
+              let split =
+                [`Text "DELETE FROM ocsigen_start.preregister WHERE email = ";
+                `Var ("email", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows -> PGOCaml.return ()))
+    let is_preregistered email =
+      one full_transaction_block ~success:(fun _ -> Lwt.return_true)
+        ~fail:Lwt.return_false
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_string)) email)]] in
+              let split =
+                [`Text
+                   "SELECT 1 FROM ocsigen_start.preregister WHERE email = ";
+                `Var ("email", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows ->
+                PGOCaml.return
+                  (let original_query =
+                     "SELECT 1 FROM ocsigen_start.preregister WHERE email = $email" in
+                   List.rev_map
+                     (fun row ->
+                        match row with
+                        | c0::[] ->
+                            PGOCaml_aux.Option.map
+                              (let open PGOCaml in int32_of_string) c0
+                        | _ ->
+                            let msg =
+                              "ppx_pgsql: internal error: " ^
+                                ("Incorrect number of columns returned from query: "
+                                   ^
+                                   (original_query ^
+                                      (".  Columns are: " ^
+                                         (String.concat "; "
+                                            (List.map
+                                               (function
+                                                | Some str ->
+                                                    Printf.sprintf "%S" str
+                                                | None -> "NULL") row))))) in
+                            raise (PGOCaml.Error msg)) _rows)))
+    let all ?(limit= 10L)  () =
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_int64)) limit)]] in
+              let split =
+                [`Text "SELECT email FROM ocsigen_start.preregister LIMIT ";
+                `Var ("limit", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows ->
+                PGOCaml.return
+                  (let original_query =
+                     "SELECT email FROM ocsigen_start.preregister LIMIT $limit" in
+                   List.rev_map
+                     (fun row ->
+                        match row with
+                        | c0::[] ->
+                            (let open PGOCaml in string_of_string)
+                              (try PGOCaml_aux.Option.get c0
+                               with
+                               | _ ->
+                                   failwith
+                                     "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")
+                        | _ ->
+                            let msg =
+                              "ppx_pgsql: internal error: " ^
+                                ("Incorrect number of columns returned from query: "
+                                   ^
+                                   (original_query ^
+                                      (".  Columns are: " ^
+                                         (String.concat "; "
+                                            (List.map
+                                               (function
+                                                | Some str ->
+                                                    Printf.sprintf "%S" str
+                                                | None -> "NULL") row))))) in
+                            raise (PGOCaml.Error msg)) _rows)))
+    let create ?password  ?avatar  ?language  ?email  ~firstname  ~lastname 
+      () =
+      if password = (Some "")
+      then Lwt.fail_with "empty password"
+      else
+        full_transaction_block
+          (fun dbh ->
+             let password_o =
+               Eliom_lib.Option.map (fun p -> fst (!pwd_crypt_ref) p)
+                 password in
+             [%lwt
+               let userid =
+                 [%lwt
+                   match PGOCaml.bind
+                           (let dbh = dbh in
+                            let params : string option list list =
+                              [[Some
+                                  (((let open PGOCaml in string_of_string))
+                                     firstname)];
+                              [Some
+                                 (((let open PGOCaml in string_of_string))
+                                    lastname)];
+                              [PGOCaml_aux.Option.map
+                                 (let open PGOCaml in string_of_string) email];
+                              [PGOCaml_aux.Option.map
+                                 (let open PGOCaml in string_of_string)
+                                 password_o];
+                              [PGOCaml_aux.Option.map
+                                 (let open PGOCaml in string_of_string)
+                                 avatar];
+                              [PGOCaml_aux.Option.map
+                                 (let open PGOCaml in string_of_string)
+                                 language]] in
+                            let split =
+                              [`Text
+                                 "INSERT INTO ocsigen_start.users\n                   (firstname, lastname, main_email, password, avatar, language)\n                 VALUES (";
+                              `Var ("firstname", false, false);
+                              `Text ", ";
+                              `Var ("lastname", false, false);
+                              `Text ", ";
+                              `Var ("email", false, true);
+                              `Text ",\n                         ";
+                              `Var ("password_o", false, true);
+                              `Text ", ";
+                              `Var ("avatar", false, true);
+                              `Text ",  ";
+                              `Var ("language", false, true);
+                              `Text ")\n                 RETURNING userid"] in
+                            let i = ref 0 in
+                            let j = ref 0 in
+                            let query =
+                              String.concat ""
+                                (List.map
+                                   (function
+                                    | `Text text -> text
+                                    | `Var (_varname, false, _) ->
+                                        let () = incr i in
+                                        let () = incr j in
+                                        "$" ^ (string_of_int j.contents)
+                                    | `Var (_varname, true, _) ->
+                                        let param =
+                                          List.nth params i.contents in
+                                        let () = incr i in
+                                        "(" ^
+                                          ((String.concat ","
+                                              (List.map
+                                                 (fun _ ->
+                                                    let () = incr j in
+                                                    "$" ^
+                                                      (string_of_int
+                                                         j.contents)) param))
+                                             ^ ")")) split) in
+                            let params = List.flatten params in
+                            let name =
+                              "ppx_pgsql." ^
+                                (Digest.to_hex (Digest.string query)) in
+                            let hash =
+                              try PGOCaml.private_data dbh
+                              with
+                              | Not_found ->
+                                  let hash = Hashtbl.create 17 in
+                                  (PGOCaml.set_private_data dbh hash; hash) in
+                            let is_prepared = Hashtbl.mem hash name in
+                            PGOCaml.bind
+                              (if not is_prepared
+                               then
+                                 PGOCaml.bind
+                                   (PGOCaml.prepare dbh ~name ~query ())
+                                   (fun () ->
+                                      Hashtbl.add hash name true;
+                                      PGOCaml.return ())
+                               else PGOCaml.return ())
+                              (fun () ->
+                                 PGOCaml.execute_rev dbh ~name ~params ()))
+                           (fun _rows ->
+                              PGOCaml.return
+                                (let original_query =
+                                   "INSERT INTO ocsigen_start.users\n                   (firstname, lastname, main_email, password, avatar, language)\n                 VALUES ($firstname, $lastname, $?email,\n                         $?password_o, $?avatar,  $?language)\n                 RETURNING userid" in
+                                 List.rev_map
+                                   (fun row ->
+                                      match row with
+                                      | c0::[] ->
+                                          (let open PGOCaml in
+                                             int64_of_string)
+                                            (try PGOCaml_aux.Option.get c0
+                                             with
+                                             | _ ->
+                                                 failwith
+                                                   "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")
+                                      | _ ->
+                                          let msg =
+                                            "ppx_pgsql: internal error: " ^
+                                              ("Incorrect number of columns returned from query: "
+                                                 ^
+                                                 (original_query ^
+                                                    (".  Columns are: " ^
+                                                       (String.concat "; "
+                                                          (List.map
+                                                             (function
+                                                              | Some str ->
+                                                                  Printf.sprintf
+                                                                    "%S" str
+                                                              | None ->
+                                                                  "NULL") row))))) in
+                                          raise (PGOCaml.Error msg)) _rows))
+                   with
+                   | userid::[] -> Lwt.return userid
+                   | _ -> assert false] in
+               [%lwt
+                 let () =
+                   match email with
+                   | Some email ->
+                       [%lwt
+                         let () =
+                           PGOCaml.bind
+                             (let dbh = dbh in
+                              let params : string option list list =
+                                [[Some
+                                    (((let open PGOCaml in string_of_string))
+                                       email)];
+                                [Some
+                                   (((let open PGOCaml in string_of_int64))
+                                      userid)]] in
+                              let split =
+                                [`Text
+                                   "INSERT INTO ocsigen_start.emails (email, userid)\n                   VALUES (";
+                                `Var ("email", false, false);
+                                `Text ", ";
+                                `Var ("userid", false, false);
+                                `Text ")"] in
+                              let i = ref 0 in
+                              let j = ref 0 in
+                              let query =
+                                String.concat ""
+                                  (List.map
+                                     (function
+                                      | `Text text -> text
+                                      | `Var (_varname, false, _) ->
+                                          let () = incr i in
+                                          let () = incr j in
+                                          "$" ^ (string_of_int j.contents)
+                                      | `Var (_varname, true, _) ->
+                                          let param =
+                                            List.nth params i.contents in
+                                          let () = incr i in
+                                          "(" ^
+                                            ((String.concat ","
+                                                (List.map
+                                                   (fun _ ->
+                                                      let () = incr j in
+                                                      "$" ^
+                                                        (string_of_int
+                                                           j.contents)) param))
+                                               ^ ")")) split) in
+                              let params = List.flatten params in
+                              let name =
+                                "ppx_pgsql." ^
+                                  (Digest.to_hex (Digest.string query)) in
+                              let hash =
+                                try PGOCaml.private_data dbh
+                                with
+                                | Not_found ->
+                                    let hash = Hashtbl.create 17 in
+                                    (PGOCaml.set_private_data dbh hash; hash) in
+                              let is_prepared = Hashtbl.mem hash name in
+                              PGOCaml.bind
+                                (if not is_prepared
+                                 then
+                                   PGOCaml.bind
+                                     (PGOCaml.prepare dbh ~name ~query ())
+                                     (fun () ->
+                                        Hashtbl.add hash name true;
+                                        PGOCaml.return ())
+                                 else PGOCaml.return ())
+                                (fun () ->
+                                   PGOCaml.execute_rev dbh ~name ~params ()))
+                             (fun _rows -> PGOCaml.return ()) in
+                         remove_preregister email]
+                   | None -> Lwt.return_unit in
+                 Lwt.return userid]])
+    let update ?password  ?avatar  ?language  ~firstname  ~lastname  userid =
+      if password = (Some "")
+      then Lwt.fail_with "empty password"
+      else
+        (let password =
+           match password with
+           | Some password -> Some (fst (!pwd_crypt_ref) password)
+           | None -> None in
+         full_transaction_block @@
+           (fun dbh ->
+              PGOCaml.bind
+                (let dbh = dbh in
+                 let params : string option list list =
+                   [[Some
+                       (((let open PGOCaml in string_of_string)) firstname)];
+                   [Some (((let open PGOCaml in string_of_string)) lastname)];
+                   [PGOCaml_aux.Option.map
+                      (let open PGOCaml in string_of_string) password];
+                   [PGOCaml_aux.Option.map
+                      (let open PGOCaml in string_of_string) avatar];
+                   [PGOCaml_aux.Option.map
+                      (let open PGOCaml in string_of_string) language];
+                   [Some (((let open PGOCaml in string_of_int64)) userid)]] in
+                 let split =
+                   [`Text
+                      "UPDATE ocsigen_start.users\n           SET firstname = ";
+                   `Var ("firstname", false, false);
+                   `Text ",\n               lastname = ";
+                   `Var ("lastname", false, false);
+                   `Text ",\n               password = COALESCE(";
+                   `Var ("password", false, true);
+                   `Text ", password),\n               avatar = COALESCE(";
+                   `Var ("avatar", false, true);
+                   `Text ", avatar),\n               language = COALESCE(";
+                   `Var ("language", false, true);
+                   `Text ", language)\n           WHERE userid = ";
+                   `Var ("userid", false, false)] in
+                 let i = ref 0 in
+                 let j = ref 0 in
+                 let query =
+                   String.concat ""
+                     (List.map
+                        (function
+                         | `Text text -> text
+                         | `Var (_varname, false, _) ->
+                             let () = incr i in
+                             let () = incr j in
+                             "$" ^ (string_of_int j.contents)
+                         | `Var (_varname, true, _) ->
+                             let param = List.nth params i.contents in
+                             let () = incr i in
+                             "(" ^
+                               ((String.concat ","
+                                   (List.map
+                                      (fun _ ->
+                                         let () = incr j in
+                                         "$" ^ (string_of_int j.contents))
+                                      param))
+                                  ^ ")")) split) in
+                 let params = List.flatten params in
+                 let name =
+                   "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+                 let hash =
+                   try PGOCaml.private_data dbh
+                   with
+                   | Not_found ->
+                       let hash = Hashtbl.create 17 in
+                       (PGOCaml.set_private_data dbh hash; hash) in
+                 let is_prepared = Hashtbl.mem hash name in
+                 PGOCaml.bind
+                   (if not is_prepared
+                    then
+                      PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                        (fun () ->
+                           Hashtbl.add hash name true; PGOCaml.return ())
+                    else PGOCaml.return ())
+                   (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+                (fun _rows -> PGOCaml.return ())))
+    let update_password ~userid  ~password  =
+      if password = ""
+      then Lwt.fail_with "empty password"
+      else
+        (let password = fst (!pwd_crypt_ref) password in
+         full_transaction_block @@
+           (fun dbh ->
+              PGOCaml.bind
+                (let dbh = dbh in
+                 let params : string option list list =
+                   [[Some (((let open PGOCaml in string_of_string)) password)];
+                   [Some (((let open PGOCaml in string_of_int64)) userid)]] in
+                 let split =
+                   [`Text "UPDATE ocsigen_start.users SET password = ";
+                   `Var ("password", false, false);
+                   `Text "\n           WHERE userid = ";
+                   `Var ("userid", false, false)] in
+                 let i = ref 0 in
+                 let j = ref 0 in
+                 let query =
+                   String.concat ""
+                     (List.map
+                        (function
+                         | `Text text -> text
+                         | `Var (_varname, false, _) ->
+                             let () = incr i in
+                             let () = incr j in
+                             "$" ^ (string_of_int j.contents)
+                         | `Var (_varname, true, _) ->
+                             let param = List.nth params i.contents in
+                             let () = incr i in
+                             "(" ^
+                               ((String.concat ","
+                                   (List.map
+                                      (fun _ ->
+                                         let () = incr j in
+                                         "$" ^ (string_of_int j.contents))
+                                      param))
+                                  ^ ")")) split) in
+                 let params = List.flatten params in
+                 let name =
+                   "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+                 let hash =
+                   try PGOCaml.private_data dbh
+                   with
+                   | Not_found ->
+                       let hash = Hashtbl.create 17 in
+                       (PGOCaml.set_private_data dbh hash; hash) in
+                 let is_prepared = Hashtbl.mem hash name in
+                 PGOCaml.bind
+                   (if not is_prepared
+                    then
+                      PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                        (fun () ->
+                           Hashtbl.add hash name true; PGOCaml.return ())
+                    else PGOCaml.return ())
+                   (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+                (fun _rows -> PGOCaml.return ())))
+    let update_avatar ~userid  ~avatar  =
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_string)) avatar)];
+                [Some (((let open PGOCaml in string_of_int64)) userid)]] in
+              let split =
+                [`Text "UPDATE ocsigen_start.users SET avatar = ";
+                `Var ("avatar", false, false);
+                `Text "\n         WHERE userid = ";
+                `Var ("userid", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows -> PGOCaml.return ()))
+    let update_main_email ~userid  ~email  =
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_string)) email)];
+                [Some (((let open PGOCaml in string_of_int64)) userid)]] in
+              let split =
+                [`Text
+                   "UPDATE ocsigen_start.users u SET main_email = e.email\n         FROM ocsigen_start.emails e\n         WHERE e.email = ";
+                `Var ("email", false, false);
+                `Text " AND u.userid = ";
+                `Var ("userid", false, false);
+                `Text "\n           AND e.userid = u.userid AND e.validated"] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows -> PGOCaml.return ()))
+    let update_language ~userid  ~language  =
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_string)) language)];
+                [Some (((let open PGOCaml in string_of_int64)) userid)]] in
+              let split =
+                [`Text "UPDATE ocsigen_start.users SET language = ";
+                `Var ("language", false, false);
+                `Text "\n         WHERE userid = ";
+                `Var ("userid", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows -> PGOCaml.return ()))
+    let verify_password ~email  ~password  =
+      if password = ""
+      then Lwt.fail Empty_password
+      else
+        one full_transaction_block
+          (fun dbh ->
+             PGOCaml.bind
+               (let dbh = dbh in
+                let params : string option list list =
+                  [[Some (((let open PGOCaml in string_of_string)) email)]] in
+                let split =
+                  [`Text
+                     "SELECT userid, password, validated\n               FROM ocsigen_start.users\n               JOIN ocsigen_start.emails USING (userid)\n               WHERE email = ";
+                  `Var ("email", false, false)] in
+                let i = ref 0 in
+                let j = ref 0 in
+                let query =
+                  String.concat ""
+                    (List.map
+                       (function
+                        | `Text text -> text
+                        | `Var (_varname, false, _) ->
+                            let () = incr i in
+                            let () = incr j in
+                            "$" ^ (string_of_int j.contents)
+                        | `Var (_varname, true, _) ->
+                            let param = List.nth params i.contents in
+                            let () = incr i in
+                            "(" ^
+                              ((String.concat ","
+                                  (List.map
+                                     (fun _ ->
+                                        let () = incr j in
+                                        "$" ^ (string_of_int j.contents))
+                                     param))
+                                 ^ ")")) split) in
+                let params = List.flatten params in
+                let name =
+                  "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+                let hash =
+                  try PGOCaml.private_data dbh
+                  with
+                  | Not_found ->
+                      let hash = Hashtbl.create 17 in
+                      (PGOCaml.set_private_data dbh hash; hash) in
+                let is_prepared = Hashtbl.mem hash name in
+                PGOCaml.bind
+                  (if not is_prepared
+                   then
+                     PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                       (fun () ->
+                          Hashtbl.add hash name true; PGOCaml.return ())
+                   else PGOCaml.return ())
+                  (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+               (fun _rows ->
+                  PGOCaml.return
+                    (let original_query =
+                       "SELECT userid, password, validated\n               FROM ocsigen_start.users\n               JOIN ocsigen_start.emails USING (userid)\n               WHERE email = $email" in
+                     List.rev_map
+                       (fun row ->
+                          match row with
+                          | c0::c1::c2::[] ->
+                              (((let open PGOCaml in int64_of_string)
+                                  (try PGOCaml_aux.Option.get c0
+                                   with
+                                   | _ ->
+                                       failwith
+                                         "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                (PGOCaml_aux.Option.map
+                                   (let open PGOCaml in string_of_string) c1),
+                                ((let open PGOCaml in bool_of_string)
+                                   (try PGOCaml_aux.Option.get c2
+                                    with
+                                    | _ ->
+                                        failwith
+                                          "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")))
+                          | _ ->
+                              let msg =
+                                "ppx_pgsql: internal error: " ^
+                                  ("Incorrect number of columns returned from query: "
+                                     ^
+                                     (original_query ^
+                                        (".  Columns are: " ^
+                                           (String.concat "; "
+                                              (List.map
+                                                 (function
+                                                  | Some str ->
+                                                      Printf.sprintf "%S" str
+                                                  | None -> "NULL") row))))) in
+                              raise (PGOCaml.Error msg)) _rows)))
+          ~success:(fun (userid, password', validated) ->
+                      match password' with
+                      | Some password' when
+                          snd (!pwd_crypt_ref) userid password password' ->
+                          if validated
+                          then Lwt.return userid
+                          else Lwt.fail Account_not_activated
+                      | Some _ -> Lwt.fail Wrong_password
+                      | _ -> Lwt.fail Password_not_set)
+          ~fail:(Lwt.fail No_such_user)
+    let verify_password_phone ~number  ~password  =
+      if password = ""
+      then Lwt.fail Empty_password
+      else
+        one full_transaction_block
+          (fun dbh ->
+             PGOCaml.bind
+               (let dbh = dbh in
+                let params : string option list list =
+                  [[Some (((let open PGOCaml in string_of_string)) number)]] in
+                let split =
+                  [`Text
+                     "SELECT userid, password\n               FROM ocsigen_start.users\n               JOIN ocsigen_start.phones USING (userid)\n               WHERE number = ";
+                  `Var ("number", false, false)] in
+                let i = ref 0 in
+                let j = ref 0 in
+                let query =
+                  String.concat ""
+                    (List.map
+                       (function
+                        | `Text text -> text
+                        | `Var (_varname, false, _) ->
+                            let () = incr i in
+                            let () = incr j in
+                            "$" ^ (string_of_int j.contents)
+                        | `Var (_varname, true, _) ->
+                            let param = List.nth params i.contents in
+                            let () = incr i in
+                            "(" ^
+                              ((String.concat ","
+                                  (List.map
+                                     (fun _ ->
+                                        let () = incr j in
+                                        "$" ^ (string_of_int j.contents))
+                                     param))
+                                 ^ ")")) split) in
+                let params = List.flatten params in
+                let name =
+                  "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+                let hash =
+                  try PGOCaml.private_data dbh
+                  with
+                  | Not_found ->
+                      let hash = Hashtbl.create 17 in
+                      (PGOCaml.set_private_data dbh hash; hash) in
+                let is_prepared = Hashtbl.mem hash name in
+                PGOCaml.bind
+                  (if not is_prepared
+                   then
+                     PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                       (fun () ->
+                          Hashtbl.add hash name true; PGOCaml.return ())
+                   else PGOCaml.return ())
+                  (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+               (fun _rows ->
+                  PGOCaml.return
+                    (let original_query =
+                       "SELECT userid, password\n               FROM ocsigen_start.users\n               JOIN ocsigen_start.phones USING (userid)\n               WHERE number = $number" in
+                     List.rev_map
+                       (fun row ->
+                          match row with
+                          | c0::c1::[] ->
+                              (((let open PGOCaml in int64_of_string)
+                                  (try PGOCaml_aux.Option.get c0
+                                   with
+                                   | _ ->
+                                       failwith
+                                         "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                (PGOCaml_aux.Option.map
+                                   (let open PGOCaml in string_of_string) c1))
+                          | _ ->
+                              let msg =
+                                "ppx_pgsql: internal error: " ^
+                                  ("Incorrect number of columns returned from query: "
+                                     ^
+                                     (original_query ^
+                                        (".  Columns are: " ^
+                                           (String.concat "; "
+                                              (List.map
+                                                 (function
+                                                  | Some str ->
+                                                      Printf.sprintf "%S" str
+                                                  | None -> "NULL") row))))) in
+                              raise (PGOCaml.Error msg)) _rows)))
+          ~success:(fun (userid, password') ->
+                      match password' with
+                      | Some password' when
+                          snd (!pwd_crypt_ref) userid password password' ->
+                          Lwt.return userid
+                      | Some _ -> Lwt.fail Wrong_password
+                      | _ -> Lwt.fail Password_not_set)
+          ~fail:(Lwt.fail No_such_user)
+    let user_of_userid userid =
+      one full_transaction_block
+        ~success:(fun
+                    (userid, firstname, lastname, avatar, has_password,
+                     language)
+                    ->
+                    Lwt.return
+                      (userid, firstname, lastname, avatar,
+                        (has_password = (Some true)), language))
+        ~fail:(Lwt.fail No_such_resource)
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_int64)) userid)]] in
+              let split =
+                [`Text
+                   "SELECT userid, firstname, lastname, avatar,\n                  password IS NOT NULL, language\n           FROM ocsigen_start.users WHERE userid = ";
+                `Var ("userid", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows ->
+                PGOCaml.return
+                  (let original_query =
+                     "SELECT userid, firstname, lastname, avatar,\n                  password IS NOT NULL, language\n           FROM ocsigen_start.users WHERE userid = $userid" in
+                   List.rev_map
+                     (fun row ->
+                        match row with
+                        | c0::c1::c2::c3::c4::c5::[] ->
+                            (((let open PGOCaml in int64_of_string)
+                                (try PGOCaml_aux.Option.get c0
+                                 with
+                                 | _ ->
+                                     failwith
+                                       "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                              ((let open PGOCaml in string_of_string)
+                                 (try PGOCaml_aux.Option.get c1
+                                  with
+                                  | _ ->
+                                      failwith
+                                        "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                              ((let open PGOCaml in string_of_string)
+                                 (try PGOCaml_aux.Option.get c2
+                                  with
+                                  | _ ->
+                                      failwith
+                                        "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                              (PGOCaml_aux.Option.map
+                                 (let open PGOCaml in string_of_string) c3),
+                              (PGOCaml_aux.Option.map
+                                 (let open PGOCaml in bool_of_string) c4),
+                              (PGOCaml_aux.Option.map
+                                 (let open PGOCaml in string_of_string) c5))
+                        | _ ->
+                            let msg =
+                              "ppx_pgsql: internal error: " ^
+                                ("Incorrect number of columns returned from query: "
+                                   ^
+                                   (original_query ^
+                                      (".  Columns are: " ^
+                                         (String.concat "; "
+                                            (List.map
+                                               (function
+                                                | Some str ->
+                                                    Printf.sprintf "%S" str
+                                                | None -> "NULL") row))))) in
+                            raise (PGOCaml.Error msg)) _rows)))
+    let get_actionlinkkey_info act_key =
+      full_transaction_block
+        (fun dbh ->
+           one (fun q -> q dbh) ~fail:(Lwt.fail No_such_resource)
+             (fun dbh ->
+                PGOCaml.bind
+                  (let dbh = dbh in
+                   let params : string option list list =
+                     [[Some
+                         (((let open PGOCaml in string_of_string)) act_key)]] in
+                   let split =
+                     [`Text
+                        "SELECT userid, email, validity, autoconnect, action, data\n               FROM ocsigen_start.activation\n               WHERE activationkey = ";
+                     `Var ("act_key", false, false)] in
+                   let i = ref 0 in
+                   let j = ref 0 in
+                   let query =
+                     String.concat ""
+                       (List.map
+                          (function
+                           | `Text text -> text
+                           | `Var (_varname, false, _) ->
+                               let () = incr i in
+                               let () = incr j in
+                               "$" ^ (string_of_int j.contents)
+                           | `Var (_varname, true, _) ->
+                               let param = List.nth params i.contents in
+                               let () = incr i in
+                               "(" ^
+                                 ((String.concat ","
+                                     (List.map
+                                        (fun _ ->
+                                           let () = incr j in
+                                           "$" ^ (string_of_int j.contents))
+                                        param))
+                                    ^ ")")) split) in
+                   let params = List.flatten params in
+                   let name =
+                     "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+                   let hash =
+                     try PGOCaml.private_data dbh
+                     with
+                     | Not_found ->
+                         let hash = Hashtbl.create 17 in
+                         (PGOCaml.set_private_data dbh hash; hash) in
+                   let is_prepared = Hashtbl.mem hash name in
+                   PGOCaml.bind
+                     (if not is_prepared
+                      then
+                        PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                          (fun () ->
+                             Hashtbl.add hash name true; PGOCaml.return ())
+                      else PGOCaml.return ())
+                     (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+                  (fun _rows ->
+                     PGOCaml.return
+                       (let original_query =
+                          "SELECT userid, email, validity, autoconnect, action, data\n               FROM ocsigen_start.activation\n               WHERE activationkey = $act_key" in
+                        List.rev_map
+                          (fun row ->
+                             match row with
+                             | c0::c1::c2::c3::c4::c5::[] ->
+                                 (((let open PGOCaml in int64_of_string)
+                                     (try PGOCaml_aux.Option.get c0
+                                      with
+                                      | _ ->
+                                          failwith
+                                            "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                   ((let open PGOCaml in string_of_string)
+                                      (try PGOCaml_aux.Option.get c1
+                                       with
+                                       | _ ->
+                                           failwith
+                                             "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                   ((let open PGOCaml in int64_of_string)
+                                      (try PGOCaml_aux.Option.get c2
+                                       with
+                                       | _ ->
+                                           failwith
+                                             "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                   ((let open PGOCaml in bool_of_string)
+                                      (try PGOCaml_aux.Option.get c3
+                                       with
+                                       | _ ->
+                                           failwith
+                                             "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                   ((let open PGOCaml in string_of_string)
+                                      (try PGOCaml_aux.Option.get c4
+                                       with
+                                       | _ ->
+                                           failwith
+                                             "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                   ((let open PGOCaml in string_of_string)
+                                      (try PGOCaml_aux.Option.get c5
+                                       with
+                                       | _ ->
+                                           failwith
+                                             "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")))
+                             | _ ->
+                                 let msg =
+                                   "ppx_pgsql: internal error: " ^
+                                     ("Incorrect number of columns returned from query: "
+                                        ^
+                                        (original_query ^
+                                           (".  Columns are: " ^
+                                              (String.concat "; "
+                                                 (List.map
+                                                    (function
+                                                     | Some str ->
+                                                         Printf.sprintf "%S"
+                                                           str
+                                                     | None -> "NULL") row))))) in
+                                 raise (PGOCaml.Error msg)) _rows)))
+             ~success:(fun
+                         (userid, email, validity, autoconnect, action, data)
+                         ->
+                         let action =
+                           match action with
+                           | "activation" -> `AccountActivation
+                           | "passwordreset" -> `PasswordReset
+                           | c -> `Custom c in
+                         let v = max 0L (Int64.pred validity) in
+                         [%lwt
+                           let () =
+                             PGOCaml.bind
+                               (let dbh = dbh in
+                                let params : string option list list =
+                                  [[Some
+                                      (((let open PGOCaml in string_of_int64))
+                                         v)];
+                                  [Some
+                                     (((let open PGOCaml in string_of_string))
+                                        act_key)]] in
+                                let split =
+                                  [`Text
+                                     "UPDATE ocsigen_start.activation\n                 SET validity = ";
+                                  `Var ("v", false, false);
+                                  `Text " WHERE activationkey = ";
+                                  `Var ("act_key", false, false)] in
+                                let i = ref 0 in
+                                let j = ref 0 in
+                                let query =
+                                  String.concat ""
+                                    (List.map
+                                       (function
+                                        | `Text text -> text
+                                        | `Var (_varname, false, _) ->
+                                            let () = incr i in
+                                            let () = incr j in
+                                            "$" ^ (string_of_int j.contents)
+                                        | `Var (_varname, true, _) ->
+                                            let param =
+                                              List.nth params i.contents in
+                                            let () = incr i in
+                                            "(" ^
+                                              ((String.concat ","
+                                                  (List.map
+                                                     (fun _ ->
+                                                        let () = incr j in
+                                                        "$" ^
+                                                          (string_of_int
+                                                             j.contents))
+                                                     param))
+                                                 ^ ")")) split) in
+                                let params = List.flatten params in
+                                let name =
+                                  "ppx_pgsql." ^
+                                    (Digest.to_hex (Digest.string query)) in
+                                let hash =
+                                  try PGOCaml.private_data dbh
+                                  with
+                                  | Not_found ->
+                                      let hash = Hashtbl.create 17 in
+                                      (PGOCaml.set_private_data dbh hash;
+                                       hash) in
+                                let is_prepared = Hashtbl.mem hash name in
+                                PGOCaml.bind
+                                  (if not is_prepared
+                                   then
+                                     PGOCaml.bind
+                                       (PGOCaml.prepare dbh ~name ~query ())
+                                       (fun () ->
+                                          Hashtbl.add hash name true;
+                                          PGOCaml.return ())
+                                   else PGOCaml.return ())
+                                  (fun () ->
+                                     PGOCaml.execute_rev dbh ~name ~params ()))
+                               (fun _rows -> PGOCaml.return ()) in
+                           Lwt.return
+                             (let open Os_types.Action_link_key in
+                                {
+                                  userid;
+                                  email;
+                                  validity;
+                                  action;
+                                  data;
+                                  autoconnect
+                                })]))
+    let emails_of_userid userid =
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_int64)) userid)]] in
+              let split =
+                [`Text
+                   "SELECT email FROM ocsigen_start.emails WHERE userid = ";
+                `Var ("userid", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows ->
+                PGOCaml.return
+                  (let original_query =
+                     "SELECT email FROM ocsigen_start.emails WHERE userid = $userid" in
+                   List.rev_map
+                     (fun row ->
+                        match row with
+                        | c0::[] ->
+                            (let open PGOCaml in string_of_string)
+                              (try PGOCaml_aux.Option.get c0
+                               with
+                               | _ ->
+                                   failwith
+                                     "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")
+                        | _ ->
+                            let msg =
+                              "ppx_pgsql: internal error: " ^
+                                ("Incorrect number of columns returned from query: "
+                                   ^
+                                   (original_query ^
+                                      (".  Columns are: " ^
+                                         (String.concat "; "
+                                            (List.map
+                                               (function
+                                                | Some str ->
+                                                    Printf.sprintf "%S" str
+                                                | None -> "NULL") row))))) in
+                            raise (PGOCaml.Error msg)) _rows)))
+    let emails_of_userid_with_status userid =
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_int64)) userid)]] in
+              let split =
+                [`Text
+                   "SELECT email, validated\n         FROM ocsigen_start.emails WHERE userid = ";
+                `Var ("userid", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows ->
+                PGOCaml.return
+                  (let original_query =
+                     "SELECT email, validated\n         FROM ocsigen_start.emails WHERE userid = $userid" in
+                   List.rev_map
+                     (fun row ->
+                        match row with
+                        | c0::c1::[] ->
+                            (((let open PGOCaml in string_of_string)
+                                (try PGOCaml_aux.Option.get c0
+                                 with
+                                 | _ ->
+                                     failwith
+                                       "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                              ((let open PGOCaml in bool_of_string)
+                                 (try PGOCaml_aux.Option.get c1
+                                  with
+                                  | _ ->
+                                      failwith
+                                        "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")))
+                        | _ ->
+                            let msg =
+                              "ppx_pgsql: internal error: " ^
+                                ("Incorrect number of columns returned from query: "
+                                   ^
+                                   (original_query ^
+                                      (".  Columns are: " ^
+                                         (String.concat "; "
+                                            (List.map
+                                               (function
+                                                | Some str ->
+                                                    Printf.sprintf "%S" str
+                                                | None -> "NULL") row))))) in
+                            raise (PGOCaml.Error msg)) _rows)))
+    let email_of_userid userid =
+      one full_transaction_block
+        ~success:(fun main_email -> Lwt.return main_email)
+        ~fail:(Lwt.fail No_such_resource)
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_int64)) userid)]] in
+              let split =
+                [`Text
+                   "SELECT main_email FROM ocsigen_start.users WHERE userid = ";
+                `Var ("userid", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows ->
+                PGOCaml.return
+                  (let original_query =
+                     "SELECT main_email FROM ocsigen_start.users WHERE userid = $userid" in
+                   List.rev_map
+                     (fun row ->
+                        match row with
+                        | c0::[] ->
+                            PGOCaml_aux.Option.map
+                              (let open PGOCaml in string_of_string) c0
+                        | _ ->
+                            let msg =
+                              "ppx_pgsql: internal error: " ^
+                                ("Incorrect number of columns returned from query: "
+                                   ^
+                                   (original_query ^
+                                      (".  Columns are: " ^
+                                         (String.concat "; "
+                                            (List.map
+                                               (function
+                                                | Some str ->
+                                                    Printf.sprintf "%S" str
+                                                | None -> "NULL") row))))) in
+                            raise (PGOCaml.Error msg)) _rows)))
+    let is_main_email ~userid  ~email  =
+      one full_transaction_block ~success:(fun _ -> Lwt.return_true)
+        ~fail:Lwt.return_false
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_int64)) userid)];
+                [Some (((let open PGOCaml in string_of_string)) email)]] in
+              let split =
+                [`Text
+                   "SELECT 1 FROM ocsigen_start.users\n            WHERE userid = ";
+                `Var ("userid", false, false);
+                `Text " AND main_email = ";
+                `Var ("email", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows ->
+                PGOCaml.return
+                  (let original_query =
+                     "SELECT 1 FROM ocsigen_start.users\n            WHERE userid = $userid AND main_email = $email" in
+                   List.rev_map
+                     (fun row ->
+                        match row with
+                        | c0::[] ->
+                            PGOCaml_aux.Option.map
+                              (let open PGOCaml in int32_of_string) c0
+                        | _ ->
+                            let msg =
+                              "ppx_pgsql: internal error: " ^
+                                ("Incorrect number of columns returned from query: "
+                                   ^
+                                   (original_query ^
+                                      (".  Columns are: " ^
+                                         (String.concat "; "
+                                            (List.map
+                                               (function
+                                                | Some str ->
+                                                    Printf.sprintf "%S" str
+                                                | None -> "NULL") row))))) in
+                            raise (PGOCaml.Error msg)) _rows)))
+    let add_email_to_user ~userid  ~email  =
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_string)) email)];
+                [Some (((let open PGOCaml in string_of_int64)) userid)]] in
+              let split =
+                [`Text
+                   "INSERT INTO ocsigen_start.emails (email, userid)\n         VALUES (";
+                `Var ("email", false, false);
+                `Text ", ";
+                `Var ("userid", false, false);
+                `Text ")"] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows -> PGOCaml.return ()))
+    let remove_email_from_user ~userid  ~email  =
+      [%lwt
+        let b = is_main_email ~userid ~email in
+        if b
+        then Lwt.fail Main_email_removal_attempt
+        else
+          full_transaction_block @@
+            ((fun dbh ->
+                PGOCaml.bind
+                  (let dbh = dbh in
+                   let params : string option list list =
+                     [[Some (((let open PGOCaml in string_of_int64)) userid)];
+                     [Some (((let open PGOCaml in string_of_string)) email)]] in
+                   let split =
+                     [`Text
+                        "DELETE FROM ocsigen_start.emails\n           WHERE userid = ";
+                     `Var ("userid", false, false);
+                     `Text " AND email = ";
+                     `Var ("email", false, false)] in
+                   let i = ref 0 in
+                   let j = ref 0 in
+                   let query =
+                     String.concat ""
+                       (List.map
+                          (function
+                           | `Text text -> text
+                           | `Var (_varname, false, _) ->
+                               let () = incr i in
+                               let () = incr j in
+                               "$" ^ (string_of_int j.contents)
+                           | `Var (_varname, true, _) ->
+                               let param = List.nth params i.contents in
+                               let () = incr i in
+                               "(" ^
+                                 ((String.concat ","
+                                     (List.map
+                                        (fun _ ->
+                                           let () = incr j in
+                                           "$" ^ (string_of_int j.contents))
+                                        param))
+                                    ^ ")")) split) in
+                   let params = List.flatten params in
+                   let name =
+                     "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+                   let hash =
+                     try PGOCaml.private_data dbh
+                     with
+                     | Not_found ->
+                         let hash = Hashtbl.create 17 in
+                         (PGOCaml.set_private_data dbh hash; hash) in
+                   let is_prepared = Hashtbl.mem hash name in
+                   PGOCaml.bind
+                     (if not is_prepared
+                      then
+                        PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                          (fun () ->
+                             Hashtbl.add hash name true; PGOCaml.return ())
+                      else PGOCaml.return ())
+                     (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+                  (fun _rows -> PGOCaml.return ())))]
+    let get_language userid =
+      one full_transaction_block
+        ~success:(fun language -> Lwt.return language)
+        ~fail:(Lwt.fail No_such_resource)
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_int64)) userid)]] in
+              let split =
+                [`Text
+                   "SELECT language FROM ocsigen_start.users WHERE userid = ";
+                `Var ("userid", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows ->
+                PGOCaml.return
+                  (let original_query =
+                     "SELECT language FROM ocsigen_start.users WHERE userid = $userid" in
+                   List.rev_map
+                     (fun row ->
+                        match row with
+                        | c0::[] ->
+                            PGOCaml_aux.Option.map
+                              (let open PGOCaml in string_of_string) c0
+                        | _ ->
+                            let msg =
+                              "ppx_pgsql: internal error: " ^
+                                ("Incorrect number of columns returned from query: "
+                                   ^
+                                   (original_query ^
+                                      (".  Columns are: " ^
+                                         (String.concat "; "
+                                            (List.map
+                                               (function
+                                                | Some str ->
+                                                    Printf.sprintf "%S" str
+                                                | None -> "NULL") row))))) in
+                            raise (PGOCaml.Error msg)) _rows)))
+    let get_users ?pattern  () =
+      [%lwt
+        let l =
+          full_transaction_block
+            (fun dbh ->
+               match pattern with
+               | None ->
+                   PGOCaml.bind
+                     (let dbh = dbh in
+                      let params : string option list list = [] in
+                      let split =
+                        [`Text
+                           "SELECT userid, firstname, lastname, avatar,\n                       password IS NOT NULL, language\n                FROM ocsigen_start.users"] in
+                      let i = ref 0 in
+                      let j = ref 0 in
+                      let query =
+                        String.concat ""
+                          (List.map
+                             (function
+                              | `Text text -> text
+                              | `Var (_varname, false, _) ->
+                                  let () = incr i in
+                                  let () = incr j in
+                                  "$" ^ (string_of_int j.contents)
+                              | `Var (_varname, true, _) ->
+                                  let param = List.nth params i.contents in
+                                  let () = incr i in
+                                  "(" ^
+                                    ((String.concat ","
+                                        (List.map
+                                           (fun _ ->
+                                              let () = incr j in
+                                              "$" ^
+                                                (string_of_int j.contents))
+                                           param))
+                                       ^ ")")) split) in
+                      let params = List.flatten params in
+                      let name =
+                        "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+                      let hash =
+                        try PGOCaml.private_data dbh
+                        with
+                        | Not_found ->
+                            let hash = Hashtbl.create 17 in
+                            (PGOCaml.set_private_data dbh hash; hash) in
+                      let is_prepared = Hashtbl.mem hash name in
+                      PGOCaml.bind
+                        (if not is_prepared
+                         then
+                           PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                             (fun () ->
+                                Hashtbl.add hash name true; PGOCaml.return ())
+                         else PGOCaml.return ())
+                        (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+                     (fun _rows ->
+                        PGOCaml.return
+                          (let original_query =
+                             "SELECT userid, firstname, lastname, avatar,\n                       password IS NOT NULL, language\n                FROM ocsigen_start.users" in
+                           List.rev_map
+                             (fun row ->
+                                match row with
+                                | c0::c1::c2::c3::c4::c5::[] ->
+                                    (((let open PGOCaml in int64_of_string)
+                                        (try PGOCaml_aux.Option.get c0
+                                         with
+                                         | _ ->
+                                             failwith
+                                               "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                      ((let open PGOCaml in string_of_string)
+                                         (try PGOCaml_aux.Option.get c1
+                                          with
+                                          | _ ->
+                                              failwith
+                                                "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                      ((let open PGOCaml in string_of_string)
+                                         (try PGOCaml_aux.Option.get c2
+                                          with
+                                          | _ ->
+                                              failwith
+                                                "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                      (PGOCaml_aux.Option.map
+                                         (let open PGOCaml in
+                                            string_of_string) c3),
+                                      (PGOCaml_aux.Option.map
+                                         (let open PGOCaml in bool_of_string)
+                                         c4),
+                                      (PGOCaml_aux.Option.map
+                                         (let open PGOCaml in
+                                            string_of_string) c5))
+                                | _ ->
+                                    let msg =
+                                      "ppx_pgsql: internal error: " ^
+                                        ("Incorrect number of columns returned from query: "
+                                           ^
+                                           (original_query ^
+                                              (".  Columns are: " ^
+                                                 (String.concat "; "
+                                                    (List.map
+                                                       (function
+                                                        | Some str ->
+                                                            Printf.sprintf
+                                                              "%S" str
+                                                        | None -> "NULL") row))))) in
+                                    raise (PGOCaml.Error msg)) _rows))
+               | Some pattern ->
+                   let pattern =
+                     "(^" ^ (pattern ^ (")|(.* " ^ (pattern ^ ")"))) in
+                   PGOCaml.bind
+                     (let dbh = dbh in
+                      let params : string option list list =
+                        [[Some
+                            (((let open PGOCaml in string_of_string)) pattern)]] in
+                      let split =
+                        [`Text
+                           "SELECT userid, firstname, lastname, avatar,\n                      password IS NOT NULL, language\n               FROM ocsigen_start.users\n               WHERE firstname <> '' -- avoids email addresses\n                 AND CONCAT_WS(' ', firstname, lastname) ~* ";
+                        `Var ("pattern", false, false)] in
+                      let i = ref 0 in
+                      let j = ref 0 in
+                      let query =
+                        String.concat ""
+                          (List.map
+                             (function
+                              | `Text text -> text
+                              | `Var (_varname, false, _) ->
+                                  let () = incr i in
+                                  let () = incr j in
+                                  "$" ^ (string_of_int j.contents)
+                              | `Var (_varname, true, _) ->
+                                  let param = List.nth params i.contents in
+                                  let () = incr i in
+                                  "(" ^
+                                    ((String.concat ","
+                                        (List.map
+                                           (fun _ ->
+                                              let () = incr j in
+                                              "$" ^
+                                                (string_of_int j.contents))
+                                           param))
+                                       ^ ")")) split) in
+                      let params = List.flatten params in
+                      let name =
+                        "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+                      let hash =
+                        try PGOCaml.private_data dbh
+                        with
+                        | Not_found ->
+                            let hash = Hashtbl.create 17 in
+                            (PGOCaml.set_private_data dbh hash; hash) in
+                      let is_prepared = Hashtbl.mem hash name in
+                      PGOCaml.bind
+                        (if not is_prepared
+                         then
+                           PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                             (fun () ->
+                                Hashtbl.add hash name true; PGOCaml.return ())
+                         else PGOCaml.return ())
+                        (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+                     (fun _rows ->
+                        PGOCaml.return
+                          (let original_query =
+                             "SELECT userid, firstname, lastname, avatar,\n                      password IS NOT NULL, language\n               FROM ocsigen_start.users\n               WHERE firstname <> '' -- avoids email addresses\n                 AND CONCAT_WS(' ', firstname, lastname) ~* $pattern" in
+                           List.rev_map
+                             (fun row ->
+                                match row with
+                                | c0::c1::c2::c3::c4::c5::[] ->
+                                    (((let open PGOCaml in int64_of_string)
+                                        (try PGOCaml_aux.Option.get c0
+                                         with
+                                         | _ ->
+                                             failwith
+                                               "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                      ((let open PGOCaml in string_of_string)
+                                         (try PGOCaml_aux.Option.get c1
+                                          with
+                                          | _ ->
+                                              failwith
+                                                "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                      ((let open PGOCaml in string_of_string)
+                                         (try PGOCaml_aux.Option.get c2
+                                          with
+                                          | _ ->
+                                              failwith
+                                                "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                      (PGOCaml_aux.Option.map
+                                         (let open PGOCaml in
+                                            string_of_string) c3),
+                                      (PGOCaml_aux.Option.map
+                                         (let open PGOCaml in bool_of_string)
+                                         c4),
+                                      (PGOCaml_aux.Option.map
+                                         (let open PGOCaml in
+                                            string_of_string) c5))
+                                | _ ->
+                                    let msg =
+                                      "ppx_pgsql: internal error: " ^
+                                        ("Incorrect number of columns returned from query: "
+                                           ^
+                                           (original_query ^
+                                              (".  Columns are: " ^
+                                                 (String.concat "; "
+                                                    (List.map
+                                                       (function
+                                                        | Some str ->
+                                                            Printf.sprintf
+                                                              "%S" str
+                                                        | None -> "NULL") row))))) in
+                                    raise (PGOCaml.Error msg)) _rows))) in
+        Lwt.return
+          (List.map
+             (fun
+                (userid, firstname, lastname, avatar, has_password, language)
+                ->
+                (userid, firstname, lastname, avatar,
+                  (has_password = (Some true)), language)) l)]
+  end
+module Groups =
+  struct
+    let create ?description  name =
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[PGOCaml_aux.Option.map
+                    (let open PGOCaml in string_of_string) description];
+                [Some (((let open PGOCaml in string_of_string)) name)]] in
+              let split =
+                [`Text
+                   "INSERT INTO ocsigen_start.groups (description, name)\n         VALUES (";
+                `Var ("description", false, true);
+                `Text ", ";
+                `Var ("name", false, false);
+                `Text ")"] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows -> PGOCaml.return ()))
+    let group_of_name name =
+      (full_transaction_block
+         (fun dbh ->
+            PGOCaml.bind
+              (let dbh = dbh in
+               let params : string option list list =
+                 [[Some (((let open PGOCaml in string_of_string)) name)]] in
+               let split =
+                 [`Text
+                    "SELECT groupid, name, description\n           FROM ocsigen_start.groups WHERE name = ";
+                 `Var ("name", false, false)] in
+               let i = ref 0 in
+               let j = ref 0 in
+               let query =
+                 String.concat ""
+                   (List.map
                       (function
-                        | [Some userid; Some firstname; Some lastname; avatar;
-                           password; language]
-                          ->
-                          (PGOCaml.int64_of_string userid,
-                           firstname, lastname, avatar, password <> None, language)
-                        | _ -> failwith "Os_db.get_users")
-                      l))
-
-end
-
-module Groups = struct
-  let create ?description name =
-    let description_o = Eliom_lib.Option.map as_sql_string description in
-    run_query <:insert< $os_groups_table$ :=
-                { description = of_option $description_o$;
-                  name  = $string:name$;
-                 groupid = os_groups_table?groupid }
-               >>
-
-  let group_of_name name = run_view_opt
-    <:view< r | r in $os_groups_table$; r.name = $string:name$ >> >>= function
-    | Some r -> Lwt.return (r#!groupid, r#!name, r#?description)
-    | None -> Lwt.fail No_such_resource
-
-  let add_user_in_group ~groupid ~userid = run_query
-    <:insert< $os_user_groups_table$ :=
-             { userid  = $int64:userid$;
-               groupid = $int64:groupid$ }
-    >>
-
-  let remove_user_in_group ~groupid ~userid = run_query
-    <:delete< r in $os_user_groups_table$ |
-              r.groupid = $int64:groupid$;
-              r.userid  = $int64:userid$
-    >>
-
-  let in_group ?dbh ~groupid ~userid () = one (run_view ?dbh)
-    ~success:(fun _ -> Lwt.return_true)
-    ~fail:Lwt.return_false
-    <:view< t | t in $os_user_groups_table$;
-                t.groupid = $int64:groupid$;
-                t.userid  = $int64:userid$;
-    >>
-
-  let all () = run_query <:select< r | r in $os_groups_table$; >> >>= fun l ->
-    Lwt.return @@ List.map (fun a -> (a#!groupid, a#!name, a#?description)) l
-
-end
-
-module Phone = struct
-
-  let add userid number =
-    without_transaction @@ fun dbh ->
-    (* low-level PG interface because we want to inspect the result *)
-    let query =
-      "INSERT INTO ocsigen_start.phones (number, userid) VALUES ($1, $2)
-       ON CONFLICT DO NOTHING
-       RETURNING 0"
-    in
-    lwt () = PGOCaml.prepare dbh ~query () in
-    lwt l  =
-      PGOCaml.execute dbh [
-        Some (PGOCaml.string_of_string number) ;
-        Some (PGOCaml.string_of_int64 userid)
-      ] ()
-    in
-    lwt () = PGOCaml.close_statement dbh () in
-    Lwt.return (match l with | [Some _] :: _ -> true | _ -> false)
-
-  let exists number =
-    without_transaction @@ fun dbh ->
-    match_lwt
-      run_query
-        <:select< row |
-                  row in $os_phones_table$;
-                  row.number = $string:number$ >>
-    with
-    | _ :: _ ->
-      Lwt.return_true
-    | [] ->
-      Lwt.return_false
-
-  let userid number =
-    without_transaction @@ fun dbh ->
-    match_lwt
-      run_view
-        <:view< { row.userid } |
-                  row in $os_phones_table$;
-                  row.number = $string:number$ >>
-    with
-    | userid :: _ ->
-      Lwt.return (Some userid#!userid)
-    | [] ->
-      Lwt.return None
-
-  let delete userid number =
-    without_transaction @@ fun dbh -> run_query
-      <:delete< row in $os_phones_table$ |
-                row.userid = $int64:userid$;
-                row.number = $string:number$ >>
-
-  let get_list userid =
-    without_transaction @@ fun dbh ->
-    lwt l =
-      run_view
-        <:view< { row.number } |
-                  row in $os_phones_table$;
-                  row.userid = $int64:userid$ >>
-    in
-    Lwt.return (List.map (fun row -> row#!number) l)
-
-end
+                       | `Text text -> text
+                       | `Var (_varname, false, _) ->
+                           let () = incr i in
+                           let () = incr j in
+                           "$" ^ (string_of_int j.contents)
+                       | `Var (_varname, true, _) ->
+                           let param = List.nth params i.contents in
+                           let () = incr i in
+                           "(" ^
+                             ((String.concat ","
+                                 (List.map
+                                    (fun _ ->
+                                       let () = incr j in
+                                       "$" ^ (string_of_int j.contents))
+                                    param))
+                                ^ ")")) split) in
+               let params = List.flatten params in
+               let name =
+                 "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+               let hash =
+                 try PGOCaml.private_data dbh
+                 with
+                 | Not_found ->
+                     let hash = Hashtbl.create 17 in
+                     (PGOCaml.set_private_data dbh hash; hash) in
+               let is_prepared = Hashtbl.mem hash name in
+               PGOCaml.bind
+                 (if not is_prepared
+                  then
+                    PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                      (fun () ->
+                         Hashtbl.add hash name true; PGOCaml.return ())
+                  else PGOCaml.return ())
+                 (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+              (fun _rows ->
+                 PGOCaml.return
+                   (let original_query =
+                      "SELECT groupid, name, description\n           FROM ocsigen_start.groups WHERE name = $name" in
+                    List.rev_map
+                      (fun row ->
+                         match row with
+                         | c0::c1::c2::[] ->
+                             (((let open PGOCaml in int64_of_string)
+                                 (try PGOCaml_aux.Option.get c0
+                                  with
+                                  | _ ->
+                                      failwith
+                                        "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                               ((let open PGOCaml in string_of_string)
+                                  (try PGOCaml_aux.Option.get c1
+                                   with
+                                   | _ ->
+                                       failwith
+                                         "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                               (PGOCaml_aux.Option.map
+                                  (let open PGOCaml in string_of_string) c2))
+                         | _ ->
+                             let msg =
+                               "ppx_pgsql: internal error: " ^
+                                 ("Incorrect number of columns returned from query: "
+                                    ^
+                                    (original_query ^
+                                       (".  Columns are: " ^
+                                          (String.concat "; "
+                                             (List.map
+                                                (function
+                                                 | Some str ->
+                                                     Printf.sprintf "%S" str
+                                                 | None -> "NULL") row))))) in
+                             raise (PGOCaml.Error msg)) _rows))))
+        >>=
+        (function | r::[] -> Lwt.return r | _ -> Lwt.fail No_such_resource)
+    let add_user_in_group ~groupid  ~userid  =
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_int64)) userid)];
+                [Some (((let open PGOCaml in string_of_int64)) groupid)]] in
+              let split =
+                [`Text
+                   "INSERT INTO ocsigen_start.user_groups (userid, groupid)\n         VALUES (";
+                `Var ("userid", false, false);
+                `Text ", ";
+                `Var ("groupid", false, false);
+                `Text ")"] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows -> PGOCaml.return ()))
+    let remove_user_in_group ~groupid  ~userid  =
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_int64)) groupid)];
+                [Some (((let open PGOCaml in string_of_int64)) userid)]] in
+              let split =
+                [`Text
+                   "DELETE FROM ocsigen_start.user_groups\n         WHERE groupid = ";
+                `Var ("groupid", false, false);
+                `Text " AND userid = ";
+                `Var ("userid", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows -> PGOCaml.return ()))
+    let in_group ?dbh  ~groupid  ~userid  () =
+      one
+        (match dbh with
+         | None -> full_transaction_block
+         | Some dbh -> (fun f -> f dbh)) ~success:(fun _ -> Lwt.return_true)
+        ~fail:Lwt.return_false
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_int64)) groupid)];
+                [Some (((let open PGOCaml in string_of_int64)) userid)]] in
+              let split =
+                [`Text
+                   "SELECT 1 FROM ocsigen_start.user_groups\n           WHERE groupid = ";
+                `Var ("groupid", false, false);
+                `Text " AND userid = ";
+                `Var ("userid", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows ->
+                PGOCaml.return
+                  (let original_query =
+                     "SELECT 1 FROM ocsigen_start.user_groups\n           WHERE groupid = $groupid AND userid = $userid" in
+                   List.rev_map
+                     (fun row ->
+                        match row with
+                        | c0::[] ->
+                            PGOCaml_aux.Option.map
+                              (let open PGOCaml in int32_of_string) c0
+                        | _ ->
+                            let msg =
+                              "ppx_pgsql: internal error: " ^
+                                ("Incorrect number of columns returned from query: "
+                                   ^
+                                   (original_query ^
+                                      (".  Columns are: " ^
+                                         (String.concat "; "
+                                            (List.map
+                                               (function
+                                                | Some str ->
+                                                    Printf.sprintf "%S" str
+                                                | None -> "NULL") row))))) in
+                            raise (PGOCaml.Error msg)) _rows)))
+    let all () =
+      full_transaction_block @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list = [] in
+              let split =
+                [`Text
+                   "SELECT groupid, name, description FROM ocsigen_start.groups"] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows ->
+                PGOCaml.return
+                  (let original_query =
+                     "SELECT groupid, name, description FROM ocsigen_start.groups" in
+                   List.rev_map
+                     (fun row ->
+                        match row with
+                        | c0::c1::c2::[] ->
+                            (((let open PGOCaml in int64_of_string)
+                                (try PGOCaml_aux.Option.get c0
+                                 with
+                                 | _ ->
+                                     failwith
+                                       "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                              ((let open PGOCaml in string_of_string)
+                                 (try PGOCaml_aux.Option.get c1
+                                  with
+                                  | _ ->
+                                      failwith
+                                        "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                              (PGOCaml_aux.Option.map
+                                 (let open PGOCaml in string_of_string) c2))
+                        | _ ->
+                            let msg =
+                              "ppx_pgsql: internal error: " ^
+                                ("Incorrect number of columns returned from query: "
+                                   ^
+                                   (original_query ^
+                                      (".  Columns are: " ^
+                                         (String.concat "; "
+                                            (List.map
+                                               (function
+                                                | Some str ->
+                                                    Printf.sprintf "%S" str
+                                                | None -> "NULL") row))))) in
+                            raise (PGOCaml.Error msg)) _rows)))
+  end
+module Phone =
+  struct
+    let add userid number =
+      without_transaction @@
+        (fun dbh ->
+           [%lwt
+             let l =
+               PGOCaml.bind
+                 (let dbh = dbh in
+                  let params : string option list list =
+                    [[Some (((let open PGOCaml in string_of_string)) number)];
+                    [Some (((let open PGOCaml in string_of_int64)) userid)]] in
+                  let split =
+                    [`Text
+                       "INSERT INTO ocsigen_start.phones (number, userid)\n           VALUES (";
+                    `Var ("number", false, false);
+                    `Text ", ";
+                    `Var ("userid", false, false);
+                    `Text
+                      ")\n           ON CONFLICT DO NOTHING\n           RETURNING 0"] in
+                  let i = ref 0 in
+                  let j = ref 0 in
+                  let query =
+                    String.concat ""
+                      (List.map
+                         (function
+                          | `Text text -> text
+                          | `Var (_varname, false, _) ->
+                              let () = incr i in
+                              let () = incr j in
+                              "$" ^ (string_of_int j.contents)
+                          | `Var (_varname, true, _) ->
+                              let param = List.nth params i.contents in
+                              let () = incr i in
+                              "(" ^
+                                ((String.concat ","
+                                    (List.map
+                                       (fun _ ->
+                                          let () = incr j in
+                                          "$" ^ (string_of_int j.contents))
+                                       param))
+                                   ^ ")")) split) in
+                  let params = List.flatten params in
+                  let name =
+                    "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+                  let hash =
+                    try PGOCaml.private_data dbh
+                    with
+                    | Not_found ->
+                        let hash = Hashtbl.create 17 in
+                        (PGOCaml.set_private_data dbh hash; hash) in
+                  let is_prepared = Hashtbl.mem hash name in
+                  PGOCaml.bind
+                    (if not is_prepared
+                     then
+                       PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                         (fun () ->
+                            Hashtbl.add hash name true; PGOCaml.return ())
+                     else PGOCaml.return ())
+                    (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+                 (fun _rows ->
+                    PGOCaml.return
+                      (let original_query =
+                         "INSERT INTO ocsigen_start.phones (number, userid)\n           VALUES ($number, $userid)\n           ON CONFLICT DO NOTHING\n           RETURNING 0" in
+                       List.rev_map
+                         (fun row ->
+                            match row with
+                            | c0::[] ->
+                                PGOCaml_aux.Option.map
+                                  (let open PGOCaml in int32_of_string) c0
+                            | _ ->
+                                let msg =
+                                  "ppx_pgsql: internal error: " ^
+                                    ("Incorrect number of columns returned from query: "
+                                       ^
+                                       (original_query ^
+                                          (".  Columns are: " ^
+                                             (String.concat "; "
+                                                (List.map
+                                                   (function
+                                                    | Some str ->
+                                                        Printf.sprintf "%S"
+                                                          str
+                                                    | None -> "NULL") row))))) in
+                                raise (PGOCaml.Error msg)) _rows)) in
+             Lwt.return (match l with | _::[] -> true | _ -> false)])
+    let exists number =
+      without_transaction @@
+        (fun dbh ->
+           [%lwt
+             match full_transaction_block @@
+                     (fun dbh ->
+                        PGOCaml.bind
+                          (let dbh = dbh in
+                           let params : string option list list =
+                             [[Some
+                                 (((let open PGOCaml in string_of_string))
+                                    number)]] in
+                           let split =
+                             [`Text
+                                "SELECT 1 FROM ocsigen_start.phones WHERE number = ";
+                             `Var ("number", false, false)] in
+                           let i = ref 0 in
+                           let j = ref 0 in
+                           let query =
+                             String.concat ""
+                               (List.map
+                                  (function
+                                   | `Text text -> text
+                                   | `Var (_varname, false, _) ->
+                                       let () = incr i in
+                                       let () = incr j in
+                                       "$" ^ (string_of_int j.contents)
+                                   | `Var (_varname, true, _) ->
+                                       let param = List.nth params i.contents in
+                                       let () = incr i in
+                                       "(" ^
+                                         ((String.concat ","
+                                             (List.map
+                                                (fun _ ->
+                                                   let () = incr j in
+                                                   "$" ^
+                                                     (string_of_int
+                                                        j.contents)) param))
+                                            ^ ")")) split) in
+                           let params = List.flatten params in
+                           let name =
+                             "ppx_pgsql." ^
+                               (Digest.to_hex (Digest.string query)) in
+                           let hash =
+                             try PGOCaml.private_data dbh
+                             with
+                             | Not_found ->
+                                 let hash = Hashtbl.create 17 in
+                                 (PGOCaml.set_private_data dbh hash; hash) in
+                           let is_prepared = Hashtbl.mem hash name in
+                           PGOCaml.bind
+                             (if not is_prepared
+                              then
+                                PGOCaml.bind
+                                  (PGOCaml.prepare dbh ~name ~query ())
+                                  (fun () ->
+                                     Hashtbl.add hash name true;
+                                     PGOCaml.return ())
+                              else PGOCaml.return ())
+                             (fun () ->
+                                PGOCaml.execute_rev dbh ~name ~params ()))
+                          (fun _rows ->
+                             PGOCaml.return
+                               (let original_query =
+                                  "SELECT 1 FROM ocsigen_start.phones WHERE number = $number" in
+                                List.rev_map
+                                  (fun row ->
+                                     match row with
+                                     | c0::[] ->
+                                         PGOCaml_aux.Option.map
+                                           (let open PGOCaml in
+                                              int32_of_string) c0
+                                     | _ ->
+                                         let msg =
+                                           "ppx_pgsql: internal error: " ^
+                                             ("Incorrect number of columns returned from query: "
+                                                ^
+                                                (original_query ^
+                                                   (".  Columns are: " ^
+                                                      (String.concat "; "
+                                                         (List.map
+                                                            (function
+                                                             | Some str ->
+                                                                 Printf.sprintf
+                                                                   "%S" str
+                                                             | None -> "NULL")
+                                                            row))))) in
+                                         raise (PGOCaml.Error msg)) _rows)))
+             with
+             | _::_ -> Lwt.return_true
+             | [] -> Lwt.return_false])
+    let userid number =
+      without_transaction @@
+        (fun dbh ->
+           [%lwt
+             match full_transaction_block @@
+                     (fun dbh ->
+                        PGOCaml.bind
+                          (let dbh = dbh in
+                           let params : string option list list =
+                             [[Some
+                                 (((let open PGOCaml in string_of_string))
+                                    number)]] in
+                           let split =
+                             [`Text
+                                "SELECT userid FROM ocsigen_start.phones WHERE number = ";
+                             `Var ("number", false, false)] in
+                           let i = ref 0 in
+                           let j = ref 0 in
+                           let query =
+                             String.concat ""
+                               (List.map
+                                  (function
+                                   | `Text text -> text
+                                   | `Var (_varname, false, _) ->
+                                       let () = incr i in
+                                       let () = incr j in
+                                       "$" ^ (string_of_int j.contents)
+                                   | `Var (_varname, true, _) ->
+                                       let param = List.nth params i.contents in
+                                       let () = incr i in
+                                       "(" ^
+                                         ((String.concat ","
+                                             (List.map
+                                                (fun _ ->
+                                                   let () = incr j in
+                                                   "$" ^
+                                                     (string_of_int
+                                                        j.contents)) param))
+                                            ^ ")")) split) in
+                           let params = List.flatten params in
+                           let name =
+                             "ppx_pgsql." ^
+                               (Digest.to_hex (Digest.string query)) in
+                           let hash =
+                             try PGOCaml.private_data dbh
+                             with
+                             | Not_found ->
+                                 let hash = Hashtbl.create 17 in
+                                 (PGOCaml.set_private_data dbh hash; hash) in
+                           let is_prepared = Hashtbl.mem hash name in
+                           PGOCaml.bind
+                             (if not is_prepared
+                              then
+                                PGOCaml.bind
+                                  (PGOCaml.prepare dbh ~name ~query ())
+                                  (fun () ->
+                                     Hashtbl.add hash name true;
+                                     PGOCaml.return ())
+                              else PGOCaml.return ())
+                             (fun () ->
+                                PGOCaml.execute_rev dbh ~name ~params ()))
+                          (fun _rows ->
+                             PGOCaml.return
+                               (let original_query =
+                                  "SELECT userid FROM ocsigen_start.phones WHERE number = $number" in
+                                List.rev_map
+                                  (fun row ->
+                                     match row with
+                                     | c0::[] ->
+                                         (let open PGOCaml in int64_of_string)
+                                           (try PGOCaml_aux.Option.get c0
+                                            with
+                                            | _ ->
+                                                failwith
+                                                  "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")
+                                     | _ ->
+                                         let msg =
+                                           "ppx_pgsql: internal error: " ^
+                                             ("Incorrect number of columns returned from query: "
+                                                ^
+                                                (original_query ^
+                                                   (".  Columns are: " ^
+                                                      (String.concat "; "
+                                                         (List.map
+                                                            (function
+                                                             | Some str ->
+                                                                 Printf.sprintf
+                                                                   "%S" str
+                                                             | None -> "NULL")
+                                                            row))))) in
+                                         raise (PGOCaml.Error msg)) _rows)))
+             with
+             | userid::_ -> Lwt.return (Some userid)
+             | [] -> Lwt.return None])
+    let delete userid number =
+      without_transaction @@
+        (fun dbh ->
+           PGOCaml.bind
+             (let dbh = dbh in
+              let params : string option list list =
+                [[Some (((let open PGOCaml in string_of_int64)) userid)];
+                [Some (((let open PGOCaml in string_of_string)) number)]] in
+              let split =
+                [`Text
+                   "DELETE FROM ocsigen_start.phones\n         WHERE userid = ";
+                `Var ("userid", false, false);
+                `Text " AND number = ";
+                `Var ("number", false, false)] in
+              let i = ref 0 in
+              let j = ref 0 in
+              let query =
+                String.concat ""
+                  (List.map
+                     (function
+                      | `Text text -> text
+                      | `Var (_varname, false, _) ->
+                          let () = incr i in
+                          let () = incr j in "$" ^ (string_of_int j.contents)
+                      | `Var (_varname, true, _) ->
+                          let param = List.nth params i.contents in
+                          let () = incr i in
+                          "(" ^
+                            ((String.concat ","
+                                (List.map
+                                   (fun _ ->
+                                      let () = incr j in
+                                      "$" ^ (string_of_int j.contents)) param))
+                               ^ ")")) split) in
+              let params = List.flatten params in
+              let name = "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+              let hash =
+                try PGOCaml.private_data dbh
+                with
+                | Not_found ->
+                    let hash = Hashtbl.create 17 in
+                    (PGOCaml.set_private_data dbh hash; hash) in
+              let is_prepared = Hashtbl.mem hash name in
+              PGOCaml.bind
+                (if not is_prepared
+                 then
+                   PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                     (fun () -> Hashtbl.add hash name true; PGOCaml.return ())
+                 else PGOCaml.return ())
+                (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+             (fun _rows -> PGOCaml.return ()))
+    let get_list userid =
+      without_transaction @@
+        (fun dbh ->
+           full_transaction_block @@
+             (fun dbh ->
+                PGOCaml.bind
+                  (let dbh = dbh in
+                   let params : string option list list =
+                     [[Some (((let open PGOCaml in string_of_int64)) userid)]] in
+                   let split =
+                     [`Text
+                        "SELECT number FROM ocsigen_start.phones WHERE userid = ";
+                     `Var ("userid", false, false)] in
+                   let i = ref 0 in
+                   let j = ref 0 in
+                   let query =
+                     String.concat ""
+                       (List.map
+                          (function
+                           | `Text text -> text
+                           | `Var (_varname, false, _) ->
+                               let () = incr i in
+                               let () = incr j in
+                               "$" ^ (string_of_int j.contents)
+                           | `Var (_varname, true, _) ->
+                               let param = List.nth params i.contents in
+                               let () = incr i in
+                               "(" ^
+                                 ((String.concat ","
+                                     (List.map
+                                        (fun _ ->
+                                           let () = incr j in
+                                           "$" ^ (string_of_int j.contents))
+                                        param))
+                                    ^ ")")) split) in
+                   let params = List.flatten params in
+                   let name =
+                     "ppx_pgsql." ^ (Digest.to_hex (Digest.string query)) in
+                   let hash =
+                     try PGOCaml.private_data dbh
+                     with
+                     | Not_found ->
+                         let hash = Hashtbl.create 17 in
+                         (PGOCaml.set_private_data dbh hash; hash) in
+                   let is_prepared = Hashtbl.mem hash name in
+                   PGOCaml.bind
+                     (if not is_prepared
+                      then
+                        PGOCaml.bind (PGOCaml.prepare dbh ~name ~query ())
+                          (fun () ->
+                             Hashtbl.add hash name true; PGOCaml.return ())
+                      else PGOCaml.return ())
+                     (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
+                  (fun _rows ->
+                     PGOCaml.return
+                       (let original_query =
+                          "SELECT number FROM ocsigen_start.phones WHERE userid = $userid" in
+                        List.rev_map
+                          (fun row ->
+                             match row with
+                             | c0::[] ->
+                                 (let open PGOCaml in string_of_string)
+                                   (try PGOCaml_aux.Option.get c0
+                                    with
+                                    | _ ->
+                                        failwith
+                                          "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")
+                             | _ ->
+                                 let msg =
+                                   "ppx_pgsql: internal error: " ^
+                                     ("Incorrect number of columns returned from query: "
+                                        ^
+                                        (original_query ^
+                                           (".  Columns are: " ^
+                                              (String.concat "; "
+                                                 (List.map
+                                                    (function
+                                                     | Some str ->
+                                                         Printf.sprintf "%S"
+                                                           str
+                                                     | None -> "NULL") row))))) in
+                                 raise (PGOCaml.Error msg)) _rows))))
+  end

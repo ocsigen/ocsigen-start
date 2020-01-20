@@ -9,11 +9,11 @@ PKG_VERS            := 1.1.0
 PKG_DESC            := Skeleton for building your own Eliom application
 
 # Source files for the server
-SERVER_FILES        := $(wildcard \
+SERVER_FILES        := $(filter-out %.ppx.ml,$(wildcard \
   src/*.ml* \
   src/*.eliom* \
   src/view/*.eliom* \
-)
+))
 # Source files for the client
 CLIENT_FILES        := $(wildcard \
   src/*.eliom* \
@@ -58,7 +58,7 @@ SERVER_PACKAGES    := lwt_ppx js_of_ocaml-ppx.deriving calendar safepass \
                       ocsigen-toolkit.server yojson re.str cohttp-lwt-unix \
                       netstring
 
-SERVER_DB_PACKAGES := pgocaml macaque.syntax \
+SERVER_DB_PACKAGES := lwt_ppx pgocaml pgocaml_ppx \
                       calendar safepass resource-pooling
 
 # OCamlfind packages for the client
