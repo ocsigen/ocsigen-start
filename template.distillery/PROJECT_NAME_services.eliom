@@ -11,7 +11,7 @@ let%server upload_user_avatar_service
   : (unit, unit) Ot_picture_uploader.service =
   Ot_picture_uploader.mk_service
     "upload_user_avatar_service"
-    [%derive.json: unit]
+    [%json: unit]
 
 let%server demo_service =
   Eliom_service.create

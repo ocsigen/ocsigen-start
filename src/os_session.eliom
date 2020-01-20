@@ -411,12 +411,12 @@ let%shared connected_wrapper ?allow ?deny ?deny_fun ?force_unconnected f pp =
 
 let%client disconnect =
   ~%(Eliom_client.server_function ~name:"Os_session.disconnect"
-       [%derive.json: unit]
+       [%json: unit]
        (connected_wrapper disconnect))
 
 let%client disconnect_all ?(user_indep = true) () =
   ~%(Eliom_client.server_function ~name:"Os_session.disconnect_all"
-       [%derive.json: bool]
+       [%json: bool]
        (connected_wrapper
           (fun user_indep -> disconnect_all ~user_indep ())))
     user_indep

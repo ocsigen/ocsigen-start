@@ -45,7 +45,7 @@ let%server get_wrong_pdata () =
   Lwt.return @@ Eliom_reference.Volatile.get Os_msg.wrong_pdata
 
 let%client get_wrong_pdata =
-  ~%(Eliom_client.server_function [%derive.json : unit]
+  ~%(Eliom_client.server_function [%json : unit]
        (Os_session.connected_wrapper get_wrong_pdata))
 
 let%shared connected_welcome_box () = Eliom_content.Html.F.(

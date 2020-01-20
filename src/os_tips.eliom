@@ -92,7 +92,7 @@ let%client set_tip_seen name =
   tips_seen_client_ref := Stringset.add name !tips_seen_client_ref;
   ~%(Eliom_client.server_function
        ~name:"Os_tips.set_tip_seen"
-       [%derive.json: string]
+       [%json: string]
        (Os_session.connected_wrapper set_tip_seen))
   name
 
@@ -108,7 +108,7 @@ let%client unset_tip_seen name =
   tips_seen_client_ref := Stringset.remove name !tips_seen_client_ref;
   ~%(Eliom_client.server_function
        ~name:"Os_tips.unset_tip_seen"
-       [%derive.json: string]
+       [%json: string]
        (Os_session.connected_wrapper set_tip_seen))
     name
 
@@ -144,7 +144,7 @@ let%client reset_tips () =
   tips_seen_client_ref := Stringset.empty;
   ~%(Eliom_client.server_function
        ~name:"Os_tips.reset_tips"
-       [%derive.json: unit]
+       [%json: unit]
        (Os_session.connected_wrapper reset_tips))
     ()
 

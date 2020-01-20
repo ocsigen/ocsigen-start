@@ -60,7 +60,7 @@ let%server set_password_handler myid () (pwd, pwd2) =
 let%client set_password_rpc =
   ~%(Eliom_client.server_function
        ~name:"Os_handlers.set_password_rpc"
-       [%derive.json: string * string]
+       [%json: string * string]
        (Os_session.connected_rpc
           (fun myid p -> set_password_handler myid () p))
     )
@@ -152,7 +152,7 @@ let%server sign_up_handler_rpc v =
 let%client sign_up_handler_rpc =
   ~%(Eliom_client.server_function
        ~name:"Os_handlers.sign_up_handler"
-       [%derive.json: string]
+       [%json: string]
        sign_up_handler_rpc)
 
 let%client sign_up_handler () v =
@@ -225,7 +225,7 @@ let%server disconnect_handler_rpc main_page =
 let%client disconnect_handler_rpc  =
   ~%(Eliom_client.server_function
        ~name:"Os_handlers.disconnect_handler"
-       [%derive.json: bool]
+       [%json: bool]
        disconnect_handler_rpc)
 
 let%client disconnect_handler ?(main_page = false) () () =
@@ -259,7 +259,7 @@ let%server connect_handler_rpc v = connect_handler () v
 let%client connect_handler_rpc =
   ~%(Eliom_client.server_function
        ~name:"Os_handlers.connect_handler"
-       [%derive.json: (string * string) * bool]
+       [%json: (string * string) * bool]
        connect_handler_rpc)
 
 let%client connect_handler () v = connect_handler_rpc v
@@ -338,7 +338,7 @@ let action_link_handler_common akey =
 
 let%client action_link_handler_common =
   ~%(Eliom_client.server_function ~name:"Os_handlers.action_link_handler_common"
-       [%derive.json: string]
+       [%json: string]
        (Os_session.connected_wrapper action_link_handler_common))
 
 let%client restart_if_client_side () =
@@ -409,7 +409,7 @@ let%server add_email_handler =
 let%client add_email_handler =
   let rpc = ~%(Eliom_client.server_function
                  ~name:"Os_handlers.add_email_handler"
-                 [%derive.json: string]
+                 [%json: string]
                  @@ add_email_handler ())
   in
   fun () -> rpc

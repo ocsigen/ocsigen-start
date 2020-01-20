@@ -29,7 +29,7 @@ let%server get_users () =
 
 (* Make function get_users available to the client *)
 let%client get_users =
-  ~%(Eliom_client.server_function [%derive.json: unit]
+  ~%(Eliom_client.server_function [%json: unit]
        (Os_session.connected_wrapper get_users))
 
 (* Generate page for this demo *)

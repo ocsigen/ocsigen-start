@@ -38,7 +38,7 @@ let%server incr_my_ref () =
 
 (* Make server-side function available to the client *)
 let%client incr_my_ref =
-  ~%(Eliom_client.server_function [%derive.json : unit]
+  ~%(Eliom_client.server_function [%json : unit]
        (Os_session.connected_wrapper incr_my_ref))
 (* Os_session.connected_wrapper is a wrapper to be used once for each RPC.
    It makes it possible to use features like Os_current_user.get_current_userid
