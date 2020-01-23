@@ -22,7 +22,7 @@ let%server init_request _myid_o tz =
 
 let%server init_request_rpc : (_, unit) Eliom_client.server_function =
   Eliom_client.server_function ~name:"%%%MODULE_NAME%%%_mobile.init_request"
-    [%json: unit]
+    [%json: string]
     (Os_session.Opt.connected_rpc init_request)
 
 let to_lwt f =
