@@ -185,7 +185,7 @@ let _ =
      "chcp_beforeAssetsInstalledOnExternalStorage";
      "chcp_assetsInstalledOnExternalStorage"];
   Lwt.async @@ fun () ->
-  let%lwt _ = Lwt_js_events.onload () in
+  let%lwt _ = Js_of_ocaml_lwt.Lwt_js_events.onload () in
   let%lwt _ = get_data wake_error in
   let%lwt _ = wait_error in
   let%lwt _ = wait_success in
