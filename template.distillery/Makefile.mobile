@@ -188,6 +188,12 @@ else
 APP_PORT_ARG=
 endif
 
+ifeq ($(APP),dev)
+  MOBILE_USE_CLEARTEXT_TRAFFIC?=<edit-config file=\"app/src/main/AndroidManifest.xml\" mode=\"merge\" target=\"/manifest/application\"><application android:usesCleartextTraffic=\"true\"/></edit-config>
+else
+  MOBILE_USE_CLEARTEXT_TRAFFIC?=
+endif
+
 # This rule generates the config.xml file from mobile/config.xml.in.
 $(CORDOVAPATH)/config.xml: mobile/config.xml.in $(CORDOVAPATH)
 	sed -e "s,%%APPSERVER%%,$(APP_SERVER),g" \
@@ -204,6 +210,7 @@ $(CORDOVAPATH)/config.xml: mobile/config.xml.in $(CORDOVAPATH)
 	    -e "s,%%MOBILE_AUTHOR_DESCRIPTION%%,$(MOBILE_AUTHOR_DESCRIPTION),g" \
 	    -e "s,%%MOBILE_ANDROID_SDK_VERSION%%,$(MOBILE_ANDROID_SDK_VERSION),g" \
 	    -e "s,%%MOBILE_NOTIFICATIONS_SENDER_ID%%,$(MOBILE_NOTIFICATIONS_SENDER_ID),g" \
+        -e "s,%%MOBILE_USE_CLEARTEXT_TRAFFIC%%,$(MOBILE_USE_CLEARTEXT_TRAFFIC),g" \
 	    mobile/config.xml.in > $@
 
 # This rule generates index.html. md5sum is used to set the right JavaScript

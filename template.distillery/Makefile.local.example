@@ -12,3 +12,7 @@ APP_SERVER       := http://YOUR_IP_ADDRESS:PORT
 # while building the mobile application.
 # See Makefile.mobile for more information about this variable.
 APP_REMOTE       := yes
+
+# Use to declare the app as a dev build that should access cleartext data
+# over `http`. A release should be anything else than `dev`.
+APP := dev

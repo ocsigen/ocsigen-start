@@ -233,7 +233,7 @@ commands if you want to test on your local machine.
 - To run the application in the emulator, use:
 
 ```
-make APP_SERVER=http://${YOUR_SERVER} APP_REMOTE=no emulate-android
+make APP_SERVER=http://${YOUR_SERVER} APP_REMOTE=no APP=dev emulate-android
 ```
 
 The above command will attempt to launch your app in the Android emulator that
@@ -249,7 +249,7 @@ details).
 To run the application on a connected device, use:
 
 ```
-make APP_SERVER=http://${YOUR_SERVER} APP_REMOTE=no run-android
+make APP_SERVER=http://${YOUR_SERVER} APP_REMOTE=no APP=dev run-android
 ```
 Notice that the `APP_SERVER` argument needs to point to your LAN or public
 address (e.g., `192.168.1.x`), not to `127.0.0.1` (neither to `localhost`). The
@@ -258,7 +258,7 @@ which `127.0.0.1` has different meaning; it points to the Android host itself.
 
 If you only want to build the mobile application, you can use:
 ```
-make APP_SERVER=http://${YOUR_SERVER} APP_REMOTE=no android
+make APP_SERVER=http://${YOUR_SERVER} APP_REMOTE=no APP=dev android
 ```
 
 Before uploading on Google Play Store, check the variables in Makefile.options
@@ -299,12 +299,14 @@ make APP_SERVER=http://${YOUR_SERVER} APP_REMOTE={yes|no} chcp
 ## Use Makefile.local file.
 
 You need to define `APP_REMOTE` and `APP_SERVER` each time you want to build
-the mobile application or to update it.
+the mobile application or to update it. The `APP` variable is not mandatory per
+say but when set to `dev` it enables cleartext traffic, so you might want to
+keep it on while working on dev builds.
 
-If you don't want to pass the variables `APP_SERVER` and
+If you don't want to pass the variables `App`, `APP_SERVER` and
 `APP_REMOTE` every time, you can change the values of these variables in
 `Makefile.local.example` and rename this file to `Makefile.local`. This way,
-the variables `APP_REMOTE` and `APP_SERVER` are not mandatory when you build
+the variables `App`, `APP_REMOTE` and `APP_SERVER` are not mandatory when you build
 or update the mobile application. You can use:
 ```
 make chcp
