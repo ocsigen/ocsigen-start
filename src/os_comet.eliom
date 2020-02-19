@@ -109,7 +109,7 @@ let%client handle_message = function
     Os_msg.msg ~level:`Err
       "Connection has changed from outside. Program will restart.";
     let%lwt () = Lwt_js.sleep 2. in
-    Eliom_client.exit_to ~service:Eliom_service.reload_action () ();
+    restart_process ();
     Lwt.return_unit
 
 let%server warn_state c state =
