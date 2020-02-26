@@ -400,11 +400,7 @@ let%shared disconnect_all_link
     Lwt_js_events.(async (fun () ->
       clicks (To_dom.of_element ~%l)
         (fun _ _ ->
-           let%lwt () = Os_session.disconnect_all () in
-           Eliom_client.exit_to
-             ~service:Eliom_service.reload_action
-             () ();
-           Lwt.return_unit
+           Os_session.disconnect_all ()
         )))
   : unit)];
   l
