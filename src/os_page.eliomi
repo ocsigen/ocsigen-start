@@ -133,7 +133,7 @@ module Make (C : PAGE) : sig
 
   module Opt : sig
   (** Wrapper for pages that first checks if the user is connected.
-      See {!Eliom_session.Opt.connected_fun}.
+      See {!Os_session.Opt.connected_fun}.
   *)
     val connected_page :
       ?allow:Os_types.Group.t list ->
@@ -145,7 +145,7 @@ module Make (C : PAGE) : sig
   end
 
   (** Wrapper for pages that first checks if the user is connected.
-      See {!Eliom_session.connected_fun}.
+      See {!Os_session.connected_fun}.
   *)
   val connected_page :
     ?allow:Os_types.Group.t list ->
