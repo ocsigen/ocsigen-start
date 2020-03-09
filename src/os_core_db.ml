@@ -103,8 +103,16 @@ let init ?host ?port ?user ?password ?database
 
 let connection_pool () = !pool
 
+type wrapper =
+  { f : 'a. PGOCaml.pa_pg_data PGOCaml.t -> (unit -> 'a Lwt.t) -> 'a Lwt.t }
+
+let connection_wrapper = ref {f = fun _ f -> f ()}
+
+let set_connection_wrapper f = connection_wrapper := f
+
 let use_pool f =
   Resource_pool.use !pool @@ fun db ->
+  (!connection_wrapper).f db @@ fun () ->
   try%lwt
     f db
   with
