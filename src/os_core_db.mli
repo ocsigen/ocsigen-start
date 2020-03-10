@@ -40,7 +40,6 @@ val init :
   unit ->
   unit
 
-
 (** [full_transaction_block f] executes function [f] within a database
     transaction. The argument of [f] is a PGOCaml database handle. *)
 val full_transaction_block :
@@ -53,3 +52,10 @@ val without_transaction :
 
 (** Direct access to the connection pool *)
 val connection_pool : unit -> PGOCaml.pa_pg_data PGOCaml.t Resource_pool.t
+
+(** Setup a wrapper function which is used each time a connection is
+   acquired. This function can perform some actions before and/or
+   after the connection is used. *)
+type wrapper =
+  { f : 'a. PGOCaml.pa_pg_data PGOCaml.t -> (unit -> 'a Lwt.t) -> 'a Lwt.t }
+val set_connection_wrapper : wrapper -> unit

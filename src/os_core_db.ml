@@ -103,13 +103,24 @@ let init ?host ?port ?user ?password ?database
 
 let connection_pool () = !pool
 
+type wrapper =
+  { f : 'a. PGOCaml.pa_pg_data PGOCaml.t -> (unit -> 'a Lwt.t) -> 'a Lwt.t }
+
+let connection_wrapper = ref {f = fun _ f -> f ()}
+
+let set_connection_wrapper f = connection_wrapper := f
+
 let use_pool f =
   Resource_pool.use !pool @@ fun db ->
+  (!connection_wrapper).f db @@ fun () ->
   try%lwt
     f db
   with
   | Lwt_PGOCaml.Error msg as e ->
     Lwt_log.ign_error_f ~section "postgresql protocol error: %s" msg;
+    let%lwt () = Lwt_PGOCaml.close db in Lwt.fail e
+  | (Unix.Unix_error _ | End_of_file) as e ->
+    Lwt_log.ign_error_f ~section ~exn:e "unix error";
     let%lwt () = Lwt_PGOCaml.close db in Lwt.fail e
   | Lwt.Canceled as e ->
     Lwt_log.ign_error ~section "thread canceled";
@@ -121,7 +132,13 @@ let transaction_block db f =
     let%lwt r = f () in
     let%lwt () = Lwt_PGOCaml.commit db in
     Lwt.return r
-  with e ->
+  with
+  | (Lwt_PGOCaml.Error _ | Lwt.Canceled | Unix.Unix_error _ | End_of_file)
+    as e ->
+     (* The connection is going to be closed by [use_pool],
+        so no need to try to rollback *)
+     Lwt.fail e
+  | e ->
     let%lwt () =
       try%lwt
         Lwt_PGOCaml.rollback db
