@@ -107,9 +107,12 @@ module User = struct
     [%pgsql dbh
         "INSERT INTO ocsigen_start.preregister (email) VALUES ($email)"]
 
-  let remove_preregister email = full_transaction_block @@ fun dbh ->
+  let remove_preregister0 dbh email =
     [%pgsql dbh
         "DELETE FROM ocsigen_start.preregister WHERE email = $email"]
+
+  let remove_preregister email = full_transaction_block @@ fun dbh ->
+    remove_preregister0 dbh email
 
   let is_preregistered email = one full_transaction_block
     ~success:(fun _ -> Lwt.return_true)
@@ -149,7 +152,7 @@ module User = struct
                   "INSERT INTO ocsigen_start.emails (email, userid)
                    VALUES ($email, $userid)"]
             in
-            remove_preregister email
+            remove_preregister0 dbh email
           | None ->
             Lwt.return_unit
         in
@@ -412,9 +415,8 @@ module Phone = struct
     Lwt.return (match l with | [_] -> true | _ -> false)
 
   let exists number =
-    without_transaction @@ fun dbh ->
     match%lwt
-      full_transaction_block @@ fun dbh ->
+      without_transaction @@ fun dbh ->
       [%pgsql dbh "SELECT 1 FROM ocsigen_start.phones WHERE number = $number"]
     with
     | _ :: _ ->
@@ -423,9 +425,8 @@ module Phone = struct
       Lwt.return_false
 
   let userid number =
-    without_transaction @@ fun dbh ->
     match%lwt
-      full_transaction_block @@ fun dbh ->
+      without_transaction @@ fun dbh ->
       [%pgsql dbh
           "SELECT userid FROM ocsigen_start.phones WHERE number = $number"]
     with
@@ -442,7 +443,6 @@ module Phone = struct
 
   let get_list userid =
     without_transaction @@ fun dbh ->
-    full_transaction_block @@ fun dbh ->
     [%pgsql dbh
         "SELECT number FROM ocsigen_start.phones WHERE userid = $userid"]
 
