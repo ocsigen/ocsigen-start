@@ -2,145 +2,177 @@
    Feel free to use it, modify it, and redistribute it as you wish.
 */
 .demo-carousel1 {
-    display: flex;
-    justify-content: center;
-    .demo-carousel1-box {
-        position: relative;
-        margin: auto;
-    }
-    .ot-carousel {
-        width: 300px;
-        height: 200px;
-    }
-    .demo-carousel1-page {
-        width: 100%;
-        height: 100%;
-        padding: 16px;
-        color: white;
-    }
-    .demo-carousel1-page-1 {
-        background-color: #49b2cc;
-    }
-    .demo-carousel1-page-2 {
-        background-color: #dddd55;
-    }
-    .demo-carousel1-page-3 {
-        background-color: #c14768;
-    }
-    .demo-carousel1-page-4 {
-        background-color: #45bf7d;
-    }
-    .ot-bullet-nav {
-        position: absolute;
-        bottom: 16px;
-        right: 16px;
-        margin: 0;
-    }
-    .ot-car-prev, .ot-car-next {
-        position: absolute;
-        top: 75px;
-        width: 50px;
-        height: 50px;
-        color: white;
-        outline: none;
-    }
-    .ot-car-prev {
-        left: 0;
-    }
-    .ot-car-next {
-        right: 0;
-    }
+  display: flex;
+  justify-content: center;
+  .demo-carousel1-box {
+    position: relative;
+    margin: auto;
+  }
+  .ot-carousel {
+    width: 300px;
+    height: 200px;
+  }
+  .demo-carousel1-page {
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+    color: white;
+  }
+  .demo-carousel1-page-1 {
+    background-color: #49b2cc;
+  }
+  .demo-carousel1-page-2 {
+    background-color: #dddd55;
+  }
+  .demo-carousel1-page-3 {
+    background-color: #c14768;
+  }
+  .demo-carousel1-page-4 {
+    background-color: #45bf7d;
+  }
+  .ot-bullet-nav {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    margin: 0;
+  }
+  .ot-car-prev,
+  .ot-car-next {
+    position: absolute;
+    top: 75px;
+    width: 50px;
+    height: 50px;
+    color: white;
+    outline: none;
+  }
+  .ot-car-prev {
+    left: 0;
+  }
+  .ot-car-next {
+    right: 0;
+  }
 }
 .os-page-demo-carousel2 {
-    .demo-carousel2 {
-        margin: 0 -16px;
+  .demo-carousel2 {
+    margin: 0 -16px;
+  }
+  .ot-carousel {
+    width: 100%;
+    height: auto;
+  }
+  .demo-carousel2-page {
+    padding: 16px;
+    p {
+      text-align: justify;
     }
-    .ot-carousel {
-        width: 100%;
-        height: auto;
-    }
-    .demo-carousel2-page {
-        padding: 16px;
-        p { text-align: justify; }
-    }
-    .demo-carousel2-page-1 {
-        background-color: white;
-    }
-    .demo-carousel2-page-2 {
-        background-color: #ffffee;
-    }
-    .demo-carousel2-page-3 {
-        background-color: #ffddee;
-    }
-    .demo-carousel2-page-4 {
-        background-color: #ddffee;
-    }
-    .demo-carousel2-tabs {
-        position: sticky;
-        background-color: white;
-        z-index: 1;
-        top: 50px;
-    }
+  }
+  .demo-carousel2-page-1 {
+    background-color: white;
+  }
+  .demo-carousel2-page-2 {
+    background-color: #ffffee;
+  }
+  .demo-carousel2-page-3 {
+    background-color: #ffddee;
+  }
+  .demo-carousel2-page-4 {
+    background-color: #ddffee;
+  }
+  .demo-carousel2-tabs {
+    position: sticky;
+    background-color: white;
+    z-index: 1;
+    top: 50px;
+  }
 }
 .os-page-demo-carousel3 {
-    .demo-prev, .demo-next {
-        width: 20px;
-        height: 20px;
-        background-color: #6ae;
-        color: white;
-    }
+  .demo-prev,
+  .demo-next {
+    width: 20px;
+    height: 20px;
+    background-color: #6ae;
+    color: white;
+  }
 }
 .os-page-demo-notif,
 .os-page-demo-react {
-    input:not([type]) {
-        background-color: #eee;
-    }
+  input:not([type]) {
+    background-color: #eee;
+  }
 }
 .os-page-demo-links .demo-static-img {
-    width: 300px;
+  width: 300px;
 }
 
 .os-page-demo-transition {
-    .demo-list{
-        padding-left: 0;
-        list-style-type: none;
-    }
+  .demo-list {
+    padding-left: 0;
+    list-style-type: none;
+  }
 
-    .demo-list-item {
-        width: 100%;
-        height: 150px;
-        font-size: 20px;
-        padding-top: 65px;
-        text-align: center;
-    }
+  .demo-list-item {
+    width: 100%;
+    height: 150px;
+    font-size: 20px;
+    padding-top: 65px;
+    text-align: center;
+  }
 
-    .demo-list-item>a:visited,
-    .demo-list-item>a {
-        color: white;
-    }
+  .demo-list-item > a:visited,
+  .demo-list-item > a {
+    color: white;
+  }
 
-    .demo-list-item.demo-list-item-0 {
-        background-color: #B1EB00
-    }
-    .demo-list-item.demo-list-item-1 {
-        background-color: #53BAF3
-    }
-    .demo-list-item.demo-list-item-2 {
-        background-color: #FF85CB
-    }
-    .demo-list-item.demo-list-item-3 {
-        background-color: #F4402C
-    }
-    .demo-list-item.demo-list-item-4 {
-        background-color: #FFAC00
-    }
+  .demo-list-item.demo-list-item-0 {
+    background-color: #b1eb00;
+  }
+  .demo-list-item.demo-list-item-1 {
+    background-color: #53baf3;
+  }
+  .demo-list-item.demo-list-item-2 {
+    background-color: #ff85cb;
+  }
+  .demo-list-item.demo-list-item-3 {
+    background-color: #f4402c;
+  }
+  .demo-list-item.demo-list-item-4 {
+    background-color: #ffac00;
+  }
 
-    .demo-button {
-        margin: 0 auto;
-        padding: 20px;
-        width: 200px;
-        font-size: 20px;
-        text-align: center;
-        background-color: #ffffee;
-    }
+  .demo-button {
+    margin: 0 auto;
+    padding: 20px;
+    width: 200px;
+    font-size: 20px;
+    text-align: center;
+    background-color: #ffffee;
+  }
+}
+.demo-tongue {
+  display: flex;
+  flex-direction: column;
+  .demo-tongue-1 {
+    background-color: #ffffee;
+    height: 100px;
+  }
+  .demo-tongue-2 {
+    background-color: #ffddee;
+    height: 150px;
+  }
+  .demo-tongue-3 {
+    background-color: #ddffee;
+    height: 80px;
+  }
+  .demo-tongue-4 {
+    background-color: #ddeeff;
+    height: 200px;
+  }
+  .demo-tongue-5 {
+    background-color: #eeccff;
+    height: 130px;
+  }
+  .demo-tongue-6 {
+    background-color: #ffeeaa;
+    height: 300px;
+  }
 }

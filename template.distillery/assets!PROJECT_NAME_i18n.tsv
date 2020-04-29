@@ -131,6 +131,8 @@ demo_timepicker_back_to_hours	Back to hours	Revenir aux heures
 demo_timepicker_description	This page shows the Ocsigen Toolkit's time picker.	Cette page montre le sélecteur d'heure d'Ocsigen Toolkit.
 demo_tips	Tips	Astuces
 change_profile_picture	Change profile picture	Changer votre photo de profil.
+demo_tongue_1	Tongue	Languette
+ot_tongue_1	This is an example of page with a tongue coming from the bottom of the screen. try to slide it with your finger on a mobile screen.	Ceci est un exemple de page avec une languette partant du bas de l'écran. Essayez de la faire glisser vers le haut avec le doigt sur un téléphone mobile.
 demo_widget_ot	This app also contains demos for some widgets from Ocsigen Toolkit.	Cette application contient également des démonstrations de quelques widgets d'Ocsigen Toolkit.
 demo_widget_see_drawer	The different demos are accessible through the drawer menu. To open it click the top left button on the screen.	Les différentes démonstrations sont accessibles à travers le menu. Pour l'ouvrir, cliquez sur le bouton en haut à gauche de l'écran.
 demo_widget_feel_free	Feel free to modify the generated code and use it or redistribute it as you want.	Vous êtes libres de modifier le code généré et de l'utiliser ou de le redistribuer comme vous souhaitez.
