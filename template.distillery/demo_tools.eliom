@@ -40,6 +40,7 @@ let demos =
   ; (module Demo_carousel1)
   ; (module Demo_carousel2)
   ; (module Demo_carousel3)
+  ; (module Demo_tongue)
   ; (module Demo_calendar)
   ; (module Demo_timepicker)
   ; (module Demo_notif)
