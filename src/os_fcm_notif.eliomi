@@ -315,6 +315,12 @@ module Options :
         the ID of mobile devices you want to send the notifications to. *)
     val create : string list -> t
 
+    (** [add_raw_string key content data] *)
+    val add_raw_string : string -> string -> t -> t
+
+    (** [add_raw_json key content_json data] *)
+    val add_raw_json : string -> Yojson.Safe.t -> t -> t
+
     (** [add_to to options] specifies the recipient of a message.
 
         The value must be a registration token, notification key, or topic. Do

@@ -80,6 +80,12 @@ module Options =
       `List (List.map (fun x -> `String x) ids)
     )]
 
+    let add_raw_string key value data =
+      (key, `String value) :: data
+
+    let add_raw_json key value data =
+      (key, value) :: data
+
     let add_to value t =
       ("to", `String value) :: t
 
