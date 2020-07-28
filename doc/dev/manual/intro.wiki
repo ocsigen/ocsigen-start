@@ -244,3 +244,6 @@ connection forms, etc.
 * <<a_api subproject="server" | module Os_request_cache>>,
   <<a_api subproject="server" | module Os_user_proxy>>:
   different forms of caching data.
+
+* <<a_api subproject="server" | Ppx_syntax>>:
+  Ppx syntax extension to implement RPC.
