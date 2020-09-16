@@ -108,13 +108,16 @@ let%client request_code =
        [%json : string]
        request_code)
 
-let%server confirm_code_extra =
-  Os_session.connected_rpc @@ fun myid code ->
+let%server confirm_code myid code =
   match%lwt Eliom_reference.get activation_code_ref with
   | Some (number, code', _) when code = code' ->
     Os_db.Phone.add myid number
   | _ ->
     Lwt.return_false
+
+let%server confirm_code_extra =
+  Os_session.connected_rpc @@ fun myid code ->
+  confirm_code myid code
 
 let%client confirm_code_extra =
   ~%(Eliom_client.server_function
