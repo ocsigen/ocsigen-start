@@ -37,6 +37,10 @@ val confirm_code_signup_no_connect :
   code:string -> password:string ->
   unit -> Os_types.User.id option Lwt.t
 
+(** Confirm validation code and add extra phone to account of the given
+    user *)
+val confirm_code : Os_types.User.id -> string -> bool Lwt.t
+
 [%%shared.start]
 
 type sms_error = [`Ownership | sms_error_core]
@@ -48,7 +52,8 @@ val request_code : string -> (unit, sms_error) result Lwt.t
 (** Send a validation code for recovering an existing address. *)
 val request_recovery_code : string -> (unit, sms_error) result Lwt.t
 
-(** Confirm validation code and add extra phone to account. *)
+(** Confirm validation code and add extra phone to account of the currently
+    connected user*)
 val confirm_code_extra : string -> bool Lwt.t
 
 (** Confirm validation code and complete sign-up with the phone
