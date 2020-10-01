@@ -96,12 +96,19 @@ let monitor_channel_ref =
 let already_send_ref =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
+let%client handle_error =
+  ref
+    (fun exn ->
+      Eliom_lib.debug_exn
+        "Exception received on Os_comet's monitor channel: " exn;
+      restart_process ();
+      Lwt.return_unit)
+
+let%client set_error_handler f = handle_error := f
+
 let%client handle_message = function
   | Lwt_stream.Error exn ->
-    Eliom_lib.debug_exn
-      "Exception received on Os_comet's monitor channel: " exn;
-    restart_process ();
-    Lwt.return_unit
+    !handle_error exn
   | Lwt_stream.Value Heartbeat ->
     Eliom_lib.debug "poum";
     Lwt.return_unit
