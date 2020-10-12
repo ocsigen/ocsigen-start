@@ -3,7 +3,6 @@
 
 (* Tongue demo *)
 
-open%client Eliom_content.Html
 open%shared Eliom_content.Html.F
 
 (* Service for this demo *)
