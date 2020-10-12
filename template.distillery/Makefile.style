@@ -43,10 +43,10 @@ NPM_AUTOPREFIXER = node_modules/autoprefixer
 POSTCSS = node_modules/.bin/postcss
 
 $(NPM_POSTCSS): $(PACKAGE_JSON)
-	npm install postcss-cli
+	npm install postcss-cli@7.1.2
 
 $(NPM_AUTOPREFIXER): $(PACKAGE_JSON)
-	npm install autoprefixer
+	npm install autoprefixer@9.8.6
 
 $(PACKAGE_JSON):
 	npm init --yes
