@@ -35,7 +35,7 @@ module Notif =
   end)
 
 (* Broadcast message [v] *)
-let%server notify v =
+let%cw_rpc notify (v: string) =
   (* Notify all client processes listening on this resource
      (identified by its key, given as first parameter)
      by sending them message v. *)
@@ -45,11 +45,6 @@ let%server notify v =
      (Where myid is Os_current_user.get_current_userid ())
   *)
   Lwt.return_unit
-
-(* Make [notify] available client-side *)
-let%client notify =
-  ~%(Eliom_client.server_function [%json : string]
-       (Os_session.connected_wrapper notify))
 
 (* Subscribe for notifications via [Notif.listen ()];
    Display a message every time the React event [e = Notif.client_ev ()]
@@ -84,10 +79,7 @@ let%shared make_form msg f =
   ];
   Eliom_content.Html.D.div [inp; btn]
 
-let%server unlisten () = Notif.unlisten () ; Lwt.return_unit
-let%client unlisten =
- ~%(Eliom_client.server_function [%json : unit]
-      (Os_session.connected_wrapper unlisten))
+let%cw_rpc unlisten () = Notif.unlisten () ; Lwt.return_unit
 
 (* Page for this demo *)
 let%server page () =
