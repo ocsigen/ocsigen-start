@@ -23,12 +23,13 @@ let%shared page_class = "os-page-demo-i18n"
 
 (* Page for this demo *)
 let%shared page () =
-  (* Syntax [%i18n key] inserts the text corresponding to the key,
-     in the language chosen by the user, as a list of HTML elements.
-     Syntax [%i18n S.key] inserts the text as a string.
+  (* Syntax [%i18n key] or [%i18n Module.key] inserts
+     the text corresponding to the key, in the language chosen by the user,
+     as a list of HTML elements.
+     Syntax [%i18n S.key] or [%i18n Module.S.key] inserts the text as a string.
      It is possible to give parameters (here a boolean ~capitalize, or
      a piece of HTML text ~f1 or ~f2). Have a look at file
-     assets/%%%PROJECT_NAME%%%_i18n.tsv
+     assets/%%%PROJECT_NAME%%%_Demo_i18n.tsv
      to see how to write the corresponding translations.
   *)
   Lwt.return
@@ -39,4 +40,8 @@ let%shared page () =
           ~f2:[code [txt "%%%PROJECT_NAME%%%_i18n.eliom"]]
       ]
     ; p [txt [%i18n Demo.S.internationalization_3] ]
+    ; p  [%i18n Demo.S.internationalization_4
+          ~f:[code [txt "assets/%%%PROJECT_NAME%%%_Demo_i18n.tsv"]]
+          ~demo_prefix:[code [txt "demo_"]]
+      ]
     ]

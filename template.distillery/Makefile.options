@@ -19,6 +19,7 @@ I18N_DEFAULT_LANGUAGE  := en
 ## The TSV files containing all translations.
 I18N_TSV_DIR           := assets/
 I18N_PRIMARY_FILE      := $(I18N_TSV_DIR)$(PROJECT_NAME)_i18n.tsv
+# The demo entries are in their own file, for convenience.
 I18N_EXTRA_FILES       := $(I18N_TSV_DIR)$(PROJECT_NAME)_Demo_i18n.tsv
 
 ##----------------------------------------------------------------------
