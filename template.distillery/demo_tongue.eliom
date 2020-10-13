@@ -16,7 +16,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name () = [%i18n S.demo_tongue_1]
+let%shared name () = [%i18n Demo.S.tongue_1]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-tongue"
@@ -39,8 +39,8 @@ let%shared page () =
       content
   in
   Lwt.return
-    [ h1 [%i18n demo_tongue_1]
-    ; p [%i18n ot_tongue_1]
+    [ h1 [%i18n Demo.tongue_1]
+    ; p [%i18n Demo.ot_tongue_1]
     ; div ~a:[a_class ["demo-tongue"]]
         [ tongue.Ot_tongue.elt ]
     ]

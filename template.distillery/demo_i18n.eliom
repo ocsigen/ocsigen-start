@@ -16,7 +16,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name () = [%i18n S.internationalization ~capitalize:true]
+let%shared name () = [%i18n Demo.S.internationalization ~capitalize:true]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-i18n"
@@ -32,11 +32,11 @@ let%shared page () =
      to see how to write the corresponding translations.
   *)
   Lwt.return
-    [ h1 [%i18n internationalization ~capitalize:true]
-    ; p [%i18n internationalization_1]
-    ; p [%i18n internationalization_2
+    [ h1 [%i18n Demo.internationalization ~capitalize:true]
+    ; p [%i18n Demo.internationalization_1]
+    ; p [%i18n Demo.internationalization_2
           ~f1:[code [txt "assets/%%%PROJECT_NAME%%%_i18n.tsv"]]
           ~f2:[code [txt "%%%PROJECT_NAME%%%_i18n.eliom"]]
       ]
-    ; p [txt [%i18n S.internationalization_3] ]
+    ; p [txt [%i18n Demo.S.internationalization_3] ]
     ]

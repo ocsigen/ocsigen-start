@@ -31,7 +31,7 @@ let%client service = ~%service
 let%client detail_page_service = ~%detail_page_service
 
 (* Name for demo menu *)
-let%shared name () = [%i18n S.demo_pagetransition]
+let%shared name () = [%i18n Demo.S.pagetransition]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-transition"
@@ -51,7 +51,7 @@ let%shared page () =
   in
   let add_button =
     div ~a:[a_class ["demo-button"]]
-      [%i18n demo_pagetransition_add_button] in
+      [%i18n Demo.pagetransition_add_button] in
   ignore
     ([%client
       ( (* It is the address of the dom that will be stored in cache, so
@@ -70,8 +70,8 @@ let%shared page () =
              Html.Manip.appendChild ~%l (create_item (counter ()));
              Lwt.return_unit ):unit Lwt.t)]) ;
   Lwt.return (
-    [ h1 [%i18n demo_pagetransition_list_page]
-    ; p [%i18n demo_pagetransition_intro]
+    [ h1 [%i18n Demo.pagetransition_list_page]
+    ; p [%i18n Demo.pagetransition_intro]
     ; l
     ; add_button]
   )
@@ -79,7 +79,7 @@ let%shared page () =
 let%shared make_detail_page page () =
   let back_button =
     div ~a:[a_class ["demo-button"]]
-      [%i18n demo_pagetransition_back_button] in
+      [%i18n Demo.pagetransition_back_button] in
   ignore ([%client (
     Lwt.async (fun () ->
       Lwt_js_events.clicks
@@ -87,6 +87,6 @@ let%shared make_detail_page page () =
         (fun _ _ ->
            Js_of_ocaml.Dom_html.window##.history##back;
            Lwt.return_unit )):unit)]);
-  [h1 ([%i18n demo_pagetransition_detail_page]
+  [h1 ([%i18n Demo.pagetransition_detail_page]
        @ [txt (Printf.sprintf " %d" page)]);
    back_button]

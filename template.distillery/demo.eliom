@@ -11,13 +11,13 @@ let%shared handler myid_o () () =
   %%%MODULE_NAME%%%_container.page
     ~a:[ a_class ["os-page-demo"] ]
     myid_o
-    [ h2 [%i18n general_principles]
-    ; p [%i18n demo_intro_1]
-    ; p [%i18n demo_intro_2]
-    ; p [%i18n demo_widget_ot]
-    ; p [%i18n demo_widget_see_drawer]
-    ; p [%i18n demo_widget_feel_free]
-    ; p [%i18n demo_intro_3]
+    [ h2 [%i18n Demo.general_principles]
+    ; p [%i18n Demo.intro_1]
+    ; p [%i18n Demo.intro_2]
+    ; p [%i18n Demo.widget_ot]
+    ; p [%i18n Demo.widget_see_drawer]
+    ; p [%i18n Demo.widget_feel_free]
+    ; p [%i18n Demo.intro_3]
     ]
 
 

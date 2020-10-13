@@ -18,7 +18,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu. This value is defined both server and client-side. *)
-let%shared name () = [%i18n S.demo_popup]
+let%shared name () = [%i18n Demo.S.popup]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-popup"
@@ -36,7 +36,7 @@ let%shared page () =
     D.Form.input
       ~a:[a_class ["button"]]
       ~input_type:`Submit
-      ~value:[%i18n S.demo_popup_click]
+      ~value:[%i18n Demo.S.popup_click]
       Form.string
   in
   (* Every time this page is generated,
@@ -63,7 +63,7 @@ let%shared page () =
               let%lwt _ =
                 Ot_popup.popup
                   ~close_button:[ Os_icons.F.close () ]
-                  (fun _ -> Lwt.return @@ p [%i18n demo_popup_message])
+                  (fun _ -> Lwt.return @@ p [%i18n Demo.popup_message])
               in
               Lwt.return_unit))
        : unit)
@@ -73,7 +73,7 @@ let%shared page () =
      See internationalization demo for i18n syntax.
   *)
   Lwt.return
-    [ h1 [%i18n demo_popup]
-    ; p [%i18n demo_popup_content]
+    [ h1 [%i18n Demo.popup]
+    ; p [%i18n Demo.popup_content]
     ; p [button]
     ]

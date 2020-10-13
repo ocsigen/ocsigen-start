@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "ocsigen-start"
-version: "2.19.3"
+version: "2.19.4"
 authors: "dev@ocsigen.org"
 maintainer: "dev@ocsigen.org"
 synopsis: "An Eliom application skeleton ready to use to build your own application with users, (pre)registration, notifications, etc"
@@ -19,6 +19,7 @@ depends: [
   "ocsigen-i18n" {>= "3.1.0"}
   "eliom" {>= "6.12.4"}
   "ocsigen-toolkit" {>= "2.7.0"}
+  "ocsigen-i18n" {>= "3.7.0"}
   "yojson" {>= "1.4.1"}
   "resource-pooling" {>= "1.0" & < "2.0"}
   "cohttp-lwt-unix"

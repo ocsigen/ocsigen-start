@@ -16,7 +16,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name () = [%i18n S.demo_tips]
+let%shared name () = [%i18n Demo.S.tips]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-tips"
@@ -33,8 +33,8 @@ let%shared example_tip () =
     ~name:"example"
     ~content:[%client (fun _ ->
       Lwt.return
-        Eliom_content.Html.F.[ p [%i18n example_tip]
-                             ; p [%i18n look_module_tip]
+        Eliom_content.Html.F.[ p [%i18n Demo.example_tip]
+                             ; p [%i18n Demo.look_module_tip]
                              ]) ]
 
 (* Page for this demo *)
@@ -42,11 +42,11 @@ let%shared page () =
   (* Call the function defining the tip from the server or the client: *)
   let%lwt () = example_tip () in
   Lwt.return
-    [ h1 [%i18n tips1]
-    ; p [%i18n tips2 ~os_tips:[code [ txt "Os_tips" ]] ]
-    ; p [%i18n tips3 ]
-    ; p [%i18n tips4
+    [ h1 [%i18n Demo.tips1]
+    ; p [%i18n Demo.tips2 ~os_tips:[code [ txt "Os_tips" ]] ]
+    ; p [%i18n Demo.tips3 ]
+    ; p [%i18n Demo.tips4
           ~set_page:[a ~service:%%%MODULE_NAME%%%_services.settings_service
-                       [%i18n tips5] ()]
-        ]
+                       [%i18n Demo.tips5] ()]
+      ]
     ]

@@ -23,7 +23,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name () = [%i18n S.demo_carousel_2]
+let%shared name () = [%i18n Demo.S.carousel_2]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-carousel2"
@@ -82,10 +82,10 @@ let%shared page () =
   ];
 
   Lwt.return
-    [ h1 [%i18n demo_carousel_2]
-    ; p [%i18n ot_carousel_second_example_1]
-    ; p [%i18n ot_carousel_second_example_2]
-    ; p [%i18n ot_carousel_second_example_3]
+    [ h1 [%i18n Demo.carousel_2]
+    ; p [%i18n Demo.ot_carousel_second_example_1]
+    ; p [%i18n Demo.ot_carousel_second_example_2]
+    ; p [%i18n Demo.ot_carousel_second_example_3]
     ; div ~a:[a_class ["demo-carousel2"]]
         [ div ~a:[a_class ["demo-carousel2-box"]]
             [ tabs ; carousel ] ]

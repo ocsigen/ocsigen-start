@@ -16,7 +16,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name () = [%i18n S.demo_spinner]
+let%shared name () = [%i18n Demo.S.spinner]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-spinner"
@@ -29,19 +29,19 @@ let%client make_spinner () =
     (* sleep for 5 seconds to simulate a delay, then return content *)
     (let%lwt () = Lwt_js.sleep 5. in
      Lwt.return Eliom_content.Html.D.[
-       txt [%i18n S.demo_spinner_content_ready]
+       txt [%i18n Demo.S.spinner_content_ready]
      ; txt " "
-     ; txt [%i18n S.demo_spinner_message_replace_spinner]
+     ; txt [%i18n Demo.S.spinner_message_replace_spinner]
      ])
 
 (* Page for this demo *)
 let%shared page () =
   Lwt.return Eliom_content.Html.[
-    F.h1 [%i18n demo_spinner]
-  ; F.p [ F.txt [%i18n S.demo_spinner_description_ot] ]
-  ; F.p [ F.txt [%i18n S.demo_spinner_description_1] ]
-  ; F.p [ F.txt [%i18n S.demo_spinner_description_2] ]
-  ; F.p [ F.txt [%i18n S.demo_spinner_description_3]]
-  ; F.p [ F.txt [%i18n S.demo_spinner_generated_client_side]]
+    F.h1 [%i18n Demo.spinner]
+  ; F.p [ F.txt [%i18n Demo.S.spinner_description_ot] ]
+  ; F.p [ F.txt [%i18n Demo.S.spinner_description_1] ]
+  ; F.p [ F.txt [%i18n Demo.S.spinner_description_2] ]
+  ; F.p [ F.txt [%i18n Demo.S.spinner_description_3]]
+  ; F.p [ F.txt [%i18n Demo.S.spinner_generated_client_side]]
   ; C.node [%client (make_spinner () : [> `Div] Eliom_content.Html.elt) ]
   ]

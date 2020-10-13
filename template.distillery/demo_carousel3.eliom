@@ -17,7 +17,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name () = [%i18n S.demo_carousel_wheel]
+let%shared name () = [%i18n Demo.S.carousel_wheel]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-carousel3"
@@ -25,41 +25,41 @@ let%shared page_class = "os-page-demo-carousel3"
 (* Page for this demo *)
 let%shared page () =
   let carousel_pages =
-    [ [%i18n S.monday] ^ " 1"
-    ; [%i18n S.tuesday] ^ " 1"
-    ; [%i18n S.wednesday] ^ " 1"
-    ; [%i18n S.thursday] ^ " 1"
-    ; [%i18n S.friday] ^ " 1"
-    ; [%i18n S.saturday] ^ " 1"
-    ; [%i18n S.sunday] ^ " 1"
-    ; [%i18n S.monday] ^ " 2"
-    ; [%i18n S.tuesday] ^ " 2"
-    ; [%i18n S.wednesday] ^ " 2"
-    ; [%i18n S.thursday] ^ " 2"
-    ; [%i18n S.friday] ^ " 2"
-    ; [%i18n S.saturday] ^ " 2"
-    ; [%i18n S.sunday] ^ " 2"
-    ; [%i18n S.monday] ^ " 3"
-    ; [%i18n S.tuesday] ^ " 3"
-    ; [%i18n S.wednesday] ^ " 3"
-    ; [%i18n S.thursday] ^ " 3"
-    ; [%i18n S.friday] ^ " 3"
-    ; [%i18n S.saturday] ^ " 3"
-    ; [%i18n S.sunday] ^ " 3"
-    ; [%i18n S.monday] ^ " 4"
-    ; [%i18n S.tuesday] ^ " 4"
-    ; [%i18n S.wednesday] ^ " 4"
-    ; [%i18n S.thursday] ^ " 4"
-    ; [%i18n S.friday] ^ " 4"
-    ; [%i18n S.saturday] ^ " 4"
-    ; [%i18n S.sunday] ^ " 4"
-    ; [%i18n S.monday] ^ " 5"
-    ; [%i18n S.tuesday] ^ " 5"
-    ; [%i18n S.wednesday] ^ " 5"
-    ; [%i18n S.thursday] ^ " 5"
-    ; [%i18n S.friday] ^ " 5"
-    ; [%i18n S.saturday] ^ " 5"
-    ; [%i18n S.sunday] ^ " 5" ]
+    [ [%i18n Demo.S.monday] ^ " 1"
+    ; [%i18n Demo.S.tuesday] ^ " 1"
+    ; [%i18n Demo.S.wednesday] ^ " 1"
+    ; [%i18n Demo.S.thursday] ^ " 1"
+    ; [%i18n Demo.S.friday] ^ " 1"
+    ; [%i18n Demo.S.saturday] ^ " 1"
+    ; [%i18n Demo.S.sunday] ^ " 1"
+    ; [%i18n Demo.S.monday] ^ " 2"
+    ; [%i18n Demo.S.tuesday] ^ " 2"
+    ; [%i18n Demo.S.wednesday] ^ " 2"
+    ; [%i18n Demo.S.thursday] ^ " 2"
+    ; [%i18n Demo.S.friday] ^ " 2"
+    ; [%i18n Demo.S.saturday] ^ " 2"
+    ; [%i18n Demo.S.sunday] ^ " 2"
+    ; [%i18n Demo.S.monday] ^ " 3"
+    ; [%i18n Demo.S.tuesday] ^ " 3"
+    ; [%i18n Demo.S.wednesday] ^ " 3"
+    ; [%i18n Demo.S.thursday] ^ " 3"
+    ; [%i18n Demo.S.friday] ^ " 3"
+    ; [%i18n Demo.S.saturday] ^ " 3"
+    ; [%i18n Demo.S.sunday] ^ " 3"
+    ; [%i18n Demo.S.monday] ^ " 4"
+    ; [%i18n Demo.S.tuesday] ^ " 4"
+    ; [%i18n Demo.S.wednesday] ^ " 4"
+    ; [%i18n Demo.S.thursday] ^ " 4"
+    ; [%i18n Demo.S.friday] ^ " 4"
+    ; [%i18n Demo.S.saturday] ^ " 4"
+    ; [%i18n Demo.S.sunday] ^ " 4"
+    ; [%i18n Demo.S.monday] ^ " 5"
+    ; [%i18n Demo.S.tuesday] ^ " 5"
+    ; [%i18n Demo.S.wednesday] ^ " 5"
+    ; [%i18n Demo.S.thursday] ^ " 5"
+    ; [%i18n Demo.S.friday] ^ " 5"
+    ; [%i18n Demo.S.saturday] ^ " 5"
+    ; [%i18n Demo.S.sunday] ^ " 5" ]
   in
   let length = List.length carousel_pages in
   let carousel_content = List.map (fun p -> D.div [ txt p ]) carousel_pages
@@ -85,8 +85,8 @@ let%shared page () =
   in
 
   Lwt.return
-    [ h1 [%i18n demo_carousel_wheel]
-    ; p [%i18n demo_carousel_third_example_1]
+    [ h1 [%i18n Demo.carousel_wheel]
+    ; p [%i18n Demo.carousel_third_example_1]
     ; carousel
     ; div [
         Ot_carousel.previous ~a:[ a_class ["demo-prev"] ] ~change ~pos [];

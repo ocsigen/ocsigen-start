@@ -16,7 +16,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name () = [%i18n S.links_and_static_files]
+let%shared name () = [%i18n Demo.S.links_and_static_files]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-links"
@@ -35,21 +35,21 @@ let%client ocsigen_service = ~%ocsigen_service
 (* Page for this demo *)
 let%shared page () =
   Lwt.return
-    [ h1 [%i18n links_and_static_files]
-    ; h2 [%i18n services]
-    ; p [%i18n services_1
+    [ h1 [%i18n Demo.links_and_static_files]
+    ; h2 [%i18n Demo.services]
+    ; p [%i18n Demo.services_1
           ~f1:[code [txt "%%%PROJECT_NAME%%%_services.eliom"]]
           ~f2:[code [txt "%%%PROJECT_NAME%%%_handlers.eliom"]]
           ~f3:[code [txt "%%%PROJECT_NAME%%%.eliom"]]
       ]
-    ; h2 [%i18n links_and_forms]
-    ; p [%i18n links_and_forms_1
+    ; h2 [%i18n Demo.links_and_forms]
+    ; p [%i18n Demo.links_and_forms_1
           ~t1:[a ~service:Os_services.main_service
-                 [%i18n internal_link] ()]
-          ~t2:[a ~service:ocsigen_service [%i18n external_service] ()]
+                 [%i18n Demo.internal_link] ()]
+          ~t2:[a ~service:ocsigen_service [%i18n Demo.external_service] ()]
       ]
-    ; h2 [%i18n static_files]
-    ; p [%i18n static_files_1
+    ; h2 [%i18n Demo.static_files]
+    ; p [%i18n Demo.static_files_1
           ~static:[code [txt "static"]]
           ~static_dir:[code [txt "static_dir"]]]
     ; img ~a:[ a_class [ "demo-static-img" ] ]
@@ -59,7 +59,7 @@ let%shared page () =
                 ~service:(Eliom_service.static_dir ())
                 ["images"; "ocsigen.png"])
         ()
-    ; p [%i18n static_files_2]
+    ; p [%i18n Demo.static_files_2]
     ; img ~a:[ a_class [ "demo-static-img" ] ]
         ~alt:"distant_img"
         ~src:(Eliom_content.Html.F.make_uri

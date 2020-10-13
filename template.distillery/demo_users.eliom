@@ -16,22 +16,22 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name () = [%i18n S.users]
+let%shared name () = [%i18n Demo.S.users]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-users"
 
 let%shared display_user_name = function
-  | None -> p [%i18n you_are_not_connected]
+  | None -> p [%i18n Demo.you_are_not_connected]
   | Some user ->
-    p [ txt ([%i18n S.you_are] ^ " ")
+    p [ txt ([%i18n Demo.S.you_are] ^ " ")
       ; em [ txt (Os_user.fullname_of_user user) ]
       ]
 
 let%shared display_user_id = function
-  | None -> p [%i18n log_in_to_see_demo]
+  | None -> p [%i18n Demo.log_in_to_see_demo]
   | Some userid ->
-    p [ txt ([%i18n S.your_user_id] ^ " ")
+    p [ txt ([%i18n Demo.S.your_user_id] ^ " ")
       ; em [ txt (Int64.to_string userid) ]
       ]
 
@@ -46,17 +46,17 @@ let%shared page () =
   let myid_o = Os_current_user.Opt.get_current_userid () in
   let me_o = Os_current_user.Opt.get_current_user () in
   Lwt.return
-    [ h1 [%i18n users]
-    ; p [ txt [%i18n S.the_module]
+    [ h1 [%i18n Demo.users]
+    ; p [ txt [%i18n Demo.S.the_module]
         ; code [ txt " Os_current_user " ]
-        ; txt [%i18n S.allows_get_information_currently_connected_user]
+        ; txt [%i18n Demo.S.allows_get_information_currently_connected_user]
         ]
     ; display_user_name me_o
     ; display_user_id myid_o
-    ; p [ txt [%i18n S.these_functions_called_server_or_client_side]
+    ; p [ txt [%i18n Demo.S.these_functions_called_server_or_client_side]
         ]
-    ; p [ txt [%i18n S.always_get_current_user_using_module]
+    ; p [ txt [%i18n Demo.S.always_get_current_user_using_module]
         ; code [ txt " Os_current_user. " ]
-        ; txt [%i18n S.never_trust_client_pending_user_id]
+        ; txt [%i18n Demo.S.never_trust_client_pending_user_id]
         ]
     ]
