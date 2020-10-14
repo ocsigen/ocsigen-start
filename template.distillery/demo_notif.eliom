@@ -51,24 +51,27 @@ let%client notify =
   ~%(Eliom_client.server_function [%json : string]
        (Os_session.connected_wrapper notify))
 
-(* Subscribe for notifications via [Notif.listen ()];
-   Display a message every time the React event [e = Notif.client_ev ()]
-   happens. *)
-let%server listen () =
-  Notif.listen ();
-  let e : (unit * string) Eliom_react.Down.t = Notif.client_ev () in
-  ignore [%client
-    ((React.E.map (fun (_, msg) ->
-       (* Eliom_lib.alert "%s" msg *)
-       Os_msg.msg ~level:`Msg (Printf.sprintf "%s" msg)
-     ) ~%e)
-     : unit React.E.t)
-  ];
-  Lwt.return ()
+let%server listen = Notif.listen
 
-let%client listen =
-  ~%(Eliom_client.server_function [%json : unit]
-       (Os_session.connected_wrapper listen))
+let%client listen () =
+  Lwt.async
+    ~%(Eliom_client.server_function [%json : unit]
+         (Os_session.connected_wrapper (fun () -> listen () ; Lwt.return_unit)))
+
+(* Display a message every time the React event [e = Notif.client_ev ()]
+   happens. *)
+let%server () =
+  Os_session.on_start_process (fun _ ->
+    let e : (unit * string) Eliom_react.Down.t = Notif.client_ev () in
+    ignore
+      [%client
+        (ignore @@
+         React.E.map (fun (_, msg) ->
+           (* Eliom_lib.alert "%s" msg *)
+           Os_msg.msg ~level:`Msg (Printf.sprintf "%s" msg)
+         ) ~%e
+         : unit)];
+    Lwt.return_unit)
 
 (* Make a text input field that calls [f s] for each [s] submitted *)
 let%shared make_form msg f =
@@ -97,7 +100,7 @@ let%client unlisten =
 (* Page for this demo *)
 let%shared page () =
   (* Subscribe to notifications when entering this page: *)
-  Lwt.async listen;
+  listen ();
 
   (* Unsubscribe from notifications when user leaves this page *)
   let _ : unit Eliom_client_value.t =
