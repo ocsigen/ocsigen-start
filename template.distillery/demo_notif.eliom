@@ -63,7 +63,12 @@ let%server listen () =
        Os_msg.msg ~level:`Msg (Printf.sprintf "%s" msg)
      ) ~%e)
      : unit React.E.t)
-  ]
+  ];
+  Lwt.return ()
+
+let%client listen =
+  ~%(Eliom_client.server_function [%json : unit]
+       (Os_session.connected_wrapper listen))
 
 (* Make a text input field that calls [f s] for each [s] submitted *)
 let%shared make_form msg f =
@@ -90,12 +95,13 @@ let%client unlisten =
       (Os_session.connected_wrapper unlisten))
 
 (* Page for this demo *)
-let%server page () =
-  listen ();
+let%shared page () =
+  (* Subscribe to notifications when entering this page: *)
+  Lwt.async listen;
 
   (* Unsubscribe from notifications when user leaves this page *)
   let _ : unit Eliom_client_value.t =
-    [%client Eliom_client.onunload (fun () -> Lwt.async unlisten)]
+    [%client Eliom_client.Page_status.ondead (fun () -> Lwt.async unlisten)]
   in
 
   Lwt.return Eliom_content.Html.F.[
@@ -109,11 +115,3 @@ let%server page () =
          ])
   ; make_form [%i18n S.send_message] [%client (notify : string -> unit Lwt.t)]
   ]
-
-(* Make page available on client-side *)
-let%client page =
-  ~%((Eliom_client.server_function [%json: unit]
-        (Os_session.connected_wrapper page)) :
-       (unit,
-        Html_types.div_content Eliom_content.Html.D.elt list)
-         Eliom_client.server_function)
