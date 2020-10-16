@@ -35,7 +35,7 @@ let%client action y m d = ~%f (Some (y, m, d)); Lwt.return_unit
 
 let%shared string_of_date = function
   | Some (y, m, d) ->
-    [%i18n S.you_click_on_date
+    [%i18n Demo.S.you_click_on_date
         ~y:(string_of_int y) ~m:(string_of_int m) ~d:(string_of_int d) ]
   | None ->
     ""
@@ -51,7 +51,7 @@ let%client date_reactive =
 
 
 (* Name for demo menu *)
-let%shared name () = [%i18n S.demo_calendar]
+let%shared name () = [%i18n Demo.S.calendar]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-calendar"
@@ -65,8 +65,8 @@ let%shared page () =
   in
   let%lwt dr = date_reactive () in
   Lwt.return
-    [ h1 [%i18n demo_calendar]
-    ; p [%i18n this_page_show_calendar]
+    [ h1 [%i18n Demo.calendar]
+    ; p [%i18n Demo.this_page_show_calendar]
     ; div ~a:[a_class ["os-calendar"]] [calendar]
     ; p [Eliom_content.Html.R.txt dr]
     ]

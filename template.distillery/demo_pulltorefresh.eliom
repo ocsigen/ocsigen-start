@@ -14,7 +14,7 @@ let%server service =
 (* Make service available on the client *)
 let%client service = ~%service
 (* Name for demo menu *)
-let%shared name () = [%i18n S.demo_pull_to_refresh]
+let%shared name () = [%i18n Demo.S.pull_to_refresh]
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-pull"
 
@@ -33,15 +33,15 @@ let%shared page () =
       [%shared
         fun n ->
           let n = [F.txt @@ string_of_int n] in
-          F.p [%i18n demo_pull_to_refresh_counter ~n]]
+          F.p [%i18n Demo.pull_to_refresh_counter ~n]]
       counter_sig
   in
   let content =
     F.div
       ~a:[F.a_class ["demo-pull-to-refresh-content"]]
-      [ F.h1 [%i18n demo_pull_to_refresh]
-      ; F.p [%i18n demo_pull_to_refresh_1]
-      ; F.p [%i18n demo_pull_to_refresh_2]
+      [ F.h1 [%i18n Demo.pull_to_refresh]
+      ; F.p [%i18n Demo.pull_to_refresh_1]
+      ; F.p [%i18n Demo.pull_to_refresh_2]
       ; R.node counter_node_sig ]
   in
   Lwt.return @@ [Ot_pulltorefresh.make ~dragThreshold:15. ~content reload]

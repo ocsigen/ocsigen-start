@@ -17,7 +17,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name () = [%i18n S.demo_carousel_1]
+let%shared name () = [%i18n Demo.S.carousel_1]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-carousel1"
@@ -63,11 +63,11 @@ let%shared page () =
   let next = Ot_carousel.next ~change ~pos ~vis_elts ~length [] in
   bind_keys change carousel;
   Lwt.return
-    [ h1 [%i18n demo_carousel_1]
-    ; p [%i18n ot_carousel_first_example_1]
-    ; p [%i18n ot_carousel_first_example_2]
-    ; p [%i18n ot_carousel_first_example_3]
-    ; p [%i18n ot_carousel_first_example_4]
+    [ h1 [%i18n Demo.carousel_1]
+    ; p [%i18n Demo.ot_carousel_first_example_1]
+    ; p [%i18n Demo.ot_carousel_first_example_2]
+    ; p [%i18n Demo.ot_carousel_first_example_3]
+    ; p [%i18n Demo.ot_carousel_first_example_4]
     ; div ~a:[a_class ["demo-carousel1"]]
         [ div ~a:[a_class ["demo-carousel1-box"]]
             [ carousel ; prev ; next ; bullets ] ]

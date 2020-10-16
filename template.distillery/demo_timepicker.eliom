@@ -22,7 +22,7 @@ let%client action (h, m) = ~%f (Some (h, m)); Lwt.return_unit
 
 let%shared string_of_time = function
   | Some (h, m) ->
-    [%i18n S.you_click_on_time ~h:(string_of_int h) ~m:(string_of_int m)]
+    [%i18n Demo.S.you_click_on_time ~h:(string_of_int h) ~m:(string_of_int m)]
   | None ->
     ""
 
@@ -36,7 +36,7 @@ let%client time_reactive =
        (Os_session.connected_wrapper time_reactive))
 
 (* Name for demo menu *)
-let%shared name () = [%i18n S.demo_timepicker]
+let%shared name () = [%i18n Demo.S.timepicker]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-timepicker"
@@ -48,7 +48,7 @@ let%shared page () =
       ~action:[%client action]
       ()
   in
-  let button = Eliom_content.Html.D.button [%i18n demo_timepicker_back_to_hours] in
+  let button = Eliom_content.Html.D.button [%i18n Demo.timepicker_back_to_hours] in
   ignore
     [%client
       (Lwt.async (fun () ->
@@ -61,8 +61,8 @@ let%shared page () =
     ];
   let%lwt tr = time_reactive () in
   Lwt.return
-    [ h1 [%i18n demo_timepicker]
-    ; p [%i18n demo_timepicker_description]
+    [ h1 [%i18n Demo.timepicker]
+    ; p [%i18n Demo.timepicker_description]
     ; div [time_picker]
     ; p [Eliom_content.Html.R.txt tr]
     ; div [button]

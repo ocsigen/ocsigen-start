@@ -1,0 +1,121 @@
+allows_get_information_currently_connected_user	provides information about the currently connected user (server or client side).	vous autorise à obtenir les information de l'utilisateur courant connecté (côté serveur ou côté client).
+always_get_current_user_using_module	Always get the current user id using module	Récupérez toujours l'ID de l'utilisateur courant en utilisant le module
+cache	Cache	Cache
+cache_1	Caching the data	Mise en cache des données
+cache_2	Module {{eliom_cscache}} implements a cache of data that is designed for Eliom's client-server programming model. It permits saving a client-side copy of the data. Have a look at the module {{os_user_proxy}} to see how it works (and use this module for getting information about Ocsigen Start's users).	Le module {{eliom_cscache}} implémente un cache de données construit pour le modèle client-serveur d'Eliom. Il permet de sauvegarder une copie des données du client. Jetez un oeil au module {{os_user_proxy}} pour comprendre son fonctionnement (et utilisez ce module pour obtenir des informations sur les utilisateurs d'Ocsigen Start).
+cache_3	When you get a piece of data through {{eliom_cscache}} from client-side, the request to the server is done only if the data is not already in the client-side cache. On server-side, {{eliom_cscache}} is using a temporary cache (with \"request\" scope) to avoid fetching the data several times from the database during the same request. This server-side cache is automatically sent to the client to fill the client-side cache. If you want to avoid too many requests from the client, prefill the server-side cache with the data the client program will need.	Quand une donnée du client est obtenue via {{eliom_cscache}}, la requête vers le serveur est faite uniquement si la donnée ne se trouve pas déjà dans le cache côté client. Du côté serveur, {{eliom_cscache}} utilise un cache temporaire (avec une portée de type "request") afin d'éviter de récupérer les données de la base de données plusieurs fois sur une même requête. Ce cache côté serveur est automatiquement envoyé au client pour remplir son cache. Pour éviter un trop grand nombre de requêtes côté client, pré-remplissez le cache côté serveur avec les données dont le programme côté client a besoin.
+cache_4	In the near future, {{eliom_cscache}} will enable saving persistent data, which is useful for implementing off-line applications.	Prochainement, {{eliom_cscache}} permettra de sauvegarder des données de manière persistante, ce qui peut être utile pour implémenter des applications hors ligne.
+calendar	Calendar	Calendrier
+carousel_1	Carousel	Carousel
+carousel_2	Carousel: page with tabs	Carousel : page avec onglets
+carousel_third_example_1	Example of a vertical circular carousel (wheel). Try with a touch screen.	Exemple de carousel vertical circulaire (wheel). Essayez avec un écran tactile.
+carousel_wheel	Wheel carousel	Carousel avec roulette
+eliom_ref	Eliom references + OS dates	Références Eliom + dates OS
+eliom_ref_1	We use an Eliom reference to record the last time you visited this page. Eliom references make it possible to save, server-side, data specific to one user, one browser, or one tab. 	Nous utilisons les références Eliom pour sauvegarder la date de la dernière fois que vous avez visité cette page. Les références Eliom permettent de sauvegarder côté serveur des données propres à un utilisateur, à un navigateur ou à un onglet.
+eliom_ref_2	The value is different for each user.	La valeur est différente pour chaque utilisateur.
+eliom_ref_3	The reference has been updated. Come back later!	La référence a été mise à jour. Revenez plus tard !
+eliom_ref_first_visit	This is your first visit.	Ceci est votre première visite.
+eliom_ref_last_visit	The last time you visited was: 	 La dernière fois que vous avez visité ce lien était :
+example_tip	This is an example of tip.	Ceci est un exemple de tip.
+exchange_msg_between_users	Module {{os_notif}} enables sending information to client applications (notifications, new messages ...).	Le module {{os_notif}} permet d'envoyer des données aux applications client (notifications, nouveaux messages,...).
+external_service	external service	service externe
+fill_input_form_send_message	Fill in the input form to send a message to all other tabs.	Remplissez le formulaire pour envoyer un message à tous vos autres onglets ouverts.
+friday	Friday	Vendredi
+general_principles	General principles	Principes généraux
+internal_link	internal link	lien interne
+internationalization	{{{capitalize?I||i}}}nternationalization	{{{capitalize?I||i}}}nternationalisation
+internationalization_1	Ocsigen Start uses Ocsigen-i18n for internationalizing your app. Ocsigen-i18n defines a PPX syntax extension for automatically selecting language-dependent text for each user. The user can choose his preferred language from the settings page. By default the browser's language is used.	Ocsigen Start utilise Ocsigen-i18n for internationaliser les applications. Ocsigen-i18n définit une extension de syntaxe PPX qui sélectionne automatiquement les textes en fonction de la langue de l'utilisateur courant. L'utilisateur peut choisir sa langue préférée dans la page de paramètres. Par défaut, la langue du navigateur est utilisée.
+internationalization_2	Write your translations (as tab-separated-values) in file {{f1}}. File {{f2}} is generated automatically from this file.	Écrivez vos traductions (au format "tab-separated-values") dans le fichier {{f1}}. Le fichier {{f2}} est généré automatiquement à partir de ce fichier.
+internationalization_3	Have a look at the OCaml code of this page to discover some features of the module Ocsigen-i18n.	Jetez un coup d'œil au code OCaml de cette page pour découvrir quelques astuces du module Ocsigen-i18n.
+internationalization_4	To make your life easier, the entries used for this whole demo sub-site have been split into their own file {{f}}. When you feel ready to make this project your own, you can freely delete all the {{demo_prefix}} files, and {{f}}.	Pour rendre votre vie un peu plus facile, les entrées utilisées dans tout ce sous-site démo ont été séparées dans leur propre fichier {{f}}. Quand vous vous sentez prêt à faire de ce projet le votre, vous pourrez librement supprimer tous les fichiers {{demo_prefix}}, ainsi que {{f}}.
+intro	Demo: introduction	Demo : introduction
+intro_1	Ocsigen provides a set of largely independent tools for implementing Web and mobile applications (OCaml to JS compiler, Web server, typed HTML, etc.). Ocsigen can be used to implement, depending on your needs, either traditional Web sites (server-side), or client-side apps running in a browser, or full client-server apps, running both in a browser and as mobile apps. Ocsigen Start is a template for quickly writing such a client-server app.	Ocsigen fournit un ensemble d'outils largement indépendants pour programmer des applications Web et mobiles (compilateur OCaml vers Javascript, serveur Web, HTML typé, etc.). Cela vous permet d'écrire, selon vos besoins, des sites Web traditionnels (côté serveur), des applications clientes s'exécutant dans une page Web, ou de véritables applications client-serveur, pouvant s'exécuter dans un navigateur ou comme application mobile. Ocsigen Start est un template prêt à utiliser pour ce type d'applications client-serveur.
+intro_2	Ocsigen Eliom is a set of libraries for Web programming in OCaml: sessions, services, client-server communication, etc. It also contains an extension of the OCaml language to write a client-server program as a single app. Code annotations permit distinguishing between the code to be included in the server app, the code for the client app, and the code to be included in both of them. Have a look at the code of this app to learn how to generate typed HTML pages, how to call server function from client side, or how to send information to client applications (notifications).	Ocsigen Eliom est un ensemble de bibliothèques pour la programmation Web en OCaml : sessions, services, communication client-serveur, etc. Il contient aussi une extension du langage OCaml permettant d'écrire des applications client-serveur. Des annotations du code permettent de distinguer le code devant être inclus dans l'application serveur, du code qui doit être inclus dans l'application cliente. Regardez le code source de cette application pour apprendre comment générer des pages HTML bien typées, comment appeler une fonction serveur depuis un programme client, ou encore comment envoyer des informations aux clients connectés (notifications).
+intro_3	Read tutorials on Ocsigen's Web site for a more detailed introduction.	Lisez les tutoriels du site d'Ocsigen pour une introduction plus détaillée.
+links_and_forms	Links and forms	Liens et formulaires
+links_and_forms_1	Here is an example of an {{t1}}, and an example of link towards an {{t2}}.	Voici un exemple de {{t1}}, et un exemple de lien vers un {{t2}}.
+links_and_static_files	Links, services and static files	Liens, services et fichiers statiques
+log_in_to_see_demo	Log in to see the demo.	Connectez-vous pour voir la démonstration.
+look_module_tip	Look at the code to see how it is defined.	Regardez le code pour voir comment c'est défini.
+monday	Monday	Lundi
+never_trust_client_pending_user_id	Never trust a client sending its own user id!	Ne faites jamais confiance à un client envoyant son propre ID d'utilisateur !
+no_user_create_accounts	No user. Create some accounts to test.	Aucun utilisateur. Créez quelques comptes pour tester.
+notification	Notifications	Notifications
+notification_got	got	Reçu
+open_multiple_tabs_browsers	Open this page in multiple tabs or browsers.	Ouvrez cette page dans plusieurs onglets et fenêtres.
+ot_carousel_first_example_1	This is a first example of Ocsigen Toolkit's carousel.	Voici le premier exemple du carousel d'Ocsigen Toolkit.
+ot_carousel_first_example_2	The carousel displays a number of blocks side-by-side (or vertically stacked).	Le carousel sert à afficher des blocs côte-à-côte (ou empilés verticalement).
+ot_carousel_first_example_3	To switch to a different block, use the buttons in the carousel.	Pour vous rendre sur un autre bloc, utilisez les boutons dans le carousel.
+ot_carousel_first_example_4	On touch screens you can also swipe with your fingers.	Sur les écrans tactiles, swipez avec les doigts.
+ot_carousel_second_example_1	This page demonstrates how to use Ocsigen Toolkit's carousel to display a page with several tabs.	Cette page montre comment utiliser le carousel d'Ocsigen Toolkit pour afficher une page avec des onglets.
+ot_carousel_second_example_2	Try to swipe on a touch screen.	Sur écran tactile, glissez pour changer d'onglet.
+ot_carousel_second_example_3	Try on a small screen or browser window to see how the tabs stick on top while scrolling the page.	Essayez sur un petit écran pour voir comment la barre d'onglets se fixe en haut de la page quand vous faites défiler la page vers le bas.
+ot_tongue_1	This is an example of page with a tongue coming from the bottom of the screen. try to slide it with your finger on a mobile screen.	Ceci est un exemple de page avec une languette partant du bas de l'écran. Essayez de la faire glisser vers le haut avec le doigt sur un téléphone mobile.
+pagetransition	Page transitions	Transition de pages
+pagetransition_add_button	Add	Ajouter
+pagetransition_back_button	Go back	Retourner
+pagetransition_detail_page	Detail Page	Page de Détails
+pagetransition_intro	This demo illustrates smooth page transitions and the retention of a page's scroll position. To see the effects scroll a bit and click on one of the links. When you return to this page by hitting the back button the DOM of the page along with its scroll position will be restored from the cache without being charged from the server or generated on the client.	Cette démo présente des changement de page animés et la mémorisation des positions de scroll. Pour voir ces effets faites défiler la page un peu vers le bas et cliquez sur un des liens de la liste. Quand vous retournerez sur cette page en appuyant sur le bouton «retour», le DOM de la page sera servi directement du cache sans être généré une nouvelle fois. La position du défilement aura été sauvegardé.
+pagetransition_list_page	List Page	Page Liste
+pgocaml	Database request	Requête à la base de données.
+pgocaml_description_1	This page shows signed-up users fetched from the database.	Cette page montre tous les utilisateurs inscrits qui ont été récupérés de la base de données.
+pgocaml_description_2	Have a look at the source code to see how to make a DB request with PGOCaml.	Regardez dans le code source comment réaliser une requête à la base de données en utilisant PGOcaml.
+pgocaml_description_3	We are using Ot_spinner to display the list, which means that, in the case the page is generated client-side, the page will be displayed immediately with a spinner, that will be replaced by the contents when ready. The code contains a 2s sleep to demonstrate the spinner.	Nous utilisons Ot_spinner pour afficher la liste : dans le cas où une page est générée côté client, cette page est affichée immédiatement avec une icône de chargement qui sera remplacée par le contenu quand il sera prêt. Pour la démonstration, nous avons ajouté une pause de 2s pour laisser le temps de voir l'icône de chargement.
+pgocaml_users	Users:	Utilisateurs :
+popup	Popup Button	Bouton popup
+popup_click	Click for a popup!	Cliquez pour afficher un popup !
+popup_content	Here is a button showing a simple popup window when clicked:	Voici un bouton affichant une simple fenêtre popup quand vous cliquez dessus :
+popup_message	Popup message	Message du popup
+pull_to_refresh	Pull to refresh	Tirer pour rafraîchir
+pull_to_refresh_1	This is an example of a page with refreshable content. It is a very common feature in mobile applications. You will need to view this page on your phone to see it work.	Cette démo présente une page avec du contenu actualisable. C'est une fonctionnalité très présente dans les applications mobiles. Pour voir les effets de cette page, ouvrez-la dans l'application mobile.
+pull_to_refresh_2	This page contains a counter that increases every time you "refresh" by pulling down the page. This feature is called "pull to refresh", but you give it your own action to be performed after the motion. Here, it updates a reactive signal after a second, but in your application, you will probably fetch data and update a more complicated signal than a number to rebuild a part of or the whole page, or do anything else you want.	Cette page contient un compteur qui s'incrémente chaque fois que vous "rechargez" la page en tirant vers le bas avec votre doigt. Cette fonctionnalité s'appelle "Tirer pour rafraîchir", mais vous fournissez votre propre action à effectuer à la fin du geste. Ici, nous mettons un simple signal réactif à jour, mais dans votre application, vous récupérerez probablement des données depuis le serveur pour mettre à jour un signal plus compliqué qu'un nombre pour reconstruire toute ou une partie de la page, ou faire ce que vous voulez d'autre.
+pull_to_refresh_counter	You refreshed the page {{n}} times.	Vous avez rafraîchi la page {{n}} fois.
+reactive_programming	Reactive pages	Pages réactives
+reactive_programming_1	This is an example of a page with reactive content. It is a very convenient solution to update pages when data changes.	Ceci est un exemple d'une page avec du contenu réactif. C'est une solution extrêment simple pour mettre à jour une page quand les données changent.
+reactive_programming_2	It defines a (client-side) reactive OCaml list. You can add elements in this list via the input form. The page is updated automatically when the value of the reactive list changes.	Il définit une liste OCaml réactive (côté client). Vous pouvez ajouter des élements dans cette liste via le formulaire. Cette page sera automatique mise à jour quand la valeur de la liste réactive changera.
+reactive_programming_3	The reactive page is generated either server-side (for example when you are using a Web browser and you reload this page) or client-side (in a mobile app or if you were already in the app before coming to this page).	La page réactive est générée aussi bien du côté serveur (par exemple quand vous utilisez le navigateur web et que vous rechargez cette page) que du côté client (sur mobile ou si vous étiez déjà sur dans cette application avant de venir sur cette page).
+reactive_programming_button	add	ajouter
+rpc_button	RPC button	Bouton RPC
+rpc_button_click_increase	Click to increase server-side value	Cliquez pour augmenter la valeur côté serveur.
+rpc_button_description	This button performs an RPC to increase a server-side value.	Ce bouton réalise un appel de fonction distante (RPC) pour augmenter une valeur côté serveur.
+saturday	Saturday	Samedi
+send_message	send message	envoyer le message
+services	Services	Services
+services_1	Have a look at file {{f1}} to see some examples of service definitions. Most service handlers are defined in file {{f2}}. Service registration is done in {{f3}}. Have a look to see how to define a service returning an application page, an action or a redirection, etc. Read Ocsigen's tutorials and Eliom's manual for more information about services.	Vous trouverez des exemples de définition de services dans le fichier {{f1}}. La plupart des handlers de services sont définis dans le fichier {{f2}}. L'enregistrement des services est fait dans le fichier {{f3}}. Jetez-y un œil pour voir comment définir une nouvelle page pour cette application, une action, une redirection, etc. Lisez les tutoriels d'Ocsigen et le manuel d'Eliom pour plus d'informations sur les services.
+spinner	Spinner	Icône de chargement
+spinner_content_ready	The content is ready. 	Le contenu est prêt.
+spinner_description_1	We use this widget to integrate into the page an HTML block that takes a long time to produce, e.g., because of a slow server call.	Nous utilisons ce widget pour intégrer dans notre page HTML un bloc qui prend un long moment à produire, par exemple, à cause d'un appel serveur lent.
+spinner_description_2	A spinner is displayed, which is then replaced with the actual content when this content is ready.	Une icône de chargement est d'abord affichée, puis remplacée par le vrai contenu quand celui-ci est prêt.
+spinner_description_3	For the demo we just sleep for 5 seconds to simulate waiting for the content.	Pour la démonstration, nous avons ajouté un délai de 5 secondes pour simuler l'attente du contenu.
+spinner_description_ot	This is a demo of the Ocsigen Toolkit spinner widget.	Ceci est la démonstration de l'icône de chargement d'Ocsigen Toolkit.
+spinner_generated_client_side	The spinner is generated client-side.	L'icône de chargement est générée côté client.
+spinner_message_replace_spinner	This message has replaced the spinner.	Ce message a remplacé l'icône de chargement.
+static_files	Static files	Fichiers statiques
+static_files_1	Use service {{static_dir}} (predefined in Eliom) to create links towards static files (images, fonts, etc.). Put static files you want to include in the mobile app in directory {{static}}. They will be stored locally on the mobile device. By default, links are relative on the Web app and absolute on the mobile app. For example, here is an example of an image stored locally in the mobile app:	Utilisez le service {{static_dir}} (prédéfini dans Eliom) pour faire des liens vers des fichiers statiques (images, fontes, etc.). Les fichiers statiques que vous voulez inclure dans l'application mobile doivent être placés dans le répertoire {{static}}. Ils seront stockés en local sur l'appareil mobile. Par défaut les liens sont relatifs dans l'application Web et absolus dans l'application mobile. Forcez les liens relatifs pour faire des liens vers des fichiers locaux dans l'application mobile. Par exemple voici une image stockée localement dans l'application mobile :
+static_files_2	and a remote image:	et une image distante :
+sunday	Sunday	Dimanche
+the_module	The module	Le module
+these_functions_called_server_or_client_side	These functions can be called from either server- or client-side.	Ces fonctions peuvent être appelées aussi bien côté client que côté serveur.
+this_page_show_calendar	This page shows Ocsigen Toolkit's date picker.	Cette page montre le sélecteur de date d'Ocsigen Toolkit.
+thursday	Thursday	Jeudi
+timepicker	Time picker	Sélecteur d'heure
+timepicker_back_to_hours	Back to hours	Revenir aux heures
+timepicker_description	This page shows the Ocsigen Toolkit's time picker.	Cette page montre le sélecteur d'heure d'Ocsigen Toolkit.
+tips	Tips	Astuces
+tips1	Tips for new users and new features	Astuces pour les nouveaux utilisateurs et nouvelles fonctionnalités
+tips2	Module {{os_tips}} implements a way to display tips in the page to the users who haven't already seen them.	Le module {{os_tips}} implémente une façon d'afficher des astuces dans la page aux utilisateurs qui ne les ont pas déjà vues.
+tips3	This page contains a tip, that you will see only as connected user, until you close it.	Cette page contient une astuce, que vous allez voir seulement en tant qu'utilisateur connecté, jusqu'à ce que vous la fermiez.
+tips4	It is possible to reset the set of already seen tips from the {{set_page}}.	Il est possible de réinitialiser l'ensemble des astuces déjà vues depuis la page {{set_page}}.
+tips5	settings page	page Paramètres
+tongue_1	Tongue	Languette
+tuesday	Tuesday	Mardi
+users	Users	Utilisateurs
+wednesday	Wednesday	Mercredi
+widget_feel_free	Feel free to modify the generated code and use it or redistribute it as you want.	Vous êtes libres de modifier le code généré et de l'utiliser ou de le redistribuer comme vous souhaitez.
+widget_ot	This app also contains demos for some widgets from Ocsigen Toolkit.	Cette application contient également des démonstrations de quelques widgets d'Ocsigen Toolkit.
+widget_see_drawer	The different demos are accessible through the drawer menu. To open it click the top left button on the screen.	Les différentes démonstrations sont accessibles à travers le menu. Pour l'ouvrir, cliquez sur le bouton en haut à gauche de l'écran.
+you_are	You are	Vous êtes
+you_are_not_connected	You are not connected.	Vous n'êtes pas connecté.
+you_click_on_date	You clicked on {{y}}/{{m}}/{{d}}	Vous avez cliqué sur {{d}}/{{m}}/{{y}}
+you_click_on_time	You clicked on {{h}}:{{m}}	Vous avez cliqué sur {{h}}:{{m}}
+your_user_id	Your user id	Votre ID utilisateur

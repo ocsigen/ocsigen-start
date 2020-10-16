@@ -16,7 +16,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name () = [%i18n S.demo_reactive_programming]
+let%shared name () = [%i18n Demo.S.reactive_programming]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-react"
@@ -51,7 +51,7 @@ let%shared page () =
   let l, h = Eliom_shared.ReactiveData.RList.create [] in
   let inp =
     (* Form that performs a cons (client-side). *)
-    make_form [%i18n S.demo_reactive_programming_button]
+    make_form [%i18n Demo.S.reactive_programming_button]
       [%client
         ((fun v -> Lwt.return (Eliom_shared.ReactiveData.RList.cons v ~%h))
          : string -> unit Lwt.t)
@@ -71,10 +71,10 @@ let%shared page () =
       l
   in
   Lwt.return Eliom_content.Html.[
-    F.h1 [%i18n demo_reactive_programming]
-  ; F.p [ F.txt [%i18n S.demo_reactive_programming_1]]
-  ; F.p [ F.txt [%i18n S.demo_reactive_programming_2]]
-  ; F.p [ F.txt [%i18n S.demo_reactive_programming_3]]
+    F.h1 [%i18n Demo.reactive_programming]
+  ; F.p [ F.txt [%i18n Demo.S.reactive_programming_1]]
+  ; F.p [ F.txt [%i18n Demo.S.reactive_programming_2]]
+  ; F.p [ F.txt [%i18n Demo.S.reactive_programming_3]]
   ; inp
   ; F.div [R.ul l]
   ]

@@ -11,17 +11,29 @@ I18N_GENERATOR          := ocsigen-i18n-generator
 I18N_ELIOM_FILE         := $(PROJECT_NAME)_i18n.eliom
 
 ## PPX extension to rewrite each file while compiling.
-I18N_PPX_REWRITER       := "ocsigen-i18n-rewriter %%%MODULE_NAME%%%_i18n"
+I18N_PPX_REWRITER       := "ocsigen-i18n-rewriter --prefix '%%%MODULE_NAME%%%_' --suffix '_i18n' %%%MODULE_NAME%%%_i18n"
 
-## This rule will update the TSV file.
-$(I18N_ELIOM_FILE): $(I18N_TSV_FILE)
+## This rule will update the primary I18N module
+$(I18N_ELIOM_FILE): $(I18N_PRIMARY_FILE)
 # use LC_ALL=C so that all $(I18N_ELIOM_FILE) files are generated the same
 # way.
 	LC_ALL=C $(I18N_GENERATOR) \
 	--languages $(I18N_LANGUAGES) \
 	--default-language $(I18N_DEFAULT_LANGUAGE) \
-	< $(I18N_TSV_FILE) \
+	< $(I18N_PRIMARY_FILE) \
 	> $(I18N_ELIOM_FILE)
+
+## This rule will update all other I18N modules
+$(PROJECT_NAME)_%_i18n.eliom: $(I18N_TSV_DIR)$(PROJECT_NAME)_%_i18n.tsv
+# use LC_ALL=C so that all I18N files are generated the same
+# way.
+	LC_ALL=C $(I18N_GENERATOR) \
+	--languages $(I18N_LANGUAGES) \
+	--default-language $(I18N_DEFAULT_LANGUAGE) \
+	--primary $(notdir $(I18N_PRIMARY_FILE)) \
+	< $< \
+	> $@
+
 
 i18n-check:
 	$(I18N_CHECKER) ./*.eliom < $(I18N_TSV_FILE)

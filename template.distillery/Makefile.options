@@ -7,17 +7,37 @@ OPAM                  := opam
 PROJECT_NAME          := %%%PROJECT_NAME%%%
 
 ##----------------------------------------------------------------------
+## The following part is used for the internationalization (i18n).
+
+## The list of supported language, separated by a comma. Each language will
+## generate a value in a sum type defined in the generate i18n file.
+I18N_LANGUAGES         := en,fr
+
+## The default language.
+I18N_DEFAULT_LANGUAGE  := en
+
+## The TSV files containing all translations.
+I18N_TSV_DIR           := assets/
+I18N_PRIMARY_FILE      := $(I18N_TSV_DIR)$(PROJECT_NAME)_i18n.tsv
+# The demo entries are in their own file, for convenience.
+I18N_EXTRA_FILES       := $(I18N_TSV_DIR)$(PROJECT_NAME)_Demo_i18n.tsv
+
+##----------------------------------------------------------------------
+
+##----------------------------------------------------------------------
 ## The following part contains the settings for the compilation process like the
 ## server/client OPAM packages and the server/client files.
 
 # Source files for the server. By default, it's all eliom, eliomi and ml files
 # in the project root directory.
 SERVER_FILES          := $(wildcard *.eliomi *.eliom *.ml) \
+                         $(notdir $(patsubst %.tsv,%.eliom,$(I18N_EXTRA_FILES))) \
                          %%%PROJECT_NAME%%%_i18n.eliom
 
 # Source files for the client. By default, it's all eliom and eliomi files
 # in the project root directory.
 CLIENT_FILES          := $(wildcard *.eliomi *.eliom) \
+                         $(notdir $(patsubst %.tsv,%.eliom,$(I18N_EXTRA_FILES))) \
                          %%%PROJECT_NAME%%%_i18n.eliom
 
 # OCamlfind packages for the server (for modules which defines services)
@@ -229,20 +249,5 @@ PSQL_DIR              := local_db
 
 ## If the LOCAL variable is set to yes, PSQL_LOG is the log directory.
 PSQL_LOG              := $(PSQL_DIR)/log
-
-##----------------------------------------------------------------------
-
-##----------------------------------------------------------------------
-## The following part is used for the internationalization (i18n).
-
-## The list of supported language, separated by a comma. Each language will
-## generate a value in a sum type defined in the generate i18n file.
-I18N_LANGUAGES         := en,fr
-
-## The default language.
-I18N_DEFAULT_LANGUAGE  := en
-
-## The TSV file containing all translations.
-I18N_TSV_FILE          := assets/$(PROJECT_NAME)_i18n.tsv
 
 ##----------------------------------------------------------------------

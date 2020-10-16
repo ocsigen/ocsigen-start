@@ -16,7 +16,7 @@ let%server service =
 let%client service = ~%service
 
 (* Name for demo menu *)
-let%shared name () = [%i18n S.demo_notification]
+let%shared name () = [%i18n Demo.S.notification]
 
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-notif"
@@ -105,13 +105,13 @@ let%shared page () =
   in
 
   Lwt.return Eliom_content.Html.F.[
-    h1 [%i18n demo_notification]
-  ; p ([%i18n exchange_msg_between_users
+    h1 [%i18n Demo.notification]
+  ; p ([%i18n Demo.exchange_msg_between_users
           ~os_notif:[code [ txt "Os_notif" ] ]]
        @ [ br ()
-         ; txt [%i18n S.open_multiple_tabs_browsers]
+         ; txt [%i18n Demo.S.open_multiple_tabs_browsers]
          ; br ()
-         ; txt [%i18n S.fill_input_form_send_message]
+         ; txt [%i18n Demo.S.fill_input_form_send_message]
          ])
-  ; make_form [%i18n S.send_message] [%client (notify : string -> unit Lwt.t)]
+  ; make_form [%i18n Demo.S.send_message] [%client (notify : string -> unit Lwt.t)]
   ]
