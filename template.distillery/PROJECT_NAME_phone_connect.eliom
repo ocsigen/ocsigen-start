@@ -14,29 +14,23 @@
 
 let enable = false
 
-let%server () = if enable then begin
+let%server () =
+  if enable
+  then
+    Os_connect_phone.set_send_sms_handler (fun ~number message ->
+        Printf.printf "Send SMS %s to %s\n%!" message number;
+        Lwt.return (Ok ()))
 
-  Os_connect_phone.set_send_sms_handler
-    (fun ~number message ->
-       Printf.printf "Send SMS %s to %s\n%!" message number;
-       Lwt.return (Ok ()))
-
-end
-
-let () = if enable then begin
-
-  Os_user_view.enable_phone () ;
-
-  Eliom_registration.Action.register
-    ~service:Os_services.confirm_code_recovery_service
-    Os_handlers.confirm_code_recovery_handler ;
-
-  Eliom_registration.Action.register
-    ~service:Os_services.confirm_code_extra_service
-    Os_handlers.confirm_code_extra_handler ;
-
-  Eliom_registration.Action.register
-    ~service:Os_services.confirm_code_signup_service
-    Os_handlers.confirm_code_signup_handler
-
-end
+let () =
+  if enable
+  then (
+    Os_user_view.enable_phone ();
+    Eliom_registration.Action.register
+      ~service:Os_services.confirm_code_recovery_service
+      Os_handlers.confirm_code_recovery_handler;
+    Eliom_registration.Action.register
+      ~service:Os_services.confirm_code_extra_service
+      Os_handlers.confirm_code_extra_handler;
+    Eliom_registration.Action.register
+      ~service:Os_services.confirm_code_signup_service
+      Os_handlers.confirm_code_signup_handler)
