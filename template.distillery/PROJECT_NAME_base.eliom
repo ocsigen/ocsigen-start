@@ -2,9 +2,7 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 let%server application_name = !%%%MODULE_NAME%%%_config.app_name
-
 let%client application_name = Eliom_client.get_application_name ()
-
 let%shared displayed_app_name = "%%%PROJECT_NAME%%%"
 
 (* Database initialization *)
@@ -19,17 +17,18 @@ let () =
     ()
 
 let () = Os_email.set_mailer "/usr/sbin/sendmail"
-let () = Os_email.set_from_addr ("%%%PROJECT_NAME%%% team", "noreply@DEFAULT.DEFAULT")
+
+let () =
+  Os_email.set_from_addr ("%%%PROJECT_NAME%%% team", "noreply@DEFAULT.DEFAULT")
 
 (* Create a module for the application. See
    https://ocsigen.org/eliom/manual/clientserver-applications for more
    information. *)
 [%%shared
 module App = Eliom_registration.App (struct
-    let application_name = application_name
-    let global_data_path = Some ["__global_data__"]
-  end)
-]
+  let application_name = application_name
+  let global_data_path = Some ["__global_data__"]
+end)]
 
 (* As the headers (stylesheets, etc) won't change, we ask Eliom not to
    update the <head> of the page when changing page. (This also avoids
