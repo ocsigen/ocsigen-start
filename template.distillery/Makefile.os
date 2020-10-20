@@ -45,9 +45,8 @@ endif
 
 .PHONY: all css byte opt
 
-DIST_DIRS          := $(ETCDIR) $(DATADIR) $(LIBDIR) $(LOGDIR) $(STATICDIR) \
-                      $(FILESDIR)/avatars/tmp $(ELIOMSTATICDIR) \
-                      $(shell dirname $(CMDPIPE)) $(ELIOMTMPDIR)
+DIST_DIRS          := $(ETCDIR) $(DATADIR) $(LIBDIR) $(LOGDIR) \
+                      $(FILESDIR)/avatars/tmp $(ELIOMSTATICDIR)
 JS_PREFIX          := $(TEST_PREFIX)$(ELIOMSTATICDIR)/$(PROJECT_NAME)
 
 CONF_IN            := $(wildcard *.conf.in)
