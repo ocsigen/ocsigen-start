@@ -41,6 +41,6 @@ let%shared page () =
     ; p [txt [%i18n Demo.S.internationalization_3]]
     ; p
         [%i18n
-          Demo.S.internationalization_4
+          Demo.internationalization_4
             ~f:[code [txt "assets/%%%PROJECT_NAME%%%_Demo_i18n.tsv"]]
             ~demo_prefix:[code [txt "demo_"]]] ]
