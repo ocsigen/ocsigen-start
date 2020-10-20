@@ -38,5 +38,10 @@ $(PROJECT_NAME)_%_i18n.eliom: $(I18N_TSV_DIR)$(PROJECT_NAME)_%_i18n.tsv
 i18n-check:
 	$(I18N_CHECKER) ./*.eliom < $(I18N_TSV_FILE)
 
+.PHONY: i18n-clean
+i18n-clean:
+	-rm -f $(notdir $(patsubst %.tsv,%.eliom,$(I18N_PRIMARY_FILE)	\
+						 $(I18N_EXTRA_FILES)))
+
 ## end of i18n
 ##----------------------------------------------------------------------
