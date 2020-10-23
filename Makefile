@@ -75,8 +75,8 @@ SERVER_DIRS     := $(shell echo $(foreach f, $(SERVER_FILES), $(dir $(f))) |  tr
 SERVER_DEP_DIRS := ${addprefix -eliom-inc ,${SERVER_DIRS}}
 SERVER_INC_DIRS := ${addprefix -I $(ELIOM_SERVER_DIR)/, ${SERVER_DIRS}}
 
-SERVER_INC  := ${addprefix -package ,${SERVER_PACKAGES}}
-SERVER_DB_INC  := ${addprefix -package ,${SERVER_DB_PACKAGES}}
+SERVER_INC  := ${addprefix -package ,${SERVER_PACKAGES} ${SERVER_PPX_PACKAGES}}
+SERVER_DB_INC  := ${addprefix -package ,${SERVER_DB_PACKAGES} ${SERVER_DB_PPX_PACKAGES}}
 
 ${ELIOM_TYPE_DIR}/%.type_mli: %.eliom
 	${ELIOMC} -ppx -infer ${SERVER_INC} ${SERVER_INC_DIRS} $<
@@ -123,8 +123,8 @@ CLIENT_DIRS     := $(shell echo $(foreach f, $(CLIENT_FILES), $(dir $(f))) |  tr
 CLIENT_DEP_DIRS := ${addprefix -eliom-inc ,${CLIENT_DIRS}}
 CLIENT_INC_DIRS := ${addprefix -I $(ELIOM_CLIENT_DIR)/,${CLIENT_DIRS}}
 
-CLIENT_LIBS := ${addprefix -package ,${CLIENT_PACKAGES}}
-CLIENT_INC  := ${addprefix -package ,${CLIENT_PACKAGES}}
+CLIENT_LIBS := ${addprefix -package ,${CLIENT_PACKAGES} ${CLIENT_PPX_PACKAGES}}
+CLIENT_INC  := ${addprefix -package ,${CLIENT_PACKAGES} ${CLIENT_PPX_PACKAGES}}
 
 CLIENT_OBJS := $(filter %.eliom %.ml, $(CLIENT_FILES))
 CLIENT_OBJS := $(patsubst %.eliom,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
