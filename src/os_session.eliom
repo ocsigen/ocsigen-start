@@ -38,14 +38,16 @@ let new_process_eref =
     ~scope:user_indep_process_scope
     true
 
-(* Call this to add an action to be done on server side
-   when the process starts *)
-let (on_start_process, start_process_action) =
+let mk_action_queue () =
   let r = ref (fun _ -> Lwt.return_unit) in
   ((fun f ->
       let oldf = !r in
-      r := (fun userid_o -> let%lwt () = oldf userid_o in f userid_o)),
-   (fun userid_o -> !r userid_o))
+      r := (fun arg -> let%lwt () = oldf arg in f arg)),
+   (fun arg -> !r arg))
+
+(* Call this to add an action to be done on server side
+   when the process starts *)
+let (on_start_process, start_process_action) = mk_action_queue ()
 
 let on_start_connected_process f =
   on_start_process (fun myid_o ->
@@ -61,61 +63,13 @@ let on_start_unconnected_process f =
       | None -> f ()
   )
 
-(* Call this to add an action to be done at each connected request *)
-let (on_connected_request, connected_request_action) =
-  let r = ref (fun _ -> Lwt.return_unit) in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun userid -> let%lwt () = oldf userid in f userid)),
-   (fun userid -> !r userid))
-
-(* Call this to add an action to be done at each unconnected request *)
-let (on_unconnected_request, unconnected_request_action) =
-  let r = ref (fun _ -> Lwt.return_unit) in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun () -> let%lwt () = oldf () in f ())),
-   (fun () -> !r ()))
-
-(* Call this to add an action to be done just after opening a session *)
-let (on_open_session, open_session_action) =
-  let r = ref (fun _ -> Lwt.return_unit) in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun userid -> let%lwt () = oldf userid in f userid)),
-   (fun userid -> !r userid))
-
-(* Call this to add an action to be done just after closing the session *)
-let (on_post_close_session, post_close_session_action) =
-  let r = ref (fun _ -> Lwt.return_unit) in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun () -> let%lwt () = oldf () in f ())),
-   (fun () -> !r ()))
-
-(* Call this to add an action to be done just before closing the session *)
-let (on_pre_close_session, pre_close_session_action) =
-  let r = ref (fun _ -> Lwt.return_unit) in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun () -> let%lwt () = oldf () in f ())),
-   (fun () -> !r ()))
-
-(* Call this to add an action to be done just before handling a request *)
-let (on_request, request_action) =
-  let r = ref (fun _ -> Lwt.return_unit) in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun userid_o -> let%lwt () = oldf userid_o in f userid_o)),
-   (fun userid -> !r userid))
-
-(* Call this to add an action to be done just for each denied request *)
-let (on_denied_request, denied_request_action) =
-  let r = ref (fun _ -> Lwt.return_unit) in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun userid_o -> let%lwt () = oldf userid_o in f userid_o)),
-   (fun userid_o -> !r userid_o))
+let (on_connected_request, connected_request_action) = mk_action_queue ()
+let (on_unconnected_request, unconnected_request_action) = mk_action_queue ()
+let (on_open_session, open_session_action) = mk_action_queue ()
+let (on_post_close_session, post_close_session_action) = mk_action_queue ()
+let (on_pre_close_session, pre_close_session_action) = mk_action_queue ()
+let (on_request, request_action) = mk_action_queue ()
+let (on_denied_request, denied_request_action) = mk_action_queue ()
 
 
 [%%shared
