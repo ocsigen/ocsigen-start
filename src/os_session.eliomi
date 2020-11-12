@@ -52,7 +52,7 @@ val on_pre_close_session : (unit -> unit Lwt.t) -> unit
 val on_post_close_session : (unit -> unit Lwt.t) -> unit
 
 (** Call this to add an action to be done just before handling a request *)
-val on_request : (unit -> unit Lwt.t) -> unit
+val on_request : (Os_types.User.id option -> unit Lwt.t) -> unit
 
 (** Call this to add an action to be done just for each denied request.
     The function takes the user id as parameter, if some user is connected. *)

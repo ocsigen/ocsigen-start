@@ -106,8 +106,8 @@ let (on_request, request_action) =
   let r = ref (fun _ -> Lwt.return_unit) in
   ((fun f ->
       let oldf = !r in
-      r := (fun () -> let%lwt () = oldf () in f ())),
-   (fun () -> !r ()))
+      r := (fun userid_o -> let%lwt () = oldf userid_o in f userid_o)),
+   (fun userid -> !r userid))
 
 (* Call this to add an action to be done just for each denied request *)
 let (on_denied_request, denied_request_action) =
@@ -329,7 +329,7 @@ let%server gen_wrapper ~allow ~deny ?(force_unconnected = false)
   let new_process =
     not force_unconnected && Eliom_reference.Volatile.get new_process_eref in
   let%lwt uid = if force_unconnected then Lwt.return_none else get_session () in
-  let%lwt () = request_action () in
+  let%lwt () = request_action uid in
   let%lwt () =
     if new_process
     then begin

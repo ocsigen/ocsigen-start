@@ -111,11 +111,11 @@ let%server unset_user_client () =
   ignore [%client ( me := CU_notconnected : unit)]
 
 let%server () =
-  Os_session.on_request (fun myid ->
-    (* I initialize current user to CU_notconnected *)
+  Os_session.on_request (fun myid_o ->
     Lwt_log.ign_debug ~section "request action";
-    unset_user_server ();
-    Lwt.return_unit);
+    match myid_o with
+    | Some myid -> set_user_server myid
+    | None -> (unset_user_server (); Lwt.return_unit));
   Os_session.on_start_connected_process (fun myid ->
     Lwt_log.ign_debug ~section "start connected process action";
     let%lwt () = set_user_server myid in
@@ -123,7 +123,7 @@ let%server () =
     Lwt.return_unit);
   Os_session.on_connected_request (fun myid ->
     Lwt_log.ign_debug ~section "connected request action";
-    set_user_server myid);
+    Lwt.return_unit);
   Os_session.on_pre_close_session (fun () ->
     Lwt_log.ign_debug ~section "pre close session action";
     unset_user_client (); (*VVV!!! will affect only current tab!! *)
