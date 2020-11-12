@@ -112,31 +112,16 @@ let%server unset_user_client () =
 
 let%server () =
   Os_session.on_request (fun myid_o ->
-    Lwt_log.ign_debug ~section "request action";
     match myid_o with
     | Some myid -> set_user_server myid
     | None -> (unset_user_server (); Lwt.return_unit));
   Os_session.on_start_connected_process (fun myid ->
-    Lwt_log.ign_debug ~section "start connected process action";
     let%lwt () = set_user_server myid in
     set_user_client ();
     Lwt.return_unit);
-  Os_session.on_connected_request (fun myid ->
-    Lwt_log.ign_debug ~section "connected request action";
-    Lwt.return_unit);
   Os_session.on_pre_close_session (fun () ->
-    Lwt_log.ign_debug ~section "pre close session action";
     unset_user_client (); (*VVV!!! will affect only current tab!! *)
     unset_user_server (); (* ok this is a request reference *)
-    Lwt.return_unit);
-  Os_session.on_start_process (fun _ ->
-    Lwt_log.ign_debug ~section "start process action";
-    Lwt.return_unit);
-  Os_session.on_open_session (fun _ ->
-    Lwt_log.ign_debug ~section "open session action";
-    Lwt.return_unit);
-  Os_session.on_denied_request (fun _ ->
-    Lwt_log.ign_debug ~section "denied request action";
     Lwt.return_unit)
 
 let%server remove_email_from_user email =

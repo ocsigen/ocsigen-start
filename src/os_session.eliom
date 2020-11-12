@@ -18,6 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+let log_section = Lwt_log.Section.make "os:session"
+
 [%%shared
   open Eliom_content.Html
   open Eliom_content.Html.F
@@ -38,16 +40,31 @@ let new_process_eref =
     ~scope:user_indep_process_scope
     true
 
-let mk_action_queue () =
+let mk_action_queue name =
   let r = ref (fun _ -> Lwt.return_unit) in
   ((fun f ->
       let oldf = !r in
       r := (fun arg -> let%lwt () = oldf arg in f arg)),
-   (fun arg -> !r arg))
+   (fun arg ->
+     Lwt_log.ign_debug ~section:log_section ("handling actions: " ^ name);
+     !r arg))
 
-(* Call this to add an action to be done on server side
-   when the process starts *)
-let (on_start_process, start_process_action) = mk_action_queue ()
+let on_connected_request, connected_request_action =
+  mk_action_queue "connected request"
+let on_unconnected_request, unconnected_request_action =
+  mk_action_queue "unconnected request"
+let on_open_session, open_session_action =
+  mk_action_queue "open session"
+let on_post_close_session, post_close_session_action =
+  mk_action_queue "post close session"
+let on_pre_close_session, pre_close_session_action =
+  mk_action_queue "pre close session"
+let on_request, request_action =
+  mk_action_queue "request"
+let on_denied_request, denied_request_action =
+  mk_action_queue "denied request"
+let on_start_process, start_process_action =
+  mk_action_queue "start process"
 
 let on_start_connected_process f =
   on_start_process (fun myid_o ->
@@ -62,15 +79,6 @@ let on_start_unconnected_process f =
       | Some myid -> Lwt.return_unit
       | None -> f ()
   )
-
-let (on_connected_request, connected_request_action) = mk_action_queue ()
-let (on_unconnected_request, unconnected_request_action) = mk_action_queue ()
-let (on_open_session, open_session_action) = mk_action_queue ()
-let (on_post_close_session, post_close_session_action) = mk_action_queue ()
-let (on_pre_close_session, pre_close_session_action) = mk_action_queue ()
-let (on_request, request_action) = mk_action_queue ()
-let (on_denied_request, denied_request_action) = mk_action_queue ()
-
 
 [%%shared
   exception Not_connected
