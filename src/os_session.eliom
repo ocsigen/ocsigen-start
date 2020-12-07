@@ -18,6 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+let log_section = Lwt_log.Section.make "os:session"
+
 [%%shared
   open Eliom_content.Html
   open Eliom_content.Html.F
@@ -38,14 +40,31 @@ let new_process_eref =
     ~scope:user_indep_process_scope
     true
 
-(* Call this to add an action to be done on server side
-   when the process starts *)
-let (on_start_process, start_process_action) =
+let mk_action_queue name =
   let r = ref (fun _ -> Lwt.return_unit) in
   ((fun f ->
       let oldf = !r in
-      r := (fun userid_o -> let%lwt () = oldf userid_o in f userid_o)),
-   (fun userid_o -> !r userid_o))
+      r := (fun arg -> let%lwt () = oldf arg in f arg)),
+   (fun arg ->
+     Lwt_log.ign_debug ~section:log_section ("handling actions: " ^ name);
+     !r arg))
+
+let on_connected_request, connected_request_action =
+  mk_action_queue "connected request"
+let on_unconnected_request, unconnected_request_action =
+  mk_action_queue "unconnected request"
+let on_open_session, open_session_action =
+  mk_action_queue "open session"
+let on_post_close_session, post_close_session_action =
+  mk_action_queue "post close session"
+let on_pre_close_session, pre_close_session_action =
+  mk_action_queue "pre close session"
+let on_request, request_action =
+  mk_action_queue "request"
+let on_denied_request, denied_request_action =
+  mk_action_queue "denied request"
+let on_start_process, start_process_action =
+  mk_action_queue "start process"
 
 let on_start_connected_process f =
   on_start_process (fun myid_o ->
@@ -60,63 +79,6 @@ let on_start_unconnected_process f =
       | Some myid -> Lwt.return_unit
       | None -> f ()
   )
-
-(* Call this to add an action to be done at each connected request *)
-let (on_connected_request, connected_request_action) =
-  let r = ref (fun _ -> Lwt.return_unit) in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun userid -> let%lwt () = oldf userid in f userid)),
-   (fun userid -> !r userid))
-
-(* Call this to add an action to be done at each unconnected request *)
-let (on_unconnected_request, unconnected_request_action) =
-  let r = ref (fun _ -> Lwt.return_unit) in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun () -> let%lwt () = oldf () in f ())),
-   (fun () -> !r ()))
-
-(* Call this to add an action to be done just after opening a session *)
-let (on_open_session, open_session_action) =
-  let r = ref (fun _ -> Lwt.return_unit) in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun userid -> let%lwt () = oldf userid in f userid)),
-   (fun userid -> !r userid))
-
-(* Call this to add an action to be done just after closing the session *)
-let (on_post_close_session, post_close_session_action) =
-  let r = ref (fun _ -> Lwt.return_unit) in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun () -> let%lwt () = oldf () in f ())),
-   (fun () -> !r ()))
-
-(* Call this to add an action to be done just before closing the session *)
-let (on_pre_close_session, pre_close_session_action) =
-  let r = ref (fun _ -> Lwt.return_unit) in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun () -> let%lwt () = oldf () in f ())),
-   (fun () -> !r ()))
-
-(* Call this to add an action to be done just before handling a request *)
-let (on_request, request_action) =
-  let r = ref (fun _ -> Lwt.return_unit) in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun () -> let%lwt () = oldf () in f ())),
-   (fun () -> !r ()))
-
-(* Call this to add an action to be done just for each denied request *)
-let (on_denied_request, denied_request_action) =
-  let r = ref (fun _ -> Lwt.return_unit) in
-  ((fun f ->
-      let oldf = !r in
-      r := (fun userid_o -> let%lwt () = oldf userid_o in f userid_o)),
-   (fun userid_o -> !r userid_o))
-
 
 [%%shared
   exception Not_connected
@@ -329,7 +291,7 @@ let%server gen_wrapper ~allow ~deny ?(force_unconnected = false)
   let new_process =
     not force_unconnected && Eliom_reference.Volatile.get new_process_eref in
   let%lwt uid = if force_unconnected then Lwt.return_none else get_session () in
-  let%lwt () = request_action () in
+  let%lwt () = request_action uid in
   let%lwt () =
     if new_process
     then begin
