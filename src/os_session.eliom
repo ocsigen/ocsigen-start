@@ -112,10 +112,18 @@ let connect ?(expire = false) userid =
     end else
       Lwt.return_unit
   in
+  Format.eprintf "SESSIONS CONNECT %Ld@." userid;
   connect_string (Int64.to_string userid)
 
 let disconnect () =
   let%lwt () = pre_close_session_action () in
+  (match
+     (let uid = Eliom_state.get_volatile_data_session_group () in
+      try Eliom_lib.Option.map Int64.of_string uid
+      with Failure _ -> None)
+   with
+   | Some uid -> Format.eprintf "SESSIONS DISCONNECT %Ld@." uid
+   | None -> Format.eprintf "SESSIONS DISCONNECT@.");
   let%lwt () = Eliom_state.discard ~scope:Eliom_common.default_session_scope () in
   let%lwt () = Eliom_state.discard ~scope:Eliom_common.default_process_scope () in
   let%lwt () = Eliom_state.discard ~scope:Eliom_common.request_scope () in
@@ -142,6 +150,7 @@ let disconnect_all ?userid ?(user_indep = true) () =
   match userid with
   | None -> Lwt.return_unit
   | Some userid ->
+Format.eprintf "SESSIONS DISCONNECT_ALL %Ld %b@." userid close_my_sessions;
     (* We do not close the group, as it may contain user data.
        We close all sessions from group instead. *)
     let group_name = Int64.to_string userid in
@@ -247,10 +256,19 @@ let get_session () =
             relaunched.
             We restart the volatile session silently
             (comme si de rien n'était, pom pom pom). *)
-         let%lwt () = connect_volatile (Int64.to_string uid) in
-         Lwt.return_some (uid)
+          Format.eprintf "SESSIONS RECONNECT %Ld@." uid;
+          let%lwt () = connect_volatile (Int64.to_string uid) in
+          Lwt.return_some (uid)
        | None -> Lwt.return_none)
-    | Some uid -> Lwt.return_some (uid)
+    | Some uid ->
+       let%lwt uids = Eliom_state.get_persistent_data_session_group () in
+       (match get_uid uids  with
+        | Some uid' ->
+           if uid <> uid' then Format.eprintf "SESSIONS MISMATCH %Ld %Ld@." uid uid';
+        | None ->
+           Format.eprintf "SESSIONS VOLATILE-ONLY %Ld@." uid;
+       );
+       Lwt.return_some (uid)
   in
   (* Check if the user exists in the DB *)
   match uid with
