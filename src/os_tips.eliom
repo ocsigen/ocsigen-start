@@ -151,7 +151,8 @@ let%client reset_tips () =
 (* Returns a block containing a tip,
    if it has not already been seen by the user. *)
 let%shared block ?(a = []) ?(recipient = `All)
-    ?(onclose = [%client (fun () -> () : unit -> unit)]) ~name ~content () =
+      ?(onclose = [%client (fun () -> Lwt.return_unit : unit -> unit Lwt.t)])
+      ~name ~content () =
   let myid_o = Os_current_user.Opt.get_current_userid () in
   match recipient, myid_o with
   | `All, _
@@ -164,7 +165,7 @@ let%shared block ?(a = []) ?(recipient = `All)
       let box_ref = ref None in
       let close : (unit -> unit Lwt.t) Eliom_client_value.t =
         [%client (fun () ->
-          ~%onclose ();
+          let%lwt () = ~%onclose () in
           let () = match !(~%box_ref) with
             | Some x -> Manip.removeSelf x
             | None -> () in
@@ -204,7 +205,7 @@ let%client () = Eliom_client.onchangepage onchangepage_handler
 (* Display a tip bubble *)
 let%client display_bubble ?(a = [])
     ?arrow ?top ?left ?right ?bottom ?height ?width
-    ?(parent_node : _ elt option) ?(delay = 0.0) ?(onclose = fun () -> ())
+    ?(parent_node : _ elt option) ?(delay = 0.0) ?(onclose = fun () -> Lwt.return_unit)
     ~name ~content ()
   =
   let current_waiter = !waiter in
@@ -214,7 +215,7 @@ let%client display_bubble ?(a = [])
   let bec = D.div ~a:[a_class ["os-tip-bec"]] [] in
   let box_ref = ref None in
   let close = fun () ->
-    onclose ();
+    let%lwt () = onclose () in
     let () = match !box_ref with
       | Some x -> Manip.removeSelf x
       | None -> () in
@@ -315,7 +316,7 @@ let%shared bubble
         Eliom_client_value.t)
   () =
   let delay : float option = delay in
-  let onclose : (unit -> unit) Eliom_client_value.t option = onclose in
+  let onclose : (unit -> unit Lwt.t) Eliom_client_value.t option = onclose in
   let myid_o = Os_current_user.Opt.get_current_userid () in
   match recipient, myid_o with
   | `All, _

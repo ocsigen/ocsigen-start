@@ -1,3 +1,6 @@
+===== 4.0.0 (2021-01-13) =====
+* BREAKING CHANGE Os_tips: change the type of 'onclose'
+
 ===== 2.13.0 (2019-12-20) =====
 * Os_tips: add unset_tip_seen
 
