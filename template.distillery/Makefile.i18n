@@ -11,7 +11,7 @@ I18N_GENERATOR          := ocsigen-i18n-generator
 I18N_ELIOM_FILE         := $(PROJECT_NAME)_i18n.eliom
 
 ## PPX extension to rewrite each file while compiling.
-I18N_PPX_REWRITER       := "ocsigen-i18n-rewriter --prefix '%%%MODULE_NAME%%%_' --suffix '_i18n' %%%MODULE_NAME%%%_i18n"
+I18N_PPX_REWRITER       := "ocsigen-i18n-rewriter --prefix '%%%MODULE_NAME%%%_' --suffix '_i18n' --default-module %%%MODULE_NAME%%%_i18n"
 
 ## This rule will update the primary I18N module
 $(I18N_ELIOM_FILE): $(I18N_PRIMARY_FILE)
