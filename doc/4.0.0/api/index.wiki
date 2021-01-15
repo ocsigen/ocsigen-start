@@ -1,0 +1,5 @@
+= Ocsigen Start -- API reference
+
+<<a_manual chapter="intro"| Read the manual for an introduction to Ocsigen Start>>.
+
+Follow the links on the left for API documentation.

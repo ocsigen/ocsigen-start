@@ -1,0 +1,7 @@
+=Module <<a_api_type subproject="server" | module Os_lib.Http >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Http>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_lib.Http >><<span class="ocsforge_color_keyword"|end>>>>~This module contains functions about ~H~T~T~P request~.
+
+----
+<<pre id="VALstring_of_stream" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|string~_of~_stream>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_label"| ?len: >>int <<span class="ocsforge_color_delimiter"| -> >> string <<span class="ocsforge_color_uid"|Ocsigen_stream>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_delimiter"| -> >> string <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|string~_of~_stream ~?len stream>> creates a string of maximum length <<span class="odocwiki_inlinecode"|len>>
+        ~(default is <<span class="odocwiki_inlinecode"|~1~6~3~8~4>>~) from the stream <<span class="odocwiki_inlinecode"|stream>>~.
+>>
