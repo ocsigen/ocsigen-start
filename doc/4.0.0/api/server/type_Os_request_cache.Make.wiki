@@ -1,0 +1,17 @@
+<<code language="ocaml" | functor
+  (M : sig
+         type key
+         type value
+         val compare :
+           Os_request_cache.Make.key -> Os_request_cache.Make.key -> int
+         val get :
+           Os_request_cache.Make.key -> Os_request_cache.Make.value Lwt.t
+       end) ->
+  sig
+    type key = M.key
+    type value = M.value
+    val has : key -> bool
+    val set : key -> value -> unit
+    val reset : key -> unit
+    val get : key -> value Lwt.t
+  end >>

@@ -1,0 +1,4 @@
+<<code language="ocaml" | sig
+  type id = int64
+  type t = { id : Os_types.Group.id; name : string; desc : string option; }
+end >>
