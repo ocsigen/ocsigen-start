@@ -57,7 +57,7 @@ val bubble :
   ?width:int Eliom_client_value.t ->
   ?parent_node:[< `Body | Html_types.body_content ] Eliom_content.Html.elt ->
   ?delay:float ->
-  ?onclose:(unit -> unit) Eliom_client_value.t ->
+  ?onclose:(unit -> unit Lwt.t) Eliom_client_value.t ->
   name:string ->
   content:((unit -> unit Lwt.t)
            -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
@@ -72,7 +72,7 @@ val bubble :
 val block :
   ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.D.attrib list ->
   ?recipient:[> `All | `Connected | `Not_connected ] ->
-  ?onclose:(unit -> unit) Eliom_client_value.t ->
+  ?onclose:(unit -> unit Lwt.t) Eliom_client_value.t ->
   name:string ->
   content:((unit -> unit Lwt.t) Eliom_client_value.t
            -> Html_types.div_content Eliom_content.Html.elt list Lwt.t) ->
