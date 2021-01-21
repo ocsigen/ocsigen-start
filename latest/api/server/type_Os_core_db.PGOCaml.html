@@ -1,5 +1,215 @@
-<!DOCTYPE html>
-<html>
-    <head><meta http-equiv="refresh" content="0; URL=../../../2.2/api/server/type_Os_core_db.PGOCaml.html" /></head>
-    <body></body>
-</html>
+<html><head><title></title><meta charset="utf8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><link rel="stylesheet" href="https://ocsigen.org/css/style.css"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/themes/prism.min.css"/><script type="text/javascript" src="https://ocsigen.org/js/client.js">
+//<![CDATA[
+
+//]]>
+</script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-core.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-ocaml.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-clike.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-reason.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-javascript.min.js">
+//<![CDATA[
+
+//]]>
+</script></head><body class="type_Os_core_db.PGOCaml ocsigen-start"><div class="project-page"><div class="page-header"><p class="logo-ocsigen"><a href="../.././../../" class="ocsimore_phrasing_link"><img src="../.././../../img/ocsigen-white.svg" alt="Ocsigen"/></a>
+</p><p class="logo-subproject">Start</p><div class="mainmenu"><p class="mainmenu-home"><a href="../.././../../" class="ocsimore_phrasing_link">Home</a></p><p class="mainmenu-doc"><a href="../.././../../tuto/" class="ocsimore_phrasing_link">Doc</a></p><p><a href="../.././../../eliom/" class="ocsimore_phrasing_link">Eliom</a></p><p><a href="../.././../../js_of_ocaml/" class="ocsimore_phrasing_link">Js_of_ocaml</a></p><p><a href="../.././../../lwt/" class="ocsimore_phrasing_link">Lwt</a></p><p><a href="../.././../../tyxml/" class="ocsimore_phrasing_link">Tyxml</a></p><p class="mainmenu-current"><a href="../.././../../ocsigen-start/" class="ocsimore_phrasing_link">Start</a></p></div><form id="googlesearch" action="https://google.com/search"><input name="q" id="gsearch-box" placeholder="Search using Google"/><label for="gsearch-box"><img src="https://ocsigen.org/img/search.svg" alt="" id="gsearch-icon"/></label><input type="submit" id="gsearch-submit" onclick="document.getElementById('gsearch-box').value += ' site:ocsigen.org';"/></form><aside class="how-drawer"><input id="how-drawer-toggle" type="checkbox"/><label for="how-drawer-toggle" id="how-drawer-label"><span class="how-drawer-icon"></span></label><nav class="how-drawer-content"><ul class="drawermainmenu"><li class="drawermainmenu-home"><a href="../.././../../" class="ocsimore_phrasing_link">Home</a>
+</li><li class="drawermainmenu-doc"><a href="../.././../../tuto/" class="ocsimore_phrasing_link">Doc</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../eliom/" class="ocsimore_phrasing_link">Eliom</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../js_of_ocaml/" class="ocsimore_phrasing_link">Js_of_ocaml</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsigenserver/" class="ocsimore_phrasing_link">Server</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../lwt/" class="ocsimore_phrasing_link">Lwt</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../tyxml/" class="ocsimore_phrasing_link">Tyxml</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsigen-toolkit/" class="ocsimore_phrasing_link">Toolkit</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsigen-start/" class="ocsimore_phrasing_link">Start</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../html_of_wiki/" class="ocsimore_phrasing_link">html_of_wiki</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../deriving/" class="ocsimore_phrasing_link">deriving</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsimore/" class="ocsimore_phrasing_link">Ocsimore (<em>deprecated</em>)</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../projects.html" class="ocsimore_phrasing_link">Other projects</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../papers.html" class="ocsimore_phrasing_link">Research papers</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../credits.html" class="ocsimore_phrasing_link">Who does Ocsigen?</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../contributing.html" class="ocsimore_phrasing_link">Contributing</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../blog.html" class="ocsimore_phrasing_link">Blog</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../install.html" class="ocsimore_phrasing_link">Installation</a>
+</li><li class="drawermainmenu-page"><a href="https://github.com/ocsigen" class="ocsimore_phrasing_link">Source code</a>
+</li></ul><nav class="how-doctree"><h1>Ocsigen start</h1><h2><a href="../.././manual/intro.html" class="ocsimore_phrasing_link">Introduction</a></h2><h1>Server API</h1><h2><a href="../.././api/server/Os_current_user.html" class="ocsimore_phrasing_link">Os_current_user</a></h2><h2><a href="../.././api/server/Os_date.html" class="ocsimore_phrasing_link">Os_date</a></h2><h2><a href="../.././api/server/Os_db.html" class="ocsimore_phrasing_link">Os_db</a></h2><h2><a href="../.././api/server/Os_email.html" class="ocsimore_phrasing_link">Os_email</a></h2><h2><a href="../.././api/server/Os_fcm_notif.html" class="ocsimore_phrasing_link">Os_fcm_notif</a></h2><h2><a href="../.././api/server/Os_group.html" class="ocsimore_phrasing_link">Os_group</a></h2><h2><a href="../.././api/server/Os_handlers.html" class="ocsimore_phrasing_link">Os_handlers</a></h2><h2><a href="../.././api/server/Os_icons.html" class="ocsimore_phrasing_link">Os_icons</a></h2><h2><a href="../.././api/server/Os_lib.html" class="ocsimore_phrasing_link">Os_lib</a></h2><h2><a href="../.././api/server/Os_msg.html" class="ocsimore_phrasing_link">Os_msg</a></h2><h2><a href="../.././api/server/Os_notif.html" class="ocsimore_phrasing_link">Os_notif</a></h2><h2><a href="../.././api/server/Os_page.html" class="ocsimore_phrasing_link">Os_page</a></h2><h2><a href="../.././api/server/Os_platform.html" class="ocsimore_phrasing_link">Os_platform</a></h2><h2><a href="../.././api/server/Os_request_cache.html" class="ocsimore_phrasing_link">Os_request_cache</a></h2><h2><a href="../.././api/server/Os_services.html" class="ocsimore_phrasing_link">Os_services</a></h2><h2><a href="../.././api/server/Os_session.html" class="ocsimore_phrasing_link">Os_session</a></h2><h2><a href="../.././api/server/Os_tips.html" class="ocsimore_phrasing_link">Os_tips</a></h2><h2><a href="../.././api/server/Os_types.html" class="ocsimore_phrasing_link">Os_types</a></h2><h2><a href="../.././api/server/Os_uploader.html" class="ocsimore_phrasing_link">Os_uploader</a></h2><h2><a href="../.././api/server/Os_user.html" class="ocsimore_phrasing_link">Os_user</a></h2><h2><a href="../.././api/server/Os_user_proxy.html" class="ocsimore_phrasing_link">Os_user_proxy</a></h2><h2><a href="../.././api/server/Os_user_view.html" class="ocsimore_phrasing_link">Os_user_view</a></h2><h2>Index</h2><h3> <span><a href="../.././api/server/index_types.html">Index of types</a></span></h3><h3> <span><a href="../.././api/server/index_exceptions.html">Index of exceptions</a></span></h3><h3> <span><a href="../.././api/server/index_values.html">Index of values</a></span></h3><h3> <span><a href="../.././api/server/index_modules.html">Index of modules</a></span></h3><h3> <span><a href="../.././api/server/index_module_types.html">Index of module types</a></span></h3><h1>Client API</h1><h2><a href="../.././api/client/Os_current_user.html" class="ocsimore_phrasing_link">Os_current_user</a></h2><h2><a href="../.././api/client/Os_date.html" class="ocsimore_phrasing_link">Os_date</a></h2><h2><a href="../.././api/client/Os_handlers.html" class="ocsimore_phrasing_link">Os_handlers</a></h2><h2><a href="../.././api/client/Os_icons.html" class="ocsimore_phrasing_link">Os_icons</a></h2><h2><a href="../.././api/client/Os_lib.html" class="ocsimore_phrasing_link">Os_lib</a></h2><h2><a href="../.././api/client/Os_msg.html" class="ocsimore_phrasing_link">Os_msg</a></h2><h2><a href="../.././api/client/Os_notif.html" class="ocsimore_phrasing_link">Os_notif</a></h2><h2><a href="../.././api/client/Os_page.html" class="ocsimore_phrasing_link">Os_page</a></h2><h2><a href="../.././api/client/Os_platform.html" class="ocsimore_phrasing_link">Os_platform</a></h2><h2><a href="../.././api/client/Os_request_cache.html" class="ocsimore_phrasing_link">Os_request_cache</a></h2><h2><a href="../.././api/client/Os_services.html" class="ocsimore_phrasing_link">Os_services</a></h2><h2><a href="../.././api/client/Os_session.html" class="ocsimore_phrasing_link">Os_session</a></h2><h2><a href="../.././api/client/Os_tips.html" class="ocsimore_phrasing_link">Os_tips</a></h2><h2><a href="../.././api/client/Os_types.html" class="ocsimore_phrasing_link">Os_types</a></h2><h2><a href="../.././api/client/Os_user.html" class="ocsimore_phrasing_link">Os_user</a></h2><h2><a href="../.././api/client/Os_user_proxy.html" class="ocsimore_phrasing_link">Os_user_proxy</a></h2><h2><a href="../.././api/client/Os_user_view.html" class="ocsimore_phrasing_link">Os_user_view</a></h2><h2>Index</h2><h3> <span><a href="../.././api/client/index_types.html">Index of types</a></span></h3><h3> <span><a href="../.././api/client/index_exceptions.html">Index of exceptions</a></span></h3><h3> <span><a href="../.././api/client/index_values.html">Index of values</a></span></h3><h3> <span><a href="../.././api/client/index_modules.html">Index of modules</a></span></h3><h3> <span><a href="../.././api/client/index_module_types.html">Index of module types</a></span></h3></nav></nav></aside></div><p class="reasonwarning">Warning: Reason support is experimental.
+We are looking for beta-tester and contributors.
+</p><button id="reason">Switch to </button><div class="twocols"><nav class="leftcol">Version <select class="how-versions" onchange="location = this.value;"><option value="../.././../1.0/api/server/type_Os_core_db.PGOCaml.html">1.0</option><option value="../.././../1.1.0/api/server/type_Os_core_db.PGOCaml.html">1.1.0</option><option value="../.././../1.5/api/server/type_Os_core_db.PGOCaml.html">1.5</option><option value="../.././../2.2/api/server/type_Os_core_db.PGOCaml.html">2.2</option><option value="../.././../4.0.0/api/server/type_Os_core_db.PGOCaml.html" selected="selected">4.0.0</option><option value="../.././../dev/api/server/type_Os_core_db.PGOCaml.html">dev</option></select><nav class="how-doctree"><h1>Ocsigen start</h1><h2><a href="../.././manual/intro.html" class="ocsimore_phrasing_link">Introduction</a></h2><h1>Server API</h1><h2><a href="../.././api/server/Os_current_user.html" class="ocsimore_phrasing_link">Os_current_user</a></h2><h2><a href="../.././api/server/Os_date.html" class="ocsimore_phrasing_link">Os_date</a></h2><h2><a href="../.././api/server/Os_db.html" class="ocsimore_phrasing_link">Os_db</a></h2><h2><a href="../.././api/server/Os_email.html" class="ocsimore_phrasing_link">Os_email</a></h2><h2><a href="../.././api/server/Os_fcm_notif.html" class="ocsimore_phrasing_link">Os_fcm_notif</a></h2><h2><a href="../.././api/server/Os_group.html" class="ocsimore_phrasing_link">Os_group</a></h2><h2><a href="../.././api/server/Os_handlers.html" class="ocsimore_phrasing_link">Os_handlers</a></h2><h2><a href="../.././api/server/Os_icons.html" class="ocsimore_phrasing_link">Os_icons</a></h2><h2><a href="../.././api/server/Os_lib.html" class="ocsimore_phrasing_link">Os_lib</a></h2><h2><a href="../.././api/server/Os_msg.html" class="ocsimore_phrasing_link">Os_msg</a></h2><h2><a href="../.././api/server/Os_notif.html" class="ocsimore_phrasing_link">Os_notif</a></h2><h2><a href="../.././api/server/Os_page.html" class="ocsimore_phrasing_link">Os_page</a></h2><h2><a href="../.././api/server/Os_platform.html" class="ocsimore_phrasing_link">Os_platform</a></h2><h2><a href="../.././api/server/Os_request_cache.html" class="ocsimore_phrasing_link">Os_request_cache</a></h2><h2><a href="../.././api/server/Os_services.html" class="ocsimore_phrasing_link">Os_services</a></h2><h2><a href="../.././api/server/Os_session.html" class="ocsimore_phrasing_link">Os_session</a></h2><h2><a href="../.././api/server/Os_tips.html" class="ocsimore_phrasing_link">Os_tips</a></h2><h2><a href="../.././api/server/Os_types.html" class="ocsimore_phrasing_link">Os_types</a></h2><h2><a href="../.././api/server/Os_uploader.html" class="ocsimore_phrasing_link">Os_uploader</a></h2><h2><a href="../.././api/server/Os_user.html" class="ocsimore_phrasing_link">Os_user</a></h2><h2><a href="../.././api/server/Os_user_proxy.html" class="ocsimore_phrasing_link">Os_user_proxy</a></h2><h2><a href="../.././api/server/Os_user_view.html" class="ocsimore_phrasing_link">Os_user_view</a></h2><h2>Index</h2><h3> <span><a href="../.././api/server/index_types.html">Index of types</a></span></h3><h3> <span><a href="../.././api/server/index_exceptions.html">Index of exceptions</a></span></h3><h3> <span><a href="../.././api/server/index_values.html">Index of values</a></span></h3><h3> <span><a href="../.././api/server/index_modules.html">Index of modules</a></span></h3><h3> <span><a href="../.././api/server/index_module_types.html">Index of module types</a></span></h3><h1>Client API</h1><h2><a href="../.././api/client/Os_current_user.html" class="ocsimore_phrasing_link">Os_current_user</a></h2><h2><a href="../.././api/client/Os_date.html" class="ocsimore_phrasing_link">Os_date</a></h2><h2><a href="../.././api/client/Os_handlers.html" class="ocsimore_phrasing_link">Os_handlers</a></h2><h2><a href="../.././api/client/Os_icons.html" class="ocsimore_phrasing_link">Os_icons</a></h2><h2><a href="../.././api/client/Os_lib.html" class="ocsimore_phrasing_link">Os_lib</a></h2><h2><a href="../.././api/client/Os_msg.html" class="ocsimore_phrasing_link">Os_msg</a></h2><h2><a href="../.././api/client/Os_notif.html" class="ocsimore_phrasing_link">Os_notif</a></h2><h2><a href="../.././api/client/Os_page.html" class="ocsimore_phrasing_link">Os_page</a></h2><h2><a href="../.././api/client/Os_platform.html" class="ocsimore_phrasing_link">Os_platform</a></h2><h2><a href="../.././api/client/Os_request_cache.html" class="ocsimore_phrasing_link">Os_request_cache</a></h2><h2><a href="../.././api/client/Os_services.html" class="ocsimore_phrasing_link">Os_services</a></h2><h2><a href="../.././api/client/Os_session.html" class="ocsimore_phrasing_link">Os_session</a></h2><h2><a href="../.././api/client/Os_tips.html" class="ocsimore_phrasing_link">Os_tips</a></h2><h2><a href="../.././api/client/Os_types.html" class="ocsimore_phrasing_link">Os_types</a></h2><h2><a href="../.././api/client/Os_user.html" class="ocsimore_phrasing_link">Os_user</a></h2><h2><a href="../.././api/client/Os_user_proxy.html" class="ocsimore_phrasing_link">Os_user_proxy</a></h2><h2><a href="../.././api/client/Os_user_view.html" class="ocsimore_phrasing_link">Os_user_view</a></h2><h2>Index</h2><h3> <span><a href="../.././api/client/index_types.html">Index of types</a></span></h3><h3> <span><a href="../.././api/client/index_exceptions.html">Index of exceptions</a></span></h3><h3> <span><a href="../.././api/client/index_values.html">Index of values</a></span></h3><h3> <span><a href="../.././api/client/index_modules.html">Index of modules</a></span></h3><h3> <span><a href="../.././api/client/index_module_types.html">Index of module types</a></span></h3></nav></nav><article class="rightcol"><pre class=""><code class="language-ocaml translatable">sig
+  type 'a t
+  type 'a monad = 'a Lwt.t
+  type isolation =
+      [ `Read_committed
+      | `Read_uncommitted
+      | `Repeatable_read
+      | `Serializable ]
+  type access = [ `Read_only | `Read_write ]
+  exception Error of string
+  exception PostgreSQL_Error of string * (char * string) list
+  type connection_desc = {
+    user : string;
+    port : int;
+    password : string;
+    host : [ `Hostname of string | `Unix_domain_socket_dir of string ];
+    database : string;
+  }
+  val describe_connection :
+    ?host:string -&gt;
+    ?port:int -&gt;
+    ?user:string -&gt;
+    ?password:string -&gt;
+    ?database:string -&gt;
+    ?unix_domain_socket_dir:string -&gt; unit -&gt; connection_desc
+  val connection_desc_to_string : connection_desc -&gt; string
+  val connect :
+    ?host:string -&gt;
+    ?port:int -&gt;
+    ?user:string -&gt;
+    ?password:string -&gt;
+    ?database:string -&gt;
+    ?unix_domain_socket_dir:string -&gt;
+    ?desc:connection_desc -&gt; unit -&gt; 'a t monad
+  val close : 'a t -&gt; unit monad
+  val ping : 'a t -&gt; unit monad
+  val alive : 'a t -&gt; bool monad
+  val begin_work :
+    ?isolation:isolation -&gt;
+    ?access:access -&gt; ?deferrable:bool -&gt; 'a t -&gt; unit monad
+  val commit : 'a t -&gt; unit monad
+  val rollback : 'a t -&gt; unit monad
+  val transact :
+    'a t -&gt;
+    ?isolation:isolation -&gt;
+    ?access:access -&gt; ?deferrable:bool -&gt; ('a t -&gt; 'b monad) -&gt; 'b monad
+  val serial : 'a t -&gt; string -&gt; int64 monad
+  val serial4 : 'a t -&gt; string -&gt; int32 monad
+  val serial8 : 'a t -&gt; string -&gt; int64 monad
+  val max_message_length : int ref
+  val verbose : int ref
+  val set_private_data : 'a t -&gt; 'a -&gt; unit
+  val private_data : 'a t -&gt; 'a
+  val uuid : 'a t -&gt; string
+  type pa_pg_data = (string, bool) Hashtbl.t
+  type oid = int32
+  type param = string option
+  type result = string option
+  type row = result list
+  val prepare :
+    'a t -&gt;
+    query:string -&gt; ?name:string -&gt; ?types:oid list -&gt; unit -&gt; unit monad
+  val execute_rev :
+    'a t -&gt;
+    ?name:string -&gt;
+    ?portal:string -&gt; params:param list -&gt; unit -&gt; row list monad
+  val execute :
+    'a t -&gt;
+    ?name:string -&gt;
+    ?portal:string -&gt; params:param list -&gt; unit -&gt; row list monad
+  val cursor :
+    'a t -&gt;
+    ?name:string -&gt;
+    ?portal:string -&gt; params:param list -&gt; (row -&gt; unit monad) -&gt; unit monad
+  val close_statement : 'a t -&gt; ?name:string -&gt; unit -&gt; unit monad
+  val close_portal : 'a t -&gt; ?portal:string -&gt; unit -&gt; unit monad
+  val inject : 'a t -&gt; ?name:string -&gt; string -&gt; row list monad
+  val alter : 'a t -&gt; ?name:string -&gt; string -&gt; unit monad
+  type row_description = result_description list
+  and result_description = {
+    name : string;
+    table : oid option;
+    column : int option;
+    field_type : oid;
+    length : int;
+    modifier : int32;
+  }
+  type params_description = param_description list
+  and param_description = { param_type : oid; }
+  val describe_statement :
+    'a t -&gt;
+    ?name:string -&gt;
+    unit -&gt; (params_description * row_description option) monad
+  val describe_portal :
+    'a t -&gt; ?portal:string -&gt; unit -&gt; row_description option monad
+  val name_of_type : ?modifier:int32 -&gt; oid -&gt; string
+  type inet = Unix.inet_addr * int
+  type timestamptz = CalendarLib.Calendar.t * CalendarLib.Time_Zone.t
+  type int16 = int
+  type bytea = string
+  type point = float * float
+  type hstore = (string * string option) list
+  type numeric = string
+  type uuid = string
+  type jsonb = string
+  type bool_array = bool option list
+  type int32_array = int32 option list
+  type int64_array = int64 option list
+  type string_array = string option list
+  type float_array = float option list
+  type timestamp_array = CalendarLib.Calendar.t option list
+  val string_of_oid : oid -&gt; string
+  val string_of_bool : bool -&gt; string
+  val string_of_int : int -&gt; string
+  val string_of_int16 : int16 -&gt; string
+  val string_of_int32 : int32 -&gt; string
+  val string_of_int64 : int64 -&gt; string
+  val string_of_float : float -&gt; string
+  val string_of_point : point -&gt; string
+  val string_of_hstore : hstore -&gt; string
+  val string_of_numeric : numeric -&gt; string
+  val string_of_uuid : uuid -&gt; string
+  val string_of_jsonb : jsonb -&gt; string
+  val string_of_inet : inet -&gt; string
+  val string_of_timestamp : CalendarLib.Calendar.t -&gt; string
+  val string_of_timestamptz : timestamptz -&gt; string
+  val string_of_date : CalendarLib.Date.t -&gt; string
+  val string_of_time : CalendarLib.Time.t -&gt; string
+  val string_of_interval : CalendarLib.Calendar.Period.t -&gt; string
+  val string_of_bytea : bytea -&gt; string
+  val string_of_string : string -&gt; string
+  val string_of_unit : unit -&gt; string
+  val string_of_bool_array : bool_array -&gt; string
+  val string_of_int32_array : int32_array -&gt; string
+  val string_of_int64_array : int64_array -&gt; string
+  val string_of_string_array : string_array -&gt; string
+  val string_of_bytea_array : string_array -&gt; string
+  val string_of_float_array : float_array -&gt; string
+  val string_of_timestamp_array : timestamp_array -&gt; string
+  val comment_src_loc : unit -&gt; bool
+  val oid_of_string : string -&gt; oid
+  val bool_of_string : string -&gt; bool
+  val int_of_string : string -&gt; int
+  val int16_of_string : string -&gt; int16
+  val int32_of_string : string -&gt; int32
+  val int64_of_string : string -&gt; int64
+  val float_of_string : string -&gt; float
+  val point_of_string : string -&gt; point
+  val hstore_of_string : string -&gt; hstore
+  val numeric_of_string : string -&gt; numeric
+  val uuid_of_string : string -&gt; uuid
+  val jsonb_of_string : string -&gt; jsonb
+  val inet_of_string : string -&gt; inet
+  val timestamp_of_string : string -&gt; CalendarLib.Calendar.t
+  val timestamptz_of_string : string -&gt; timestamptz
+  val date_of_string : string -&gt; CalendarLib.Date.t
+  val time_of_string : string -&gt; CalendarLib.Time.t
+  val interval_of_string : string -&gt; CalendarLib.Calendar.Period.t
+  val bytea_of_string : string -&gt; bytea
+  val unit_of_string : string -&gt; unit
+  val bool_array_of_string : string -&gt; bool_array
+  val int32_array_of_string : string -&gt; int32_array
+  val int64_array_of_string : string -&gt; int64_array
+  val string_array_of_string : string -&gt; string_array
+  val float_array_of_string : string -&gt; float_array
+  val timestamp_array_of_string : string -&gt; timestamp_array
+  val bind : 'a monad -&gt; ('a -&gt; 'b monad) -&gt; 'b monad
+  val return : 'a -&gt; 'a monad
+end</code></pre></article></div></div></body></html>
