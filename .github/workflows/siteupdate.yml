@@ -51,6 +51,9 @@ jobs:
           export HOW_LATEST
           ln -s $HOW_LATEST $HOW_OUT/latest
           echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; URL=latest/manual/intro" /></head><body></body></html>' > $HOW_OUT/index.html
+          mkdir $HOW_OUT/demo
+          echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; URL=http://ocsigen-1.inria.fr/ocsigen-start/demo/" /></head><body></body></html>' > $HOW_OUT/demo/index.html
+
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.0.0
