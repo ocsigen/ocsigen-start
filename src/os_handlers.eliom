@@ -126,7 +126,9 @@ let%server sign_up_handler () email =
     let msg =
       "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: " in
-    send_action_link ~autoconnect:true msg Os_services.main_service email userid
+    send_action_link ~validity:1L
+      ~expiry:CalendarLib.Calendar.(add (now ()) (Period.hour 1))
+      ~autoconnect:true msg Os_services.main_service email userid
   in
   try%lwt
     let%lwt user = Os_user.create ~firstname:"" ~lastname:"" ~email () in
@@ -134,7 +136,7 @@ let%server sign_up_handler () email =
     Os_msg.msg ~onload:true ~level:`Msg ~duration:6.
       "An e-mail was sent to this address. \
        Click on the link it contains to activate your account.";
-    send_action_link email userid
+    send_action_link  email userid
   with Os_user.Already_exists userid ->
     (* If email is not validated, the user never logged in,
        I send an action link, as if it were a new user. *)
@@ -166,8 +168,8 @@ let%server forgot_password_handler service () email =
     let msg = "Hi,\r\nTo set a new password, \
                please click on this link: " in
     Os_msg.msg ~level:`Msg ~onload:true "An email was sent to this address. Click on the link it contains to reset your password.";
-    (* ~validity:1L seems not to be enough for some users *)
     send_action_link ~autoconnect:true ~action:`PasswordReset ~validity:1L
+      ~expiry:CalendarLib.Calendar.(add (now ()) (Period.hour 1))
       msg service email userid
   with Os_db.No_such_resource ->
     Eliom_reference.Volatile.set Os_user.user_does_not_exist true;
