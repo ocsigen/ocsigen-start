@@ -303,8 +303,8 @@ module User =
                 (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
              (fun _rows -> PGOCaml.return ()))
     let add_actionlinkkey ?(autoconnect= false)  ?(action=
-      `AccountActivation)  ?(data= "")  ?(validity= 1L)  ~act_key  ~userid 
-      ~email  () =
+      `AccountActivation)  ?(data= "")  ?(validity= 1L)  ?expiry  ~act_key 
+      ~userid  ~email  () =
       let action =
         match action with
         | `AccountActivation -> "activation"
@@ -321,10 +321,12 @@ module User =
                 [Some (((let open PGOCaml in string_of_bool)) autoconnect)];
                 [Some (((let open PGOCaml in string_of_string)) data)];
                 [Some (((let open PGOCaml in string_of_int64)) validity)];
-                [Some (((let open PGOCaml in string_of_string)) act_key)]] in
+                [Some (((let open PGOCaml in string_of_string)) act_key)];
+                [PGOCaml_aux.Option.map
+                   (let open PGOCaml in string_of_timestamp) expiry]] in
               let split =
                 [`Text
-                   "INSERT INTO ocsigen_start.activation\n           (userid, email, action, autoconnect, data,\n            validity, activationkey)\n         VALUES (";
+                   "INSERT INTO ocsigen_start.activation\n           (userid, email, action, autoconnect, data,\n            validity, activationkey, expiry)\n         VALUES (";
                 `Var ("userid", false, false);
                 `Text ", ";
                 `Var ("email", false, false);
@@ -338,6 +340,8 @@ module User =
                 `Var ("validity", false, false);
                 `Text ", ";
                 `Var ("act_key", false, false);
+                `Text ", ";
+                `Var ("expiry", false, true);
                 `Text ")"] in
               let i = ref 0 in
               let j = ref 0 in
@@ -1411,7 +1415,7 @@ module User =
                          (((let open PGOCaml in string_of_string)) act_key)]] in
                    let split =
                      [`Text
-                        "SELECT userid, email, validity, autoconnect, action, data\n               FROM ocsigen_start.activation\n               WHERE activationkey = ";
+                        "SELECT userid, email, validity, expiry, autoconnect, action, data\n               FROM ocsigen_start.activation\n               WHERE activationkey = ";
                      `Var ("act_key", false, false)] in
                    let i = ref 0 in
                    let j = ref 0 in
@@ -1456,11 +1460,11 @@ module User =
                   (fun _rows ->
                      PGOCaml.return
                        (let original_query =
-                          "SELECT userid, email, validity, autoconnect, action, data\n               FROM ocsigen_start.activation\n               WHERE activationkey = $act_key" in
+                          "SELECT userid, email, validity, expiry, autoconnect, action, data\n               FROM ocsigen_start.activation\n               WHERE activationkey = $act_key" in
                         List.rev_map
                           (fun row ->
                              match row with
-                             | c0::c1::c2::c3::c4::c5::[] ->
+                             | c0::c1::c2::c3::c4::c5::c6::[] ->
                                  (((let open PGOCaml in int64_of_string)
                                      (try PGOCaml_aux.Option.get c0
                                       with
@@ -1479,13 +1483,10 @@ module User =
                                        | _ ->
                                            failwith
                                              "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                   (PGOCaml_aux.Option.map
+                                      (let open PGOCaml in
+                                         timestamp_of_string) c3),
                                    ((let open PGOCaml in bool_of_string)
-                                      (try PGOCaml_aux.Option.get c3
-                                       with
-                                       | _ ->
-                                           failwith
-                                             "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
-                                   ((let open PGOCaml in string_of_string)
                                       (try PGOCaml_aux.Option.get c4
                                        with
                                        | _ ->
@@ -1493,6 +1494,12 @@ module User =
                                              "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
                                    ((let open PGOCaml in string_of_string)
                                       (try PGOCaml_aux.Option.get c5
+                                       with
+                                       | _ ->
+                                           failwith
+                                             "ppx_pgsql's nullability heuristic has failed - use \"nullable-results\"")),
+                                   ((let open PGOCaml in string_of_string)
+                                      (try PGOCaml_aux.Option.get c6
                                        with
                                        | _ ->
                                            failwith
@@ -1513,7 +1520,8 @@ module User =
                                                      | None -> "NULL") row))))) in
                                  raise (PGOCaml.Error msg)) _rows)))
              ~success:(fun
-                         (userid, email, validity, autoconnect, action, data)
+                         (userid, email, validity, expiry, autoconnect,
+                          action, data)
                          ->
                          let action =
                            match action with
@@ -1593,6 +1601,7 @@ module User =
                                   userid;
                                   email;
                                   validity;
+                                  expiry;
                                   action;
                                   data;
                                   autoconnect

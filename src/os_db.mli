@@ -87,6 +87,7 @@ module User : sig
              > `AccountActivation ] ->
     ?data:string ->
     ?validity:int64 ->
+    ?expiry:CalendarLib.Calendar.t ->
     act_key:string ->
     userid:Os_types.User.id ->
     email:string ->

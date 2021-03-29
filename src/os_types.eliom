@@ -49,6 +49,7 @@ module Action_link_key = struct
     userid        : User.id;
     email         : string;
     validity      : int64;
+    expiry        : CalendarLib.Calendar.t option;
     autoconnect   : bool;
     action        : [ `AccountActivation | `PasswordReset | `Custom of string ];
     data          : string;

@@ -101,6 +101,7 @@ let%server send_action_link
     ?autoconnect
     ?action
     ?validity
+    ?expiry
     msg
     service
     email
@@ -115,7 +116,7 @@ let%server send_action_link
   Eliom_reference.Volatile.set Os_msg.action_link_key_created true;
   let%lwt () =
     Os_user.add_actionlinkkey
-      ?autoconnect ?action ?validity ~act_key ~userid ~email ()
+      ?autoconnect ?action ?validity ?expiry ~act_key ~userid ~email ()
   in
   Lwt.return_unit
 
@@ -165,6 +166,7 @@ let%server forgot_password_handler service () email =
     let msg = "Hi,\r\nTo set a new password, \
                please click on this link: " in
     Os_msg.msg ~level:`Msg ~onload:true "An email was sent to this address. Click on the link it contains to reset your password.";
+    (* ~validity:1L seems not to be enough for some users *)
     send_action_link ~autoconnect:true ~action:`PasswordReset ~validity:1L
       msg service email userid
   with Os_db.No_such_resource ->
@@ -284,7 +286,7 @@ let action_link_handler_common akey =
   try%lwt
     let open Os_types.Action_link_key in
     let%lwt
-      {userid; email; validity; action; data = _; autoconnect}
+      {userid; email; validity; expiry; action; data = _; autoconnect}
       as action_link =
       Os_user.get_actionlinkkey_info akey
     in
@@ -298,8 +300,12 @@ let action_link_handler_common akey =
            Lwt.fail (Account_already_activated_unconnected action_link)
       else Lwt.return_unit
     in
+    let outdated = match expiry with
+      | None -> false
+      | Some e -> e <= CalendarLib.Calendar.now ()
+    in
     let%lwt () =
-      if validity <= 0L
+      if validity <= 0L || outdated
       then Lwt.fail (Invalid_action_key action_link)
       else Lwt.return_unit
     in
