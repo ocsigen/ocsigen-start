@@ -65,8 +65,8 @@ val on_denied_request : (Os_types.User.id option -> unit Lwt.t) -> unit
     (Remains when user logs out).
 *)
 val user_indep_state_hierarchy : Eliom_common.scope_hierarchy
-val user_indep_process_scope : Eliom_common.client_process_scope
-val user_indep_session_scope : Eliom_common.session_scope
+val user_indep_process_scope : [> Eliom_common.client_process_scope ]
+val user_indep_session_scope : [> Eliom_common.session_scope ]
 
 [%%shared.start]
 exception Not_connected
