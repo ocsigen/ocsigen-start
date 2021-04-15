@@ -145,7 +145,7 @@ let%server _ =
       Eliom_reference.Volatile.set already_send_ref true;
       let cur = Eliom_reference.Volatile.get monitor_channel_ref in
       Eliom_state.Ext.iter_volatile_sub_states
-        ~state:(Eliom_state.Ext.current_volatile_session_state
+        ~state:(Eliom_state.Ext.current_volatile_data_state
                   ~scope:Os_session.user_indep_session_scope ())
         (fun state ->
            match

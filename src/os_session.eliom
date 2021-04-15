@@ -90,7 +90,7 @@ let connect_volatile uid =
     ~scope:Eliom_common.default_session_scope uid;
   let uid = Int64.of_string uid in
   Eliom_reference.Volatile.set current_user_indep_session_state
-    (Some (Eliom_state.Ext.current_volatile_session_state
+    (Some (Eliom_state.Ext.current_volatile_data_state
              ~scope:user_indep_session_scope ()));
   open_session_action uid
 
