@@ -1,3 +1,0 @@
-<<code language="ocaml" | sig
-  val string_of_stream : ?len:int -> string Ocsigen_stream.t -> string Lwt.t
-end >>
