@@ -1,0 +1,71 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  schedule:
+    # To invalidate the caches for OPAM root every week.
+    - cron: '0 0 * * MON'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+        ocaml-version:
+          - 4.08.1
+          - 4.09.1
+          - 4.10.2
+          - 4.11.2
+          - 4.12.0
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      OPAMYES: true
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Get date to compute cache key
+        id: date
+        run: echo "::set-output name=week::$(date -u +%Y-%W)"
+
+      - name: Cache OPAM root
+        uses: actions/cache@v2
+        with:
+          path: ~/.opam/
+          key:
+            build-${{ matrix.os }}-${{ matrix.ocaml-version }}-${{
+            steps.date.outputs.week }}-${{ hashFiles ('opam') }}
+
+      - name: Use OCaml ${{ matrix.ocaml-version }}
+        uses: avsm/setup-ocaml@v1
+        with:
+          ocaml-version: ${{ matrix.ocaml-version }}
+
+      - name: Install library dependencies
+        run: |
+          opam pin add --no-action ocsigen-start.dev .
+          opam depext ocsigen-start.dev
+          opam install --deps-only ocsigen-start.dev
+
+      - name: Install library and Eliom distillery template
+        run: opam reinstall ocsigen-start.dev
+
+      - name: Build Eliom distillery template
+        working-directory: /tmp
+        run: |
+          mkdir template
+          opam exec -- eliom-distillery -name template -template os.pgocaml
+          cd template
+          make db-init db-create db-schema
+          opam exec -- make all
