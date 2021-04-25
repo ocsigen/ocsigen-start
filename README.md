@@ -1,7 +1,4 @@
-# Ocsigen Start [![Travis Status][travis-img]][travis] [![Build](https://github.com/ocsigen/ocsigen-start/actions/workflows/build.yml/badge.svg)](https://github.com/ocsigen/ocsigen-start/actions/workflows/build.yml)
-
-[travis]:      https://travis-ci.org/ocsigen/ocsigen-start/branches
-[travis-img]:  https://img.shields.io/travis/ocsigen/ocsigen-start/master.svg?label=travis
+# Ocsigen Start [![Build](https://github.com/ocsigen/ocsigen-start/actions/workflows/build.yml/badge.svg)](https://github.com/ocsigen/ocsigen-start/actions/workflows/build.yml)
 
 You can try the [online version](https://ocsigen.org/ocsigen-start/demo) and
 download
