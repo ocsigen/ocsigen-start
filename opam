@@ -28,5 +28,5 @@ depends: [
 ]
 depexts: [
   ["imagemagick" "ruby-sass" "postgresql" "postgresql-common"] {os-family = "debian"}
-  ["postgresql"] {os = "macos" & os-distribution = "homebrew"}
+  ["postgresql" "md5sha1sum" "sassc"] {os = "macos" & os-distribution = "homebrew"}
 ]
