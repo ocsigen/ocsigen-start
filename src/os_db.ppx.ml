@@ -89,7 +89,7 @@ module User = struct
          WHERE userid = $userid AND email = $email"]
 
   let add_actionlinkkey ?(autoconnect=false)
-      ?(action=`AccountActivation) ?(data="") ?(validity=1L)
+      ?(action=`AccountActivation) ?(data="") ?(validity=1L) ?expiry
       ~act_key ~userid ~email () =
     let action = match action with
       | `AccountActivation -> "activation"
@@ -99,9 +99,9 @@ module User = struct
     [%pgsql dbh
         "INSERT INTO ocsigen_start.activation
            (userid, email, action, autoconnect, data,
-            validity, activationkey)
+            validity, activationkey, expiry)
          VALUES ($userid, $email, $action, $autoconnect, $data,
-                 $validity, $act_key)"]
+                 $validity, $act_key, $?expiry)"]
 
   let add_preregister email = full_transaction_block @@ fun dbh ->
     [%pgsql dbh
@@ -262,10 +262,11 @@ module User = struct
         ~fail:(Lwt.fail No_such_resource)
         (fun dbh ->
           [%pgsql dbh
-              "SELECT userid, email, validity, autoconnect, action, data
+              "SELECT userid, email, validity, expiry, autoconnect, action, data
                FROM ocsigen_start.activation
                WHERE activationkey = $act_key"])
-        ~success:(fun (userid, email, validity, autoconnect, action, data) ->
+        ~success:(fun (userid, email, validity, expiry, autoconnect, action, data)
+                   ->
           let action = match action with
             | "activation" -> `AccountActivation
             | "passwordreset" -> `PasswordReset
@@ -281,6 +282,7 @@ module User = struct
               userid;
               email;
               validity;
+              expiry;
               action;
               data;
               autoconnect

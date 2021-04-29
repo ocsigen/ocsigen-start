@@ -33,10 +33,11 @@ CREATE SCHEMA ocsigen_start
          userid bigint NOT NULL references users(userid), -- DEFAULT
          email citext NOT NULL,
          autoconnect boolean NOT NULL,
-         validity bigint NOT NULL,
+         validity bigint NOT NULL default 1,
          action text NOT NULL,
          data text NOT NULL,
-         creationdate timestamptz NOT NULL default now()
+         creationdate timestamp NOT NULL default (now() at time zone 'utc'),
+         expiry timestamp
   )
 
   CREATE TABLE groups ( -- DEFAULT

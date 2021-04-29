@@ -118,7 +118,7 @@ val is_complete : Os_types.User.t -> bool
 (** [emails_of_user user] returns the emails of the user [user]. *)
 val emails_of_user : Os_types.User.t -> string Lwt.t
 
-(** [add_actionlinkkey ?autoconnect ?action ?data ?validity ~act_key ~userid
+(** [add_actionlinkkey ?autoconnect ?action ?data ?validity ?expiry ~act_key ~userid
     ~email ()] adds the action key in the database.
  *)
 (* Use {!Os_types.actionlinkkey_info} instead of each parameter? *)
@@ -129,6 +129,7 @@ val add_actionlinkkey :
   (** default: `AccountActivation *)
   ?data:string -> (** default: empty string *)
   ?validity:int64 -> (** default: 1L *)
+  ?expiry:CalendarLib.Calendar.t ->
   act_key:string -> userid:Os_types.User.id -> email:string -> unit -> unit Lwt.t
 
 (** [verify_password ~email ~password] returns the userid if user with email

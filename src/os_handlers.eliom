@@ -101,6 +101,7 @@ let%server send_action_link
     ?autoconnect
     ?action
     ?validity
+    ?expiry
     msg
     service
     email
@@ -115,7 +116,7 @@ let%server send_action_link
   Eliom_reference.Volatile.set Os_msg.action_link_key_created true;
   let%lwt () =
     Os_user.add_actionlinkkey
-      ?autoconnect ?action ?validity ~act_key ~userid ~email ()
+      ?autoconnect ?action ?validity ?expiry ~act_key ~userid ~email ()
   in
   Lwt.return_unit
 
@@ -125,7 +126,9 @@ let%server sign_up_handler () email =
     let msg =
       "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: " in
-    send_action_link ~autoconnect:true msg Os_services.main_service email userid
+    send_action_link ~validity:1L
+      ~expiry:CalendarLib.Calendar.(add (now ()) (Period.hour 1))
+      ~autoconnect:true msg Os_services.main_service email userid
   in
   try%lwt
     let%lwt user = Os_user.create ~firstname:"" ~lastname:"" ~email () in
@@ -133,7 +136,7 @@ let%server sign_up_handler () email =
     Os_msg.msg ~onload:true ~level:`Msg ~duration:6.
       "An e-mail was sent to this address. \
        Click on the link it contains to activate your account.";
-    send_action_link email userid
+    send_action_link  email userid
   with Os_user.Already_exists userid ->
     (* If email is not validated, the user never logged in,
        I send an action link, as if it were a new user. *)
@@ -166,6 +169,7 @@ let%server forgot_password_handler service () email =
                please click on this link: " in
     Os_msg.msg ~level:`Msg ~onload:true "An email was sent to this address. Click on the link it contains to reset your password.";
     send_action_link ~autoconnect:true ~action:`PasswordReset ~validity:1L
+      ~expiry:CalendarLib.Calendar.(add (now ()) (Period.hour 1))
       msg service email userid
   with Os_db.No_such_resource ->
     Eliom_reference.Volatile.set Os_user.user_does_not_exist true;
@@ -284,7 +288,7 @@ let action_link_handler_common akey =
   try%lwt
     let open Os_types.Action_link_key in
     let%lwt
-      {userid; email; validity; action; data = _; autoconnect}
+      {userid; email; validity; expiry; action; data = _; autoconnect}
       as action_link =
       Os_user.get_actionlinkkey_info akey
     in
@@ -298,8 +302,12 @@ let action_link_handler_common akey =
            Lwt.fail (Account_already_activated_unconnected action_link)
       else Lwt.return_unit
     in
+    let outdated = match expiry with
+      | None -> false
+      | Some e -> e <= CalendarLib.Calendar.now ()
+    in
     let%lwt () =
-      if validity <= 0L
+      if validity <= 0L || outdated
       then Lwt.fail (Invalid_action_key action_link)
       else Lwt.return_unit
     in
