@@ -40,6 +40,10 @@
     for connected users only, non-connected users only, or all (default).
     Tips for non-connected users will reappear every time the session is closed.
     - [?delay] adds a delay before displaying the tip (in seconds)
+    - [?priority] specifies a lower-value-first priority order for this bubble.
+    Priority 1 bubbles will be displayed first, Priority [None] bubbles will
+    be displayed last. Any tie will retain the order of
+    the calls to [Os_tips.bubble].
 
 *)
 val bubble :
@@ -57,6 +61,7 @@ val bubble :
   ?width:int Eliom_client_value.t ->
   ?parent_node:[< `Body | Html_types.body_content ] Eliom_content.Html.elt ->
   ?delay:float ->
+  ?priority:int ->
   ?onclose:(unit -> unit Lwt.t) Eliom_client_value.t ->
   name:string ->
   content:((unit -> unit Lwt.t)

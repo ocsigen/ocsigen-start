@@ -189,12 +189,101 @@ let%shared block ?(a = []) ?(recipient = `All)
 let%client onload_waiter () =
   let%lwt _  = Eliom_client.lwt_onload () in Lwt.return_unit
 
-(* This thread is used to display only one tip at a time *)
-let%client waiter = ref (onload_waiter ())
+(* This list of threads is used to display only one tip at a time,
+   in the order specified by the given priorities *)
+let%client prioritized_waiters : (int option * unit Lwt.t * bool) list ref =
+  ref []
+
+(* [Lwt.cancel] does nothing if the task is already resolved,
+   so we can safely cancel them all *)
+let%client cancel_waiters () =
+  List.iter (fun (_,w,_) -> Lwt.cancel w) !prioritized_waiters
+
+(* This boolean is used to track whether
+   the list of priorities has been sorted
+ *)
+let%client sorted = ref false
+
+(* A priority of [None] is considered infinite,
+   and thus greater than everything else *)
+let%client compare_priority_opt p1 p2 =
+  match p1,p2 with
+  | None, None -> 0
+  | None, _ -> 1
+  | Some _, None -> -1
+  | Some p1, Some p2 -> compare p1 p2
+
+(* Find the appropriate promise to wait for
+   corresponding to the given priority.
+
+   This function assumes the input list is sorted.
+
+   It turns to 'true' any priority item matched with its previous waiter.
+   That much is useful to keep track of which items to ignore.
+
+   It returns [None] if no appropriate promise is found.
+   Otherwise it returns [Some (promise,l)]
+   where [l] is meant to replace [prioritized_waiters]
+   and [promise] is the promise the bubble calling the function should wait for.
+ *)
+let%client rec find_previous priority = function
+  | [] -> (* Not found in an empty list *) None
+  | (p,_,_)::_ when compare_priority_opt p priority > 0 ->
+    (* First priority is too low: Not Found *)
+    None
+  | (p,w,false)::l when p = priority ->
+    (* Very first priority found: Result waiter resolves immediately. *)
+    Some (Lwt.return_unit, (p,w,true)::l)
+  | (prevp, prevw, prevb)::(p,w,false)::tl
+       when p = priority ->
+    (* First of a series of priorities is available:
+       Result waiter is the previous in the queue *)
+    Some (prevw, (prevp,prevw,prevb)::(p,w,true)::tl)
+  | (prevp, prevw, prevb)::(p,w,true)::tl
+       when p = priority ->
+    (* First of a series of priorities is unavailable:
+       Keep looking and rebuild on top of the list *)
+    (match find_previous priority ((p,w,true)::tl) with
+     | None -> None
+     | Some (r,l) -> Some (r, (prevp,prevw,prevb)::l))
+  | (p,w,b)::l
+       when compare_priority_opt p priority < 0 ->
+    (* Following priority is not matched by previous cases:
+       Keep looking and rebuild on top of the list *)
+    (match find_previous priority l with
+     | None -> None
+     | Some (r,l) -> Some (r, (p,w,b)::l))
+  | _ ->
+    (* Catch-all because everything else uses guards,
+       but should be unreachable *)
+    assert false
+
+let%client wait_for_bubble ?priority () =
+  (* We wait for the elements to load,
+     to be sure we have all waiters prioritized *)
+  let%lwt () = onload_waiter () in
+  if not !sorted then
+    (prioritized_waiters := List.rev !prioritized_waiters; sorted := true);
+  match find_previous priority !prioritized_waiters with
+  | None -> Lwt.return_unit
+  | Some (w,l) -> prioritized_waiters := l; w
+
+(* Registering a prioritized bubble. The list is sorted in decreasing order,
+   and is meant to be reversed later. This is because order of
+   lwt waiter additions are in reverse order from the order of calls to
+   Os_tips.bubble. *)
+let%client register_bubble ?priority w =
+  match priority with
+  | None -> prioritized_waiters := !prioritized_waiters @ [(priority,w, false)]
+  | Some p ->
+    prioritized_waiters :=
+      List.stable_sort (fun (p1,_,_) (p2,_,_) -> -compare_priority_opt p1 p2)
+        ( (priority,w, false)::!prioritized_waiters )
 
 let%client rec onchangepage_handler _ =
-  Lwt.cancel !waiter;
-  waiter := onload_waiter ();
+  cancel_waiters ();
+  sorted := false;
+  prioritized_waiters := [];
   (* onchangepage handlers are one-off, register ourselves again for
      next time *)
   Eliom_client.onchangepage onchangepage_handler;
@@ -205,13 +294,12 @@ let%client () = Eliom_client.onchangepage onchangepage_handler
 (* Display a tip bubble *)
 let%client display_bubble ?(a = [])
     ?arrow ?top ?left ?right ?bottom ?height ?width
-    ?(parent_node : _ elt option) ?(delay = 0.0) ?(onclose = fun () -> Lwt.return_unit)
+    ?(parent_node : _ elt option) ?(delay = 0.0) ?priority ?(onclose = fun () -> Lwt.return_unit)
     ~name ~content ()
   =
-  let current_waiter = !waiter in
   let new_waiter, new_wakener = Lwt.task () in
-  waiter := new_waiter;
-  let%lwt () = current_waiter in
+  register_bubble ?priority new_waiter;
+  let%lwt () = wait_for_bubble ?priority () in
   let bec = D.div ~a:[a_class ["os-tip-bec"]] [] in
   let box_ref = ref None in
   let close = fun () ->
@@ -308,6 +396,7 @@ let%shared bubble
   ?(parent_node: [< `Body | Html_types.body_content ] Eliom_content.Html.elt
         option)
   ?delay
+  ?(priority : int option)
   ?onclose
   ~(name : string)
   ~(content:
@@ -330,7 +419,7 @@ let%shared bubble
         ?top:~%top ?left:~%left ?right:~%right ?bottom:~%bottom
         ?height:~%height ?width:~%width
         ?parent_node:~%parent_node
-        ?delay:~%delay
+        ?delay:~%delay ?priority:~%priority
         ?onclose:~%onclose
         ~name:(~%name : string)
         ~content:~%content
