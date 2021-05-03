@@ -44,6 +44,9 @@
     Priority 1 bubbles will be displayed first, Priority [None] bubbles will
     be displayed last. Any tie will retain the order of
     the calls to [Os_tips.bubble].
+    Negative values are not ignored and behave how you would expect them to:
+    between priorities of [None], [0], [80], and [-80], the order is
+    [-80], [0], [80], then [None].
 
 *)
 val bubble :
