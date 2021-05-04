@@ -263,7 +263,11 @@ let%client wait_for_bubble ?priority () =
      to be sure we have all waiters prioritized *)
   let%lwt () = onload_waiter () in
   if not !sorted then
-    (prioritized_waiters := List.rev !prioritized_waiters; sorted := true);
+    (prioritized_waiters :=
+       List.rev @@ List.stable_sort
+                     (fun (p1,_,_) (p2,_,_) -> -compare_priority_opt p1 p2)
+                     !prioritized_waiters;
+     sorted := true);
   match find_previous priority !prioritized_waiters with
   | None -> Lwt.return_unit
   | Some (w,l) -> prioritized_waiters := l; w
@@ -276,9 +280,7 @@ let%client register_bubble ?priority w =
   match priority with
   | None -> prioritized_waiters := !prioritized_waiters @ [(priority,w, false)]
   | Some p ->
-    prioritized_waiters :=
-      List.stable_sort (fun (p1,_,_) (p2,_,_) -> -compare_priority_opt p1 p2)
-        ( (priority,w, false)::!prioritized_waiters )
+    prioritized_waiters := (priority,w, false)::!prioritized_waiters
 
 let%client rec onchangepage_handler _ =
   cancel_waiters ();
