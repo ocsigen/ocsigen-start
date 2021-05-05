@@ -141,37 +141,69 @@ version changes. You may have to change version numbers in
 You may also have problems with old versions of `gradle` or wrong versions
 of Android packages ...
 
-** Be prepared! You're entering an unstable world! **
+If npm is causing a lot of errors (on Debian) in the following parts of the installation, an advice would be to uninstall nodejs and npm and do a clean installation of them **with aptitude**.
+
+This installation was tested with those versions:
+
+```
+npm : 6.14.12
+nodejs : v10.24.1
+```
+
+**Be prepared! You're entering an unstable world!**
 
 ### For Android:
 
-- Install JDK 8 (`openjdk-8-jdk` package in Debian/Ubuntu)
+- Install JDK 11 (`openjdk-11-jdk` package in Debian/Ubuntu)
+
+  Run those commands and look carefully if the checked option for java and javac are from the same repository:
+  ```
+  sudo update-alternatives --config java
+  sudo update-alternatives --config javac
+  ```
 - Install Gradle (`gradle` package in Debian/Ubuntu)
-- Download and untar the [Android SDK](http://developer.android.com) (the smaller version without Android Studio suffices), rename it so that you have a `$HOME/android-sdk-linux/tools` folder.
-- Using the Android package management interface (or `sdkmanager`), install latest versions of SDK Tools (`tools`), SDK Platform-tools (`platform-tools`), and SDK Build-tools (`build-tools;XXX`). Don't forget to replace `XXX` by current version (for example `29.0.0`). From your `android-sdk-linux/tools` :
-```Shell
- bin/sdkmanager "extras;android;m2repository"
- bin/sdkmanager "extras;google;m2respository"
- bin/sdkmanager "extras;google;google_play_services"
- bin/sdkmanager "build-tools;X.X.X"
- bin/sdkmanager "patcher;v4"
- bin/sdkmanager "platform-tools"
+- Download and untar the [Android SDK](http://developer.android.com) (the smaller version without Android Studio is sufficent), rename it so that you have a `$HOME/android-sdk-linux/tools` folder.
+- Using the Android package management interface (or sdkmanager):
+  * List All System Images Available for Download: `sdkmanager --list | grep system-images`\
+    (*As an example we're going to choose "system-images;android-26;default;x86" but you can choose your way.*)
+  * Download Image: sdkmanager --install "system-images;android-26;default;x86"\
+    (*Be aware that version > android-26 may not work.*)
+
+If you want to emulate an Android device, you need to create an emulator :
+
 ```
-- Install recent Android API: SDK Platform :
-```Shell
- bin/sdkmanager "platforms;android-X"
- ```
-- From Extras, enable the Android Support Repository and the Google Repository.
-- For convenience, add the SDK directories platform-tools and tools in your $PATH
+echo "no" | avdmanager --verbose create avd --force --name "generic_10" --package "system-images;android-26 default;x86" --tag "default" --abi "x86"
+# Check every available options that offers avdmanager to customize your emulator as you wish.
+```
 
-If you will test on an Android device, you don't need to do anything else.
+There is a couple more steps to follow:
 
-If you want to emulate an Android device, you need to
+Unfortunately there are two named emulator binary file, which are located under `$ANDROID_SDK/tools/emulator` and the other is under `$ANDROID_SDK/emulator/`.\
+Make sure you have the right emulator configure (you need to add `$ANDROID_SDK/emulator` to your env PATH).
 
-- install `qemu-kvm`
-- From the tools/android interface, install a system image (e.g., Intel x86 Atom_64) and configure an emulator: go to Tools -> Manage AVDs -> Device definition (for example choose Nexus 6 no skin)
+In order to do this:
 
-You can install any Android API version you want, depending on the platform you want to target. By default, in ocsigen Start, the minimal version is Android API 15.
+1. Add in your `~/.bashrc` (or `~/.zshrc`) file:
+    ```sh
+    export ANDROID_SDK=$HOME'your_path_to_android_sdk'
+    export PATH=$ANDROID_SDK/emulator:$PATH
+    export PATH=$ANDROID_SDK/tools:$PATH
+    export PATH=$ANDROID_SDK/tools/bin:$PATH
+    export PATH=$ANDROID_SDK/platform-tools:$PATH
+    export ANDROID_SDK_ROOT=$ANDROID_SDK 
+    export ANDROID_AVD_HOME=$HOME/.android/and
+    alias emulator='$ANDROID_SDK/emulator/emulator'
+    ```
+2. Then execute this command in your shell: `source ~/.bash_profile`
+3. And show the installed emulators with: `emulator -list-avds`\
+   You should have something displaying like:
+   ```sh
+   generic_10
+   # Or even something like :
+   Pixel_2_API_29
+   Pixel_3a_API_29
+   Pixel_C_API_29
+   ```
 
 ### For iOS:
 
