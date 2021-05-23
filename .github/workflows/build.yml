@@ -1,15 +1,11 @@
 name: Build
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
-    branches:
-      - master
+  push:
   schedule:
-    # To invalidate the caches for OPAM root every week.
-    - cron: '0 0 * * MON'
+    # Prime the caches every Monday
+    - cron: 0 1 * * MON
 
 jobs:
   build:
@@ -19,53 +15,39 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
-        ocaml-version:
-          - 4.08.1
-          - 4.09.1
-          - 4.10.2
-          - 4.11.2
-          - 4.12.0
+        ocaml-compiler:
+          - 4.08.x
+          - 4.09.x
+          - 4.10.x
+          - 4.11.x
+          - 4.12.x
 
     runs-on: ${{ matrix.os }}
-
-    env:
-      OPAMYES: true
 
     steps:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Get date to compute cache key
-        id: date
-        run: echo "::set-output name=week::$(date -u +%Y-%W)"
-
-      - name: Cache OPAM root
-        uses: actions/cache@v2
+      - name: Use OCaml ${{ matrix.ocaml-compiler }}
+        uses: ocaml/setup-ocaml@v2
         with:
-          path: ~/.opam/
-          key:
-            build-${{ matrix.os }}-${{ matrix.ocaml-version }}-${{
-            steps.date.outputs.week }}-${{ hashFiles ('opam') }}
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+          dune-cache: ${{ matrix.os != 'macos-latest' }}
+          opam-depext: false
+          opam-pin: false
 
-      - name: Use OCaml ${{ matrix.ocaml-version }}
-        uses: avsm/setup-ocaml@v1
-        with:
-          ocaml-version: ${{ matrix.ocaml-version }}
+      - run: opam pin add ocsigen-start.dev . --no-action
 
-      - name: Install library dependencies
-        run: |
-          opam pin add --no-action ocsigen-start.dev .
-          opam depext ocsigen-start.dev
-          opam install --deps-only ocsigen-start.dev
+      - run: opam depext ocsigen-start
 
-      - name: Install library and Eliom distillery template
-        run: opam reinstall ocsigen-start.dev
+      - run: opam install . --deps-only
 
-      - name: Build Eliom distillery template
-        working-directory: /tmp
-        run: |
-          mkdir template
-          opam exec -- eliom-distillery -name template -template os.pgocaml
-          cd template
-          make db-init db-create db-schema
-          opam exec -- make all
+      - run: mkdir -p template
+
+      - run: opam exec -- eliom-distillery -name template -template os.pgocaml
+
+      - run: make db-init db-create db-schema
+        working-directory: /template
+
+      - run: opam exec -- make all
+        working-directory: /template
