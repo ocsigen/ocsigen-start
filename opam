@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "ocsigen-start"
-version: "4.2.0"
+version: "4.2.1"
 authors: "dev@ocsigen.org"
 maintainer: "dev@ocsigen.org"
 synopsis: "An Eliom application skeleton ready to use to build your own application with users, (pre)registration, notifications, etc"
@@ -28,5 +28,5 @@ depends: [
 ]
 depexts: [
   ["imagemagick" "ruby-sass" "postgresql" "postgresql-common"] {os-family = "debian"}
-  ["postgresql"] {os = "macos" & os-distribution = "homebrew"}
+  ["postgresql" "md5sha1sum" "sassc"] {os = "macos" & os-distribution = "homebrew"}
 ]

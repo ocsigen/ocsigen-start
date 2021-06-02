@@ -1,0 +1,57 @@
+name: Build
+
+on:
+  pull_request:
+  push:
+  schedule:
+    # Prime the caches every Monday
+    - cron: 0 1 * * MON
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+        ocaml-compiler:
+          - 4.08.x
+          - 4.09.x
+          - 4.10.x
+          - 4.11.x
+          - 4.12.x
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Use OCaml ${{ matrix.ocaml-compiler }}
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+          dune-cache: ${{ matrix.os != 'macos-latest' }}
+          opam-depext: false
+          opam-pin: false
+
+      - run: opam pin add ocsigen-start.dev . --no-action
+
+      - run: opam depext ocsigen-start
+
+      - run: opam install . --deps-only
+
+      - run: opam exec -- make
+
+      - run: opam exec -- make install
+
+      - run: mkdir -p template
+
+      - run: opam exec -- eliom-distillery -name template -template os.pgocaml
+
+      - run: make db-init db-create db-schema
+        working-directory: template
+
+      - run: opam exec -- make all
+        working-directory: template
