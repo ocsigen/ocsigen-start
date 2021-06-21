@@ -73,7 +73,8 @@ exception Not_connected
 exception Permission_denied
 
 [%%server.start]
-(** Open a session for a user by setting a session group for the browser
+(** Close current session (if any) by calling disconnect,
+    then open a new session for a user by setting a session group for the browser
     which initiated the current request.
     Ocsigen-start is using both persistent and volatile session groups.
     The volatile groups is recreated from persistent group if absent.

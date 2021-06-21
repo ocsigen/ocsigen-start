@@ -101,7 +101,15 @@ let connect_string uid =
   let uid = Int64.of_string uid in
   start_process_action (Some uid)
 
+let disconnect () =
+  let%lwt () = pre_close_session_action () in
+  let%lwt () = Eliom_state.discard ~scope:Eliom_common.default_session_scope () in
+  let%lwt () = Eliom_state.discard ~scope:Eliom_common.default_process_scope () in
+  let%lwt () = Eliom_state.discard ~scope:Eliom_common.request_scope () in
+  post_close_session_action ()
+
 let connect ?(expire = false) userid =
+  let%lwt () = disconnect () in
   let%lwt () =
     if expire then begin
       let open Eliom_common in
@@ -113,13 +121,6 @@ let connect ?(expire = false) userid =
       Lwt.return_unit
   in
   connect_string (Int64.to_string userid)
-
-let disconnect () =
-  let%lwt () = pre_close_session_action () in
-  let%lwt () = Eliom_state.discard ~scope:Eliom_common.default_session_scope () in
-  let%lwt () = Eliom_state.discard ~scope:Eliom_common.default_process_scope () in
-  let%lwt () = Eliom_state.discard ~scope:Eliom_common.request_scope () in
-  post_close_session_action ()
 
 let set_warn_connection_change, warn_connection_changed =
   let r = ref (fun _ -> ()) in
