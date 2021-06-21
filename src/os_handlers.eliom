@@ -318,7 +318,6 @@ let action_link_handler_common akey =
     in
     if autoconnect && myid_o <> Some userid
     then
-      let%lwt () = Os_session.disconnect () in
       let%lwt () = Os_session.connect userid in
       Lwt.return `Restart_if_app
     else
