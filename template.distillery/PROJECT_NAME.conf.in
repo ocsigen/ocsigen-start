@@ -31,6 +31,8 @@
       />
     </extension>
     <extension findlib-package="eliom.server">
+      <!-- Ask Eliom to ignore UTM parameters and others: -->
+      <ignoredgetparams regexp="utm_[a-z]*|[a-z]*clid|li_fat_id"/>
 <!-- Uncomment if you are using https only and want secure cookies:
        <securecookies value="true" />
   -->
