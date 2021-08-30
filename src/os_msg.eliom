@@ -32,9 +32,14 @@ let%client msgbox () =
     Dom.appendChild Dom_html.document##.body b;
     b
 
+let%server default_duration = ref 4.
+
+let%server set_default_duration d =
+  default_duration := d
+
 let%shared msg
   ?(level = `Err)
-  ?(duration = 2.)
+  ?(duration = ~%(!default_duration))
   ?(onload=false)
   (message : string) =
   ignore [%client (

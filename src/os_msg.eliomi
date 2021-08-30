@@ -30,8 +30,8 @@
     created automatically in the body of the page).
 
     It is displayed during a short amount of time then disappears. You may
-    change the duration in seconds with the parameter [duration] (default 2
-    seconds).
+    change the duration in seconds with the parameter [duration] (default can
+    be set using function {!Os_msg.set_default_duration}).
 
     The two levels correspond to different classes that you can
     personalize by modifying the CSS class ["os_err"] (added for error messages
@@ -44,7 +44,11 @@
 val msg :
   ?level:[`Err | `Msg] -> ?duration:float -> ?onload:bool -> string -> unit
 
+
 [%%server.start]
+
+(** Set default message duration (default 4s) *)
+val set_default_duration : float -> unit
 
 (** Set to [true] if an action link key has been already created and sent to the
     user email, else [false]. Default is [false]. *)
