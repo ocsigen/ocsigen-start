@@ -127,9 +127,20 @@ let set_warn_connection_change, warn_connection_changed =
   (fun f -> r := f),
   (fun state -> !r state; Lwt.return_unit)
 
+
+let wrap loc f =
+  try%lwt
+    f()
+  with Not_found as e ->
+    Lwt_log.ign_error_f ~section:log_section
+      "exception Not found in disconnect_all/%s" loc;
+    raise e
+
 let disconnect_all ?userid ?(user_indep = true) () =
   let close_my_sessions = userid = None in
-  let%lwt () = if close_my_sessions
+  let%lwt () =
+    wrap "pre_close_session_action" @@ fun () ->
+    if close_my_sessions
     then pre_close_session_action ()
     else Lwt.return_unit
   in
@@ -158,6 +169,7 @@ let disconnect_all ?userid ?(user_indep = true) () =
          group_name]
     in
     let%lwt ui_states =
+      wrap "ui_states" @@ fun () ->(
       List.fold_left (fun acc state ->
         match%lwt
           Eliom_reference.Ext.get state
@@ -174,21 +186,25 @@ let disconnect_all ?userid ?(user_indep = true) () =
                      group_name)
            (fun acc s -> s::acc)
            []
-        )
+        ))
     in
     (* Closing all sessions: *)
     let%lwt () =
+      wrap "closing_all_sessions" @@ fun () ->
       Lwt_list.iter_s
         (fun state -> Eliom_state.Ext.iter_sub_states ~state @@ fun state ->
           Eliom_state.Ext.discard_state ~state)
         states
     in
-    let%lwt () = if close_my_sessions
+    let%lwt () =
+      wrap "post_close_session_action" @@ fun () ->
+      if close_my_sessions
       then post_close_session_action ()
       else Lwt.return_unit
     in
     (* Warn every client process that the session is closed: *)
     let%lwt () =
+      wrap "warn_connection_changed" @@ fun () ->
       Lwt_list.iter_s
         (fun state -> Eliom_state.Ext.iter_sub_states ~state
             warn_connection_changed)
@@ -196,6 +212,7 @@ let disconnect_all ?userid ?(user_indep = true) () =
     in
     (* Closing user_indep states, if requested: *)
     let%lwt () =
+      wrap "closing_user_indep" @@ fun () ->
       if user_indep
       then
         Lwt_list.iter_s
