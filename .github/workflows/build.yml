@@ -21,6 +21,7 @@ jobs:
           - 4.10.x
           - 4.11.x
           - 4.12.x
+          - 4.13.x
 
     runs-on: ${{ matrix.os }}
 
@@ -32,7 +33,7 @@ jobs:
         uses: ocaml/setup-ocaml@v2
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
-          dune-cache: ${{ matrix.os != 'macos-latest' }}
+          dune-cache: true
           opam-depext: false
           opam-pin: false
 
