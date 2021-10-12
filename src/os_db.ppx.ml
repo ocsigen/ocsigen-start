@@ -44,7 +44,7 @@ let pwd_crypt_ref = ref
 
 module Email = struct
 
-  let available email = one full_transaction_block
+  let available email = one without_transaction
       ~success:(fun _ -> Lwt.return_false)
       ~fail:Lwt.return_true
       (fun dbh ->
@@ -60,7 +60,7 @@ module User = struct
 
   exception Invalid_action_link_key of Os_types.User.id
 
-  let userid_of_email email = one full_transaction_block
+  let userid_of_email email = one without_transaction
     ~success:(fun userid -> Lwt.return userid)
     ~fail:(Lwt.fail No_such_resource)
     (fun dbh ->
@@ -75,7 +75,7 @@ module User = struct
       Lwt.return_true
     with No_such_resource -> Lwt.return_false
 
-  let is_email_validated userid email = one full_transaction_block
+  let is_email_validated userid email = one without_transaction
     ~success:(fun _ -> Lwt.return_true)
     ~fail:Lwt.return_false
     (fun dbh ->
@@ -83,7 +83,7 @@ module User = struct
           "SELECT 1 FROM ocsigen_start.emails
            WHERE userid = $userid AND email = $email AND validated"])
 
-  let set_email_validated userid email = full_transaction_block @@ fun dbh ->
+  let set_email_validated userid email = without_transaction @@ fun dbh ->
     [%pgsql dbh
         "UPDATE ocsigen_start.emails SET validated = true
          WHERE userid = $userid AND email = $email"]
@@ -95,7 +95,7 @@ module User = struct
       | `AccountActivation -> "activation"
       | `PasswordReset -> "passwordreset"
       | `Custom s -> s in
-    full_transaction_block @@ fun dbh ->
+    without_transaction @@ fun dbh ->
     [%pgsql dbh
         "INSERT INTO ocsigen_start.activation
            (userid, email, action, autoconnect, data,
@@ -103,7 +103,7 @@ module User = struct
          VALUES ($userid, $email, $action, $autoconnect, $data,
                  $validity, $act_key, $?expiry)"]
 
-  let add_preregister email = full_transaction_block @@ fun dbh ->
+  let add_preregister email = without_transaction @@ fun dbh ->
     [%pgsql dbh
         "INSERT INTO ocsigen_start.preregister (email) VALUES ($email)"]
 
@@ -111,17 +111,17 @@ module User = struct
     [%pgsql dbh
         "DELETE FROM ocsigen_start.preregister WHERE email = $email"]
 
-  let remove_preregister email = full_transaction_block @@ fun dbh ->
+  let remove_preregister email = without_transaction @@ fun dbh ->
     remove_preregister0 dbh email
 
-  let is_preregistered email = one full_transaction_block
+  let is_preregistered email = one without_transaction
     ~success:(fun _ -> Lwt.return_true)
     ~fail:Lwt.return_false
     (fun dbh ->
       [%pgsql dbh
           "SELECT 1 FROM ocsigen_start.preregister WHERE email = $email"])
 
-  let all ?(limit = 10L) () = full_transaction_block @@ fun dbh ->
+  let all ?(limit = 10L) () = without_transaction @@ fun dbh ->
     [%pgsql dbh
         "SELECT email FROM ocsigen_start.preregister LIMIT $limit"]
 
@@ -166,7 +166,7 @@ module User = struct
         | Some password -> Some (fst !pwd_crypt_ref password)
         | None -> None
       in
-      full_transaction_block @@ fun dbh ->
+      without_transaction @@ fun dbh ->
       [%pgsql dbh
           "UPDATE ocsigen_start.users
            SET firstname = $firstname,
@@ -180,24 +180,24 @@ module User = struct
     if password = "" then Lwt.fail_with "empty password"
     else
       let password = fst !pwd_crypt_ref password in
-      full_transaction_block @@ fun dbh ->
+      without_transaction @@ fun dbh ->
       [%pgsql dbh
           "UPDATE ocsigen_start.users SET password = $password
            WHERE userid = $userid"]
 
-  let update_avatar ~userid ~avatar = full_transaction_block @@ fun dbh ->
+  let update_avatar ~userid ~avatar = without_transaction @@ fun dbh ->
     [%pgsql dbh
         "UPDATE ocsigen_start.users SET avatar = $avatar
          WHERE userid = $userid"]
 
-  let update_main_email ~userid ~email = full_transaction_block @@ fun dbh ->
+  let update_main_email ~userid ~email = without_transaction @@ fun dbh ->
     [%pgsql dbh
         "UPDATE ocsigen_start.users u SET main_email = e.email
          FROM ocsigen_start.emails e
          WHERE e.email = $email AND u.userid = $userid
            AND e.userid = u.userid AND e.validated"]
 
-  let update_language ~userid ~language = full_transaction_block @@ fun dbh ->
+  let update_language ~userid ~language = without_transaction @@ fun dbh ->
     [%pgsql dbh
         "UPDATE ocsigen_start.users SET language = $language
          WHERE userid = $userid"]
@@ -205,7 +205,7 @@ module User = struct
   let verify_password ~email ~password =
     if password = "" then Lwt.fail Empty_password
     else
-      one full_transaction_block
+      one without_transaction
         (fun dbh ->
           [%pgsql dbh
               "SELECT userid, password, validated
@@ -229,7 +229,7 @@ module User = struct
   let verify_password_phone ~number ~password =
     if password = "" then Lwt.fail Empty_password
     else
-      one full_transaction_block
+      one without_transaction
         (fun dbh ->
           [%pgsql dbh
               "SELECT userid, password
@@ -245,7 +245,7 @@ module User = struct
           | _ -> Lwt.fail Password_not_set)
         ~fail:(Lwt.fail No_such_user)
 
-  let user_of_userid userid = one full_transaction_block
+  let user_of_userid userid = one without_transaction
     ~success:(fun (userid, firstname, lastname, avatar, has_password, language)
               -> Lwt.return (userid, firstname, lastname, avatar,
                              has_password = Some true, language))
@@ -291,24 +291,24 @@ module User = struct
     )
 
   let emails_of_userid userid =
-    full_transaction_block @@ fun dbh ->
+    without_transaction @@ fun dbh ->
     [%pgsql dbh
         "SELECT email FROM ocsigen_start.emails WHERE userid = $userid"]
 
   let emails_of_userid_with_status userid =
-    full_transaction_block @@ fun dbh ->
+    without_transaction @@ fun dbh ->
     [%pgsql dbh
         "SELECT email, validated
          FROM ocsigen_start.emails WHERE userid = $userid"]
 
-  let email_of_userid userid = one full_transaction_block
+  let email_of_userid userid = one without_transaction
     ~success:(fun main_email -> Lwt.return main_email)
     ~fail:(Lwt.fail No_such_resource)
     (fun dbh ->
       [%pgsql dbh
           "SELECT main_email FROM ocsigen_start.users WHERE userid = $userid"])
 
-   let is_main_email ~userid ~email = one full_transaction_block
+   let is_main_email ~userid ~email = one without_transaction
      ~success:(fun _ -> Lwt.return_true)
      ~fail:Lwt.return_false
      (fun dbh ->
@@ -316,7 +316,7 @@ module User = struct
            "SELECT 1 FROM ocsigen_start.users
             WHERE userid = $userid AND main_email = $email"])
 
-  let add_email_to_user ~userid ~email = full_transaction_block @@ fun dbh ->
+  let add_email_to_user ~userid ~email = without_transaction @@ fun dbh ->
     [%pgsql dbh
         "INSERT INTO ocsigen_start.emails (email, userid)
          VALUES ($email, $userid)"]
@@ -324,12 +324,12 @@ module User = struct
   let remove_email_from_user ~userid ~email =
     let%lwt b = is_main_email ~userid ~email in
     if b then Lwt.fail Main_email_removal_attempt else
-      full_transaction_block @@ fun dbh ->
+      without_transaction @@ fun dbh ->
       [%pgsql dbh
           "DELETE FROM ocsigen_start.emails
            WHERE userid = $userid AND email = $email"]
 
-  let get_language userid = one full_transaction_block
+  let get_language userid = one without_transaction
     ~success:(fun language -> Lwt.return language)
     ~fail:(Lwt.fail No_such_resource)
     (fun dbh ->
@@ -338,7 +338,7 @@ module User = struct
 
   let get_users ?pattern () =
     let%lwt l =
-      full_transaction_block (fun dbh ->
+      without_transaction (fun dbh ->
         match pattern with
         | None ->
            [%pgsql dbh
@@ -364,12 +364,12 @@ end
 
 module Groups = struct
   let create ?description name =
-    full_transaction_block @@ fun dbh ->
+    without_transaction @@ fun dbh ->
     [%pgsql dbh
         "INSERT INTO ocsigen_start.groups (description, name)
          VALUES ($?description, $name)"]
 
-  let group_of_name name = full_transaction_block
+  let group_of_name name = without_transaction
     (fun dbh ->
       [%pgsql dbh
           "SELECT groupid, name, description
@@ -377,19 +377,19 @@ module Groups = struct
     | [r] -> Lwt.return r
     | _ -> Lwt.fail No_such_resource
 
-  let add_user_in_group ~groupid ~userid = full_transaction_block @@ fun dbh ->
+  let add_user_in_group ~groupid ~userid = without_transaction @@ fun dbh ->
     [%pgsql dbh
         "INSERT INTO ocsigen_start.user_groups (userid, groupid)
          VALUES ($userid, $groupid)"]
 
-  let remove_user_in_group ~groupid ~userid = full_transaction_block @@ fun dbh ->
+  let remove_user_in_group ~groupid ~userid = without_transaction @@ fun dbh ->
     [%pgsql dbh
         "DELETE FROM ocsigen_start.user_groups
          WHERE groupid = $groupid AND userid = $userid"]
 
   let in_group ?dbh ~groupid ~userid () =
     one (match dbh with
-         | None -> full_transaction_block
+         | None -> without_transaction
          | Some dbh -> fun f -> f dbh)
     ~success:(fun _ -> Lwt.return_true)
     ~fail:Lwt.return_false
@@ -398,7 +398,7 @@ module Groups = struct
           "SELECT 1 FROM ocsigen_start.user_groups
            WHERE groupid = $groupid AND userid = $userid"])
 
-  let all () = full_transaction_block @@ fun dbh ->
+  let all () = without_transaction @@ fun dbh ->
     [%pgsql dbh "SELECT groupid, name, description FROM ocsigen_start.groups"]
 
 end

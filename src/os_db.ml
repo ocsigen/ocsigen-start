@@ -20,7 +20,7 @@ let pwd_crypt_ref =
 module Email =
   struct
     let available email =
-      one full_transaction_block ~success:(fun _ -> Lwt.return_false)
+      one without_transaction ~success:(fun _ -> Lwt.return_false)
         ~fail:Lwt.return_true
         (fun dbh ->
            PGOCaml.bind
@@ -96,7 +96,7 @@ module User =
   struct
     exception Invalid_action_link_key of Os_types.User.id 
     let userid_of_email email =
-      one full_transaction_block ~success:(fun userid -> Lwt.return userid)
+      one without_transaction ~success:(fun userid -> Lwt.return userid)
         ~fail:(Lwt.fail No_such_resource)
         (fun dbh ->
            PGOCaml.bind
@@ -176,7 +176,7 @@ module User =
         try [%lwt let _ = userid_of_email email in Lwt.return_true]
         with | No_such_resource -> Lwt.return_false]
     let is_email_validated userid email =
-      one full_transaction_block ~success:(fun _ -> Lwt.return_true)
+      one without_transaction ~success:(fun _ -> Lwt.return_true)
         ~fail:Lwt.return_false
         (fun dbh ->
            PGOCaml.bind
@@ -252,7 +252,7 @@ module User =
                                                 | None -> "NULL") row))))) in
                             raise (PGOCaml.Error msg)) _rows)))
     let set_email_validated userid email =
-      full_transaction_block @@
+      without_transaction @@
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
@@ -310,7 +310,7 @@ module User =
         | `AccountActivation -> "activation"
         | `PasswordReset -> "passwordreset"
         | `Custom s -> s in
-      full_transaction_block @@
+      without_transaction @@
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
@@ -381,7 +381,7 @@ module User =
                 (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
              (fun _rows -> PGOCaml.return ()))
     let add_preregister email =
-      full_transaction_block @@
+      without_transaction @@
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
@@ -475,9 +475,9 @@ module User =
            (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
         (fun _rows -> PGOCaml.return ())
     let remove_preregister email =
-      full_transaction_block @@ (fun dbh -> remove_preregister0 dbh email)
+      without_transaction @@ (fun dbh -> remove_preregister0 dbh email)
     let is_preregistered email =
-      one full_transaction_block ~success:(fun _ -> Lwt.return_true)
+      one without_transaction ~success:(fun _ -> Lwt.return_true)
         ~fail:Lwt.return_false
         (fun dbh ->
            PGOCaml.bind
@@ -549,7 +549,7 @@ module User =
                                                 | None -> "NULL") row))))) in
                             raise (PGOCaml.Error msg)) _rows)))
     let all ?(limit= 10L)  () =
-      full_transaction_block @@
+      without_transaction @@
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
@@ -830,7 +830,7 @@ module User =
            match password with
            | Some password -> Some (fst (!pwd_crypt_ref) password)
            | None -> None in
-         full_transaction_block @@
+         without_transaction @@
            (fun dbh ->
               PGOCaml.bind
                 (let dbh = dbh in
@@ -905,7 +905,7 @@ module User =
       then Lwt.fail_with "empty password"
       else
         (let password = fst (!pwd_crypt_ref) password in
-         full_transaction_block @@
+         without_transaction @@
            (fun dbh ->
               PGOCaml.bind
                 (let dbh = dbh in
@@ -959,7 +959,7 @@ module User =
                    (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
                 (fun _rows -> PGOCaml.return ())))
     let update_avatar ~userid  ~avatar  =
-      full_transaction_block @@
+      without_transaction @@
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
@@ -1009,7 +1009,7 @@ module User =
                 (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
              (fun _rows -> PGOCaml.return ()))
     let update_main_email ~userid  ~email  =
-      full_transaction_block @@
+      without_transaction @@
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
@@ -1061,7 +1061,7 @@ module User =
                 (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
              (fun _rows -> PGOCaml.return ()))
     let update_language ~userid  ~language  =
-      full_transaction_block @@
+      without_transaction @@
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
@@ -1114,7 +1114,7 @@ module User =
       if password = ""
       then Lwt.fail Empty_password
       else
-        one full_transaction_block
+        one without_transaction
           (fun dbh ->
              PGOCaml.bind
                (let dbh = dbh in
@@ -1214,7 +1214,7 @@ module User =
       if password = ""
       then Lwt.fail Empty_password
       else
-        one full_transaction_block
+        one without_transaction
           (fun dbh ->
              PGOCaml.bind
                (let dbh = dbh in
@@ -1303,7 +1303,7 @@ module User =
                       | _ -> Lwt.fail Password_not_set)
           ~fail:(Lwt.fail No_such_user)
     let user_of_userid userid =
-      one full_transaction_block
+      one without_transaction
         ~success:(fun
                     (userid, firstname, lastname, avatar, has_password,
                      language)
@@ -1607,7 +1607,7 @@ module User =
                                   autoconnect
                                 })]))
     let emails_of_userid userid =
-      full_transaction_block @@
+      without_transaction @@
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
@@ -1682,7 +1682,7 @@ module User =
                                                 | None -> "NULL") row))))) in
                             raise (PGOCaml.Error msg)) _rows)))
     let emails_of_userid_with_status userid =
-      full_transaction_block @@
+      without_transaction @@
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
@@ -1763,7 +1763,7 @@ module User =
                                                 | None -> "NULL") row))))) in
                             raise (PGOCaml.Error msg)) _rows)))
     let email_of_userid userid =
-      one full_transaction_block
+      one without_transaction
         ~success:(fun main_email -> Lwt.return main_email)
         ~fail:(Lwt.fail No_such_resource)
         (fun dbh ->
@@ -1836,7 +1836,7 @@ module User =
                                                 | None -> "NULL") row))))) in
                             raise (PGOCaml.Error msg)) _rows)))
     let is_main_email ~userid  ~email  =
-      one full_transaction_block ~success:(fun _ -> Lwt.return_true)
+      one without_transaction ~success:(fun _ -> Lwt.return_true)
         ~fail:Lwt.return_false
         (fun dbh ->
            PGOCaml.bind
@@ -1911,7 +1911,7 @@ module User =
                                                 | None -> "NULL") row))))) in
                             raise (PGOCaml.Error msg)) _rows)))
     let add_email_to_user ~userid  ~email  =
-      full_transaction_block @@
+      without_transaction @@
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
@@ -1968,7 +1968,7 @@ module User =
         if b
         then Lwt.fail Main_email_removal_attempt
         else
-          full_transaction_block @@
+          without_transaction @@
             ((fun dbh ->
                 PGOCaml.bind
                   (let dbh = dbh in
@@ -2023,8 +2023,7 @@ module User =
                      (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
                   (fun _rows -> PGOCaml.return ())))]
     let get_language userid =
-      one full_transaction_block
-        ~success:(fun language -> Lwt.return language)
+      one without_transaction ~success:(fun language -> Lwt.return language)
         ~fail:(Lwt.fail No_such_resource)
         (fun dbh ->
            PGOCaml.bind
@@ -2098,7 +2097,7 @@ module User =
     let get_users ?pattern  () =
       [%lwt
         let l =
-          full_transaction_block
+          without_transaction
             (fun dbh ->
                match pattern with
                | None ->
@@ -2313,7 +2312,7 @@ module User =
 module Groups =
   struct
     let create ?description  name =
-      full_transaction_block @@
+      without_transaction @@
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
@@ -2366,7 +2365,7 @@ module Groups =
                 (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
              (fun _rows -> PGOCaml.return ()))
     let group_of_name name =
-      (full_transaction_block
+      (without_transaction
          (fun dbh ->
             PGOCaml.bind
               (let dbh = dbh in
@@ -2455,7 +2454,7 @@ module Groups =
         >>=
         (function | r::[] -> Lwt.return r | _ -> Lwt.fail No_such_resource)
     let add_user_in_group ~groupid  ~userid  =
-      full_transaction_block @@
+      without_transaction @@
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
@@ -2507,7 +2506,7 @@ module Groups =
                 (fun () -> PGOCaml.execute_rev dbh ~name ~params ()))
              (fun _rows -> PGOCaml.return ()))
     let remove_user_in_group ~groupid  ~userid  =
-      full_transaction_block @@
+      without_transaction @@
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
@@ -2560,7 +2559,7 @@ module Groups =
     let in_group ?dbh  ~groupid  ~userid  () =
       one
         (match dbh with
-         | None -> full_transaction_block
+         | None -> without_transaction
          | Some dbh -> (fun f -> f dbh)) ~success:(fun _ -> Lwt.return_true)
         ~fail:Lwt.return_false
         (fun dbh ->
@@ -2636,7 +2635,7 @@ module Groups =
                                                 | None -> "NULL") row))))) in
                             raise (PGOCaml.Error msg)) _rows)))
     let all () =
-      full_transaction_block @@
+      without_transaction @@
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
