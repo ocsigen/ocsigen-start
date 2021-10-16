@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "ocsigen-start"
-version: "4.4.0"
+version: "4.5.0"
 authors: "dev@ocsigen.org"
 maintainer: "dev@ocsigen.org"
 synopsis: "An Eliom application skeleton ready to use to build your own application with users, (pre)registration, notifications, etc"
@@ -17,7 +17,7 @@ depends: [
   "pgocaml_ppx" {>= "4.0"}
   "safepass" {>= "3.0"}
   "ocsigen-i18n" {>= "4.0.0"}
-  "eliom" {>= "7.0.0"}
+  "eliom" {>= "9.0.0" & < "10.0.0"}
   "ocsigen-toolkit" {>= "2.7.0"}
   "ocsigen-i18n" {>= "3.7.0"}
   "yojson" {>= "1.6.0"}
