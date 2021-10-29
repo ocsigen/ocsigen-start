@@ -51,6 +51,9 @@ jobs:
 
       - run: opam exec -- eliom-distillery -name template -template os.pgocaml
 
+      - run: opam install -y .
+        working-directory: template
+
       - run: make db-init db-create db-schema
         working-directory: template
 
