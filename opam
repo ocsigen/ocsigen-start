@@ -4,11 +4,17 @@ version: "4.5.0"
 authors: "dev@ocsigen.org"
 maintainer: "dev@ocsigen.org"
 synopsis: "An Eliom application skeleton ready to use to build your own application with users, (pre)registration, notifications, etc"
-description: "Ocsigen Start is a set of higher-level libraries for building client-server web applications with Ocsigen (Js_of_ocaml and Eliom). It provides modules for user management (session management, registration, activation keys, ...), managing groups of users, displaying tips, and easily sending notifications to the users. Ocsigen Start comes with an eliom-distillery template for an app with a database, user management, and session management. This template is intended to serve as a basis for quickly building the Minimum Viable Product for web applications with users. The goal is to enable the programmer to concentrate on the core of the app, and not on user management."
+description: """
+Ocsigen Start is a set of higher-level libraries for building client-server web applications with Ocsigen (Js_of_ocaml and Eliom).
+It provides modules for user management (session management, registration, activation keys, ...), managing groups of users, displaying tips, and easily sending notifications to the users.
+Ocsigen Start comes with an eliom-distillery template for an app with a database, user management, and session management.
+This template is intended to serve as a basis for quickly building the Minimum Viable Product for web applications with users.
+The goal is to enable the programmer to concentrate on the core of the app, and not on user management.
+"""
 homepage: "https://ocsigen.org/ocsigen-start/"
 bug-reports: "https://github.com/ocsigen/ocsigen-start/issues"
 dev-repo: "git+https://github.com/ocsigen/ocsigen-start.git"
-license: "LGPL-2.1-only with OCaml-LGPL-linking-exception"
+license: "LGPL-2.1-only WITH OCaml-LGPL-linking-exception"
 build: [ make "-j%{jobs}%" ]
 install: [ make "install" ]
 depends: [
