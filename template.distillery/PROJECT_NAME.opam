@@ -1,0 +1,9 @@
+opam-version: "2.0"
+name: "%%%PROJECT_NAME%%%"
+version: "0.1"
+synopsis: "Pseudo package for defining project dependencies"
+
+depends: [
+  "eliom" {>= "8.0.0" & < "9.0.0"}
+  "ocsigen-start"
+]

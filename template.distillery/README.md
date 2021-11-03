@@ -10,11 +10,11 @@ automatically installing various NPM packages; you can disable this
 via the `USE_NPM` variable in `Makefile.options` if you prefer to use
 a system-wide NPM installation. SASS is optional, but not installing
 it may negatively impact the rendering of the pages generated. All
-needed system packages (Postgres, NPM, SASS, ...) can be installed via
-the command
+needed packages (Postgres, NPM, SASS, ...) and required OPAM packages can be
+installed via the command (from the %%%PROJECT_NAME%%% directory):
 
 ```shell
-opam depext ocsigen-start
+opam install .
 ```
 
 If you have issues with the NPM provided by your distribution, you can
