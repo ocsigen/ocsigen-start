@@ -19,9 +19,19 @@
     <extension findlib-package="ocsigenserver.ext.staticmod"/>
     <!-- we use the PostgreSQL backend for ocsipersist,
          but there is also a DBM and an SQLite backend -->
-    <!-- <extension findlib-package="ocsigenserver.ext.ocsipersist-dbm"> -->
-    <!-- <extension findlib-package="ocsigenserver.ext.ocsipersist-sqlite"> -->
-    <extension findlib-package="ocsigenserver.ext.ocsipersist-pgsql">
+    <!--
+    <extension findlib-package="ocsipersist.dbm">
+      <delayloading val="false"/>
+      <store dir="%%DATADIR%%"/>
+      <ocsidbm name="ocsidbm"/>
+    </extension>
+    -->
+    <!--
+    <extension findlib-package="ocsipersist.sqlite">
+      <database file="%%DATADIR%%/ocsidb"/>
+    </extension>
+    -->
+    <extension findlib-package="ocsipersist.pgsql">
       <database
         host="%%DB_HOST%%"
         port="%%DB_PORT%%"
