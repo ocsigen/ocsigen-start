@@ -135,7 +135,7 @@ CORDOVA_DIRS := www www/css www/fonts www/images www/img www/js
 # to be replaced later.
 $(CORDOVAPATH):
 ifeq ($(USE_NPM), yes)
-	npm install cordova cordova-hot-code-push-cli read-package-json xml2js
+	npm install cordova git+https://github.com/besport/cordova-hot-code-push-cli.git read-package-json xml2js
 endif
 	$(CORDOVA) create $(CORDOVAPATH) $(MOBILE_APP_ID) "$(MOBILE_APP_NAME)"
 	rm -f $(CORDOVAPATH)/www/css/index.css
