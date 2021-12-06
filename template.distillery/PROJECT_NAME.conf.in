@@ -11,6 +11,7 @@
     <datadir>%%DATADIR%%</datadir>
     <charset>utf-8</charset>
     <uploaddir>/tmp</uploaddir> <!-- Customize this -->
+    <usedefaulthostname/>
     %%% Only set when debugging
     %%DEBUGMODE%%
     <extension findlib-package="ocsigenserver.ext.accesscontrol"/>
