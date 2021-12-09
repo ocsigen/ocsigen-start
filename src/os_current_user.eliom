@@ -36,8 +36,7 @@ let%server me : current_user Eliom_reference.Volatile.eref =
   (* This is a request cache of current user *)
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope CU_idontknown
 
-let%client me : current_user ref = ref CU_notconnected
-  (*on client side the default is not connected *)
+let%client me : current_user ref = ref CU_idontknown
 
 let%client get_current_user_option () =
   match !me with
@@ -103,25 +102,42 @@ let%server set_user_server myid =
 let%server unset_user_server () =
   Eliom_reference.Volatile.set me CU_notconnected
 
+let%client restarting = ref false
+
+let%client update_user_client v =
+  (* Restart in case of identity mismatch between the client and the server *)
+  if !me <> CU_idontknown && !me <> v then begin
+    if not !restarting then
+      Lwt.async @@ fun () ->
+      restarting := true;
+      Os_msg.msg ~level:`Err
+        "Connection has changed from outside. Program will restart.";
+      let%lwt () = Js_of_ocaml_lwt.Lwt_js.sleep 2. in
+      Os_comet.restart_process ();
+      Lwt.return_unit
+  end else
+    me := v
+
 let%server set_user_client () =
   let u = Eliom_reference.Volatile.get me in
-  ignore [%client ( me := ~%u : unit)]
+  ignore [%client ( update_user_client ~%u : unit)]
 
 let%server unset_user_client () =
-  ignore [%client ( me := CU_notconnected : unit)]
+  ignore [%client ( update_user_client CU_notconnected : unit)]
 
 let%server () =
   Os_session.on_request (fun myid_o ->
     match myid_o with
-    | Some myid -> set_user_server myid
-    | None -> (unset_user_server (); Lwt.return_unit));
+    | Some myid ->
+      let%lwt () = set_user_server myid in
+      set_user_client ();
+      Lwt.return_unit
+    | None -> unset_user_server (); unset_user_client (); Lwt.return_unit);
   Os_session.on_start_connected_process (fun myid ->
     let%lwt () = set_user_server myid in
-    set_user_client ();
     Lwt.return_unit);
   Os_session.on_pre_close_session (fun () ->
-    unset_user_client (); (*VVV!!! will affect only current tab!! *)
-    unset_user_server (); (* ok this is a request reference *)
+    unset_user_server ();
     Lwt.return_unit)
 
 let%server remove_email_from_user email =
