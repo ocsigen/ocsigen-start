@@ -39,5 +39,3 @@ val __link : unit
 val restart_process :
   unit ->
   unit
-
-val set_error_handler : (exn -> unit Lwt.t) -> unit
