@@ -61,4 +61,11 @@ let%client comet_restart_process () =
 let%client _ = Eliom_comet.set_handle_exn_function
     (fun ?exn () -> comet_restart_process (); Lwt.return_unit)
 
+let%client () = Eliom_react.Down.set_handle_react_exn_function (fun ?exn () ->
+  match exn with
+  | Some Eliom_comet.Channel_closed ->
+      comet_restart_process (); Lwt.return_unit
+  | _ ->
+      Lwt.return_unit)
+
 let%client () = Eliom_client.set_missing_service_handler restart_process
