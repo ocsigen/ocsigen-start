@@ -1531,70 +1531,136 @@ module User =
                          let v = max 0L (Int64.pred validity) in
                          [%lwt
                            let () =
-                             PGOCaml.bind
-                               (let dbh = dbh in
-                                let params : string option list list =
-                                  [[Some
-                                      (((let open PGOCaml in string_of_int64))
-                                         v)];
-                                  [Some
-                                     (((let open PGOCaml in string_of_string))
-                                        act_key)]] in
-                                let split =
-                                  [`Text
-                                     "UPDATE ocsigen_start.activation\n                 SET validity = ";
-                                  `Var ("v", false, false);
-                                  `Text " WHERE activationkey = ";
-                                  `Var ("act_key", false, false)] in
-                                let i = ref 0 in
-                                let j = ref 0 in
-                                let query =
-                                  String.concat ""
-                                    (List.map
-                                       (function
-                                        | `Text text -> text
-                                        | `Var (_varname, false, _) ->
-                                            let () = incr i in
-                                            let () = incr j in
-                                            "$" ^ (string_of_int j.contents)
-                                        | `Var (_varname, true, _) ->
-                                            let param =
-                                              List.nth params i.contents in
-                                            let () = incr i in
-                                            "(" ^
-                                              ((String.concat ","
-                                                  (List.map
-                                                     (fun _ ->
-                                                        let () = incr j in
-                                                        "$" ^
-                                                          (string_of_int
-                                                             j.contents))
-                                                     param))
-                                                 ^ ")")) split) in
-                                let params = List.flatten params in
-                                let name =
-                                  "ppx_pgsql." ^
-                                    (Digest.to_hex (Digest.string query)) in
-                                let hash =
-                                  try PGOCaml.private_data dbh
-                                  with
-                                  | Not_found ->
-                                      let hash = Hashtbl.create 17 in
-                                      (PGOCaml.set_private_data dbh hash;
-                                       hash) in
-                                let is_prepared = Hashtbl.mem hash name in
-                                PGOCaml.bind
-                                  (if not is_prepared
-                                   then
-                                     PGOCaml.bind
-                                       (PGOCaml.prepare dbh ~name ~query ())
-                                       (fun () ->
-                                          Hashtbl.add hash name true;
-                                          PGOCaml.return ())
-                                   else PGOCaml.return ())
-                                  (fun () ->
-                                     PGOCaml.execute_rev dbh ~name ~params ()))
-                               (fun _rows -> PGOCaml.return ()) in
+                             if v = 0L
+                             then
+                               PGOCaml.bind
+                                 (let dbh = dbh in
+                                  let params : string option list list =
+                                    [[Some
+                                        (((let open PGOCaml in
+                                             string_of_string)) act_key)]] in
+                                  let split =
+                                    [`Text
+                                       "UPDATE ocsigen_start.activation\n                  SET expiry = LEAST(NOW() AT TIME ZONE 'utc'\n                                     + INTERVAL '20 seconds',\n                                     expiry)\n                  WHERE activationkey = ";
+                                    `Var ("act_key", false, false)] in
+                                  let i = ref 0 in
+                                  let j = ref 0 in
+                                  let query =
+                                    String.concat ""
+                                      (List.map
+                                         (function
+                                          | `Text text -> text
+                                          | `Var (_varname, false, _) ->
+                                              let () = incr i in
+                                              let () = incr j in
+                                              "$" ^
+                                                (string_of_int j.contents)
+                                          | `Var (_varname, true, _) ->
+                                              let param =
+                                                List.nth params i.contents in
+                                              let () = incr i in
+                                              "(" ^
+                                                ((String.concat ","
+                                                    (List.map
+                                                       (fun _ ->
+                                                          let () = incr j in
+                                                          "$" ^
+                                                            (string_of_int
+                                                               j.contents))
+                                                       param))
+                                                   ^ ")")) split) in
+                                  let params = List.flatten params in
+                                  let name =
+                                    "ppx_pgsql." ^
+                                      (Digest.to_hex (Digest.string query)) in
+                                  let hash =
+                                    try PGOCaml.private_data dbh
+                                    with
+                                    | Not_found ->
+                                        let hash = Hashtbl.create 17 in
+                                        (PGOCaml.set_private_data dbh hash;
+                                         hash) in
+                                  let is_prepared = Hashtbl.mem hash name in
+                                  PGOCaml.bind
+                                    (if not is_prepared
+                                     then
+                                       PGOCaml.bind
+                                         (PGOCaml.prepare dbh ~name ~query ())
+                                         (fun () ->
+                                            Hashtbl.add hash name true;
+                                            PGOCaml.return ())
+                                     else PGOCaml.return ())
+                                    (fun () ->
+                                       PGOCaml.execute_rev dbh ~name ~params
+                                         ()))
+                                 (fun _rows -> PGOCaml.return ())
+                             else
+                               PGOCaml.bind
+                                 (let dbh = dbh in
+                                  let params : string option list list =
+                                    [[Some
+                                        (((let open PGOCaml in
+                                             string_of_int64)) v)];
+                                    [Some
+                                       (((let open PGOCaml in
+                                            string_of_string)) act_key)]] in
+                                  let split =
+                                    [`Text
+                                       "UPDATE ocsigen_start.activation\n                 SET validity = ";
+                                    `Var ("v", false, false);
+                                    `Text " WHERE activationkey = ";
+                                    `Var ("act_key", false, false)] in
+                                  let i = ref 0 in
+                                  let j = ref 0 in
+                                  let query =
+                                    String.concat ""
+                                      (List.map
+                                         (function
+                                          | `Text text -> text
+                                          | `Var (_varname, false, _) ->
+                                              let () = incr i in
+                                              let () = incr j in
+                                              "$" ^
+                                                (string_of_int j.contents)
+                                          | `Var (_varname, true, _) ->
+                                              let param =
+                                                List.nth params i.contents in
+                                              let () = incr i in
+                                              "(" ^
+                                                ((String.concat ","
+                                                    (List.map
+                                                       (fun _ ->
+                                                          let () = incr j in
+                                                          "$" ^
+                                                            (string_of_int
+                                                               j.contents))
+                                                       param))
+                                                   ^ ")")) split) in
+                                  let params = List.flatten params in
+                                  let name =
+                                    "ppx_pgsql." ^
+                                      (Digest.to_hex (Digest.string query)) in
+                                  let hash =
+                                    try PGOCaml.private_data dbh
+                                    with
+                                    | Not_found ->
+                                        let hash = Hashtbl.create 17 in
+                                        (PGOCaml.set_private_data dbh hash;
+                                         hash) in
+                                  let is_prepared = Hashtbl.mem hash name in
+                                  PGOCaml.bind
+                                    (if not is_prepared
+                                     then
+                                       PGOCaml.bind
+                                         (PGOCaml.prepare dbh ~name ~query ())
+                                         (fun () ->
+                                            Hashtbl.add hash name true;
+                                            PGOCaml.return ())
+                                     else PGOCaml.return ())
+                                    (fun () ->
+                                       PGOCaml.execute_rev dbh ~name ~params
+                                         ()))
+                                 (fun _rows -> PGOCaml.return ()) in
                            Lwt.return
                              (let open Os_types.Action_link_key in
                                 {

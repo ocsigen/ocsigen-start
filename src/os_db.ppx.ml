@@ -273,7 +273,17 @@ module User = struct
             | c -> `Custom c in
           let v  = max 0L (Int64.pred validity) in
           let%lwt () =
-            [%pgsql dbh
+            (* We provide a grace period of 20 seconds before expiring the
+               key, in case the link is successively opened several times *)
+            if v = 0L then
+              [%pgsql dbh
+                 "UPDATE ocsigen_start.activation
+                  SET expiry = LEAST(NOW() AT TIME ZONE 'utc'
+                                     + INTERVAL '20 seconds',
+                                     expiry)
+                  WHERE activationkey = $act_key"]
+            else
+              [%pgsql dbh
                 "UPDATE ocsigen_start.activation
                  SET validity = $v WHERE activationkey = $act_key"]
           in
