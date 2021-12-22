@@ -58,7 +58,7 @@ SERVER_PACKAGES    := calendar safepass \
                       ocsigen-toolkit.server yojson re.str cohttp-lwt-unix \
                       netstring
 
-SERVER_PPX_PACKAGES := lwt_ppx js_of_ocaml-ppx_deriving_json
+SERVER_PPX_PACKAGES := lwt_ppx js_of_ocaml-ppx_deriving_json ocsigen-ppx-rpc
 
 SERVER_DB_PACKAGES := pgocaml calendar safepass resource-pooling
 
@@ -67,7 +67,7 @@ SERVER_DB_PPX_PACKAGES := lwt_ppx pgocaml_ppx
 # OCamlfind packages for the client
 CLIENT_PACKAGES    := calendar ocsigen-toolkit.client re.str
 
-CLIENT_PPX_PACKAGES := lwt_ppx js_of_ocaml-ppx_deriving_json js_of_ocaml-ppx
+CLIENT_PPX_PACKAGES := lwt_ppx js_of_ocaml-ppx_deriving_json js_of_ocaml-ppx ocsigen-ppx-rpc
 
 # Debug package (yes/no): Debugging info in compilation
 DEBUG              := yes

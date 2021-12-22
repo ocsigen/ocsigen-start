@@ -57,13 +57,8 @@ let%server set_password_handler myid () (pwd, pwd2) =
     Os_user.update' ~password:pwd user)
 
 (* Set password RPC *)
-let%client set_password_rpc =
-  ~%(Eliom_client.server_function
-       ~name:"Os_handlers.set_password_rpc"
-       [%json: string * string]
-       (Os_session.connected_rpc
-          (fun myid p -> set_password_handler myid () p))
-    )
+let%rpc set_password_rpc myid (p : string * string) : unit Lwt.t =
+  set_password_handler myid () p
 
 let%server generate_action_link_key
     ?(act_key = Ocsigen_lib.make_cryptographic_safe_string ())
@@ -149,14 +144,8 @@ let%server sign_up_handler () email =
       Lwt.return_unit
     end
 
-let%server sign_up_handler_rpc v =
-  (Os_session.connected_wrapper (sign_up_handler ())) v
-
-let%client sign_up_handler_rpc =
-  ~%(Eliom_client.server_function
-       ~name:"Os_handlers.sign_up_handler"
-       [%json: string]
-       sign_up_handler_rpc)
+let%rpc sign_up_handler_rpc (email : string) : unit Lwt.t =
+  sign_up_handler () email
 
 let%client sign_up_handler () v =
   sign_up_handler_rpc v
@@ -223,14 +212,8 @@ let disconnect_handler ?(main_page = false) () () =
                    : unit)];
   Lwt.return_unit
 
-let%server disconnect_handler_rpc main_page =
+let%rpc disconnect_handler_rpc (main_page : bool) =
   disconnect_handler ~main_page () ()
-
-let%client disconnect_handler_rpc  =
-  ~%(Eliom_client.server_function
-       ~name:"Os_handlers.disconnect_handler"
-       [%json: bool]
-       disconnect_handler_rpc)
 
 let%client disconnect_handler ?(main_page = false) () () =
   disconnect_handler_rpc main_page
@@ -258,13 +241,8 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
       Os_msg.msg ~level:`Err ~onload:true "No such user";
       Lwt.return_unit
 
-let%server connect_handler_rpc v = connect_handler () v
-
-let%client connect_handler_rpc =
-  ~%(Eliom_client.server_function
-       ~name:"Os_handlers.connect_handler"
-       [%json: (string * string) * bool]
-       connect_handler_rpc)
+let%rpc connect_handler_rpc (v : (string * string) * bool) : unit Lwt.t =
+  connect_handler () v
 
 let%client connect_handler () v = connect_handler_rpc v
 
@@ -283,8 +261,13 @@ let%client connect_handler () v = connect_handler_rpc v
   exception No_such_resource
 ]
 
-let action_link_handler_common akey =
-  let myid_o = Os_current_user.Opt.get_current_userid () in
+let%rpc action_link_handler_common myid_o (akey : string) :
+  [ `Account_already_activated_unconnected of Os_types.Action_link_key.info
+  | `Custom_action_link of Os_types.Action_link_key.info * bool
+  | `Invalid_action_key of Os_types.Action_link_key.info
+  | `No_such_resource
+  | `Reload
+  | `Restart_if_app ] Lwt.t =
   try%lwt
     let open Os_types.Action_link_key in
     let%lwt
@@ -343,11 +326,6 @@ let action_link_handler_common akey =
        next exception handler. *)
     Lwt.return `Reload
 
-let%client action_link_handler_common =
-  ~%(Eliom_client.server_function ~name:"Os_handlers.action_link_handler_common"
-       [%json: string]
-       (Os_session.connected_wrapper action_link_handler_common))
-
 let%client restart_if_client_side () =
   restart ~url:(make_uri
                   ~absolute:true
@@ -388,7 +366,7 @@ let preregister_handler () email =
    end
 
 (* Add email *)
-let%server add_email_handler =
+let add_email_handler =
   let msg =
     "Welcome!\r\nTo confirm your e-mail address, \
        please click on this link: "
@@ -413,13 +391,10 @@ let%server add_email_handler =
   in
   Os_session.connected_fun add_email
 
-let%client add_email_handler =
-  let rpc = ~%(Eliom_client.server_function
-                 ~name:"Os_handlers.add_email_handler"
-                 [%json: string]
-                 @@ add_email_handler ())
-  in
-  fun () -> rpc
+let%rpc add_email_rpc (email : string) : unit Lwt.t =
+  add_email_handler () email
+
+let%client add_email_handler () = add_email_rpc
 
 let%shared _ = Os_comet.__link (* to make sure os_comet is linked *)
 

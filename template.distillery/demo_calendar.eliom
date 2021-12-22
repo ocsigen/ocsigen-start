@@ -44,11 +44,8 @@ let%shared string_of_date = function
 let%server date_as_string () : string Eliom_shared.React.S.t =
   Eliom_shared.React.S.map [%shared string_of_date] s
 
-let%server date_reactive () = Lwt.return @@ date_as_string ()
-
-let%client date_reactive =
-  ~%(Eliom_client.server_function [%json: unit]
-       (Os_session.connected_wrapper date_reactive))
+let%rpc date_reactive () : string Eliom_shared.React.S.t Lwt.t =
+  Lwt.return @@ date_as_string ()
 
 (* Name for demo menu *)
 let%shared name () = [%i18n Demo.S.calendar]

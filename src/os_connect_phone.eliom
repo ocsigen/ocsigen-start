@@ -76,37 +76,27 @@ let%server request_code reference number =
   with _ ->
     Lwt.return (Error `Unknown)
 
-let%shared request_wrapper f number =
+let%shared request_wrapper number f =
   if Re.Str.string_match Os_lib.phone_regexp number 0 then
     f number
   else
     Lwt.return (Error `Invalid_number)
 
-let%server request_recovery_code = request_wrapper @@ fun number ->
+let%rpc request_recovery_code (number : string) : (unit, sms_error) result Lwt.t =
+  request_wrapper number @@ fun number ->
   let%lwt b = Os_db.Phone.exists number in
   if not b then
     Lwt.return (Error `Ownership)
   else
     request_code recovery_code_ref number
 
-let%client request_recovery_code =
-  ~%(Eliom_client.server_function
-       ~name:"Os_connect_phone.request_recovery_code"
-       [%json : string]
-       request_recovery_code)
-
-let%server request_code = request_wrapper @@ fun number ->
+let%rpc request_code (number : string) : (unit, sms_error) result Lwt.t =
+  request_wrapper number @@ fun number ->
   let%lwt b = Os_db.Phone.exists number in
   if b then
     Lwt.return (Error `Ownership)
   else
     request_code activation_code_ref number
-
-let%client request_code =
-  ~%(Eliom_client.server_function
-       ~name:"Os_connect_phone.request_code"
-       [%json : string]
-       request_code)
 
 let%server confirm_code myid code =
   match%lwt Eliom_reference.get activation_code_ref with
@@ -115,15 +105,8 @@ let%server confirm_code myid code =
   | _ ->
     Lwt.return_false
 
-let%server confirm_code_extra =
-  Os_session.connected_rpc @@ fun myid code ->
+let%rpc confirm_code_extra myid (code : string) : bool Lwt.t =
   confirm_code myid code
-
-let%client confirm_code_extra =
-  ~%(Eliom_client.server_function
-       ~name:"Os_connect_phone.confirm_code_extra"
-       Deriving_Json.Json_string.t
-       confirm_code_extra)
 
 let%server confirm_code_signup_no_connect
       ~first_name ~last_name ~code ~password () =
@@ -138,7 +121,7 @@ let%server confirm_code_signup_no_connect
   | _ ->
     Lwt.return_none
 
-let%server confirm_code_signup (first_name, last_name, code, password) =
+let%rpc confirm_code_signup ~(first_name : string) ~(last_name: string) ~(code:string) ~(password: string) () : bool Lwt.t =
   match%lwt
     confirm_code_signup_no_connect ~first_name ~last_name ~code ~password ()
   with
@@ -148,17 +131,7 @@ let%server confirm_code_signup (first_name, last_name, code, password) =
     let%lwt () = Os_session.connect userid in
     Lwt.return_true
 
-let%client confirm_code_signup =
-  ~%(Eliom_client.server_function
-       ~name:"Os_connect_phone.confirm_code_signup"
-       [%json: string * string * string * string]
-       confirm_code_signup)
-
-let%shared confirm_code_signup
-    ~first_name ~last_name ~code ~password () =
-  confirm_code_signup (first_name, last_name, code, password)
-
-let%server confirm_code_recovery code =
+let%rpc confirm_code_recovery (code : string) : bool Lwt.t =
   match%lwt Eliom_reference.get recovery_code_ref with
   | Some (number, code', _) when code = code' ->
     begin
@@ -172,13 +145,7 @@ let%server confirm_code_recovery code =
   | _ ->
     Lwt.return_false
 
-let%client confirm_code_recovery =
-  ~%(Eliom_client.server_function
-       ~name:"Os_connect_phone.confirm_code_recovery"
-       Deriving_Json.Json_string.t
-       confirm_code_recovery)
-
-let%server connect ~keepmeloggedin ~password number =
+let%rpc connect ~(keepmeloggedin : bool) ~(password : string) (number : string) : [`Login_ok | `Wrong_password | `No_such_user | `Password_not_set] Lwt.t =
   try%lwt
     let%lwt userid = Os_db.User.verify_password_phone ~password ~number in
     let%lwt () = Os_session.connect ~expire:(not keepmeloggedin) userid in
@@ -188,13 +155,3 @@ let%server connect ~keepmeloggedin ~password number =
   | Os_db.Wrong_password -> Lwt.return `Wrong_password
   | Os_db.No_such_user -> Lwt.return `No_such_user
   | Os_db.Password_not_set -> Lwt.return `Password_not_set
-
-let%client connect =
-  let f =
-    ~%(Eliom_client.server_function ~name:"Os_connect_phone.connect"
-         [%json: string * string * bool]
-         (Os_session.Opt.connected_rpc
-            (fun _ (number, password, keepmeloggedin) ->
-               connect ~keepmeloggedin ~password number)))
-  in
-  fun ~keepmeloggedin ~password number -> f (number, password, keepmeloggedin)

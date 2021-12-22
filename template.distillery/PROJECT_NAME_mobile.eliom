@@ -19,12 +19,10 @@ open %%%MODULE_NAME%%% (* for dependency reasons *)
    The RPC only initializes Os_date by default, but you can add your
    own actions to be performed server side on first client request, if
    necessary. *)
-let%server init_request _myid_o tz = Os_date.initialize tz; Lwt.return_unit
-
-let%server init_request_rpc : (_, unit) Eliom_client.server_function =
-  Eliom_client.server_function ~name:"%%%MODULE_NAME%%%_mobile.init_request"
-    [%json: string]
-    (Os_session.Opt.connected_rpc init_request)
+let%rpc init_request myid_o (tz : string) : unit Lwt.t =
+  ignore myid_o;
+  Os_date.initialize tz;
+  Lwt.return_unit
 
 let to_lwt f =
   let wait, wakeup = Lwt.wait () in
@@ -54,7 +52,7 @@ let change_page_uri uri =
 
 let handle_initial_url () =
   let tz = Os_date.user_tz () in
-  let%lwt () = ~%init_request_rpc tz in
+  let%lwt () = init_request tz in
   let%lwt () = ondeviceready in
   app_started := true;
   match !initial_change_page with

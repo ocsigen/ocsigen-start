@@ -46,11 +46,6 @@ val get_data_from_db : 'a -> Os_types.User.id -> Os_types.User.t Lwt.t
  *)
 val get_data_from_db_for_client : 'a -> Os_types.User.id -> Os_types.User.t Lwt.t
 
-(** [get_data_rpc' userid] returns the user which has ID [userid].
-    Use {!Os_connected_rpc} and {!get_data_from_db_for_client}.
- *)
-val get_data_rpc' : Os_types.User.id -> Os_types.User.t Lwt.t
-
 [%%shared.start]
 
 (** [get_data userid] returns the user which has ID [userid].
@@ -59,12 +54,6 @@ val get_data_rpc' : Os_types.User.id -> Os_types.User.t Lwt.t
     Data comes from the database, not the cache.
  *)
 val get_data : Os_types.User.id -> Os_types.User.t Lwt.t
-
-(** [get_data_rpc] is a RPC to <<a_api subproject="server" | module
-    Os_user_proxy.get_data_rpc'>>
- *)
-val get_data_rpc :
-  (Os_types.User.id, Os_types.User.t) Eliom_client.server_function
 
 (** [get_data_from_cache userid] returns the user with ID [userid] saved in
     cache.
