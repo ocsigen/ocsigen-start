@@ -35,7 +35,7 @@ module Notif = Os_notif.Make_Simple (struct
 end)
 
 (* Broadcast message [v] *)
-let%server notify v =
+let%rpc notify (v : string) : unit Lwt.t =
   (* Notify all client processes listening on this resource
      (identified by its key, given as first parameter)
      by sending them message v. *)
@@ -46,17 +46,7 @@ let%server notify v =
   *)
   Lwt.return_unit
 
-(* Make [notify] available client-side *)
-let%client notify =
-  ~%(Eliom_client.server_function [%json: string]
-       (Os_session.connected_wrapper notify))
-
-let%server listen = Notif.listen
-
-let%client listen () =
-  Lwt.async
-    ~%(Eliom_client.server_function [%json: unit]
-         (Os_session.connected_wrapper (fun () -> listen (); Lwt.return_unit)))
+let%rpc listen () : unit Lwt.t = Notif.listen (); Lwt.return_unit
 
 (* Display a message every time the React event [e = Notif.client_ev ()]
    happens. *)
@@ -93,16 +83,12 @@ let%shared make_form msg f =
         : unit)];
   Eliom_content.Html.D.div [inp; btn]
 
-let%server unlisten () = Notif.unlisten (); Lwt.return_unit
-
-let%client unlisten =
-  ~%(Eliom_client.server_function [%json: unit]
-       (Os_session.connected_wrapper unlisten))
+let%rpc unlisten () : unit Lwt.t = Notif.unlisten (); Lwt.return_unit
 
 (* Page for this demo *)
 let%shared page () =
   (* Subscribe to notifications when entering this page: *)
-  listen ();
+  let%lwt () = listen () in
   (* Unsubscribe from notifications when user leaves this page *)
   let (_ : unit Eliom_client_value.t) =
     [%client Eliom_client.Page_status.ondead (fun () -> Lwt.async unlisten)]

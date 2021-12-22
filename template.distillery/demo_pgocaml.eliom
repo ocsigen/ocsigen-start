@@ -20,15 +20,10 @@ let%shared name () = [%i18n Demo.S.pgocaml]
 let%shared page_class = "os-page-demo-pgocaml"
 
 (* Fetch users in database *)
-let%server get_users () =
+let%rpc get_users () : string list Lwt.t =
   (* For this demo, we add a delay to simulate a network or db latency: *)
   let%lwt () = Lwt_unix.sleep 2. in
   Demo_pgocaml_db.get ()
-
-(* Make function get_users available to the client *)
-let%client get_users =
-  ~%(Eliom_client.server_function [%json: unit]
-       (Os_session.connected_wrapper get_users))
 
 (* Generate page for this demo *)
 let%shared page () =

@@ -35,15 +35,8 @@ val page
     a footer, and a drawer menu.  If the user profile is not
     completed, a connected welcome box is added. *)
 
-[%%server.start]
+[%%shared.start]
 
 val get_wrong_pdata
   :  unit
   -> ((string * string) * (string * string)) option Lwt.t
-
-[%%client.start]
-
-val get_wrong_pdata
-  : ( unit
-    , ((string * string) * (string * string)) option )
-    Eliom_client.server_function

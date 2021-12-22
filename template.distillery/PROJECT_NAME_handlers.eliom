@@ -25,25 +25,20 @@ let upload_user_avatar_handler myid () ((), (cropping, photo)) =
 let%server set_personal_data_handler =
   Os_session.connected_fun Os_handlers.set_personal_data_handler
 
-let%client set_personal_data_handler =
-  let set_personal_data_rpc =
-    ~%(Eliom_client.server_function
-         [%json: (string * string) * (string * string)]
-         (Os_session.connected_wrapper (set_personal_data_handler ())))
-  in
-  fun () -> set_personal_data_rpc
+let%rpc set_personal_data_rpc (data : (string * string) * (string * string)) : unit Lwt.t =
+  set_personal_data_handler () data
+
+let%client set_personal_data_handler () = set_personal_data_rpc
 
 (* Forgot password *)
 
 let%server forgot_password_handler =
   Os_handlers.forgot_password_handler %%%MODULE_NAME%%%_services.settings_service
 
-let%client forgot_password_handler =
-  let forgot_password_rpc =
-    ~%(Eliom_client.server_function [%json: string]
-         (Os_session.connected_wrapper (forgot_password_handler ())))
-  in
-  fun () -> forgot_password_rpc
+let%rpc forgot_password_rpc (email : string) : unit Lwt.t =
+  forgot_password_handler () email
+
+let%client forgot_password_handler () = forgot_password_rpc
 
 (* Action links are links created to perform an action. They are used
    for example to send activation links by email, or links to reset a
@@ -135,12 +130,10 @@ let%client set_password_handler () (pwd, pwd2) =
 
 let%server preregister_handler = Os_handlers.preregister_handler
 
-let%client preregister_handler =
-  let preregister_rpc =
-    ~%(Eliom_client.server_function [%json: string]
-         (Os_session.connected_wrapper (preregister_handler ())))
-  in
-  fun () -> preregister_rpc
+let%rpc preregister_rpc (email : string) : unit Lwt.t =
+  preregister_handler () email
+
+let%client preregister_handler () = preregister_rpc
 
 let%shared main_service_handler myid_o () () =
   %%%MODULE_NAME%%%_container.page

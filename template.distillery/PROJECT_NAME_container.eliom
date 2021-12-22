@@ -35,12 +35,8 @@ let%shared os_footer () =
         ; a ~service:%%%MODULE_NAME%%%_services.ocsigen_service [txt " Ocsigen "] ()
         ; txt [%i18n S.footer_technology] ] ]
 
-let%server get_wrong_pdata () =
+let%rpc get_wrong_pdata () : ((string * string) * (string * string)) option Lwt.t =
   Lwt.return @@ Eliom_reference.Volatile.get Os_msg.wrong_pdata
-
-let%client get_wrong_pdata =
-  ~%(Eliom_client.server_function [%json: unit]
-       (Os_session.connected_wrapper get_wrong_pdata))
 
 let%shared connected_welcome_box () =
   let open Eliom_content.Html.F in

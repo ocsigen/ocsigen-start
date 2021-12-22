@@ -88,8 +88,7 @@ let%shared ul_of_emails (main_email, emails) =
   Lwt.return Eliom_content.Html.D.(div ~a:[a_class ["os-emails"]] [ul li_list])
 
 (* List with information about emails *)
-let%server get_emails () =
-  let myid = Os_current_user.get_current_userid () in
+let%rpc get_emails myid () : (string option * (string * bool) list) Lwt.t =
   let%lwt main_email = Os_db.User.email_of_userid myid in
   let%lwt emails = Os_db.User.emails_of_userid myid in
   let%lwt emails =
@@ -100,11 +99,6 @@ let%server get_emails () =
       emails
   in
   Lwt.return (main_email, emails)
-
-(* List with information about emails *)
-let%client get_emails =
-  ~%(Eliom_client.server_function [%json: unit]
-       (Os_session.connected_wrapper get_emails))
 
 let%shared select_language_form select_language_name =
   let open Eliom_content.Html in

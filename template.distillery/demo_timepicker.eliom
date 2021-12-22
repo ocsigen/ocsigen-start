@@ -30,11 +30,8 @@ let%shared string_of_time = function
 let%server time_as_string () : string Eliom_shared.React.S.t =
   Eliom_shared.React.S.map [%shared string_of_time] s
 
-let%server time_reactive () = Lwt.return @@ time_as_string ()
-
-let%client time_reactive =
-  ~%(Eliom_client.server_function [%json: unit]
-       (Os_session.connected_wrapper time_reactive))
+let%rpc time_reactive () : string Eliom_shared.React.S.t Lwt.t =
+  Lwt.return @@ time_as_string ()
 
 (* Name for demo menu *)
 let%shared name () = [%i18n Demo.S.timepicker]

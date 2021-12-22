@@ -83,13 +83,10 @@ let initialize tz =
   Eliom_reference.Volatile.set user_tz_gr tz;
   Eliom_reference.Volatile.set user_tz_sr tz
 
-(** When the browser is loaded, we init the timezone *)
-let init_time_rpc : (_, unit) Eliom_client.server_function =
-  Eliom_client.server_function ~name:"os_date.init_time_rpc"
-    [%json: string]
-    (fun tz -> initialize tz; Lwt.return_unit)
-
-let%client init_time_rpc = ~%init_time_rpc
+(* When the browser is loaded, we init the timezone *)
+let%rpc init_time_rpc (tz : string) : unit Lwt.t =
+  initialize tz;
+  Lwt.return_unit
 
 let%client auto_init = ref true
 

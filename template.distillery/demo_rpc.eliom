@@ -28,24 +28,11 @@ let%server my_ref =
   Eliom_reference.eref ~scope:Eliom_common.default_session_scope 0
 
 (* Server-side function that increments my_ref and returns new val *)
-let%server incr_my_ref () =
+let%rpc incr_my_ref () : int Lwt.t =
   let%lwt v = Eliom_reference.get my_ref in
   let v = v + 1 in
   let%lwt () = Eliom_reference.set my_ref v in
   Lwt.return v
-
-(* Make server-side function available to the client *)
-let%client incr_my_ref =
-  ~%(Eliom_client.server_function [%json: unit]
-       (Os_session.connected_wrapper incr_my_ref))
-
-(* Os_session.connected_wrapper is a wrapper to be used once for each RPC.
-   It makes it possible to use features like Os_current_user.get_current_userid
-   to get the user-id of the current user.
-   We recommend to use Os_session.connected_wrapper for each server function
-   and the corresponding %%%MODULE_NAME%%%_page.Opt.connected_page
-   for each service handler.
-*)
 
 let%shared button msg f =
   let btn =
