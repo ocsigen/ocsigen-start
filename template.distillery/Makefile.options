@@ -44,14 +44,14 @@ CLIENT_FILES          := $(wildcard *.eliomi *.eliom) \
 SERVER_ELIOM_PACKAGES := ocsigen-start.server
 
 # OCamlfind packages for the server
-SERVER_PACKAGES       := lwt_ppx js_of_ocaml-ppx_deriving_json ppx_deriving.std pgocaml
+SERVER_PACKAGES       := lwt_ppx js_of_ocaml-ppx_deriving_json ppx_deriving.std pgocaml ocsigen-ppx-rpc
 
 # OCamlfind packages for database access
 SERVER_DB_PACKAGES    := pgocaml pgocaml_ppx
 
 # OCamlfind packages for the client
 CLIENT_PACKAGES       := lwt_ppx js_of_ocaml-ppx js_of_ocaml-ppx_deriving_json \
-                         ppx_deriving.std ocsigen-start.client base
+                         ppx_deriving.std ocsigen-start.client base ocsigen-ppx-rpc
 
 # Automatically install packages via NPM
 USE_NPM               := yes

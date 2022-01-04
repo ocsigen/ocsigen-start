@@ -124,29 +124,13 @@ let%server () =
     unset_user_server (); (* ok this is a request reference *)
     Lwt.return_unit)
 
-let%server remove_email_from_user email =
+let%rpc remove_email_from_user (email : string) : unit Lwt.t =
   let myid = get_current_userid () in
   Os_user.remove_email_from_user ~userid:myid ~email
 
-let%client remove_email_from_user email =
-  ~%(Eliom_client.server_function
-       ~name:"Os_current_user.remove_email_from_user"
-       [%json: string]
-       (Os_session.connected_wrapper remove_email_from_user)
-  )
-  email
-
-let%server update_main_email email =
+let%rpc update_main_email (email : string) : unit Lwt.t =
   let myid = get_current_userid () in
   Os_user.update_main_email ~userid:myid ~email
-
-let%client update_main_email email =
-  ~%(Eliom_client.server_function
-       ~name:"Os_current_user.update_main_email"
-       [%json: string]
-       (Os_session.connected_wrapper update_main_email)
-  )
-  email
 
 let%server is_email_validated email =
   let myid = get_current_userid () in
@@ -156,14 +140,6 @@ let%server is_main_email email =
   let myid = get_current_userid () in
   Os_user.is_main_email ~userid:myid ~email
 
-let%server update_language language =
+let%rpc update_language (language : string) : unit Lwt.t =
   let myid = get_current_userid () in
   Os_user.update_language myid language
-
-let%client update_language language =
-  ~%(Eliom_client.server_function
-       ~name:"Os_current_user.update_language"
-       [%json: string]
-       (Os_session.connected_wrapper update_language)
-    )
-    language

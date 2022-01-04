@@ -30,15 +30,10 @@ let%server last_visit =
     ~scope:Eliom_common.default_group_scope None
 
 (* Read & reset last_visit *)
-let get_reset_last_visit () =
+let%rpc get_reset_last_visit () : Os_date.local_calendar option Lwt.t =
   let%lwt v = Eliom_reference.get last_visit in
   let%lwt () = Eliom_reference.set last_visit (Some (Os_date.now ())) in
   Lwt.return v
-
-(* Make get_reset_last_visit available to the client *)
-let%client get_reset_last_visit =
-  ~%(Eliom_client.server_function [%json: unit]
-       (Os_session.connected_wrapper get_reset_last_visit))
 
 (* Call get_reset_last_visit and produce pretty message *)
 let%shared get_reset_last_visit_message () =

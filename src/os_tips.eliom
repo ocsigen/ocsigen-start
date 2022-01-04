@@ -81,7 +81,7 @@ let%server () = Os_session.on_start_connected_process
        Lwt.return_unit)
 
 (* notify the server that a user has seen a tip *)
-let set_tip_seen (name : string) =
+let%rpc set_tip_seen (name : string) : unit Lwt.t =
   let%lwt prev = Eliom_reference.Volatile.get seen_by_user in
   let newset = Stringset.add (name : string) prev in
   match Os_current_user.Opt.get_current_userid () with
@@ -90,14 +90,10 @@ let set_tip_seen (name : string) =
 
 let%client set_tip_seen name =
   tips_seen_client_ref := Stringset.add name !tips_seen_client_ref;
-  ~%(Eliom_client.server_function
-       ~name:"Os_tips.set_tip_seen"
-       [%json: string]
-       (Os_session.connected_wrapper set_tip_seen))
-  name
+  set_tip_seen name
 
 (* counterpart of set_tip_seen *)
-let unset_tip_seen name  =
+let%rpc unset_tip_seen (name : string) : unit Lwt.t  =
   let%lwt prev = Eliom_reference.Volatile.get seen_by_user in
   let newset = Stringset.remove name prev in
   match Os_current_user.Opt.get_current_userid () with
@@ -106,11 +102,7 @@ let unset_tip_seen name  =
 
 let%client unset_tip_seen name =
   tips_seen_client_ref := Stringset.remove name !tips_seen_client_ref;
-  ~%(Eliom_client.server_function
-       ~name:"Os_tips.unset_tip_seen"
-       [%json: string]
-       (Os_session.connected_wrapper set_tip_seen))
-    name
+  unset_tip_seen name
 
 let%shared tip_seen name =
   let%lwt seen = get_tips_seen () in
@@ -122,8 +114,8 @@ let%server reset_tips_user myid_o =
   | None -> Eliom_reference.set tips_seen_not_connected (Stringset.empty)
   | _ -> Eliom_reference.set tips_seen (Stringset.empty)
 
-let reset_tips () =
-  reset_tips_user (Os_current_user.Opt.get_current_userid ())
+let%rpc reset_tips myid_o () : unit Lwt.t=
+  reset_tips_user myid_o
 
 let%server reset_tips_service =
   Eliom_service.create
@@ -142,11 +134,7 @@ let%server _ =
 
 let%client reset_tips () =
   tips_seen_client_ref := Stringset.empty;
-  ~%(Eliom_client.server_function
-       ~name:"Os_tips.reset_tips"
-       [%json: unit]
-       (Os_session.connected_wrapper reset_tips))
-    ()
+  reset_tips ()
 
 (* Returns a block containing a tip,
    if it has not already been seen by the user. *)
