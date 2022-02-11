@@ -39,9 +39,9 @@ jobs:
 
       - run: opam pin add ocsigen-start.dev . --no-action
 
-      - run: opam depext ocsigen-start
-
-      - run: opam install . --deps-only
+      - name: Install OpenSSL on MacOS
+        run: brew install openssl@3
+        if: ${{ matrix.os == 'macos-latest' }}
 
       - run: opam install .
 
