@@ -23,81 +23,67 @@
 
 [%%client.start]
 
-(** [reload ()] reloads the current page. *)
 val reload : unit -> unit Lwt.t
+(** [reload ()] reloads the current page. *)
 
 [%%shared.start]
 
 (** Parse strings that can be e-mails or phones. *)
 module Email_or_phone : sig
-
   type t [@@deriving json]
-
   type y = [`Email | `Phone]
 
   val y : t -> y
-
   val to_string : t -> string
-
   val of_string : only_mail:bool -> string -> t option
 
   module Almost : sig
-
     type t [@@deriving json]
 
-    type y = [ `Email | `Phone | `Almost_phone | `Almost_email | `Invalid ]
+    type y = [`Email | `Phone | `Almost_phone | `Almost_email | `Invalid]
     [@@deriving json]
 
     val y : t -> y
-
     val to_string : t -> string
-
     val of_string : only_mail:bool -> string -> t
-
   end
 
   val of_almost : Almost.t -> t option
-
 end
 
 val phone_regexp : Re.Str.regexp
-
 val email_regexp : Re.Str.regexp
 
+val memoizator : (unit -> 'a Lwt.t) -> unit -> 'a Lwt.t
 (** [memoizator f ()] caches the returned value of [f ()] *)
-val memoizator :
-  (unit -> 'a Lwt.t)  ->
-  unit                ->
-  'a Lwt.t
 
 val string_repeat : string -> int -> string
-
 val string_filter : (char -> bool) -> string -> string
 
-(** [lwt_bound_input_enter f] produces an input element bound to [f],
-    i.e., when the user submits the input, we call [f]. *)
-val lwt_bound_input_enter :
-  ?a:[< Html_types.input_attrib ] Eliom_content.Html.attrib list
-  -> ?button:[< Html_types.button ] Eliom_content.Html.elt
+val lwt_bound_input_enter
+  :  ?a:[< Html_types.input_attrib] Eliom_content.Html.attrib list
+  -> ?button:[< Html_types.button] Eliom_content.Html.elt
   -> ?validate:(string -> bool) Eliom_client_value.t
   -> (string -> unit Lwt.t) Eliom_client_value.t
-  -> [> `Input ] Eliom_content.Html.elt
+  -> [> `Input] Eliom_content.Html.elt
+(** [lwt_bound_input_enter f] produces an input element bound to [f],
+    i.e., when the user submits the input, we call [f]. *)
 
-(** [lwt_bound_input_enter inp f] calls f whenever the user submits
-    the contents of [inp]. *)
-val lwt_bind_input_enter :
-  ?validate:(string -> bool) Eliom_client_value.t
-  -> ?button:[< Html_types.button | Html_types.input ] Eliom_content.Html.elt
+val lwt_bind_input_enter
+  :  ?validate:(string -> bool) Eliom_client_value.t
+  -> ?button:[< Html_types.button | Html_types.input] Eliom_content.Html.elt
   -> Html_types.input Eliom_content.Html.elt
   -> (string -> unit Lwt.t) Eliom_client_value.t
   -> unit
+(** [lwt_bound_input_enter inp f] calls f whenever the user submits
+    the contents of [inp]. *)
 
 [%%server.start]
+
 (** This module contains functions about HTTP request. *)
-module Http :
-  sig
-    (** [string_of_stream ?len stream] creates a string of maximum length [len]
+module Http : sig
+  val string_of_stream : ?len:int -> string Ocsigen_stream.t -> string Lwt.t
+  (** [string_of_stream ?len stream] creates a string of maximum length [len]
         (default is [16384]) from the stream [stream].
      *)
-    val string_of_stream : ?len:int -> string Ocsigen_stream.t -> string Lwt.t
-  end
+end
