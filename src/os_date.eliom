@@ -182,9 +182,6 @@ let%shared smart_date ?(now = now ()) local_date =
 let%shared smart_hours_minutes local_date =
   Printer.Calendar.sprint "%-I:%M%P" local_date
 
-let%shared smart_hours_minutes_fixed local_date =
-  Printer.Calendar.sprint "%I:%M%P" local_date
-
 let%server unknown_timezone () = user_tz_opt () = None
 let%client unknown_timezone () = false
 

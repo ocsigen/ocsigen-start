@@ -42,4 +42,4 @@ end
 
 module D : ICSIG
 module F : ICSIG
-module Register (FF : ICSIG) (DD : ICSIG) : sig end
+module Register (_ : ICSIG) (_ : ICSIG) : sig end

@@ -77,3 +77,5 @@ NATIVE             := yes
 
 # Package's library $(PKG_NAME).{client,server}.cma (a,cmxa,cmxs only server side)
 LIBDIR             := lib/
+
+WARNING_FLAGS=-w +A@3-4@5..15-9@20..68-37-39-44-48-69

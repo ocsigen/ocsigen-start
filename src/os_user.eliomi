@@ -119,9 +119,6 @@ val is_complete : Os_types.User.t -> bool
 
 [%%server.start]
 
-val emails_of_user : Os_types.User.t -> string Lwt.t
-(** [emails_of_user user] returns the emails of the user [user]. *)
-
 (* Use {!Os_types.actionlinkkey_info} instead of each parameter? *)
 val add_actionlinkkey
   :  ?autoconnect:

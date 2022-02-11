@@ -123,7 +123,7 @@ module Email_or_phone = struct
   end
 
   let of_almost = function
-    | s, (`Invalid | `Almost_email | `Almost_phone) -> None
+    | _s, (`Invalid | `Almost_email | `Almost_phone) -> None
     | s, ((`Email | `Phone) as y) -> Some (s, y)
 
   let of_string ~only_mail s = of_almost (Almost.of_string ~only_mail s)

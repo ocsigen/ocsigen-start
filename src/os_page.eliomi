@@ -111,7 +111,7 @@ module Default_config : PAGE
     {!Os_session.Not_connected}.
  *)
 
-module Make (C : PAGE) : sig
+module Make (_ : PAGE) : sig
   val make_page : content -> [> Html_types.html] Eliom_content.Html.elt
   (** Builds a valid html page from body content by adding headers
       for this app *)

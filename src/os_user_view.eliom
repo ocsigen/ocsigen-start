@@ -270,7 +270,7 @@ let%shared upload_pic_link ?(a = []) ?(content = [txt "Change profile picture"])
     ~a:
       (a_onclick
          [%client
-           (fun ev ->
+           (fun _ ->
               Lwt.async (fun () ->
                   ~%onclick ();
                   let upload_service ?progress ?cropping file =
@@ -341,30 +341,27 @@ let%shared bind_popup_button ?a ~button
                Lwt.return_unit))
         : _)]
 
-let%shared forgotpwd_button ?(content_popup = "Recover password")
+let%client forgotpwd_button ?(content_popup = "Recover password")
     ?(text_button = "Forgot your password?")
     ?(phone_placeholder = "Or your phone") ?(text_send_button = "Send")
-    ?(close = [%client (fun () -> () : unit -> unit)]) ()
+    ?(close = (fun () -> () : unit -> unit)) ()
   =
-  let popup_content =
-    [%client
-      fun _ ->
-        let h = h2 [txt ~%content_popup] in
-        Lwt.return @@ div
-        @@
-        if !enable_phone
-        then
-          [ h
-          ; forgot_password_form ()
-          ; forgot_password_phone_input ~placeholder:~%phone_placeholder
-              ~%text_send_button ]
-        else [h; forgot_password_form ()]]
+  let popup_content _ =
+    let h = h2 [txt content_popup] in
+    Lwt.return @@ div
+    @@
+    if !enable_phone
+    then
+      [ h
+      ; forgot_password_form ()
+      ; forgot_password_phone_input ~placeholder:phone_placeholder
+          text_send_button ]
+    else [h; forgot_password_form ()]
   in
   let button_name = text_button in
   let button =
     D.Raw.a
-      ~a:
-        [a_class ["os-forgot-pwd-link"]; a_onclick [%client fun _ -> ~%close ()]]
+      ~a:[a_class ["os-forgot-pwd-link"]; a_onclick (fun _ -> close ())]
       [txt button_name]
   in
   bind_popup_button ~a:[a_class ["os-forgot-pwd"]] ~button ~popup_content ();
@@ -428,15 +425,6 @@ let%shared sign_up_button ?(a_placeholder_email = "Your email")
   in
   bind_popup_button ~a:[a_class ["os-sign-up"]] ~button ~popup_content ();
   button
-
-let%shared disconnect_button ?(text_logout = "Logout") () =
-  D.Form.post_form ~service:Os_services.disconnect_service
-    (fun _ ->
-      [ D.Form.button_no_value
-          ~a:[a_class ["button"]]
-          ~button_type:`Submit
-          [Os_icons.F.signout (); txt text_logout] ])
-    ()
 
 let%shared disconnect_link ?(text_logout = "Logout") ?(a = []) () =
   Eliom_content.Html.D.Raw.a
