@@ -21,21 +21,19 @@
 open Eliom_content.Html.F
 
 [%%shared
-  type id = Os_types.User.id [@@deriving json]
+type id = Os_types.User.id [@@deriving json]
 
-  type t = Os_types.User.t = {
-      userid : id;
-      fn : string;
-      ln : string;
-      avatar : string option;
-      language : string option;
-    } [@@deriving json]
-]
+type t = Os_types.User.t =
+  { userid : id
+  ; fn : string
+  ; ln : string
+  ; avatar : string option
+  ; language : string option }
+[@@deriving json]]
 
 [%%server
-  exception Already_exists of Os_types.User.id
-  exception No_such_user
-]
+exception Already_exists of Os_types.User.id
+exception No_such_user]
 
 let%server wrong_password =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
@@ -58,18 +56,9 @@ let%server user_already_preregistered =
 let%server action_link_key_outdated =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
-
 (** Create a user of type [t] using db information. *)
 let create_user_from_db0 (userid, fn, ln, avatar, pwdset, language) =
-  Os_types.
-  {
-    userid = userid;
-    fn = fn;
-    ln = ln;
-    avatar = avatar;
-    language = language;
-  },
-  pwdset
+  Os_types.{userid; fn; ln; avatar; language}, pwdset
 
 let create_user_from_db d = fst (create_user_from_db0 d)
 
@@ -82,36 +71,33 @@ let%shared language_of_user u = Os_types.(u.language)
 
 let%shared avatar_uri_of_avatar ?absolute_path avatar =
   Eliom_content.Html.F.make_uri ?absolute_path
-    ~service:(Eliom_service.static_dir ()) ["avatars"; avatar]
+    ~service:(Eliom_service.static_dir ())
+    ["avatars"; avatar]
 
 let%shared avatar_uri_of_user ?absolute_path user =
   Eliom_lib.Option.map
-    (avatar_uri_of_avatar ?absolute_path) (avatar_of_user user)
+    (avatar_uri_of_avatar ?absolute_path)
+    (avatar_of_user user)
 
 let%shared fullname_of_user user =
   String.concat " " [firstname_of_user user; lastname_of_user user]
 
 let%shared is_complete user =
-  not ((firstname_of_user user) = "" || (lastname_of_user user) = "")
+  not (firstname_of_user user = "" || lastname_of_user user = "")
 
-let emails_of_user user =
-  Os_db.User.emails_of_userid (userid_of_user user)
-
-let email_of_user user =
-  Os_db.User.email_of_userid (userid_of_user user)
-
+let emails_of_user user = Os_db.User.emails_of_userid (userid_of_user user)
+let email_of_user user = Os_db.User.email_of_userid (userid_of_user user)
 
 include Os_db.User
 
-
 (* Using cache tools to prevent multiple same database queries
    during the request. *)
-module MCache = Os_request_cache.Make(
-struct
+module MCache = Os_request_cache.Make (struct
   type key = Os_types.User.id
   type value = Os_types.User.t * bool
 
   let compare = compare
+
   let get key =
     try%lwt
       let%lwt g = Os_db.User.user_of_userid key in
@@ -129,9 +115,6 @@ let password_set userid =
   let%lwt _, s = MCache.get userid in
   Lwt.return s
 
-
-
-
 (* -----------------------------------------------------------------
 
    All the following functions are only helpers/wrappers around db
@@ -145,56 +128,45 @@ let create ?password ?avatar ?language ?email ~firstname ~lastname () =
   let password = match password with Some "" -> None | _ -> password in
   let really_create () =
     let%lwt userid =
-      Os_db.User.create
-        ~firstname ~lastname ?password ?avatar ?language ?email ()
+      Os_db.User.create ~firstname ~lastname ?password ?avatar ?language ?email
+        ()
     in
     user_of_userid userid
   in
   match email with
-  | Some email ->
-    (try%lwt
-       let%lwt userid = Os_db.User.userid_of_email email in
-       Lwt.fail (Already_exists userid)
-     with Os_db.No_such_resource ->
-       really_create ())
-  | None ->
-    really_create ()
+  | Some email -> (
+      try%lwt
+        let%lwt userid = Os_db.User.userid_of_email email in
+        Lwt.fail (Already_exists userid)
+      with Os_db.No_such_resource -> really_create ())
+  | None -> really_create ()
 
 (* Overwrites the function [update] of [Os_db.User]
    to reset the cache *)
 let update ?password ?avatar ?language ~firstname ~lastname userid =
-  let%lwt () = Os_db.User.update
-             ?password ?avatar ?language ~firstname ~lastname userid
+  let%lwt () =
+    Os_db.User.update ?password ?avatar ?language ~firstname ~lastname userid
   in
-  MCache.reset userid;
-  Lwt.return_unit
+  MCache.reset userid; Lwt.return_unit
 
 let update' ?password user =
-  update
-    ?password
-    ?avatar:(avatar_of_user user)
-    ?language:(language_of_user user)
-    ~firstname:(firstname_of_user user)
-    ~lastname:(lastname_of_user user)
-    (userid_of_user user)
+  update ?password ?avatar:(avatar_of_user user)
+    ?language:(language_of_user user) ~firstname:(firstname_of_user user)
+    ~lastname:(lastname_of_user user) (userid_of_user user)
 
 let update_password ~userid ~password =
   let%lwt () = Os_db.User.update_password userid password in
-  MCache.reset userid;
-  Lwt.return_unit
+  MCache.reset userid; Lwt.return_unit
 
 let update_language ~userid ~language =
   let%lwt () = Os_db.User.update_language userid language in
-  MCache.reset userid;
-  Lwt.return_unit
+  MCache.reset userid; Lwt.return_unit
 
 let update_avatar ~userid ~avatar =
   let%lwt () = Os_db.User.update_avatar userid avatar in
-  MCache.reset userid;
-  Lwt.return_unit
+  MCache.reset userid; Lwt.return_unit
 
-let get_language userid =
-  Os_db.User.get_language userid
+let get_language userid = Os_db.User.get_language userid
 
 let get_users ?pattern () =
   let%lwt users = Os_db.User.get_users ?pattern () in
@@ -205,5 +177,4 @@ let set_pwd_crypt_fun a = Os_db.pwd_crypt_ref := a
 let is_email_validated ~userid ~email =
   Os_db.User.is_email_validated userid email
 
-let is_main_email ~userid ~email =
-  Os_db.User.is_main_email ~email ~userid
+let is_main_email ~userid ~email = Os_db.User.is_main_email ~email ~userid

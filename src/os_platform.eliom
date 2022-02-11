@@ -21,7 +21,7 @@
 open%shared Js_of_ocaml
 
 [%%shared
-  type t =
+type t =
   | Android
   | IPhone
   | IPad
@@ -29,32 +29,33 @@ open%shared Js_of_ocaml
   | IWatch
   | BlackBerry
   | Windows
-  | Unknown
-]
+  | Unknown]
 
-let%shared t_of_string platform = match platform with
-  | "Android"    -> Android
-  | "iPhone"     -> IPhone
-  | "iPad"       -> IPad
-  | "iPod"       -> IPod
-  | "iWatch"     -> IWatch
-  | "Windows"    -> Windows
+let%shared t_of_string platform =
+  match platform with
+  | "Android" -> Android
+  | "iPhone" -> IPhone
+  | "iPad" -> IPad
+  | "iPod" -> IPod
+  | "iWatch" -> IWatch
+  | "Windows" -> Windows
   | "BlackBerry" -> BlackBerry
-  | _            -> Unknown
+  | _ -> Unknown
 
-let%shared string_of_t platform = match platform with
-  | Android    -> "Android"
-  | IPhone     -> "iPhone"
-  | IPad       -> "iPad"
-  | IPod       -> "iPod"
-  | IWatch     -> "iWatch"
-  | Windows    -> "Windows"
+let%shared string_of_t platform =
+  match platform with
+  | Android -> "Android"
+  | IPhone -> "iPhone"
+  | IPad -> "iPad"
+  | IPod -> "iPod"
+  | IWatch -> "iWatch"
+  | Windows -> "Windows"
   | BlackBerry -> "BlackBerry"
-  | Unknown    -> "Unknown"
+  | Unknown -> "Unknown"
 
 let%client get () =
   let uA = Dom_html.window##.navigator##.userAgent in
-  let has s = uA##indexOf(Js.string s) <> -1 in
+  let has s = uA##indexOf (Js.string s) <> -1 in
   if has "Android"
   then Android
   else if has "iPhone"
@@ -71,9 +72,10 @@ let%client get () =
   then BlackBerry
   else Unknown
 
-let%shared css_class platform = match platform with
-  | Android                       -> "os-android"
+let%shared css_class platform =
+  match platform with
+  | Android -> "os-android"
   | IPhone | IPad | IPod | IWatch -> "os-ios"
-  | Windows                       -> "os-windows"
-  | BlackBerry                    -> "os-blackberry"
-  | Unknown                       -> "os-unknown-platform"
+  | Windows -> "os-windows"
+  | BlackBerry -> "os-blackberry"
+  | Unknown -> "os-unknown-platform"

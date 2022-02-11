@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
+ *)
 
 (** The icons used internally by Ocsigen Start's library.
     Customize them with your own icons by calling module [Register]. *)
@@ -24,16 +24,22 @@
 [%%shared.start]
 
 module type ICSIG = sig
-  val user : ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list ->
-    unit -> [> Html_types.i ] Eliom_content.Html.D.elt
-  val signout : ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list ->
-    unit -> [> Html_types.i ] Eliom_content.Html.D.elt
-  val close : ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list ->
-    unit -> [> Html_types.i ] Eliom_content.Html.D.elt
+  val user
+    :  ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list
+    -> unit
+    -> [> Html_types.i] Eliom_content.Html.D.elt
+
+  val signout
+    :  ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list
+    -> unit
+    -> [> Html_types.i] Eliom_content.Html.D.elt
+
+  val close
+    :  ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list
+    -> unit
+    -> [> Html_types.i] Eliom_content.Html.D.elt
 end
 
 module D : ICSIG
-
 module F : ICSIG
-
-module Register(FF : ICSIG)(DD : ICSIG) : sig end
+module Register (FF : ICSIG) (DD : ICSIG) : sig end

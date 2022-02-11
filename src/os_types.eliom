@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
+ *)
 
 (** Data types
 
@@ -26,44 +26,38 @@
     dependencies between different modules for only one type.
  **)
 
-
 [%%shared.start]
 
 module User = struct
-  (** Type representing a user ID *)
   type id = int64 [@@deriving json]
+  (** Type representing a user ID *)
 
+  type t =
+    { userid : id
+    ; fn : string
+    ; ln : string
+    ; avatar : string option
+    ; language : string option }
+  [@@deriving json]
   (** Type representing a user. See <<a_api | module Os_user >>. *)
-  type t = {
-      userid : id;
-      fn : string;
-      ln : string;
-      avatar : string option;
-      language : string option;
-    } [@@deriving json]
 end
 
 module Action_link_key = struct
+  type info =
+    { userid : User.id
+    ; email : string
+    ; validity : int64
+    ; expiry : CalendarLib.Calendar.t option
+    ; autoconnect : bool
+    ; action : [`AccountActivation | `PasswordReset | `Custom of string]
+    ; data : string }
   (** Action links *)
-  type info = {
-    userid        : User.id;
-    email         : string;
-    validity      : int64;
-    expiry        : CalendarLib.Calendar.t option;
-    autoconnect   : bool;
-    action        : [ `AccountActivation | `PasswordReset | `Custom of string ];
-    data          : string;
-  }
 end
 
 module Group = struct
-  (** Type representing a group ID *)
   type id = int64 [@@deriving json]
+  (** Type representing a group ID *)
 
+  type t = {id : id; name : string; desc : string option}
   (** Type representing a group. See <<a_api | module Os_group >> *)
-  type t = {
-    id    : id;
-    name  : string;
-    desc  : string option;
-  }
 end

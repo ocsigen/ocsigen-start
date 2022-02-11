@@ -23,10 +23,10 @@
     Groups are used by OS for example to restrict access to pages or
     server functions. *)
 
+exception No_such_group
 (** Exception raised when no there is no group corresponding to the request (for
     example wrong ID or name).
  *)
-exception No_such_group
 
 (* -----------------------------------------------------------------
 
@@ -35,32 +35,29 @@ exception No_such_group
 
 *)
 
-(** Type alias to {!Os_types.Group.id} to allow to use [Os_group.id]. *)
 type id = Os_types.Group.id [@@deriving json]
+(** Type alias to {!Os_types.Group.id} to allow to use [Os_group.id]. *)
 
+type t = Os_types.Group.t = {id : id; name : string; desc : string option}
+[@@deriving json]
 (** Type alias to {!Os_types.Group.t} to allow to use [Os_group.t]. *)
-type t = Os_types.Group.t = {
-  id    : id;
-  name  : string;
-  desc  : string option;
-} [@@deriving json]
 
-(** [id_of_group group] returns the group ID. *)
 val id_of_group : Os_types.Group.t -> Os_types.Group.id
+(** [id_of_group group] returns the group ID. *)
 
-(** [name_of_group group] returns the group name. *)
 val name_of_group : Os_types.Group.t -> string
+(** [name_of_group group] returns the group name. *)
 
-(** [desc_of_group group] returns the group description. *)
 val desc_of_group : Os_types.Group.t -> string option
+(** [desc_of_group group] returns the group description. *)
 
+val create : ?description:string -> string -> Os_types.Group.t Lwt.t
 (** [create ~description name] creates a new group in the database and returns
     it as a record of type [Os_types.Group.t]. *)
-val create : ?description:string -> string -> Os_types.Group.t Lwt.t
 
+val group_of_name : string -> Os_types.Group.t Lwt.t
 (** Overwrites the function [group_of_name] of [Os_db.Group] and use
     the [get] function of the cache module. *)
-val group_of_name : string -> Os_types.Group.t Lwt.t
 
 (* -----------------------------------------------------------------
 
@@ -71,28 +68,28 @@ val group_of_name : string -> Os_types.Group.t Lwt.t
 
 *)
 
+val add_user_in_group
+  :  group:Os_types.Group.t
+  -> userid:Os_types.User.id
+  -> unit Lwt.t
 (** [add_user_in_group ~group ~userid] adds the user with ID [userid] to
     [group]. *)
-val add_user_in_group :
-  group:Os_types.Group.t ->
-  userid:Os_types.User.id ->
-  unit Lwt.t
 
+val remove_user_in_group
+  :  group:Os_types.Group.t
+  -> userid:Os_types.User.id
+  -> unit Lwt.t
 (** [remove_user_in_group ~group ~userid] removes the user with ID [userid] from
     [group]. *)
-val remove_user_in_group :
-  group:Os_types.Group.t ->
-  userid:Os_types.User.id ->
-  unit Lwt.t
 
+val in_group
+  :  ?dbh:Os_db.PGOCaml.pa_pg_data Os_db.PGOCaml.t
+  -> group:Os_types.Group.t
+  -> userid:Os_types.User.id
+  -> unit
+  -> bool Lwt.t
 (** [in_group ~group ~userid] returns [true] if the user with ID [userid] is in
     [group]. *)
-val in_group :
-  ?dbh: Os_db.PGOCaml.pa_pg_data Os_db.PGOCaml.t ->
-  group:Os_types.Group.t ->
-  userid:Os_types.User.id ->
-  unit ->
-  bool Lwt.t
 
-(** [all ()] returns all the groups of the database. *)
 val all : unit -> Os_types.Group.t list Lwt.t
+(** [all ()] returns all the groups of the database. *)

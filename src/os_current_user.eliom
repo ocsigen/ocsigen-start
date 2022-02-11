@@ -21,15 +21,13 @@
 let%server section = Lwt_log.Section.make "os:current_user"
 
 [%%shared
-  type current_user =
-    | CU_idontknown
-    | CU_notconnected
-    | CU_user of Os_types.User.t
-]
+type current_user =
+  | CU_idontknown
+  | CU_notconnected
+  | CU_user of Os_types.User.t]
 
 let%shared please_use_connected_fun =
   "ERROR: Os_current_user is usable only with connected functions (see Os_session)"
-
 
 (* current user *)
 let%server me : current_user Eliom_reference.Volatile.eref =
@@ -37,7 +35,7 @@ let%server me : current_user Eliom_reference.Volatile.eref =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope CU_idontknown
 
 let%client me : current_user ref = ref CU_notconnected
-  (*on client side the default is not connected *)
+(*on client side the default is not connected *)
 
 let%client get_current_user_option () =
   match !me with
@@ -49,13 +47,13 @@ let%client get_current_user () =
   match !me with
   | CU_user a -> a
   | CU_idontknown ->
-    (* The programmer forgot connection_wrapper.
+      (* The programmer forgot connection_wrapper.
        We ask him to fix his code. *)
-    prerr_endline please_use_connected_fun;
-    failwith please_use_connected_fun
+      prerr_endline please_use_connected_fun;
+      failwith please_use_connected_fun
   | _ ->
-    prerr_endline "Not connected error in Os_current_user";
-    raise Os_session.Not_connected
+      prerr_endline "Not connected error in Os_current_user";
+      raise Os_session.Not_connected
 
 (* SECURITY: We can trust these functions on server side,
    because the user is set at every request from the session cookie value.
@@ -65,8 +63,8 @@ let%server get_current_user () =
   match Eliom_reference.Volatile.get me with
   | CU_user a -> a
   | CU_idontknown ->
-    prerr_endline please_use_connected_fun;
-    failwith please_use_connected_fun
+      prerr_endline please_use_connected_fun;
+      failwith please_use_connected_fun
   | CU_notconnected -> raise Os_session.Not_connected
 
 let%server get_current_user_option () =
@@ -76,24 +74,17 @@ let%server get_current_user_option () =
   | CU_idontknown -> failwith please_use_connected_fun
   | CU_notconnected -> None
 
-let%shared get_current_userid () =
-  Os_user.userid_of_user (get_current_user ())
+let%shared get_current_userid () = Os_user.userid_of_user (get_current_user ())
 
 [%%shared
-  module Opt = struct
+module Opt = struct
+  let get_current_user = get_current_user_option
 
-    let get_current_user = get_current_user_option
+  let get_current_userid () =
+    Eliom_lib.Option.map Os_user.userid_of_user (get_current_user_option ())
+end]
 
-    let get_current_userid () =
-      Eliom_lib.Option.map
-        Os_user.userid_of_user
-        (get_current_user_option ())
-
-  end
-]
-
-let%client _ =
-  Os_session.get_current_userid_o := Opt.get_current_userid
+let%client _ = Os_session.get_current_userid_o := Opt.get_current_userid
 
 let%server set_user_server myid =
   let%lwt u = Os_user.user_of_userid myid in
@@ -105,24 +96,25 @@ let%server unset_user_server () =
 
 let%server set_user_client () =
   let u = Eliom_reference.Volatile.get me in
-  ignore [%client ( me := ~%u : unit)]
+  ignore [%client (me := ~%u : unit)]
 
 let%server unset_user_client () =
-  ignore [%client ( me := CU_notconnected : unit)]
+  ignore [%client (me := CU_notconnected : unit)]
 
 let%server () =
   Os_session.on_request (fun myid_o ->
-    match myid_o with
-    | Some myid -> set_user_server myid
-    | None -> (unset_user_server (); Lwt.return_unit));
+      match myid_o with
+      | Some myid -> set_user_server myid
+      | None -> unset_user_server (); Lwt.return_unit);
   Os_session.on_start_connected_process (fun myid ->
-    let%lwt () = set_user_server myid in
-    set_user_client ();
-    Lwt.return_unit);
+      let%lwt () = set_user_server myid in
+      set_user_client (); Lwt.return_unit);
   Os_session.on_pre_close_session (fun () ->
-    unset_user_client (); (*VVV!!! will affect only current tab!! *)
-    unset_user_server (); (* ok this is a request reference *)
-    Lwt.return_unit)
+      unset_user_client ();
+      (*VVV!!! will affect only current tab!! *)
+      unset_user_server ();
+      (* ok this is a request reference *)
+      Lwt.return_unit)
 
 let%rpc remove_email_from_user (email : string) : unit Lwt.t =
   let myid = get_current_userid () in
