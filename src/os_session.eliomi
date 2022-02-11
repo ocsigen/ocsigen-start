@@ -22,57 +22,60 @@
     restrict access to services or server functions,
     define actions to be executed at some points of the session. *)
 
+val on_start_process : (Os_types.User.id option -> unit Lwt.t) -> unit
 (** Call this to add an action to be done on server side
     when the process starts *)
-val on_start_process : (Os_types.User.id option -> unit Lwt.t) -> unit
 
+val on_start_connected_process : (Os_types.User.id -> unit Lwt.t) -> unit
 (** Call this to add an action to be done
     when the process starts in connected mode, or when the user logs in *)
-val on_start_connected_process : (Os_types.User.id -> unit Lwt.t) -> unit
 
+val on_start_unconnected_process : (unit -> unit Lwt.t) -> unit
 (** Call this to add an action to be done on server side
     when the process starts but only when not in connected mode *)
-val on_start_unconnected_process : (unit -> unit Lwt.t) -> unit
 
+val on_connected_request : (Os_types.User.id -> unit Lwt.t) -> unit
 (** Call this to add an action to be done at each connected request.
     The function takes the user id as parameter. *)
-val on_connected_request : (Os_types.User.id -> unit Lwt.t) -> unit
 
-(** Call this to add an action to be done at each unconnected request. *)
 val on_unconnected_request : (unit -> unit Lwt.t) -> unit
+(** Call this to add an action to be done at each unconnected request. *)
 
+val on_open_session : (Os_types.User.id -> unit Lwt.t) -> unit
 (** Call this to add an action to be done just after opening a session
     The function takes the user id as parameter. *)
-val on_open_session : (Os_types.User.id -> unit Lwt.t) -> unit
 
-(** Call this to add an action to be done just before closing the session *)
 val on_pre_close_session : (unit -> unit Lwt.t) -> unit
+(** Call this to add an action to be done just before closing the session *)
 
-(** Call this to add an action to be done just after closing the session *)
 val on_post_close_session : (unit -> unit Lwt.t) -> unit
+(** Call this to add an action to be done just after closing the session *)
 
-(** Call this to add an action to be done just before handling a request *)
 val on_request : (Os_types.User.id option -> unit Lwt.t) -> unit
+(** Call this to add an action to be done just before handling a request *)
 
+val on_denied_request : (Os_types.User.id option -> unit Lwt.t) -> unit
 (** Call this to add an action to be done just for each denied request.
     The function takes the user id as parameter, if some user is connected. *)
-val on_denied_request : (Os_types.User.id option -> unit Lwt.t) -> unit
 
-
+val user_indep_state_hierarchy : Eliom_common.scope_hierarchy
 (** Scopes that are independent from user connection.
     Use this scopes for example when you want to store
     server side data for one browser or tab, but not user dependent.
     (Remains when user logs out).
 *)
-val user_indep_state_hierarchy : Eliom_common.scope_hierarchy
-val user_indep_process_scope : [> Eliom_common.client_process_scope ]
-val user_indep_session_scope : [> Eliom_common.session_scope ]
+
+val user_indep_process_scope : [> Eliom_common.client_process_scope]
+val user_indep_session_scope : [> Eliom_common.session_scope]
 
 [%%shared.start]
+
 exception Not_connected
 exception Permission_denied
 
 [%%server.start]
+
+val connect : ?expire:bool -> Os_types.User.id -> unit Lwt.t
 (** Close current session (if any) by calling disconnect,
     then open a new session for a user by setting a session group for the browser
     which initiated the current request.
@@ -82,23 +85,28 @@ exception Permission_denied
     argument [expire] to true, the session will expire when the browser
     exits.
 *)
-val connect : ?expire:bool -> Os_types.User.id -> unit Lwt.t
 
+val disconnect_all
+  :  ?userid:Os_types.User.id
+  -> ?user_indep:bool
+  -> unit
+  -> unit Lwt.t
 (** Close all sessions of current user (or [userid] if present).
     If [?user_indep] is [true]
     (default), will also affect [user_indep_session_scope].
 *)
-val disconnect_all :
-  ?userid:Os_types.User.id -> ?user_indep:bool -> unit -> unit Lwt.t
 
 [%%client.start]
+
+val disconnect_all : ?user_indep:bool -> unit -> unit Lwt.t
 (** Close all sessions of current user.
     If [?user_indep] is [true] (default),
     will also affect [user_indep_session_scope].
 *)
-val disconnect_all : ?user_indep:bool -> unit -> unit Lwt.t
 
 [%%shared.start]
+
+val disconnect : unit -> unit Lwt.t
 (** Close a session by discarding server side states for current browser
     (session and session group), current client process (tab) and current
     request.
@@ -106,8 +114,15 @@ val disconnect_all : ?user_indep:bool -> unit -> unit Lwt.t
     The actions registered for session close (by {!on_close_session})
     will be executed just before the session is actually closed.
 *)
-val disconnect : unit -> unit Lwt.t
 
+val connected_fun
+  :  ?allow:Os_types.Group.t list
+  -> ?deny:Os_types.Group.t list
+  -> ?deny_fun:(Os_types.User.id option -> 'c Lwt.t)
+  -> (Os_types.User.id -> 'a -> 'b -> 'c Lwt.t)
+  -> 'a
+  -> 'b
+  -> 'c Lwt.t
 (** Wrapper for service handlers that fetches automatically connection
     information.
     Register [(connected_fun f)] as handler for your services,
@@ -131,67 +146,66 @@ val disconnect : unit -> unit Lwt.t
 
     Use only one connection wrapper for each request!
 *)
-val connected_fun :
-  ?allow:Os_types.Group.t list ->
-  ?deny:Os_types.Group.t list ->
-  ?deny_fun:(Os_types.User.id option -> 'c Lwt.t) ->
-  (Os_types.User.id -> 'a -> 'b -> 'c Lwt.t) ->
-  ('a -> 'b -> 'c Lwt.t)
 
+val connected_rpc
+  :  ?allow:Os_types.Group.t list
+  -> ?deny:Os_types.Group.t list
+  -> ?deny_fun:(Os_types.User.id option -> 'b Lwt.t)
+  -> (Os_types.User.id -> 'a -> 'b Lwt.t)
+  -> 'a
+  -> 'b Lwt.t
 (** Wrapper for server functions (see {!connected_fun}). *)
-val connected_rpc :
-  ?allow:Os_types.Group.t list ->
-  ?deny:Os_types.Group.t list ->
-  ?deny_fun:(Os_types.User.id option -> 'b Lwt.t) ->
-  (Os_types.User.id -> 'a -> 'b Lwt.t) ->
-  ('a -> 'b Lwt.t)
 
+val connected_wrapper
+  :  ?allow:Os_types.Group.t list
+  -> ?deny:Os_types.Group.t list
+  -> ?deny_fun:(Os_types.User.id option -> 'b Lwt.t)
+  -> ?force_unconnected:bool
+  -> ('a -> 'b Lwt.t)
+  -> 'a
+  -> 'b Lwt.t
 (** Wrapper for server functions when you do not need userid
     (see {!connected_fun}).
     It is recommended to use this wrapper for all your server functions! *)
-val connected_wrapper :
-  ?allow:Os_types.Group.t list ->
-  ?deny:Os_types.Group.t list ->
-  ?deny_fun:(Os_types.User.id option -> 'b Lwt.t) ->
-  ?force_unconnected:bool ->
-  ('a -> 'b Lwt.t) ->
-  ('a -> 'b Lwt.t)
 
 module Opt : sig
-
+  val connected_fun
+    :  ?allow:Os_types.Group.t list
+    -> ?deny:Os_types.Group.t list
+    -> ?deny_fun:(Os_types.User.id option -> 'c Lwt.t)
+    -> ?force_unconnected:bool
+    -> (Os_types.User.id option -> 'a -> 'b -> 'c Lwt.t)
+    -> 'a
+    -> 'b
+    -> 'c Lwt.t
   (** Same as {!connected_fun} but instead of failing in case the user is
       not connected, the function given as parameter takes an [Os_types.User.id
       option] for user id.
   *)
-  val connected_fun :
-    ?allow:Os_types.Group.t list ->
-    ?deny:Os_types.Group.t list ->
-    ?deny_fun:(Os_types.User.id option -> 'c Lwt.t) ->
-    ?force_unconnected:bool ->
-    (Os_types.User.id option -> 'a -> 'b -> 'c Lwt.t) ->
-    ('a -> 'b -> 'c Lwt.t)
 
+  val connected_rpc
+    :  ?allow:Os_types.Group.t list
+    -> ?deny:Os_types.Group.t list
+    -> ?deny_fun:(Os_types.User.id option -> 'b Lwt.t)
+    -> ?force_unconnected:bool
+    -> (Os_types.User.id option -> 'a -> 'b Lwt.t)
+    -> 'a
+    -> 'b Lwt.t
   (** Same as {!connected_rpc} but instead of failing in case the user is
       not connected, the function given as parameter takes an [Os_types.User.id
       option] for user id.
   *)
-  val connected_rpc :
-    ?allow:Os_types.Group.t list ->
-    ?deny:Os_types.Group.t list ->
-    ?deny_fun:(Os_types.User.id option -> 'b Lwt.t) ->
-    ?force_unconnected:bool ->
-    (Os_types.User.id option -> 'a -> 'b Lwt.t) ->
-    ('a -> 'b Lwt.t)
-
 end
 
-
 (**/**)
+
 [%%client.start]
-   (** internal. Do not use *)
+
 val get_current_userid_o : (unit -> Os_types.User.id option) ref
+(** internal. Do not use *)
 
 [%%server.start]
-val set_warn_connection_change :
-  (([ `Session ], [ `Data ]) Eliom_state.Ext.state -> unit) ->
-  unit
+
+val set_warn_connection_change
+  :  (([`Session], [`Data]) Eliom_state.Ext.state -> unit)
+  -> unit
