@@ -49,7 +49,8 @@ let%server _ =
             let%lwt best_language = best_matched_language () in
             ignore
               (Os_user.update_language ~userid
-                 ~language:(%%%MODULE_NAME%%%_i18n.string_of_language best_language));
+                 ~language:
+                   (%%%MODULE_NAME%%%_i18n.string_of_language best_language));
             Lwt.return best_language
       in
       %%%MODULE_NAME%%%_i18n.set_language language;

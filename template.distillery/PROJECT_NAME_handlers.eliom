@@ -25,7 +25,9 @@ let upload_user_avatar_handler myid () ((), (cropping, photo)) =
 let%server set_personal_data_handler =
   Os_session.connected_fun Os_handlers.set_personal_data_handler
 
-let%rpc set_personal_data_rpc (data : (string * string) * (string * string)) : unit Lwt.t =
+let%rpc set_personal_data_rpc (data : (string * string) * (string * string))
+    : unit Lwt.t
+  =
   set_personal_data_handler () data
 
 let%client set_personal_data_handler () = set_personal_data_rpc
@@ -33,7 +35,8 @@ let%client set_personal_data_handler () = set_personal_data_rpc
 (* Forgot password *)
 
 let%server forgot_password_handler =
-  Os_handlers.forgot_password_handler %%%MODULE_NAME%%%_services.settings_service
+  Os_handlers.forgot_password_handler
+    %%%MODULE_NAME%%%_services.settings_service
 
 let%rpc forgot_password_rpc (email : string) : unit Lwt.t =
   forgot_password_handler () email

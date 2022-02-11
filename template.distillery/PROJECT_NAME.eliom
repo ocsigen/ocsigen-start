@@ -38,15 +38,20 @@ let%shared () =
   %%%MODULE_NAME%%%_base.App.register ~service:Os_services.main_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page
        %%%MODULE_NAME%%%_handlers.main_service_handler);
-  %%%MODULE_NAME%%%_base.App.register ~service:%%%MODULE_NAME%%%_services.about_service
-    (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.about_handler);
-  %%%MODULE_NAME%%%_base.App.register ~service:%%%MODULE_NAME%%%_services.settings_service
-    (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.settings_handler)
+  %%%MODULE_NAME%%%_base.App.register
+    ~service:%%%MODULE_NAME%%%_services.about_service
+    (%%%MODULE_NAME%%%_page.Opt.connected_page
+       %%%MODULE_NAME%%%_handlers.about_handler);
+  %%%MODULE_NAME%%%_base.App.register
+    ~service:%%%MODULE_NAME%%%_services.settings_service
+    (%%%MODULE_NAME%%%_page.Opt.connected_page
+       %%%MODULE_NAME%%%_handlers.settings_handler)
 
 let%server () =
   Eliom_registration.Ocaml.register
     ~service:%%%MODULE_NAME%%%_services.upload_user_avatar_service
-    (Os_session.connected_fun %%%MODULE_NAME%%%_handlers.upload_user_avatar_handler)
+    (Os_session.connected_fun
+       %%%MODULE_NAME%%%_handlers.upload_user_avatar_handler)
 
 (* Print more debugging information when <debugmode/> is in config file
    (DEBUG = yes in Makefile.options).

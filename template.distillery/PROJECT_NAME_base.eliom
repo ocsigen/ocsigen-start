@@ -13,7 +13,8 @@ let () =
     ?user:!%%%MODULE_NAME%%%_config.os_db_user
     ?password:!%%%MODULE_NAME%%%_config.os_db_password
     ?database:!%%%MODULE_NAME%%%_config.os_db_database
-    ?unix_domain_socket_dir:!%%%MODULE_NAME%%%_config.os_db_unix_domain_socket_dir
+    ?unix_domain_socket_dir:
+      !%%%MODULE_NAME%%%_config.os_db_unix_domain_socket_dir
     ()
 
 let () = Os_email.set_mailer "/usr/sbin/sendmail"
