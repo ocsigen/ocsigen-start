@@ -29,33 +29,36 @@
 
 [%%server.start]
 
-(** Cache keeping userid and user information as a {!Os_types.user} type. *)
 val cache : (Os_types.User.id, Os_types.User.t) Eliom_cscache.t
+(** Cache keeping userid and user information as a {!Os_types.user} type. *)
 
+val get_data_from_db : 'a -> Os_types.User.id -> Os_types.User.t Lwt.t
 (** [get_data_from_db myid_o userid] returns the user which has ID [userid].
     For the moment, [myid_o] is not used but it will be use later.
 
     Data comes from the database, not the cache.
  *)
-val get_data_from_db : 'a -> Os_types.User.id -> Os_types.User.t Lwt.t
 
+val get_data_from_db_for_client
+  :  'a
+  -> Os_types.User.id
+  -> Os_types.User.t Lwt.t
 (** [get_data_from_db_for_client myid_o userid] returns the user which has ID
     [userid]. For the moment, [myid_o] is not used but it will be use later.
 
     Data comes from the database, not the cache.
  *)
-val get_data_from_db_for_client : 'a -> Os_types.User.id -> Os_types.User.t Lwt.t
 
 [%%shared.start]
 
+val get_data : Os_types.User.id -> Os_types.User.t Lwt.t
 (** [get_data userid] returns the user which has ID [userid].
     For the moment, [myid_o] is not used but it will be use later.
 
     Data comes from the database, not the cache.
  *)
-val get_data : Os_types.User.id -> Os_types.User.t Lwt.t
 
+val get_data_from_cache : Os_types.User.id -> Os_types.User.t Lwt.t
 (** [get_data_from_cache userid] returns the user with ID [userid] saved in
     cache.
  *)
-val get_data_from_cache : Os_types.User.id -> Os_types.User.t Lwt.t

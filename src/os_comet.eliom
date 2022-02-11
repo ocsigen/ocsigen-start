@@ -22,44 +22,36 @@ open%shared Eliom_content.Html
 open%shared Eliom_content.Html.F
 open%client Js_of_ocaml
 open%client Js_of_ocaml_lwt
-
 let%shared __link = () (* to make sure os_comet is linked *)
-
 
 let%client cookies_enabled () =
   try
     Dom_html.document##.cookie := Js.string "cookietest=1";
     let has_cookies =
-      Dom_html.document##.cookie##indexOf (Js.string "cookietest=") <> -1 in
+      Dom_html.document##.cookie##indexOf (Js.string "cookietest=") <> -1
+    in
     Dom_html.document##.cookie :=
       Js.string "cookietest=1; expires=Thu, 01-Jan-1970 00:00:01 GMT";
     has_cookies
-  with _ ->
-    false
-
-
-
+  with _ -> false
 
 let%client restart_process () =
-  if Eliom_client.is_client_app () then
+  if Eliom_client.is_client_app ()
+  then
     Eliom_client.exit_to ~absolute:false
       ~service:(Eliom_service.static_dir ())
       ["index.html"] ()
-  else
-    (* If cookies do not work,
+  else if (* If cookies do not work,
        the failed comet is probably due to missing cookies.
        In that case we do not restart. This happens for example
        if cookies are deactivated of if the app is running in an iframe
        and the browser forbids third party cookies. *)
-  if cookies_enabled ()
+          cookies_enabled ()
   then Eliom_client.exit_to ~service:Eliom_service.reload_action () ()
 
-
-let%client _ = Eliom_comet.set_handle_exn_function
-    (fun ?exn () -> restart_process (); Lwt.return_unit)
-
-
-
+let%client _ =
+  Eliom_comet.set_handle_exn_function (fun ?exn () ->
+      restart_process (); Lwt.return_unit)
 
 (* We create a channel on scope user_indep_process_scope,
    to monitor the application.
@@ -69,18 +61,16 @@ let%client _ = Eliom_comet.set_handle_exn_function
 [%%shared
 (** The type of sent message *)
 type msg =
-  | Connection_changed (** If a connection changed *)
-  | Heartbeat (** Just to be sure the server is not down. *)
-]
+  | Connection_changed  (** If a connection changed *)
+  | Heartbeat  (** Just to be sure the server is not down. *)]
 
 let create_monitor_channel () =
   let monitor_stream, monitor_send = React.E.create () in
-  let channel = Eliom_comet.Channel.create_from_events
-      ~scope:Os_session.user_indep_process_scope
-      ~name:"monitor"
-      monitor_stream
+  let channel =
+    Eliom_comet.Channel.create_from_events
+      ~scope:Os_session.user_indep_process_scope ~name:"monitor" monitor_stream
   in
-  channel, (fun ev -> monitor_send ev)
+  channel, fun ev -> monitor_send ev
 
 (* The monitor channel for each browser tab is kept in a client-process
    reference that remains even if user logs out (user_indep_process_scope)
@@ -89,35 +79,28 @@ let create_monitor_channel () =
    after timeout.
  *)
 let monitor_channel_ref =
-  Eliom_reference.Volatile.eref
-    ~scope:Os_session.user_indep_process_scope
-    None
+  Eliom_reference.Volatile.eref ~scope:Os_session.user_indep_process_scope None
 
 let already_send_ref =
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
 
 let%client handle_error =
-  ref
-    (fun exn ->
-      Eliom_lib.debug_exn
-        "Exception received on Os_comet's monitor channel: " exn;
+  ref (fun exn ->
+      Eliom_lib.debug_exn "Exception received on Os_comet's monitor channel: "
+        exn;
       restart_process ();
       Lwt.return_unit)
 
 let%client set_error_handler f = handle_error := f
 
 let%client handle_message = function
-  | Lwt_stream.Error exn ->
-    !handle_error exn
-  | Lwt_stream.Value Heartbeat ->
-    Eliom_lib.debug "poum";
-    Lwt.return_unit
+  | Lwt_stream.Error exn -> !handle_error exn
+  | Lwt_stream.Value Heartbeat -> Eliom_lib.debug "poum"; Lwt.return_unit
   | Lwt_stream.Value Connection_changed ->
-    Os_msg.msg ~level:`Err
-      "Connection has changed from outside. Program will restart.";
-    let%lwt () = Lwt_js.sleep 2. in
-    restart_process ();
-    Lwt.return_unit
+      Os_msg.msg ~level:`Err
+        "Connection has changed from outside. Program will restart.";
+      let%lwt () = Lwt_js.sleep 2. in
+      restart_process (); Lwt.return_unit
 
 let%server warn_state c state =
   match Eliom_reference.Volatile.Ext.get state monitor_channel_ref with
@@ -128,32 +111,30 @@ let%server _ =
   Os_session.set_warn_connection_change (warn_state Connection_changed)
 
 let%server _ =
-  Os_session.on_start_process
-    (fun _ ->
-       let channel = create_monitor_channel () in
-       Eliom_reference.Volatile.set monitor_channel_ref (Some channel);
-       ignore [%client ( Lwt.async (fun () ->
-         Lwt_stream.iter_s
-           handle_message
-           (Lwt_stream.map_exn ~%(fst channel))) : unit)];
-       Lwt.return_unit);
+  Os_session.on_start_process (fun _ ->
+      let channel = create_monitor_channel () in
+      Eliom_reference.Volatile.set monitor_channel_ref (Some channel);
+      ignore
+        [%client
+          (Lwt.async (fun () ->
+               Lwt_stream.iter_s handle_message
+                 (Lwt_stream.map_exn ~%(fst channel)))
+            : unit)];
+      Lwt.return_unit);
   let warn c =
     (* User connected or disconnected.
        I want to send the message on all tabs of the browser: *)
     if not (Eliom_reference.Volatile.get already_send_ref)
-    then begin
+    then (
       Eliom_reference.Volatile.set already_send_ref true;
       let cur = Eliom_reference.Volatile.get monitor_channel_ref in
       Eliom_state.Ext.iter_volatile_sub_states
-        ~state:(Eliom_state.Ext.current_volatile_data_state
-                  ~scope:Os_session.user_indep_session_scope ())
-        (fun state ->
-           match
-             Eliom_reference.Volatile.Ext.get state monitor_channel_ref with
-           | Some (_, send) as v ->
-             if not (v == cur) then send c
-           | None -> ())
-    end;
+        ~state:
+          (Eliom_state.Ext.current_volatile_data_state
+             ~scope:Os_session.user_indep_session_scope ()) (fun state ->
+          match Eliom_reference.Volatile.Ext.get state monitor_channel_ref with
+          | Some (_, send) as v -> if not (v == cur) then send c
+          | None -> ()));
     Lwt.return_unit
   in
   let warn_connection_change _ = warn Connection_changed in

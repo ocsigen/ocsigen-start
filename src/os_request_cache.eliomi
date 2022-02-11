@@ -22,43 +22,39 @@
     during the same request. *)
 
 module type Cache_sig = sig
-
-  (** The type of the key *)
   type key
+  (** The type of the key *)
 
-  (** The type of the value *)
   type value
+  (** The type of the value *)
 
-  (** Returns [true] if the key has been stored into the cache. *)
   val has : key -> bool
+  (** Returns [true] if the key has been stored into the cache. *)
 
-  (** Set the corresponding [value] for a key. *)
   val set : key -> value -> unit
+  (** Set the corresponding [value] for a key. *)
 
-  (** Remove a [value] for the given key. *)
   val reset : key -> unit
+  (** Remove a [value] for the given key. *)
 
-  (** Get the value corresponding to the given key. *)
   val get : key -> value Lwt.t
-
+  (** Get the value corresponding to the given key. *)
 end
-
 
 (** Functor which creates a module {!Cache_sig}. *)
 module Make : functor
   (M : sig
-
-     (** The type of your key. *)
      type key
+     (** The type of your key. *)
 
-     (** The type of the stored value. *)
      type value
+     (** The type of the stored value. *)
 
-     (** The function used to compare keys. *)
      val compare : key -> key -> int
+     (** The function used to compare keys. *)
 
+     val get : key -> value Lwt.t
      (** This function is called when the value corresponding to a key
          is not yet stored into the cache. *)
-     val get : key -> value Lwt.t
-
-   end) -> Cache_sig with type key = M.key and type value = M.value
+   end)
+  -> Cache_sig with type key = M.key and type value = M.value

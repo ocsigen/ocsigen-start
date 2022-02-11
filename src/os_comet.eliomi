@@ -25,10 +25,12 @@
  *)
 
 [%%shared.start]
+
 val __link : unit
 
 [%%client.start]
 
+val restart_process : unit -> unit
 (** [restart_process ()] restarts the client.
     For mobile application, it restarts the application by going to
     ["index.html"].
@@ -36,8 +38,5 @@ val __link : unit
     module Eliom_service.reload_action>> is used as argument of <<a_api
     subproject="server" | module Eliom_client.exit_to>>
  *)
-val restart_process :
-  unit ->
-  unit
 
 val set_error_handler : (exn -> unit Lwt.t) -> unit

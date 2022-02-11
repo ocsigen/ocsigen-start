@@ -24,23 +24,27 @@ module type Cache_sig = sig
 
   val has : key -> bool
   val set : key -> value -> unit
-
   val reset : key -> unit
   val get : key -> value Lwt.t
 end
 
-module Make(M : sig
+module Make (M : sig
   type key
   type value
 
   val compare : key -> key -> int
   val get : key -> value Lwt.t
-end) = struct
+end) =
+struct
   type key = M.key
   type value = M.value
 
   (* we use an associative map to store the data *)
-  module MMap = Map.Make(struct type t = M.key let compare = M.compare end)
+  module MMap = Map.Make (struct
+    type t = M.key
+
+    let compare = M.compare
+  end)
 
   (* we use an eliom reference with the restrictive request scope, which is
      sufficient and safe (SECURITY) *)
@@ -48,8 +52,8 @@ end) = struct
     Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope MMap.empty
 
   let has k =
-    (Eliom_common.get_sp_option () <> None) &&
-    MMap.mem k (Eliom_reference.Volatile.get cache)
+    Eliom_common.get_sp_option () <> None
+    && MMap.mem k (Eliom_reference.Volatile.get cache)
 
   let set k v =
     if Eliom_common.get_sp_option () <> None
@@ -69,10 +73,8 @@ end) = struct
     else
       let table = Eliom_reference.Volatile.get cache in
       try Lwt.return (MMap.find k table)
-      with
-      | Not_found ->
+      with Not_found ->
         let%lwt ret = M.get k in
         Eliom_reference.Volatile.set cache (MMap.add k ret table);
         Lwt.return ret
-
 end

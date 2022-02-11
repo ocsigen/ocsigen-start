@@ -34,18 +34,18 @@ type t =
   | Unknown
 
 val t_of_string : string -> t
-
 val string_of_t : t -> string
 
 [%%client.start]
 
+val get : unit -> t
 (** Return the platform as a type {!t}.
     The detection is based on the user agent.
  *)
-val get : unit -> t
 
 [%%shared.start]
 
+val css_class : t -> string
 (** Return ["os-platform"] where [platform] is the device platform.
 
     CSS class for [IPhone], [IPad], [IWatch] and [IPod] is
@@ -53,4 +53,3 @@ val get : unit -> t
 
     If the platform is [Unknown], it returns ["os-unknown-platform"].
  *)
-val css_class : t -> string
