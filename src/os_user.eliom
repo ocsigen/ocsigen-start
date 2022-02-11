@@ -18,8 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open Eliom_content.Html.F
-
 [%%shared
 type id = Os_types.User.id [@@deriving json]
 
@@ -58,16 +56,16 @@ let%server action_link_key_outdated =
 
 (** Create a user of type [t] using db information. *)
 let create_user_from_db0 (userid, fn, ln, avatar, pwdset, language) =
-  Os_types.{userid; fn; ln; avatar; language}, pwdset
+  {userid; fn; ln; avatar; language}, pwdset
 
 let create_user_from_db d = fst (create_user_from_db0 d)
 
 (** Getters functions. *)
-let%shared userid_of_user (u : Os_types.User.t) = Os_types.(u.userid)
-let%shared firstname_of_user u = Os_types.(u.fn)
-let%shared lastname_of_user u = Os_types.(u.ln)
-let%shared avatar_of_user u = Os_types.(u.avatar)
-let%shared language_of_user u = Os_types.(u.language)
+let%shared userid_of_user (u : Os_types.User.t) = u.userid
+let%shared firstname_of_user u = u.fn
+let%shared lastname_of_user u = u.ln
+let%shared avatar_of_user u = u.avatar
+let%shared language_of_user u = u.language
 
 let%shared avatar_uri_of_avatar ?absolute_path avatar =
   Eliom_content.Html.F.make_uri ?absolute_path
@@ -155,15 +153,15 @@ let update' ?password user =
     ~lastname:(lastname_of_user user) (userid_of_user user)
 
 let update_password ~userid ~password =
-  let%lwt () = Os_db.User.update_password userid password in
+  let%lwt () = Os_db.User.update_password ~userid ~password in
   MCache.reset userid; Lwt.return_unit
 
 let update_language ~userid ~language =
-  let%lwt () = Os_db.User.update_language userid language in
+  let%lwt () = Os_db.User.update_language ~userid ~language in
   MCache.reset userid; Lwt.return_unit
 
 let update_avatar ~userid ~avatar =
-  let%lwt () = Os_db.User.update_avatar userid avatar in
+  let%lwt () = Os_db.User.update_avatar ~userid ~avatar in
   MCache.reset userid; Lwt.return_unit
 
 let get_language userid = Os_db.User.get_language userid

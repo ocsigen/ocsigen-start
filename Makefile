@@ -12,9 +12,9 @@ include Makefile.options
 ##			      Internals
 
 ## Required binaries
-ELIOMC            := eliomc
-ELIOMOPT          := eliomopt
-JS_OF_ELIOM       := js_of_eliom -ppx
+ELIOMC            := eliomc ${WARNING_FLAGS}
+ELIOMOPT          := eliomopt ${WARNING_FLAGS}
+JS_OF_ELIOM       := js_of_eliom -ppx ${WARNING_FLAGS}
 ELIOMDEP          := eliomdep
 OCAMLFIND         := ocamlfind
 

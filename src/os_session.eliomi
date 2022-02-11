@@ -58,13 +58,12 @@ val on_denied_request : (Os_types.User.id option -> unit Lwt.t) -> unit
 (** Call this to add an action to be done just for each denied request.
     The function takes the user id as parameter, if some user is connected. *)
 
-val user_indep_state_hierarchy : Eliom_common.scope_hierarchy
 (** Scopes that are independent from user connection.
     Use this scopes for example when you want to store
     server side data for one browser or tab, but not user dependent.
-    (Remains when user logs out).
-*)
+    (Remains when user logs out). *)
 
+val user_indep_state_hierarchy : Eliom_common.scope_hierarchy
 val user_indep_process_scope : [> Eliom_common.client_process_scope]
 val user_indep_session_scope : [> Eliom_common.session_scope]
 

@@ -18,8 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-let%server section = Lwt_log.Section.make "os:current_user"
-
 [%%shared
 type current_user =
   | CU_idontknown
@@ -134,4 +132,4 @@ let%server is_main_email email =
 
 let%rpc update_language (language : string) : unit Lwt.t =
   let myid = get_current_userid () in
-  Os_user.update_language myid language
+  Os_user.update_language ~userid:myid ~language

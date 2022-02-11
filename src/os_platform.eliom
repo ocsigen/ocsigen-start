@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open%shared Js_of_ocaml
+open%client Js_of_ocaml
 
 [%%shared
 type t =

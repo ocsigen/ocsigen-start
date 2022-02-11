@@ -27,12 +27,11 @@ type t = Os_types.Group.t = {id : id; name : string; desc : string option}
 
 (** Create a group of type [Os_types.Group.t] using db information. *)
 let create_group_from_db (groupid, name, description) : Os_types.Group.t =
-  let open Os_types in
   {id = groupid; name; desc = description}
 
-let id_of_group (g : Os_types.Group.t) = Os_types.(g.id)
-let name_of_group (g : Os_types.Group.t) = Os_types.(g.name)
-let desc_of_group (g : Os_types.Group.t) = Os_types.(g.desc)
+let id_of_group (g : Os_types.Group.t) = g.id
+let name_of_group (g : Os_types.Group.t) = g.name
+let desc_of_group (g : Os_types.Group.t) = g.desc
 
 (* Using cache tools to prevent multiple same database queries
    during the request. *)
@@ -78,13 +77,13 @@ let group_of_name = MCache.get
  * *)
 
 let add_user_in_group ~(group : Os_types.Group.t) =
-  Os_db.Groups.add_user_in_group ~groupid:Os_types.(group.id)
+  Os_db.Groups.add_user_in_group ~groupid:group.id
 
 let remove_user_in_group ~(group : Os_types.Group.t) =
-  Os_db.Groups.remove_user_in_group ~groupid:Os_types.(group.id)
+  Os_db.Groups.remove_user_in_group ~groupid:group.id
 
 let in_group ?dbh ~(group : Os_types.Group.t) ~userid () =
-  Os_db.Groups.in_group ?dbh ~groupid:Os_types.(group.id) ~userid ()
+  Os_db.Groups.in_group ?dbh ~groupid:group.id ~userid ()
 
 (** Returns all the groups of the database. *)
 let all () =

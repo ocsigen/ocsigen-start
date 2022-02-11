@@ -20,8 +20,7 @@
 
 (** Registration of default services *)
 
-open%shared Eliom_content.Html
-open%shared Eliom_content.Html.F
+open%client Eliom_content.Html.F
 open%client Js_of_ocaml
 
 let%client storage () =
@@ -195,7 +194,7 @@ let%client disconnect_handler ?(main_page = false) () () =
 let connect_handler () ((login, pwd), keepmeloggedin) =
   (* SECURITY: no check here. *)
   try%lwt
-    let%lwt userid = Os_user.verify_password login pwd in
+    let%lwt userid = Os_user.verify_password ~email:login ~password:pwd in
     let%lwt () = disconnect_handler () () in
     Os_session.connect ~expire:(not keepmeloggedin) userid
   with
@@ -216,22 +215,21 @@ let%rpc connect_handler_rpc (v : (string * string) * bool) : unit Lwt.t =
   connect_handler () v
 
 let%client connect_handler () v = connect_handler_rpc v
-
-[%%shared
-exception Custom_action_link of Os_types.Action_link_key.info * bool
+exception%shared Custom_action_link of Os_types.Action_link_key.info * bool
 (* If true, the link corresponds to a phantom user
                 (user who never created its account).
                 In that case, you probably want to display a sign-up form,
                 and in the other case a login form. *)
 
-exception Account_already_activated_unconnected of Os_types.Action_link_key.info
+exception%shared
+  Account_already_activated_unconnected of Os_types.Action_link_key.info
 
-exception
+exception%server
   Account_already_activated_connected of
     Os_types.Action_link_key.info * Os_types.User.id
 
-exception Invalid_action_key of Os_types.Action_link_key.info
-exception No_such_resource]
+exception%shared Invalid_action_key of Os_types.Action_link_key.info
+exception%shared No_such_resource
 
 let%rpc action_link_handler_common myid_o (akey : string)
     : [ `Account_already_activated_unconnected of Os_types.Action_link_key.info
@@ -279,7 +277,7 @@ let%rpc action_link_handler_common myid_o (akey : string)
       Lwt.return `Restart_if_app
     else
       match action with
-      | `Custom s ->
+      | `Custom _s ->
           let%lwt existing_user = Os_db.User.is_email_validated userid email in
           Lwt.return (`Custom_action_link (action_link, not existing_user))
       | _ -> Lwt.return `Reload
@@ -291,7 +289,7 @@ let%rpc action_link_handler_common myid_o (akey : string)
   | Account_already_activated_unconnected action_link ->
       Eliom_reference.Volatile.set Os_user.action_link_key_outdated true;
       Lwt.return (`Account_already_activated_unconnected action_link)
-  | Account_already_activated_connected (action_link, _) ->
+  | Account_already_activated_connected (_action_link, _) ->
       Eliom_reference.Volatile.set Os_user.action_link_key_outdated true;
       (* Just reload the page without the GET parameters to get rid of the key.
        If the user wasn't already logged in, let the exception pass to the

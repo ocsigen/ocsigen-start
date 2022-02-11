@@ -32,7 +32,7 @@
 let%server cache : (Os_types.User.id, Os_types.User.t) Eliom_cscache.t =
   Eliom_cscache.create ()
 
-let%server get_data_from_db myid_o userid = Os_user.user_of_userid userid
+let%server get_data_from_db _myid_o userid = Os_user.user_of_userid userid
 
 let%rpc get_data myid_o (userid : Os_types.User.id) : Os_types.User.t Lwt.t =
   get_data_from_db myid_o userid
