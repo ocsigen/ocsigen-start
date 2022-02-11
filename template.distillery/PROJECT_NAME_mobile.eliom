@@ -11,6 +11,7 @@ open %%%MODULE_NAME%%% (* for dependency reasons *)
 
 [%%client open Js_of_ocaml]
 [%%client open Js_of_ocaml_lwt]
+
 (* This RPC is called when client application is initialized. This
    way, the server sends necessary cookies to the client (the mobile
    app) early on and subsequent requests from the client will contain
@@ -20,9 +21,7 @@ open %%%MODULE_NAME%%% (* for dependency reasons *)
    own actions to be performed server side on first client request, if
    necessary. *)
 let%rpc init_request myid_o (tz : string) : unit Lwt.t =
-  ignore myid_o;
-  Os_date.initialize tz;
-  Lwt.return_unit
+  ignore myid_o; Os_date.initialize tz; Lwt.return_unit
 
 let to_lwt f =
   let wait, wakeup = Lwt.wait () in

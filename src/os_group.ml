@@ -22,32 +22,26 @@ exception No_such_group
 
 type id = Os_types.Group.id [@@deriving json]
 
-type t = Os_types.Group.t = {
-  id    : id;
-  name  : string;
-  desc  : string option;
-} [@@deriving json]
+type t = Os_types.Group.t = {id : id; name : string; desc : string option}
+[@@deriving json]
 
 (** Create a group of type [Os_types.Group.t] using db information. *)
 let create_group_from_db (groupid, name, description) : Os_types.Group.t =
-  let open Os_types in {
-  id = groupid;
-  name = name;
-  desc = description;
-}
+  let open Os_types in
+  {id = groupid; name; desc = description}
 
-let id_of_group (g : Os_types.Group.t)    = Os_types.(g.id)
-let name_of_group (g : Os_types.Group.t)  = Os_types.(g.name)
-let desc_of_group (g : Os_types.Group.t)  = Os_types.(g.desc)
+let id_of_group (g : Os_types.Group.t) = Os_types.(g.id)
+let name_of_group (g : Os_types.Group.t) = Os_types.(g.name)
+let desc_of_group (g : Os_types.Group.t) = Os_types.(g.desc)
 
 (* Using cache tools to prevent multiple same database queries
    during the request. *)
-module MCache = Os_request_cache.Make(
-struct
+module MCache = Os_request_cache.Make (struct
   type key = string
   type value = Os_types.Group.t
 
   let compare = compare
+
   let get key =
     try%lwt
       let%lwt g = Os_db.Groups.group_of_name key in
@@ -62,14 +56,14 @@ let create ?description name =
     let%lwt g = Os_db.Groups.group_of_name name in
     Lwt.return (create_group_from_db g)
   in
-  try%lwt group_of_name name with
-  | Os_db.No_such_resource ->
+  try%lwt group_of_name name
+  with Os_db.No_such_resource -> (
     let%lwt () = Os_db.Groups.create ?description name in
     try%lwt
       let%lwt g = group_of_name name in
       Lwt.return g
-    with Os_db.No_such_resource ->
-      Lwt.fail No_such_group (* Should never happen *)
+    with Os_db.No_such_resource -> Lwt.fail No_such_group)
+(* Should never happen *)
 
 (** Overwrite the function [group_of_name] of [Os_db.Group] and use
   * the [get] function of the cache module. *)
@@ -84,15 +78,15 @@ let group_of_name = MCache.get
  * *)
 
 let add_user_in_group ~(group : Os_types.Group.t) =
-  Os_db.Groups.add_user_in_group ~groupid:(Os_types.(group.id))
+  Os_db.Groups.add_user_in_group ~groupid:Os_types.(group.id)
 
 let remove_user_in_group ~(group : Os_types.Group.t) =
-  Os_db.Groups.remove_user_in_group ~groupid:(Os_types.(group.id))
+  Os_db.Groups.remove_user_in_group ~groupid:Os_types.(group.id)
 
 let in_group ?dbh ~(group : Os_types.Group.t) ~userid () =
-  Os_db.Groups.in_group ?dbh ~groupid:(Os_types.(group.id)) ~userid ()
+  Os_db.Groups.in_group ?dbh ~groupid:Os_types.(group.id) ~userid ()
 
 (** Returns all the groups of the database. *)
 let all () =
   let%lwt groups = Os_db.Groups.all () in
-  Lwt.return (List.map (create_group_from_db) groups)
+  Lwt.return (List.map create_group_from_db groups)

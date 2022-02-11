@@ -24,89 +24,64 @@
     Predefined handlers for each service are defined in the module
     Os_handlers. *)
 
-[%%server
-  open Eliom_parameter
-]
+[%%server open Eliom_parameter]
 
 (** The main service. *)
 let%server main_service =
-  Eliom_service.create
-    ~path:(Eliom_service.Path [])
-    ~meth:(Eliom_service.Get Eliom_parameter.unit)
-    ()
+  Eliom_service.create ~path:(Eliom_service.Path [])
+    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
 
 (** A POST service to preregister a user. By default, an email is
     enough. *)
 let%server preregister_service =
-  Eliom_service.create
-    ~name:"preregister_service"
-    ~path:Eliom_service.No_path
+  Eliom_service.create ~name:"preregister_service" ~path:Eliom_service.No_path
     ~meth:
-      (Eliom_service.Post
-         (Eliom_parameter.unit,
-          Eliom_parameter.string "email"))
+      (Eliom_service.Post (Eliom_parameter.unit, Eliom_parameter.string "email"))
     ()
 
 (** A POST service when the user forgot his password.
     See {!Os_handlers.forgot_password_handler for a default handler. *)
 let%server forgot_password_service =
-  Eliom_service.create
-    ~name:"lost_password"
-    ~path:Eliom_service.No_path
+  Eliom_service.create ~name:"lost_password" ~path:Eliom_service.No_path
     ~meth:
-      (Eliom_service.Post
-         (Eliom_parameter.unit,
-          Eliom_parameter.string "email"))
+      (Eliom_service.Post (Eliom_parameter.unit, Eliom_parameter.string "email"))
     ()
 
 (** A POST service to update the basic user data like first name, last name and
     password.
     See {!Os_handlers.set_personal_data_handler for a default handler. *)
 let%server set_personal_data_service =
-  Eliom_service.create
-    ~name:"set_data"
-    ~path:Eliom_service.No_path
+  Eliom_service.create ~name:"set_data" ~path:Eliom_service.No_path
     ~meth:
       (Eliom_service.Post
-         (Eliom_parameter.unit,
-          (string "firstname" ** string "lastname") **
-          (string "password"  ** string "password2")))
+         ( Eliom_parameter.unit
+         , (string "firstname" ** string "lastname")
+           ** string "password" ** string "password2" ))
     ()
 
 (** A POST service to sign up with only an email address.
     See {!Os_handlers.sign_up_handler for a default handler. *)
 let%server sign_up_service =
-  Eliom_service.create
-    ~name:"sign_up"
-    ~path:Eliom_service.No_path
+  Eliom_service.create ~name:"sign_up" ~path:Eliom_service.No_path
     ~meth:
-      (Eliom_service.Post
-         (Eliom_parameter.unit,
-          Eliom_parameter.string "email"))
+      (Eliom_service.Post (Eliom_parameter.unit, Eliom_parameter.string "email"))
     ()
 
 (** A POST service to connect a user with username and password.
     See {!Os_handlers.connect_handler for a default handler. *)
 let%server connect_service =
-  Eliom_service.create
-    ~name:"connect"
-    ~path:Eliom_service.No_path
+  Eliom_service.create ~name:"connect" ~path:Eliom_service.No_path
     ~meth:
       (Eliom_service.Post
-         (Eliom_parameter.unit,
-          ((string "username" ** string "password") **
-           bool "keepmeloggedin")))
+         ( Eliom_parameter.unit
+         , (string "username" ** string "password") ** bool "keepmeloggedin" ))
     ()
 
 (** A POST service to disconnect the current user.
     See {!Os_handlers.disconnect_handler} for a default handler. *)
 let%server disconnect_service =
-  Eliom_service.create
-    ~name:"disconnect"
-    ~path:Eliom_service.No_path
-    ~meth:
-      (Eliom_service.Post
-         (Eliom_parameter.unit, Eliom_parameter.unit))
+  Eliom_service.create ~name:"disconnect" ~path:Eliom_service.No_path
+    ~meth:(Eliom_service.Post (Eliom_parameter.unit, Eliom_parameter.unit))
     ()
 
 (** A GET service for action link keys.
@@ -114,9 +89,7 @@ let%server disconnect_service =
     {!Os_db.action_link_table} for more information about the action
     process. *)
 let%server action_link_service =
-  Eliom_service.create
-    ~name:"action_link"
-    ~path:Eliom_service.No_path
+  Eliom_service.create ~name:"action_link" ~path:Eliom_service.No_path
     ~meth:(Eliom_service.Get (Eliom_parameter.string "actionkey"))
     ()
 
@@ -124,57 +97,43 @@ let%server action_link_service =
     associated with the confirmation password.
     See {!Os_handlers.set_password_handler} for a default handler. *)
 let%server set_password_service =
-  Eliom_service.create
-    ~name:"set_password"
-    ~path:Eliom_service.No_path
+  Eliom_service.create ~name:"set_password" ~path:Eliom_service.No_path
     ~meth:
       (Eliom_service.Post
-         (Eliom_parameter.unit,
-          string "password" ** string "password2"))
+         (Eliom_parameter.unit, string "password" ** string "password2"))
     ()
 
 (** A POST service to add an email to a user.
     See {!Os_handlers.add_email_handler} for a default handler. *)
-let%server add_email_service = Eliom_service.create
-  ~name:"add_email"
-  ~path:Eliom_service.No_path
-  ~meth:(Eliom_service.Post (
-    Eliom_parameter.unit,
-    Eliom_parameter.string "email"
-  )) ()
+let%server add_email_service =
+  Eliom_service.create ~name:"add_email" ~path:Eliom_service.No_path
+    ~meth:
+      (Eliom_service.Post (Eliom_parameter.unit, Eliom_parameter.string "email"))
+    ()
 
-let%server update_language_service = Eliom_service.create
-    ~name:"update_language"
-    ~path:Eliom_service.No_path
-    ~meth:(Eliom_service.Post (
-      Eliom_parameter.unit,
-      Eliom_parameter.string "language"
-    )) ()
+let%server update_language_service =
+  Eliom_service.create ~name:"update_language" ~path:Eliom_service.No_path
+    ~meth:
+      (Eliom_service.Post
+         (Eliom_parameter.unit, Eliom_parameter.string "language"))
+    ()
 
 let confirm_code_signup_service =
-  Eliom_service.create
-    ~name:"confirm_code_signup"
-    ~path:Eliom_service.No_path
-    ~meth:(
-      Eliom_service.Post (
-        unit,
-        string "first_name" ** string "last_name" **
-        string "password" ** string "number"
-      )
-    )
+  Eliom_service.create ~name:"confirm_code_signup" ~path:Eliom_service.No_path
+    ~meth:
+      (Eliom_service.Post
+         ( unit
+         , string "first_name" ** string "last_name" ** string "password"
+           ** string "number" ))
     ()
 
 let confirm_code_extra_service =
-  Eliom_service.create
-    ~name:"confirm_code_extra"
-    ~path:Eliom_service.No_path
+  Eliom_service.create ~name:"confirm_code_extra" ~path:Eliom_service.No_path
     ~meth:(Eliom_service.Post (unit, string "number"))
     ()
 
 let confirm_code_recovery_service =
-  Eliom_service.create
-    ~name:"confirm_code_recovery"
-    ~path:Eliom_service.No_path
+  Eliom_service.create ~name:"confirm_code_recovery" ~path:Eliom_service.No_path
     ~meth:(Eliom_service.Post (unit, string "number"))
     ()
 
@@ -189,20 +148,14 @@ let%client action_link_service = ~%action_link_service
 let%client set_password_service = ~%set_password_service
 let%client add_email_service = ~%add_email_service
 let%client update_language_service = ~%update_language_service
-
 let%client confirm_code_signup_service = ~%confirm_code_signup_service
-let%client confirm_code_extra_service  = ~%confirm_code_extra_service
+let%client confirm_code_extra_service = ~%confirm_code_extra_service
 let%client confirm_code_recovery_service = ~%confirm_code_recovery_service
-
 (* [Os_handlers.add_email_handler] needs access to the settings
    service, but the latter needs to be defined in the template. So we
    use the reference [settings_service_ref]. The template needs to
    call [set_settings_service]. *)
-
 let%shared settings_service_ref = ref None
-
 let%shared register_settings_service s = settings_service_ref := Some s
-
 let%shared settings_service () = !settings_service_ref
-
 let%shared confirm_code_remind_service = confirm_code_recovery_service

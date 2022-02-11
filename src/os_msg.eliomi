@@ -18,11 +18,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+[%%shared.start]
 (** This module provides functions to display messages (client-side or
     server-side).
  *)
-[%%shared.start]
 
+val msg
+  :  ?level:[`Err | `Msg]
+  -> ?duration:float
+  -> ?onload:bool
+  -> string
+  -> unit
 (** Call this function either from client or server side
     to display an error message in the page.
 
@@ -41,19 +47,18 @@
     is displayed (default [false]). When called on server side, this is
     always the case.
 *)
-val msg :
-  ?level:[`Err | `Msg] -> ?duration:float -> ?onload:bool -> string -> unit
-
 
 [%%server.start]
 
-(** Set default message duration (default 4s) *)
 val set_default_duration : float -> unit
+(** Set default message duration (default 4s) *)
 
+val action_link_key_created : bool Eliom_reference.Volatile.eref
 (** Set to [true] if an action link key has been already created and sent to the
     user email, else [false]. Default is [false]. *)
-val action_link_key_created : bool Eliom_reference.Volatile.eref
 
+val wrong_pdata
+  : ((string * string) * (string * string)) option Eliom_reference.Volatile.eref
 (** [((firstname, lastname), (password, password_confirmation)) option]
     is a reference used to remember information about the user during a
     request when something went wrong (for example in a form when the password
@@ -61,5 +66,3 @@ val action_link_key_created : bool Eliom_reference.Volatile.eref
 
     If the value is [None], no user data has been set. Default is [None].
  *)
-val wrong_pdata
-  : ((string * string) * (string * string)) option Eliom_reference.Volatile.eref
