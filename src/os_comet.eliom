@@ -18,8 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open%shared Eliom_content.Html
-open%shared Eliom_content.Html.F
 open%client Js_of_ocaml
 open%client Js_of_ocaml_lwt
 let%shared __link = () (* to make sure os_comet is linked *)
@@ -50,7 +48,7 @@ let%client restart_process () =
   then Eliom_client.exit_to ~service:Eliom_service.reload_action () ()
 
 let%client _ =
-  Eliom_comet.set_handle_exn_function (fun ?exn () ->
+  Eliom_comet.set_handle_exn_function (fun ?exn:_ () ->
       restart_process (); Lwt.return_unit)
 
 (* We create a channel on scope user_indep_process_scope,
@@ -58,11 +56,10 @@ let%client _ =
    If this channel is closed or fails, it means that something went wrong.
 *)
 
-[%%shared
 (** The type of sent message *)
-type msg =
+type%shared msg =
   | Connection_changed  (** If a connection changed *)
-  | Heartbeat  (** Just to be sure the server is not down. *)]
+  | Heartbeat  (** Just to be sure the server is not down. *)
 
 let create_monitor_channel () =
   let monitor_stream, monitor_send = React.E.create () in
@@ -94,9 +91,9 @@ let%client handle_error =
 let%client set_error_handler f = handle_error := f
 
 let%client handle_message = function
-  | Lwt_stream.Error exn -> !handle_error exn
-  | Lwt_stream.Value Heartbeat -> Eliom_lib.debug "poum"; Lwt.return_unit
-  | Lwt_stream.Value Connection_changed ->
+  | Error exn -> !handle_error exn
+  | Ok Heartbeat -> Eliom_lib.debug "poum"; Lwt.return_unit
+  | Ok Connection_changed ->
       Os_msg.msg ~level:`Err
         "Connection has changed from outside. Program will restart.";
       let%lwt () = Lwt_js.sleep 2. in
@@ -118,7 +115,7 @@ let%server _ =
         [%client
           (Lwt.async (fun () ->
                Lwt_stream.iter_s handle_message
-                 (Lwt_stream.map_exn ~%(fst channel)))
+                 (Lwt_stream.wrap_exn ~%(fst channel)))
             : unit)];
       Lwt.return_unit);
   let warn c =

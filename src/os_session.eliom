@@ -19,11 +19,6 @@
  *)
 
 let log_section = Lwt_log.Section.make "os:session"
-
-[%%shared
-open Eliom_content.Html
-open Eliom_content.Html.F]
-
 let user_indep_state_hierarchy = Eliom_common.create_scope_hierarchy "userindep"
 let user_indep_process_scope = `Client_process user_indep_state_hierarchy
 let user_indep_session_scope = `Session user_indep_state_hierarchy
@@ -71,7 +66,7 @@ let on_start_connected_process f =
 
 let on_start_unconnected_process f =
   on_start_process (fun myid_o ->
-      match myid_o with Some myid -> Lwt.return_unit | None -> f ())
+      match myid_o with Some _myid -> Lwt.return_unit | None -> f ())
 
 [%%shared
 exception Not_connected
@@ -326,9 +321,8 @@ let%client get_current_userid_o = ref (fun () -> assert false)
 
 (* On client-side, we do no security check.
    They are done by the server. *)
-let%client gen_wrapper ~allow ~deny ?(force_unconnected = false)
-    ?(deny_fun = fun _ -> Lwt.fail Permission_denied) connected not_connected gp
-    pp
+let%client gen_wrapper ~allow:_ ~deny:_ ?(force_unconnected = false) ?deny_fun:_
+    connected not_connected gp pp
   =
   let myid_o = if force_unconnected then None else !get_current_userid_o () in
   match myid_o with
@@ -346,7 +340,7 @@ let%shared connected_rpc ?allow ?deny ?deny_fun f pp =
 
 let%shared connected_wrapper ?allow ?deny ?deny_fun ?force_unconnected f pp =
   gen_wrapper ?force_unconnected ~allow ~deny ?deny_fun
-    (fun myid _ p -> f p)
+    (fun _myid _ p -> f p)
     (fun _ p -> f p)
     () pp
 

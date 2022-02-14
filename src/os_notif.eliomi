@@ -30,13 +30,17 @@
 open Os_types
 
 module type S = sig
-  include Eliom_notif.S
-    with type identity = User.id option
+  include Eliom_notif.S with type identity = User.id option
+
+  val unlisten_user
+    :  ?sitedata:Eliom_common.sitedata
+    -> userid:User.id
+    -> key
+    -> unit
   (** Make a user stop listening on data [key]. This function will work as
       expected without a value supplied for [sitedata] if called during a
       request or initialisation. Otherwise a value needs to be supplied. *)
-  val unlisten_user :
-    ?sitedata:Eliom_common.sitedata -> userid:User.id -> key -> unit
+
   val notify : ?notfor:[`Me | `User of User.id] -> key -> server_notif -> unit
 end
 
@@ -46,6 +50,7 @@ module type ARG = sig
   type key
   type server_notif
   type client_notif
+
   val prepare : User.id option -> server_notif -> client_notif option Lwt.t
   val equal_key : key -> key -> bool
   val max_resource : int
@@ -53,10 +58,11 @@ module type ARG = sig
 end
 
 (** see [Eliom_notif.Make] *)
-module Make (A : ARG) : S
-  with type key = A.key
-   and type server_notif = A.server_notif
-   and type client_notif = A.client_notif
+module Make (A : ARG) :
+  S
+    with type key = A.key
+     and type server_notif = A.server_notif
+     and type client_notif = A.client_notif
 
 (** [ARG_SIMPLE] is for making [Make_Simple].
     It is a simplified version of [Eliom_notif.ARG_SIMPLE] *)
@@ -69,7 +75,8 @@ end
     connected to the current server, as is always the case in a single-server
     set-up.
 *)
-module Make_Simple (A : ARG_SIMPLE) : S
-  with type key = A.key
-   and type server_notif = A.notification
-   and type client_notif = A.notification
+module Make_Simple (A : ARG_SIMPLE) :
+  S
+    with type key = A.key
+     and type server_notif = A.notification
+     and type client_notif = A.notification

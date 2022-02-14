@@ -286,12 +286,6 @@ val disconnect_all_link
     @param text_link link text.
  *)
 
-val disconnect_button
-  :  ?text_logout:string
-  -> unit
-  -> [> Html_types.li_content_fun] Eliom_content.Html.F.elt
-(** A disconnect button *)
-
 val disconnect_link
   :  ?text_logout:string
   -> ?a:[< Html_types.a_attrib > `OnClick] Eliom_content.Html.attrib list

@@ -21,6 +21,29 @@
 (** Tips for new users and new features. *)
 
 [%%shared.start]
+
+val bubble
+  :  ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.D.attrib list
+  -> ?recipient:[> `All | `Connected | `Not_connected]
+  -> ?arrow:
+       [< `left of int | `right of int | `top of int | `bottom of int]
+       Eliom_client_value.t
+  -> ?top:int Eliom_client_value.t
+  -> ?left:int Eliom_client_value.t
+  -> ?right:int Eliom_client_value.t
+  -> ?bottom:int Eliom_client_value.t
+  -> ?height:int Eliom_client_value.t
+  -> ?width:int Eliom_client_value.t
+  -> ?parent_node:[< `Body | Html_types.body_content] Eliom_content.Html.elt
+  -> ?delay:float
+  -> ?onclose:(unit -> unit Lwt.t) Eliom_client_value.t
+  -> name:string
+  -> content:
+       ((unit -> unit Lwt.t)
+        -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
+       Eliom_client_value.t
+  -> unit
+  -> unit Lwt.t
 (** Display tips in pages, as a speech bubble.
 
     One tip is displayed at a time.
@@ -42,66 +65,52 @@
     - [?delay] adds a delay before displaying the tip (in seconds)
 
 *)
-val bubble :
-  ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.D.attrib list ->
-  ?recipient:[> `All | `Connected | `Not_connected ] ->
-  ?arrow: [< `left of int
-          | `right of int
-          | `top of int
-          | `bottom of int ] Eliom_client_value.t ->
-  ?top:int Eliom_client_value.t ->
-  ?left:int Eliom_client_value.t ->
-  ?right:int Eliom_client_value.t ->
-  ?bottom:int Eliom_client_value.t ->
-  ?height:int Eliom_client_value.t ->
-  ?width:int Eliom_client_value.t ->
-  ?parent_node:[< `Body | Html_types.body_content ] Eliom_content.Html.elt ->
-  ?delay:float ->
-  ?onclose:(unit -> unit Lwt.t) Eliom_client_value.t ->
-  name:string ->
-  content:((unit -> unit Lwt.t)
-           -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
-      Eliom_client_value.t ->
-  unit ->
-  unit Lwt.t
 
+val block
+  :  ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.D.attrib list
+  -> ?recipient:[> `All | `Connected | `Not_connected]
+  -> ?onclose:(unit -> unit Lwt.t) Eliom_client_value.t
+  -> name:string
+  -> content:
+       ((unit -> unit Lwt.t) Eliom_client_value.t
+        -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
+  -> unit
+  -> [> `Div] Eliom_content.Html.elt option Lwt.t
 (** Return a box containing a tip, to be inserted where you want in a page.
     The box contains a close button. Once it is closed, it is never displayed
     again for this user. In that case the function returns [None].
  *)
-val block :
-  ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.D.attrib list ->
-  ?recipient:[> `All | `Connected | `Not_connected ] ->
-  ?onclose:(unit -> unit Lwt.t) Eliom_client_value.t ->
-  name:string ->
-  content:((unit -> unit Lwt.t) Eliom_client_value.t
-           -> Html_types.div_content Eliom_content.Html.elt list Lwt.t) ->
-  unit ->
-  [> `Div ] Eliom_content.Html.elt option Lwt.t
 
+val reset_tips : unit -> unit Lwt.t
 (** Call this function to reset tips for current user.
     Tips will be shown again from the beginning.
 *)
-val reset_tips : unit -> unit Lwt.t
 
+val set_tip_seen : string -> unit Lwt.t
 (** Call this function to mark a tip as "already seen" by current user.
     This is done automatically when a tip is closed.
 *)
-val set_tip_seen : string -> unit Lwt.t
 
+val unset_tip_seen : string -> unit Lwt.t
 (** Counterpart of set_tip_seen. Does not fail if the tip has not been seen
     yet *)
-val unset_tip_seen : string -> unit Lwt.t
 
-(** Returns whether a tip has been seen or not. *)
 val tip_seen : string -> bool Lwt.t
+(** Returns whether a tip has been seen or not. *)
 
+val reset_tips_service
+  : ( unit
+    , unit
+    , Eliom_service.post
+    , Eliom_service.non_att
+    , Eliom_service.co
+    , Eliom_service.non_ext
+    , Eliom_service.reg
+    , [`WithoutSuffix]
+    , unit
+    , unit
+    , Eliom_service.non_ocaml )
+    Eliom_service.t
 (** A non-attached service that will reset tips.
     Call it with [Eliom_client.exit_to] to restart the application and
     see tips again. *)
-val reset_tips_service :
-  (unit, unit, Eliom_service.post, Eliom_service.non_att,
-   Eliom_service.co, Eliom_service.non_ext, Eliom_service.reg,
-   [ `WithoutSuffix ], unit, unit,
-   Eliom_service.non_ocaml)
-    Eliom_service.t

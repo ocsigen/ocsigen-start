@@ -69,7 +69,7 @@ let%server request_code reference number =
     else Lwt.return (Error `Limit)
   with _ -> Lwt.return (Error `Unknown)
 
-let%shared request_wrapper number f =
+let%server request_wrapper number f =
   if Re.Str.string_match Os_lib.phone_regexp number 0
   then f number
   else Lwt.return (Error `Invalid_number)
@@ -107,7 +107,7 @@ let%server confirm_code_signup_no_connect ~first_name ~last_name ~code ~password
         Os_user.create ~password ~firstname:first_name ~lastname:last_name ()
       in
       let userid = Os_user.userid_of_user user in
-      let%lwt b = Os_db.Phone.add userid number in
+      let%lwt _ = Os_db.Phone.add userid number in
       Lwt.return_some userid
   | _ -> Lwt.return_none
 
