@@ -52,8 +52,8 @@ jobs:
       - run: opam install -y .
         working-directory: template
 
-      - run: make db-init db-create db-schema
+      - run: make USE_SASS=no db-init db-create db-schema
         working-directory: template
 
-      - run: opam exec -- make all
+      - run: opam exec -- make USE_SASS=no all
         working-directory: template
