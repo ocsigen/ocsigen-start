@@ -40,6 +40,7 @@ val resize_image
   -> ?dst:string
   -> width:int
   -> height:int
+  -> unit
   -> unit Lwt.t
 (** Resize the given image ([src]) and save it to [dst] (default is the source
    file). If an error occurred, it raises the exception [Error_while_resizing]
@@ -54,6 +55,7 @@ val crop_image
   -> right:float
   -> bottom:float
   -> left:float
+  -> unit
   -> unit Lwt.t
 (** [crop_image ~src ?dst ?ratio ~top ~right ~bottom ~left] crops the image
     saved in [src] and saves the result in [dst] (default is the source file).

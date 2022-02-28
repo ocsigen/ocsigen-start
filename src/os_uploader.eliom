@@ -22,7 +22,7 @@
 exception Error_while_cropping of Unix.process_status
 exception Error_while_resizing of Unix.process_status]
 
-let%server resize_image ~src ?(dst = src) ~width ~height =
+let%server resize_image ~src ?(dst = src) ~width ~height () =
   let%lwt resize_unix_result =
     Lwt_process.exec
       ( ""
@@ -61,7 +61,7 @@ let%server get_image_height file =
   in
   Lwt.return (int_of_string height)
 
-let%server crop_image ~src ?(dst = src) ?ratio ~top ~right ~bottom ~left =
+let%server crop_image ~src ?(dst = src) ?ratio ~top ~right ~bottom ~left () =
   (* Given arguments are in percent. Use this to convert to pixel. The full size
   is needed to compute the number of pixel *)
   let pixel_of_percent percent full_size_px =
@@ -89,7 +89,7 @@ let%server crop_image ~src ?(dst = src) ?ratio ~top ~right ~bottom ~left =
   in
   match crop_unix_result with
   | Unix.WEXITED status_code when status_code = 0 ->
-      resize_image ~src:dst ~dst ~width:width_cropped ~height:height_cropped
+      resize_image ~src:dst ~dst ~width:width_cropped ~height:height_cropped ()
   | unix_process_status -> Lwt.fail (Error_while_cropping unix_process_status)
 
 let%server record_image directory ?ratio ?cropping file =
@@ -107,7 +107,7 @@ let%server record_image directory ?ratio ?cropping file =
   let cp =
     match cropping with
     | Some (top, right, bottom, left) ->
-        fun src dst -> crop_image ~src ~dst ?ratio ~top ~right ~bottom ~left
+        fun src dst -> crop_image ~src ~dst ?ratio ~top ~right ~bottom ~left ()
     | None -> Lwt_unix.link
   in
   let file_saver = make_file_saver cp () in
