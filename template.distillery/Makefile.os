@@ -13,9 +13,9 @@
 ##                Internals
 
 ## Required binaries
-ELIOMC            := eliomc -w +A-4-7-9-37-38-39-41-42-44-45-48
+ELIOMC            := eliomc -w +A-4-7-9-37-38-39-41-42-44-45-48-70
 ELIOMOPT          := eliomopt
-JS_OF_ELIOM       := js_of_eliom -w +A-4-7-9-37-38-39-41-42-44-45-48 -jsopt +base/runtime.js
+JS_OF_ELIOM       := js_of_eliom -w +A-4-7-9-37-38-39-41-42-44-45-48-70 -jsopt +base/runtime.js
 JS_OF_OCAML       := js_of_ocaml
 ELIOMDEP          := eliomdep
 OCSIGENSERVER     := ocsigenserver
