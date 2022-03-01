@@ -42,7 +42,7 @@ CREATE SCHEMA ocsigen_start
 
   CREATE TABLE groups ( -- DEFAULT
          groupid bigserial primary key, -- DEFAULT
-         name text NOT NULL, -- DEFAULT
+         name text UNIQUE NOT NULL, -- DEFAULT
          description text -- DEFAULT
   )
 

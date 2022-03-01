@@ -421,7 +421,8 @@ module Groups = struct
     [%pgsql
       dbh
         "INSERT INTO ocsigen_start.groups (description, name)
-         VALUES ($?description, $name)"]
+         VALUES ($?description, $name)
+         ON CONFLICT DO NOTHING"]
 
   let group_of_name name =
     without_transaction (fun dbh ->
