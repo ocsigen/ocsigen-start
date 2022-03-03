@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "ocsigen-start"
-version: "6.0.0"
+version: "6.0.1"
 authors: "dev@ocsigen.org"
 maintainer: "dev@ocsigen.org"
 synopsis: "An Eliom application skeleton ready to use to build your own application with users, (pre)registration, notifications, etc"

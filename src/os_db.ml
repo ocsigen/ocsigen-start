@@ -2761,7 +2761,7 @@ module Groups = struct
          ; `Var ("description", false, true)
          ; `Text ", "
          ; `Var ("name", false, false)
-         ; `Text ")" ]
+         ; `Text ")\n         ON CONFLICT DO NOTHING" ]
        in
        let i = ref 0 in
        let j = ref 0 in
