@@ -120,7 +120,7 @@ let set_warn_connection_change, warn_connection_changed =
   let r = ref (fun _ -> ()) in
   (fun f -> r := f), fun state -> !r state; Lwt.return_unit
 
-let disconnect_all ?userid ?(user_indep = true) () =
+let disconnect_all ?userid ?(user_indep = true) ?(with_restart = true) () =
   let close_my_sessions = userid = None in
   let%lwt () =
     if close_my_sessions then pre_close_session_action () else Lwt.return_unit
@@ -199,7 +199,9 @@ let disconnect_all ?userid ?(user_indep = true) () =
             ui_states
         else Lwt.return_unit
       in
-      let _ = [%client (Os_handlers.restart () : unit)] in
+      let () =
+        if with_restart then ignore [%client (Os_handlers.restart () : unit)]
+      in
       Lwt.return_unit
 
 let check_allow_deny userid allow deny =

@@ -88,11 +88,14 @@ val connect : ?expire:bool -> Os_types.User.id -> unit Lwt.t
 val disconnect_all
   :  ?userid:Os_types.User.id
   -> ?user_indep:bool
+  -> ?with_restart:bool
   -> unit
   -> unit Lwt.t
 (** Close all sessions of current user (or [userid] if present).
     If [?user_indep] is [true]
     (default), will also affect [user_indep_session_scope].
+    If [?with_restart] is [true]
+    (default), will also restart the client.
 *)
 
 [%%client.start]
