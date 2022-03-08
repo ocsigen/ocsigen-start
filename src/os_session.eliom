@@ -120,7 +120,9 @@ let set_warn_connection_change, warn_connection_changed =
   let r = ref (fun _ -> ()) in
   (fun f -> r := f), fun state -> !r state; Lwt.return_unit
 
-let disconnect_all ?userid ?(user_indep = true) ?(with_restart = true) () =
+let disconnect_all ?sitedata ?userid ?(user_indep = true) ?(with_restart = true)
+    ()
+  =
   let close_my_sessions = userid = None in
   let%lwt () =
     if close_my_sessions then pre_close_session_action () else Lwt.return_unit
@@ -163,7 +165,7 @@ let disconnect_all ?userid ?(user_indep = true) ?(with_restart = true) () =
                 let%lwt acc = acc in
                 Lwt.return (s :: acc))
           Lwt.return_nil
-          (Eliom_state.Ext.fold_volatile_sub_states
+          (Eliom_state.Ext.fold_volatile_sub_states ?sitedata
              ~state:
                (Eliom_state.Ext.volatile_data_group_state
                   ~scope:Eliom_common.default_group_scope group_name)
@@ -174,8 +176,8 @@ let disconnect_all ?userid ?(user_indep = true) ?(with_restart = true) () =
       let%lwt () =
         Lwt_list.iter_s
           (fun state ->
-            Eliom_state.Ext.iter_sub_states ~state @@ fun state ->
-            Eliom_state.Ext.discard_state ~state)
+            Eliom_state.Ext.iter_sub_states ?sitedata ~state @@ fun state ->
+            Eliom_state.Ext.discard_state ?sitedata ~state ())
           states
       in
       let%lwt () =
@@ -187,7 +189,8 @@ let disconnect_all ?userid ?(user_indep = true) ?(with_restart = true) () =
       let%lwt () =
         Lwt_list.iter_s
           (fun state ->
-            Eliom_state.Ext.iter_sub_states ~state warn_connection_changed)
+            Eliom_state.Ext.iter_sub_states ?sitedata ~state
+              warn_connection_changed)
           ui_states
       in
       (* Closing user_indep states, if requested: *)
@@ -195,7 +198,7 @@ let disconnect_all ?userid ?(user_indep = true) ?(with_restart = true) () =
         if user_indep
         then
           Lwt_list.iter_s
-            (fun state -> Eliom_state.Ext.discard_state ~state)
+            (fun state -> Eliom_state.Ext.discard_state ?sitedata ~state ())
             ui_states
         else Lwt.return_unit
       in
