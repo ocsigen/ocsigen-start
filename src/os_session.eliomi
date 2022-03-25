@@ -86,13 +86,25 @@ val connect : ?expire:bool -> Os_types.User.id -> unit Lwt.t
 *)
 
 val disconnect_all
-  :  ?userid:Os_types.User.id
+  :  ?sitedata:Eliom_common.sitedata
+  -> ?userid:Os_types.User.id
   -> ?user_indep:bool
+  -> ?with_restart:bool
   -> unit
   -> unit Lwt.t
 (** Close all sessions of current user (or [userid] if present).
     If [?user_indep] is [true]
     (default), will also affect [user_indep_session_scope].
+    If [?with_restart] is [true]
+    (default), will also restart the client.
+    If you do not call the function during
+    a request or during the initialisation phase of the Eliom module:
+
+    - [?userid] must not be [None]
+    - [?with_restart] must be [false]
+    - you must provide the extra parameter [?sitedata],
+      that you can get by calling [Eliom_request_info.get_sitedata]
+      during the initialisation phase of the Eliom module.
 *)
 
 [%%client.start]
