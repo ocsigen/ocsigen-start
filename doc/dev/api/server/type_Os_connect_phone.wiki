@@ -4,6 +4,11 @@
     (number:string ->
      string -> (unit, Os_connect_phone.sms_error_core) Stdlib.result Lwt.t) ->
     unit
+  val confirm_code_signup_no_connect :
+    first_name:string ->
+    last_name:string ->
+    code:string -> password:string -> unit -> Os_types.User.id option Lwt.t
+  val confirm_code : Os_types.User.id -> string -> bool Lwt.t
   type sms_error =
       [ `Invalid_number | `Limit | `Ownership | `Send | `Unknown ]
   val request_code :
@@ -17,5 +22,7 @@
   val confirm_code_recovery : string -> bool Lwt.t
   val connect :
     keepmeloggedin:bool ->
-    password:string -> string -> [ `Login_ok | `No_such_resource ] Lwt.t
+    password:string ->
+    string ->
+    [ `Login_ok | `No_such_user | `Password_not_set | `Wrong_password ] Lwt.t
 end >>

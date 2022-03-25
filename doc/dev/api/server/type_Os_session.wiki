@@ -7,14 +7,18 @@
   val on_open_session : (Os_types.User.id -> unit Lwt.t) -> unit
   val on_pre_close_session : (unit -> unit Lwt.t) -> unit
   val on_post_close_session : (unit -> unit Lwt.t) -> unit
-  val on_request : (unit -> unit Lwt.t) -> unit
+  val on_request : (Os_types.User.id option -> unit Lwt.t) -> unit
   val on_denied_request : (Os_types.User.id option -> unit Lwt.t) -> unit
   val user_indep_state_hierarchy : Eliom_common.scope_hierarchy
-  val user_indep_process_scope : Eliom_common.client_process_scope
-  val user_indep_session_scope : Eliom_common.session_scope
+  val user_indep_process_scope : [> Eliom_common.client_process_scope ]
+  val user_indep_session_scope : [> Eliom_common.session_scope ]
   exception Not_connected
   exception Permission_denied
   val connect : ?expire:bool -> Os_types.User.id -> unit Lwt.t
+  val disconnect_all :
+    ?sitedata:Eliom_common.sitedata ->
+    ?userid:Os_types.User.id ->
+    ?user_indep:bool -> ?with_restart:bool -> unit -> unit Lwt.t
   val disconnect : unit -> unit Lwt.t
   val connected_fun :
     ?allow:Os_types.Group.t list ->
@@ -47,4 +51,6 @@
         ?force_unconnected:bool ->
         (Os_types.User.id option -> 'a -> 'b Lwt.t) -> 'a -> 'b Lwt.t
     end
+  val set_warn_connection_change :
+    (([ `Session ], [ `Data ]) Eliom_state.Ext.state -> unit) -> unit
 end >>

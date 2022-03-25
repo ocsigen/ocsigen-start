@@ -10,7 +10,7 @@
 >>
 >><<span class="ocsforge_color_keyword"|end>><<span class="ocsforge_color_delimiter"|)>> <<span class="ocsforge_color_delimiter"|-~>>> \\  <<span class="odocwiki_type"|<<a_api subproject="server" text="Cache_sig" | module Os_request_cache.Cache_sig >>>><<span class="odocwiki_type"|  with type key = M.key and type value = M.value>>>>>>~Functor which creates a module <<a_api subproject="server" | module type Os_request_cache.Cache_sig >>~.
 <<div class="odocwiki_module_param_list" | <<span class="odocwiki_param_title" |Parameters :>><<div|
-|@@class="odocwiki_paramstable"@ @class="centertop fifteen code"@@{{{M}}}|@@class="centertop"@@:|<<span class="odocwiki_type"|\\sig\\\\     (** The type of your key. *)\\     type key\\\\     (** The type of the stored value. *)\\     type value\\\\     (** The function used to compare keys. *)\\     val compare : key -> key -> int\\\\     (** This function is called when the value corresponding to a key\\         is not yet stored into the cache. *)\\     val get : key -> value Lwt.t\\\\   end>>|
+|@@class="odocwiki_paramstable"@ @class="centertop fifteen code"@@{{{M}}}|@@class="centertop"@@:|<<span class="odocwiki_type"|\\sig\\     type key\\     (** The type of your key. *)\\\\     type value\\     (** The type of the stored value. *)\\\\     val compare : key -> key -> int\\     (** The function used to compare keys. *)\\\\     val get : key -> value Lwt.t\\     (** This function is called when the value corresponding to a key\\         is not yet stored into the cache. *)\\   end>>|
 >>>>
 
 ----

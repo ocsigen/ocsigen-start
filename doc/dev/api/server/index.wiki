@@ -81,9 +81,6 @@
     settings buttons and other common contents arising in applications~.
 >>
 |
-|<<a_api subproject="server" | Ppx_syntax>>|<<div class="odocwiki_info"|~An ocsigen-start ppx syntax extension to create RPC~.
->>
-|
 
 
 

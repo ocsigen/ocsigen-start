@@ -26,7 +26,7 @@
     end
   module Default_config : PAGE
   module Make :
-    functor (C : PAGE) ->
+    PAGE ->
       sig
         val make_page :
           Os_page.content -> [> Html_types.html ] Eliom_content.Html.elt

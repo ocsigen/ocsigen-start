@@ -41,7 +41,9 @@
 |@@ @style="tet-align: left;"@@\\S|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="server_notif"| type Os_notif.ARG.server_notif >> ~[<<a_api subproject="server" | module Os_notif.ARG >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="sms_error"| type Os_connect_phone.sms_error >> ~[<<a_api subproject="server" | module Os_connect_phone >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="sms_error_core"| type Os_connect_phone.sms_error_core >> ~[<<a_api subproject="server" | module Os_connect_phone >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="sms_error_core"| type Os_connect_phone.sms_error_core >> ~[<<a_api subproject="server" | module Os_connect_phone >>~]|<<div class="odocwiki_info"|~To be used for signalling errors with ~S~M~S transmission
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="success"| type Os_fcm_notif.Response.Results.success >> ~[<<a_api subproject="server" | module Os_fcm_notif.Response.Results >>~]|<<div class="odocwiki_info"|~The type representing a success result~.
 >>
 |
@@ -66,7 +68,9 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_fcm_notif.Response.Results.t >> ~[<<a_api subproject="server" | module Os_fcm_notif.Response.Results >>~]|<<div class="odocwiki_info"|~The type representing a result~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_fcm_notif.Response.t >> ~[<<a_api subproject="server" | module Os_fcm_notif.Response >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_fcm_notif.Response.t >> ~[<<a_api subproject="server" | module Os_fcm_notif.Response >>~]|<<div class="odocwiki_info"|~The type representing a ~F~C~M response
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Os_fcm_notif.Options.Priority.t >> ~[<<a_api subproject="server" | module Os_fcm_notif.Options.Priority >>~]|<<div class="odocwiki_info"|~Priority of the message~.
 >>
 |
@@ -88,6 +92,11 @@
 |
 |@@ @style="tet-align: left;"@@\\V|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="value"| type Os_request_cache.Cache_sig.value >> ~[<<a_api subproject="server" | module Os_request_cache.Cache_sig >>~]|<<div class="odocwiki_info"|~The type of the value
+>>
+|
+|@@ @style="tet-align: left;"@@\\W|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="wrapper"| type Os_core_db.wrapper >> ~[<<a_api subproject="server" | module Os_core_db >>~]|<<div class="odocwiki_info"|~Setup a wrapper function which is used each time a connection is
+   acquired~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\Y|

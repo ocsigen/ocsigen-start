@@ -1,4 +1,4 @@
-<<code language="ocaml" | functor (C : PAGE) ->
+<<code language="ocaml" | PAGE ->
   sig
     val make_page :
       Os_page.content -> [> Html_types.html ] Eliom_content.Html.elt

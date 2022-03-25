@@ -54,6 +54,9 @@
   val uuid : 'a t -> string
   type pa_pg_data = (string, bool) Hashtbl.t
   type oid = int32
+  val pp_oid :
+    Ppx_deriving_runtime.Format.formatter -> oid -> Ppx_deriving_runtime.unit
+  val show_oid : oid -> Ppx_deriving_runtime.string
   type param = string option
   type result = string option
   type row = result list
@@ -76,8 +79,7 @@
   val close_portal : 'a t -> ?portal:string -> unit -> unit monad
   val inject : 'a t -> ?name:string -> string -> row list monad
   val alter : 'a t -> ?name:string -> string -> unit monad
-  type row_description = result_description list
-  and result_description = {
+  type result_description = {
     name : string;
     table : oid option;
     column : int option;
@@ -85,6 +87,16 @@
     length : int;
     modifier : int32;
   }
+  val pp_result_description :
+    Ppx_deriving_runtime.Format.formatter ->
+    result_description -> Ppx_deriving_runtime.unit
+  val show_result_description :
+    result_description -> Ppx_deriving_runtime.string
+  type row_description = result_description list
+  val pp_row_description :
+    Ppx_deriving_runtime.Format.formatter ->
+    row_description -> Ppx_deriving_runtime.unit
+  val show_row_description : row_description -> Ppx_deriving_runtime.string
   type params_description = param_description list
   and param_description = { param_type : oid; }
   val describe_statement :
@@ -93,7 +105,7 @@
     unit -> (params_description * row_description option) monad
   val describe_portal :
     'a t -> ?portal:string -> unit -> row_description option monad
-  val name_of_type : ?modifier:int32 -> oid -> string
+  val name_of_type : oid -> string
   type inet = Unix.inet_addr * int
   type timestamptz = CalendarLib.Calendar.t * CalendarLib.Time_Zone.t
   type int16 = int
@@ -109,6 +121,7 @@
   type string_array = string option list
   type float_array = float option list
   type timestamp_array = CalendarLib.Calendar.t option list
+  type uuid_array = string option list
   val string_of_oid : oid -> string
   val string_of_bool : bool -> string
   val string_of_int : int -> string
@@ -137,7 +150,15 @@
   val string_of_bytea_array : string_array -> string
   val string_of_float_array : float_array -> string
   val string_of_timestamp_array : timestamp_array -> string
+  val string_of_arbitrary_array : ('a -> string) -> 'a option list -> string
+  val string_of_uuid_array : uuid_array -> string
   val comment_src_loc : unit -> bool
+  val find_custom_typconvs :
+    ?typnam:string ->
+    ?lookin:string ->
+    ?colnam:string ->
+    ?argnam:string ->
+    unit -> ((string * string) option, string) Rresult.result
   val oid_of_string : string -> oid
   val bool_of_string : string -> bool
   val int_of_string : string -> int
@@ -164,6 +185,7 @@
   val string_array_of_string : string -> string_array
   val float_array_of_string : string -> float_array
   val timestamp_array_of_string : string -> timestamp_array
+  val arbitrary_array_of_string : (string -> 'a) -> string -> 'a option list
   val bind : 'a monad -> ('a -> 'b monad) -> 'b monad
   val return : 'a -> 'a monad
 end >>

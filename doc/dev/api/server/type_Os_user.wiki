@@ -12,6 +12,7 @@
   exception No_such_user
   val password_set : Os_types.User.id -> bool Lwt.t
   val wrong_password : bool Eliom_reference.Volatile.eref
+  val no_such_user : bool Eliom_reference.Volatile.eref
   val account_not_activated : bool Eliom_reference.Volatile.eref
   val user_already_exists : bool Eliom_reference.Volatile.eref
   val user_does_not_exist : bool Eliom_reference.Volatile.eref
@@ -33,6 +34,7 @@
     ?action:[ `AccountActivation | `Custom of string | `PasswordReset ] ->
     ?data:string ->
     ?validity:int64 ->
+    ?expiry:CalendarLib.Calendar.t ->
     act_key:string ->
     userid:Os_types.User.id -> email:string -> unit -> unit Lwt.t
   val verify_password :

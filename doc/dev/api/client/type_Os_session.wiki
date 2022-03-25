@@ -1,6 +1,8 @@
 <<code language="ocaml" | sig
   exception Not_connected
   exception Permission_denied
+  val disconnect_all : ?user_indep:bool -> unit -> unit Lwt.t
+  val disconnect : unit -> unit Lwt.t
   val connected_fun :
     ?allow:Os_types.Group.t list ->
     ?deny:Os_types.Group.t list ->

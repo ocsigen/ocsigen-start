@@ -1,6 +1,5 @@
 =Module <<a_api_type subproject="server" | module Os_fcm_notif.Response.Results >> =
-<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Results>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_fcm_notif.Response.Results >><<span class="ocsforge_color_keyword"|end>>>>~The type representing a ~F~C~M response
-
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Results>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Os_fcm_notif.Response.Results >><<span class="ocsforge_color_keyword"|end>>>>
 ----
 <<pre class="ocsforge_color odocwiki_code" id="TYPEsuccess"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|success>>>><<div class="odocwiki_info"|~The type representing a success result~.
             ~If no error occurred~, the ~J~S~O~N in the results attribute contains a

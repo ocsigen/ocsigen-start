@@ -4,12 +4,14 @@
   val get_image_height : string -> int Lwt.t
   val get_image_width : string -> int Lwt.t
   val resize_image :
-    src:string -> ?dst:string -> width:int -> height:int -> unit Lwt.t
+    src:string ->
+    ?dst:string -> width:int -> height:int -> unit -> unit Lwt.t
   val crop_image :
     src:string ->
     ?dst:string ->
     ?ratio:float ->
-    top:float -> right:float -> bottom:float -> left:float -> unit Lwt.t
+    top:float ->
+    right:float -> bottom:float -> left:float -> unit -> unit Lwt.t
   val record_image :
     string ->
     ?ratio:float ->

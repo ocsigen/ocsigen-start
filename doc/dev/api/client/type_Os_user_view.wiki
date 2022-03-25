@@ -22,6 +22,10 @@
     ?text_sign_in:string ->
     ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
     ?email:string -> unit -> [> Html_types.form ] Eliom_content.Html.D.elt
+  val disconnect_button :
+    ?a:[< Html_types.form_attrib ] Eliom_content.Html.F.attrib list ->
+    ?text_logout:string ->
+    unit -> [> Html_types.form ] Eliom_content.Html.F.elt
   val sign_up_form :
     ?a:[< Html_types.form_attrib ] Eliom_content.Html.D.attrib list ->
     ?a_placeholder_email:string ->
@@ -82,9 +86,9 @@
     ?text_link:string ->
     ?close:(unit -> unit) Eliom_client_value.t ->
     unit -> [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
-  val disconnect_button :
-    ?text_logout:string ->
-    unit -> [> Html_types.li_content_fun ] Eliom_content.Html.F.elt
+  val disconnect_all_link :
+    ?text_link:string ->
+    unit -> [> `A of [> `PCDATA ] ] Eliom_content.Html.D.Raw.elt
   val disconnect_link :
     ?text_logout:string ->
     ?a:[< Html_types.a_attrib > `OnClick ] Eliom_content.Html.attrib list ->

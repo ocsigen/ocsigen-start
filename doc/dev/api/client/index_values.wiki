@@ -38,11 +38,18 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="block"| value Os_tips.block >> ~[<<a_api subproject="client" | module Os_tips >>~]|<<div class="odocwiki_info"|~Return a box containing a tip~, to be inserted where you want in a page~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="bubble"| value Os_tips.bubble >> ~[<<a_api subproject="client" | module Os_tips >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="bubble"| value Os_tips.bubble >> ~[<<a_api subproject="client" | module Os_tips >>~]|<<div class="odocwiki_info"|~Display tips in pages~, as a speech bubble~.
+>>
+|
 |@@ @style="tet-align: left;"@@\\C|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="check_password_confirmation"| value Os_user_view.check_password_confirmation >> ~[<<a_api subproject="client" | module Os_user_view >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="check_password_confirmation"| value Os_user_view.check_password_confirmation >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|check~_password~_confirmation ~~password ~~confirmation>> adds a listener to
+    the element <<span class="odocwiki_inlinecode"|confirmation>> which checks if the value of <<span class="odocwiki_inlinecode"|password>> and
+    <<span class="odocwiki_inlinecode"|confirmation>> match~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="close"| value Os_icons.ICSIG.close >> ~[<<a_api subproject="client" | module Os_icons.ICSIG >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="confirm_code_extra"| value Os_connect_phone.confirm_code_extra >> ~[<<a_api subproject="client" | module Os_connect_phone >>~]|<<div class="odocwiki_info"|~Confirm validation code and add extra phone to account~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="confirm_code_extra"| value Os_connect_phone.confirm_code_extra >> ~[<<a_api subproject="client" | module Os_connect_phone >>~]|<<div class="odocwiki_info"|~Confirm validation code and add extra phone to account of the currently
+    connected user
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="confirm_code_extra_handler"| value Os_handlers.confirm_code_extra_handler >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|confirm~_code~_extra~_handler ~(~) number>> is like
@@ -157,6 +164,20 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="default_predicate"| value Os_page.PAGE.default_predicate >> ~[<<a_api subproject="client" | module Os_page.PAGE >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|default~_predicate get~_param post~_param>> is the default predicate~.
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="disable_auto_init"| value Os_date.disable_auto_init >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|~Disable auto~-initialization
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="disconnect"| value Os_session.disconnect >> ~[<<a_api subproject="client" | module Os_session >>~]|<<div class="odocwiki_info"|~Close a session by discarding server side states for current browser
+    ~(session and session group~)~, current client process ~(tab~) and current
+    request~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="disconnect_all"| value Os_session.disconnect_all >> ~[<<a_api subproject="client" | module Os_session >>~]|<<div class="odocwiki_info"|~Close all sessions of current user~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="disconnect_all_link"| value Os_user_view.disconnect_all_link >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|~Link to disconnect all user sessions~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="disconnect_button"| value Os_user_view.disconnect_button >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|disconnect~_button ~?a ~(~)>> creates a disconnect ~P~O~S~T form with a button
     without value~, a signout icon and a text message <<span class="odocwiki_inlinecode"|"logout">>~.
 >>
@@ -208,13 +229,11 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_current_userid"| value Os_current_user.get_current_userid >> ~[<<a_api subproject="client" | module Os_current_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_current~_userid ~(~)>> returns the ~I~D of the current user~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_data"| value Os_user_proxy.get_data >> ~[<<a_api subproject="client" | module Os_user_proxy >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_data_from_cache"| value Os_user_proxy.get_data_from_cache >> ~[<<a_api subproject="client" | module Os_user_proxy >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data~_from~_cache userid>> returns the user with ~I~D <<span class="odocwiki_inlinecode"|userid>> saved in
-    cache~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_data"| value Os_user_proxy.get_data >> ~[<<a_api subproject="client" | module Os_user_proxy >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data userid>> returns the user which has ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_data_rpc"| value Os_user_proxy.get_data_rpc >> ~[<<a_api subproject="client" | module Os_user_proxy >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data~_rpc>> is a ~R~P~C to ~<~<a~_api subproject~="server" ~| module
-    ~Os~_user~_proxy~.get~_data~_rpc~'~>~>
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_data_from_cache"| value Os_user_proxy.get_data_from_cache >> ~[<<a_api subproject="client" | module Os_user_proxy >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data~_from~_cache userid>> returns the user with ~I~D <<span class="odocwiki_inlinecode"|userid>> saved in
+    cache~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\H|
@@ -266,7 +285,9 @@
 >>
 |
 |@@ @style="tet-align: left;"@@\\M|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="main_service"| value Os_services.main_service >> ~[<<a_api subproject="client" | module Os_services >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="main_service"| value Os_services.main_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~The main service~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="make_page"| value Os_page.Make.make_page >> ~[<<a_api subproject="client" | module Os_page.Make >>~]|<<div class="odocwiki_info"|~Builds a valid html page from body content by adding headers
       for this app
 >>
@@ -275,7 +296,10 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="memoizator"| value Os_lib.memoizator >> ~[<<a_api subproject="client" | module Os_lib >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|memoizator f ~(~)>> caches the returned value of <<span class="odocwiki_inlinecode"|f ~(~)>>
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="msg"| value Os_msg.msg >> ~[<<a_api subproject="client" | module Os_msg >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="msg"| value Os_msg.msg >> ~[<<a_api subproject="client" | module Os_msg >>~]|<<div class="odocwiki_info"|~Call this function either from client or server side
+    to display an error message in the page~.
+>>
+|
 |@@ @style="tet-align: left;"@@\\N|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="now"| value Os_date.now >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|now ~(~)>> returns the current date as a <<span class="odocwiki_inlinecode"|local~_calendar>> value~.
 >>
@@ -309,7 +333,9 @@
     the ~O~S lib~) because we need to perform redirections to it~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="reload"| value Os_lib.reload >> ~[<<a_api subproject="client" | module Os_lib >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="reload"| value Os_lib.reload >> ~[<<a_api subproject="client" | module Os_lib >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|reload ~(~)>> reloads the current page~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="remove_email_from_user"| value Os_current_user.remove_email_from_user >> ~[<<a_api subproject="client" | module Os_current_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|remove~_email~_from~_user email>> removes the email <<span class="odocwiki_inlinecode"|email>> of the current
     user~.
 >>
@@ -337,6 +363,7 @@
 >>
 |
 |@@ @style="tet-align: left;"@@\\S|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_error_handler"| value Os_comet.set_error_handler >> ~[<<a_api subproject="client" | module Os_comet >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_password_rpc"| value Os_handlers.set_password_rpc >> ~[<<a_api subproject="client" | module Os_handlers >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|set~_password~_rpc ~(password~, confirmation~_password~)>> is a ~R~P~C to
     <<span class="odocwiki_inlinecode"|set~_password>>~.
 >>
@@ -415,6 +442,9 @@
 |
 |@@ @style="tet-align: left;"@@\\U|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="unknown_timezone"| value Os_date.unknown_timezone >> ~[<<a_api subproject="client" | module Os_date >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|unknown~_timezone ~(~)>> returns <<span class="odocwiki_inlinecode"|true>> if the timezone is unknown~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="unset_tip_seen"| value Os_tips.unset_tip_seen >> ~[<<a_api subproject="client" | module Os_tips >>~]|<<div class="odocwiki_info"|~Counterpart of set~_tip~_seen~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="update_language"| value Os_current_user.update_language >> ~[<<a_api subproject="client" | module Os_current_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|update~_language language>> updates the language of the current user~.

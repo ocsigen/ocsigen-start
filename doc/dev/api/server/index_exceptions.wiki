@@ -16,6 +16,9 @@
 >>
 |
 |@@ @style="tet-align: left;"@@\\E|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Empty_password"| exception Os_db.Empty_password >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Exception raised when user attempts to connect with empty password~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Error_while_cropping"| exception Os_uploader.Error_while_cropping >> ~[<<a_api subproject="server" | module Os_uploader >>~]|<<div class="odocwiki_info"|~Raised if an error occurred while cropping a picture~.
 >>
 |
@@ -53,8 +56,18 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="No_such_user"| exception Os_user.No_such_user >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|~Exception used if an user doesn~'t exist~.
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="No_such_user"| exception Os_db.No_such_user >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Exception raised when users attempts to connect with unknown identifier~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Not_connected"| exception Os_session.Not_connected >> ~[<<a_api subproject="server" | module Os_session >>~]||
 |@@ @style="tet-align: left;"@@\\P|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Password_not_set"| exception Os_db.Password_not_set >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Exception raised when user has no password~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Permission_denied"| exception Os_session.Permission_denied >> ~[<<a_api subproject="server" | module Os_session >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Predicate_failed"| exception Os_page.Predicate_failed >> ~[<<a_api subproject="server" | module Os_page >>~]||
+|@@ @style="tet-align: left;"@@\\W|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Wrong_password"| exception Os_db.Wrong_password >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Exception raised when password do not match~.
+>>
+|
 \\

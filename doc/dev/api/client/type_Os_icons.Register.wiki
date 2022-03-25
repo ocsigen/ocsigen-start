@@ -1,1 +1,1 @@
-<<code language="ocaml" | functor (FF : ICSIG) (DD : ICSIG) -> sig  end >>
+<<code language="ocaml" | ICSIG -> ICSIG -> sig end >>
