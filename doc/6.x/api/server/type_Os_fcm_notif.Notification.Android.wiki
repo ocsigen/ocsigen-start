@@ -1,0 +1,10 @@
+<<code language="ocaml" | sig
+  val add_icon :
+    string -> Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
+  val add_tag :
+    string -> Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
+  val add_color :
+    red:int ->
+    green:int ->
+    blue:int -> Os_fcm_notif.Notification.t -> Os_fcm_notif.Notification.t
+end >>
