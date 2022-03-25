@@ -13,5 +13,5 @@
     end
   module D : ICSIG
   module F : ICSIG
-  module Register : functor (FF : ICSIG) (DD : ICSIG) -> sig  end
+  module Register : ICSIG -> ICSIG -> sig end
 end >>

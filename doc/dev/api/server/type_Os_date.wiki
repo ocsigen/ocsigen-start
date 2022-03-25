@@ -4,7 +4,8 @@
     ?timezone:string -> Os_date.local_calendar -> CalendarLib.Calendar.t
   val to_local :
     ?timezone:string -> CalendarLib.Calendar.t -> Os_date.local_calendar
-  val now : unit -> Os_date.local_calendar
+  val now : ?timezone:string -> unit -> Os_date.local_calendar
+  val initialize : string -> unit
   val user_tz : unit -> string
   val to_local_time : Os_date.local_calendar -> CalendarLib.Time.t
   val to_local_date : Os_date.local_calendar -> CalendarLib.Date.t

@@ -14,6 +14,8 @@
 >>
 <<pre id="VALadd_email_handler" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|add~_email~_handler>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|unit <<span class="ocsforge_color_delimiter"| -> >> string <<span class="ocsforge_color_delimiter"| -> >> unit <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_email~_handler ~(~) email>> adds a new e~-mail address
     for the current user and sends an activation link~.
+    ~Eliom reference <<span class="odocwiki_inlinecode"|~Os~_user~.user~_already~_exists>> is set
+    to <<span class="odocwiki_inlinecode"|true>> if the e~-mail address already exists in database~.
 >>
 <<pre id="EXCEPTIONCustom_action_link" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|exception>> <<span class="odocwiki_name"|Custom_action_link>> <<span class="ocsforge_color_keyword"|of>> <<span class="odocwiki_type"|<<a_api subproject="server" text="Os_types.Action_link_key.info" | type Os_types.Action_link_key.info >> * bool>>>><<div class="odocwiki_info"|~Exception raised when something went wrong with an action link key~. ~The
     action link key is given as parameter as a type

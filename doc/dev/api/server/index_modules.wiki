@@ -60,9 +60,7 @@
     clients~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_connect_phone"| module Os_connect_phone >> |<<div class="odocwiki_info"|~To be used for signalling errors with ~S~M~S transmission
->>
-|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_connect_phone"| module Os_connect_phone >> ||
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_core_db"| module Os_core_db >> |<<div class="odocwiki_info"|~This module defines low level functions for database requests~.
 >>
 |
@@ -143,9 +141,7 @@
 >>
 |
 |@@ @style="tet-align: left;"@@\\P|
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="PGOCaml"| module Os_core_db.PGOCaml >> ~[<<a_api subproject="server" | module Os_core_db >>~]|<<div class="odocwiki_info"|~Lwt version of ~P~G~O~Caml
->>
-|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="PGOCaml"| module Os_core_db.PGOCaml >> ~[<<a_api subproject="server" | module Os_core_db >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Phone"| module Os_db.Phone >> ~[<<a_api subproject="server" | module Os_db >>~]|<<div class="odocwiki_info"|~Manage user phone numbers
 >>
 |
@@ -160,9 +156,7 @@
 |@@ @style="tet-align: left;"@@\\R|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Register"| module Os_icons.Register >> ~[<<a_api subproject="server" | module Os_icons >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Response"| module Os_fcm_notif.Response >> ~[<<a_api subproject="server" | module Os_fcm_notif >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Results"| module Os_fcm_notif.Response.Results >> ~[<<a_api subproject="server" | module Os_fcm_notif.Response >>~]|<<div class="odocwiki_info"|~The type representing a ~F~C~M response
->>
-|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Results"| module Os_fcm_notif.Response.Results >> ~[<<a_api subproject="server" | module Os_fcm_notif.Response >>~]||
 |@@ @style="tet-align: left;"@@\\S|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Style"| module Os_fcm_notif.Data.PhoneGap.Style >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data.PhoneGap >>~]||
 |@@ @style="tet-align: left;"@@\\U|

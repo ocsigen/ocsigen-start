@@ -2,6 +2,11 @@
   type t
   val to_list : Os_fcm_notif.Options.t -> (string * Yojson.Safe.t) list
   val create : string list -> Os_fcm_notif.Options.t
+  val add_raw_string :
+    string -> string -> Os_fcm_notif.Options.t -> Os_fcm_notif.Options.t
+  val add_raw_json :
+    string ->
+    Yojson.Safe.t -> Os_fcm_notif.Options.t -> Os_fcm_notif.Options.t
   val add_to : string -> Os_fcm_notif.Options.t -> Os_fcm_notif.Options.t
   val add_condition :
     string -> Os_fcm_notif.Options.t -> Os_fcm_notif.Options.t

@@ -5,6 +5,14 @@
 <<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|include>> <<a_api subproject="server" | module Os_core_db >>>>
 <<pre id="EXCEPTIONNo_such_resource" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|exception>> <<span class="odocwiki_name"|No_such_resource>>>><<div class="odocwiki_info"|~Exception raised when no resource corresponds to the database request~.
 >>
+<<pre id="EXCEPTIONWrong_password" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|exception>> <<span class="odocwiki_name"|Wrong_password>>>><<div class="odocwiki_info"|~Exception raised when password do not match~.
+>>
+<<pre id="EXCEPTIONPassword_not_set" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|exception>> <<span class="odocwiki_name"|Password_not_set>>>><<div class="odocwiki_info"|~Exception raised when user has no password~.
+>>
+<<pre id="EXCEPTIONNo_such_user" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|exception>> <<span class="odocwiki_name"|No_such_user>>>><<div class="odocwiki_info"|~Exception raised when users attempts to connect with unknown identifier~.
+>>
+<<pre id="EXCEPTIONEmpty_password" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|exception>> <<span class="odocwiki_name"|Empty_password>>>><<div class="odocwiki_info"|~Exception raised when user attempts to connect with empty password~.
+>>
 <<pre id="EXCEPTIONMain_email_removal_attempt" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|exception>> <<span class="odocwiki_name"|Main_email_removal_attempt>>>><<div class="odocwiki_info"|~Exception raised when there is an attempt to remove the main email~.
 >>
 <<pre id="EXCEPTIONAccount_not_activated" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|exception>> <<span class="odocwiki_name"|Account_not_activated>>>><<div class="odocwiki_info"|~Exception raised when the account is not activated~.

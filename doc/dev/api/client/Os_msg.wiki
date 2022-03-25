@@ -1,5 +1,9 @@
 =Module <<a_api_type subproject="client" | module Os_msg >> =
-<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Os_msg>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="client" text=".." | module Os_msg >><<span class="ocsforge_color_keyword"|end>>>>~Call this function either from client or server side
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Os_msg>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="client" text=".." | module Os_msg >><<span class="ocsforge_color_keyword"|end>>>>~This module provides functions to display messages ~(client~-side or
+    server~-side~)~.
+
+----
+<<pre id="VALmsg" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|msg>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| ?level: >>[ `Err | `Msg ] <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?duration: >>float <<span class="ocsforge_color_delimiter"| -> >> <<span class="ocsforge_color_label"| ?onload: >>bool <<span class="ocsforge_color_delimiter"| -> >> string <<span class="ocsforge_color_delimiter"| -> >> unit>>>><<div class="odocwiki_info"|~Call this function either from client or server side
     to display an error message in the page~.
 
 
@@ -8,8 +12,8 @@
 
 
     ~It is displayed during a short amount of time then disappears~. ~You may
-    change the duration in seconds with the parameter <<span class="odocwiki_inlinecode"|duration>> ~(default ~2
-    seconds~)~.
+    change the duration in seconds with the parameter <<span class="odocwiki_inlinecode"|duration>> ~(default can
+    be set using function <<span class="odocwiki_inlinecode"|~Os~_msg~.set~_default~_duration>>~)~.
 
 
     ~The two levels correspond to different classes that you can
@@ -20,6 +24,4 @@
     ~If <<span class="odocwiki_inlinecode"|~?onload>> is <<span class="odocwiki_inlinecode"|true>>~, the message is displayed after the next page
     is displayed ~(default <<span class="odocwiki_inlinecode"|false>>~)~. ~When called on server side~, this is
     always the case~.
-
-----
-<<pre id="VALmsg" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|msg>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| ?level: >>[ `Err | `Msg ] <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?duration: >>float <<span class="ocsforge_color_delimiter"| -> >> <<span class="ocsforge_color_label"| ?onload: >>bool <<span class="ocsforge_color_delimiter"| -> >> string <<span class="ocsforge_color_delimiter"| -> >> unit>>>>
+>>

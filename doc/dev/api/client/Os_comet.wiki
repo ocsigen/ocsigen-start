@@ -8,3 +8,4 @@
     module ~Eliom~_service~.reload~_action~>~> is used as argument of ~<~<a~_api
     subproject~="server" ~| module ~Eliom~_client~.exit~_to~>~>
 >>
+<<pre id="VALset_error_handler" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|set~_error~_handler>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_delimiter"| ( >>exn <<span class="ocsforge_color_delimiter"| -> >> unit <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>><<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_delimiter"| -> >> unit>>>>

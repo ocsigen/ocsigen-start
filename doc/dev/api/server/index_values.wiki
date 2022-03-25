@@ -24,7 +24,7 @@
       <<span class="odocwiki_inlinecode"|userid>>~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="add_actionlinkkey"| value Os_user.add_actionlinkkey >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_actionlinkkey ~?autoconnect ~?action ~?data ~?validity ~~act~_key ~~userid
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="add_actionlinkkey"| value Os_user.add_actionlinkkey >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_actionlinkkey ~?autoconnect ~?action ~?data ~?validity ~?expiry ~~act~_key ~~userid
     ~~email ~(~)>> adds the action key in the database~.
 >>
 |
@@ -108,10 +108,16 @@
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="add_priority"| value Os_fcm_notif.Data.PhoneGap.add_priority >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data.PhoneGap >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="add_raw_json"| value Os_fcm_notif.Options.add_raw_json >> ~[<<a_api subproject="server" | module Os_fcm_notif.Options >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_raw~_json key content~_json data>>
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="add_raw_json"| value Os_fcm_notif.Data.add_raw_json >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_raw~_json key content~_json data>>
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="add_raw_json"| value Os_fcm_notif.Notification.add_raw_json >> ~[<<a_api subproject="server" | module Os_fcm_notif.Notification >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_raw~_json key content~_json notification>>
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="add_raw_string"| value Os_fcm_notif.Options.add_raw_string >> ~[<<a_api subproject="server" | module Os_fcm_notif.Options >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_raw~_string key content data>>
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="add_raw_string"| value Os_fcm_notif.Data.add_raw_string >> ~[<<a_api subproject="server" | module Os_fcm_notif.Data >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|add~_raw~_string key content data>>
@@ -219,7 +225,12 @@
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="close"| value Os_icons.ICSIG.close >> ~[<<a_api subproject="server" | module Os_icons.ICSIG >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="confirm_code_extra"| value Os_connect_phone.confirm_code_extra >> ~[<<a_api subproject="server" | module Os_connect_phone >>~]|<<div class="odocwiki_info"|~Confirm validation code and add extra phone to account~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="confirm_code"| value Os_connect_phone.confirm_code >> ~[<<a_api subproject="server" | module Os_connect_phone >>~]|<<div class="odocwiki_info"|~Confirm validation code and add extra phone to account of the given
+    user
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="confirm_code_extra"| value Os_connect_phone.confirm_code_extra >> ~[<<a_api subproject="server" | module Os_connect_phone >>~]|<<div class="odocwiki_info"|~Confirm validation code and add extra phone to account of the currently
+    connected user
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="confirm_code_extra_handler"| value Os_handlers.confirm_code_extra_handler >> ~[<<a_api subproject="server" | module Os_handlers >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|confirm~_code~_extra~_handler ~(~) number>> is like
@@ -257,10 +268,14 @@
     well~.
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="confirm_code_signup_no_connect"| value Os_connect_phone.confirm_code_signup_no_connect >> ~[<<a_api subproject="server" | module Os_connect_phone >>~]|<<div class="odocwiki_info"|~Confirm validation code and create corresponding user~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="confirm_code_signup_service"| value Os_services.confirm_code_signup_service >> ~[<<a_api subproject="server" | module Os_services >>~]|<<div class="odocwiki_info"|~Confirm ~S~M~S activation code and ~(if valid~) register new user~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="connect"| value Os_session.connect >> ~[<<a_api subproject="server" | module Os_session >>~]|<<div class="odocwiki_info"|~Open a session for a user by setting a session group for the browser
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="connect"| value Os_session.connect >> ~[<<a_api subproject="server" | module Os_session >>~]|<<div class="odocwiki_info"|~Close current session ~(if any~) by calling disconnect~,
+    then open a new session for a user by setting a session group for the browser
     which initiated the current request~.
 >>
 |
@@ -380,6 +395,12 @@
     request~.
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="disconnect_all"| value Os_session.disconnect_all >> ~[<<a_api subproject="server" | module Os_session >>~]|<<div class="odocwiki_info"|~Close all sessions of current user ~(or <<span class="odocwiki_inlinecode"|userid>> if present~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="disconnect_all_link"| value Os_user_view.disconnect_all_link >> ~[<<a_api subproject="server" | module Os_user_view >>~]|<<div class="odocwiki_info"|~Link to disconnect all user sessions~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="disconnect_button"| value Os_user_view.disconnect_button >> ~[<<a_api subproject="server" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|disconnect~_button ~?a ~(~)>> creates a disconnect ~P~O~S~T form with a button
     without value~, a signout icon and a text message <<span class="odocwiki_inlinecode"|"logout">>~.
 >>
@@ -409,7 +430,7 @@
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="email_regexp"| value Os_lib.email_regexp >> ~[<<a_api subproject="server" | module Os_lib >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="emails_of_user"| value Os_user.emails_of_user >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|emails~_of~_user user>> returns the emails of the user <<span class="odocwiki_inlinecode"|user>>~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="emails_of_user"| value Os_user.emails_of_user >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|emails~_of~_user user>> returns the emails list of user <<span class="odocwiki_inlinecode"|user>>~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="emails_of_userid"| value Os_user.emails_of_userid >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|emails~_of~_userid userid>> returns the emails list of user with ~I~D
@@ -505,13 +526,6 @@
     <<span class="odocwiki_inlinecode"|userid>>~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="get_data_rpc"| value Os_user_proxy.get_data_rpc >> ~[<<a_api subproject="server" | module Os_user_proxy >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data~_rpc>> is a ~R~P~C to ~<~<a~_api subproject~="server" ~| module
-    ~Os~_user~_proxy~.get~_data~_rpc~'~>~>
->>
-|
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="get_data_rpc'"| value Os_user_proxy.get_data_rpc' >> ~[<<a_api subproject="server" | module Os_user_proxy >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|get~_data~_rpc~' userid>> returns the user which has ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
->>
-|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="get_image_height"| value Os_uploader.get_image_height >> ~[<<a_api subproject="server" | module Os_uploader >>~]|<<div class="odocwiki_info"|~Return the height of the given image~.
 >>
 |
@@ -576,6 +590,10 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="init"| value Os_core_db.init >> ~[<<a_api subproject="server" | module Os_core_db >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|init ~?host ~?port ~?user ~?password ~?database ~?unix~_domain~_socket~_dir ~?init ~(~)>>
     initializes the variables for the database access and register a
     function <<span class="odocwiki_inlinecode"|init>> invoked each time a connection is created~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="initialize"| value Os_date.initialize >> ~[<<a_api subproject="server" | module Os_date >>~]|<<div class="odocwiki_info"|~You can use <<span class="odocwiki_inlinecode"|initialize timezone>> to communicate the client~'s
+   timezone to the client when the auto~-initialization is disabled
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="is_complete"| value Os_user.is_complete >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|is~_complete user>> returns <<span class="odocwiki_inlinecode"|true>> if the first name and the last name of
@@ -682,6 +700,9 @@
 |
 |@@ @style="tet-align: left;"@@\\N|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="name_of_group"| value Os_group.name_of_group >> ~[<<a_api subproject="server" | module Os_group >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|name~_of~_group group>> returns the group name~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="no_such_user"| value Os_user.no_such_user >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|~Reference used to remember if a wrong user has already been typed~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="notify"| value Os_notif.S.notify >> ~[<<a_api subproject="server" | module Os_notif.S >>~]||
@@ -836,6 +857,10 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="set"| value Os_request_cache.Cache_sig.set >> ~[<<a_api subproject="server" | module Os_request_cache.Cache_sig >>~]|<<div class="odocwiki_info"|~Set the corresponding <<span class="odocwiki_inlinecode"|value>> for a key~.
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="set_connection_wrapper"| value Os_core_db.set_connection_wrapper >> ~[<<a_api subproject="server" | module Os_core_db >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="set_default_duration"| value Os_msg.set_default_duration >> ~[<<a_api subproject="server" | module Os_msg >>~]|<<div class="odocwiki_info"|~Set default message duration ~(default ~4s~)
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="set_email_validated"| value Os_db.User.set_email_validated >> ~[<<a_api subproject="server" | module Os_db.User >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|set~_email~_validated userid email>> valids <<span class="odocwiki_inlinecode"|email>> for the user with id
       <<span class="odocwiki_inlinecode"|userid>>~.
 >>
@@ -969,6 +994,9 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="unlisten_user"| value Os_notif.S.unlisten_user >> ~[<<a_api subproject="server" | module Os_notif.S >>~]|<<div class="odocwiki_info"|~Make a user stop listening on data <<span class="odocwiki_inlinecode"|key>>~.
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="unset_tip_seen"| value Os_tips.unset_tip_seen >> ~[<<a_api subproject="server" | module Os_tips >>~]|<<div class="odocwiki_info"|~Counterpart of set~_tip~_seen~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="update"| value Os_user.update >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|update ~?password ~?avatar ~?language ~~firstname ~~lastname userid>> update the
     given information of the user with ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
 >>
@@ -1041,9 +1069,7 @@
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user_indep_process_scope"| value Os_session.user_indep_process_scope >> ~[<<a_api subproject="server" | module Os_session >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user_indep_session_scope"| value Os_session.user_indep_session_scope >> ~[<<a_api subproject="server" | module Os_session >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user_indep_state_hierarchy"| value Os_session.user_indep_state_hierarchy >> ~[<<a_api subproject="server" | module Os_session >>~]|<<div class="odocwiki_info"|~Scopes that are independent from user connection~.
->>
-|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user_indep_state_hierarchy"| value Os_session.user_indep_state_hierarchy >> ~[<<a_api subproject="server" | module Os_session >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user_of_userid"| value Os_user.user_of_userid >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|user~_of~_userid userid>> returns the information about the user with ~I~D
     <<span class="odocwiki_inlinecode"|userid>>~.
 >>
@@ -1075,16 +1101,17 @@
 >>
 |
 |@@ @style="tet-align: left;"@@\\V|
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="verify_password"| value Os_user.verify_password >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|verify~_password email password>> verifies if <<span class="odocwiki_inlinecode"|email>> and <<span class="odocwiki_inlinecode"|password>>
-    correspond~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="verify_password"| value Os_user.verify_password >> ~[<<a_api subproject="server" | module Os_user >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|verify~_password ~~email ~~password>> returns the userid if user with email
+    <<span class="odocwiki_inlinecode"|email>> is registered with the password <<span class="odocwiki_inlinecode"|password>>~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="verify_password"| value Os_db.User.verify_password >> ~[<<a_api subproject="server" | module Os_db.User >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|verify~_password ~~email ~~password>> returns the userid if user with email
       <<span class="odocwiki_inlinecode"|email>> is registered with the password <<span class="odocwiki_inlinecode"|password>>~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="verify_password_phone"| value Os_db.User.verify_password_phone >> ~[<<a_api subproject="server" | module Os_db.User >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|verify~_password~_phone ~~number ~~password>> returns the userid of
-      the user who owns <<span class="odocwiki_inlinecode"|number>> and whose password is <<span class="odocwiki_inlinecode"|password>>~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="verify_password_phone"| value Os_db.User.verify_password_phone >> ~[<<a_api subproject="server" | module Os_db.User >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|verify~_password~_phone ~~number ~~password>>
+      returns the userid if user
+      who owns <<span class="odocwiki_inlinecode"|number>> and whose password is <<span class="odocwiki_inlinecode"|password>>~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\W|

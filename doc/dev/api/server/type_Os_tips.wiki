@@ -70,6 +70,7 @@
                   | `Output
                   | `P
                   | `PCDATA
+                  | `Picture
                   | `Pre
                   | `Progress
                   | `Q
@@ -86,6 +87,7 @@
                   | `Sup
                   | `Svg
                   | `Table
+                  | `Template
                   | `Textarea
                   | `Time
                   | `U
@@ -96,6 +98,7 @@
                   | `Wbr ]
                  Eliom_content.Html.elt ->
     ?delay:float ->
+    ?onclose:(unit -> unit Lwt.t) Eliom_client_value.t ->
     name:string ->
     content:((unit -> unit Lwt.t) ->
              Html_types.div_content Eliom_content.Html.elt list Lwt.t)
@@ -104,12 +107,14 @@
   val block :
     ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.D.attrib list ->
     ?recipient:[> `All | `Connected | `Not_connected ] ->
+    ?onclose:(unit -> unit Lwt.t) Eliom_client_value.t ->
     name:string ->
     content:((unit -> unit Lwt.t) Eliom_client_value.t ->
              Html_types.div_content Eliom_content.Html.elt list Lwt.t) ->
     unit -> [> `Div ] Eliom_content.Html.elt option Lwt.t
   val reset_tips : unit -> unit Lwt.t
   val set_tip_seen : string -> unit Lwt.t
+  val unset_tip_seen : string -> unit Lwt.t
   val tip_seen : string -> bool Lwt.t
   val reset_tips_service :
     (unit, unit, Eliom_service.post, Eliom_service.non_att, Eliom_service.co,
