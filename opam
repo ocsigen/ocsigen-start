@@ -18,7 +18,7 @@ license: "LGPL-2.1-only WITH OCaml-LGPL-linking-exception"
 build: [ make "-j%{jobs}%" ]
 install: [ make "install" ]
 depends: [
-  "ocaml" {>= "4.06.1"}
+  "ocaml" {>= "4.08.1"}
   "pgocaml" {>= "4.0"}
   "pgocaml_ppx" {>= "4.0"}
   "safepass" {>= "3.0"}
