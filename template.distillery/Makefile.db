@@ -24,7 +24,7 @@ export PGPASSWORD := $(DB_PASSWORD)
 OCSIGENSERVER     := $(OCSIGENSERVER)
 OCSIGENSERVER.OPT := $(OCSIGENSERVER.OPT)
 
-OPAM_LIB_DIR      := $(shell opam config var lib)
+OPAM_LIB_DIR      := $(shell opam var lib)
 OS_UPGRADE_FILE   := $(OPAM_LIB_DIR)/eliom/templates/os.pgocaml/upgrade.sql
 ## ---------------------------------------------------------------------
 
