@@ -274,3 +274,19 @@ clean:
 
 distclean: clean
 	-rm -rf $(DEPSDIR) .depend
+
+test-new-project: clean
+	opam pin add ocsigen-start . -n -y \
+	&& opam reinstall -y ocsigen-start \
+	&& pushd /tmp \
+	&& rm -rf os_test \
+	&& mkdir os_test \
+	&& eliom-distillery -name os_test -template os.pgocaml \
+	&& pushd os_test \
+	&& (make db-drop || true) \
+	&& make db-init \
+	&& make db-create \
+	&& make db-schema \
+	&& make test.byte \
+	&& popd \
+	&& popd
