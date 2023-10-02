@@ -75,17 +75,17 @@ let _ =
   let missing_server_modules =
     List.filter_map
       (fun (m, sect) ->
-        let c = List.mem m client_modules in
-        let s = List.mem m server_modules in
-        match c, s, sect with true, false, true -> Some m | _ -> None)
+         let c = List.mem m client_modules in
+         let s = List.mem m server_modules in
+         match c, s, sect with true, false, true -> Some m | _ -> None)
       eliom_modules
   in
   let missing_client_modules =
     List.filter_map
       (fun (m, sect) ->
-        let c = List.mem m client_modules in
-        let s = List.mem m server_modules in
-        match c, s, sect with false, true, true -> Some m | _ -> None)
+         let c = List.mem m client_modules in
+         let s = List.mem m server_modules in
+         match c, s, sect with false, true, true -> Some m | _ -> None)
       eliom_modules
   in
   let missing_modules =

@@ -15,7 +15,7 @@
 module XmlHttpRequest = Js_of_ocaml_lwt.XmlHttpRequest
 
 (* Debug mode. Set to true if you want to use the debug mode. Used by "log".
- *)
+*)
 let debug = false
 
 (* If debug mode is activated, a paragraph is created and a message is printed
@@ -73,17 +73,17 @@ let rec add_retry_button wake msg =
        (Js_of_ocaml.Js.string "Retry"));
   btn##.onclick :=
     Js_of_ocaml.Dom_html.handler (fun _ ->
-        Js_of_ocaml.Dom.removeChild container p;
-        container##.className := Js_of_ocaml.Js.string "app blink";
-        if !update_failed
-        then (
-          update_failed := false;
-          ignore Js_of_ocaml.Js.Unsafe.global##.chcp##fetchUpdate);
-        if !data_upload_failed
-        then (
-          data_upload_failed := false;
-          Lwt.async (fun () -> get_data wake));
-        Js_of_ocaml.Js._false);
+      Js_of_ocaml.Dom.removeChild container p;
+      container##.className := Js_of_ocaml.Js.string "app blink";
+      if !update_failed
+      then (
+        update_failed := false;
+        ignore Js_of_ocaml.Js.Unsafe.global##.chcp##fetchUpdate);
+      if !data_upload_failed
+      then (
+        data_upload_failed := false;
+        Lwt.async (fun () -> get_data wake));
+      Js_of_ocaml.Js._false);
   btn##.id := Js_of_ocaml.Js.string "retry-button";
   Js_of_ocaml.Dom.appendChild p btn;
   Js_of_ocaml.Dom.appendChild container p
@@ -119,9 +119,9 @@ let _ =
   @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
        (Js_of_ocaml.Dom_html.Event.make "resume")
        (Js_of_ocaml.Dom.handler (fun _ ->
-            log "Resume";
-            ignore Js_of_ocaml.Js.Unsafe.global##.chcp##fetchUpdate;
-            Js_of_ocaml.Js._true))
+          log "Resume";
+          ignore Js_of_ocaml.Js.Unsafe.global##.chcp##fetchUpdate;
+          Js_of_ocaml.Js._true))
        Js_of_ocaml.Js._false;
   (* Create two threads for success callbacks and error callbacks. *)
   let wait_success, wake_success = Lwt.wait () in
@@ -132,26 +132,26 @@ let _ =
    *)
   let callback ev =
     Js_of_ocaml.Dom.handler (fun _ ->
-        log ev;
-        update_failed := false;
-        Lwt.wakeup wake_success ();
-        Js_of_ocaml.Js._true)
+      log ev;
+      update_failed := false;
+      Lwt.wakeup wake_success ();
+      Js_of_ocaml.Js._true)
   in
   (* Callback when errors.
    * Calls by the event chcp_nothingToUpdate.
    *)
   let error_callback name =
     Js_of_ocaml.Dom.handler (fun ev ->
-        log
-          (name ^ ": "
-          ^ Js_of_ocaml.Js.to_string ev##.detail##.error##.description);
-        update_failed := true;
-        if not !data_upload_failed
-        then
-          add_retry_button wake_error
-            (Js_of_ocaml.Js.to_string ev##.detail##.error##.description
-            ^ ". Please try again later.");
-        Js_of_ocaml.Js.bool true)
+      log
+        (name ^ ": "
+        ^ Js_of_ocaml.Js.to_string ev##.detail##.error##.description);
+      update_failed := true;
+      if not !data_upload_failed
+      then
+        add_retry_button wake_error
+          (Js_of_ocaml.Js.to_string ev##.detail##.error##.description
+          ^ ". Please try again later.");
+      Js_of_ocaml.Js.bool true)
   in
   (* Callback to print a message *)
   let status_callback name =
@@ -160,20 +160,20 @@ let _ =
   (* Binding to chcp_nothingToUpdate. Calls [callback ev]. *)
   List.iter
     (fun ev ->
-      ignore
-      @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
-           (Js_of_ocaml.Dom_html.Event.make ev)
-           (callback ev) Js_of_ocaml.Js._false)
+       ignore
+       @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
+            (Js_of_ocaml.Dom_html.Event.make ev)
+            (callback ev) Js_of_ocaml.Js._false)
     ["chcp_nothingToUpdate"];
   (* Binding to chcp_updateLoadFailed, chcp_updateInstallFailed and
    * chcp_assetsInstallationError. It calls [error_callback ev].
    *)
   List.iter
     (fun ev ->
-      ignore
-      @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
-           (Js_of_ocaml.Dom_html.Event.make ev)
-           (error_callback ev) Js_of_ocaml.Js._false)
+       ignore
+       @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
+            (Js_of_ocaml.Dom_html.Event.make ev)
+            (error_callback ev) Js_of_ocaml.Js._false)
     [ "chcp_updateLoadFailed"
     ; "chcp_updateInstallFailed"
     ; "chcp_assetsInstallationError" ];
@@ -182,10 +182,10 @@ let _ =
    *)
   List.iter
     (fun ev ->
-      ignore
-      @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
-           (Js_of_ocaml.Dom_html.Event.make ev)
-           (status_callback ev) Js_of_ocaml.Js._false)
+       ignore
+       @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
+            (Js_of_ocaml.Dom_html.Event.make ev)
+            (status_callback ev) Js_of_ocaml.Js._false)
     [ "chcp_updateIsReadyToInstall"
     ; "chcp_beforeInstall"
     ; "chcp_nothingToInstall"
