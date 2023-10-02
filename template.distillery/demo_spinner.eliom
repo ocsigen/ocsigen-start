@@ -32,7 +32,7 @@ let%client make_spinner () =
          ; txt [%i18n Demo.S.spinner_message_replace_spinner] ])
 
 (* Page for this demo *)
-let%shared page () =
+let%shared page () : Html_types.div_content Eliom_content.Html.elt list Lwt.t =
   Lwt.return
     Eliom_content.Html.
       [ F.h1 [%i18n Demo.spinner]

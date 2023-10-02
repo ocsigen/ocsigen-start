@@ -13,29 +13,11 @@
 ##                Internals
 
 ## Required binaries
-ELIOMC            := eliomc -w +A-4-7-9-37-38-39-41-42-44-45-48-70
-ELIOMOPT          := eliomopt
-JS_OF_ELIOM       := js_of_eliom -w +A-4-7-9-37-38-39-41-42-44-45-48-70 -jsopt +base/runtime.js
-JS_OF_OCAML       := js_of_ocaml
-ELIOMDEP          := eliomdep
 OCSIGENSERVER     := ocsigenserver
 OCSIGENSERVER.OPT := ocsigenserver.opt
 
-## Where to put intermediate object files.
-## - ELIOM_{SERVER,CLIENT}_DIR must be distinct
-## - ELIOM_CLIENT_DIR must not be the local dir.
-## - ELIOM_SERVER_DIR could be ".", but you need to
-##   remove it from the "clean" rules...
-export ELIOM_SERVER_DIR := _server
-export ELIOM_CLIENT_DIR := _client
-export ELIOM_TYPE_DIR   := _server
-DEPSDIR := _deps
-
-ifeq ($(DEBUG),yes)
-  GENERATE_DEBUG ?= -g
-  RUN_DEBUG ?= "-v"
-  DEBUG_JS ?= --noinline --disable=shortvar --pretty
-      #  --debuginfo
+ifneq ($(DEBUG),yes)
+  DUNE_OPTIONS = --profile release
 endif
 
 ##----------------------------------------------------------------------
@@ -55,25 +37,9 @@ CONFIG_FILES       := $(patsubst %.conf.in,$(TEST_PREFIX)$(ETCDIR)/%.conf,$(CONF
 TEST_CONFIG_FILES  := $(patsubst %.conf.in,$(TEST_PREFIX)$(ETCDIR)/%-test.conf,$(CONF_IN))
 
 
-all: css byte opt
+all:: css
+all byte opt:: ${VOLATILE_SCHEMA}
 
-byte:: $(TEST_PREFIX)$(LIBDIR)/${PROJECT_NAME}.cma
-opt:: $(TEST_PREFIX)$(LIBDIR)/${PROJECT_NAME}.cmxs
-
-byte opt:: ${JS_PREFIX}.js
-byte opt:: $(CONFIG_FILES)
-
-##----------------------------------------------------------------------
-
-##----------------------------------------------------------------------
-## The following part has been generated with os template.
-## This will overload the default required binaries.
-
-## DO NOT MOVE IT ON TOP OF THE `all` RULE!
-
-include Makefile.$(PROJECT_NAME)
-
-## end of `include Makefile.$(PROJECT_NAME)`
 ##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
@@ -82,12 +48,13 @@ include Makefile.$(PROJECT_NAME)
 DIST_FILES = $(ELIOMSTATICDIR)/$(PROJECT_NAME).js $(LIBDIR)/$(PROJECT_NAME).cma
 
 .PHONY: test.byte test.opt staticfiles
-test.byte: $(TEST_CONFIG_FILES) staticfiles $(addprefix $(TEST_PREFIX),$(DIST_DIRS) $(DIST_FILES)) css
+
+test.byte:: byte | $(addprefix $(TEST_PREFIX),$(DIST_DIRS)) staticfiles
 	@echo "==== The website is available at http://localhost:$(TEST_PORT) ===="
-	$(OCSIGENSERVER) $(RUN_DEBUG) -c $<
-test.opt: $(TEST_CONFIG_FILES) staticfiles $(addprefix $(TEST_PREFIX),$(DIST_DIRS) $(patsubst %.cma,%.cmxs, $(DIST_FILES))) css
+	$(OCSIGENSERVER) $(RUN_DEBUG) -c $(patsubst %.conf.in,$(TEST_PREFIX)$(ETCDIR)/%-test.conf,$(CONF_IN))
+test.opt:: opt | $(addprefix $(TEST_PREFIX),$(DIST_DIRS)) staticfiles
 	@echo "==== The website is available at http://localhost:$(TEST_PORT) ===="
-	$(OCSIGENSERVER.OPT) $(RUN_DEBUG) -c $<
+	$(OCSIGENSERVER.OPT) $(RUN_DEBUG) -c $(patsubst %.conf.in,$(TEST_PREFIX)$(ETCDIR)/%-test.conf,$(CONF_IN))
 
 $(addprefix $(TEST_PREFIX), $(DIST_DIRS)):
 	mkdir -p $@
@@ -137,21 +104,6 @@ run.opt:
 ##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
-## Aux
-
-# Use `eliomdep -sort' only in OCaml>4
-#ifeq ($(shell ocamlc -version|cut -c1),4)
-#eliomdep=$(shell $(ELIOMDEP) $(1) -ppx -sort $(2) $(filter %.eliom %.ml,$(3))))
-#else
-#eliomdep=$(3)
-#endif
-objs=$(patsubst %.ml,$(1)/%.$(2),$(patsubst %.eliom,$(1)/%.$(2),$(filter %.eliom %.ml,$(3))))
-#depsort=$(call objs,$(1),$(2),$(call eliomdep,$(3),$(4),$(5)))
-depsort=$(shell ocaml tools/sort_deps.ml .depend $(patsubst %.ml,$(1)/%.$(2),$(patsubst %.eliom,$(1)/%.$(2),$(filter %.eliom %.ml,$(5)))))
-
-##----------------------------------------------------------------------
-
-##----------------------------------------------------------------------
 ## Config files
 
 ELIOM_MODULES=$(patsubst %,\<eliommodule\ findlib-package=\"%\"\ /\>,$(SERVER_ELIOM_PACKAGES))
@@ -190,161 +142,49 @@ else
   GLOBAL_SED_ARGS += -e "s|%%USERGROUP%%|<user>$(WWWUSER)</user><group>$(WWWGROUP)</group>|g"
 endif
 
-ifneq ($(DO_NOT_RECOMPILE),yes)
 JS_AND_CSS=$(JS_PREFIX).js $(CSS_PREFIX).css
-endif
 
-$(CONFIG_FILES): $(TEST_PREFIX)$(ETCDIR)/%.conf: %.conf.in Makefile.options $(JS_AND_CSS) | $(TEST_PREFIX)$(ETCDIR)
+$(CONFIG_FILES): $(TEST_PREFIX)$(ETCDIR)/%.conf: %.conf.in $(JS_AND_CSS) | $(TEST_PREFIX)$(ETCDIR)
 	sed $(SED_ARGS) $(GLOBAL_SED_ARGS) $< | sed -e "s|%%PREFIX%%|$(PREFIX)|g" > $@
 
-$(TEST_CONFIG_FILES): $(TEST_PREFIX)$(ETCDIR)/%-test.conf: %.conf.in Makefile.options $(JS_AND_CSS) | $(TEST_PREFIX)$(ETCDIR)
+$(TEST_CONFIG_FILES): $(TEST_PREFIX)$(ETCDIR)/%-test.conf: %.conf.in $(JS_AND_CSS) | $(TEST_PREFIX)$(ETCDIR)
 	sed $(SED_ARGS) $(LOCAL_SED_ARGS) $< | sed -e "s|%%PREFIX%%|$(TEST_PREFIX)|g" > $@
 
 ##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
-## Server side compilation
+## Compilation
 
-SERVER_INC_DEP  := ${addprefix -package ,${SERVER_PACKAGES} ${SERVER_ELIOM_PACKAGES}}
-SERVER_INC  := ${addprefix -package ,${SERVER_PACKAGES} ${SERVER_ELIOM_PACKAGES}}
-SERVER_DB_INC  := ${addprefix -package ,${SERVER_PACKAGES} ${SERVER_DB_PACKAGES} ${SERVER_ELIOM_PACKAGES}}
+.PHONY: gen-dune config-files
 
-${ELIOM_TYPE_DIR}/%.type_mli: %.eliom
-	${ELIOMC} -ppx -ppx ${I18N_PPX_REWRITER} -infer ${SERVER_INC} $<
+config-files: | $(TEST_PREFIX)$(ELIOMSTATICDIR) $(TEST_PREFIX)$(LIBDIR)
+	HASH=`md5sum _build/default/client/$(PROJECT_NAME).bc.js | cut -d ' ' -f 1` && \
+	cp -f _build/default/client/$(PROJECT_NAME).bc.js $(JS_PREFIX)_$$HASH.js && \
+	ln -sf $(PROJECT_NAME)_$$HASH.js $(JS_PREFIX).js
+	cp -f _build/default/$(PROJECT_NAME).cm* $(TEST_PREFIX)$(LIBDIR)/
+	$(MAKE) $(CONFIG_FILES) $(TEST_CONFIG_FILES) PROJECT_NAME=$(PROJECT_NAME)
 
-$(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cma: $(call objs,$(ELIOM_SERVER_DIR),cmo,$(SERVER_FILES)) | $(TEST_PREFIX)$(LIBDIR)
-	${ELIOMC} -a -o $@ $(GENERATE_DEBUG) \
-          $(call depsort,$(ELIOM_SERVER_DIR),cmo,-server,$(SERVER_DB_INC),$(SERVER_FILES))
+all:: gen-dune
+	$(ENV_PSQL) dune build $(DUNE_OPTIONS) @install @$(PROJECT_NAME) $(PROJECT_NAME).cmxs
 
-$(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cmxa: $(call objs,$(ELIOM_SERVER_DIR),cmx,$(SERVER_FILES)) | $(TEST_PREFIX)$(LIBDIR)
-	${ELIOMOPT} -a -o $@ $(GENERATE_DEBUG) \
-          $(call depsort,$(ELIOM_SERVER_DIR),cmx,-server,$(SERVER_DB_INC),$(SERVER_FILES))
+byte:: gen-dune
+	$(ENV_PSQL) dune build $(DUNE_OPTIONS) @$(PROJECT_NAME)
+	make config-files PROJECT_NAME=$(PROJECT_NAME)
 
-%.cmxs: %.cmxa
-	$(ELIOMOPT) -shared -linkall -o $@ $(GENERATE_DEBUG) $<
+opt:: gen-dune
+	$(ENV_PSQL) dune build $(DUNE_OPTIONS) $(PROJECT_NAME).cmxs @$(PROJECT_NAME)
+	make config-files PROJECT_NAME=$(PROJECT_NAME)
 
-${ELIOM_SERVER_DIR}/%_db.cmi: %_db.mli
-	${ELIOMC} -c -ppx ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
-${ELIOM_SERVER_DIR}/%.cmi: %.mli
-	${ELIOMC} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
-
-${ELIOM_SERVER_DIR}/%.cmi: %.eliomi
-	${ELIOMC} -ppx -ppx ${I18N_PPX_REWRITER} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
-
-${ELIOM_SERVER_DIR}/%_db.cmo: %_db.ml
-	${ELIOMC} -c -ppx ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
-${ELIOM_SERVER_DIR}/%.cmo: %.ml
-	${ELIOMC} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
-${ELIOM_SERVER_DIR}/%.cmo: %.eliom
-	${ELIOMC} -ppx -ppx ${I18N_PPX_REWRITER} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
-
-${ELIOM_SERVER_DIR}/%_db.cmx: %_db.ml
-	${ELIOMOPT} -c -ppx ${SERVER_DB_INC} $(GENERATE_DEBUG) $<
-${ELIOM_SERVER_DIR}/%.cmx: %.ml
-	${ELIOMOPT} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
-${ELIOM_SERVER_DIR}/%.cmx: %.eliom
-	${ELIOMOPT} -ppx -ppx ${I18N_PPX_REWRITER} -c ${SERVER_INC} $(GENERATE_DEBUG) $<
-
-##----------------------------------------------------------------------
-
-##----------------------------------------------------------------------
-## Client side compilation
-
-CLIENT_LIBS := ${addprefix -package ,${CLIENT_PACKAGES}}
-CLIENT_INC  := ${addprefix -package ,${CLIENT_PACKAGES}}
-
-CLIENT_OBJS := $(filter %.eliom %.ml, $(CLIENT_FILES))
-CLIENT_OBJS := $(patsubst %.eliom,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
-CLIENT_OBJS := $(patsubst %.ml,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
-
-$(ELIOM_CLIENT_DIR)/os_prologue.js: \
-    $(shell ocamlfind query -r -predicates byte -a-format $(CLIENT_PACKAGES))
-	${JS_OF_ELIOM} -jsopt --dynlink -o $@ $(GENERATE_DEBUG) $(CLIENT_INC) \
-		${addprefix -jsopt ,$(DEBUG_JS)}
-
-ifeq ($(DEBUG),yes)
-$(JS_PREFIX).js: $(call objs,$(ELIOM_CLIENT_DIR),js,$(CLIENT_FILES)) | $(TEST_PREFIX)$(ELIOMSTATICDIR) $(ELIOM_CLIENT_DIR)/os_prologue.js
-	cat $(ELIOM_CLIENT_DIR)/os_prologue.js $(call depsort,$(ELIOM_CLIENT_DIR),js,-client,$(CLIENT_INC),$(CLIENT_FILES)) > $(JS_PREFIX)_tmp.js && \
-	HASH=`md5sum $(JS_PREFIX)_tmp.js | cut -d ' ' -f 1` && \
-	mv $(JS_PREFIX)_tmp.js $(JS_PREFIX)_$$HASH.js && \
-	ln -sf $(PROJECT_NAME)_$$HASH.js $@
-else
-$(JS_PREFIX).js: $(call objs,$(ELIOM_CLIENT_DIR),cmo,$(CLIENT_FILES)) | $(TEST_PREFIX)$(ELIOMSTATICDIR)
-	${JS_OF_ELIOM} -ppx -o $(JS_PREFIX)_tmp.js $(GENERATE_DEBUG) $(CLIENT_INC) ${addprefix -jsopt ,$(DEBUG_JS)} \
-          $(call depsort,$(ELIOM_CLIENT_DIR),cmo,-client,$(CLIENT_INC),$(CLIENT_FILES))
-	HASH=`md5sum $(JS_PREFIX)_tmp.js | cut -d ' ' -f 1` && \
-	mv $(JS_PREFIX)_tmp.js $(JS_PREFIX)_$$HASH.js && \
-	ln -sf $(PROJECT_NAME)_$$HASH.js $@
-endif
-
-${ELIOM_CLIENT_DIR}/%.cmi: %.mli
-	${JS_OF_ELIOM} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
-
-${ELIOM_CLIENT_DIR}/%.cmo: %.eliom
-	${JS_OF_ELIOM} -ppx -ppx ${I18N_PPX_REWRITER} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
-
-${ELIOM_CLIENT_DIR}/%.cmo: %.ml
-	${JS_OF_ELIOM} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
-
-${ELIOM_CLIENT_DIR}/%.cmi: %.eliomi
-	${JS_OF_ELIOM} -ppx -ppx ${I18N_PPX_REWRITER} -c ${CLIENT_INC} $(GENERATE_DEBUG) $<
-
-${ELIOM_CLIENT_DIR}/%.js: ${ELIOM_CLIENT_DIR}/%.cmo
-	${JS_OF_OCAML} $(DEBUG_JS) +base/runtime.js $<
-
-##----------------------------------------------------------------------
-
-##----------------------------------------------------------------------
-## Dependencies
-
-# DO NOT include `.depend' for the following commands: db-*, clean, distclean
-is_db_command=$(shell echo $(1) | grep -q "db-" && echo "true" || echo "false")
-ifneq ($(call is_db_command,$(MAKECMDGOALS)),true)
-ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(MAKECMDGOALS),i18n-update)
-ifneq ($(MAKECMDGOALS),distclean)
-include .depend
-endif
-endif
-endif
-endif
-
-.depend: $(patsubst %,$(DEPSDIR)/%.server,$(SERVER_FILES)) $(patsubst %,$(DEPSDIR)/%.client,$(CLIENT_FILES))
-	@cat $^ > $@
-
-$(DEPSDIR)/%.ml.server: %.ml | $(DEPSDIR) $(SERVER_FILES)
-	$(ELIOMDEP) -server -ppx $(SERVER_DB_INC) $< > $@.tmp && mv $@.tmp $@
-
-$(DEPSDIR)/%.mli.server: %.mli | $(DEPSDIR) $(SERVER_FILES)
-	$(ELIOMDEP) -server -ppx $(SERVER_DB_INC) $< > $@.tmp && mv $@.tmp $@
-
-$(DEPSDIR)/%.eliom.server: %.eliom | $(DEPSDIR) $(SERVER_FILES)
-	$(ELIOMDEP) -server -ppx -ppx ${I18N_PPX_REWRITER} $(SERVER_INC_DEP) $< > $@.tmp && mv $@.tmp $@
-
-$(DEPSDIR)/%.eliomi.server: %.eliomi | $(DEPSDIR) $(SERVER_FILES)
-	$(ELIOMDEP) -server -ppx -ppx ${I18N_PPX_REWRITER} $(SERVER_INC_DEP) $< > $@.tmp && mv $@.tmp $@
-
-$(DEPSDIR)/%.ml.client: %.ml | $(DEPSDIR)
-	$(ELIOMDEP) -client $(CLIENT_INC) $< > $@.tmp && mv $@.tmp $@
-
-$(DEPSDIR)/%.eliom.client: %.eliom | $(DEPSDIR)
-	$(ELIOMDEP) -client -ppx -ppx ${I18N_PPX_REWRITER} $(CLIENT_INC) $< > $@.tmp && mv $@.tmp $@
-
-$(DEPSDIR)/%.eliomi.client: %.eliomi | $(DEPSDIR)
-	$(ELIOMDEP) -client -ppx -ppx ${I18N_PPX_REWRITER} $(CLIENT_INC) $< > $@.tmp && mv $@.tmp $@
-
-$(DEPSDIR):
-	mkdir $@
+gen-dune:
+	@ocaml tools/gen_dune.ml --server > dune.server
+	@ocaml tools/gen_dune.ml --client > client/dune.client
 
 ##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
 ## Clean up
 
-clean:: clean-style mobile-clean i18n-clean
-	-rm -f *.cm[ioax] *.cmxa *.cmxs *.o *.a *.annot
-	-rm -f *.type_mli
-	-rm -rf ${ELIOM_CLIENT_DIR} ${ELIOM_SERVER_DIR}
+.PHONY: clean
 
-distclean: clean
-	-rm -rf $(TEST_PREFIX) $(DEPSDIR) .depend
+clean::
+	dune clean

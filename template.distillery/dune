@@ -1,0 +1,69 @@
+(dirs tools client assets)
+
+(executables
+    (names %%%PROJECT_NAME%%%)
+    (modes (byte plugin) (native plugin))
+    (libraries
+;        pervasives_server
+;        monadlib
+;        log
+;        id
+;        crypto
+;        anonymization
+;        moengage
+        eliom.server
+        ocsigen-start.server
+        ocsipersist.pgsql
+;        lwt
+;        batteries.unthreaded
+;        js_of_ocaml
+;        nocrypto
+;        x509
+;        ezjsonm
+;        aws
+;        aws-lwt
+;        aws-cloudformation
+;        bs-aws
+;        syndic
+;        lambdasoup
+;        camomile
+;        uunf.string
+;        unix-sys-resource.unix
+    )
+    (preprocess
+       (pps
+           lwt_ppx
+           pgocaml_ppx
+;           ppx_deriving.show
+           js_of_ocaml-ppx_deriving_json
+;           ppx_sexp_conv
+;           ppx_deriving.ord
+;           ppx_deriving.enum
+           ocsigen-i18n
+;           ppx_blob
+           ocsigen-ppx-rpc
+           eliom.ppx.server
+           -- --prefix %%%MODULE_NAME%%%_ --suffix _i18n --default-module %%%MODULE_NAME%%%_i18n
+       )
+    )
+  )
+
+(rule (target %%%PROJECT_NAME%%%_i18n.eliom) (deps assets/%%%PROJECT_NAME%%%_i18n.tsv)
+  (action
+    (with-stdout-to %{target}
+      (with-stdin-from %{deps}
+        (pipe-stdout
+          (run ocsigen-i18n-generator --languages en,fr --default-language fr %{deps})
+          (run sed "1 s/]/[@@deriving json]]\\n[%%shared [@@@ocaml.warning\"-27\"]]/"))))))
+
+(rule (target %%%PROJECT_NAME%%%_Demo_i18n.eliom) (deps assets/%%%PROJECT_NAME%%%_Demo_i18n.tsv)
+  (action
+    (with-stdout-to %{target}
+      (with-stdin-from %{deps}
+        (run ocsigen-i18n-generator --primary %%%PROJECT_NAME%%%_i18n.tsv --languages en,fr --default-language fr)))))
+
+(rule (alias %%%PROJECT_NAME%%%)
+   (deps %%%PROJECT_NAME%%%.cma client/%%%PROJECT_NAME%%%.bc client/%%%PROJECT_NAME%%%.bc.js tools/check_modules.ml)
+   (action (run ocaml tools/check_modules.ml %%%PROJECT_NAME%%%)))
+
+(env (_ (flags (:standard -w -9-37-39))))

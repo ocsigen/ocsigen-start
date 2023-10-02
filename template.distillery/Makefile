@@ -9,9 +9,6 @@
 # Eliom settings. Contains all variables.
 include Makefile.options
 
-# I18N rules.
-include Makefile.i18n
-
 # Database rules.
 include Makefile.db
 

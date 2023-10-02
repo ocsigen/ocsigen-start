@@ -1,0 +1,20 @@
+(executable
+    (name eliom_ppx_client)
+    (modes native)
+    (modules eliom_ppx_client)
+    (preprocess (pps lwt_ppx))
+    (libraries
+;       ppx_deriving.show
+;       ppx_deriving_caching.disabled
+;       js_of_ocaml-ppx_deriving_json
+;       ppx_sexp_conv
+;       ppx_deriving.ord
+;       ppx_deriving.enum
+       ocsigen-ppx-rpc
+       eliom.ppx.client
+;       ppxlib
+))
+
+(rule
+  (action (with-stdout-to eliom_ppx_client.ml
+            (echo "let () = Ppxlib.Driver.standalone ()"))))

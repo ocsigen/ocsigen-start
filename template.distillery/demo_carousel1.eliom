@@ -21,7 +21,10 @@ let%shared name () = [%i18n Demo.S.carousel_1]
 let%shared page_class = "os-page-demo-carousel1"
 
 (* Bind arrow keys *)
-let%shared bind_keys change carousel =
+let%shared bind_keys
+    (change : ([`Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t)
+    (carousel : [`Div] Eliom_content.Html.elt)
+  =
   ignore
     [%client
       (let arrow_thread =
@@ -50,7 +53,11 @@ let%shared page () =
           * (?step:React.step -> 'a -> unit))]
   in
   let update = [%client fst ~%carousel_change_signal] in
-  let change = [%client fun a -> snd ~%carousel_change_signal ?step:None a] in
+  let change =
+    [%client
+      (fun a -> snd ~%carousel_change_signal ?step:None a
+        : [`Goto of int | `Next | `Prev] -> unit)]
+  in
   let carousel_pages = ["1"; "2"; "3"; "4"] in
   let length = List.length carousel_pages in
   let carousel_content = List.map make_page carousel_pages in
