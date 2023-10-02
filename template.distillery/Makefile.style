@@ -38,15 +38,15 @@ endif
 
 ifeq ($(USE_NPM), yes)
 PACKAGE_JSON = package.json
-NPM_POSTCSS = node_modules/postcss-cli
-NPM_AUTOPREFIXER = node_modules/autoprefixer
+NPM_POSTCSS = node_modules/postcss-cli/package.json
+NPM_AUTOPREFIXER = node_modules/autoprefixer/package.json
 POSTCSS = node_modules/.bin/postcss
 
 $(NPM_POSTCSS): $(PACKAGE_JSON)
-	npm install postcss-cli@7.1.2
+	npm install postcss-cli@7.1.2 && touch $(NPM_POSTCSS)
 
 $(NPM_AUTOPREFIXER): $(PACKAGE_JSON)
-	npm install autoprefixer@9.8.6
+	npm install autoprefixer@9.8.6 && touch $(NPM_AUTOPREFIXER)
 
 $(PACKAGE_JSON):
 	npm init --yes

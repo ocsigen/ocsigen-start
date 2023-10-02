@@ -7,51 +7,16 @@ OPAM                  := opam
 PROJECT_NAME          := %%%PROJECT_NAME%%%
 
 ##----------------------------------------------------------------------
-## The following part is used for the internationalization (i18n).
-
-## The list of supported language, separated by a comma. Each language will
-## generate a value in a sum type defined in the generate i18n file.
-I18N_LANGUAGES         := en,fr
-
-## The default language.
-I18N_DEFAULT_LANGUAGE  := en
-
-## The TSV files containing all translations.
-I18N_TSV_DIR           := assets/
-I18N_PRIMARY_FILE      := $(I18N_TSV_DIR)$(PROJECT_NAME)_i18n.tsv
-# The demo entries are in their own file, for convenience.
-I18N_EXTRA_FILES       := $(I18N_TSV_DIR)$(PROJECT_NAME)_Demo_i18n.tsv
-
-##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
 ## The following part contains the settings for the compilation process like the
 ## server/client OPAM packages and the server/client files.
 
-# Source files for the server. By default, it's all eliom, eliomi and ml files
-# in the project root directory.
-SERVER_FILES          := $(wildcard *.eliomi *.eliom *.ml) \
-                         $(notdir $(patsubst %.tsv,%.eliom,$(I18N_EXTRA_FILES))) \
-                         %%%PROJECT_NAME%%%_i18n.eliom
-
-# Source files for the client. By default, it's all eliom and eliomi files
-# in the project root directory.
-CLIENT_FILES          := $(wildcard *.eliomi *.eliom) \
-                         $(notdir $(patsubst %.tsv,%.eliom,$(I18N_EXTRA_FILES))) \
-                         %%%PROJECT_NAME%%%_i18n.eliom
-
 # OCamlfind packages for the server (for modules which defines services)
 SERVER_ELIOM_PACKAGES := ocsigen-start.server
 
 # OCamlfind packages for the server
-SERVER_PACKAGES       := lwt_ppx js_of_ocaml-ppx_deriving_json ppx_deriving.std pgocaml ocsigen-ppx-rpc
-
-# OCamlfind packages for database access
-SERVER_DB_PACKAGES    := pgocaml pgocaml_ppx
-
-# OCamlfind packages for the client
-CLIENT_PACKAGES       := lwt_ppx js_of_ocaml-ppx js_of_ocaml-ppx_deriving_json \
-                         ppx_deriving.std ocsigen-start.client base ocsigen-ppx-rpc
+SERVER_PACKAGES       :=
 
 # Automatically install packages via NPM
 USE_NPM               := yes
