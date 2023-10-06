@@ -39,9 +39,9 @@ let%shared content ?(html_a = []) ?(a = []) ?title ?(head = []) body =
   in
   { html_attrs
   ; title
-  ; head = (head :> Html_types.head_content_fun elt list)
+  ; head :> Html_types.head_content_fun elt list
   ; body_attrs = a
-  ; body = (body :> Html_types.body_content elt list) }
+  ; body :> Html_types.body_content elt list }
 
 [%%shared
 module type PAGE = sig
@@ -53,8 +53,8 @@ module type PAGE = sig
   val other_head : Html_types.head_content_fun Eliom_content.Html.elt list
   val default_error_page : 'a -> 'b -> exn -> content Lwt.t
 
-  val default_connected_error_page
-    :  Os_types.User.id option
+  val default_connected_error_page :
+     Os_types.User.id option
     -> 'a
     -> 'b
     -> exn
@@ -62,8 +62,8 @@ module type PAGE = sig
 
   val default_predicate : 'a -> 'b -> bool Lwt.t
 
-  val default_connected_predicate
-    :  Os_types.User.id option
+  val default_connected_predicate :
+     Os_types.User.id option
     -> 'a
     -> 'b
     -> bool Lwt.t
@@ -105,23 +105,24 @@ module Make (C : PAGE) = struct
   let local_css =
     List.map
       (fun cssname ->
-        Eliom_content.Html.F.css_link
-          ~uri:
-            (make_uri ~absolute:false
-               ~service:(Eliom_service.static_dir ())
-               ("css" :: cssname))
-          ())
+         Eliom_content.Html.F.css_link
+           ~uri:
+             (make_uri ~absolute:false
+                ~service:(Eliom_service.static_dir ())
+                ("css" :: cssname))
+           ())
       C.local_css
 
   let local_js =
     List.map
       (fun cssname ->
-        Eliom_content.Html.F.js_script ~a:[a_defer ()]
-          ~uri:
-            (make_uri ~absolute:false
-               ~service:(Eliom_service.static_dir ())
-               ("js" :: cssname))
-          ())
+         Eliom_content.Html.F.js_script
+           ~a:[a_defer ()]
+           ~uri:
+             (make_uri ~absolute:false
+                ~service:(Eliom_service.static_dir ())
+                ("js" :: cssname))
+           ())
       C.local_js
 
   let make_page content =

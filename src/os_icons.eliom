@@ -20,18 +20,18 @@
 
 [%%shared
 module type ICSIG = sig
-  val user
-    :  ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list
+  val user :
+     ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list
     -> unit
     -> [> Html_types.i] Eliom_content.Html.D.elt
 
-  val signout
-    :  ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list
+  val signout :
+     ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list
     -> unit
     -> [> Html_types.i] Eliom_content.Html.D.elt
 
-  val close
-    :  ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list
+  val close :
+     ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list
     -> unit
     -> [> Html_types.i] Eliom_content.Html.D.elt
 end

@@ -86,8 +86,8 @@ val avatar_of_user : Os_types.User.t -> string option
     avatar_uri]. It returns [None] if the user [user] has no avatar.
  *)
 
-val avatar_uri_of_avatar
-  :  ?absolute_path:bool
+val avatar_uri_of_avatar :
+   ?absolute_path:bool
   -> string
   -> Eliom_content.Xml.uri
 (** [avatar_uri_of_avatar ?absolute_path avatar] returns the URI (absolute or
@@ -95,8 +95,8 @@ val avatar_uri_of_avatar
     [avatar].
  *)
 
-val avatar_uri_of_user
-  :  ?absolute_path:bool
+val avatar_uri_of_user :
+   ?absolute_path:bool
   -> Os_types.User.t
   -> Eliom_content.Xml.uri option
 (** [avatar_uri_of_user user] returns the avatar URI (absolute or relative)
@@ -120,10 +120,10 @@ val is_complete : Os_types.User.t -> bool
 [%%server.start]
 
 (* Use {!Os_types.actionlinkkey_info} instead of each parameter? *)
-val add_actionlinkkey
-  :  ?autoconnect:
-       (* by default, an action_link key is just an activation key *)
-       bool (** default: false *)
+val add_actionlinkkey :
+   ?autoconnect:
+     (* by default, an action_link key is just an activation key *)
+     bool (** default: false *)
   -> ?action:[`AccountActivation | `PasswordReset | `Custom of string]
        (** default: `AccountActivation *)
   -> ?data:string (** default: empty string *)
@@ -194,8 +194,8 @@ val get_users : ?pattern:string -> unit -> Os_types.User.t list Lwt.t
     completion).
  *)
 
-val create
-  :  ?password:string
+val create :
+   ?password:string
   -> ?avatar:string
   -> ?language:string
   -> ?email:string
@@ -207,8 +207,8 @@ val create
     with the given information. An email, the first name and the last name are mandatory.
  *)
 
-val update
-  :  ?password:string
+val update :
+   ?password:string
   -> ?avatar:string
   -> ?language:string
   -> firstname:string
@@ -262,8 +262,8 @@ val remove_preregister : string -> unit Lwt.t
 val all : ?limit:int64 -> unit -> string list Lwt.t
 (** Get [limit] (default: 10) emails from the preregister collections. *)
 
-val set_pwd_crypt_fun
-  :  (string -> string) * (Os_types.User.id -> string -> string -> bool)
+val set_pwd_crypt_fun :
+   (string -> string) * (Os_types.User.id -> string -> string -> bool)
   -> unit
 (** By default, passwords are encrypted using Bcrypt.
     You can customize this by calling this function
@@ -274,8 +274,8 @@ val set_pwd_crypt_fun
     by user, and as third parameter the hash found in database.
 *)
 
-val remove_email_from_user
-  :  userid:Os_types.User.id
+val remove_email_from_user :
+   userid:Os_types.User.id
   -> email:string
   -> unit Lwt.t
 (** [remove_email_from_user ~userid ~email] removes the email [email] from the

@@ -52,12 +52,13 @@ let tips_seen_not_connected =
 let seen_by_user =
   Eliom_reference.Volatile.eref_from_fun ~scope:Eliom_common.request_scope
     (fun () ->
-      match Os_current_user.Opt.get_current_userid () with
-      | None -> Eliom_reference.get tips_seen_not_connected
-      | _ -> Eliom_reference.get tips_seen)
+       match Os_current_user.Opt.get_current_userid () with
+       | None -> Eliom_reference.get tips_seen_not_connected
+       | _ -> Eliom_reference.get tips_seen)
 
 (* Get the set of seen tips *)
 let%server get_tips_seen () = Eliom_reference.Volatile.get seen_by_user
+
 (* We cache the set of seen tips to avoid doing the request several times.
    Warning: it is not updated if the user is using several devices or
    tabs at a time which means that the user may see the same tip several
@@ -67,9 +68,9 @@ let%client get_tips_seen () = Lwt.return !tips_seen_client_ref
 
 let%server () =
   Os_session.on_start_connected_process (fun _ ->
-      let%lwt tips = get_tips_seen () in
-      ignore [%client (tips_seen_client_ref := ~%tips : unit)];
-      Lwt.return_unit)
+    let%lwt tips = get_tips_seen () in
+    ignore [%client (tips_seen_client_ref := ~%tips : unit)];
+    Lwt.return_unit)
 
 (* notify the server that a user has seen a tip *)
 let%rpc set_tip_seen (name : string) : unit Lwt.t =
@@ -238,30 +239,30 @@ let%client display_bubble ?(a = []) ?arrow ?top ?left ?right ?bottom ?height
     height;
   Eliom_lib.Option.iter
     (fun a ->
-      let bec = To_dom.of_element bec in
-      let bec_size = bec##.offsetWidth in
-      let offset = Printf.sprintf "-%dpx" (bec_size / 2) in
-      match a with
-      | `top i ->
-          bec##.style##.top := Js.string offset;
-          bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
-          bec##.style##.borderBottom := Js.string "none";
-          bec##.style##.borderRight := Js.string "none"
-      | `left i ->
-          bec##.style##.left := Js.string offset;
-          bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
-          bec##.style##.borderTop := Js.string "none";
-          bec##.style##.borderRight := Js.string "none"
-      | `bottom i ->
-          bec##.style##.bottom := Js.string offset;
-          bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
-          bec##.style##.borderTop := Js.string "none";
-          bec##.style##.borderLeft := Js.string "none"
-      | `right i ->
-          bec##.style##.right := Js.string offset;
-          bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
-          bec##.style##.borderBottom := Js.string "none";
-          bec##.style##.borderLeft := Js.string "none")
+       let bec = To_dom.of_element bec in
+       let bec_size = bec##.offsetWidth in
+       let offset = Printf.sprintf "-%dpx" (bec_size / 2) in
+       match a with
+       | `top i ->
+           bec##.style##.top := Js.string offset;
+           bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
+           bec##.style##.borderBottom := Js.string "none";
+           bec##.style##.borderRight := Js.string "none"
+       | `left i ->
+           bec##.style##.left := Js.string offset;
+           bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
+           bec##.style##.borderTop := Js.string "none";
+           bec##.style##.borderRight := Js.string "none"
+       | `bottom i ->
+           bec##.style##.bottom := Js.string offset;
+           bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
+           bec##.style##.borderTop := Js.string "none";
+           bec##.style##.borderLeft := Js.string "none"
+       | `right i ->
+           bec##.style##.right := Js.string offset;
+           bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
+           bec##.style##.borderBottom := Js.string "none";
+           bec##.style##.borderLeft := Js.string "none")
     arrow;
   let%lwt () = Lwt_js_events.request_animation_frame () in
   box##.style##.opacity := Js.def (Js.string "1");
@@ -271,11 +272,11 @@ let%client display_bubble ?(a = []) ?arrow ?top ?left ?right ?bottom ?height
 let%shared bubble
     ?(a :
        [< Html_types.div_attrib > `Class] Eliom_content.Html.D.attrib list
-       option) ?(recipient = `All)
+         option) ?(recipient = `All)
     ?(arrow :
        [< `left of int | `right of int | `top of int | `bottom of int]
-       Eliom_client_value.t
-       option) ?(top : int Eliom_client_value.t option)
+         Eliom_client_value.t
+         option) ?(top : int Eliom_client_value.t option)
     ?(left : int Eliom_client_value.t option)
     ?(right : int Eliom_client_value.t option)
     ?(bottom : int Eliom_client_value.t option)
@@ -287,7 +288,7 @@ let%shared bubble
     ~(content :
        ((unit -> unit Lwt.t)
         -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
-       Eliom_client_value.t) ()
+         Eliom_client_value.t) ()
   =
   let delay : float option = delay in
   let onclose : (unit -> unit Lwt.t) Eliom_client_value.t option = onclose in
@@ -301,13 +302,12 @@ let%shared bubble
         let _ =
           [%client
             (Lwt.async (fun () ->
-                 display_bubble ?a:~%a ?arrow:~%arrow ?top:~%top ?left:~%left
-                   ?right:~%right ?bottom:~%bottom ?height:~%height
-                   ?width:~%width ?parent_node:~%parent_node ?delay:~%delay
-                   ?onclose:~%onclose
-                   ~name:(~%name : string)
-                   ~content:~%content ())
-              : unit)]
+               display_bubble ?a:~%a ?arrow:~%arrow ?top:~%top ?left:~%left
+                 ?right:~%right ?bottom:~%bottom ?height:~%height ?width:~%width
+                 ?parent_node:~%parent_node ?delay:~%delay ?onclose:~%onclose
+                 ~name:(~%name : string)
+                 ~content:~%content ())
+             : unit)]
         in
         Lwt.return_unit
   | _ -> Lwt.return_unit

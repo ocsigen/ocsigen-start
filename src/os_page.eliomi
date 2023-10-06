@@ -26,8 +26,8 @@ exception Predicate_failed of exn option
 type content
 (** An abstract type describing the content of a page *)
 
-val content
-  :  ?html_a:Html_types.html_attrib Eliom_content.Html.attrib list
+val content :
+   ?html_a:Html_types.html_attrib Eliom_content.Html.attrib list
   -> ?a:Html_types.body_attrib Eliom_content.Html.attrib list
   -> ?title:string
   -> ?head:[< Html_types.head_content_fun] Eliom_content.Html.elt list
@@ -78,8 +78,8 @@ module type PAGE = sig
       [exn] is the exception which must be caught when something went wrong.
    *)
 
-  val default_connected_error_page
-    :  Os_types.User.id option
+  val default_connected_error_page :
+     Os_types.User.id option
     -> 'a
     -> 'b
     -> exn
@@ -91,8 +91,8 @@ module type PAGE = sig
   val default_predicate : 'a -> 'b -> bool Lwt.t
   (** [default_predicate get_param post_param] is the default predicate. *)
 
-  val default_connected_predicate
-    :  Os_types.User.id option
+  val default_connected_predicate :
+     Os_types.User.id option
     -> 'a
     -> 'b
     -> bool Lwt.t
@@ -116,8 +116,8 @@ module Make (_ : PAGE) : sig
   (** Builds a valid html page from body content by adding headers
       for this app *)
 
-  val page
-    :  ?predicate:('a -> 'b -> bool Lwt.t)
+  val page :
+     ?predicate:('a -> 'b -> bool Lwt.t)
     -> ?fallback:('a -> 'b -> exn -> content Lwt.t)
     -> ('a -> 'b -> content Lwt.t)
     -> 'a
@@ -135,8 +135,8 @@ module Make (_ : PAGE) : sig
   *)
 
   module Opt : sig
-    val connected_page
-      :  ?allow:Os_types.Group.t list
+    val connected_page :
+       ?allow:Os_types.Group.t list
       -> ?deny:Os_types.Group.t list
       -> ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool Lwt.t)
       -> ?fallback:(Os_types.User.id option -> 'a -> 'b -> exn -> content Lwt.t)
@@ -149,8 +149,8 @@ module Make (_ : PAGE) : sig
   *)
   end
 
-  val connected_page
-    :  ?allow:Os_types.Group.t list
+  val connected_page :
+     ?allow:Os_types.Group.t list
     -> ?deny:Os_types.Group.t list
     -> ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool Lwt.t)
     -> ?fallback:(Os_types.User.id option -> 'a -> 'b -> exn -> content Lwt.t)

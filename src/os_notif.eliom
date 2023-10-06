@@ -23,8 +23,8 @@ open Os_types
 module type S = sig
   include Eliom_notif.S with type identity = User.id option
 
-  val unlisten_user
-    :  ?sitedata:Eliom_common.sitedata
+  val unlisten_user :
+     ?sitedata:Eliom_common.sitedata
     -> userid:User.id
     -> key
     -> unit
@@ -45,25 +45,25 @@ end
 
 module Make (A : ARG) :
   S
-    with type key = A.key
-     and type server_notif = A.server_notif
-     and type client_notif = A.client_notif = struct
+  with type key = A.key
+   and type server_notif = A.server_notif
+   and type client_notif = A.client_notif = struct
   include Eliom_notif.Make (struct
-    type identity = User.id option
-    type key = A.key
-    type server_notif = A.server_notif
-    type client_notif = A.client_notif
+      type identity = User.id option
+      type key = A.key
+      type server_notif = A.server_notif
+      type client_notif = A.client_notif
 
-    let prepare = A.prepare
-    let equal_key = A.equal_key
-    let equal_identity = ( = )
+      let prepare = A.prepare
+      let equal_key = A.equal_key
+      let equal_identity = ( = )
 
-    let get_identity () =
-      Lwt.return @@ Os_current_user.Opt.get_current_userid ()
+      let get_identity () =
+        Lwt.return @@ Os_current_user.Opt.get_current_userid ()
 
-    let max_resource = A.max_resource
-    let max_identity_per_resource = A.max_identity_per_resource
-  end)
+      let max_resource = A.max_resource
+      let max_identity_per_resource = A.max_identity_per_resource
+    end)
 
   let unlisten_user ?sitedata ~userid (id : A.key) =
     let state =
@@ -75,7 +75,7 @@ module Make (A : ARG) :
     Eliom_state.Ext.iter_sub_states ?sitedata ~state @@ fun state ->
     (* Iterating on all client processes in session: *)
     Eliom_state.Ext.iter_sub_states ?sitedata ~state (fun state ->
-        Ext.unlisten state id; Lwt.return_unit)
+      Ext.unlisten state id; Lwt.return_unit)
 
   let notify ?notfor key notif =
     let notfor =
@@ -98,15 +98,15 @@ end
 
 module Make_Simple (A : ARG_SIMPLE) :
   S
-    with type key = A.key
-     and type server_notif = A.notification
-     and type client_notif = A.notification = Make (struct
-  type key = A.key
-  type server_notif = A.notification
-  type client_notif = A.notification
+  with type key = A.key
+   and type server_notif = A.notification
+   and type client_notif = A.notification = Make (struct
+    type key = A.key
+    type server_notif = A.notification
+    type client_notif = A.notification
 
-  let prepare _ n = Lwt.return_some n
-  let equal_key = ( = )
-  let max_resource = 1000
-  let max_identity_per_resource = 10
-end)
+    let prepare _ n = Lwt.return_some n
+    let equal_key = ( = )
+    let max_resource = 1000
+    let max_identity_per_resource = 10
+  end)

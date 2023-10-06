@@ -22,12 +22,12 @@
 
 [%%shared.start]
 
-val bubble
-  :  ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.D.attrib list
+val bubble :
+   ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.D.attrib list
   -> ?recipient:[> `All | `Connected | `Not_connected]
   -> ?arrow:
        [< `left of int | `right of int | `top of int | `bottom of int]
-       Eliom_client_value.t
+         Eliom_client_value.t
   -> ?top:int Eliom_client_value.t
   -> ?left:int Eliom_client_value.t
   -> ?right:int Eliom_client_value.t
@@ -41,7 +41,7 @@ val bubble
   -> content:
        ((unit -> unit Lwt.t)
         -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
-       Eliom_client_value.t
+         Eliom_client_value.t
   -> unit
   -> unit Lwt.t
 (** Display tips in pages, as a speech bubble.
@@ -66,8 +66,8 @@ val bubble
 
 *)
 
-val block
-  :  ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.D.attrib list
+val block :
+   ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.D.attrib list
   -> ?recipient:[> `All | `Connected | `Not_connected]
   -> ?onclose:(unit -> unit Lwt.t) Eliom_client_value.t
   -> name:string
@@ -98,8 +98,8 @@ val unset_tip_seen : string -> unit Lwt.t
 val tip_seen : string -> bool Lwt.t
 (** Returns whether a tip has been seen or not. *)
 
-val reset_tips_service
-  : ( unit
+val reset_tips_service :
+  ( unit
     , unit
     , Eliom_service.post
     , Eliom_service.non_att

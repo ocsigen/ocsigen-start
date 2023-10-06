@@ -45,8 +45,8 @@ val is_valid : string -> bool
 (** [is_valid email] returns [true] if the e-mail address [email] is valid. Else
     it returns [false]. *)
 
-val send
-  :  ?url:string
+val send :
+   ?url:string
   -> ?from_addr:string * string
   -> to_addrs:(string * string) list
   -> subject:string
@@ -58,13 +58,13 @@ val send
     Tuples used by [from_addr] and [to_addrs] is of the form [(name, email)].
     *)
 
-val set_send
-  :  (?url:string
-      -> from_addr:string * string
-      -> to_addrs:(string * string) list
-      -> subject:string
-      -> string list
-      -> unit Lwt.t)
+val set_send :
+   (?url:string
+    -> from_addr:string * string
+    -> to_addrs:(string * string) list
+    -> subject:string
+    -> string list
+    -> unit Lwt.t)
   -> unit
 (** Customize email sending function. See {!send} for more details about the
     arguments.

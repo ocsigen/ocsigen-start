@@ -43,18 +43,18 @@ end
 
 (** Functor which creates a module {!Cache_sig}. *)
 module Make : functor
-  (M : sig
-     type key
-     (** The type of your key. *)
+    (M : sig
+       type key
+       (** The type of your key. *)
 
-     type value
-     (** The type of the stored value. *)
+       type value
+       (** The type of the stored value. *)
 
-     val compare : key -> key -> int
-     (** The function used to compare keys. *)
+       val compare : key -> key -> int
+       (** The function used to compare keys. *)
 
-     val get : key -> value Lwt.t
-     (** This function is called when the value corresponding to a key
+       val get : key -> value Lwt.t
+       (** This function is called when the value corresponding to a key
          is not yet stored into the cache. *)
-   end)
-  -> Cache_sig with type key = M.key and type value = M.value
+     end)
+    -> Cache_sig with type key = M.key and type value = M.value

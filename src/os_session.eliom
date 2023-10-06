@@ -62,11 +62,11 @@ let on_start_process, start_process_action = mk_action_queue "start process"
 
 let on_start_connected_process f =
   on_start_process (fun myid_o ->
-      match myid_o with Some myid -> f myid | None -> Lwt.return_unit)
+    match myid_o with Some myid -> f myid | None -> Lwt.return_unit)
 
 let on_start_unconnected_process f =
   on_start_process (fun myid_o ->
-      match myid_o with Some _myid -> Lwt.return_unit | None -> f ())
+    match myid_o with Some _myid -> Lwt.return_unit | None -> f ())
 
 [%%shared
 exception Not_connected
@@ -151,19 +151,19 @@ let disconnect_all ?sitedata ?userid ?(user_indep = true) ?(with_restart = true)
       let%lwt ui_states =
         List.fold_left
           (fun acc state ->
-            match%lwt
-              Eliom_reference.Ext.get state
-                (current_user_indep_session_state
-                  :> ( [< `Session_group | `Session | `Client_process]
-                     , [< `Data | `Pers] )
-                     Eliom_state.Ext.state
-                     option
-                     Eliom_reference.eref)
-            with
-            | None -> acc
-            | Some s ->
-                let%lwt acc = acc in
-                Lwt.return (s :: acc))
+             match%lwt
+               Eliom_reference.Ext.get state
+                 (current_user_indep_session_state
+                   :> ( [< `Session_group | `Session | `Client_process]
+                        , [< `Data | `Pers] )
+                        Eliom_state.Ext.state
+                        option
+                        Eliom_reference.eref)
+             with
+             | None -> acc
+             | Some s ->
+                 let%lwt acc = acc in
+                 Lwt.return (s :: acc))
           Lwt.return_nil
           (Eliom_state.Ext.fold_volatile_sub_states ?sitedata
              ~state:
@@ -176,8 +176,8 @@ let disconnect_all ?sitedata ?userid ?(user_indep = true) ?(with_restart = true)
       let%lwt () =
         Lwt_list.iter_s
           (fun state ->
-            Eliom_state.Ext.iter_sub_states ?sitedata ~state @@ fun state ->
-            Eliom_state.Ext.discard_state ?sitedata ~state ())
+             Eliom_state.Ext.iter_sub_states ?sitedata ~state @@ fun state ->
+             Eliom_state.Ext.discard_state ?sitedata ~state ())
           states
       in
       let%lwt () =
@@ -189,8 +189,8 @@ let disconnect_all ?sitedata ?userid ?(user_indep = true) ?(with_restart = true)
       let%lwt () =
         Lwt_list.iter_s
           (fun state ->
-            Eliom_state.Ext.iter_sub_states ?sitedata ~state
-              warn_connection_changed)
+             Eliom_state.Ext.iter_sub_states ?sitedata ~state
+               warn_connection_changed)
           ui_states
       in
       (* Closing user_indep states, if requested: *)
@@ -215,8 +215,8 @@ let check_allow_deny userid allow deny =
         (* allow only users from one of the groups of list l *)
         Lwt_list.fold_left_s
           (fun b group ->
-            let%lwt b2 = Os_group.in_group ~userid ~group () in
-            Lwt.return (b || b2))
+             let%lwt b2 = Os_group.in_group ~userid ~group () in
+             Lwt.return (b || b2))
           false l
   in
   let%lwt b =
@@ -227,8 +227,8 @@ let check_allow_deny userid allow deny =
                      in one of the groups of list l *)
         Lwt_list.fold_left_s
           (fun b group ->
-            let%lwt b2 = Os_group.in_group ~userid ~group () in
-            Lwt.return (b && not b2))
+             let%lwt b2 = Os_group.in_group ~userid ~group () in
+             Lwt.return (b && not b2))
           b l
   in
   if b

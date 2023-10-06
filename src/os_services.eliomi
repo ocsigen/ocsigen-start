@@ -25,8 +25,8 @@
     {!Os_handlers}.
  *)
 
-val main_service
-  : ( unit
+val main_service :
+  ( unit
     , unit
     , Eliom_service.get
     , Eliom_service.att
@@ -40,8 +40,8 @@ val main_service
     Eliom_service.t
 (** The main service. *)
 
-val preregister_service
-  : ( unit
+val preregister_service :
+  ( unit
     , string
     , Eliom_service.post
     , Eliom_service.non_att
@@ -56,8 +56,8 @@ val preregister_service
 (** A POST service to preregister a user. By default, an email is
     enough. *)
 
-val forgot_password_service
-  : ( unit
+val forgot_password_service :
+  ( unit
     , string
     , Eliom_service.post
     , Eliom_service.non_att
@@ -73,8 +73,8 @@ val forgot_password_service
     See {!Os_handlers.forgot_password_handler} for a default handler.
  *)
 
-val set_personal_data_service
-  : ( unit
+val set_personal_data_service :
+  ( unit
     , (string * string) * (string * string)
     , Eliom_service.post
     , Eliom_service.non_att
@@ -94,8 +94,8 @@ val set_personal_data_service
     See {!Os_handlers.set_personal_data_handler'} for a default handler.
  *)
 
-val sign_up_service
-  : ( unit
+val sign_up_service :
+  ( unit
     , string
     , Eliom_service.post
     , Eliom_service.non_att
@@ -111,8 +111,8 @@ val sign_up_service
     See {!Os_handlers.sign_up_handler} for a default handler.
  *)
 
-val connect_service
-  : ( unit
+val connect_service :
+  ( unit
     , (string * string) * bool
     , Eliom_service.post
     , Eliom_service.non_att
@@ -130,8 +130,8 @@ val connect_service
     See {!Os_handlers.connect_handler} for a default handler.
  *)
 
-val disconnect_service
-  : ( unit
+val disconnect_service :
+  ( unit
     , unit
     , Eliom_service.post
     , Eliom_service.non_att
@@ -147,8 +147,8 @@ val disconnect_service
     See {!Os_handlers.disconnect_handler} for a default handler.
  *)
 
-val action_link_service
-  : ( string
+val action_link_service :
+  ( string
     , unit
     , Eliom_service.get
     , Eliom_service.non_att
@@ -166,8 +166,8 @@ val action_link_service
     process.
  *)
 
-val set_password_service
-  : ( unit
+val set_password_service :
+  ( unit
     , string * string
     , Eliom_service.post
     , Eliom_service.non_att
@@ -185,8 +185,8 @@ val set_password_service
     See {!Os_handlers.set_password_handler'} for a default handler.
  *)
 
-val add_email_service
-  : ( unit
+val add_email_service :
+  ( unit
     , string
     , Eliom_service.post
     , Eliom_service.non_att
@@ -202,8 +202,8 @@ val add_email_service
     See {!Os_handlers.add_email_handler} for a default handler.
  *)
 
-val update_language_service
-  : ( unit
+val update_language_service :
+  ( unit
     , string
     , Eliom_service.post
     , Eliom_service.non_att
@@ -219,8 +219,8 @@ val update_language_service
      See {!Os_handlers.update_language_handler} for a default handler.
 *)
 
-val confirm_code_signup_service
-  : ( unit
+val confirm_code_signup_service :
+  ( unit
     , string * (string * (string * string))
     , Eliom_service.post
     , Eliom_service.non_att
@@ -237,8 +237,8 @@ val confirm_code_signup_service
     Eliom_service.t
 (** Confirm SMS activation code and (if valid) register new user. *)
 
-val confirm_code_extra_service
-  : ( unit
+val confirm_code_extra_service :
+  ( unit
     , string
     , Eliom_service.post
     , Eliom_service.non_att
@@ -253,8 +253,8 @@ val confirm_code_extra_service
 (** Confirm SMS activation code and (if valid) add new phone number to
     user's account. *)
 
-val confirm_code_recovery_service
-  : ( unit
+val confirm_code_recovery_service :
+  ( unit
     , string
     , Eliom_service.post
     , Eliom_service.non_att
@@ -269,8 +269,8 @@ val confirm_code_recovery_service
 (** Confirm SMS activation code and (if valid) allow the user to set a
     new password. *)
 
-val confirm_code_remind_service
-  : ( unit
+val confirm_code_remind_service :
+  ( unit
     , string
     , Eliom_service.post
     , Eliom_service.non_att
@@ -285,8 +285,8 @@ val confirm_code_remind_service
 (** Temporary alternate name for [confirm_code_recovery_handler] to
     facilite the transition. *)
 
-val register_settings_service
-  :  ( unit
+val register_settings_service :
+   ( unit
      , unit
      , Eliom_service.get
      , Eliom_service.att
@@ -304,18 +304,18 @@ val register_settings_service
 
 (**/**)
 
-val settings_service
-  :  unit
+val settings_service :
+   unit
   -> ( unit
-     , unit
-     , Eliom_service.get
-     , Eliom_service.att
-     , Eliom_service.non_co
-     , Eliom_service.non_ext
-     , Eliom_service.reg
-     , [`WithoutSuffix]
-     , unit
-     , unit
-     , Eliom_service.non_ocaml )
-     Eliom_service.t
-     option
+       , unit
+       , Eliom_service.get
+       , Eliom_service.att
+       , Eliom_service.non_co
+       , Eliom_service.non_ext
+       , Eliom_service.reg
+       , [`WithoutSuffix]
+       , unit
+       , unit
+       , Eliom_service.non_ocaml )
+       Eliom_service.t
+       option
