@@ -13,42 +13,6 @@
         (build_runtime_flags :standard --enable use-js-string)
         (flags :standard --enable with-js-error --enable use-js-string
                --no-source-map)) ; source maps are slow...
-    (libraries
-;        uri
-;        pervasives_client
-;        log
-;        id
-        eliom.client
-;        lwt
-;        re
-;        calendar
-        ocsigen-start.client
-;        base
-;        gen_js_api
-;        branch-cordova-sdk
-;        chcp
-;        cordova-plugin-statusbar
-;        cordova-plugin-file
-;        cordova-plugin-file-transfer
-;        cordova-plugin-file-opener
-;        cordova-plugin-keyboard
-;        cordova-plugin-screenshot
-;        polyfill-crypto
-;        ocaml-googlemaps
-;        ocaml-woosmap
-;        cordova-plugin-device
-;        ocaml-geoloc
-;        cordova-plugin-geolocation
-;        cordova-plugin-push-notifications
-;        cordova-plugin-intent
-;        cordova-plugin-firebase
-;        mixpanel
-;        cordova-plugin-social-sharing
-;        screen-orientation
-;        gapi
-;        hls
-;        cordova-plugin-media-capture
-    )
-)
+    (libraries eliom.client ocsigen-start.client))
 
 (include dune.client)

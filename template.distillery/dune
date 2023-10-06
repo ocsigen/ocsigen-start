@@ -3,44 +3,13 @@
 (executables
     (names %%%PROJECT_NAME%%%)
     (modes (byte plugin) (native plugin))
-    (libraries
-;        pervasives_server
-;        monadlib
-;        log
-;        id
-;        crypto
-;        anonymization
-;        moengage
-        eliom.server
-        ocsigen-start.server
-        ocsipersist.pgsql
-;        lwt
-;        batteries.unthreaded
-;        js_of_ocaml
-;        nocrypto
-;        x509
-;        ezjsonm
-;        aws
-;        aws-lwt
-;        aws-cloudformation
-;        bs-aws
-;        syndic
-;        lambdasoup
-;        camomile
-;        uunf.string
-;        unix-sys-resource.unix
-    )
+    (libraries eliom.server ocsigen-start.server ocsipersist.pgsql)
     (preprocess
        (pps
            lwt_ppx
            pgocaml_ppx
-;           ppx_deriving.show
            js_of_ocaml-ppx_deriving_json
-;           ppx_sexp_conv
-;           ppx_deriving.ord
-;           ppx_deriving.enum
            ocsigen-i18n
-;           ppx_blob
            ocsigen-ppx-rpc
            eliom.ppx.server
            -- --prefix %%%MODULE_NAME%%%_ --suffix _i18n --default-module %%%MODULE_NAME%%%_i18n
