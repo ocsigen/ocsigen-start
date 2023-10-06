@@ -10,17 +10,19 @@ let modules_from_bytecode_executable nm =
     ()
   done;
   let lst = ref [] in
-  while
-    let l = input_line ch in
-    if l <> "" && l.[0] = '\t'
-    then (
-      let i = String.rindex l '\t' in
-      lst := String.sub l (i + 1) (String.length l - i - 1) :: !lst;
-      true)
-    else false
-  do
-    ()
-  done;
+  (try
+     while
+       let l = input_line ch in
+       if l <> "" && l.[0] = '\t'
+       then (
+         let i = String.rindex l '\t' in
+         lst := String.sub l (i + 1) (String.length l - i - 1) :: !lst;
+         true)
+       else false
+     do
+       ()
+     done
+   with End_of_file -> ());
   !lst
 
 let modules_from_bytecode_library nm =
