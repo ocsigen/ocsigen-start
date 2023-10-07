@@ -64,7 +64,6 @@ let user_tz_opt () =
   else tz
 
 let user_tz () = match user_tz_opt () with None -> "UTC" | Some v -> v
-
 let%client user_tz () = timezone
 
 (* This function is called once by each client process to record on server
@@ -84,7 +83,7 @@ let%client disable_auto_init () = auto_init := false
 let%client _ =
   (* We wait for the client process to be fully loaded: *)
   Eliom_client.onload (fun () ->
-      if !auto_init then Lwt.async (fun () -> init_time_rpc timezone))
+    if !auto_init then Lwt.async (fun () -> init_time_rpc timezone))
 
 [%%shared
 open CalendarLib
@@ -152,8 +151,8 @@ let%client to_utc d =
   let o' = (new%js Js.date_fromTimeValue (d' *. 1000.))##getTimezoneOffset in
   CalendarLib.Calendar.from_unixfloat
     (if o = o'
-    then d' (* We guessed the DST status right *)
-    else d +. (float o' *. 60.))
+     then d' (* We guessed the DST status right *)
+     else d +. (float o' *. 60.))
 (* Assume other DST status *)
 
 let%server now ?timezone () = to_local ?timezone (CalendarLib.Calendar.now ())

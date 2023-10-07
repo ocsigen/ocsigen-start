@@ -101,18 +101,18 @@ let%server unset_user_client () =
 
 let%server () =
   Os_session.on_request (fun myid_o ->
-      match myid_o with
-      | Some myid -> set_user_server myid
-      | None -> unset_user_server (); Lwt.return_unit);
+    match myid_o with
+    | Some myid -> set_user_server myid
+    | None -> unset_user_server (); Lwt.return_unit);
   Os_session.on_start_connected_process (fun myid ->
-      let%lwt () = set_user_server myid in
-      set_user_client (); Lwt.return_unit);
+    let%lwt () = set_user_server myid in
+    set_user_client (); Lwt.return_unit);
   Os_session.on_pre_close_session (fun () ->
-      unset_user_client ();
-      (*VVV!!! will affect only current tab!! *)
-      unset_user_server ();
-      (* ok this is a request reference *)
-      Lwt.return_unit)
+    unset_user_client ();
+    (*VVV!!! will affect only current tab!! *)
+    unset_user_server ();
+    (* ok this is a request reference *)
+    Lwt.return_unit)
 
 let%rpc remove_email_from_user (email : string) : unit Lwt.t =
   let myid = get_current_userid () in

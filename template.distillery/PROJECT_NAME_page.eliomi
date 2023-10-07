@@ -20,8 +20,8 @@ module Page_config : sig
   val default_connected_predicate : 'a -> 'b -> 'c -> bool Lwt.t
   val default_error_page : 'a -> 'b -> exn -> Os_page.content Lwt.t
 
-  val default_connected_error_page
-    :  Os_types.User.id option
+  val default_connected_error_page :
+     Os_types.User.id option
     -> 'a
     -> 'b
     -> exn
@@ -30,8 +30,8 @@ end
 
 val make_page : Os_page.content -> [> Html_types.html] Eliom_content.Html.elt
 
-val page
-  :  ?predicate:('a -> 'b -> bool Lwt.t)
+val page :
+   ?predicate:('a -> 'b -> bool Lwt.t)
   -> ?fallback:('a -> 'b -> exn -> Os_page.content Lwt.t)
   -> ('a -> 'b -> Os_page.content Lwt.t)
   -> 'a
@@ -39,8 +39,8 @@ val page
   -> Html_types.html Eliom_content.Html.elt Lwt.t
 
 module Opt : sig
-  val connected_page
-    :  ?allow:Os_types.Group.t list
+  val connected_page :
+     ?allow:Os_types.Group.t list
     -> ?deny:Os_types.Group.t list
     -> ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool Lwt.t)
     -> ?fallback:
@@ -51,8 +51,8 @@ module Opt : sig
     -> Html_types.html Eliom_content.Html.elt Lwt.t
 end
 
-val connected_page
-  :  ?allow:Os_types.Group.t list
+val connected_page :
+   ?allow:Os_types.Group.t list
   -> ?deny:Os_types.Group.t list
   -> ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool Lwt.t)
   -> ?fallback:

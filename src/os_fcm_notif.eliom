@@ -193,7 +193,7 @@ module Response = struct
   module Results = struct
     (* If an error occurred, one of these sum types is returned (based on the
            couple (code, error_as_string), see [error_of_string_and_code].
-         *)
+    *)
     type error =
       | Missing_registration
       | Invalid_registration
@@ -214,7 +214,7 @@ module Response = struct
     (* Internal use. See
            https://developers.google.com/cloud-messaging/http-server-ref
            table 9
-         *)
+    *)
     let error_of_string_and_code = function
       | 200, "MissingRegistration" -> Missing_registration
       | 200, "InvalidRegistration" -> Invalid_registration
@@ -253,7 +253,7 @@ module Response = struct
 
     (* If no error occurred, the JSON in the results attribute contains a
            mandatory field message_id and an optional field registration_id.
-         *)
+    *)
     type success = {message_id : string; registration_id : string option}
 
     let message_id_of_success success = success.message_id
@@ -266,7 +266,7 @@ module Response = struct
       match Util.member "message_id" json with
       (* If the field [message_id] is present, we are in the case of a
                successful message
-             *)
+      *)
       | `String x ->
           let message_id = x in
           let registration_id =
@@ -279,12 +279,12 @@ module Response = struct
                case of an error message.
                The pattern _ is used because is equivalent to `Null in this
                case due to the predefined type of the message_id (string).
-             *)
+      *)
       | _ -> (
         match Util.member "error" json with
         (* If the field [error] is present, we are in the case of an
                  error message.
-               *)
+        *)
         | `String err -> Error (error_of_string_and_code (code, err))
         (* Else we don't know what is the result. *)
         | _ -> raise (FCM_missing_field "No message_id and error fields found.")
@@ -307,7 +307,7 @@ module Response = struct
            the max integer. The first pattern is `Int x is x is smaller
            than the max integer and the second is `String if x can't be
            interpreted as an integer.
-         *)
+    *)
     let multicast_id =
       match Util.member "multicast_id" json with
       | `Int x -> string_of_int x
@@ -331,7 +331,7 @@ module Response = struct
     in
     (* As results is an options array, we don't fail if it's not present but
            we use an empty list.
-         *)
+    *)
     let results =
       match Util.member "results" json with
       | `List l -> List.map (Results.t_of_json code) l
@@ -342,7 +342,7 @@ module Response = struct
   (* Build a type t from the raw HTTP response. The HTTP response code is
          computed to pass it to [t_of_json] and to [results_of_json] to be used
          if an error occurred.
-       *)
+  *)
   let t_of_http_response (r, b) =
     try%lwt
       let status = Cohttp.(Code.code_of_status (Response.status r)) in
@@ -352,7 +352,7 @@ module Response = struct
     with
     (* Could be the case if the server key is wrong or if it's not
            registered only in FCM and not in FCM (since September 2016).
-         *)
+    *)
     | Yojson.Json_error _ ->
       Lwt.fail (FCM_no_json_response "It could come from your server key.")
 

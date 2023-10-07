@@ -157,15 +157,15 @@ let%shared lwt_bind_input_enter
        on_enter ~f e;
        match
          ~%(button
-             : [< Html_types.button | Html_types.input] Eliom_content.Html.elt
-               option)
+            : [< Html_types.button | Html_types.input] Eliom_content.Html.elt
+                option)
        with
        | Some button ->
            Lwt.async @@ fun () ->
            Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element button)
            @@ fun _ _ -> f (Js.to_string e##.value)
        | None -> ()
-        : unit)]
+       : unit)]
 
 let%shared lwt_bound_input_enter ?(a = []) ?button ?validate f =
   let e = Eliom_content.Html.D.Raw.input ~a () in
@@ -178,11 +178,11 @@ module Http = struct
   let string_of_stream ?(len = 16384) contents =
     Lwt.try_bind
       (fun () ->
-        Ocsigen_stream.string_of_stream len (Ocsigen_stream.get contents))
+         Ocsigen_stream.string_of_stream len (Ocsigen_stream.get contents))
       (fun r ->
-        let%lwt () = Ocsigen_stream.finalize contents `Success in
-        Lwt.return r)
+         let%lwt () = Ocsigen_stream.finalize contents `Success in
+         Lwt.return r)
       (fun e ->
-        let%lwt () = Ocsigen_stream.finalize contents `Failure in
-        Lwt.fail e)
+         let%lwt () = Ocsigen_stream.finalize contents `Failure in
+         Lwt.fail e)
 end

@@ -85,8 +85,8 @@ val connect : ?expire:bool -> Os_types.User.id -> unit Lwt.t
     exits.
 *)
 
-val disconnect_all
-  :  ?sitedata:Eliom_common.sitedata
+val disconnect_all :
+   ?sitedata:Eliom_common.sitedata
   -> ?userid:Os_types.User.id
   -> ?user_indep:bool
   -> ?with_restart:bool
@@ -126,8 +126,8 @@ val disconnect : unit -> unit Lwt.t
     will be executed just before the session is actually closed.
 *)
 
-val connected_fun
-  :  ?allow:Os_types.Group.t list
+val connected_fun :
+   ?allow:Os_types.Group.t list
   -> ?deny:Os_types.Group.t list
   -> ?deny_fun:(Os_types.User.id option -> 'c Lwt.t)
   -> (Os_types.User.id -> 'a -> 'b -> 'c Lwt.t)
@@ -158,8 +158,8 @@ val connected_fun
     Use only one connection wrapper for each request!
 *)
 
-val connected_rpc
-  :  ?allow:Os_types.Group.t list
+val connected_rpc :
+   ?allow:Os_types.Group.t list
   -> ?deny:Os_types.Group.t list
   -> ?deny_fun:(Os_types.User.id option -> 'b Lwt.t)
   -> (Os_types.User.id -> 'a -> 'b Lwt.t)
@@ -167,8 +167,8 @@ val connected_rpc
   -> 'b Lwt.t
 (** Wrapper for server functions (see {!connected_fun}). *)
 
-val connected_wrapper
-  :  ?allow:Os_types.Group.t list
+val connected_wrapper :
+   ?allow:Os_types.Group.t list
   -> ?deny:Os_types.Group.t list
   -> ?deny_fun:(Os_types.User.id option -> 'b Lwt.t)
   -> ?force_unconnected:bool
@@ -180,8 +180,8 @@ val connected_wrapper
     It is recommended to use this wrapper for all your server functions! *)
 
 module Opt : sig
-  val connected_fun
-    :  ?allow:Os_types.Group.t list
+  val connected_fun :
+     ?allow:Os_types.Group.t list
     -> ?deny:Os_types.Group.t list
     -> ?deny_fun:(Os_types.User.id option -> 'c Lwt.t)
     -> ?force_unconnected:bool
@@ -194,8 +194,8 @@ module Opt : sig
       option] for user id.
   *)
 
-  val connected_rpc
-    :  ?allow:Os_types.Group.t list
+  val connected_rpc :
+     ?allow:Os_types.Group.t list
     -> ?deny:Os_types.Group.t list
     -> ?deny_fun:(Os_types.User.id option -> 'b Lwt.t)
     -> ?force_unconnected:bool
@@ -217,6 +217,6 @@ val get_current_userid_o : (unit -> Os_types.User.id option) ref
 
 [%%server.start]
 
-val set_warn_connection_change
-  :  (([`Session], [`Data]) Eliom_state.Ext.state -> unit)
+val set_warn_connection_change :
+   (([`Session], [`Data]) Eliom_state.Ext.state -> unit)
   -> unit

@@ -74,10 +74,11 @@ let%server generate_action_link_key
   if send_email
   then
     Lwt.async (fun () ->
-        try%lwt
-          Os_email.send ~to_addrs:["", email] ~subject:"creation" ~url:act_link
-            [text]
-        with _ -> Lwt.return_unit);
+      try%lwt
+        Os_email.send
+          ~to_addrs:["", email]
+          ~subject:"creation" ~url:act_link [text]
+      with _ -> Lwt.return_unit);
   act_key
 
 (** For default value of [autoconnect], cf. [Os_user.add_actionlinkkey]. *)
@@ -176,12 +177,12 @@ let disconnect_handler ?(main_page = false) () () =
       (restart
          ?url:
            (if ~%main_page
-           then None
-           else
-             Some
-               (make_uri ~absolute:true ~service:Eliom_service.reload_action ()))
+            then None
+            else
+              Some
+                (make_uri ~absolute:true ~service:Eliom_service.reload_action ()))
          ()
-        : unit)];
+       : unit)];
   Lwt.return_unit
 
 let%rpc disconnect_handler_rpc (main_page : bool) =
@@ -215,6 +216,7 @@ let%rpc connect_handler_rpc (v : (string * string) * bool) : unit Lwt.t =
   connect_handler () v
 
 let%client connect_handler () v = connect_handler_rpc v
+
 exception%shared Custom_action_link of Os_types.Action_link_key.info * bool
 (* If true, the link corresponds to a phantom user
                 (user who never created its account).
@@ -231,19 +233,19 @@ exception%server
 exception%shared Invalid_action_key of Os_types.Action_link_key.info
 exception%shared No_such_resource
 
-let%rpc action_link_handler_common myid_o (akey : string)
-    : [ `Account_already_activated_unconnected of Os_types.Action_link_key.info
-      | `Custom_action_link of Os_types.Action_link_key.info * bool
-      | `Invalid_action_key of Os_types.Action_link_key.info
-      | `No_such_resource
-      | `Reload
-      | `Restart_if_app ]
-    Lwt.t
+let%rpc action_link_handler_common myid_o (akey : string) :
+    [ `Account_already_activated_unconnected of Os_types.Action_link_key.info
+    | `Custom_action_link of Os_types.Action_link_key.info * bool
+    | `Invalid_action_key of Os_types.Action_link_key.info
+    | `No_such_resource
+    | `Reload
+    | `Restart_if_app ]
+      Lwt.t
   =
   try%lwt
     let open Os_types.Action_link_key in
     let%lwt ({userid; email; validity; expiry; action; data = _; autoconnect} as
-            action_link)
+             action_link)
       =
       Os_user.get_actionlinkkey_info akey
     in

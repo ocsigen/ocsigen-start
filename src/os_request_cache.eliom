@@ -29,22 +29,22 @@ module type Cache_sig = sig
 end
 
 module Make (M : sig
-  type key
-  type value
+    type key
+    type value
 
-  val compare : key -> key -> int
-  val get : key -> value Lwt.t
-end) =
+    val compare : key -> key -> int
+    val get : key -> value Lwt.t
+  end) =
 struct
   type key = M.key
   type value = M.value
 
   (* we use an associative map to store the data *)
   module MMap = Map.Make (struct
-    type t = M.key
+      type t = M.key
 
-    let compare = M.compare
-  end)
+      let compare = M.compare
+    end)
 
   (* we use an eliom reference with the restrictive request scope, which is
      sufficient and safe (SECURITY) *)

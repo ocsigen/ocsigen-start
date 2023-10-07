@@ -35,8 +35,8 @@ val get_image_height : string -> int Lwt.t
 val get_image_width : string -> int Lwt.t
 (** Return the width of the given image. *)
 
-val resize_image
-  :  src:string
+val resize_image :
+   src:string
   -> ?dst:string
   -> width:int
   -> height:int
@@ -47,8 +47,8 @@ val resize_image
    with the corresponding unix process status.
 *)
 
-val crop_image
-  :  src:string
+val crop_image :
+   src:string
   -> ?dst:string
   -> ?ratio:float
   -> top:float
@@ -66,8 +66,8 @@ val crop_image
     [Error_while_cropping] with the corresponding unix process status.
  *)
 
-val record_image
-  :  string
+val record_image :
+   string
   -> ?ratio:float
   -> ?cropping:float * float * float * float
   -> Ocsigen_extensions.file_info

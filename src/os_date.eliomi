@@ -118,8 +118,8 @@ val smart_hours_minutes : local_calendar -> string
     If the timezone is unknown, GMT is added.
  *)
 
-val smart_interval
-  :  ?now:local_calendar
+val smart_interval :
+   ?now:local_calendar
   -> local_calendar
   -> local_calendar
   -> string
@@ -138,8 +138,8 @@ val smart_interval
     year is needed and ["%B %d"] if not.
  *)
 
-val smart_date_interval
-  :  ?now:local_calendar
+val smart_date_interval :
+   ?now:local_calendar
   -> local_calendar
   -> local_calendar
   -> string

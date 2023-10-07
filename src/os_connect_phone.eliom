@@ -112,8 +112,7 @@ let%server confirm_code_signup_no_connect ~first_name ~last_name ~code ~password
   | _ -> Lwt.return_none
 
 let%rpc confirm_code_signup ~(first_name : string) ~(last_name : string)
-    ~(code : string) ~(password : string) ()
-    : bool Lwt.t
+    ~(code : string) ~(password : string) () : bool Lwt.t
   =
   match%lwt
     confirm_code_signup_no_connect ~first_name ~last_name ~code ~password ()

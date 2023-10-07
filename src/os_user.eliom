@@ -62,6 +62,7 @@ let create_user_from_db d = fst (create_user_from_db0 d)
 
 (** Getters functions. *)
 let%shared userid_of_user (u : Os_types.User.t) = u.userid
+
 let%shared firstname_of_user u = u.fn
 let%shared lastname_of_user u = u.ln
 let%shared avatar_of_user u = u.avatar
@@ -91,17 +92,17 @@ include Os_db.User
 (* Using cache tools to prevent multiple same database queries
    during the request. *)
 module MCache = Os_request_cache.Make (struct
-  type key = Os_types.User.id
-  type value = Os_types.User.t * bool
+    type key = Os_types.User.id
+    type value = Os_types.User.t * bool
 
-  let compare = compare
+    let compare = compare
 
-  let get key =
-    try%lwt
-      let%lwt g = Os_db.User.user_of_userid key in
-      Lwt.return (create_user_from_db0 g)
-    with Os_db.No_such_resource -> Lwt.fail No_such_user
-end)
+    let get key =
+      try%lwt
+        let%lwt g = Os_db.User.user_of_userid key in
+        Lwt.return (create_user_from_db0 g)
+      with Os_db.No_such_resource -> Lwt.fail No_such_user
+  end)
 
 (* Overwrite the function [user_of_userid] of [Os_db.User] and use
    the [get] function of the cache module. *)
@@ -118,7 +119,6 @@ let password_set userid =
    All the following functions are only helpers/wrappers around db
    functions ones. They generally use the type [t] of the module
    and get rid of the part of picking each field of the record [t].
-
 *)
 
 (** Create new user. May raise [Already_exists] *)

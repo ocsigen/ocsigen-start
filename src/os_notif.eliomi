@@ -32,8 +32,8 @@ open Os_types
 module type S = sig
   include Eliom_notif.S with type identity = User.id option
 
-  val unlisten_user
-    :  ?sitedata:Eliom_common.sitedata
+  val unlisten_user :
+     ?sitedata:Eliom_common.sitedata
     -> userid:User.id
     -> key
     -> unit
@@ -60,9 +60,9 @@ end
 (** see [Eliom_notif.Make] *)
 module Make (A : ARG) :
   S
-    with type key = A.key
-     and type server_notif = A.server_notif
-     and type client_notif = A.client_notif
+  with type key = A.key
+   and type server_notif = A.server_notif
+   and type client_notif = A.client_notif
 
 (** [ARG_SIMPLE] is for making [Make_Simple].
     It is a simplified version of [Eliom_notif.ARG_SIMPLE] *)
@@ -77,6 +77,6 @@ end
 *)
 module Make_Simple (A : ARG_SIMPLE) :
   S
-    with type key = A.key
-     and type server_notif = A.notification
-     and type client_notif = A.notification
+  with type key = A.key
+   and type server_notif = A.notification
+   and type client_notif = A.notification

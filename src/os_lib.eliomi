@@ -60,8 +60,8 @@ val memoizator : (unit -> 'a Lwt.t) -> unit -> 'a Lwt.t
 val string_repeat : string -> int -> string
 val string_filter : (char -> bool) -> string -> string
 
-val lwt_bound_input_enter
-  :  ?a:[< Html_types.input_attrib] Eliom_content.Html.attrib list
+val lwt_bound_input_enter :
+   ?a:[< Html_types.input_attrib] Eliom_content.Html.attrib list
   -> ?button:[< Html_types.button] Eliom_content.Html.elt
   -> ?validate:(string -> bool) Eliom_client_value.t
   -> (string -> unit Lwt.t) Eliom_client_value.t
@@ -69,8 +69,8 @@ val lwt_bound_input_enter
 (** [lwt_bound_input_enter f] produces an input element bound to [f],
     i.e., when the user submits the input, we call [f]. *)
 
-val lwt_bind_input_enter
-  :  ?validate:(string -> bool) Eliom_client_value.t
+val lwt_bind_input_enter :
+   ?validate:(string -> bool) Eliom_client_value.t
   -> ?button:[< Html_types.button | Html_types.input] Eliom_content.Html.elt
   -> Html_types.input Eliom_content.Html.elt
   -> (string -> unit Lwt.t) Eliom_client_value.t

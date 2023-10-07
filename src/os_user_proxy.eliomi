@@ -39,8 +39,8 @@ val get_data_from_db : 'a -> Os_types.User.id -> Os_types.User.t Lwt.t
     Data comes from the database, not the cache.
  *)
 
-val get_data_from_db_for_client
-  :  'a
+val get_data_from_db_for_client :
+   'a
   -> Os_types.User.id
   -> Os_types.User.t Lwt.t
 (** [get_data_from_db_for_client myid_o userid] returns the user which has ID

@@ -25,15 +25,15 @@ type sms_error_core = [`Unknown | `Send | `Limit | `Invalid_number]
 
 [%%server.start]
 
-val set_send_sms_handler
-  :  (number:string -> string -> (unit, sms_error_core) result Lwt.t)
+val set_send_sms_handler :
+   (number:string -> string -> (unit, sms_error_core) result Lwt.t)
   -> unit
 (** [set_send_sms_handler f] registers [f] as the function to be
     called to send SMS messages. Used to send activation codes for
     connectivity by mail. *)
 
-val confirm_code_signup_no_connect
-  :  first_name:string
+val confirm_code_signup_no_connect :
+   first_name:string
   -> last_name:string
   -> code:string
   -> password:string
@@ -60,8 +60,8 @@ val confirm_code_extra : string -> bool Lwt.t
 (** Confirm validation code and add extra phone to account of the currently
     connected user*)
 
-val confirm_code_signup
-  :  first_name:string
+val confirm_code_signup :
+   first_name:string
   -> last_name:string
   -> code:string
   -> password:string
@@ -74,8 +74,8 @@ val confirm_code_recovery : string -> bool Lwt.t
 (** Confirm validation code and recover account. We redirect to the
     settings page for setting a new password. *)
 
-val connect
-  :  keepmeloggedin:bool
+val connect :
+   keepmeloggedin:bool
   -> password:string
   -> string
   -> [`Login_ok | `No_such_user | `Wrong_password | `Password_not_set] Lwt.t

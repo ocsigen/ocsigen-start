@@ -67,8 +67,8 @@ exception No_such_resource
 
 [%%shared.start]
 
-val action_link_handler
-  :  int64 option
+val action_link_handler :
+   int64 option
   -> string
   -> unit
   -> 'a Eliom_registration.application_content Eliom_registration.kind Lwt.t
@@ -80,8 +80,8 @@ val action_link_handler
     raised.
  *)
 
-val confirm_code_signup_handler
-  :  unit
+val confirm_code_signup_handler :
+   unit
   -> string * (string * (string * string))
   -> unit Lwt.t
 (** [confirm_code_signup_handler () (first_name, (last_name, (pass,
@@ -102,8 +102,8 @@ val confirm_code_recovery_handler : unit -> string -> unit Lwt.t
 
 [%%server.start]
 
-val forgot_password_handler
-  :  ( unit
+val forgot_password_handler :
+   ( unit
      , unit
      , Eliom_service.get
      , Eliom_service.att
@@ -127,8 +127,8 @@ val forgot_password_handler
 val preregister_handler : unit -> string -> unit Lwt.t
 (** [preregister_handler () email] preregisters the email [email]. *)
 
-val set_password_handler
-  :  Os_types.User.id
+val set_password_handler :
+   Os_types.User.id
   -> unit
   -> string * string
   -> unit Lwt.t
@@ -138,8 +138,8 @@ val set_password_handler
     don't correspond, {!Os_msg.msg} is called with the level [`Err].
  *)
 
-val set_personal_data_handler
-  :  Os_types.User.id
+val set_personal_data_handler :
+   Os_types.User.id
   -> unit
   -> (string * string) * (string * string)
   -> unit Lwt.t

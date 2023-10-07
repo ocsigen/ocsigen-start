@@ -151,6 +151,7 @@ let%client update_language_service = ~%update_language_service
 let%client confirm_code_signup_service = ~%confirm_code_signup_service
 let%client confirm_code_extra_service = ~%confirm_code_extra_service
 let%client confirm_code_recovery_service = ~%confirm_code_recovery_service
+
 (* [Os_handlers.add_email_handler] needs access to the settings
    service, but the latter needs to be defined in the template. So we
    use the reference [settings_service_ref]. The template needs to
