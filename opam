@@ -31,7 +31,6 @@ depends: [
   "resource-pooling" {>= "1.0" & < "2.0"}
   "cohttp-lwt-unix"
   "conf-npm" {>= "1"}
-  "ocamlnet"
   "re" {>= "1.7.2"}
 ]
 depexts: [

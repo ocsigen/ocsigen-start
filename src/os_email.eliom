@@ -33,41 +33,28 @@ let email_pattern = email_pattern
 let email_regexp = Str.regexp_case_fold email_pattern
 let is_valid email = Str.string_match email_regexp email 0
 
-let default_send ?url ~from_addr ~to_addrs ~subject content =
-  (* TODO with fork ou mieux en utilisant l'event loop de ocamlnet *)
+let default_send ?url:_ ~from_addr ~to_addrs ~subject:_ content =
   let echo = printf "%s\n" in
   let flush () = printf "%!" in
+  let print_tuple (a, b) = printf " (%s,%s)\n" a b in
   let content =
-    match url with Some url -> content @ [url] | None -> content
+    if List.length content = 0
+    then ""
+    else
+      List.fold_left
+        (fun s1 s2 -> s1 ^ "\n" ^ s2)
+        (List.hd content) (List.tl content)
   in
-  try
-    let content =
-      if List.length content = 0
-      then ""
-      else
-        List.fold_left
-          (fun s1 s2 -> s1 ^ "\n" ^ s2)
-          (List.hd content) (List.tl content)
-    in
-    let print_tuple (a, b) = printf " (%s,%s)\n" a b in
-    echo "Sending e-mail:";
-    echo "[from_addr]: ";
-    print_tuple from_addr;
-    echo "[to_addrs]: [";
-    List.iter print_tuple to_addrs;
-    echo "]";
-    printf "[content]:\n%s\n" content;
-    let%lwt () =
-      Lwt_preemptive.detach
-        (Netsendmail.sendmail ~mailer:!mailer)
-        (Netsendmail.compose ~from_addr ~to_addrs ~subject content)
-    in
-    echo "[SUCCESS]: e-mail has been sent!";
-    Lwt.return_unit
-  with Netchannels.Command_failure (Unix.WEXITED 127) ->
-    echo "[FAIL]: e-mail has not been sent!";
-    flush ();
-    Lwt.fail (Invalid_mailer (!mailer ^ " not found"))
+  echo "Sending e-mail:";
+  echo "[from_addr]: ";
+  print_tuple from_addr;
+  echo "[to_addrs]: [";
+  List.iter print_tuple to_addrs;
+  echo "]";
+  printf "[content]:\n%s\n" content;
+  echo "Please set your own sendmail function using Os_email.set_send";
+  flush ();
+  Lwt.return ()
 
 let send_ref = ref default_send
 

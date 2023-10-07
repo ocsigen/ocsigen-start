@@ -1,7 +1,8 @@
 let with_suffixes nm l f =
   List.iter
     (fun suffix ->
-      if Filename.check_suffix nm suffix then f (Filename.chop_suffix nm suffix))
+       if Filename.check_suffix nm suffix
+       then f (Filename.chop_suffix nm suffix))
     l
 
 let handle_file_client nm =
@@ -11,9 +12,9 @@ let handle_file_client nm =
   then ()
   else
     with_suffixes nm [".eliom"; ".tsv"] (fun nm ->
-        Printf.printf
-          "(rule (target %s.ml) (deps ../%s.eliom)\n\  (action\n\    (with-stdout-to %%{target}\n\      (chdir .. (run tools/eliom_ppx_client.exe --as-pp -server-cmo %%{cmo:../%s} --impl %s.eliom)))))\n"
-          nm nm nm nm);
+      Printf.printf
+        "(rule (target %s.ml) (deps ../%s.eliom)\n\  (action\n\    (with-stdout-to %%{target}\n\      (chdir .. (run tools/eliom_ppx_client.exe --as-pp -server-cmo %%{cmo:../%s} --impl %s.eliom)))))\n"
+        nm nm nm nm);
   if Filename.check_suffix nm ".eliomi"
   then
     let nm = Filename.chop_suffix nm ".eliomi" in

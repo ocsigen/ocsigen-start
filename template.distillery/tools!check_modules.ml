@@ -10,17 +10,19 @@ let modules_from_bytecode_executable nm =
     ()
   done;
   let lst = ref [] in
-  while
-    let l = input_line ch in
-    if l <> "" && l.[0] = '\t'
-    then (
-      let i = String.rindex l '\t' in
-      lst := String.sub l (i + 1) (String.length l - i - 1) :: !lst;
-      true)
-    else false
-  do
-    ()
-  done;
+  (try
+     while
+       let l = input_line ch in
+       if l <> "" && l.[0] = '\t'
+       then (
+         let i = String.rindex l '\t' in
+         lst := String.sub l (i + 1) (String.length l - i - 1) :: !lst;
+         true)
+       else false
+     do
+       ()
+     done
+   with End_of_file -> ());
   !lst
 
 let modules_from_bytecode_library nm =
@@ -75,17 +77,17 @@ let _ =
   let missing_server_modules =
     List.filter_map
       (fun (m, sect) ->
-        let c = List.mem m client_modules in
-        let s = List.mem m server_modules in
-        match c, s, sect with true, false, true -> Some m | _ -> None)
+         let c = List.mem m client_modules in
+         let s = List.mem m server_modules in
+         match c, s, sect with true, false, true -> Some m | _ -> None)
       eliom_modules
   in
   let missing_client_modules =
     List.filter_map
       (fun (m, sect) ->
-        let c = List.mem m client_modules in
-        let s = List.mem m server_modules in
-        match c, s, sect with false, true, true -> Some m | _ -> None)
+         let c = List.mem m client_modules in
+         let s = List.mem m server_modules in
+         match c, s, sect with false, true, true -> Some m | _ -> None)
       eliom_modules
   in
   let missing_modules =
