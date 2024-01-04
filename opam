@@ -3,9 +3,9 @@ name: "ocsigen-start"
 version: "6.1.2"
 authors: "dev@ocsigen.org"
 maintainer: "dev@ocsigen.org"
-synopsis: "An Eliom application skeleton ready to use to build your own application with users, (pre)registration, notifications, etc"
+synopsis: "Higher-level library for developing Web and mobile applications with users, registration, notifications, etc"
 description: """
-Ocsigen Start is a set of higher-level libraries for building client-server web applications with Ocsigen (Js_of_ocaml and Eliom).
+Ocsigen Start is a set of higher-level libraries for building client-server Web applications with Ocsigen (Js_of_ocaml and Eliom).
 It provides modules for user management (session management, registration, activation keys, ...), managing groups of users, displaying tips, and easily sending notifications to the users.
 Ocsigen Start comes with an eliom-distillery template for an app with a database, user management, and session management.
 This template is intended to serve as a basis for quickly building the Minimum Viable Product for web applications with users.
