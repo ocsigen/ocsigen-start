@@ -141,14 +141,20 @@ let to_utc ?(timezone = user_tz ()) d =
 
 let%client to_local d =
   let d = CalendarLib.Calendar.to_unixfloat d in
-  let o = (new%js Js.date_fromTimeValue (d *. 1000.))##getTimezoneOffset in
+  let o =
+    (new%js Js.date_fromTimeValue (Js.float (d *. 1000.)))##getTimezoneOffset
+  in
   CalendarLib.Calendar.from_unixfloat (d -. (float o *. 60.))
 
 let%client to_utc d =
   let d = CalendarLib.Calendar.to_unixfloat d in
-  let o = (new%js Js.date_fromTimeValue (d *. 1000.))##getTimezoneOffset in
+  let o =
+    (new%js Js.date_fromTimeValue (Js.float (d *. 1000.)))##getTimezoneOffset
+  in
   let d' = d +. (float o *. 60.) in
-  let o' = (new%js Js.date_fromTimeValue (d' *. 1000.))##getTimezoneOffset in
+  let o' =
+    (new%js Js.date_fromTimeValue (Js.float (d' *. 1000.)))##getTimezoneOffset
+  in
   CalendarLib.Calendar.from_unixfloat
     (if o = o'
      then d' (* We guessed the DST status right *)
