@@ -18,8 +18,8 @@ let%server () =
   if enable
   then
     Os_connect_phone.set_send_sms_handler (fun ~number message ->
-        Printf.printf "Send SMS %s to %s\n%!" message number;
-        Lwt.return (Ok ()))
+      Printf.printf "Send SMS %s to %s\n%!" message number;
+      Lwt.return (Ok ()))
 
 let () =
   if enable

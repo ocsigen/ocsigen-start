@@ -7,8 +7,8 @@ module type Page = sig
   val name : unit -> string
   val page_class : string
 
-  val service
-    : ( unit
+  val service :
+    ( unit
       , unit
       , Eliom_service.get
       , Eliom_service.att

@@ -28,8 +28,10 @@ let%server detail_page_service =
 (* Make service available on the client *)
 let%client service = ~%service
 let%client detail_page_service = ~%detail_page_service
+
 (* Name for demo menu *)
 let%shared name () = [%i18n Demo.S.pagetransition]
+
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-transition"
 
@@ -67,9 +69,9 @@ let%shared page () =
            !r
        in
        Lwt_js_events.clicks (To_dom.of_element ~%add_button) (fun _ _ ->
-           Html.Manip.appendChild ~%l (create_item (counter ()));
-           Lwt.return_unit)
-        : unit Lwt.t)];
+         Html.Manip.appendChild ~%l (create_item (counter ()));
+         Lwt.return_unit)
+       : unit Lwt.t)];
   Lwt.return
     [ h1 [%i18n Demo.pagetransition_list_page]
     ; p [%i18n Demo.pagetransition_intro]
@@ -83,10 +85,10 @@ let%shared make_detail_page page () =
   ignore
     [%client
       (Lwt.async (fun () ->
-           Lwt_js_events.clicks (To_dom.of_element ~%back_button) (fun _ _ ->
-               Js_of_ocaml.Dom_html.window##.history##back;
-               Lwt.return_unit))
-        : unit)];
+         Lwt_js_events.clicks (To_dom.of_element ~%back_button) (fun _ _ ->
+           Js_of_ocaml.Dom_html.window##.history##back;
+           Lwt.return_unit))
+       : unit)];
   [ h1
       ([%i18n Demo.pagetransition_detail_page]
       @ [txt (Printf.sprintf " %d" page)])

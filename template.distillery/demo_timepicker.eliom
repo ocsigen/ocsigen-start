@@ -9,8 +9,7 @@ open Eliom_content.Html.D]
 
 (* Service for this demo *)
 let%server service =
-  Eliom_service.create
-    ~path:(Eliom_service.Path ["demo-timepicker"])
+  Eliom_service.create ~path:(Eliom_service.Path ["demo-timepicker"])
     ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
 
 (* Make service available on the client *)
@@ -34,6 +33,7 @@ let%rpc time_reactive () : string Eliom_shared.React.S.t Lwt.t =
 
 (* Name for demo menu *)
 let%shared name () = [%i18n Demo.S.timepicker]
+
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-timepicker"
 
@@ -48,9 +48,9 @@ let%shared page () =
   ignore
     [%client
       (Lwt.async (fun () ->
-           Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
-             (fun _ _ -> ~%back_f (); Lwt.return_unit))
-        : _)];
+         Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
+           (fun _ _ -> ~%back_f (); Lwt.return_unit))
+       : _)];
   let%lwt tr = time_reactive () in
   Lwt.return
     [ h1 [%i18n Demo.timepicker]

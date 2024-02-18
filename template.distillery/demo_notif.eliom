@@ -6,14 +6,15 @@ open Js_of_ocaml_lwt]
 
 (* Service for this demo *)
 let%server service =
-  Eliom_service.create
-    ~path:(Eliom_service.Path ["demo-notif"])
+  Eliom_service.create ~path:(Eliom_service.Path ["demo-notif"])
     ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
 
 (* Make service available on the client *)
 let%client service = ~%service
+
 (* Name for demo menu *)
 let%shared name () = [%i18n Demo.S.notification]
+
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-notif"
 
@@ -24,13 +25,13 @@ let%shared page_class = "os-page-demo-notif"
    (for example type key = int64).
 *)
 module Notif = Os_notif.Make_Simple (struct
-  type key = unit
+    type key = unit
 
-  (* The resources identifiers.
+    (* The resources identifiers.
                        Here unit because we have only one resource. *)
 
-  type notification = string
-end)
+    type notification = string
+  end)
 
 (* Broadcast message [v] *)
 let%rpc notify (v : string) : unit Lwt.t =
@@ -50,18 +51,18 @@ let%rpc listen () : unit Lwt.t = Notif.listen (); Lwt.return_unit
    happens. *)
 let%server () =
   Os_session.on_start_process (fun _ ->
-      let e : (unit * string) Eliom_react.Down.t = Notif.client_ev () in
-      ignore
-        [%client
-          (Eliom_lib.Dom_reference.retain Js_of_ocaml.Dom_html.window
-             ~keep:
-               (React.E.map
-                  (fun (_, msg) ->
-                    (* Eliom_lib.alert "%s" msg *)
-                    Os_msg.msg ~level:`Msg (Printf.sprintf "%s" msg))
-                  ~%e)
-            : unit)];
-      Lwt.return_unit)
+    let e : (unit * string) Eliom_react.Down.t = Notif.client_ev () in
+    ignore
+      [%client
+        (Eliom_lib.Dom_reference.retain Js_of_ocaml.Dom_html.window
+           ~keep:
+             (React.E.map
+                (fun (_, msg) ->
+                   (* Eliom_lib.alert "%s" msg *)
+                   Os_msg.msg ~level:`Msg (Printf.sprintf "%s" msg))
+                ~%e)
+         : unit)];
+    Lwt.return_unit)
 
 (* Make a text input field that calls [f s] for each [s] submitted *)
 let%shared make_form msg f =
@@ -79,7 +80,7 @@ let%shared make_form msg f =
        let%lwt () = ~%f v in
        inp##.value := Js_of_ocaml.Js.string "";
        Lwt.return_unit
-        : unit)];
+       : unit)];
   Eliom_content.Html.D.div [inp; btn]
 
 let%rpc unlisten () : unit Lwt.t = Notif.unlisten (); Lwt.return_unit

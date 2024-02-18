@@ -7,14 +7,15 @@
 
 (* Service for this demo *)
 let%server service =
-  Eliom_service.create
-    ~path:(Eliom_service.Path ["demo-pull-to-refresh"])
+  Eliom_service.create ~path:(Eliom_service.Path ["demo-pull-to-refresh"])
     ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
 
 (* Make service available on the client *)
 let%client service = ~%service
+
 (* Name for demo menu *)
 let%shared name () = [%i18n Demo.S.pull_to_refresh]
+
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-pull"
 

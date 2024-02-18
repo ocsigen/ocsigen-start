@@ -35,24 +35,22 @@ let%server update_language lang =
 
 let%server _ =
   Os_session.on_start_process (fun _ ->
-      (* Guess a default language. *)
-      let%lwt lang = best_matched_language () in
-      ignore (update_language lang);
-      Lwt.return_unit);
+    (* Guess a default language. *)
+    let%lwt lang = best_matched_language () in
+    ignore (update_language lang);
+    Lwt.return_unit);
   Os_session.on_start_connected_process (fun userid ->
-      (* Set language according to user preferences. *)
-      let%lwt language =
-        match%lwt Os_user.get_language userid with
-        | Some lang ->
-            Lwt.return (%%%MODULE_NAME%%%_i18n.guess_language_of_string lang)
-        | None ->
-            let%lwt best_language = best_matched_language () in
-            ignore
-              (Os_user.update_language ~userid
-                 ~language:
-                   (%%%MODULE_NAME%%%_i18n.string_of_language best_language));
-            Lwt.return best_language
-      in
-      %%%MODULE_NAME%%%_i18n.set_language language;
-      ignore [%client (%%%MODULE_NAME%%%_i18n.set_language ~%language : unit)];
-      Lwt.return_unit)
+    (* Set language according to user preferences. *)
+    let%lwt language =
+      match%lwt Os_user.get_language userid with
+      | Some lang -> Lwt.return (%%%MODULE_NAME%%%_i18n.guess_language_of_string lang)
+      | None ->
+          let%lwt best_language = best_matched_language () in
+          ignore
+            (Os_user.update_language ~userid
+               ~language:(%%%MODULE_NAME%%%_i18n.string_of_language best_language));
+          Lwt.return best_language
+    in
+    %%%MODULE_NAME%%%_i18n.set_language language;
+    ignore [%client (%%%MODULE_NAME%%%_i18n.set_language ~%language : unit)];
+    Lwt.return_unit)

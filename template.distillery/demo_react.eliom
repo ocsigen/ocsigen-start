@@ -7,14 +7,15 @@
 
 (* Service for this demo *)
 let%server service =
-  Eliom_service.create
-    ~path:(Eliom_service.Path ["demo-react"])
+  Eliom_service.create ~path:(Eliom_service.Path ["demo-react"])
     ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
 
 (* Make service available on the client *)
 let%client service = ~%service
+
 (* Name for demo menu *)
 let%shared name () = [%i18n Demo.S.reactive_programming]
+
 (* Class for the page containing this demo (for internal use) *)
 let%shared page_class = "os-page-demo-react"
 
@@ -34,7 +35,7 @@ let%shared make_form msg f =
        let%lwt () = ~%f v in
        inp##.value := Js_of_ocaml.Js.string "";
        Lwt.return_unit
-        : unit)];
+       : unit)];
   Eliom_content.Html.D.div [inp; btn]
 
 (* Page for this demo *)
@@ -51,7 +52,7 @@ let%shared page () =
     make_form [%i18n Demo.S.reactive_programming_button]
       [%client
         (fun v -> Lwt.return (Eliom_shared.ReactiveData.RList.cons v ~%h)
-          : string -> unit Lwt.t)]
+         : string -> unit Lwt.t)]
   and l =
     (* Produce <li> items from l contents.
        The shared function will first be called once server or client-side
