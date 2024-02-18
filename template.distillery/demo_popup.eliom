@@ -7,19 +7,8 @@ open Eliom_content.Html]
 [%%shared open Eliom_content.Html.F]
 [%%client open Js_of_ocaml_lwt]
 
-(* Service for this demo, defined in the server-side app *)
-let%server service =
-  Eliom_service.create ~path:(Eliom_service.Path ["demo-popup"])
-    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
-
-(* Make service available on the client *)
-let%client service = ~%service
-
 (* Name for demo menu. This value is defined both server and client-side. *)
 let%shared name () = [%i18n Demo.S.popup]
-
-(* Class for the page containing this demo (for internal use) *)
-let%shared page_class = "os-page-demo-popup"
 
 (* The function generating the page can be called either from the server or
    the client (shared section). *)
@@ -67,3 +56,13 @@ let%shared page () =
      See internationalization demo for i18n syntax.
   *)
   Lwt.return [h1 [%i18n Demo.popup]; p [%i18n Demo.popup_content]; p [button]]
+
+(* Service registration is done on both sides (shared section),
+   so that pages can be generated from the server
+   (first request, crawling, search engines ...)
+   or the client (subsequent link clicks, or mobile app ...). *)
+let%shared () =
+  %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_popup
+    ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
+      let%lwt p = page () in
+      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-popup"]] myid_o p )

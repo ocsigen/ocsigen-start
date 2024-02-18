@@ -4,20 +4,8 @@
 (** Demo for shared reactive content *)
 
 [%%client open Js_of_ocaml_lwt]
-
-(* Service for this demo *)
-let%server service =
-  Eliom_service.create ~path:(Eliom_service.Path ["demo-react"])
-    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
-
-(* Make service available on the client *)
-let%client service = ~%service
-
-(* Name for demo menu *)
-let%shared name () = [%i18n Demo.S.reactive_programming]
-
-(* Class for the page containing this demo (for internal use) *)
-let%shared page_class = "os-page-demo-react"
+[%%shared open Eliom_content]
+[%%shared open Html.D]
 
 (* Make a text input field that calls [f s] for each [s] submitted *)
 let%shared make_form msg f =
@@ -71,3 +59,13 @@ let%shared page () =
       ; F.p [F.txt [%i18n Demo.S.reactive_programming_3]]
       ; inp
       ; F.div [R.ul l] ]
+
+(* Service registration is done on both sides (shared section),
+   so that pages can be generated from the server
+   (first request, crawling, search engines ...)
+   or the client (subsequent link clicks, or mobile app ...). *)
+let%shared () =
+  %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_react
+    ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
+      let%lwt p = page () in
+      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-react"]] myid_o p )

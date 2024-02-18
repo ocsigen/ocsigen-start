@@ -18,24 +18,5 @@ let%shared handler myid_o () () =
     ; p [%i18n Demo.intro_3] ]
 
 let%shared () =
-  let registerDemo (module D : Demo_tools.Page) =
-    %%%MODULE_NAME%%%_base.App.register ~service:D.service
-      ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
-        let%lwt p = D.page () in
-        %%%MODULE_NAME%%%_container.page ~a:[a_class [D.page_class]] myid_o p )
-  in
-  List.iter registerDemo Demo_tools.demos;
-  %%%MODULE_NAME%%%_base.App.register ~service:%%%MODULE_NAME%%%_services.demo_service
+  %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo
     (%%%MODULE_NAME%%%_page.Opt.connected_page handler)
-
-(* [detail_page_handler] is not registered in [Demo_tools] because we
-   - don't want to show detail pages in the menu. *)
-let%shared () =
-  let detail_page_handler myid_o page () =
-    %%%MODULE_NAME%%%_container.page
-      ~a:[a_class ["os-page-demo-transition"]]
-      myid_o
-      (Demo_pagetransition.make_detail_page page ())
-  in
-  %%%MODULE_NAME%%%_base.App.register ~service:Demo_pagetransition.detail_page_service
-    (%%%MODULE_NAME%%%_page.Opt.connected_page detail_page_handler)

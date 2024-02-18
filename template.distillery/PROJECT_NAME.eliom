@@ -72,7 +72,7 @@ let%server _ =
 (* The modules below are all the modules that needs to be explicitely
    linked-in. *)
 
-[%%server.start]
+[%%shared.start]
 
 module Demo = Demo
 module Demo_cache = Demo_cache
@@ -98,6 +98,5 @@ module Demo_users = Demo_users
 
 [%%client.start]
 
-module Demo = Demo
 module %%%MODULE_NAME%%%_config = %%%MODULE_NAME%%%_config
 module %%%MODULE_NAME%%%_language = %%%MODULE_NAME%%%_language

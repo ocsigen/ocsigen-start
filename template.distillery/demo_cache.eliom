@@ -4,20 +4,6 @@
 (* Eliom_cscache demo *)
 open Eliom_content.Html.F]
 
-(* Service for this demo *)
-let%server service =
-  Eliom_service.create ~path:(Eliom_service.Path ["demo-cache"])
-    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
-
-(* Make service available on the client *)
-let%client service = ~%service
-
-(* Name for demo menu *)
-let%shared name () = [%i18n Demo.S.cache]
-
-(* Class for the page containing this demo (for internal use) *)
-let%shared page_class = "os-page-demo-cache"
-
 (* Page for this demo *)
 let%shared page () =
   Lwt.return
@@ -29,3 +15,13 @@ let%shared page () =
             ~os_user_proxy:[code [txt "Os_user_proxy"]]]
     ; p [%i18n Demo.cache_3 ~eliom_cscache:[code [txt "Eliom_cscache"]]]
     ; p [%i18n Demo.cache_4 ~eliom_cscache:[code [txt "Eliom_cscache"]]] ]
+
+(* Service registration is done on both sides (shared section),
+   so that pages can be generated from the server
+   (first request, crawling, search engines ...)
+   or the client (subsequent link clicks, or mobile app ...). *)
+let%shared () =
+  %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_cache
+    ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
+      let%lwt p = page () in
+      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-cache"]] myid_o p )

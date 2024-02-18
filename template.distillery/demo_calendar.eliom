@@ -4,14 +4,6 @@
 (* Calendar demo *)
 open Eliom_content.Html.D]
 
-(* Service for this demo *)
-let%server service =
-  Eliom_service.create ~path:(Eliom_service.Path ["demo-calendar"])
-    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
-
-(* Make service available on the client *)
-let%client service = ~%service
-
 (* A reactive value containing the currently selected date *)
 (* NOTE: in this example, we define a shared signal on the server side. Its
    original value can only be read when the server generates the first page
@@ -45,12 +37,6 @@ let%server date_as_string () : string Eliom_shared.React.S.t =
 let%rpc date_reactive () : string Eliom_shared.React.S.t Lwt.t =
   Lwt.return @@ date_as_string ()
 
-(* Name for demo menu *)
-let%shared name () = [%i18n Demo.S.calendar]
-
-(* Class for the page containing this demo (for internal use) *)
-let%shared page_class = "os-page-demo-calendar"
-
 (* Page for this demo *)
 let%shared page () =
   let calendar =
@@ -62,3 +48,13 @@ let%shared page () =
     ; p [%i18n Demo.this_page_show_calendar]
     ; div ~a:[a_class ["os-calendar"]] [calendar]
     ; p [Eliom_content.Html.R.txt dr] ]
+
+(* Service registration is done on both sides (shared section),
+   so that pages can be generated from the server
+   (first request, crawling, search engines ...)
+   or the client (subsequent link clicks, or mobile app ...). *)
+let%shared () =
+  %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_calendar
+    ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
+      let%lwt p = page () in
+      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-calendar"]] myid_o p )

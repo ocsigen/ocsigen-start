@@ -3,59 +3,37 @@
 
 [%%shared.start]
 
-module type Page = sig
-  val name : unit -> string
-  val page_class : string
-
-  val service :
-    ( unit
-      , unit
-      , Eliom_service.get
-      , Eliom_service.att
-      , Eliom_service.non_co
-      , Eliom_service.non_ext
-      , Eliom_service.reg
-      , [`WithoutSuffix]
-      , unit
-      , unit
-      , Eliom_service.non_ocaml )
-      Eliom_service.t
-
-  val page : unit -> Html_types.div_content Eliom_content.Html.D.elt list Lwt.t
-end
-
 let demos =
-  [ (module Demo_popup : Page)
-  ; (module Demo_rpc)
-  ; (module Demo_ref)
-  ; (module Demo_spinner)
-  ; (module Demo_pgocaml)
-  ; (module Demo_users)
-  ; (module Demo_links)
-  ; (module Demo_i18n)
-  ; (module Demo_tips)
-  ; (module Demo_carousel1)
-  ; (module Demo_carousel2)
-  ; (module Demo_carousel3)
-  ; (module Demo_tongue)
-  ; (module Demo_calendar)
-  ; (module Demo_timepicker)
-  ; (module Demo_notif)
-  ; (module Demo_react)
-  ; (module Demo_pulltorefresh)
-  ; (module Demo_cache)
-  ; (module Demo_pagetransition) ]
+  [ (fun () -> [%i18n Demo.S.rpc_button]), Demo_services.demo_rpc
+  ; (fun () -> [%i18n Demo.S.eliom_ref]), Demo_services.demo_ref
+  ; (fun () -> [%i18n Demo.S.spinner]), Demo_services.demo_spinner
+  ; (fun () -> [%i18n Demo.S.pgocaml]), Demo_services.demo_pgocaml
+  ; (fun () -> [%i18n Demo.S.users]), Demo_services.demo_users
+  ; (fun () -> [%i18n Demo.S.links_and_static_files]), Demo_services.demo_links
+  ; ( (fun () -> [%i18n Demo.S.internationalization ~capitalize:true])
+    , Demo_services.demo_i18n )
+  ; (fun () -> [%i18n Demo.S.tips]), Demo_services.demo_tips
+  ; (fun () -> [%i18n Demo.S.carousel_1]), Demo_services.demo_carousel1
+  ; (fun () -> [%i18n Demo.S.carousel_2]), Demo_services.demo_carousel2
+  ; (fun () -> [%i18n Demo.S.carousel_wheel]), Demo_services.demo_carousel3
+  ; (fun () -> [%i18n Demo.S.tongue_1]), Demo_services.demo_tongue
+  ; (fun () -> [%i18n Demo.S.calendar]), Demo_services.demo_calendar
+  ; (fun () -> [%i18n Demo.S.timepicker]), Demo_services.demo_timepicker
+  ; (fun () -> [%i18n Demo.S.notification]), Demo_services.demo_notif
+  ; (fun () -> [%i18n Demo.S.reactive_programming]), Demo_services.demo_react
+  ; (fun () -> [%i18n Demo.S.pull_to_refresh]), Demo_services.demo_pulltorefresh
+  ; (fun () -> [%i18n Demo.S.cache]), Demo_services.demo_cache
+  ; (fun () -> [%i18n Demo.S.pagetransition]), Demo_services.demo_pagetransition
+  ]
 
 let drawer_contents () =
   let open Eliom_content.Html.F in
-  let make_link (module D : Page) =
-    li [a ~service:D.service [txt @@ D.name ()] ()]
-  in
+  let make_link (name, service) = li [a ~service [txt @@ name ()] ()] in
   let submenu =
     ul ~a:[a_class ["os-drawer-submenu"]] (List.map make_link demos)
   in
   li
     [ a
         ~a:[a_class ["os-drawer-item"]]
-        ~service:%%%MODULE_NAME%%%_services.demo_service [%i18n Demo.intro] ()
+        ~service:Demo_services.demo [%i18n Demo.intro] ()
     ; submenu ]

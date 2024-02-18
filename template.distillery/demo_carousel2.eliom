@@ -20,20 +20,6 @@ let%shared lorem_ipsum =
           "Amicitiam autem adhibendam esse censent, quia sit ex eo genere, quae prosunt. Hoc loco tenere se Triarius non potuit. Facile est hoc cernere in primis puerorum aetatulis. Sed in rebus apertissimis nimium longi sumus. Utrum igitur tibi litteram videor an totas paginas commovere? Quid de Platone aut de Democrito loquar?"
       ] ]
 
-(* Service for this demo *)
-let%server service =
-  Eliom_service.create ~path:(Eliom_service.Path ["demo-carousel2"])
-    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
-
-(* Make service available on the client *)
-let%client service = ~%service
-
-(* Name for demo menu *)
-let%shared name () = [%i18n Demo.S.carousel_2]
-
-(* Class for the page containing this demo (for internal use) *)
-let%shared page_class = "os-page-demo-carousel2"
-
 (* Page for this demo *)
 let%shared page () =
   let make_page name =
@@ -93,3 +79,13 @@ let%shared page () =
     ; div
         ~a:[a_class ["demo-carousel2"]]
         [div ~a:[a_class ["demo-carousel2-box"]] [tabs; carousel]] ]
+
+(* Service registration is done on both sides (shared section),
+   so that pages can be generated from the server
+   (first request, crawling, search engines ...)
+   or the client (subsequent link clicks, or mobile app ...). *)
+let%shared () =
+  %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_carousel2
+    ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
+      let%lwt p = page () in
+      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-carousel2"]] myid_o p )

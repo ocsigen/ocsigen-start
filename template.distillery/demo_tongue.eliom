@@ -4,20 +4,6 @@
 (* Tongue demo *)
 open Eliom_content.Html.F]
 
-(* Service for this demo *)
-let%server service =
-  Eliom_service.create ~path:(Eliom_service.Path ["demo-tongue"])
-    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
-
-(* Make service available on the client *)
-let%client service = ~%service
-
-(* Name for demo menu *)
-let%shared name () = [%i18n Demo.S.tongue_1]
-
-(* Class for the page containing this demo (for internal use) *)
-let%shared page_class = "os-page-demo-tongue"
-
 (* Page for this demo *)
 let%shared page () =
   let content =
@@ -37,3 +23,13 @@ let%shared page () =
     [ h1 [%i18n Demo.tongue_1]
     ; p [%i18n Demo.ot_tongue_1]
     ; div ~a:[a_class ["demo-tongue"]] [tongue.Ot_tongue.elt] ]
+
+(* Service registration is done on both sides (shared section),
+   so that pages can be generated from the server
+   (first request, crawling, search engines ...)
+   or the client (subsequent link clicks, or mobile app ...). *)
+let%shared () =
+  %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_tongue
+    ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
+      let%lwt p = page () in
+      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-tongue"]] myid_o p )
