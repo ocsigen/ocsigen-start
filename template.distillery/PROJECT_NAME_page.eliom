@@ -22,9 +22,7 @@ let%client css_name_script = []
 (* Warning: either we use exactly the same global node (and make sure
    global nodes work properly on client side), or we do not add the
    script on client side.  We chose the second solution. *)
-let%server app_js =
-  [%%%MODULE_NAME%%%_base.App.application_script ~defer:true ()]
-
+let%server app_js = [%%%MODULE_NAME%%%_base.App.application_script ~defer:true ()]
 let%client app_js = []
 let%server the_local_js = []
 let%client the_local_js = [] (* in index.html *)
@@ -53,14 +51,14 @@ module Page_config = struct
   let default_error_page _ _ exn =
     %%%MODULE_NAME%%%_container.page None
       (if Ocsigen_config.get_debugmode ()
-      then [p [txt (Printexc.to_string exn)]]
-      else [p [txt "Error"]])
+       then [p [txt (Printexc.to_string exn)]]
+       else [p [txt "Error"]])
 
   let default_connected_error_page myid_o _ _ exn =
     %%%MODULE_NAME%%%_container.page myid_o
       (if Ocsigen_config.get_debugmode ()
-      then [p [txt (Printexc.to_string exn)]]
-      else [p [txt "Error"]])
+       then [p [txt (Printexc.to_string exn)]]
+       else [p [txt "Error"]])
 end
 
 include Os_page.Make (Page_config)]

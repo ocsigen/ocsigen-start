@@ -13,26 +13,6 @@ open Eliom_content]
 [%%shared open Html.D]
 [%%client open Js_of_ocaml_lwt]
 
-(* Service for this demo *)
-let%server service =
-  Eliom_service.create
-    ~path:(Eliom_service.Path ["demo-page-transition"; ""])
-    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
-
-let%server detail_page_service =
-  Eliom_service.create
-    ~path:(Eliom_service.Path ["demo-page-transition"; "detail"; ""])
-    ~meth:(Eliom_service.Get (Eliom_parameter.int "page"))
-    ()
-
-(* Make service available on the client *)
-let%client service = ~%service
-let%client detail_page_service = ~%detail_page_service
-(* Name for demo menu *)
-let%shared name () = [%i18n Demo.S.pagetransition]
-(* Class for the page containing this demo (for internal use) *)
-let%shared page_class = "os-page-demo-transition"
-
 let%shared create_item index =
   let open F in
   li
@@ -40,7 +20,9 @@ let%shared create_item index =
       [ a_class
           ["demo-list-item"; Printf.sprintf "demo-list-item-%d" (index mod 5)]
       ]
-    [a ~service:detail_page_service [txt (Printf.sprintf "list%d" index)] index]
+    [ a ~service:Demo_services.detail_page
+        [txt (Printf.sprintf "list%d" index)]
+        index ]
 
 let%shared page () =
   let l =
@@ -67,9 +49,9 @@ let%shared page () =
            !r
        in
        Lwt_js_events.clicks (To_dom.of_element ~%add_button) (fun _ _ ->
-           Html.Manip.appendChild ~%l (create_item (counter ()));
-           Lwt.return_unit)
-        : unit Lwt.t)];
+         Html.Manip.appendChild ~%l (create_item (counter ()));
+         Lwt.return_unit)
+       : unit Lwt.t)];
   Lwt.return
     [ h1 [%i18n Demo.pagetransition_list_page]
     ; p [%i18n Demo.pagetransition_intro]
@@ -83,11 +65,32 @@ let%shared make_detail_page page () =
   ignore
     [%client
       (Lwt.async (fun () ->
-           Lwt_js_events.clicks (To_dom.of_element ~%back_button) (fun _ _ ->
-               Js_of_ocaml.Dom_html.window##.history##back;
-               Lwt.return_unit))
-        : unit)];
+         Lwt_js_events.clicks (To_dom.of_element ~%back_button) (fun _ _ ->
+           Js_of_ocaml.Dom_html.window##.history##back;
+           Lwt.return_unit))
+       : unit)];
   [ h1
       ([%i18n Demo.pagetransition_detail_page]
       @ [txt (Printf.sprintf " %d" page)])
   ; back_button ]
+
+(* Service registration is done on both sides (shared section),
+   so that pages can be generated from the server
+   (first request, crawling, search engines ...)
+   or the client (subsequent link clicks, or mobile app ...). *)
+let%shared () =
+  %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_pagetransition
+    ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
+      let%lwt p = page () in
+      %%%MODULE_NAME%%%_container.page
+        ~a:[a_class ["os-page-demo-pagetransition"]]
+        myid_o p )
+
+let%shared () =
+  let detail_page_handler myid_o page () =
+    %%%MODULE_NAME%%%_container.page
+      ~a:[a_class ["os-page-demo-transition"]]
+      myid_o (make_detail_page page ())
+  in
+  %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.detail_page
+    (%%%MODULE_NAME%%%_page.Opt.connected_page detail_page_handler)

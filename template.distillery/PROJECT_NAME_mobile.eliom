@@ -30,12 +30,11 @@ let to_lwt f =
 
 let ondeviceready =
   to_lwt (fun cont ->
-      ignore
-      @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
-           (Js_of_ocaml.Dom_html.Event.make "deviceready")
-           (Js_of_ocaml.Dom_html.handler (fun _ ->
-                cont (); Js_of_ocaml.Js._true))
-           Js_of_ocaml.Js._false)
+    ignore
+    @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
+         (Js_of_ocaml.Dom_html.Event.make "deviceready")
+         (Js_of_ocaml.Dom_html.handler (fun _ -> cont (); Js_of_ocaml.Js._true))
+         Js_of_ocaml.Js._false)
 
 let app_started = ref false
 let initial_change_page = ref None
@@ -80,9 +79,9 @@ let () =
     @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
          (Js_of_ocaml.Dom_html.Event.make ev)
          (Js_of_ocaml.Dom_html.handler (fun _ ->
-              Firebug.console##log (Js_of_ocaml.Js.string ev);
-              Eliom_comet.activate ();
-              Js_of_ocaml.Js._true))
+            Firebug.console##log (Js_of_ocaml.Js.string ev);
+            Eliom_comet.activate ();
+            Js_of_ocaml.Js._true))
          Js_of_ocaml.Js._false
   in
   activate "online"; activate "resume"
@@ -102,8 +101,8 @@ let () =
     (st##getItem lc)
     (fun () -> ())
     (fun url ->
-      st##removeItem lc;
-      change_page_uri (Js_of_ocaml.Js.to_string url))
+       st##removeItem lc;
+       change_page_uri (Js_of_ocaml.Js.to_string url))
 
 (* Handle universal links *)
 
@@ -121,15 +120,15 @@ let universal_links () =
   let%lwt () = ondeviceready in
   Lwt.return @@ Js_of_ocaml.Js.Optdef.to_option
   @@ (Js_of_ocaml.Js.Unsafe.global##.universalLinks
-       : < subscribe :
-             Js_of_ocaml.Js.js_string Js_of_ocaml.Js.opt
-             -> (event Js_of_ocaml.Js.t -> unit) Js_of_ocaml.Js.callback
-             -> unit Js_of_ocaml.Js.meth
-         ; unsubscribe :
-             Js_of_ocaml.Js.js_string Js_of_ocaml.Js.opt
-             -> unit Js_of_ocaml.Js.meth >
-         Js_of_ocaml.Js.t
-         Js_of_ocaml.Js.Optdef.t)
+      : < subscribe :
+            Js_of_ocaml.Js.js_string Js_of_ocaml.Js.opt
+            -> (event Js_of_ocaml.Js.t -> unit) Js_of_ocaml.Js.callback
+            -> unit Js_of_ocaml.Js.meth
+        ; unsubscribe :
+            Js_of_ocaml.Js.js_string Js_of_ocaml.Js.opt
+            -> unit Js_of_ocaml.Js.meth >
+          Js_of_ocaml.Js.t
+          Js_of_ocaml.Js.Optdef.t)
 
 let _ =
   match%lwt universal_links () with
@@ -138,10 +137,10 @@ let _ =
         (Js_of_ocaml.Js.string "Universal links: registering");
       universal_links##subscribe Js_of_ocaml.Js.null
         (Js_of_ocaml.Js.wrap_callback (fun (ev : event Js_of_ocaml.Js.t) ->
-             Js_of_ocaml.Firebug.console##log_2
-               (Js_of_ocaml.Js.string "Universal links: got link")
-               ev##.url;
-             change_page_uri (Js_of_ocaml.Js.to_string ev##.url)));
+           Js_of_ocaml.Firebug.console##log_2
+             (Js_of_ocaml.Js.string "Universal links: got link")
+             ev##.url;
+           change_page_uri (Js_of_ocaml.Js.to_string ev##.url)));
       Js_of_ocaml.Firebug.console##log
         (Js_of_ocaml.Js.string "Universal links: registered");
       Lwt.return_unit

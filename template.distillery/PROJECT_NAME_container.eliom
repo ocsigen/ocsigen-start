@@ -30,14 +30,14 @@ let%shared os_footer () =
     [ p
         [ txt [%i18n S.footer_generated]
         ; a ~service:%%%MODULE_NAME%%%_services.os_github_service
-            [txt " Ocsigen Start "] ()
+            [txt " Ocsigen Start "]
+            ()
         ; txt [%i18n S.footer_eliom_distillery]
-        ; a ~service:%%%MODULE_NAME%%%_services.ocsigen_service
-            [txt " Ocsigen "] ()
+        ; a ~service:%%%MODULE_NAME%%%_services.ocsigen_service [txt " Ocsigen "] ()
         ; txt [%i18n S.footer_technology] ] ]
 
-let%rpc get_wrong_pdata ()
-    : ((string * string) * (string * string)) option Lwt.t
+let%rpc get_wrong_pdata () :
+    ((string * string) * (string * string)) option Lwt.t
   =
   Lwt.return @@ Eliom_reference.Volatile.get Os_msg.wrong_pdata
 

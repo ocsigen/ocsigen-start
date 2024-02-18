@@ -4,19 +4,7 @@
 (** Demo for refreshable content *)
 
 [%%shared open Eliom_content.Html]
-
-(* Service for this demo *)
-let%server service =
-  Eliom_service.create
-    ~path:(Eliom_service.Path ["demo-pull-to-refresh"])
-    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
-
-(* Make service available on the client *)
-let%client service = ~%service
-(* Name for demo menu *)
-let%shared name () = [%i18n Demo.S.pull_to_refresh]
-(* Class for the page containing this demo (for internal use) *)
-let%shared page_class = "os-page-demo-pull"
+[%%shared open Eliom_content.Html.D]
 
 let%shared page () =
   let counter_sig, set_counter = Eliom_shared.React.S.create 0 in
@@ -45,3 +33,14 @@ let%shared page () =
       ; R.node counter_node_sig ]
   in
   Lwt.return @@ [Ot_pulltorefresh.make ~dragThreshold:15. ~content reload]
+
+(* Service registration is done on both sides (shared section),
+   so that pages can be generated from the server
+   (first request, crawling, search engines ...)
+   or the client (subsequent link clicks, or mobile app ...). *)
+let%shared () =
+  %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_pulltorefresh
+    ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
+      let%lwt p = page () in
+      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-pulltorefresh"]] myid_o p
+    )

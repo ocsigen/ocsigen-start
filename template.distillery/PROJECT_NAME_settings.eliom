@@ -13,12 +13,12 @@ let%shared update_main_email_button email =
   ignore
     [%client
       (Lwt.async (fun () ->
-           Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
-             (fun _ _ ->
-               let%lwt () = Os_current_user.update_main_email ~%email in
-               Eliom_client.change_page
-                 ~service:%%%MODULE_NAME%%%_services.settings_service () ()))
-        : unit)];
+         Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
+           (fun _ _ ->
+              let%lwt () = Os_current_user.update_main_email ~%email in
+              Eliom_client.change_page
+                ~service:%%%MODULE_NAME%%%_services.settings_service () ()))
+       : unit)];
   button
 
 (* A button to remove the email from the database *)
@@ -32,12 +32,12 @@ let%shared delete_email_button email =
   ignore
     [%client
       (Lwt.async (fun () ->
-           Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
-             (fun _ _ ->
-               let%lwt () = Os_current_user.remove_email_from_user ~%email in
-               Eliom_client.change_page
-                 ~service:%%%MODULE_NAME%%%_services.settings_service () ()))
-        : unit)];
+         Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
+           (fun _ _ ->
+              let%lwt () = Os_current_user.remove_email_from_user ~%email in
+              Eliom_client.change_page
+                ~service:%%%MODULE_NAME%%%_services.settings_service () ()))
+       : unit)];
   button
 
 (* A list of buttons to update or to remove the email depending on the
@@ -93,8 +93,8 @@ let%rpc get_emails myid () : (string option * (string * bool) list) Lwt.t =
   let%lwt emails =
     Lwt_list.map_s
       (fun email ->
-        let%lwt v = Os_current_user.is_email_validated email in
-        Lwt.return (email, v))
+         let%lwt v = Os_current_user.is_email_validated email in
+         Lwt.return (email, v))
       emails
   in
   Lwt.return (main_email, emails)
@@ -103,9 +103,7 @@ let%shared select_language_form select_language_name =
   let open Eliom_content.Html in
   let current_language = %%%MODULE_NAME%%%_i18n.get_language () in
   let all_languages_except_current =
-    List.filter
-      (fun l -> l <> current_language)
-      %%%MODULE_NAME%%%_i18n.languages
+    List.filter (fun l -> l <> current_language) %%%MODULE_NAME%%%_i18n.languages
   in
   let form_option_of_language language is_current_language =
     D.Form.Option

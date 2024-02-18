@@ -30,28 +30,22 @@ let%shared () =
     (Os_session.Opt.connected_fun %%%MODULE_NAME%%%_handlers.action_link_handler);
   Eliom_registration.Action.register ~service:Os_services.add_email_service
     (fun () email ->
-      let%lwt () = Os_handlers.add_email_handler () email in
-      add_email_notif (); Lwt.return_unit);
+       let%lwt () = Os_handlers.add_email_handler () email in
+       add_email_notif (); Lwt.return_unit);
   Eliom_registration.Action.register
     ~service:Os_services.update_language_service
     %%%MODULE_NAME%%%_handlers.update_language_handler;
   %%%MODULE_NAME%%%_base.App.register ~service:Os_services.main_service
-    (%%%MODULE_NAME%%%_page.Opt.connected_page
-       %%%MODULE_NAME%%%_handlers.main_service_handler);
-  %%%MODULE_NAME%%%_base.App.register
-    ~service:%%%MODULE_NAME%%%_services.about_service
-    (%%%MODULE_NAME%%%_page.Opt.connected_page
-       %%%MODULE_NAME%%%_handlers.about_handler);
-  %%%MODULE_NAME%%%_base.App.register
-    ~service:%%%MODULE_NAME%%%_services.settings_service
-    (%%%MODULE_NAME%%%_page.Opt.connected_page
-       %%%MODULE_NAME%%%_handlers.settings_handler)
+    (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.main_service_handler);
+  %%%MODULE_NAME%%%_base.App.register ~service:%%%MODULE_NAME%%%_services.about_service
+    (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.about_handler);
+  %%%MODULE_NAME%%%_base.App.register ~service:%%%MODULE_NAME%%%_services.settings_service
+    (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.settings_handler)
 
 let%server () =
   Eliom_registration.Ocaml.register
     ~service:%%%MODULE_NAME%%%_services.upload_user_avatar_service
-    (Os_session.connected_fun
-       %%%MODULE_NAME%%%_handlers.upload_user_avatar_handler)
+    (Os_session.connected_fun %%%MODULE_NAME%%%_handlers.upload_user_avatar_handler)
 
 (* Print more debugging information when <debugmode/> is in config file
    (DEBUG = yes in Makefile.options).
@@ -60,7 +54,7 @@ let%server () =
    ...
    Lwt_log.ign_info ~section "This is an information";
    (or ign_debug, ign_warning, ign_error etc.)
- *)
+*)
 let%server _ =
   if Eliom_config.get_debugmode ()
   then (
@@ -71,14 +65,14 @@ let%server _ =
          (* Lwt_log_core.add_rule "os*" Lwt_log_js.Debug; *)
          Lwt_log_core.add_rule "%%%MODULE_NAME%%%*" Lwt_log_js.Debug
          (* Lwt_log_core.add_rule "*" Lwt_log_js.Debug *)
-          : unit)];
+         : unit)];
     (* Lwt_log_core.add_rule "*" Lwt_log.Debug *)
     Lwt_log_core.add_rule "%%%MODULE_NAME%%%*" Lwt_log.Debug)
 
 (* The modules below are all the modules that needs to be explicitely
    linked-in. *)
 
-[%%server.start]
+[%%shared.start]
 
 module Demo = Demo
 module Demo_cache = Demo_cache
@@ -104,6 +98,5 @@ module Demo_users = Demo_users
 
 [%%client.start]
 
-module Demo = Demo
 module %%%MODULE_NAME%%%_config = %%%MODULE_NAME%%%_config
 module %%%MODULE_NAME%%%_language = %%%MODULE_NAME%%%_language
