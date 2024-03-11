@@ -231,7 +231,7 @@ let%shared password_form ?(a_placeholder_pwd = "password")
          D.Form.input
            ~a:
              [ a_required ()
-             ; a_autocomplete false
+             ; a_autocomplete `Off
              ; a_placeholder a_placeholder_pwd ]
            ~input_type:`Password ~name:pwdn D.Form.string
        in
@@ -239,7 +239,7 @@ let%shared password_form ?(a_placeholder_pwd = "password")
          D.Form.input
            ~a:
              [ a_required ()
-             ; a_autocomplete false
+             ; a_autocomplete `Off
              ; a_placeholder a_placeholder_confirmation ]
            ~input_type:`Password ~name:pwd2n D.Form.string
        in
