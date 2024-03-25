@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "ocsigen-start"
-version: "6.2.0"
+version: "6.3.0"
 authors: "dev@ocsigen.org"
 maintainer: "dev@ocsigen.org"
 synopsis: "Higher-level library for developing Web and mobile applications with users, registration, notifications, etc"
