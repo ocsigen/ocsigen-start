@@ -174,6 +174,7 @@ install: all META
 	cp $(SERVER_CMI) $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
 	cp $(SERVER_CMX) $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
 	cp $(LIBDIR)/$(PKG_NAME).client.cma $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
+	cp $(LIBDIR)/$(PKG_NAME).server.a $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
 	cp $(LIBDIR)/$(PKG_NAME).server.cm* $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
 	scripts/install.sh $(TEMPLATE_DIR) $(TEMPLATE_NAME)
 
