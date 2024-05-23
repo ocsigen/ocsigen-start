@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "ocsigen-start"
-version: "6.3.0"
+version: "7.0.0"
 authors: "dev@ocsigen.org"
 maintainer: "dev@ocsigen.org"
 synopsis: "Higher-level library for developing Web and mobile applications with users, registration, notifications, etc"
@@ -23,7 +23,7 @@ depends: [
   "pgocaml_ppx" {>= "4.0"}
   "safepass" {>= "3.0"}
   "ocsigen-i18n" {>= "4.0.0"}
-  "eliom" {>= "10.4.0" & < "11.0.0"}
+  "eliom" {>= "11.0.0" & < "12.0.0"}
   "ocsigen-toolkit" {>= "2.7.0"}
   "ocsigen-ppx-rpc"
   "ocsigen-i18n" {>= "3.7.0"}
