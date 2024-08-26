@@ -4,7 +4,7 @@ version: "0.1"
 synopsis: "Pseudo package for defining project dependencies"
 
 depends: [
-  "eliom" {>= "10.0.0" & < "11.0.0"}
-  "ocsipersist-pgsql" {>= "1.0" & < "2.0"}
-  "ocsigen-start"
+  "eliom" {>= "11.0.0" & < "12.0.0"}
+  "ocsipersist-pgsql-config" {>= "2.0" & < "3.0"}
+  "ocsigen-start" {>= "7.0.0" & < "8.0.0"}
 ]

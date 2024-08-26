@@ -70,4 +70,6 @@ let os_db =
   in
   element ~name:"os-db" ~attributes ()
 
-let _ = Eliom_config.parse_config [app; avatars; os_db]
+let _ =
+  if Ocsigen_config.has_configuration_file ()
+  then Eliom_config.parse_config [app; avatars; os_db]

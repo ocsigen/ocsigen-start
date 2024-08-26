@@ -3,12 +3,6 @@
 
 [%%client.start]
 
-[@@@ocaml.warning "-33"]
-
-open %%%MODULE_NAME%%% (* for dependency reasons *)
-
-[@@@ocaml.warning "+33"]
-
 [%%client open Js_of_ocaml]
 [%%client open Js_of_ocaml_lwt]
 

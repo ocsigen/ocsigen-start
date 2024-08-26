@@ -23,13 +23,21 @@ you can try updating it with `sudo npm install -g npm`. Depending on your
 setup, you may have to update your `$PATH` for the new `npm` to become
 visible.
 
-Generally, you can compile it and run ocsigenserver on it by
-
+First create a local database:
 ```shell
 make db-init
 make db-create
 make db-schema
+```
+Then compile and run the app, either as a library loaded dynamically
+into ocsigenserver using a configuration file: 
+```shell
 make test.byte (or test.opt)
+```
+or as an OCaml executable, using ocsigenserver as a libary
+(without configuration file):
+```shell
+make test.static.byte (or test.static.opt)
 ```
 
 Then connect to `http://localhost:8080` to see the running app skeleton.
@@ -95,8 +103,15 @@ make db-status
 ```
 
 - Test your application by compiling it and running ocsigenserver locally
+with a configuration file:
 ```
 make test.byte (or test.opt)
+```
+
+- Test your application by compiling it as an OCaml executable without
+configuration file:
+```
+make test.static.byte (or test.static.opt)
 ```
 
 - Compile it only
@@ -104,18 +119,17 @@ make test.byte (or test.opt)
 make all (or byte or opt)
 ```
 
-- Deploy your project on your system
+- DEPRECATED Deploy your project on your system
 ```Shell
 sudo make install (or install.byte or install.opt)
 ```
 
-- Run the server on the deployed project
+- DEPRECATED Run the server on the deployed project
 ```Shell
 sudo make run.byte (or run.opt)
 ```
 
-If `WWWUSER` in the `Makefile.options` is you, you don't need the
-`sudo`. If Eliom isn't installed globally, however, you need to
+If Eliom isn't installed globally, however, you need to
 re-export some environment variables to make this work:
 ```Shell
 sudo PATH=$PATH OCAMLPATH=$OCAMLPATH LD_LIBRARY_PATH=$LD_LIBRARY_PATH make run.byte/run.opt
