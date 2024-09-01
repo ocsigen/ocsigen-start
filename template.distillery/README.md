@@ -119,20 +119,27 @@ make test.static.byte (or test.static.opt)
 make all (or byte or opt)
 ```
 
-- DEPRECATED Deploy your project on your system
+- Deploy your project on your system
 ```Shell
-sudo make install (or install.byte or install.opt)
+make install (or install.byte or install.opt)
 ```
 
-- DEPRECATED Run the server on the deployed project
+- Run the server on the deployed project
 ```Shell
-sudo make run.byte (or run.opt)
+make run.byte (or run.opt)
 ```
 
-If Eliom isn't installed globally, however, you need to
-re-export some environment variables to make this work:
+- Run the static executable of the deployed project
 ```Shell
-sudo PATH=$PATH OCAMLPATH=$OCAMLPATH LD_LIBRARY_PATH=$LD_LIBRARY_PATH make run.byte/run.opt
+make run.static
+```
+
+If you want to use a global install, update PREFIX in `Makefile.options`
+and run make ```install``` as root. If OCaml/Eliom is not installed
+globally, you will need to re-export some environment variables to make
+this work:
+```Shell
+sudo PATH=$PATH OCAMLPATH=$OCAMLPATH LD_LIBRARY_PATH=$LD_LIBRARY_PATH make run.opt
 ```
 
 - If you need a findlib package in your project, add it to the
