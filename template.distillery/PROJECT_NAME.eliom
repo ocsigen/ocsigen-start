@@ -95,8 +95,10 @@ module Demo_timepicker = Demo_timepicker
 module Demo_tips = Demo_tips
 module Demo_tongue = Demo_tongue
 module Demo_users = Demo_users
+module %%%MODULE_NAME%%%_config = %%%MODULE_NAME%%%_config
 
 [%%client.start]
 
-module %%%MODULE_NAME%%%_config = %%%MODULE_NAME%%%_config
 module %%%MODULE_NAME%%%_language = %%%MODULE_NAME%%%_language
+module %%%MODULE_NAME%%%_mobile = %%%MODULE_NAME%%%_mobile
+module %%%MODULE_NAME%%%_phone_connect = %%%MODULE_NAME%%%_phone_connect

@@ -71,7 +71,7 @@ ifeq ($(shell which sassc),)
 	[ -d $(SASSDIR) ] && \
 	SASS_PATH=$(SASS_PATH) sass --style compressed $(SASS_SRC) $@
 else
-	[ -d $(SASSDIR) ] && \
+	[ -d $(SASSDIR) ] &&
 	sassc -t compressed $(addprefix -I ,$(subst :, ,$(SASS_PATH))) $(SASS_SRC) $@
 endif
 	$(POSTCSS) --use autoprefixer --replace $@

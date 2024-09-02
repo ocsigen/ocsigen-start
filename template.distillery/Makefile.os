@@ -47,7 +47,7 @@ all byte opt:: ${VOLATILE_SCHEMA}
 
 DIST_FILES = $(ELIOMSTATICDIR)/$(PROJECT_NAME).js $(LIBDIR)/$(PROJECT_NAME).cma
 
-.PHONY: test.byte test.opt staticfiles
+.PHONY: test.byte test.opt staticfiles byte opt
 
 test.byte:: byte | $(addprefix $(TEST_PREFIX),$(DIST_DIRS)) staticfiles
 	@echo "==== The website is available at http://localhost:$(TEST_PORT) ===="
@@ -56,6 +56,13 @@ test.opt:: opt | $(addprefix $(TEST_PREFIX),$(DIST_DIRS)) staticfiles
 	@echo "==== The website is available at http://localhost:$(TEST_PORT) ===="
 	$(OCSIGENSERVER.OPT) $(RUN_DEBUG) -c $(patsubst %.conf.in,$(TEST_PREFIX)$(ETCDIR)/%-test.conf,$(CONF_IN))
 
+test.static.byte: static.byte | $(addprefix $(TEST_PREFIX),$(DIST_DIRS)) staticfiles
+	@echo "==== The website is available at http://localhost:$(TEST_PORT) ===="
+	dune exec ./$(PROJECT_NAME)_main.bc
+test.static.opt: static.opt | $(addprefix $(TEST_PREFIX),$(DIST_DIRS)) staticfiles
+	@echo "==== The website is available at http://localhost:$(TEST_PORT) ===="
+	dune exec ./$(PROJECT_NAME)_main.exe
+
 $(addprefix $(TEST_PREFIX), $(DIST_DIRS)):
 	mkdir -p $@
 
@@ -63,23 +70,38 @@ staticfiles:
 	cp -rf $(LOCAL_STATIC_CSS) $(LOCAL_STATIC_IMAGES) $(LOCAL_STATIC_FONTS) $(TEST_PREFIX)$(ELIOMSTATICDIR)
 
 ##----------------------------------------------------------------------
+## Static executable
+
+static.byte: byte
+	dune build $(PROJECT_NAME)_main.bc
+
+static.opt: opt
+	dune build $(PROJECT_NAME)_main.exe
+
+##----------------------------------------------------------------------
 ## Installing & Running
 
-.PHONY: install install.byte install.byte install.opt install.static install.etc install.lib install.lib.byte install.lib.opt run.byte run.opt
+.PHONY: install install.exe install.byte install.byte install.opt install.static install.etc install.lib install.lib.byte install.lib.opt run.byte run.opt
 install: install.byte install.opt
+install.exe: install.etc install.static
+	dune install
 install.byte: install.lib.byte install.etc install.static | $(addprefix $(PREFIX),$(DATADIR) $(LOGDIR) $(shell dirname $(CMDPIPE)))
 install.opt: install.lib.opt install.etc install.static | $(addprefix $(PREFIX),$(DATADIR) $(LOGDIR) $(shell dirname $(CMDPIPE)))
 install.lib: install.lib.byte install.lib.opt
-install.lib.byte: $(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cma | $(PREFIX)$(LIBDIR)
-	install $< $(PREFIX)$(LIBDIR)
-install.lib.opt: $(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cmxs | $(PREFIX)$(LIBDIR)
-	install $< $(PREFIX)$(LIBDIR)
+install.lib.byte: byte | $(PREFIX)$(LIBDIR)
+	install $(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cma $(PREFIX)$(LIBDIR)
+install.lib.opt: opt | $(PREFIX)$(LIBDIR)
+	install $(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cmxs $(PREFIX)$(LIBDIR)
 install.static: $(TEST_PREFIX)$(ELIOMSTATICDIR)/$(PROJECT_NAME).js | $(PREFIX)$(STATICDIR) $(PREFIX)$(ELIOMSTATICDIR)
-	cp -r $(LOCAL_STATIC_CSS) $(PREFIX)$(FILESDIR)
 	cp -r $(LOCAL_STATIC_IMAGES) $(PREFIX)$(FILESDIR)
 	cp -r $(LOCAL_STATIC_FONTS) $(PREFIX)$(FILESDIR)
 	[ -z $(WWWUSER) ] || chown -R $(WWWUSER) $(PREFIX)$(FILESDIR)
-	install $(addprefix -o ,$(WWWUSER)) $< $(PREFIX)$(ELIOMSTATICDIR)
+	HASH=`md5sum _build/default/client/$(PROJECT_NAME).bc.js | cut -d ' ' -f 1` && \
+	install $(addprefix -o ,$(WWWUSER)) $(JS_PREFIX)_$$HASH.js $(PREFIX)$(ELIOMSTATICDIR) && \
+	ln -sf $(PROJECT_NAME)_$$HASH.js $(PREFIX)$(ELIOMSTATICDIR)/$(PROJECT_NAME).js
+	HASH=`cat $(LOCAL_CSS) | md5sum | cut -d ' ' -f 1` && \
+	install $(addprefix -o ,$(WWWUSER)) $(CSS_PREFIX)_$$HASH.css $(PREFIX)$(ELIOMSTATICDIR)/css && \
+	ln -sf $(PROJECT_NAME)_$$HASH.css $(PREFIX)$(ELIOMSTATICDIR)/css/$(PROJECT_NAME).css
 install.etc: $(TEST_PREFIX)$(ETCDIR)/$(PROJECT_NAME).conf | $(PREFIX)$(ETCDIR)
 	install $< $(PREFIX)$(ETCDIR)/$(PROJECT_NAME).conf
 
@@ -95,11 +117,18 @@ $(addprefix $(PREFIX),$(DATADIR) $(LOGDIR) $(ELIOMSTATICDIR) $(shell dirname $(C
 	install $(addprefix -o ,$(WWWUSER)) -d $@
 
 run.byte:
+	@echo "==== Running ocsigenserver with configuration file  ===="
 	@echo "==== The website is available at http://localhost:$(PORT) ===="
 	$(OCSIGENSERVER) $(RUN_DEBUG) -c ${PREFIX}${ETCDIR}/${PROJECT_NAME}.conf
 run.opt:
+	@echo "==== Running ocsigenserver with configuration file  ===="
 	@echo "==== The website is available at http://localhost:$(PORT) ===="
 	$(OCSIGENSERVER.OPT) $(RUN_DEBUG) -c ${PREFIX}${ETCDIR}/${PROJECT_NAME}.conf
+
+run.static:
+	@echo "==== Running static executable ===="
+	@echo "==== The website is available at http://localhost:$(PORT) ===="
+	${PROJECT_NAME}
 
 ##----------------------------------------------------------------------
 
@@ -155,7 +184,7 @@ $(TEST_CONFIG_FILES): $(TEST_PREFIX)$(ETCDIR)/%-test.conf: %.conf.in $(JS_AND_CS
 ##----------------------------------------------------------------------
 ## Compilation
 
-.PHONY: gen-dune config-files
+.PHONY: config-files
 
 config-files: | $(TEST_PREFIX)$(ELIOMSTATICDIR) $(TEST_PREFIX)$(LIBDIR)
 	HASH=`md5sum _build/default/client/$(PROJECT_NAME).bc.js | cut -d ' ' -f 1` && \
@@ -164,19 +193,16 @@ config-files: | $(TEST_PREFIX)$(ELIOMSTATICDIR) $(TEST_PREFIX)$(LIBDIR)
 	cp -f _build/default/$(PROJECT_NAME).cm* $(TEST_PREFIX)$(LIBDIR)/
 	$(MAKE) $(CONFIG_FILES) $(TEST_CONFIG_FILES) PROJECT_NAME=$(PROJECT_NAME)
 
-all:: gen-dune
+all::
 	$(ENV_PSQL) dune build $(DUNE_OPTIONS) @install @$(PROJECT_NAME) $(PROJECT_NAME).cmxs
 
-byte:: gen-dune
+byte::
 	$(ENV_PSQL) dune build $(DUNE_OPTIONS) @$(PROJECT_NAME)
 	make config-files PROJECT_NAME=$(PROJECT_NAME)
 
-opt:: gen-dune
+opt::
 	$(ENV_PSQL) dune build $(DUNE_OPTIONS) $(PROJECT_NAME).cmxs @$(PROJECT_NAME)
 	make config-files PROJECT_NAME=$(PROJECT_NAME)
-
-gen-dune:
-	@ocaml tools/gen_dune.ml > client/dune.client
 
 ##----------------------------------------------------------------------
 

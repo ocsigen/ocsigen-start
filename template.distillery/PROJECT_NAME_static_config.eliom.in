@@ -1,0 +1,31 @@
+(* Set static configuration in case you are using static linking only.
+   These information are taken from the config file otherwise.
+*)
+let%server set_static_config () =
+  if not (Ocsigen_config.has_configuration_file ())
+  then begin
+    Ocsigen_config.set_ports [`All, 8080];
+    Ocsigen_config.set_veryverbose ();
+    Ocsigen_config.set_debugmode true;
+    Ocsigen_config.set_logdir "local/var/log/%%%PROJECT_NAME%%%";
+    Ocsigen_config.set_datadir "local/var/data/%%%PROJECT_NAME%%%";
+    Ocsigen_config.set_uploaddir (Some "/tmp");
+    Ocsigen_config.set_usedefaulthostname true;
+    Ocsigen_config.set_command_pipe "local/var/run/%%%PROJECT_NAME%%%-cmd";
+    Ocsigen_config.set_default_charset (Some "utf-8");
+    Ocsipersist_settings.set_host "%%PGHOST%%";
+    Ocsipersist_settings.set_port %%PGPORT%%;
+    Ocsipersist_settings.set_database "ocsipersist_%%%PROJECT_NAME%%%";
+    Ocsipersist.init ();
+    %%%MODULE_NAME%%%_config.os_db_database := Some "%%PGDATABASE%%";
+    %%%MODULE_NAME%%%_config.os_db_host := Some "%%PGHOST%%";
+    %%%MODULE_NAME%%%_config.os_db_user :=
+      (let u = "%%PGUSER%%" in if u = "" then None else Some u);
+    %%%MODULE_NAME%%%_config.os_db_password := Some "%%PGPASSWORD%%";
+    %%%MODULE_NAME%%%_config.os_db_port := Some %%PGPORT%%;
+    %%%MODULE_NAME%%%_config.app_name := 
+      Filename.chop_suffix
+        (Unix.readlink "local/var/www/%%%PROJECT_NAME%%%/%%%PROJECT_NAME%%%.js") ".js" ;
+    %%%MODULE_NAME%%%_config.css_name :=
+      Unix.readlink "local/var/www/%%%PROJECT_NAME%%%/css/%%%PROJECT_NAME%%%.css";
+  end

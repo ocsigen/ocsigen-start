@@ -21,18 +21,18 @@
     <!-- we use the PostgreSQL backend for ocsipersist,
          but there is also a DBM and an SQLite backend -->
     <!--
-    <extension findlib-package="ocsipersist.dbm">
+    <extension findlib-package="ocsipersist-dbm-config">
       <delayloading val="false"/>
       <store dir="%%DATADIR%%"/>
       <ocsidbm name="ocsidbm"/>
     </extension>
     -->
     <!--
-    <extension findlib-package="ocsipersist.sqlite">
+    <extension findlib-package="ocsipersist-sqlite-config">
       <database file="%%DATADIR%%/ocsidb"/>
     </extension>
     -->
-    <extension findlib-package="ocsipersist.pgsql">
+    <extension findlib-package="ocsipersist-pgsql-config">
       <database
         host="%%DB_HOST%%"
         port="%%DB_PORT%%"
