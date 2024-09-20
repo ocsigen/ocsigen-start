@@ -21,7 +21,7 @@ jobs:
           - "5.2"
         include:
           - os: ubuntu-latest
-            ocaml-compiler: "4.08"
+            ocaml-compiler: "4.12"
 
     runs-on: ${{ matrix.os }}
 
@@ -40,7 +40,7 @@ jobs:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
           opam-pin: false
 
-      - run: opam pin add ocsigen-start.dev . --no-action
+      - run: opam pin add ocsigen-start.7.0.0 . --no-action
 
       - run: opam install .
 
