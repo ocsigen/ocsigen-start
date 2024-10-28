@@ -91,7 +91,7 @@ module Options = struct
 end
 
 module Data = struct
-  type t = (string * [`String of string | `Int of int]) list
+  type t = (string * [`String of string]) list
 
   let to_list t = t
   let to_json t = `Assoc (t : t :> (string * Yojson.Safe.t) list)
@@ -101,6 +101,8 @@ module Data = struct
   let add_raw_json key value data =
     (key, `String (Yojson.Safe.to_string value)) :: data
 
+  let add_int key value data = add_raw_string key (string_of_int value) data
+
   module PhoneGap = struct
     let add_message str t = add_raw_string "message" str t
     let add_title str t = add_raw_string "title" str t
@@ -108,9 +110,9 @@ module Data = struct
     let add_soundname str t = add_raw_string "soundname" str t
 
     let add_notification_channel_id id t =
-      ("android_channel_id", `String id) :: t
+      add_raw_string "android_channel_id" id t
 
-    let add_notification_id id t = ("notId", `String (string_of_int id)) :: t
+    let add_notification_id id t = add_int "notId" id t
     let add_summary_text str t = add_raw_string "summaryText" str t
 
     module Style = struct
@@ -138,20 +140,18 @@ module Data = struct
 
     let add_actions left right t =
       let actions_list = `List [Action.to_json left; Action.to_json right] in
-      ("actions", `String (Yojson.Safe.to_string actions_list)) :: t
+      add_raw_json "actions" actions_list t
 
     let add_led_color a r g b t =
       let json_int_list = `List [`Int a; `Int r; `Int g; `Int b] in
-      ("ledColor", `String (Yojson.Safe.to_string json_int_list)) :: t
+      add_raw_json "ledColor" json_int_list t
 
     let add_vibration_pattern pattern t =
-      ( "vibrationPattern"
-      , `String
-          (Yojson.Safe.to_string (`List (List.map (fun x -> `Int x) pattern)))
-      )
-      :: t
+      add_raw_json "vibrationPattern"
+        (`List (List.map (fun x -> `Int x) pattern))
+        t
 
-    let add_badge nb t = ("badge", `Int nb) :: t
+    let add_badge nb t = add_int "badge" nb t
 
     module Priority = struct
       type t = Minimum | Low | Default | High | Maximum
@@ -166,7 +166,7 @@ module Data = struct
         | Priority.High -> 1
         | Priority.Maximum -> 2
       in
-      ("priority", `Int int_of_priority) :: t
+      add_int "priority" int_of_priority t
 
     (** NOTE: we don't add automatically the value picture to style because we
          * don't know if we can mix Inbox and Picture at the same time. In general,
@@ -177,7 +177,7 @@ module Data = struct
     let add_picture picture t = add_raw_string "picture" picture t
 
     let add_info info t =
-      ("info", `String info) :: ("content-available", `Int 1) :: t
+      ("info", `String info) :: add_int "content-available" 1 t
 
     module Visibility = struct
       type t = Secret | Private | Public
@@ -190,7 +190,7 @@ module Data = struct
         | Visibility.Private -> 0
         | Visibility.Public -> 1
       in
-      ("visibility", `Int visibility_to_int) :: t
+      add_int "visibility" visibility_to_int t
   end
 end
 

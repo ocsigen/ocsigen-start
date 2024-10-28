@@ -175,7 +175,7 @@ module Data : sig
 
   val to_json : t -> Yojson.Safe.t
 
-  val to_list : t -> (string * [`String of string | `Int of int]) list
+  val to_list : t -> (string * [`String of string]) list
   (** [to_list data] returns the representation of the data as a list of
         tuples [(data_key, json_value)]. *)
 
