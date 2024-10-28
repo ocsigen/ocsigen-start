@@ -91,13 +91,15 @@ module Options = struct
 end
 
 module Data = struct
-  type t = (string * Yojson.Safe.t) list
+  type t = (string * [`String of string | `Int of int]) list
 
   let to_list t = t
-  let to_json t = `Assoc t
+  let to_json t = `Assoc (t : t :> (string * Yojson.Safe.t) list)
   let empty () = []
   let add_raw_string key value data = (key, `String value) :: data
-  let add_raw_json key value data = (key, value) :: data
+
+  let add_raw_json key value data =
+    (key, `String (Yojson.Safe.to_string value)) :: data
 
   module PhoneGap = struct
     let add_message str t = add_raw_string "message" str t
@@ -108,7 +110,7 @@ module Data = struct
     let add_notification_channel_id id t =
       ("android_channel_id", `String id) :: t
 
-    let add_notification_id id t = ("notId", `Int id) :: t
+    let add_notification_id id t = ("notId", `String (string_of_int id)) :: t
     let add_summary_text str t = add_raw_string "summaryText" str t
 
     module Style = struct
@@ -136,14 +138,18 @@ module Data = struct
 
     let add_actions left right t =
       let actions_list = `List [Action.to_json left; Action.to_json right] in
-      ("actions", actions_list) :: t
+      ("actions", `String (Yojson.Safe.to_string actions_list)) :: t
 
     let add_led_color a r g b t =
       let json_int_list = `List [`Int a; `Int r; `Int g; `Int b] in
-      ("ledColor", json_int_list) :: t
+      ("ledColor", `String (Yojson.Safe.to_string json_int_list)) :: t
 
     let add_vibration_pattern pattern t =
-      ("vibrationPattern", `List (List.map (fun x -> `Int x) pattern)) :: t
+      ( "vibrationPattern"
+      , `String
+          (Yojson.Safe.to_string (`List (List.map (fun x -> `Int x) pattern)))
+      )
+      :: t
 
     let add_badge nb t = ("badge", `Int nb) :: t
 
