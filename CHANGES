@@ -1,3 +1,10 @@
+===== 7.1.0 (2024-11) =====
+* Compatibility with WASM
+
+===== 7.0.0 (2024-09) =====
+* Compatibility with Ocsigen Server 6
+* Build an app as an executable, with Ocsigen Server as a library, without config file
+
 ===== 6.3.0 (2024-03-25) =====
 * Adding license Unlicense to the template
 * Dependecy to Tyxml >= 4.6
