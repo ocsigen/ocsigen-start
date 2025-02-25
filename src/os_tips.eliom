@@ -218,7 +218,7 @@ let%client display_bubble ?(a = []) ?arrow ?top ?left ?right ?bottom ?height
   let%lwt () = Lwt_js.sleep delay in
   let box = To_dom.of_element box in
   Dom.appendChild parent_node box;
-  box##.style##.opacity := Js.string "0";
+  box##.style##.opacity := Js.def (Js.string "0");
   Eliom_lib.Option.iter
     (fun v -> box##.style##.top := Js.string (Printf.sprintf "%ipx" v))
     top;
@@ -265,7 +265,7 @@ let%client display_bubble ?(a = []) ?arrow ?top ?left ?right ?bottom ?height
            bec##.style##.borderLeft := Js.string "none")
     arrow;
   let%lwt () = Lwt_js_events.request_animation_frame () in
-  box##.style##.opacity := Js.string "1";
+  box##.style##.opacity := Js.def (Js.string "1");
   Lwt.return_unit
 
 (* Function to be called on server to display a tip *)

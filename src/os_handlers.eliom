@@ -23,7 +23,11 @@
 open%client Eliom_content.Html.F
 open%client Js_of_ocaml
 
-let%client storage () = Dom_html.window##.localStorage
+let%client storage () =
+  Js.Optdef.case
+    Dom_html.window##.localStorage
+    (fun () -> failwith "Browser storage not supported")
+    (fun v -> v)
 
 (* Set personal data *)
 let%server set_personal_data_handler myid ()
