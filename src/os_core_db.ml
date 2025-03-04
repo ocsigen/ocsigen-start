@@ -83,8 +83,7 @@ let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Resource_pool.t ref =
 let set_pool_size n = pool := Resource_pool.create n ~validate ~dispose connect
 
 let init ?host ?port ?user ?password ?database ?unix_domain_socket_dir
-    ?pool_size ?init ()
-  =
+    ?pool_size ?init () =
   host_r := host;
   port_r := port;
   user_r := user;
@@ -96,10 +95,11 @@ let init ?host ?port ?user ?password ?database ?unix_domain_socket_dir
 
 let connection_pool () = !pool
 
-type wrapper =
-  {f : 'a. PGOCaml.pa_pg_data PGOCaml.t -> (unit -> 'a Lwt.t) -> 'a Lwt.t}
+type wrapper = {
+  f : 'a. PGOCaml.pa_pg_data PGOCaml.t -> (unit -> 'a Lwt.t) -> 'a Lwt.t;
+}
 
-let connection_wrapper = ref {f = (fun _ f -> f ())}
+let connection_wrapper = ref { f = (fun _ f -> f ()) }
 let set_connection_wrapper f = connection_wrapper := f
 
 let use_pool f =

@@ -269,7 +269,8 @@ module User = struct
   let user_of_userid userid =
     one without_transaction
       ~success:
-        (fun (userid, firstname, lastname, avatar, has_password, language) ->
+        (fun
+          (userid, firstname, lastname, avatar, has_password, language) ->
         Lwt.return
           ( userid
           , firstname
@@ -406,12 +407,12 @@ module User = struct
     Lwt.return
       (List.map
          (fun (userid, firstname, lastname, avatar, has_password, language) ->
-           ( userid
-           , firstname
-           , lastname
-           , avatar
-           , has_password = Some true
-           , language ))
+            ( userid
+            , firstname
+            , lastname
+            , avatar
+            , has_password = Some true
+            , language ))
          l)
 end
 

@@ -2,7 +2,6 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 [%%client.start]
-
 [%%client open Js_of_ocaml]
 [%%client open Js_of_ocaml_lwt]
 

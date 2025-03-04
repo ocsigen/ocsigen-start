@@ -22,12 +22,12 @@ exception No_such_group
 
 type id = Os_types.Group.id [@@deriving json]
 
-type t = Os_types.Group.t = {id : id; name : string; desc : string option}
+type t = Os_types.Group.t = { id : id; name : string; desc : string option }
 [@@deriving json]
 
 (** Create a group of type [Os_types.Group.t] using db information. *)
 let create_group_from_db (groupid, name, description) : Os_types.Group.t =
-  {id = groupid; name; desc = description}
+  { id = groupid; name; desc = description }
 
 let id_of_group (g : Os_types.Group.t) = g.id
 let name_of_group (g : Os_types.Group.t) = g.name
