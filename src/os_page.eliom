@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open%shared Lwt.Syntax
 open%shared Eliom_content.Html.F
 open%client Js_of_ocaml
 
@@ -152,13 +153,14 @@ module Make (C : PAGE) = struct
   let page ?(predicate = C.default_predicate) ?(fallback = C.default_error_page)
       f gp pp
     =
-    let%lwt content =
-      try%lwt
-        let%lwt b = predicate gp pp in
-        if b
-        then try%lwt f gp pp with exc -> fallback gp pp exc
-        else fallback gp pp (Predicate_failed None)
-      with exc -> fallback gp pp (Predicate_failed (Some exc))
+    let* content =
+      Lwt.catch
+        (fun () ->
+           let* b = predicate gp pp in
+           if b
+           then Lwt.catch (fun () -> f gp pp) (fun exc -> fallback gp pp exc)
+           else fallback gp pp (Predicate_failed None))
+        (fun exc -> fallback gp pp (Predicate_failed (Some exc)))
     in
     Lwt.return (make_page content)
 
@@ -166,22 +168,29 @@ module Make (C : PAGE) = struct
       ?(fallback = C.default_connected_error_page) f gp pp
     =
     let f_wrapped myid gp pp =
-      try%lwt
-        let%lwt b = predicate (Some myid) gp pp in
-        if b
-        then try%lwt f myid gp pp with exc -> fallback (Some myid) gp pp exc
-        else Lwt.fail (Predicate_failed None)
-      with
-      | Predicate_failed _ as exc -> fallback (Some myid) gp pp exc
-      | exc -> fallback (Some myid) gp pp (Predicate_failed (Some exc))
+      Lwt.catch
+        (fun () ->
+           let* b = predicate (Some myid) gp pp in
+           if b
+           then
+             Lwt.catch
+               (fun () -> f myid gp pp)
+               (fun exc -> fallback (Some myid) gp pp exc)
+           else Lwt.fail (Predicate_failed None))
+        (function
+           | Predicate_failed _ as exc -> fallback (Some myid) gp pp exc
+           | exc -> fallback (Some myid) gp pp (Predicate_failed (Some exc)))
     in
-    let%lwt content =
-      try%lwt
-        Os_session.connected_fun ?allow ?deny
-          ~deny_fun:(fun myid_o ->
-            fallback myid_o gp pp Os_session.Permission_denied)
-          f_wrapped gp pp
-      with Os_session.Not_connected as exc -> fallback None gp pp exc
+    let* content =
+      Lwt.catch
+        (fun () ->
+           Os_session.connected_fun ?allow ?deny
+             ~deny_fun:(fun myid_o ->
+               fallback myid_o gp pp Os_session.Permission_denied)
+             f_wrapped gp pp)
+        (function
+           | Os_session.Not_connected as exc -> fallback None gp pp exc
+           | exc -> Lwt.reraise exc)
     in
     Lwt.return (make_page content)
 
@@ -190,16 +199,20 @@ module Make (C : PAGE) = struct
         ?(fallback = C.default_connected_error_page) f gp pp
       =
       let f_wrapped (myid_o : Os_types.User.id option) gp pp =
-        try%lwt
-          let%lwt b = predicate myid_o gp pp in
-          if b
-          then try%lwt f myid_o gp pp with exc -> fallback myid_o gp pp exc
-          else Lwt.fail (Predicate_failed None)
-        with
-        | Predicate_failed _ as exc -> fallback myid_o gp pp exc
-        | exc -> fallback myid_o gp pp (Predicate_failed (Some exc))
+        Lwt.catch
+          (fun () ->
+             let* b = predicate myid_o gp pp in
+             if b
+             then
+               Lwt.catch
+                 (fun () -> f myid_o gp pp)
+                 (fun exc -> fallback myid_o gp pp exc)
+             else Lwt.fail (Predicate_failed None))
+          (function
+             | Predicate_failed _ as exc -> fallback myid_o gp pp exc
+             | exc -> fallback myid_o gp pp (Predicate_failed (Some exc)))
       in
-      let%lwt content =
+      let* content =
         Os_session.Opt.connected_fun ?allow ?deny
           ~deny_fun:(fun myid_o ->
             fallback myid_o gp pp Os_session.Permission_denied)

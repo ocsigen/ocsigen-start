@@ -18,6 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open Lwt.Syntax
+
 exception No_such_group
 
 type id = Os_types.Group.id [@@deriving json]
@@ -42,26 +44,35 @@ module MCache = Os_request_cache.Make (struct
   let compare = compare
 
   let get key =
-    try%lwt
-      let%lwt g = Os_db.Groups.group_of_name key in
-      Lwt.return (create_group_from_db g)
-    with Os_db.No_such_resource -> Lwt.fail No_such_group
+    Lwt.catch
+      (fun () ->
+        let* g = Os_db.Groups.group_of_name key in
+        Lwt.return (create_group_from_db g))
+      (function
+        | Os_db.No_such_resource -> Lwt.fail No_such_group
+        | exc -> Lwt.reraise exc)
 end)
 
 (** Helper function which creates a new group and return it as
   * a record of type [Os_types.Group.t]. *)
 let create ?description name =
   let group_of_name name =
-    let%lwt g = Os_db.Groups.group_of_name name in
+    let* g = Os_db.Groups.group_of_name name in
     Lwt.return (create_group_from_db g)
   in
-  try%lwt group_of_name name
-  with Os_db.No_such_resource -> (
-    let%lwt () = Os_db.Groups.create ?description name in
-    try%lwt
-      let%lwt g = group_of_name name in
-      Lwt.return g
-    with Os_db.No_such_resource -> Lwt.fail No_such_group)
+  Lwt.catch
+    (fun () -> group_of_name name)
+    (function
+      | Os_db.No_such_resource ->
+          let* () = Os_db.Groups.create ?description name in
+          Lwt.catch
+            (fun () ->
+              let* g = group_of_name name in
+              Lwt.return g)
+            (function
+              | Os_db.No_such_resource -> Lwt.fail No_such_group
+              | exc -> Lwt.reraise exc)
+      | exc -> Lwt.reraise exc)
 (* Should never happen *)
 
 (** Overwrite the function [group_of_name] of [Os_db.Group] and use
@@ -74,7 +85,7 @@ let group_of_name = MCache.get
  * functions ones. They generally use the type [Os_types.Group.t] of the module
  * and get rid of the part of picking each field of the record [Os_types.Group.t].
  *
- * *)
+ *)
 
 let add_user_in_group ~(group : Os_types.Group.t) =
   Os_db.Groups.add_user_in_group ~groupid:group.id
@@ -87,5 +98,5 @@ let in_group ?dbh ~(group : Os_types.Group.t) ~userid () =
 
 (** Returns all the groups of the database. *)
 let all () =
-  let%lwt groups = Os_db.Groups.all () in
+  let* groups = Os_db.Groups.all () in
   Lwt.return (List.map create_group_from_db groups)

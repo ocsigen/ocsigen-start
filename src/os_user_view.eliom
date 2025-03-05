@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open%client Lwt.Syntax
 open%shared Eliom_content.Html
 open%shared Eliom_content.Html.F
 open%client Js_of_ocaml
@@ -63,25 +64,25 @@ let%client form_override_phone phone_input form =
   Lwt_js_events.submits form @@ fun ev _ ->
   let number = Js.to_string phone_input##.value in
   if number <> ""
-  then (
-    match%lwt
-      let password = (Js.Unsafe.coerce form)##.password##.value |> Js.to_string
-      and keepmeloggedin =
-        (Js.Unsafe.coerce form)##.keepmeloggedin##.checked |> Js.to_bool
-      in
-      Dom.preventDefault ev;
-      Os_connect_phone.connect ~keepmeloggedin ~password number
-    with
-    | `Login_ok -> Os_lib.reload ()
-    | `Wrong_password ->
-        Os_msg.msg ~level:`Err "Wrong password";
-        Lwt.return_unit
-    | `No_such_user ->
-        Os_msg.msg ~level:`Err "No such user";
-        Lwt.return_unit
-    | `Password_not_set ->
-        Os_msg.msg ~level:`Err "User password not set";
-        Lwt.return_unit)
+  then
+    Lwt.bind
+      (let password = (Js.Unsafe.coerce form)##.password##.value |> Js.to_string
+       and keepmeloggedin =
+         (Js.Unsafe.coerce form)##.keepmeloggedin##.checked |> Js.to_bool
+       in
+       Dom.preventDefault ev;
+       Os_connect_phone.connect ~keepmeloggedin ~password number)
+      (function
+         | `Login_ok -> Os_lib.reload ()
+         | `Wrong_password ->
+             Os_msg.msg ~level:`Err "Wrong password";
+             Lwt.return_unit
+         | `No_such_user ->
+             Os_msg.msg ~level:`Err "No such user";
+             Lwt.return_unit
+         | `Password_not_set ->
+             Os_msg.msg ~level:`Err "User password not set";
+             Lwt.return_unit)
   else Lwt.return_unit
 
 let%shared connect_form ?(a_placeholder_email = "Your email")
@@ -279,22 +280,23 @@ let%shared upload_pic_link ?(a = []) ?(content = [txt "Change profile picture"])
                   Ot_picture_uploader.ocaml_service_upload ?progress ?cropping
                     ~service:~%service ~arg:() file
                 in
-                try%lwt
-                  ignore
-                  @@ Ot_popup.popup
-                       ~close_button:[Os_icons.F.close ()]
-                       ~onclose:(fun () ->
-                         Eliom_client.change_page
-                           ~service:Eliom_service.reload_action () ())
-                       (fun close ->
-                          Ot_picture_uploader.mk_form ~crop:~%crop
-                            ~input:~%input ~submit:~%submit ~after_submit:close
-                            upload_service);
-                  Lwt.return_unit
-                with e ->
-                  Os_msg.msg ~level:`Err "Error while uploading the picture";
-                  Eliom_lib.debug_exn "%s" e "→ ";
-                  Lwt.return_unit)
+                Lwt.catch
+                  (fun () ->
+                     ignore
+                     @@ Ot_popup.popup
+                          ~close_button:[Os_icons.F.close ()]
+                          ~onclose:(fun () ->
+                            Eliom_client.change_page
+                              ~service:Eliom_service.reload_action () ())
+                          (fun close ->
+                             Ot_picture_uploader.mk_form ~crop:~%crop
+                               ~input:~%input ~submit:~%submit
+                               ~after_submit:close upload_service);
+                     Lwt.return_unit)
+                  (fun e ->
+                     Os_msg.msg ~level:`Err "Error while uploading the picture";
+                     Eliom_lib.debug_exn "%s" e "→ ";
+                     Lwt.return_unit))
             : _)]
       :: a)
     content
@@ -337,7 +339,7 @@ let%shared bind_popup_button ?a ~button
       (Lwt.async (fun () ->
          Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
            (fun _ _ ->
-              let%lwt _ =
+              let* _ =
                 Ot_popup.popup ?a:~%a
                   ~close_button:[Os_icons.F.close ()]
                   ~%popup_content

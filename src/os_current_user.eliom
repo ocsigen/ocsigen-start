@@ -18,6 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open%server Lwt.Syntax
+
 [%%shared
 type current_user =
   | CU_idontknown
@@ -85,7 +87,7 @@ end]
 let%client _ = Os_session.get_current_userid_o := Opt.get_current_userid
 
 let%server set_user_server myid =
-  let%lwt u = Os_user.user_of_userid myid in
+  let* u = Os_user.user_of_userid myid in
   Eliom_reference.Volatile.set me (CU_user u);
   Lwt.return_unit
 
@@ -105,7 +107,7 @@ let%server () =
     | Some myid -> set_user_server myid
     | None -> unset_user_server (); Lwt.return_unit);
   Os_session.on_start_connected_process (fun myid ->
-    let%lwt () = set_user_server myid in
+    let* () = set_user_server myid in
     set_user_client (); Lwt.return_unit);
   Os_session.on_pre_close_session (fun () ->
     unset_user_client ();

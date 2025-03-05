@@ -12,6 +12,7 @@
    js_of_ocaml eliom_loader.byte
 *)
 
+open Lwt.Syntax
 module XmlHttpRequest = Js_of_ocaml_lwt.XmlHttpRequest
 
 (* Debug mode. Set to true if you want to use the debug mode. Used by "log".
@@ -86,9 +87,8 @@ let rec add_retry_button wake msg =
   Js_of_ocaml.Dom.appendChild container p
 
 and get_data wake =
-  let%lwt {XmlHttpRequest.content; code} = XmlHttpRequest.get url in
-  if code = 200
-  then (
+  let* { XmlHttpRequest.content; code } = XmlHttpRequest.get url in
+  if code = 200 then (
     log "Got global data";
     (storage ())##setItem
       (Js_of_ocaml.Js.string "__global_data")
@@ -195,8 +195,8 @@ let _ =
       "chcp_assetsInstalledOnExternalStorage";
     ];
   Lwt.async @@ fun () ->
-  let%lwt _ = Js_of_ocaml_lwt.Lwt_js_events.onload () in
-  let%lwt _ = get_data wake_error in
-  let%lwt _ = wait_error in
-  let%lwt _ = wait_success in
+  let* _ = Js_of_ocaml_lwt.Lwt_js_events.onload () in
+  let* _ = get_data wake_error in
+  let* _ = wait_error in
+  let* _ = wait_success in
   Lwt.return (redirect ())

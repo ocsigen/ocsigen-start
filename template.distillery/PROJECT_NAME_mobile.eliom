@@ -2,6 +2,7 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 [%%client.start]
+[%%client open Lwt.Syntax]
 [%%client open Js_of_ocaml]
 [%%client open Js_of_ocaml_lwt]
 
@@ -43,8 +44,8 @@ let change_page_uri uri =
 
 let handle_initial_url () =
   let tz = Os_date.user_tz () in
-  let%lwt () = init_request tz in
-  let%lwt () = ondeviceready in
+  let* () = init_request tz in
+  let* () = ondeviceready in
   app_started := true;
   match !initial_change_page with
   | None ->
@@ -59,7 +60,7 @@ let () =
     (* Initialize the application server-side; there should be a
        single initial request for that. *)
     Os_date.disable_auto_init ();
-    let%lwt _ = Lwt_js_events.onload () in
+    let* _ = Lwt_js_events.onload () in
     handle_initial_url ())
   else Lwt.return_unit
 
@@ -110,7 +111,7 @@ type event =
   ; params : 'a. 'a Js_of_ocaml.Js.t Js_of_ocaml.Js.readonly_prop >
 
 let universal_links () =
-  let%lwt () = ondeviceready in
+  let* () = ondeviceready in
   Lwt.return @@ Js_of_ocaml.Js.Optdef.to_option
   @@ (Js_of_ocaml.Js.Unsafe.global##.universalLinks
       : < subscribe :
@@ -124,20 +125,20 @@ let universal_links () =
           Js_of_ocaml.Js.Optdef.t)
 
 let _ =
-  match%lwt universal_links () with
-  | Some universal_links ->
-      Js_of_ocaml.Firebug.console##log
-        (Js_of_ocaml.Js.string "Universal links: registering");
-      universal_links##subscribe Js_of_ocaml.Js.null
-        (Js_of_ocaml.Js.wrap_callback (fun (ev : event Js_of_ocaml.Js.t) ->
-           Js_of_ocaml.Firebug.console##log_2
-             (Js_of_ocaml.Js.string "Universal links: got link")
-             ev##.url;
-           change_page_uri (Js_of_ocaml.Js.to_string ev##.url)));
-      Js_of_ocaml.Firebug.console##log
-        (Js_of_ocaml.Js.string "Universal links: registered");
-      Lwt.return_unit
-  | None -> Lwt.return_unit
+  Lwt.bind (universal_links ()) (function
+    | Some universal_links ->
+        Js_of_ocaml.Firebug.console##log
+          (Js_of_ocaml.Js.string "Universal links: registering");
+        universal_links##subscribe Js_of_ocaml.Js.null
+          (Js_of_ocaml.Js.wrap_callback (fun (ev : event Js_of_ocaml.Js.t) ->
+             Js_of_ocaml.Firebug.console##log_2
+               (Js_of_ocaml.Js.string "Universal links: got link")
+               ev##.url;
+             change_page_uri (Js_of_ocaml.Js.to_string ev##.url)));
+        Js_of_ocaml.Firebug.console##log
+          (Js_of_ocaml.Js.string "Universal links: registered");
+        Lwt.return_unit
+    | None -> Lwt.return_unit)
 
 (* Debugging *)
 

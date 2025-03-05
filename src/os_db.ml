@@ -1,3 +1,5 @@
+open Lwt.Syntax
+
 (* GENERATED CODE, DO NOT EDIT! *)
 include Os_core_db
 
@@ -200,12 +202,11 @@ module User = struct
                  _rows)))
 
   let is_registered email =
-    [%lwt
-      try
-        [%lwt
-          let _ = userid_of_email email in
-          Lwt.return_true]
-      with No_such_resource -> Lwt.return_false]
+    Lwt.catch
+      (fun () ->
+        let* _ = userid_of_email email in
+        Lwt.return_true)
+      (function No_such_resource -> Lwt.return_false | exc -> Lwt.reraise exc)
 
   let is_email_validated userid email =
     one without_transaction

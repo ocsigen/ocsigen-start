@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open Lwt.Syntax
 open Resource_pooling
 
 let section = Lwt_log.Section.make "os:db"
@@ -55,27 +56,29 @@ let dispose db =
   Lwt.catch (fun () -> PGOCaml.close db) (fun _ -> Lwt.return_unit)
 
 let connect () =
-  let%lwt h =
+  let* h =
     Lwt_PGOCaml.connect ?host:!host_r ?port:!port_r ?user:!user_r
       ?password:!password_r ?database:!database_r
       ?unix_domain_socket_dir:!unix_domain_socket_dir_r ()
   in
   match !init_r with
   | Some init ->
-      let%lwt () =
-        try%lwt init h
-        with exn ->
-          let%lwt () = dispose h in
-          Lwt.fail exn
+      let* () =
+        Lwt.catch
+          (fun () -> init h)
+          (fun exn ->
+            let* () = dispose h in
+            Lwt.fail exn)
       in
       Lwt.return h
   | None -> Lwt.return h
 
 let validate db =
-  try%lwt
-    let%lwt () = Lwt_PGOCaml.ping db in
-    Lwt.return_true
-  with _ -> Lwt.return_false
+  Lwt.catch
+    (fun () ->
+      let* () = Lwt_PGOCaml.ping db in
+      Lwt.return_true)
+    (fun _ -> Lwt.return_false)
 
 let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Resource_pool.t ref =
   ref @@ Resource_pool.create 16 ~validate ~dispose connect
@@ -105,42 +108,49 @@ let set_connection_wrapper f = connection_wrapper := f
 let use_pool f =
   Resource_pool.use !pool @@ fun db ->
   !connection_wrapper.f db @@ fun () ->
-  try%lwt f db with
-  | Lwt_PGOCaml.Error msg as e ->
-      Lwt_log.ign_error_f ~section "postgresql protocol error: %s" msg;
-      let%lwt () = Lwt_PGOCaml.close db in
-      Lwt.fail e
-  | (Unix.Unix_error _ | End_of_file) as e ->
-      Lwt_log.ign_error_f ~section ~exn:e "unix error";
-      let%lwt () = Lwt_PGOCaml.close db in
-      Lwt.fail e
-  | Lwt.Canceled as e ->
-      Lwt_log.ign_error ~section "thread canceled";
-      let%lwt () = PGOCaml.close db in
-      Lwt.fail e
+  Lwt.catch
+    (fun () -> f db)
+    (function
+      | Lwt_PGOCaml.Error msg as e ->
+          Lwt_log.ign_error_f ~section "postgresql protocol error: %s" msg;
+          let* () = Lwt_PGOCaml.close db in
+          Lwt.fail e
+      | (Unix.Unix_error _ | End_of_file) as e ->
+          Lwt_log.ign_error_f ~section ~exn:e "unix error";
+          let* () = Lwt_PGOCaml.close db in
+          Lwt.fail e
+      | Lwt.Canceled as e ->
+          Lwt_log.ign_error ~section "thread canceled";
+          let* () = PGOCaml.close db in
+          Lwt.fail e
+      | exc -> Lwt.reraise exc)
 
 let transaction_block db f =
-  try%lwt
-    Lwt_PGOCaml.begin_work db >>= fun _ ->
-    let%lwt r = f () in
-    let%lwt () = Lwt_PGOCaml.commit db in
-    Lwt.return r
-  with
-  | (Lwt_PGOCaml.Error _ | Lwt.Canceled | Unix.Unix_error _ | End_of_file) as e
-    ->
-      (* The connection is going to be closed by [use_pool],
+  Lwt.catch
+    (fun () ->
+      Lwt_PGOCaml.begin_work db >>= fun _ ->
+      let* r = f () in
+      let* () = Lwt_PGOCaml.commit db in
+      Lwt.return r)
+    (function
+      | (Lwt_PGOCaml.Error _ | Lwt.Canceled | Unix.Unix_error _ | End_of_file)
+        as e ->
+          (* The connection is going to be closed by [use_pool],
         so no need to try to rollback *)
-      Lwt.fail e
-  | e ->
-      let%lwt () =
-        try%lwt Lwt_PGOCaml.rollback db
-        with Lwt_PGOCaml.PostgreSQL_Error _ ->
-          (* If the rollback fails, for instance due to a timeout,
+          Lwt.fail e
+      | e ->
+          let* () =
+            Lwt.catch
+              (fun () -> Lwt_PGOCaml.rollback db)
+              (function
+                | Lwt_PGOCaml.PostgreSQL_Error _ ->
+                    (* If the rollback fails, for instance due to a timeout,
            it seems better to close the connection. *)
-          Lwt_log.ign_error ~section "rollback failed";
-          Lwt_PGOCaml.close db
-      in
-      Lwt.fail e
+                    Lwt_log.ign_error ~section "rollback failed";
+                    Lwt_PGOCaml.close db
+                | exc -> Lwt.reraise exc)
+          in
+          Lwt.fail e)
 
 let full_transaction_block f =
   use_pool (fun db -> transaction_block db (fun () -> f db))
