@@ -5,7 +5,7 @@
    localStorage. Compile as follos:
 
    ocamlfind ocamlc \
-     -package js_of_ocaml,js_of_ocaml.ppx,lwt_ppx \
+     -package js_of_ocaml,js_of_ocaml.ppx \
      -linkpkg -o eliom_loader.byte \
      eliom_loader.ml
 
