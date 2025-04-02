@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open%client Lwt.Syntax
 open%client Js_of_ocaml
 open%client Js_of_ocaml_lwt
 
@@ -96,7 +97,7 @@ let%client handle_message = function
   | Ok Connection_changed ->
       Os_msg.msg ~level:`Err
         "Connection has changed from outside. Program will restart.";
-      let%lwt () = Lwt_js.sleep 2. in
+      let* () = Lwt_js.sleep 2. in
       restart_process (); Lwt.return_unit
 
 let%server warn_state c state =

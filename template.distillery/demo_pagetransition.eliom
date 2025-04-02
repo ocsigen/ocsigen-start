@@ -1,3 +1,5 @@
+open%shared Lwt.Syntax
+
 [%%shared
 (* This demo illustrates Eliom's DOM caching feature.
 
@@ -81,7 +83,7 @@ let%shared make_detail_page page () =
 let%shared () =
   %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_pagetransition
     ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
-      let%lwt p = page () in
+      let* p = page () in
       %%%MODULE_NAME%%%_container.page
         ~a:[a_class ["os-page-demo-pagetransition"]]
         myid_o p )

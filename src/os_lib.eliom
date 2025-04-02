@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open%shared Lwt.Syntax
 open%client Js_of_ocaml
 open%client Js_of_ocaml_lwt
 
@@ -31,7 +32,7 @@ let%shared memoizator f =
     match !value_ref with
     | Some value -> Lwt.return value
     | None ->
-        let%lwt value = f () in
+        let* value = f () in
         value_ref := Some value;
         Lwt.return value
 
@@ -180,9 +181,9 @@ module Http = struct
       (fun () ->
          Ocsigen_stream.string_of_stream len (Ocsigen_stream.get contents))
       (fun r ->
-         let%lwt () = Ocsigen_stream.finalize contents `Success in
+         let* () = Ocsigen_stream.finalize contents `Success in
          Lwt.return r)
       (fun e ->
-         let%lwt () = Ocsigen_stream.finalize contents `Failure in
+         let* () = Ocsigen_stream.finalize contents `Failure in
          Lwt.fail e)
 end

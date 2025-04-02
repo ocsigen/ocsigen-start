@@ -18,6 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open Lwt.Syntax
+
 [%%shared
 type id = Os_types.User.id [@@deriving json]
 
@@ -98,20 +100,23 @@ module MCache = Os_request_cache.Make (struct
     let compare = compare
 
     let get key =
-      try%lwt
-        let%lwt g = Os_db.User.user_of_userid key in
-        Lwt.return (create_user_from_db0 g)
-      with Os_db.No_such_resource -> Lwt.fail No_such_user
+      Lwt.catch
+        (fun () ->
+           let* g = Os_db.User.user_of_userid key in
+           Lwt.return (create_user_from_db0 g))
+        (function
+           | Os_db.No_such_resource -> Lwt.fail No_such_user
+           | exc -> Lwt.reraise exc)
   end)
 
 (* Overwrite the function [user_of_userid] of [Os_db.User] and use
    the [get] function of the cache module. *)
 let user_of_userid userid =
-  let%lwt u, _ = MCache.get userid in
+  let* u, _ = MCache.get userid in
   Lwt.return u
 
 let password_set userid =
-  let%lwt _, s = MCache.get userid in
+  let* _, s = MCache.get userid in
   Lwt.return s
 
 (* -----------------------------------------------------------------
@@ -125,24 +130,26 @@ let password_set userid =
 let create ?password ?avatar ?language ?email ~firstname ~lastname () =
   let password = match password with Some "" -> None | _ -> password in
   let really_create () =
-    let%lwt userid =
+    let* userid =
       Os_db.User.create ~firstname ~lastname ?password ?avatar ?language ?email
         ()
     in
     user_of_userid userid
   in
   match email with
-  | Some email -> (
-      try%lwt
-        let%lwt userid = Os_db.User.userid_of_email email in
-        Lwt.fail (Already_exists userid)
-      with Os_db.No_such_resource -> really_create ())
+  | Some email ->
+      Lwt.catch
+        (fun () ->
+           let* userid = Os_db.User.userid_of_email email in
+           Lwt.fail (Already_exists userid))
+        (function
+           | Os_db.No_such_resource -> really_create () | exc -> Lwt.reraise exc)
   | None -> really_create ()
 
 (* Overwrites the function [update] of [Os_db.User]
    to reset the cache *)
 let update ?password ?avatar ?language ~firstname ~lastname userid =
-  let%lwt () =
+  let* () =
     Os_db.User.update ?password ?avatar ?language ~firstname ~lastname userid
   in
   MCache.reset userid; Lwt.return_unit
@@ -153,21 +160,21 @@ let update' ?password user =
     ~lastname:(lastname_of_user user) (userid_of_user user)
 
 let update_password ~userid ~password =
-  let%lwt () = Os_db.User.update_password ~userid ~password in
+  let* () = Os_db.User.update_password ~userid ~password in
   MCache.reset userid; Lwt.return_unit
 
 let update_language ~userid ~language =
-  let%lwt () = Os_db.User.update_language ~userid ~language in
+  let* () = Os_db.User.update_language ~userid ~language in
   MCache.reset userid; Lwt.return_unit
 
 let update_avatar ~userid ~avatar =
-  let%lwt () = Os_db.User.update_avatar ~userid ~avatar in
+  let* () = Os_db.User.update_avatar ~userid ~avatar in
   MCache.reset userid; Lwt.return_unit
 
 let get_language userid = Os_db.User.get_language userid
 
 let get_users ?pattern () =
-  let%lwt users = Os_db.User.get_users ?pattern () in
+  let* users = Os_db.User.get_users ?pattern () in
   Lwt.return (List.map create_user_from_db users)
 
 let set_pwd_crypt_fun a = Os_db.pwd_crypt_ref := a

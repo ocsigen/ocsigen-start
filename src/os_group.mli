@@ -32,7 +32,6 @@ exception No_such_group
 
    The implementation of this module should be sufficient. Groups are
    useful for example to allow or deny access to functions or pages.
-
 *)
 
 type id = Os_types.Group.id [@@deriving json]
@@ -65,25 +64,24 @@ val group_of_name : string -> Os_types.Group.t Lwt.t
    functions ones. They generally use the type {!Os_types.group} of the module
    and get rid of the part of picking each field of the record
    {!os_types.group}.
-
 *)
 
-val add_user_in_group
-  :  group:Os_types.Group.t
+val add_user_in_group :
+   group:Os_types.Group.t
   -> userid:Os_types.User.id
   -> unit Lwt.t
 (** [add_user_in_group ~group ~userid] adds the user with ID [userid] to
     [group]. *)
 
-val remove_user_in_group
-  :  group:Os_types.Group.t
+val remove_user_in_group :
+   group:Os_types.Group.t
   -> userid:Os_types.User.id
   -> unit Lwt.t
 (** [remove_user_in_group ~group ~userid] removes the user with ID [userid] from
     [group]. *)
 
-val in_group
-  :  ?dbh:Os_db.PGOCaml.pa_pg_data Os_db.PGOCaml.t
+val in_group :
+   ?dbh:Os_db.PGOCaml.pa_pg_data Os_db.PGOCaml.t
   -> group:Os_types.Group.t
   -> userid:Os_types.User.id
   -> unit

@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open%shared Lwt.Syntax
 open%shared Eliom_content.Html
 open%shared Eliom_content.Html.F
 open%client Js_of_ocaml
@@ -68,13 +69,13 @@ let%client get_tips_seen () = Lwt.return !tips_seen_client_ref
 
 let%server () =
   Os_session.on_start_connected_process (fun _ ->
-    let%lwt tips = get_tips_seen () in
+    let* tips = get_tips_seen () in
     ignore [%client (tips_seen_client_ref := ~%tips : unit)];
     Lwt.return_unit)
 
 (* notify the server that a user has seen a tip *)
 let%rpc set_tip_seen (name : string) : unit Lwt.t =
-  let%lwt prev = Eliom_reference.Volatile.get seen_by_user in
+  let* prev = Eliom_reference.Volatile.get seen_by_user in
   let newset = Stringset.add (name : string) prev in
   match Os_current_user.Opt.get_current_userid () with
   | None -> Eliom_reference.set tips_seen_not_connected newset
@@ -86,7 +87,7 @@ let%client set_tip_seen name =
 
 (* counterpart of set_tip_seen *)
 let%rpc unset_tip_seen (name : string) : unit Lwt.t =
-  let%lwt prev = Eliom_reference.Volatile.get seen_by_user in
+  let* prev = Eliom_reference.Volatile.get seen_by_user in
   let newset = Stringset.remove name prev in
   match Os_current_user.Opt.get_current_userid () with
   | None -> Eliom_reference.set tips_seen_not_connected newset
@@ -97,7 +98,7 @@ let%client unset_tip_seen name =
   unset_tip_seen name
 
 let%shared tip_seen name =
-  let%lwt seen = get_tips_seen () in
+  let* seen = get_tips_seen () in
   Lwt.return @@ Stringset.mem name seen
 
 (* I want to see the tips again *)
@@ -132,7 +133,7 @@ let%shared block ?(a = []) ?(recipient = `All)
   let myid_o = Os_current_user.Opt.get_current_userid () in
   match recipient, myid_o with
   | `All, _ | `Not_connected, None | `Connected, Some _ ->
-      let%lwt seen = get_tips_seen () in
+      let* seen = get_tips_seen () in
       if Stringset.mem name seen
       then Lwt.return_none
       else
@@ -140,7 +141,7 @@ let%shared block ?(a = []) ?(recipient = `All)
         let close : (unit -> unit Lwt.t) Eliom_client_value.t =
           [%client
             fun () ->
-              let%lwt () = ~%onclose () in
+              let* () = ~%onclose () in
               let () =
                 match !(~%box_ref) with
                 | Some x -> Manip.removeSelf x
@@ -148,7 +149,7 @@ let%shared block ?(a = []) ?(recipient = `All)
               in
               set_tip_seen ~%name]
         in
-        let%lwt c = content close in
+        let* c = content close in
         let c = [div ~a:[a_class ["os-tip-content"]] c] in
         let box =
           D.div
@@ -165,7 +166,7 @@ let%shared block ?(a = []) ?(recipient = `All)
   | _ -> Lwt.return_none
 
 let%client onload_waiter () =
-  let%lwt _ = Eliom_client.lwt_onload () in
+  let* _ = Eliom_client.lwt_onload () in
   Lwt.return_unit
 
 (* This thread is used to display only one tip at a time *)
@@ -189,16 +190,16 @@ let%client display_bubble ?(a = []) ?arrow ?top ?left ?right ?bottom ?height
   let current_waiter = !waiter in
   let new_waiter, new_wakener = Lwt.task () in
   waiter := new_waiter;
-  let%lwt () = current_waiter in
+  let* () = current_waiter in
   let bec = D.div ~a:[a_class ["os-tip-bec"]] [] in
   let box_ref = ref None in
   let close () =
-    let%lwt () = onclose () in
+    let* () = onclose () in
     let () = match !box_ref with Some x -> Manip.removeSelf x | None -> () in
     Lwt.wakeup new_wakener ();
     set_tip_seen (name : string)
   in
-  let%lwt c = content close in
+  let* c = content close in
   let c = [div ~a:[a_class ["os-tip-content"]] c] in
   let box =
     D.div
@@ -214,8 +215,8 @@ let%client display_bubble ?(a = []) ?arrow ?top ?left ?right ?bottom ?height
     | None -> Dom_html.document##.body
     | Some p -> To_dom.of_element p
   in
-  let%lwt () = Ot_nodeready.nodeready parent_node in
-  let%lwt () = Lwt_js.sleep delay in
+  let* () = Ot_nodeready.nodeready parent_node in
+  let* () = Lwt_js.sleep delay in
   let box = To_dom.of_element box in
   Dom.appendChild parent_node box;
   box##.style##.opacity := Js.def (Js.string "0");
@@ -264,7 +265,7 @@ let%client display_bubble ?(a = []) ?arrow ?top ?left ?right ?bottom ?height
            bec##.style##.borderBottom := Js.string "none";
            bec##.style##.borderLeft := Js.string "none")
     arrow;
-  let%lwt () = Lwt_js_events.request_animation_frame () in
+  let* () = Lwt_js_events.request_animation_frame () in
   box##.style##.opacity := Js.def (Js.string "1");
   Lwt.return_unit
 
@@ -295,7 +296,7 @@ let%shared bubble
   let myid_o = Os_current_user.Opt.get_current_userid () in
   match recipient, myid_o with
   | `All, _ | `Not_connected, None | `Connected, Some _ ->
-      let%lwt seen = get_tips_seen () in
+      let* seen = get_tips_seen () in
       if Stringset.mem name seen
       then Lwt.return_unit
       else

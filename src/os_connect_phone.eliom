@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open%server Lwt.Syntax
 type%shared sms_error_core = [`Unknown | `Send | `Limit | `Invalid_number]
 type%shared sms_error = [`Ownership | sms_error_core]
 
@@ -52,22 +53,24 @@ let send_sms ~number message : (unit, sms_error_core) result Lwt.t =
   !send_sms_handler ~number message
 
 let%server request_code reference number =
-  try%lwt
-    let%lwt attempt =
-      match%lwt Eliom_reference.get reference with
-      | Some (_, _, attempt) -> Lwt.return attempt
-      | None -> Lwt.return 0
-    in
-    if attempt <= 3
-    then
-      let attempt = attempt + 1 and code = activation_code () in
-      let%lwt () =
-        Eliom_reference.set reference (Some (number, code, attempt))
-      in
-      try%lwt (send_sms ~number code :> (unit, sms_error) result Lwt.t)
-      with _ -> Lwt.return (Error `Send)
-    else Lwt.return (Error `Limit)
-  with _ -> Lwt.return (Error `Unknown)
+  Lwt.catch
+    (fun () ->
+       let* attempt =
+         Lwt.bind (Eliom_reference.get reference) (function
+           | Some (_, _, attempt) -> Lwt.return attempt
+           | None -> Lwt.return 0)
+       in
+       if attempt <= 3
+       then
+         let attempt = attempt + 1 and code = activation_code () in
+         let* () =
+           Eliom_reference.set reference (Some (number, code, attempt))
+         in
+         Lwt.catch
+           (fun () -> (send_sms ~number code :> (unit, sms_error) result Lwt.t))
+           (fun _ -> Lwt.return (Error `Send))
+       else Lwt.return (Error `Limit))
+    (fun _ -> Lwt.return (Error `Unknown))
 
 let%server request_wrapper number f =
   if Re.Str.string_match Os_lib.phone_regexp number 0
@@ -77,22 +80,22 @@ let%server request_wrapper number f =
 let%rpc request_recovery_code (number : string) : (unit, sms_error) result Lwt.t
   =
   request_wrapper number @@ fun number ->
-  let%lwt b = Os_db.Phone.exists number in
+  let* b = Os_db.Phone.exists number in
   if not b
   then Lwt.return (Error `Ownership)
   else request_code recovery_code_ref number
 
 let%rpc request_code (number : string) : (unit, sms_error) result Lwt.t =
   request_wrapper number @@ fun number ->
-  let%lwt b = Os_db.Phone.exists number in
+  let* b = Os_db.Phone.exists number in
   if b
   then Lwt.return (Error `Ownership)
   else request_code activation_code_ref number
 
 let%server confirm_code myid code =
-  match%lwt Eliom_reference.get activation_code_ref with
-  | Some (number, code', _) when code = code' -> Os_db.Phone.add myid number
-  | _ -> Lwt.return_false
+  Lwt.bind (Eliom_reference.get activation_code_ref) (function
+    | Some (number, code', _) when code = code' -> Os_db.Phone.add myid number
+    | _ -> Lwt.return_false)
 
 let%rpc confirm_code_extra myid (code : string) : bool Lwt.t =
   confirm_code myid code
@@ -100,46 +103,49 @@ let%rpc confirm_code_extra myid (code : string) : bool Lwt.t =
 let%server confirm_code_signup_no_connect ~first_name ~last_name ~code ~password
     ()
   =
-  match%lwt Eliom_reference.get activation_code_ref with
-  | Some (number, code', _) when code = code' ->
-      let%lwt () = Eliom_reference.set activation_code_ref None in
-      let%lwt user =
-        Os_user.create ~password ~firstname:first_name ~lastname:last_name ()
-      in
-      let userid = Os_user.userid_of_user user in
-      let%lwt _ = Os_db.Phone.add userid number in
-      Lwt.return_some userid
-  | _ -> Lwt.return_none
+  Lwt.bind (Eliom_reference.get activation_code_ref) (function
+    | Some (number, code', _) when code = code' ->
+        let* () = Eliom_reference.set activation_code_ref None in
+        let* user =
+          Os_user.create ~password ~firstname:first_name ~lastname:last_name ()
+        in
+        let userid = Os_user.userid_of_user user in
+        let* _ = Os_db.Phone.add userid number in
+        Lwt.return_some userid
+    | _ -> Lwt.return_none)
 
 let%rpc confirm_code_signup ~(first_name : string) ~(last_name : string)
     ~(code : string) ~(password : string) () : bool Lwt.t
   =
-  match%lwt
-    confirm_code_signup_no_connect ~first_name ~last_name ~code ~password ()
-  with
-  | None -> Lwt.return_false
-  | Some userid ->
-      let%lwt () = Os_session.connect userid in
-      Lwt.return_true
+  Lwt.bind
+    (confirm_code_signup_no_connect ~first_name ~last_name ~code ~password ())
+    (function
+    | None -> Lwt.return_false
+    | Some userid ->
+        let* () = Os_session.connect userid in
+        Lwt.return_true)
 
 let%rpc confirm_code_recovery (code : string) : bool Lwt.t =
-  match%lwt Eliom_reference.get recovery_code_ref with
-  | Some (number, code', _) when code = code' -> (
-      match%lwt Os_db.Phone.userid number with
-      | Some userid ->
-          let%lwt () = Os_session.connect userid in
-          Lwt.return_true
-      | None -> Lwt.return_false)
-  | _ -> Lwt.return_false
+  Lwt.bind (Eliom_reference.get recovery_code_ref) (function
+    | Some (number, code', _) when code = code' ->
+        Lwt.bind (Os_db.Phone.userid number) (function
+          | Some userid ->
+              let* () = Os_session.connect userid in
+              Lwt.return_true
+          | None -> Lwt.return_false)
+    | _ -> Lwt.return_false)
 
 let%rpc connect ~(keepmeloggedin : bool) ~(password : string) (number : string)
     : [`Login_ok | `Wrong_password | `No_such_user | `Password_not_set] Lwt.t
   =
-  try%lwt
-    let%lwt userid = Os_db.User.verify_password_phone ~password ~number in
-    let%lwt () = Os_session.connect ~expire:(not keepmeloggedin) userid in
-    Lwt.return `Login_ok
-  with
-  | Os_db.Empty_password | Os_db.Wrong_password -> Lwt.return `Wrong_password
-  | Os_db.No_such_user -> Lwt.return `No_such_user
-  | Os_db.Password_not_set -> Lwt.return `Password_not_set
+  Lwt.catch
+    (fun () ->
+       let* userid = Os_db.User.verify_password_phone ~password ~number in
+       let* () = Os_session.connect ~expire:(not keepmeloggedin) userid in
+       Lwt.return `Login_ok)
+    (function
+       | Os_db.Empty_password | Os_db.Wrong_password ->
+           Lwt.return `Wrong_password
+       | Os_db.No_such_user -> Lwt.return `No_such_user
+       | Os_db.Password_not_set -> Lwt.return `Password_not_set
+       | exc -> Lwt.reraise exc)

@@ -5,13 +5,14 @@
    localStorage. Compile as follos:
 
    ocamlfind ocamlc \
-     -package js_of_ocaml,js_of_ocaml.ppx,lwt_ppx \
+     -package js_of_ocaml,js_of_ocaml.ppx \
      -linkpkg -o eliom_loader.byte \
      eliom_loader.ml
 
    js_of_ocaml eliom_loader.byte
 *)
 
+open Lwt.Syntax
 module XmlHttpRequest = Js_of_ocaml_lwt.XmlHttpRequest
 
 (* Debug mode. Set to true if you want to use the debug mode. Used by "log".
@@ -22,8 +23,7 @@ let debug = false
  * in the console.
  *)
 let log =
-  if debug
-  then (fun s ->
+  if debug then (fun s ->
     Js_of_ocaml.Firebug.console##log (Js_of_ocaml.Js.string s);
     let p = Js_of_ocaml.Dom_html.createP Js_of_ocaml.Dom_html.document in
     p##.style##.color := Js_of_ocaml.Js.string "#64b5f6";
@@ -73,25 +73,22 @@ let rec add_retry_button wake msg =
        (Js_of_ocaml.Js.string "Retry"));
   btn##.onclick :=
     Js_of_ocaml.Dom_html.handler (fun _ ->
-      Js_of_ocaml.Dom.removeChild container p;
-      container##.className := Js_of_ocaml.Js.string "app blink";
-      if !update_failed
-      then (
-        update_failed := false;
-        ignore Js_of_ocaml.Js.Unsafe.global##.chcp##fetchUpdate);
-      if !data_upload_failed
-      then (
-        data_upload_failed := false;
-        Lwt.async (fun () -> get_data wake));
-      Js_of_ocaml.Js._false);
+        Js_of_ocaml.Dom.removeChild container p;
+        container##.className := Js_of_ocaml.Js.string "app blink";
+        if !update_failed then (
+          update_failed := false;
+          ignore Js_of_ocaml.Js.Unsafe.global##.chcp##fetchUpdate);
+        if !data_upload_failed then (
+          data_upload_failed := false;
+          Lwt.async (fun () -> get_data wake));
+        Js_of_ocaml.Js._false);
   btn##.id := Js_of_ocaml.Js.string "retry-button";
   Js_of_ocaml.Dom.appendChild p btn;
   Js_of_ocaml.Dom.appendChild container p
 
 and get_data wake =
-  let%lwt {XmlHttpRequest.content; code} = XmlHttpRequest.get url in
-  if code = 200
-  then (
+  let* { XmlHttpRequest.content; code } = XmlHttpRequest.get url in
+  if code = 200 then (
     log "Got global data";
     (storage ())##setItem
       (Js_of_ocaml.Js.string "__global_data")
@@ -99,11 +96,11 @@ and get_data wake =
     Lwt.wakeup wake ())
   else (
     log "Could not get global data";
-    if not (!update_failed || !data_upload_failed)
-    then (
+    if not (!update_failed || !data_upload_failed) then (
       data_upload_failed := true;
       add_retry_button wake
-        "Cannot connect to the server. Please make sure that this app has access to a data connection."));
+        "Cannot connect to the server. Please make sure that this app has \
+         access to a data connection."));
   Lwt.return_unit
 
 (* Get the URL saved in the JavaScript variables "___eliom_html_url_" defined in
@@ -119,9 +116,9 @@ let _ =
   @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
        (Js_of_ocaml.Dom_html.Event.make "resume")
        (Js_of_ocaml.Dom.handler (fun _ ->
-          log "Resume";
-          ignore Js_of_ocaml.Js.Unsafe.global##.chcp##fetchUpdate;
-          Js_of_ocaml.Js._true))
+            log "Resume";
+            ignore Js_of_ocaml.Js.Unsafe.global##.chcp##fetchUpdate;
+            Js_of_ocaml.Js._true))
        Js_of_ocaml.Js._false;
   (* Create two threads for success callbacks and error callbacks. *)
   let wait_success, wake_success = Lwt.wait () in
@@ -132,69 +129,74 @@ let _ =
    *)
   let callback ev =
     Js_of_ocaml.Dom.handler (fun _ ->
-      log ev;
-      update_failed := false;
-      Lwt.wakeup wake_success ();
-      Js_of_ocaml.Js._true)
+        log ev;
+        update_failed := false;
+        Lwt.wakeup wake_success ();
+        Js_of_ocaml.Js._true)
   in
   (* Callback when errors.
    * Calls by the event chcp_nothingToUpdate.
    *)
   let error_callback name =
     Js_of_ocaml.Dom.handler (fun ev ->
-      log
-        (name ^ ": "
-        ^ Js_of_ocaml.Js.to_string ev##.detail##.error##.description);
-      update_failed := true;
-      if not !data_upload_failed
-      then
-        add_retry_button wake_error
-          (Js_of_ocaml.Js.to_string ev##.detail##.error##.description
-          ^ ". Please try again later.");
-      Js_of_ocaml.Js.bool true)
+        log
+          (name ^ ": "
+          ^ Js_of_ocaml.Js.to_string ev##.detail##.error##.description);
+        update_failed := true;
+        if not !data_upload_failed then
+          add_retry_button wake_error
+            (Js_of_ocaml.Js.to_string ev##.detail##.error##.description
+            ^ ". Please try again later.");
+        Js_of_ocaml.Js.bool true)
   in
   (* Callback to print a message *)
   let status_callback name =
-    Js_of_ocaml.Dom.handler (fun ev -> log name; Js_of_ocaml.Js.bool true)
+    Js_of_ocaml.Dom.handler (fun ev ->
+        log name;
+        Js_of_ocaml.Js.bool true)
   in
   (* Binding to chcp_nothingToUpdate. Calls [callback ev]. *)
   List.iter
     (fun ev ->
-       ignore
-       @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
-            (Js_of_ocaml.Dom_html.Event.make ev)
-            (callback ev) Js_of_ocaml.Js._false)
-    ["chcp_nothingToUpdate"];
+      ignore
+      @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
+           (Js_of_ocaml.Dom_html.Event.make ev)
+           (callback ev) Js_of_ocaml.Js._false)
+    [ "chcp_nothingToUpdate" ];
   (* Binding to chcp_updateLoadFailed, chcp_updateInstallFailed and
    * chcp_assetsInstallationError. It calls [error_callback ev].
    *)
   List.iter
     (fun ev ->
-       ignore
-       @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
-            (Js_of_ocaml.Dom_html.Event.make ev)
-            (error_callback ev) Js_of_ocaml.Js._false)
-    [ "chcp_updateLoadFailed"
-    ; "chcp_updateInstallFailed"
-    ; "chcp_assetsInstallationError" ];
+      ignore
+      @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
+           (Js_of_ocaml.Dom_html.Event.make ev)
+           (error_callback ev) Js_of_ocaml.Js._false)
+    [
+      "chcp_updateLoadFailed";
+      "chcp_updateInstallFailed";
+      "chcp_assetsInstallationError";
+    ];
   (* Binding to other chcp events. It calls [status_callback ev] which will only
    * print the event.
    *)
   List.iter
     (fun ev ->
-       ignore
-       @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
-            (Js_of_ocaml.Dom_html.Event.make ev)
-            (status_callback ev) Js_of_ocaml.Js._false)
-    [ "chcp_updateIsReadyToInstall"
-    ; "chcp_beforeInstall"
-    ; "chcp_nothingToInstall"
-    ; "chcp_updateInstalled"
-    ; "chcp_beforeAssetsInstalledOnExternalStorage"
-    ; "chcp_assetsInstalledOnExternalStorage" ];
+      ignore
+      @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
+           (Js_of_ocaml.Dom_html.Event.make ev)
+           (status_callback ev) Js_of_ocaml.Js._false)
+    [
+      "chcp_updateIsReadyToInstall";
+      "chcp_beforeInstall";
+      "chcp_nothingToInstall";
+      "chcp_updateInstalled";
+      "chcp_beforeAssetsInstalledOnExternalStorage";
+      "chcp_assetsInstalledOnExternalStorage";
+    ];
   Lwt.async @@ fun () ->
-  let%lwt _ = Js_of_ocaml_lwt.Lwt_js_events.onload () in
-  let%lwt _ = get_data wake_error in
-  let%lwt _ = wait_error in
-  let%lwt _ = wait_success in
+  let* _ = Js_of_ocaml_lwt.Lwt_js_events.onload () in
+  let* _ = get_data wake_error in
+  let* _ = wait_error in
+  let* _ = wait_success in
   Lwt.return (redirect ())

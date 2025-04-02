@@ -44,8 +44,8 @@ exception Main_email_removal_attempt
 exception Account_not_activated
 (** Exception raised when the account is not activated. *)
 
-val pwd_crypt_ref
-  : ((string -> string) * (Os_types.User.id -> string -> string -> bool)) ref
+val pwd_crypt_ref :
+  ((string -> string) * (Os_types.User.id -> string -> string -> bool)) ref
 (** [pwd_crypt_ref] is a reference to [(f_crypt, f_check)] where
     - [f_crypt pwd] is used to encrypt the password [pwd].
     - [f_check userid pwd hashed_pwd] returns [true] if the hash of [pwd] and
@@ -81,8 +81,8 @@ module User : sig
   (** [set_email_validated userid email] valids [email] for the user with id
       [userid]. *)
 
-  val add_actionlinkkey
-    :  ?autoconnect:bool
+  val add_actionlinkkey :
+     ?autoconnect:bool
     -> ?action:
          [< `AccountActivation
          | `Custom of string
@@ -110,8 +110,8 @@ module User : sig
   (** [all ?limit ()] get all email addresses with a limit of [limit] (default
       is 10). *)
 
-  val create
-    :  ?password:string
+  val create :
+     ?password:string
     -> ?avatar:string
     -> ?language:string
     -> ?email:string
@@ -127,8 +127,8 @@ module User : sig
       ["empty password"]. TODO: change it to an exception?
    *)
 
-  val update
-    :  ?password:string
+  val update :
+     ?password:string
     -> ?avatar:string
     -> ?language:string
     -> firstname:string
@@ -161,8 +161,8 @@ module User : sig
       ID [userid].
    *)
 
-  val verify_password
-    :  email:string
+  val verify_password :
+     email:string
     -> password:string
     -> Os_types.User.id Lwt.t
   (** [verify_password ~email ~password] returns the userid if user with email
@@ -175,8 +175,8 @@ module User : sig
       If user is not found, it fails with exception {!No_such_user}.
       If password is empty, it fails with exception {!Empty_password}. *)
 
-  val verify_password_phone
-    :  number:string
+  val verify_password_phone :
+     number:string
     -> password:string
     -> Os_types.User.id Lwt.t
   (** [verify_password_phone ~number ~password]
@@ -188,15 +188,15 @@ module User : sig
       If user is not found, it fails with exception {!No_such_user}.
       If password is empty, it fails with exception {!Empty_password}. *)
 
-  val user_of_userid
-    :  Os_types.User.id
+  val user_of_userid :
+     Os_types.User.id
     -> (Os_types.User.id
        * string
        * string
        * string option
        * bool
        * string option)
-       Lwt.t
+         Lwt.t
   (** [user_of_userid userid] returns a tuple [(userid, firstname, lastname,
       avatar, bool_password, language)] describing the information about
       the user with ID [userid].
@@ -216,8 +216,8 @@ module User : sig
       {!No_such_resource}.
       *)
 
-  val emails_of_userid_with_status
-    :  Os_types.User.id
+  val emails_of_userid_with_status :
+     Os_types.User.id
     -> (string * bool) list Lwt.t
   (** Like [emails_of_userid], but also returns validation
       status. This way we perform fewer DB queries. *)
@@ -240,8 +240,8 @@ module User : sig
   (** [add_email_to_user ~userid ~email] add [email] to user with ID [userid].
     *)
 
-  val remove_email_from_user
-    :  userid:Os_types.User.id
+  val remove_email_from_user :
+     userid:Os_types.User.id
     -> email:string
     -> unit Lwt.t
   (** [remove_email_from_user ~userid ~email] removes the email [email] from the
@@ -252,8 +252,8 @@ module User : sig
   val get_language : Os_types.User.id -> string option Lwt.t
   (** [get_language userid] returns the language of the user with ID [userid] *)
 
-  val get_users
-    :  ?pattern:string
+  val get_users :
+     ?pattern:string
     -> unit
     -> (Os_types.User.id
        * string
@@ -261,8 +261,8 @@ module User : sig
        * string option
        * bool
        * string option)
-       list
-       Lwt.t
+         list
+         Lwt.t
   (** [get_users ~pattern ()] returns all users matching the pattern [pattern]
       as a tuple [(userid, firstname, lastname, avatar, bool_password,
       language)].
@@ -275,30 +275,30 @@ module Groups : sig
   (** [create ?description name] creates a new group with name [name] and with
       description [description]. *)
 
-  val group_of_name
-    :  string
+  val group_of_name :
+     string
     -> (Os_types.Group.id * string * string option) Lwt.t
   (** [group_of_name name] returns a tuple [(groupid, name, description)]
       describing the group.
       If no group has the name [name], it fails with {!No_such_resource}.
    *)
 
-  val add_user_in_group
-    :  groupid:Os_types.Group.id
+  val add_user_in_group :
+     groupid:Os_types.Group.id
     -> userid:Os_types.User.id
     -> unit Lwt.t
   (** [add_user_in_group ~groupid ~userid] adds the user with ID [userid] in the
       group with ID [groupid] *)
 
-  val remove_user_in_group
-    :  groupid:Os_types.Group.id
+  val remove_user_in_group :
+     groupid:Os_types.Group.id
     -> userid:Os_types.User.id
     -> unit Lwt.t
   (** [remove_user_in_group ~groupid ~userid] removes the user with ID [userid]
       in the group with ID [groupid] *)
 
-  val in_group
-    :  ?dbh:PGOCaml.pa_pg_data PGOCaml.t
+  val in_group :
+     ?dbh:PGOCaml.pa_pg_data PGOCaml.t
     -> groupid:Os_types.Group.id
     -> userid:Os_types.User.id
     -> unit

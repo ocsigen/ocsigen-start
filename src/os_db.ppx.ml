@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open Lwt.Syntax
 include Os_core_db
 
 exception No_such_resource
@@ -69,10 +70,11 @@ module User = struct
            WHERE email = $email"])
 
   let is_registered email =
-    try%lwt
-      let%lwt _ = userid_of_email email in
-      Lwt.return_true
-    with No_such_resource -> Lwt.return_false
+    Lwt.catch
+      (fun () ->
+        let* _ = userid_of_email email in
+        Lwt.return_true)
+      (function No_such_resource -> Lwt.return_false | exc -> Lwt.reraise exc)
 
   let is_email_validated userid email =
     one without_transaction
@@ -92,8 +94,7 @@ module User = struct
          WHERE userid = $userid AND email = $email"]
 
   let add_actionlinkkey ?(autoconnect = false) ?(action = `AccountActivation)
-      ?(data = "") ?(validity = 1L) ?expiry ~act_key ~userid ~email ()
-    =
+      ?(data = "") ?(validity = 1L) ?expiry ~act_key ~userid ~email () =
     let action =
       match action with
       | `AccountActivation -> "activation"
@@ -132,30 +133,29 @@ module User = struct
     [%pgsql dbh "SELECT email FROM ocsigen_start.preregister LIMIT $limit"]
 
   let create ?password ?avatar ?language ?email ~firstname ~lastname () =
-    if password = Some ""
-    then Lwt.fail_with "empty password"
+    if password = Some "" then Lwt.fail_with "empty password"
     else
       full_transaction_block (fun dbh ->
           let password_o =
             Eliom_lib.Option.map (fun p -> fst !pwd_crypt_ref p) password
           in
-          let%lwt userid =
-            match%lwt
+          let* userid =
+            Lwt.bind
               [%pgsql
                 dbh
-                  "INSERT INTO ocsigen_start.users
-                   (firstname, lastname, main_email, password, avatar, language)
-                 VALUES ($firstname, $lastname, $?email,
-                         $?password_o, $?avatar,  $?language)
-                 RETURNING userid"]
-            with
-            | [userid] -> Lwt.return userid
-            | _ -> assert false
+                  "INSERT INTO ocsigen_start.users\n\
+                  \                   (firstname, lastname, main_email, \
+                   password, avatar, language)\n\
+                  \                 VALUES ($firstname, $lastname, $?email,\n\
+                  \                         $?password_o, $?avatar,  $?language)\n\
+                  \                 RETURNING userid"] (function
+              | [ userid ] -> Lwt.return userid
+              | _ -> assert false)
           in
-          let%lwt () =
+          let* () =
             match email with
             | Some email ->
-                let%lwt () =
+                let* () =
                   [%pgsql
                     dbh
                       "INSERT INTO ocsigen_start.emails (email, userid)
@@ -167,8 +167,7 @@ module User = struct
           Lwt.return userid)
 
   let update ?password ?avatar ?language ~firstname ~lastname userid =
-    if password = Some ""
-    then Lwt.fail_with "empty password"
+    if password = Some "" then Lwt.fail_with "empty password"
     else
       let password =
         match password with
@@ -239,16 +238,14 @@ module User = struct
              a password field. *)
           match password' with
           | Some password' when snd !pwd_crypt_ref userid password password' ->
-              if validated
-              then Lwt.return userid
+              if validated then Lwt.return userid
               else Lwt.fail Account_not_activated
           | Some _ -> Lwt.fail Wrong_password
           | _ -> Lwt.fail Password_not_set)
         ~fail:(Lwt.fail No_such_user)
 
   let verify_password_phone ~number ~password =
-    if password = ""
-    then Lwt.fail Empty_password
+    if password = "" then Lwt.fail Empty_password
     else
       one without_transaction
         (fun dbh ->
@@ -269,7 +266,8 @@ module User = struct
   let user_of_userid userid =
     one without_transaction
       ~success:
-        (fun (userid, firstname, lastname, avatar, has_password, language) ->
+        (fun
+          (userid, firstname, lastname, avatar, has_password, language) ->
         Lwt.return
           ( userid
           , firstname
@@ -305,11 +303,10 @@ module User = struct
               | c -> `Custom c
             in
             let v = max 0L (Int64.pred validity) in
-            let%lwt () =
+            let* () =
               (* We provide a grace period of 20 seconds before expiring the
                key, in case the link is successively opened several times *)
-              if v = 0L
-              then
+              if v = 0L then
                 [%pgsql
                   dbh
                     "UPDATE ocsigen_start.activation
@@ -325,7 +322,7 @@ module User = struct
             in
             Lwt.return
               Os_types.Action_link_key.
-                {userid; email; validity; expiry; action; data; autoconnect}))
+                { userid; email; validity; expiry; action; data; autoconnect }))
 
   let emails_of_userid userid =
     without_transaction @@ fun dbh ->
@@ -365,9 +362,8 @@ module User = struct
          VALUES ($email, $userid)"]
 
   let remove_email_from_user ~userid ~email =
-    let%lwt b = is_main_email ~userid ~email in
-    if b
-    then Lwt.fail Main_email_removal_attempt
+    let* b = is_main_email ~userid ~email in
+    if b then Lwt.fail Main_email_removal_attempt
     else
       without_transaction @@ fun dbh ->
       [%pgsql
@@ -384,7 +380,7 @@ module User = struct
           dbh "SELECT language FROM ocsigen_start.users WHERE userid = $userid"])
 
   let get_users ?pattern () =
-    let%lwt l =
+    let* l =
       without_transaction (fun dbh ->
           match pattern with
           | None ->
@@ -406,12 +402,12 @@ module User = struct
     Lwt.return
       (List.map
          (fun (userid, firstname, lastname, avatar, has_password, language) ->
-           ( userid
-           , firstname
-           , lastname
-           , avatar
-           , has_password = Some true
-           , language ))
+            ( userid
+            , firstname
+            , lastname
+            , avatar
+            , has_password = Some true
+            , language ))
          l)
 end
 
@@ -431,7 +427,7 @@ module Groups = struct
             "SELECT groupid, name, description
            FROM ocsigen_start.groups WHERE name = $name"])
     >>= function
-    | [r] -> Lwt.return r
+    | [ r ] -> Lwt.return r
     | _ -> Lwt.fail No_such_resource
 
   let add_user_in_group ~groupid ~userid =
@@ -469,7 +465,7 @@ end
 module Phone = struct
   let add userid number =
     without_transaction @@ fun dbh ->
-    let%lwt l =
+    let* l =
       [%pgsql
         dbh
           "INSERT INTO ocsigen_start.phones (number, userid)
@@ -477,24 +473,23 @@ module Phone = struct
            ON CONFLICT DO NOTHING
            RETURNING 0"]
     in
-    Lwt.return (match l with [_] -> true | _ -> false)
+    Lwt.return (match l with [ _ ] -> true | _ -> false)
 
   let exists number =
-    match%lwt
-      without_transaction @@ fun dbh ->
-      [%pgsql dbh "SELECT 1 FROM ocsigen_start.phones WHERE number = $number"]
-    with
-    | _ :: _ -> Lwt.return_true
-    | [] -> Lwt.return_false
+    Lwt.bind
+      ( without_transaction @@ fun dbh ->
+        [%pgsql dbh "SELECT 1 FROM ocsigen_start.phones WHERE number = $number"]
+      )
+      (function _ :: _ -> Lwt.return_true | [] -> Lwt.return_false)
 
   let userid number =
-    match%lwt
-      without_transaction @@ fun dbh ->
-      [%pgsql
-        dbh "SELECT userid FROM ocsigen_start.phones WHERE number = $number"]
-    with
-    | userid :: _ -> Lwt.return (Some userid)
-    | [] -> Lwt.return None
+    Lwt.bind
+      ( without_transaction @@ fun dbh ->
+        [%pgsql
+          dbh "SELECT userid FROM ocsigen_start.phones WHERE number = $number"]
+      )
+      (function
+        | userid :: _ -> Lwt.return (Some userid) | [] -> Lwt.return None)
 
   let delete userid number =
     without_transaction @@ fun dbh ->
