@@ -67,13 +67,13 @@ let () =
 (* Reactivate comet on resume and online events *)
 
 let () =
-  Firebug.console##log (Js_of_ocaml.Js.string "adding resume/online listeners");
+  Console.console##log (Js_of_ocaml.Js.string "adding resume/online listeners");
   let activate ev =
     ignore
     @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
          (Js_of_ocaml.Dom_html.Event.make ev)
          (Js_of_ocaml.Dom_html.handler (fun _ ->
-            Firebug.console##log (Js_of_ocaml.Js.string ev);
+            Console.console##log (Js_of_ocaml.Js.string ev);
             Eliom_comet.activate ();
             Js_of_ocaml.Js._true))
          Js_of_ocaml.Js._false
@@ -127,15 +127,15 @@ let universal_links () =
 let _ =
   Lwt.bind (universal_links ()) (function
     | Some universal_links ->
-        Js_of_ocaml.Firebug.console##log
+        Js_of_ocaml.Console.console##log
           (Js_of_ocaml.Js.string "Universal links: registering");
         universal_links##subscribe Js_of_ocaml.Js.null
           (Js_of_ocaml.Js.wrap_callback (fun (ev : event Js_of_ocaml.Js.t) ->
-             Js_of_ocaml.Firebug.console##log_2
+             Js_of_ocaml.Console.console##log_2
                (Js_of_ocaml.Js.string "Universal links: got link")
                ev##.url;
              change_page_uri (Js_of_ocaml.Js.to_string ev##.url)));
-        Js_of_ocaml.Firebug.console##log
+        Js_of_ocaml.Console.console##log
           (Js_of_ocaml.Js.string "Universal links: registered");
         Lwt.return_unit
     | None -> Lwt.return_unit)

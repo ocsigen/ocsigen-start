@@ -40,6 +40,10 @@ jobs:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
           opam-pin: false
 
+      - run: |
+          opam pin add -n eliom https://github.com/ocsigen/eliom.git
+          opam pin add -n ocsigen-toolkit https://github.com/ocsigen/ocsigen-toolkit.git
+
       - run: opam pin add ocsigen-start.7.0.0 . --no-action
 
       - run: opam install .
