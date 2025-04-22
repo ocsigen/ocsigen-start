@@ -46,7 +46,7 @@ let%shared msg ?(level = `Err) ?(duration = ~%(!default_duration))
            if ~%onload then Eliom_client.lwt_onload () else Lwt.return_unit
          in
          let msgbox = msgbox () in
-         Eliom_lib.debug "%s" ~%message;
+         Eliom_lib.Lwt_log.ign_info_f "%s" ~%message;
          Dom.appendChild msgbox message_dom;
          let* () = Js_of_ocaml_lwt.Lwt_js.sleep ~%duration in
          Dom.removeChild msgbox message_dom;

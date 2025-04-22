@@ -293,9 +293,9 @@ let%shared upload_pic_link ?(a = []) ?(content = [txt "Change profile picture"])
                                ~input:~%input ~submit:~%submit
                                ~after_submit:close upload_service);
                      Lwt.return_unit)
-                  (fun e ->
+                  (fun exn ->
                      Os_msg.msg ~level:`Err "Error while uploading the picture";
-                     Eliom_lib.debug_exn "%s" e "→ ";
+                     Eliom_lib.Lwt_log.ign_info_f "%s" ~exn "→ ";
                      Lwt.return_unit))
             : _)]
       :: a)
