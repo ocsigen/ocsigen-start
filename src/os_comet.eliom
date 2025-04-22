@@ -85,7 +85,8 @@ let already_send_ref =
 
 let%client handle_error =
   ref (fun exn ->
-    Eliom_lib.debug_exn "Exception received on Os_comet's monitor channel: " exn;
+    Eliom_lib.Lwt_log.ign_info_f ~exn
+      "Exception received on Os_comet's monitor channel: ";
     restart_process ();
     Lwt.return_unit)
 
@@ -93,7 +94,9 @@ let%client set_error_handler f = handle_error := f
 
 let%client handle_message = function
   | Error exn -> !handle_error exn
-  | Ok Heartbeat -> Eliom_lib.debug "poum"; Lwt.return_unit
+  | Ok Heartbeat ->
+      Eliom_lib.Lwt_log.ign_info_f "poum";
+      Lwt.return_unit
   | Ok Connection_changed ->
       Os_msg.msg ~level:`Err
         "Connection has changed from outside. Program will restart.";
