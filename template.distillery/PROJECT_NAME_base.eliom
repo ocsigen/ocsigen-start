@@ -18,7 +18,9 @@ let () =
     ()
 
 let () = Os_email.set_mailer "/usr/sbin/sendmail"
-let () = Os_email.set_from_addr ("%%%PROJECT_NAME%%% team", "noreply@DEFAULT.DEFAULT")
+
+let () =
+  Os_email.set_from_addr ("%%%PROJECT_NAME%%% team", "noreply@DEFAULT.DEFAULT")
 
 (* Create a module for the application. See
    https://ocsigen.org/eliom/manual/clientserver-applications for more

@@ -9,9 +9,10 @@ open Eliom_content.Html]
 [%%shared open Eliom_content.Html.F]
 
 (* Bind arrow keys *)
-let%shared bind_keys
-    (change : ([`Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t)
-    (carousel : [`Div] Eliom_content.Html.elt)
+let%shared
+    bind_keys
+      (change : ([`Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t)
+      (carousel : [`Div] Eliom_content.Html.elt)
   =
   ignore
     [%client
@@ -19,7 +20,7 @@ let%shared bind_keys
          let*
              (* Wait for the carousel to be in the page
           (in the case the page is generated client side): *)
-             ()
+               ()
            =
            Ot_nodeready.nodeready (To_dom.of_element ~%carousel)
          in

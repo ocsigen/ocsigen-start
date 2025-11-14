@@ -10,7 +10,7 @@ open Eliom_content.Html.F]
 let%rpc get_users () : string list Lwt.t =
   let*
       (* For this demo, we add a delay to simulate a network or db latency: *)
-      ()
+        ()
     =
     Lwt_unix.sleep 2.
   in

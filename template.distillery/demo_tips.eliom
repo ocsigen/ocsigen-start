@@ -22,8 +22,9 @@ let%shared example_tip () =
 
 (* Page for this demo *)
 let%shared page () =
-  let* (* Call the function defining the tip from the server or the client: *)
-      ()
+  let*
+      (* Call the function defining the tip from the server or the client: *)
+        ()
     =
     example_tip ()
   in

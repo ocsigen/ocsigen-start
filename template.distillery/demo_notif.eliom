@@ -78,8 +78,10 @@ let%rpc unlisten () : unit Lwt.t = Notif.unlisten (); Lwt.return_unit
 
 (* Page for this demo *)
 let%shared page () =
-  let* (* Subscribe to notifications when entering this page: *)
-      () =
+  let*
+      (* Subscribe to notifications when entering this page: *)
+        ()
+    =
     listen ()
   in
   (* Unsubscribe from notifications when user leaves this page *)

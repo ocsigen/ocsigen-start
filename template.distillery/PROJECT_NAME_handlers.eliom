@@ -26,7 +26,7 @@ let%server set_personal_data_handler =
   Os_session.connected_fun Os_handlers.set_personal_data_handler
 
 let%rpc set_personal_data_rpc (data : (string * string) * (string * string)) :
-    unit Lwt.t
+  unit Lwt.t
   =
   set_personal_data_handler () data
 
@@ -53,32 +53,32 @@ let%shared action_link_handler myid_o akey () =
      password) *)
        Os_handlers.action_link_handler myid_o akey ())
     (function
-       | Os_handlers.No_such_resource | Os_handlers.Invalid_action_key _ ->
-           Os_msg.msg ~level:`Err ~onload:true [%i18n S.invalid_action_key];
-           Eliom_registration.(appl_self_redirect Action.send) ()
-       | e ->
-           let* email, phantom_user =
-             match e with
-             | Os_handlers.Account_already_activated_unconnected
-                 { Os_types.Action_link_key.userid = _
-                 ; email
-                 ; validity = _
-                 ; action = _
-                 ; data = _
-                 ; autoconnect = _ } ->
-                 Lwt.return (email, false)
-             | Os_handlers.Custom_action_link
-                 ( { Os_types.Action_link_key.userid = _
-                   ; email
-                   ; validity = _
-                   ; action = _
-                   ; data = _
-                   ; autoconnect = _ }
-                 , phantom_user ) ->
-                 Lwt.return (email, phantom_user)
-             | _ -> Lwt.fail e
-           in
-           (* Define here your custom action links. If phantom_user is true,
+      | Os_handlers.No_such_resource | Os_handlers.Invalid_action_key _ ->
+          Os_msg.msg ~level:`Err ~onload:true [%i18n S.invalid_action_key];
+          Eliom_registration.(appl_self_redirect Action.send) ()
+      | e ->
+          let* email, phantom_user =
+            match e with
+            | Os_handlers.Account_already_activated_unconnected
+                { Os_types.Action_link_key.userid = _
+                ; email
+                ; validity = _
+                ; action = _
+                ; data = _
+                ; autoconnect = _ } ->
+                Lwt.return (email, false)
+            | Os_handlers.Custom_action_link
+                ( { Os_types.Action_link_key.userid = _
+                  ; email
+                  ; validity = _
+                  ; action = _
+                  ; data = _
+                  ; autoconnect = _ }
+                , phantom_user ) ->
+                Lwt.return (email, phantom_user)
+            | _ -> Lwt.fail e
+          in
+          (* Define here your custom action links. If phantom_user is true,
        it means the link has been created for an email that does not
        correspond to an existing user. By default, we just display a
        sign up form or phantom users, a login form for others.  You
@@ -87,38 +87,38 @@ let%shared action_link_handler myid_o akey () =
 
        Perhaps personalise the intended behavior for when you meet
        [Account_already_activated_unconnected].  *)
-           if myid_o = None (* Not currently connected, and no autoconnect *)
-           then
-             if phantom_user
-             then
-               let page =
-                 [ div
-                     ~a:[a_class ["login-signup-box"]]
-                     [ Os_user_view.sign_up_form
-                         ~a_placeholder_email:[%i18n S.your_email]
-                         ~text:[%i18n S.sign_up] ~email () ] ]
-               in
-               %%%MODULE_NAME%%%_base.App.send
-                 (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))
-             else
-               let page =
-                 [ div
-                     ~a:[a_class ["login-signup-box"]]
-                     [ Os_user_view.connect_form
-                         ~a_placeholder_email:[%i18n S.your_email]
-                         ~a_placeholder_pwd:[%i18n S.your_password]
-                         ~text_keep_me_logged_in:[%i18n S.keep_logged_in]
-                         ~text_sign_in:[%i18n S.sign_in] ~email () ] ]
-               in
-               %%%MODULE_NAME%%%_base.App.send
-                 (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))
-           else
-             (*VVV In that case we must do something more complex. Check
+          if myid_o = None (* Not currently connected, and no autoconnect *)
+          then
+            if phantom_user
+            then
+              let page =
+                [ div
+                    ~a:[a_class ["login-signup-box"]]
+                    [ Os_user_view.sign_up_form
+                        ~a_placeholder_email:[%i18n S.your_email]
+                        ~text:[%i18n S.sign_up] ~email () ] ]
+              in
+              %%%MODULE_NAME%%%_base.App.send
+                (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))
+            else
+              let page =
+                [ div
+                    ~a:[a_class ["login-signup-box"]]
+                    [ Os_user_view.connect_form
+                        ~a_placeholder_email:[%i18n S.your_email]
+                        ~a_placeholder_pwd:[%i18n S.your_password]
+                        ~text_keep_me_logged_in:[%i18n S.keep_logged_in]
+                        ~text_sign_in:[%i18n S.sign_in] ~email () ] ]
+              in
+              %%%MODULE_NAME%%%_base.App.send
+                (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))
+          else
+            (*VVV In that case we must do something more complex. Check
                whether myid = userid and ask the user what he wants to
                do. *)
-             let open Eliom_registration in
-             appl_self_redirect Redirection.send
-               (Redirection Eliom_service.reload_action))
+            let open Eliom_registration in
+            appl_self_redirect Redirection.send
+              (Redirection Eliom_service.reload_action))
 
 (* Set password *)
 

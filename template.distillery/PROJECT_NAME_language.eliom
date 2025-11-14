@@ -37,13 +37,19 @@ let%server update_language lang =
 
 let%server _ =
   Os_session.on_start_process (fun _ ->
-    let* (* Guess a default language. *)
-        lang = best_matched_language () in
+    let*
+        (* Guess a default language. *)
+          lang
+      =
+      best_matched_language ()
+    in
     ignore (update_language lang);
     Lwt.return_unit);
   Os_session.on_start_connected_process (fun userid ->
-    let* (* Set language according to user preferences. *)
-        language =
+    let*
+        (* Set language according to user preferences. *)
+          language
+      =
       Lwt.bind (Os_user.get_language userid) (function
         | Some lang ->
             Lwt.return (%%%MODULE_NAME%%%_i18n.guess_language_of_string lang)

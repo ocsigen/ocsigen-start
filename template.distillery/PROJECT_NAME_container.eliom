@@ -39,7 +39,7 @@ let%shared os_footer () =
         ; txt [%i18n S.footer_technology] ] ]
 
 let%rpc get_wrong_pdata () :
-    ((string * string) * (string * string)) option Lwt.t
+  ((string * string) * (string * string)) option Lwt.t
   =
   Lwt.return @@ Eliom_reference.Volatile.get Os_msg.wrong_pdata
 
