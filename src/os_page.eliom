@@ -150,8 +150,12 @@ module Make (C : PAGE) = struct
          ~a:(platform_attr :: connected_attr :: content.body_attrs)
          content.body)
 
-  let page ?(predicate = C.default_predicate) ?(fallback = C.default_error_page)
-      f gp pp
+  let page
+        ?(predicate = C.default_predicate)
+        ?(fallback = C.default_error_page)
+        f
+        gp
+        pp
     =
     let* content =
       Lwt.catch
@@ -164,8 +168,14 @@ module Make (C : PAGE) = struct
     in
     Lwt.return (make_page content)
 
-  let connected_page ?allow ?deny ?(predicate = C.default_connected_predicate)
-      ?(fallback = C.default_connected_error_page) f gp pp
+  let connected_page
+        ?allow
+        ?deny
+        ?(predicate = C.default_connected_predicate)
+        ?(fallback = C.default_connected_error_page)
+        f
+        gp
+        pp
     =
     let f_wrapped myid gp pp =
       Lwt.catch
@@ -178,8 +188,8 @@ module Make (C : PAGE) = struct
                (fun exc -> fallback (Some myid) gp pp exc)
            else Lwt.fail (Predicate_failed None))
         (function
-           | Predicate_failed _ as exc -> fallback (Some myid) gp pp exc
-           | exc -> fallback (Some myid) gp pp (Predicate_failed (Some exc)))
+          | Predicate_failed _ as exc -> fallback (Some myid) gp pp exc
+          | exc -> fallback (Some myid) gp pp (Predicate_failed (Some exc)))
     in
     let* content =
       Lwt.catch
@@ -189,14 +199,20 @@ module Make (C : PAGE) = struct
                fallback myid_o gp pp Os_session.Permission_denied)
              f_wrapped gp pp)
         (function
-           | Os_session.Not_connected as exc -> fallback None gp pp exc
-           | exc -> Lwt.reraise exc)
+          | Os_session.Not_connected as exc -> fallback None gp pp exc
+          | exc -> Lwt.reraise exc)
     in
     Lwt.return (make_page content)
 
   module Opt = struct
-    let connected_page ?allow ?deny ?(predicate = C.default_connected_predicate)
-        ?(fallback = C.default_connected_error_page) f gp pp
+    let connected_page
+          ?allow
+          ?deny
+          ?(predicate = C.default_connected_predicate)
+          ?(fallback = C.default_connected_error_page)
+          f
+          gp
+          pp
       =
       let f_wrapped (myid_o : Os_types.User.id option) gp pp =
         Lwt.catch
@@ -209,8 +225,8 @@ module Make (C : PAGE) = struct
                  (fun exc -> fallback myid_o gp pp exc)
              else Lwt.fail (Predicate_failed None))
           (function
-             | Predicate_failed _ as exc -> fallback myid_o gp pp exc
-             | exc -> fallback myid_o gp pp (Predicate_failed (Some exc)))
+            | Predicate_failed _ as exc -> fallback myid_o gp pp exc
+            | exc -> fallback myid_o gp pp (Predicate_failed (Some exc)))
       in
       let* content =
         Os_session.Opt.connected_fun ?allow ?deny

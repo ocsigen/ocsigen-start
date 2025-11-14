@@ -19,6 +19,7 @@
  *)
 
 open%server Lwt.Syntax
+
 type%shared sms_error_core = [`Unknown | `Send | `Limit | `Invalid_number]
 type%shared sms_error = [`Ownership | sms_error_core]
 
@@ -100,8 +101,8 @@ let%server confirm_code myid code =
 let%rpc confirm_code_extra myid (code : string) : bool Lwt.t =
   confirm_code myid code
 
-let%server confirm_code_signup_no_connect ~first_name ~last_name ~code ~password
-    ()
+let%server
+    confirm_code_signup_no_connect ~first_name ~last_name ~code ~password ()
   =
   Lwt.bind (Eliom_reference.get activation_code_ref) (function
     | Some (number, code', _) when code = code' ->
@@ -114,8 +115,13 @@ let%server confirm_code_signup_no_connect ~first_name ~last_name ~code ~password
         Lwt.return_some userid
     | _ -> Lwt.return_none)
 
-let%rpc confirm_code_signup ~(first_name : string) ~(last_name : string)
-    ~(code : string) ~(password : string) () : bool Lwt.t
+let%rpc
+    confirm_code_signup
+      ~(first_name : string)
+      ~(last_name : string)
+      ~(code : string)
+      ~(password : string)
+      () : bool Lwt.t
   =
   Lwt.bind
     (confirm_code_signup_no_connect ~first_name ~last_name ~code ~password ())
@@ -136,7 +142,7 @@ let%rpc confirm_code_recovery (code : string) : bool Lwt.t =
     | _ -> Lwt.return_false)
 
 let%rpc connect ~(keepmeloggedin : bool) ~(password : string) (number : string)
-    : [`Login_ok | `Wrong_password | `No_such_user | `Password_not_set] Lwt.t
+  : [`Login_ok | `Wrong_password | `No_such_user | `Password_not_set] Lwt.t
   =
   Lwt.catch
     (fun () ->
@@ -144,8 +150,8 @@ let%rpc connect ~(keepmeloggedin : bool) ~(password : string) (number : string)
        let* () = Os_session.connect ~expire:(not keepmeloggedin) userid in
        Lwt.return `Login_ok)
     (function
-       | Os_db.Empty_password | Os_db.Wrong_password ->
-           Lwt.return `Wrong_password
-       | Os_db.No_such_user -> Lwt.return `No_such_user
-       | Os_db.Password_not_set -> Lwt.return `Password_not_set
-       | exc -> Lwt.reraise exc)
+      | Os_db.Empty_password | Os_db.Wrong_password ->
+          Lwt.return `Wrong_password
+      | Os_db.No_such_user -> Lwt.return `No_such_user
+      | Os_db.Password_not_set -> Lwt.return `Password_not_set
+      | exc -> Lwt.reraise exc)

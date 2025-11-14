@@ -34,8 +34,12 @@ let%client msgbox () =
 let%server default_duration = ref 4.
 let%server set_default_duration d = default_duration := d
 
-let%shared msg ?(level = `Err) ?(duration = ~%(!default_duration))
-    ?(onload = false) (message : string)
+let%shared
+    msg
+      ?(level = `Err)
+      ?(duration = ~%(!default_duration))
+      ?(onload = false)
+      (message : string)
   =
   ignore
     [%client

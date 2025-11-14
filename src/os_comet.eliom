@@ -41,12 +41,13 @@ let%client restart_process () =
     Eliom_client.exit_to ~absolute:false
       ~service:(Eliom_service.static_dir ())
       ["index.html"] ()
-  else if (* If cookies do not work,
+  else if
+    (* If cookies do not work,
        the failed comet is probably due to missing cookies.
        In that case we do not restart. This happens for example
        if cookies are deactivated of if the app is running in an iframe
        and the browser forbids third party cookies. *)
-          cookies_enabled ()
+    cookies_enabled ()
   then Eliom_client.exit_to ~service:Eliom_service.reload_action () ()
 
 let%client _ =

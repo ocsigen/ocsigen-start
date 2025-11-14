@@ -108,13 +108,14 @@ module Email_or_phone = struct
         in
         if String.sub s 0 3 = "+33"
         then
-          if (* Be a bit more precise for France. We should have +33
+          if
+            (* Be a bit more precise for France. We should have +33
                followed by 9 digits, i.e., 12 characters in total.
                For cellphones, the 4-th character is either 6 or 7. *)
-             String.length s = 12
-             &&
-             let s3 = String.get s 3 in
-             s3 = '6' || s3 = '7'
+            String.length s = 12
+            &&
+            let s3 = String.get s 3 in
+            s3 = '6' || s3 = '7'
           then s, `Phone
           else s, `Almost_phone
         else s, `Phone
@@ -136,10 +137,12 @@ let%client on_enter ~f inp =
   if ev##.keyCode = 13 then f (Js.to_string inp##.value) else Lwt.return_unit
 
 (* TODO: Build a nice Ot_form module with such functions *)
-let%shared lwt_bind_input_enter
-    ?(validate : (string -> bool) Eliom_client_value.t option) ?button
-    (e : Html_types.input Eliom_content.Html.elt)
-    (f : (string -> unit Lwt.t) Eliom_client_value.t)
+let%shared
+    lwt_bind_input_enter
+      ?(validate : (string -> bool) Eliom_client_value.t option)
+      ?button
+      (e : Html_types.input Eliom_content.Html.elt)
+      (f : (string -> unit Lwt.t) Eliom_client_value.t)
   =
   ignore
     [%client

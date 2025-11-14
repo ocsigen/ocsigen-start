@@ -67,8 +67,8 @@ let connect () =
         Lwt.catch
           (fun () -> init h)
           (fun exn ->
-            let* () = dispose h in
-            Lwt.fail exn)
+             let* () = dispose h in
+             Lwt.fail exn)
       in
       Lwt.return h
   | None -> Lwt.return h
@@ -76,8 +76,8 @@ let connect () =
 let validate db =
   Lwt.catch
     (fun () ->
-      let* () = Lwt_PGOCaml.ping db in
-      Lwt.return_true)
+       let* () = Lwt_PGOCaml.ping db in
+       Lwt.return_true)
     (fun _ -> Lwt.return_false)
 
 let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Resource_pool.t ref =
@@ -85,8 +85,17 @@ let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Resource_pool.t ref =
 
 let set_pool_size n = pool := Resource_pool.create n ~validate ~dispose connect
 
-let init ?host ?port ?user ?password ?database ?unix_domain_socket_dir
-    ?pool_size ?init () =
+let init
+      ?host
+      ?port
+      ?user
+      ?password
+      ?database
+      ?unix_domain_socket_dir
+      ?pool_size
+      ?init
+      ()
+  =
   host_r := host;
   port_r := port;
   user_r := user;
@@ -98,11 +107,10 @@ let init ?host ?port ?user ?password ?database ?unix_domain_socket_dir
 
 let connection_pool () = !pool
 
-type wrapper = {
-  f : 'a. PGOCaml.pa_pg_data PGOCaml.t -> (unit -> 'a Lwt.t) -> 'a Lwt.t;
-}
+type wrapper =
+  {f : 'a. PGOCaml.pa_pg_data PGOCaml.t -> (unit -> 'a Lwt.t) -> 'a Lwt.t}
 
-let connection_wrapper = ref { f = (fun _ f -> f ()) }
+let connection_wrapper = ref {f = (fun _ f -> f ())}
 let set_connection_wrapper f = connection_wrapper := f
 
 let use_pool f =
@@ -128,10 +136,10 @@ let use_pool f =
 let transaction_block db f =
   Lwt.catch
     (fun () ->
-      Lwt_PGOCaml.begin_work db >>= fun _ ->
-      let* r = f () in
-      let* () = Lwt_PGOCaml.commit db in
-      Lwt.return r)
+       Lwt_PGOCaml.begin_work db >>= fun _ ->
+       let* r = f () in
+       let* () = Lwt_PGOCaml.commit db in
+       Lwt.return r)
     (function
       | (Lwt_PGOCaml.Error _ | Lwt.Canceled | Unix.Unix_error _ | End_of_file)
         as e ->
