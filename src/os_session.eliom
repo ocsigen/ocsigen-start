@@ -20,7 +20,7 @@
 
 open Lwt.Syntax
 
-let log_section = Lwt_log.Section.make "os:session"
+let log_section = Logs.Src.create "os:session"
 let user_indep_state_hierarchy = Eliom_common.create_scope_hierarchy "userindep"
 let user_indep_process_scope = `Client_process user_indep_state_hierarchy
 let user_indep_session_scope = `Session user_indep_state_hierarchy
@@ -41,7 +41,8 @@ let mk_action_queue name =
           let* () = oldf arg in
           f arg)
   , fun arg ->
-      Lwt_log.ign_debug ~section:log_section ("handling actions: " ^ name);
+      Logs.debug ~src:log_section (fun fmt ->
+        fmt "%s" ("handling actions: " ^ name));
       !r arg )
 
 let on_connected_request, connected_request_action =

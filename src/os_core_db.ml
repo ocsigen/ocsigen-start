@@ -21,7 +21,7 @@
 open Lwt.Syntax
 open Resource_pooling
 
-let section = Lwt_log.Section.make "os:db"
+let section = Logs.Src.create "os:db"
 let ( >>= ) = Lwt.bind
 
 module Lwt_thread = struct
@@ -120,15 +120,17 @@ let use_pool f =
     (fun () -> f db)
     (function
       | Lwt_PGOCaml.Error msg as e ->
-          Lwt_log.ign_error_f ~section "postgresql protocol error: %s" msg;
+          Logs.err ~src:section (fun fmt ->
+            fmt "postgresql protocol error: %s" msg);
           let* () = Lwt_PGOCaml.close db in
           Lwt.fail e
       | (Unix.Unix_error _ | End_of_file) as e ->
-          Lwt_log.ign_error_f ~section ~exn:e "unix error";
+          Logs.err ~src:section (fun fmt ->
+            fmt ("unix error" ^^ "@\n%s") (Printexc.to_string e));
           let* () = Lwt_PGOCaml.close db in
           Lwt.fail e
       | Lwt.Canceled as e ->
-          Lwt_log.ign_error ~section "thread canceled";
+          Logs.err ~src:section (fun fmt -> fmt "thread canceled");
           let* () = PGOCaml.close db in
           Lwt.fail e
       | exc -> Lwt.reraise exc)
@@ -154,7 +156,7 @@ let transaction_block db f =
                 | Lwt_PGOCaml.PostgreSQL_Error _ ->
                     (* If the rollback fails, for instance due to a timeout,
            it seems better to close the connection. *)
-                    Lwt_log.ign_error ~section "rollback failed";
+                    Logs.err ~src:section (fun fmt -> fmt "rollback failed");
                     Lwt_PGOCaml.close db
                 | exc -> Lwt.reraise exc)
           in
