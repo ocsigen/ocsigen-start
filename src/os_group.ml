@@ -18,8 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open Lwt.Syntax
-
 exception No_such_group
 
 type id = Os_types.Group.id [@@deriving json]
@@ -44,35 +42,26 @@ module MCache = Os_request_cache.Make (struct
     let compare = compare
 
     let get key =
-      Lwt.catch
-        (fun () ->
-           let* g = Os_db.Groups.group_of_name key in
-           Lwt.return (create_group_from_db g))
-        (function
-          | Os_db.No_such_resource -> Lwt.fail No_such_group
-          | exc -> Lwt.reraise exc)
+      try
+        let g = Os_db.Groups.group_of_name key in
+        create_group_from_db g
+      with Os_db.No_such_resource -> raise No_such_group
   end)
 
 (** Helper function which creates a new group and return it as
   * a record of type [Os_types.Group.t]. *)
 let create ?description name =
   let group_of_name name =
-    let* g = Os_db.Groups.group_of_name name in
-    Lwt.return (create_group_from_db g)
+    let g = Os_db.Groups.group_of_name name in
+    create_group_from_db g
   in
-  Lwt.catch
-    (fun () -> group_of_name name)
-    (function
-      | Os_db.No_such_resource ->
-          let* () = Os_db.Groups.create ?description name in
-          Lwt.catch
-            (fun () ->
-               let* g = group_of_name name in
-               Lwt.return g)
-            (function
-              | Os_db.No_such_resource -> Lwt.fail No_such_group
-              | exc -> Lwt.reraise exc)
-      | exc -> Lwt.reraise exc)
+  try group_of_name name
+  with Os_db.No_such_resource -> (
+    let () = Os_db.Groups.create ?description name in
+    try
+      let g = group_of_name name in
+      g
+    with Os_db.No_such_resource -> raise No_such_group)
 (* Should never happen *)
 
 (** Overwrite the function [group_of_name] of [Os_db.Group] and use
@@ -98,5 +87,5 @@ let in_group ?dbh ~(group : Os_types.Group.t) ~userid () =
 
 (** Returns all the groups of the database. *)
 let all () =
-  let* groups = Os_db.Groups.all () in
-  Lwt.return (List.map create_group_from_db groups)
+  let groups = Os_db.Groups.all () in
+  List.map create_group_from_db groups

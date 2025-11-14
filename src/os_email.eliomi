@@ -51,7 +51,7 @@ val send :
   -> to_addrs:(string * string) list
   -> subject:string
   -> string list
-  -> unit Lwt.t
+  -> unit
 (** Send an e-mail to [to_addrs] from [from_addr]. You have to define the
     [subject] of your email. The body of the email is a list of strings
     and each element of the list is automatically separated by a new line.
@@ -64,7 +64,7 @@ val set_send :
     -> to_addrs:(string * string) list
     -> subject:string
     -> string list
-    -> unit Lwt.t)
+    -> unit)
   -> unit
 (** Customize email sending function. See {!send} for more details about the
     arguments.
