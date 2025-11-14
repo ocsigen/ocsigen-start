@@ -323,7 +323,7 @@ let%shared
                      Lwt.return_unit)
                   (fun exn ->
                      Os_msg.msg ~level:`Err "Error while uploading the picture";
-                     Eliom_lib.Lwt_log.ign_info_f "%s" ~exn "→ ";
+                     Logs.info (fun fmt -> fmt "→ %s" (Printexc.to_string exn));
                      Lwt.return_unit))
             : _)]
       :: a)
