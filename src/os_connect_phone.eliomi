@@ -26,7 +26,7 @@ type sms_error_core = [`Unknown | `Send | `Limit | `Invalid_number]
 [%%server.start]
 
 val set_send_sms_handler :
-   (number:string -> string -> (unit, sms_error_core) result Lwt.t)
+   (number:string -> string -> (unit, sms_error_core) result)
   -> unit
 (** [set_send_sms_handler f] registers [f] as the function to be
     called to send SMS messages. Used to send activation codes for
@@ -38,10 +38,10 @@ val confirm_code_signup_no_connect :
   -> code:string
   -> password:string
   -> unit
-  -> Os_types.User.id option Lwt.t
+  -> Os_types.User.id option
 (** Confirm validation code and create corresponding user. *)
 
-val confirm_code : Os_types.User.id -> string -> bool Lwt.t
+val confirm_code : Os_types.User.id -> string -> bool
 (** Confirm validation code and add extra phone to account of the given
     user *)
 
@@ -49,14 +49,14 @@ val confirm_code : Os_types.User.id -> string -> bool Lwt.t
 
 type sms_error = [`Ownership | sms_error_core]
 
-val request_code : string -> (unit, sms_error) result Lwt.t
+val request_code : string -> (unit, sms_error) result
 (** Send a validation code for a new e-mail address (corresponds to
     [confirm_code_signup] and [confirm_code_extra]). *)
 
-val request_recovery_code : string -> (unit, sms_error) result Lwt.t
+val request_recovery_code : string -> (unit, sms_error) result
 (** Send a validation code for recovering an existing address. *)
 
-val confirm_code_extra : string -> bool Lwt.t
+val confirm_code_extra : string -> bool
 (** Confirm validation code and add extra phone to account of the currently
     connected user*)
 
@@ -66,11 +66,11 @@ val confirm_code_signup :
   -> code:string
   -> password:string
   -> unit
-  -> bool Lwt.t
+  -> bool
 (** Confirm validation code and complete sign-up with the phone
     number. *)
 
-val confirm_code_recovery : string -> bool Lwt.t
+val confirm_code_recovery : string -> bool
 (** Confirm validation code and recover account. We redirect to the
     settings page for setting a new password. *)
 
@@ -78,4 +78,4 @@ val connect :
    keepmeloggedin:bool
   -> password:string
   -> string
-  -> [`Login_ok | `No_such_user | `Wrong_password | `Password_not_set] Lwt.t
+  -> [`Login_ok | `No_such_user | `Wrong_password | `Password_not_set]

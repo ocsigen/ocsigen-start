@@ -448,10 +448,5 @@ module Response : sig
   (** [results_of_t response] returns the status of the messages processed. *)
 end
 
-val send :
-   string
-  -> Notification.t
-  -> ?data:Data.t
-  -> Options.t
-  -> Response.t Lwt.t
+val send : string -> Notification.t -> ?data:Data.t -> Options.t -> Response.t
 (** [send server_key notification options]  *)

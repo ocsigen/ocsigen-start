@@ -25,18 +25,18 @@
     {!Os_services}.
  *)
 
-val connect_handler : unit -> (string * string) * bool -> unit Lwt.t
+val connect_handler : unit -> (string * string) * bool -> unit
 (** [connect_handler () ((login, password), keepMeLoggedIn)] connects the user
     with [login] and [password] and keeps the user logged in between different
     session if [keepMeLoggedIn] is set to [true]. *)
 
-val disconnect_handler : ?main_page:bool -> unit -> unit -> unit Lwt.t
+val disconnect_handler : ?main_page:bool -> unit -> unit -> unit
 (** [disconnect_handler ?main_page () ()] disconnects the current user. *)
 
-val sign_up_handler : unit -> string -> unit Lwt.t
+val sign_up_handler : unit -> string -> unit
 (** [sign_up_handler () email] signes up an user with email [email]. *)
 
-val add_email_handler : unit -> string -> unit Lwt.t
+val add_email_handler : unit -> string -> unit
 (** [add_email_handler () email] adds a new e-mail address
     for the current user and sends an activation link.
     Eliom reference [Os_user.user_already_exists] is set
@@ -71,7 +71,7 @@ val action_link_handler :
    int64 option
   -> string
   -> unit
-  -> 'a Eliom_registration.application_content Eliom_registration.kind Lwt.t
+  -> 'a Eliom_registration.application_content Eliom_registration.kind
 (** [action_link_handler userid_o activation_key ()] is the handler for
     activation keys.
 
@@ -83,18 +83,18 @@ val action_link_handler :
 val confirm_code_signup_handler :
    unit
   -> string * (string * (string * string))
-  -> unit Lwt.t
+  -> unit
 (** [confirm_code_signup_handler () (first_name, (last_name, (pass,
     number)))] sends a verification code to [number], displays a popup
     for confirming the code, and creates the account if all goes
     well. *)
 
-val confirm_code_extra_handler : unit -> string -> unit Lwt.t
+val confirm_code_extra_handler : unit -> string -> unit
 (** [confirm_code_extra_handler () number] is like
     [confirm_code_signup_handler] but for adding an additional number to
     the account. The new phone is added to the account. *)
 
-val confirm_code_recovery_handler : unit -> string -> unit Lwt.t
+val confirm_code_recovery_handler : unit -> string -> unit
 (** [confirm_code_recovery_handler () number] is like
     [confirm_code_signup_handler] but for recovering a lost
     password. The user is redirected to the settings page for setting
@@ -117,21 +117,17 @@ val forgot_password_handler :
      Eliom_service.t
   -> unit
   -> string
-  -> unit Lwt.t
+  -> unit
 (** [forgot_password_handler service () email] creates and sends an action link
     to [email] if the user forgot his password and redirects to [service].
     If [email] doesn't correspond to any user, {!Os_user.user_does_not_exist}
     is set to [true] and {!Os_msg.msg} is called with the level [`Err].
  *)
 
-val preregister_handler : unit -> string -> unit Lwt.t
+val preregister_handler : unit -> string -> unit
 (** [preregister_handler () email] preregisters the email [email]. *)
 
-val set_password_handler :
-   Os_types.User.id
-  -> unit
-  -> string * string
-  -> unit Lwt.t
+val set_password_handler : Os_types.User.id -> unit -> string * string -> unit
 (** [set_password_handler userid () (password, confirmation_password)] updates
     the password of the user with ID [userid] with the hashed value of
     [password] if [confirmation_password] corresponds to [password]. If they
@@ -142,7 +138,7 @@ val set_personal_data_handler :
    Os_types.User.id
   -> unit
   -> (string * string) * (string * string)
-  -> unit Lwt.t
+  -> unit
 (** [set_personal_data_handler userid () ((firstname, lastname), (password,
     confirmation_password))] sets the corresponding data to given values.
  *)

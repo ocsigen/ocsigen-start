@@ -1,3 +1,5 @@
+open Eio.Std
+
 (* Ocsigen-start
  * http://www.ocsigen.org/ocsigen-start
  *
@@ -37,7 +39,7 @@ module type ARG = sig
   type server_notif
   type client_notif
 
-  val prepare : User.id option -> server_notif -> client_notif option Lwt.t
+  val prepare : User.id option -> server_notif -> client_notif option
   val equal_key : key -> key -> bool
   val max_resource : int
   val max_identity_per_resource : int
@@ -57,10 +59,7 @@ module Make (A : ARG) :
       let prepare = A.prepare
       let equal_key = A.equal_key
       let equal_identity = ( = )
-
-      let get_identity () =
-        Lwt.return @@ Os_current_user.Opt.get_current_userid ()
-
+      let get_identity () = Os_current_user.Opt.get_current_userid ()
       let max_resource = A.max_resource
       let max_identity_per_resource = A.max_identity_per_resource
     end)
@@ -70,12 +69,14 @@ module Make (A : ARG) :
       Eliom_state.Ext.volatile_data_group_state
         ~scope:Eliom_common.default_group_scope (Int64.to_string userid)
     in
-    Lwt.async @@ fun () ->
-    (* Iterating on all sessions in group: *)
-    Eliom_state.Ext.iter_sub_states ?sitedata ~state @@ fun state ->
-    (* Iterating on all client processes in session: *)
-    Eliom_state.Ext.iter_sub_states ?sitedata ~state (fun state ->
-      Ext.unlisten state id; Lwt.return_unit)
+    Fiber.fork
+      ~sw:(Stdlib.Option.get (Fiber.get Ocsigen_lib.current_switch))
+      (fun () ->
+         (* Iterating on all sessions in group: *)
+         Eliom_state.Ext.iter_sub_states ?sitedata ~state @@ fun state ->
+         (* Iterating on all client processes in session: *)
+         Eliom_state.Ext.iter_sub_states ?sitedata ~state (fun state ->
+           Ext.unlisten state id))
 
   let notify ?notfor key notif =
     let notfor =
@@ -88,7 +89,7 @@ module Make (A : ARG) :
 
   let _ =
     Os_session.on_start_process (fun _ -> init ());
-    Os_session.on_post_close_session (fun () -> deinit (); Lwt.return_unit)
+    Os_session.on_post_close_session (fun () -> deinit ())
 end
 
 module type ARG_SIMPLE = sig
@@ -105,7 +106,7 @@ module Make_Simple (A : ARG_SIMPLE) :
     type server_notif = A.notification
     type client_notif = A.notification
 
-    let prepare _ n = Lwt.return_some n
+    let prepare _ n = Some n
     let equal_key = ( = )
     let max_resource = 1000
     let max_identity_per_resource = 10

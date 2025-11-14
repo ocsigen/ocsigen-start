@@ -37,7 +37,7 @@ module type Cache_sig = sig
   val reset : key -> unit
   (** Remove a [value] for the given key. *)
 
-  val get : key -> value Lwt.t
+  val get : key -> value
   (** Get the value corresponding to the given key. *)
 end
 
@@ -53,7 +53,7 @@ module Make : functor
        val compare : key -> key -> int
        (** The function used to compare keys. *)
 
-       val get : key -> value Lwt.t
+       val get : key -> value
        (** This function is called when the value corresponding to a key
          is not yet stored into the cache. *)
      end)

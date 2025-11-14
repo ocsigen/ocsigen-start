@@ -123,8 +123,7 @@ let%server _ =
         (Lwt.async (fun () ->
            Lwt_stream.iter_s handle_message
              (Lwt_stream.wrap_exn ~%(fst channel)))
-         : unit)];
-    Lwt.return_unit);
+         : unit)]);
   let warn c =
     (* User connected or disconnected.
        I want to send the message on all tabs of the browser: *)
@@ -138,8 +137,7 @@ let%server _ =
              ~scope:Os_session.user_indep_session_scope ()) (fun state ->
         match Eliom_reference.Volatile.Ext.get state monitor_channel_ref with
         | Some (_, send) as v -> if not (v == cur) then send c
-        | None -> ()));
-    Lwt.return_unit
+        | None -> ()))
   in
   let warn_connection_change _ = warn Connection_changed in
   Os_session.on_open_session warn_connection_change;

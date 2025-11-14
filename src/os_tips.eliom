@@ -18,7 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open%shared Lwt.Syntax
 open%shared Eliom_content.Html
 open%shared Eliom_content.Html.F
 open%client Js_of_ocaml
@@ -69,13 +68,12 @@ let%client get_tips_seen () = Lwt.return !tips_seen_client_ref
 
 let%server () =
   Os_session.on_start_connected_process (fun _ ->
-    let* tips = get_tips_seen () in
-    ignore [%client (tips_seen_client_ref := ~%tips : unit)];
-    Lwt.return_unit)
+    let tips = get_tips_seen () in
+    ignore [%client (tips_seen_client_ref := ~%tips : unit)])
 
 (* notify the server that a user has seen a tip *)
-let%rpc set_tip_seen (name : string) : unit Lwt.t =
-  let* prev = Eliom_reference.Volatile.get seen_by_user in
+let%rpc set_tip_seen (name : string) : unit =
+  let prev = Eliom_reference.Volatile.get seen_by_user in
   let newset = Stringset.add (name : string) prev in
   match Os_current_user.Opt.get_current_userid () with
   | None -> Eliom_reference.set tips_seen_not_connected newset
@@ -86,8 +84,8 @@ let%client set_tip_seen name =
   set_tip_seen name
 
 (* counterpart of set_tip_seen *)
-let%rpc unset_tip_seen (name : string) : unit Lwt.t =
-  let* prev = Eliom_reference.Volatile.get seen_by_user in
+let%rpc unset_tip_seen (name : string) : unit =
+  let prev = Eliom_reference.Volatile.get seen_by_user in
   let newset = Stringset.remove name prev in
   match Os_current_user.Opt.get_current_userid () with
   | None -> Eliom_reference.set tips_seen_not_connected newset
@@ -98,8 +96,8 @@ let%client unset_tip_seen name =
   unset_tip_seen name
 
 let%shared tip_seen name =
-  let* seen = get_tips_seen () in
-  Lwt.return @@ Stringset.mem name seen
+  let seen = get_tips_seen () in
+  Stringset.mem name seen
 
 (* I want to see the tips again *)
 let%server reset_tips_user myid_o =
@@ -107,7 +105,7 @@ let%server reset_tips_user myid_o =
   | None -> Eliom_reference.set tips_seen_not_connected Stringset.empty
   | _ -> Eliom_reference.set tips_seen Stringset.empty
 
-let%rpc reset_tips myid_o () : unit Lwt.t = reset_tips_user myid_o
+let%rpc reset_tips myid_o () : unit = reset_tips_user myid_o
 
 let%server reset_tips_service =
   Eliom_service.create ~name:"resettips" ~path:Eliom_service.No_path
@@ -130,7 +128,7 @@ let%shared
     block
       ?(a = [])
       ?(recipient = `All)
-      ?(onclose = [%client (fun () -> Lwt.return_unit : unit -> unit Lwt.t)])
+      ?(onclose = [%client (fun () -> Lwt.return_unit : unit -> unit)])
       ~name
       ~content
       ()
@@ -138,12 +136,12 @@ let%shared
   let myid_o = Os_current_user.Opt.get_current_userid () in
   match recipient, myid_o with
   | `All, _ | `Not_connected, None | `Connected, Some _ ->
-      let* seen = get_tips_seen () in
+      let seen = get_tips_seen () in
       if Stringset.mem name seen
-      then Lwt.return_none
+      then None
       else
         let box_ref = ref None in
-        let close : (unit -> unit Lwt.t) Eliom_client_value.t =
+        let close : (unit -> unit) Eliom_client_value.t =
           [%client
             fun () ->
               let* () = ~%onclose () in
@@ -154,7 +152,7 @@ let%shared
               in
               set_tip_seen ~%name]
         in
-        let* c = content close in
+        let c = content close in
         let c = [div ~a:[a_class ["os-tip-content"]] c] in
         let box =
           D.div
@@ -167,8 +165,8 @@ let%shared
             :: c)
         in
         box_ref := Some box;
-        Lwt.return_some box
-  | _ -> Lwt.return_none
+        Some box
+  | _ -> None
 
 let%client onload_waiter () =
   let* _ = Eliom_client.lwt_onload () in
@@ -310,19 +308,18 @@ let%shared
       ?onclose
       ~(name : string)
       ~(content :
-         ((unit -> unit Lwt.t)
-          -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
+         ((unit -> unit) -> Html_types.div_content Eliom_content.Html.elt list)
            Eliom_client_value.t)
       ()
   =
   let delay : float option = delay in
-  let onclose : (unit -> unit Lwt.t) Eliom_client_value.t option = onclose in
+  let onclose : (unit -> unit) Eliom_client_value.t option = onclose in
   let myid_o = Os_current_user.Opt.get_current_userid () in
   match recipient, myid_o with
   | `All, _ | `Not_connected, None | `Connected, Some _ ->
-      let* seen = get_tips_seen () in
+      let seen = get_tips_seen () in
       if Stringset.mem name seen
-      then Lwt.return_unit
+      then ()
       else
         let _ =
           [%client
@@ -334,5 +331,5 @@ let%shared
                  ~content:~%content ())
              : unit)]
         in
-        Lwt.return_unit
-  | _ -> Lwt.return_unit
+        ()
+  | _ -> ()

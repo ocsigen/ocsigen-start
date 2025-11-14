@@ -36,14 +36,13 @@ val bubble :
   -> ?width:int Eliom_client_value.t
   -> ?parent_node:[< `Body | Html_types.body_content] Eliom_content.Html.elt
   -> ?delay:float
-  -> ?onclose:(unit -> unit Lwt.t) Eliom_client_value.t
+  -> ?onclose:(unit -> unit) Eliom_client_value.t
   -> name:string
   -> content:
-       ((unit -> unit Lwt.t)
-        -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
+       ((unit -> unit) -> Html_types.div_content Eliom_content.Html.elt list)
          Eliom_client_value.t
   -> unit
-  -> unit Lwt.t
+  -> unit
 (** Display tips in pages, as a speech bubble.
 
     One tip is displayed at a time.
@@ -69,33 +68,33 @@ val bubble :
 val block :
    ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.D.attrib list
   -> ?recipient:[> `All | `Connected | `Not_connected]
-  -> ?onclose:(unit -> unit Lwt.t) Eliom_client_value.t
+  -> ?onclose:(unit -> unit) Eliom_client_value.t
   -> name:string
   -> content:
-       ((unit -> unit Lwt.t) Eliom_client_value.t
-        -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
+       ((unit -> unit) Eliom_client_value.t
+        -> Html_types.div_content Eliom_content.Html.elt list)
   -> unit
-  -> [> `Div] Eliom_content.Html.elt option Lwt.t
+  -> [> `Div] Eliom_content.Html.elt option
 (** Return a box containing a tip, to be inserted where you want in a page.
     The box contains a close button. Once it is closed, it is never displayed
     again for this user. In that case the function returns [None].
  *)
 
-val reset_tips : unit -> unit Lwt.t
+val reset_tips : unit -> unit
 (** Call this function to reset tips for current user.
     Tips will be shown again from the beginning.
 *)
 
-val set_tip_seen : string -> unit Lwt.t
+val set_tip_seen : string -> unit
 (** Call this function to mark a tip as "already seen" by current user.
     This is done automatically when a tip is closed.
 *)
 
-val unset_tip_seen : string -> unit Lwt.t
+val unset_tip_seen : string -> unit
 (** Counterpart of set_tip_seen. Does not fail if the tip has not been seen
     yet *)
 
-val tip_seen : string -> bool Lwt.t
+val tip_seen : string -> bool
 (** Returns whether a tip has been seen or not. *)
 
 val reset_tips_service :

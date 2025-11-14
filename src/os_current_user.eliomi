@@ -52,7 +52,7 @@ module Opt : sig
       If no user is connected, [None] is returned. *)
 end
 
-val remove_email_from_user : string -> unit Lwt.t
+val remove_email_from_user : string -> unit
 (** [remove_email_from_user email] removes the email [email] of the current
     user.
     If no user is connected, it fails with {!Os_session.Not_connected}. If
@@ -60,27 +60,27 @@ val remove_email_from_user : string -> unit Lwt.t
     {!Os_db.Main_email_removal_attempt}.
  *)
 
-val update_main_email : string -> unit Lwt.t
+val update_main_email : string -> unit
 (** [update_main_email email] sets the main email of the current user to
     [email].
     If no user is connected, it fails with {!Os_session.Not_connected}.
  *)
 
-val update_language : string -> unit Lwt.t
+val update_language : string -> unit
 (** [update_language language] updates the language of the current user.
     If no user is connected, it fails with {!Os_session.Not_connected}.
 *)
 
 [%%server.start]
 
-val is_email_validated : string -> bool Lwt.t
+val is_email_validated : string -> bool
 (** [is_email_validated email] returns [true] if [email] is a valided email for
     the current user.
     If no user is connected, it fails with {!Os_session.Not_connected}.
     It returns [false] in all other cases.
  *)
 
-val is_main_email : string -> bool Lwt.t
+val is_main_email : string -> bool
 (** [is_main_email email] returns [true] if [email] is the main email of the current user. *)
 
 [%%client.start]

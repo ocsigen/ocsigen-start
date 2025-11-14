@@ -18,14 +18,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open%server Lwt.Syntax
-
 [%%server
 exception Error_while_cropping of Unix.process_status
 exception Error_while_resizing of Unix.process_status]
 
 let%server resize_image ~src ?(dst = src) ~width ~height () =
-  let* resize_unix_result =
+  let resize_unix_result =
     Lwt_process.exec
       ( ""
       , [| "convert"
@@ -48,20 +46,20 @@ let%server resize_image ~src ?(dst = src) ~width ~height () =
          ; "jpg:" ^ dst |] )
   in
   match resize_unix_result with
-  | Unix.WEXITED status_code when status_code = 0 -> Lwt.return_unit
-  | unix_process_status -> Lwt.fail (Error_while_resizing unix_process_status)
+  | Unix.WEXITED status_code when status_code = 0 -> ()
+  | unix_process_status -> raise (Error_while_resizing unix_process_status)
 
 let%server get_image_width file =
-  let* width =
+  let width =
     Lwt_process.pread ("", [|"convert"; file; "-print"; "%w"; "/dev/null"|])
   in
-  Lwt.return (int_of_string width)
+  int_of_string width
 
 let%server get_image_height file =
-  let* height =
+  let height =
     Lwt_process.pread ("", [|"convert"; file; "-print"; "%h"; "/dev/null"|])
   in
-  Lwt.return (int_of_string height)
+  int_of_string height
 
 let%server crop_image ~src ?(dst = src) ?ratio ~top ~right ~bottom ~left () =
   (* Given arguments are in percent. Use this to convert to pixel. The full size
@@ -69,8 +67,8 @@ let%server crop_image ~src ?(dst = src) ?ratio ~top ~right ~bottom ~left () =
   let pixel_of_percent percent full_size_px =
     truncate percent * full_size_px / 100
   in
-  let* width_src = get_image_width src in
-  let* height_src = get_image_height src in
+  let width_src = get_image_width src in
+  let height_src = get_image_height src in
   let left_px = pixel_of_percent left width_src in
   let top_px = pixel_of_percent top height_src in
   let width_cropped = width_src - left_px - pixel_of_percent right width_src in
@@ -79,7 +77,7 @@ let%server crop_image ~src ?(dst = src) ?ratio ~top ~right ~bottom ~left () =
     | None -> height_src - top_px - pixel_of_percent bottom height_src
     | Some ratio -> truncate (float_of_int width_cropped /. ratio)
   in
-  let* crop_unix_result =
+  let crop_unix_result =
     Lwt_process.exec
       ( ""
       , [| "convert"
@@ -92,7 +90,7 @@ let%server crop_image ~src ?(dst = src) ?ratio ~top ~right ~bottom ~left () =
   match crop_unix_result with
   | Unix.WEXITED status_code when status_code = 0 ->
       resize_image ~src:dst ~dst ~width:width_cropped ~height:height_cropped ()
-  | unix_process_status -> Lwt.fail (Error_while_cropping unix_process_status)
+  | unix_process_status -> raise (Error_while_cropping unix_process_status)
 
 let%server record_image directory ?ratio ?cropping file =
   let make_file_saver cp () =
@@ -103,8 +101,8 @@ let%server record_image directory ?ratio ?cropping file =
     fun file_info ->
       let fname = new_filename () in
       let fpath = directory ^ "/" ^ fname in
-      let* () = cp (Eliom_request_info.get_tmp_filename file_info) fpath in
-      Lwt.return fname
+      let () = cp (Eliom_request_info.get_tmp_filename file_info) fpath in
+      fname
   in
   let cp =
     match cropping with
