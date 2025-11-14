@@ -364,8 +364,7 @@ let%shared
       ?a
       ~button
       ~(popup_content :
-         ((unit -> unit Lwt.t)
-          -> [< Html_types.div_content] Eliom_content.Html.elt Lwt.t)
+         ((unit -> unit) -> [< Html_types.div_content] Eliom_content.Html.elt)
            Eliom_client_value.t)
       ()
   =
@@ -518,7 +517,7 @@ let%shared
     sign_up_button ~a_placeholder_email ~text_button:text_sign_up
       ~text_send_button ()
   in
-  Lwt.return @@ div ~a:[a_class ["os-connection-box"]] [sign_in; sign_up]
+  div ~a:[a_class ["os-connection-box"]] [sign_in; sign_up]
 
 let%shared
     user_box
@@ -538,6 +537,6 @@ let%shared
       connection_box ~a_placeholder_email ~a_placeholder_pwd
         ~text_keep_me_logged_in ~content_popup_forgotpwd ~text_button_forgotpwd
         ~text_sign_in ~text_sign_up ~text_send_button ()
-  | Some user -> Lwt.return (connected_user_box ~user)
+  | Some user -> connected_user_box ~user
 
 let%shared enable_phone () = enable_phone := true

@@ -18,7 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open%shared Lwt.Syntax
 open%shared Eliom_content.Html.F
 open%client Js_of_ocaml
 
@@ -52,22 +51,17 @@ module type PAGE = sig
   val css : string list list
   val local_css : string list list
   val other_head : Html_types.head_content_fun Eliom_content.Html.elt list
-  val default_error_page : 'a -> 'b -> exn -> content Lwt.t
+  val default_error_page : 'a -> 'b -> exn -> content
 
   val default_connected_error_page :
      Os_types.User.id option
     -> 'a
     -> 'b
     -> exn
-    -> content Lwt.t
+    -> content
 
-  val default_predicate : 'a -> 'b -> bool Lwt.t
-
-  val default_connected_predicate :
-     Os_types.User.id option
-    -> 'a
-    -> 'b
-    -> bool Lwt.t
+  val default_predicate : 'a -> 'b -> bool
+  val default_connected_predicate : Os_types.User.id option -> 'a -> 'b -> bool
 end
 
 module Default_config = struct
@@ -90,10 +84,10 @@ module Default_config = struct
           p [txt "You must be connected to see this page."] :: de
       | _ -> de
     in
-    Lwt.return (content [div ~a:[a_class ["errormsg"]] (h2 [txt "Error"] :: l)])
+    content [div ~a:[a_class ["errormsg"]] (h2 [txt "Error"] :: l)]
 
-  let default_predicate _ _ = Lwt.return_true
-  let default_connected_predicate _ _ _ = Lwt.return_true
+  let default_predicate _ _ = true
+  let default_connected_predicate _ _ _ = true
   let default_error_page _ _ exn = err_page exn
   let default_connected_error_page _ _ _ exn = err_page exn
 end
@@ -157,16 +151,15 @@ module Make (C : PAGE) = struct
         gp
         pp
     =
-    let* content =
-      Lwt.catch
-        (fun () ->
-           let* b = predicate gp pp in
-           if b
-           then Lwt.catch (fun () -> f gp pp) (fun exc -> fallback gp pp exc)
-           else fallback gp pp (Predicate_failed None))
-        (fun exc -> fallback gp pp (Predicate_failed (Some exc)))
+    let content =
+      try
+        let b = predicate gp pp in
+        if b
+        then try f gp pp with exc -> fallback gp pp exc
+        else fallback gp pp (Predicate_failed None)
+      with exc -> fallback gp pp (Predicate_failed (Some exc))
     in
-    Lwt.return (make_page content)
+    make_page content
 
   let connected_page
         ?allow
@@ -178,31 +171,24 @@ module Make (C : PAGE) = struct
         pp
     =
     let f_wrapped myid gp pp =
-      Lwt.catch
-        (fun () ->
-           let* b = predicate (Some myid) gp pp in
-           if b
-           then
-             Lwt.catch
-               (fun () -> f myid gp pp)
-               (fun exc -> fallback (Some myid) gp pp exc)
-           else Lwt.fail (Predicate_failed None))
-        (function
-          | Predicate_failed _ as exc -> fallback (Some myid) gp pp exc
-          | exc -> fallback (Some myid) gp pp (Predicate_failed (Some exc)))
+      try
+        let b = predicate (Some myid) gp pp in
+        if b
+        then try f myid gp pp with exc -> fallback (Some myid) gp pp exc
+        else raise (Predicate_failed None)
+      with
+      | Predicate_failed _ as exc -> fallback (Some myid) gp pp exc
+      | exc -> fallback (Some myid) gp pp (Predicate_failed (Some exc))
     in
-    let* content =
-      Lwt.catch
-        (fun () ->
-           Os_session.connected_fun ?allow ?deny
-             ~deny_fun:(fun myid_o ->
-               fallback myid_o gp pp Os_session.Permission_denied)
-             f_wrapped gp pp)
-        (function
-          | Os_session.Not_connected as exc -> fallback None gp pp exc
-          | exc -> Lwt.reraise exc)
+    let content =
+      try
+        Os_session.connected_fun ?allow ?deny
+          ~deny_fun:(fun myid_o ->
+            fallback myid_o gp pp Os_session.Permission_denied)
+          f_wrapped gp pp
+      with Os_session.Not_connected as exc -> fallback None gp pp exc
     in
-    Lwt.return (make_page content)
+    make_page content
 
   module Opt = struct
     let connected_page
@@ -215,25 +201,21 @@ module Make (C : PAGE) = struct
           pp
       =
       let f_wrapped (myid_o : Os_types.User.id option) gp pp =
-        Lwt.catch
-          (fun () ->
-             let* b = predicate myid_o gp pp in
-             if b
-             then
-               Lwt.catch
-                 (fun () -> f myid_o gp pp)
-                 (fun exc -> fallback myid_o gp pp exc)
-             else Lwt.fail (Predicate_failed None))
-          (function
-            | Predicate_failed _ as exc -> fallback myid_o gp pp exc
-            | exc -> fallback myid_o gp pp (Predicate_failed (Some exc)))
+        try
+          let b = predicate myid_o gp pp in
+          if b
+          then try f myid_o gp pp with exc -> fallback myid_o gp pp exc
+          else raise (Predicate_failed None)
+        with
+        | Predicate_failed _ as exc -> fallback myid_o gp pp exc
+        | exc -> fallback myid_o gp pp (Predicate_failed (Some exc))
       in
-      let* content =
+      let content =
         Os_session.Opt.connected_fun ?allow ?deny
           ~deny_fun:(fun myid_o ->
             fallback myid_o gp pp Os_session.Permission_denied)
           f_wrapped gp pp
       in
-      Lwt.return (make_page content)
+      make_page content
   end
 end]
