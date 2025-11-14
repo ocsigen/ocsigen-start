@@ -353,13 +353,13 @@ module Response = struct
          Yojson.Safe.from_string b |> Yojson.Safe.to_basic |> t_of_json status
          |> Lwt.return)
       (function
-         (* Could be the case if the server key is wrong or if it's not
+        (* Could be the case if the server key is wrong or if it's not
            registered only in FCM and not in FCM (since September 2016).
          *)
-         | Yojson.Json_error _ ->
-             Lwt.fail
-               (FCM_no_json_response "It could come from your server key.")
-         | exc -> Lwt.reraise exc)
+        | Yojson.Json_error _ ->
+            Lwt.fail
+              (FCM_no_json_response "It could come from your server key.")
+        | exc -> Lwt.reraise exc)
 
   let multicast_id_of_t response = response.multicast_id
   let success_of_t response = response.success

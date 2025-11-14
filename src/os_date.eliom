@@ -31,10 +31,11 @@ let%client timezone =
   (* Use Intl API if available. Revert to using the time zone offset
      otherwise. *)
   match
-    if Js.Opt.test Js.Unsafe.global ##. Intl
-       && Js.Opt.test Js.Unsafe.global ##. Intl ##. DateTimeFormat
+    if
+      Js.Opt.test Js.Unsafe.global##.Intl
+      && Js.Opt.test Js.Unsafe.global##.Intl##.DateTimeFormat
     then
-      let f = Js.Unsafe.global ##. Intl ## DateTimeFormat in
+      let f = Js.Unsafe.global##.Intl##DateTimeFormat in
       if Js.Opt.test f##.resolvedOptions
       then
         let o = f##resolvedOptions in

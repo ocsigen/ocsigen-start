@@ -24,12 +24,12 @@ exception No_such_group
 
 type id = Os_types.Group.id [@@deriving json]
 
-type t = Os_types.Group.t = { id : id; name : string; desc : string option }
+type t = Os_types.Group.t = {id : id; name : string; desc : string option}
 [@@deriving json]
 
 (** Create a group of type [Os_types.Group.t] using db information. *)
 let create_group_from_db (groupid, name, description) : Os_types.Group.t =
-  { id = groupid; name; desc = description }
+  {id = groupid; name; desc = description}
 
 let id_of_group (g : Os_types.Group.t) = g.id
 let name_of_group (g : Os_types.Group.t) = g.name
@@ -38,20 +38,20 @@ let desc_of_group (g : Os_types.Group.t) = g.desc
 (* Using cache tools to prevent multiple same database queries
    during the request. *)
 module MCache = Os_request_cache.Make (struct
-  type key = string
-  type value = Os_types.Group.t
+    type key = string
+    type value = Os_types.Group.t
 
-  let compare = compare
+    let compare = compare
 
-  let get key =
-    Lwt.catch
-      (fun () ->
-        let* g = Os_db.Groups.group_of_name key in
-        Lwt.return (create_group_from_db g))
-      (function
-        | Os_db.No_such_resource -> Lwt.fail No_such_group
-        | exc -> Lwt.reraise exc)
-end)
+    let get key =
+      Lwt.catch
+        (fun () ->
+           let* g = Os_db.Groups.group_of_name key in
+           Lwt.return (create_group_from_db g))
+        (function
+          | Os_db.No_such_resource -> Lwt.fail No_such_group
+          | exc -> Lwt.reraise exc)
+  end)
 
 (** Helper function which creates a new group and return it as
   * a record of type [Os_types.Group.t]. *)
@@ -67,8 +67,8 @@ let create ?description name =
           let* () = Os_db.Groups.create ?description name in
           Lwt.catch
             (fun () ->
-              let* g = group_of_name name in
-              Lwt.return g)
+               let* g = group_of_name name in
+               Lwt.return g)
             (function
               | Os_db.No_such_resource -> Lwt.fail No_such_group
               | exc -> Lwt.reraise exc)

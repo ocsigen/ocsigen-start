@@ -118,8 +118,12 @@ let set_warn_connection_change, warn_connection_changed =
   let r = ref (fun _ -> ()) in
   (fun f -> r := f), fun state -> !r state; Lwt.return_unit
 
-let disconnect_all ?sitedata ?userid ?(user_indep = true) ?(with_restart = true)
-    ()
+let disconnect_all
+      ?sitedata
+      ?userid
+      ?(user_indep = true)
+      ?(with_restart = true)
+      ()
   =
   let close_my_sessions = userid = None in
   let* () =
@@ -158,10 +162,10 @@ let disconnect_all ?sitedata ?userid ?(user_indep = true) ?(with_restart = true)
                          option
                          Eliom_reference.eref))
                (function
-                  | None -> acc
-                  | Some s ->
-                      let* acc = acc in
-                      Lwt.return (s :: acc)))
+                 | None -> acc
+                 | Some s ->
+                     let* acc = acc in
+                     Lwt.return (s :: acc)))
           Lwt.return_nil
           (Eliom_state.Ext.fold_volatile_sub_states ?sitedata
              ~state:
@@ -170,8 +174,10 @@ let disconnect_all ?sitedata ?userid ?(user_indep = true) ?(with_restart = true)
              (fun acc s -> s :: acc)
              [])
       in
-      let* (* Closing all sessions: *)
-          () =
+      let*
+          (* Closing all sessions: *)
+            ()
+        =
         Lwt_list.iter_s
           (fun state ->
              Eliom_state.Ext.iter_sub_states ?sitedata ~state @@ fun state ->
@@ -183,16 +189,20 @@ let disconnect_all ?sitedata ?userid ?(user_indep = true) ?(with_restart = true)
         then post_close_session_action ()
         else Lwt.return_unit
       in
-      let* (* Warn every client process that the session is closed: *)
-          () =
+      let*
+          (* Warn every client process that the session is closed: *)
+            ()
+        =
         Lwt_list.iter_s
           (fun state ->
              Eliom_state.Ext.iter_sub_states ?sitedata ~state
                warn_connection_changed)
           ui_states
       in
-      let* (* Closing user_indep states, if requested: *)
-          () =
+      let*
+          (* Closing user_indep states, if requested: *)
+            ()
+        =
         if user_indep
         then
           Lwt_list.iter_s
@@ -252,7 +262,7 @@ let get_session () =
             relaunched.
             We restart the volatile session silently
             (comme si de rien n'était, pom pom pom). *)
-                ()
+                  ()
               =
               connect_volatile (Int64.to_string uid)
             in
@@ -269,15 +279,15 @@ let get_session () =
            let* _user = Os_user.user_of_userid uid in
            Lwt.return_some uid)
         (function
-           | Os_user.No_such_user ->
-               let*
-                   (* If session exists and no user in DB, close the session *)
-                   ()
-                 =
-                 disconnect ()
-               in
-               Lwt.return_none
-           | exc -> Lwt.reraise exc)
+          | Os_user.No_such_user ->
+              let*
+                  (* If session exists and no user in DB, close the session *)
+                    ()
+                =
+                disconnect ()
+              in
+              Lwt.return_none
+          | exc -> Lwt.reraise exc)
 
 (** The connection wrapper checks whether the user is connected,
     and calls the page generator accordingly.
@@ -299,9 +309,16 @@ let get_session () =
     or not to these groups, and call function [deny_fun] otherwise.
     By default, it raises [Permission_denied].
 *)
-let%server gen_wrapper ~allow ~deny ?(force_unconnected = false)
-    ?(deny_fun = fun _ -> Lwt.fail Permission_denied) connected not_connected gp
-    pp
+let%server
+    gen_wrapper
+      ~allow
+      ~deny
+      ?(force_unconnected = false)
+      ?(deny_fun = fun _ -> Lwt.fail Permission_denied)
+      connected
+      not_connected
+      gp
+      pp
   =
   let new_process =
     (not force_unconnected) && Eliom_reference.Volatile.get new_process_eref
@@ -336,8 +353,16 @@ let%client get_current_userid_o = ref (fun () -> assert false)
 
 (* On client-side, we do no security check.
    They are done by the server. *)
-let%client gen_wrapper ~allow:_ ~deny:_ ?(force_unconnected = false) ?deny_fun:_
-    connected not_connected gp pp
+let%client
+    gen_wrapper
+      ~allow:_
+      ~deny:_
+      ?(force_unconnected = false)
+      ?deny_fun:_
+      connected
+      not_connected
+      gp
+      pp
   =
   let myid_o = if force_unconnected then None else !get_current_userid_o () in
   match myid_o with

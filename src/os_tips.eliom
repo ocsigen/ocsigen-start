@@ -126,9 +126,14 @@ let%client reset_tips () =
 
 (* Returns a block containing a tip,
    if it has not already been seen by the user. *)
-let%shared block ?(a = []) ?(recipient = `All)
-    ?(onclose = [%client (fun () -> Lwt.return_unit : unit -> unit Lwt.t)])
-    ~name ~content ()
+let%shared
+    block
+      ?(a = [])
+      ?(recipient = `All)
+      ?(onclose = [%client (fun () -> Lwt.return_unit : unit -> unit Lwt.t)])
+      ~name
+      ~content
+      ()
   =
   let myid_o = Os_current_user.Opt.get_current_userid () in
   match recipient, myid_o with
@@ -183,9 +188,22 @@ let%client rec onchangepage_handler _ =
 let%client () = Eliom_client.onchangepage onchangepage_handler
 
 (* Display a tip bubble *)
-let%client display_bubble ?(a = []) ?arrow ?top ?left ?right ?bottom ?height
-    ?width ?(parent_node : _ elt option) ?(delay = 0.0)
-    ?(onclose = fun () -> Lwt.return_unit) ~name ~content ()
+let%client
+    display_bubble
+      ?(a = [])
+      ?arrow
+      ?top
+      ?left
+      ?right
+      ?bottom
+      ?height
+      ?width
+      ?(parent_node : _ elt option)
+      ?(delay = 0.0)
+      ?(onclose = fun () -> Lwt.return_unit)
+      ~name
+      ~content
+      ()
   =
   let current_waiter = !waiter in
   let new_waiter, new_wakener = Lwt.task () in
@@ -270,26 +288,32 @@ let%client display_bubble ?(a = []) ?arrow ?top ?left ?right ?bottom ?height
   Lwt.return_unit
 
 (* Function to be called on server to display a tip *)
-let%shared bubble
-    ?(a :
-       [< Html_types.div_attrib > `Class] Eliom_content.Html.D.attrib list
-         option) ?(recipient = `All)
-    ?(arrow :
-       [< `left of int | `right of int | `top of int | `bottom of int]
-         Eliom_client_value.t
-         option) ?(top : int Eliom_client_value.t option)
-    ?(left : int Eliom_client_value.t option)
-    ?(right : int Eliom_client_value.t option)
-    ?(bottom : int Eliom_client_value.t option)
-    ?(height : int Eliom_client_value.t option)
-    ?(width : int Eliom_client_value.t option)
-    ?(parent_node :
-       [< `Body | Html_types.body_content] Eliom_content.Html.elt option) ?delay
-    ?onclose ~(name : string)
-    ~(content :
-       ((unit -> unit Lwt.t)
-        -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
-         Eliom_client_value.t) ()
+let%shared
+    bubble
+      ?(a :
+         [< Html_types.div_attrib > `Class] Eliom_content.Html.D.attrib list
+           option)
+      ?(recipient = `All)
+      ?(arrow :
+         [< `left of int | `right of int | `top of int | `bottom of int]
+           Eliom_client_value.t
+           option)
+      ?(top : int Eliom_client_value.t option)
+      ?(left : int Eliom_client_value.t option)
+      ?(right : int Eliom_client_value.t option)
+      ?(bottom : int Eliom_client_value.t option)
+      ?(height : int Eliom_client_value.t option)
+      ?(width : int Eliom_client_value.t option)
+      ?(parent_node :
+         [< `Body | Html_types.body_content] Eliom_content.Html.elt option)
+      ?delay
+      ?onclose
+      ~(name : string)
+      ~(content :
+         ((unit -> unit Lwt.t)
+          -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
+           Eliom_client_value.t)
+      ()
   =
   let delay : float option = delay in
   let onclose : (unit -> unit Lwt.t) Eliom_client_value.t option = onclose in
