@@ -44,7 +44,7 @@ exception Already_exists of Os_types.User.id
 exception No_such_user
 (** Exception used if an user doesn't exist. *)
 
-val password_set : Os_types.User.id -> bool Lwt.t
+val password_set : Os_types.User.id -> bool
 (** [password_set userid] returns [true] if the user with ID [userid] has set
     a password. Else [false].
  *)
@@ -133,12 +133,12 @@ val add_actionlinkkey :
   -> userid:Os_types.User.id
   -> email:string
   -> unit
-  -> unit Lwt.t
+  -> unit
 (** [add_actionlinkkey ?autoconnect ?action ?data ?validity ?expiry ~act_key ~userid
     ~email ()] adds the action key in the database.
  *)
 
-val verify_password : email:string -> password:string -> Os_types.User.id Lwt.t
+val verify_password : email:string -> password:string -> Os_types.User.id
 (** [verify_password ~email ~password] returns the userid if user with email
     [email] is registered with the password [password].
     If [password] the password is wrong,
@@ -149,12 +149,12 @@ val verify_password : email:string -> password:string -> Os_types.User.id Lwt.t
     If user is not found, it fails with exception {!No_such_user}.
     If password is empty, it fails with exception {!Empty_password}. *)
 
-val user_of_userid : Os_types.User.id -> Os_types.User.t Lwt.t
+val user_of_userid : Os_types.User.id -> Os_types.User.t
 (** [user_of_userid userid] returns the information about the user with ID
     [userid].
  *)
 
-val get_actionlinkkey_info : string -> Os_types.Action_link_key.info Lwt.t
+val get_actionlinkkey_info : string -> Os_types.Action_link_key.info
 (** Retrieve the data corresponding to an action link key, each
     call decrements the validity of the key by [1] if it exists and
     [validity > 0] (it remains at [0] if it's already [0]). It is up to
@@ -162,34 +162,34 @@ val get_actionlinkkey_info : string -> Os_types.Action_link_key.info Lwt.t
     Raises {!Os_db.No_such_resource} if the action link key is not found.
  *)
 
-val userid_of_email : string -> Os_types.User.id Lwt.t
+val userid_of_email : string -> Os_types.User.id
 (** [userid_of_email email] returns the userid of the user with email [email].
     It raises the exception {!Os_db.No_such_resource} if the email [email] is
     not used.
  *)
 
-val emails_of_userid : Os_types.User.id -> string list Lwt.t
+val emails_of_userid : Os_types.User.id -> string list
 (** [emails_of_userid userid] returns the emails list of user with ID
     [userid].
  *)
 
-val email_of_userid : Os_types.User.id -> string option Lwt.t
+val email_of_userid : Os_types.User.id -> string option
 (** [email_of_userid userid] returns the main email of user with ID
     [userid].
  *)
 
-val emails_of_user : Os_types.User.t -> string list Lwt.t
+val emails_of_user : Os_types.User.t -> string list
 (** [emails_of_user user] returns the emails list of user [user]. *)
 
-val email_of_user : Os_types.User.t -> string option Lwt.t
+val email_of_user : Os_types.User.t -> string option
 (** [email_of_user user] returns the main email of user [user]. *)
 
-val get_language : Os_types.User.id -> string option Lwt.t
+val get_language : Os_types.User.id -> string option
 (** [get_language userid] returns the language of the user with ID [userid]. The
     language is retrieved from the database.
  *)
 
-val get_users : ?pattern:string -> unit -> Os_types.User.t list Lwt.t
+val get_users : ?pattern:string -> unit -> Os_types.User.t list
 (** [get_users ?pattern ()] gets users who match the [pattern] (useful for
     completion).
  *)
@@ -202,7 +202,7 @@ val create :
   -> firstname:string
   -> lastname:string
   -> unit
-  -> Os_types.User.t Lwt.t
+  -> Os_types.User.t
 (** [create ?password ?avatar ?language ~firstname ~lastname email] creates a new user
     with the given information. An email, the first name and the last name are mandatory.
  *)
@@ -214,52 +214,52 @@ val update :
   -> firstname:string
   -> lastname:string
   -> Os_types.User.id
-  -> unit Lwt.t
+  -> unit
 (** [update ?password ?avatar ?language ~firstname ~lastname userid] update the
     given information of the user with ID [userid]. Only given information are
     updated.
  *)
 
-val update' : ?password:string -> Os_types.User.t -> unit Lwt.t
+val update' : ?password:string -> Os_types.User.t -> unit
 (** Another version of [update] using a type {!Os_types.User.t} instead of
     label.
  *)
 
-val update_password : userid:Os_types.User.id -> password:string -> unit Lwt.t
+val update_password : userid:Os_types.User.id -> password:string -> unit
 (** [update_password ~userid ~password] updates the password only. [password]
     must not be hashed: it is done by the function [f_crypt] of the tuple
     {!Os_db.pwd_crypt_ref}.
  *)
 
-val update_avatar : userid:Os_types.User.id -> avatar:string -> unit Lwt.t
+val update_avatar : userid:Os_types.User.id -> avatar:string -> unit
 (** [update_avatar ~userid ~avatar] updates the avatar of the user with ID
     [userid].
  *)
 
-val update_language : userid:Os_types.User.id -> language:string -> unit Lwt.t
+val update_language : userid:Os_types.User.id -> language:string -> unit
 (** [update_language ~userid ~language] updates the language of the user with ID
     [userid].
  *)
 
-val is_registered : string -> bool Lwt.t
+val is_registered : string -> bool
 (** [is_registered email] returns [true] if a user exists with email [email].
     Else, it returns [false].
  *)
 
-val is_preregistered : string -> bool Lwt.t
+val is_preregistered : string -> bool
 (** [is_preregistered email] returns [true] if a user exists with email
     [email]. Else, it returns [false].
  *)
 
-val add_preregister : string -> unit Lwt.t
+val add_preregister : string -> unit
 (** [add_preregister email] adds an email into the preregister collections. *)
 
-val remove_preregister : string -> unit Lwt.t
+val remove_preregister : string -> unit
 (** [remove_preregister email] removes an email from the preregister
     collections.
  *)
 
-val all : ?limit:int64 -> unit -> string list Lwt.t
+val all : ?limit:int64 -> unit -> string list
 (** Get [limit] (default: 10) emails from the preregister collections. *)
 
 val set_pwd_crypt_fun :
@@ -274,26 +274,23 @@ val set_pwd_crypt_fun :
     by user, and as third parameter the hash found in database.
 *)
 
-val remove_email_from_user :
-   userid:Os_types.User.id
-  -> email:string
-  -> unit Lwt.t
+val remove_email_from_user : userid:Os_types.User.id -> email:string -> unit
 (** [remove_email_from_user ~userid ~email] removes the email [email] from the
     user with the id [userid]. If the email is registered as the main email for
     the user it fails with the exception {!Os_db.Main_email_removal_attempt}.
 *)
 
-val is_email_validated : userid:Os_types.User.id -> email:string -> bool Lwt.t
+val is_email_validated : userid:Os_types.User.id -> email:string -> bool
 (** [is_email_validated ~userid ~email] returns whether for a user designated by
     its id the given email has been validated.
  *)
 
-val is_main_email : userid:Os_types.User.id -> email:string -> bool Lwt.t
+val is_main_email : userid:Os_types.User.id -> email:string -> bool
 (** [is_main_email ~userid ~email] returns whether an email is the main email
     registered for a given user designated by its id.
  *)
 
-val update_main_email : userid:Os_types.User.id -> email:string -> unit Lwt.t
+val update_main_email : userid:Os_types.User.id -> email:string -> unit
 (** [update_mail_email ~userid ~email] sets the main email for a user with the
     ID [userid] as the email [email].
  *)
