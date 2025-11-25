@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout tree
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set-up Node.js
         uses: actions/setup-node@v5
