@@ -75,9 +75,7 @@ let initialize tz =
   Eliom_reference.Volatile.set user_tz_sr tz
 
 (* When the browser is loaded, we init the timezone *)
-let%rpc init_time_rpc (tz : string) : unit Lwt.t =
-  initialize tz; Lwt.return_unit
-
+let%rpc init_time_rpc (tz : string) : unit = initialize tz
 let%client auto_init = ref true
 let%client disable_auto_init () = auto_init := false
 

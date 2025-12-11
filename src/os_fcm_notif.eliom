@@ -18,8 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open Lwt.Syntax
-
 exception FCM_empty_response
 exception FCM_no_json_response of string
 exception FCM_missing_field of string
@@ -346,20 +344,16 @@ module Response = struct
          if an error occurred.
   *)
   let t_of_http_response (r, b) =
-    Lwt.catch
-      (fun () ->
-         let status = Cohttp.(Code.code_of_status (Response.status r)) in
-         let* b = Cohttp_lwt.Body.to_string b in
-         Yojson.Safe.from_string b |> Yojson.Safe.to_basic |> t_of_json status
-         |> Lwt.return)
-      (function
-        (* Could be the case if the server key is wrong or if it's not
+    try
+      let status = Cohttp.(Code.code_of_status (Response.status r)) in
+      let b = Cohttp_lwt.Body.to_string b in
+      Yojson.Safe.from_string b |> Yojson.Safe.to_basic |> t_of_json status
+    with
+    (* Could be the case if the server key is wrong or if it's not
            registered only in FCM and not in FCM (since September 2016).
          *)
-        | Yojson.Json_error _ ->
-            Lwt.fail
-              (FCM_no_json_response "It could come from your server key.")
-        | exc -> Lwt.reraise exc)
+    | Yojson.Json_error _ ->
+      raise (FCM_no_json_response "It could come from your server key.")
 
   let multicast_id_of_t response = response.multicast_id
   let success_of_t response = response.success
@@ -381,5 +375,5 @@ let send server_key notification ?(data = Data.empty ()) options =
       :: Options.to_list options)
     |> Yojson.Safe.to_string |> Cohttp_lwt.Body.of_string
   in
-  let* response = Cohttp_lwt_unix.Client.call ~headers ~body `POST gcm_url in
+  let response = Cohttp_lwt_unix.Client.call ~headers ~body `POST gcm_url in
   Response.t_of_http_response response
