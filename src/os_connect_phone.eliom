@@ -18,8 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open%server Lwt.Syntax
-
 type%shared sms_error_core = [`Unknown | `Send | `Limit | `Invalid_number]
 type%shared sms_error = [`Ownership | sms_error_core]
 
@@ -46,74 +44,64 @@ let send_sms_handler =
   Printf.printf
     "INFO: send SMS %s to %s\nYou have not defined an SMS handler.\nPlease see Os_connect_phone.set_send_sms_handler\n%!"
     message number;
-  Lwt.return (Error `Send)
+  Error `Send
 
 let set_send_sms_handler = ( := ) send_sms_handler
 
-let send_sms ~number message : (unit, sms_error_core) result Lwt.t =
+let send_sms ~number message : (unit, sms_error_core) result =
   !send_sms_handler ~number message
 
 let%server request_code reference number =
-  Lwt.catch
-    (fun () ->
-       let* attempt =
-         Lwt.bind (Eliom_reference.get reference) (function
-           | Some (_, _, attempt) -> Lwt.return attempt
-           | None -> Lwt.return 0)
-       in
-       if attempt <= 3
-       then
-         let attempt = attempt + 1 and code = activation_code () in
-         let* () =
-           Eliom_reference.set reference (Some (number, code, attempt))
-         in
-         Lwt.catch
-           (fun () -> (send_sms ~number code :> (unit, sms_error) result Lwt.t))
-           (fun _ -> Lwt.return (Error `Send))
-       else Lwt.return (Error `Limit))
-    (fun _ -> Lwt.return (Error `Unknown))
+  try
+    let attempt =
+      match Eliom_reference.get reference with
+      | Some (_, _, attempt) -> attempt
+      | None -> 0
+    in
+    if attempt <= 3
+    then
+      let attempt = attempt + 1 and code = activation_code () in
+      let () = Eliom_reference.set reference (Some (number, code, attempt)) in
+      try (send_sms ~number code :> (unit, sms_error) result)
+      with _ -> Error `Send
+    else Error `Limit
+  with _ -> Error `Unknown
 
 let%server request_wrapper number f =
   if Re.Str.string_match Os_lib.phone_regexp number 0
   then f number
-  else Lwt.return (Error `Invalid_number)
+  else Error `Invalid_number
 
-let%rpc request_recovery_code (number : string) : (unit, sms_error) result Lwt.t
-  =
+let%rpc request_recovery_code (number : string) : (unit, sms_error) result =
   request_wrapper number @@ fun number ->
-  let* b = Os_db.Phone.exists number in
-  if not b
-  then Lwt.return (Error `Ownership)
-  else request_code recovery_code_ref number
+  let b = Os_db.Phone.exists number in
+  if not b then Error `Ownership else request_code recovery_code_ref number
 
-let%rpc request_code (number : string) : (unit, sms_error) result Lwt.t =
+let%rpc request_code (number : string) : (unit, sms_error) result =
   request_wrapper number @@ fun number ->
-  let* b = Os_db.Phone.exists number in
-  if b
-  then Lwt.return (Error `Ownership)
-  else request_code activation_code_ref number
+  let b = Os_db.Phone.exists number in
+  if b then Error `Ownership else request_code activation_code_ref number
 
 let%server confirm_code myid code =
-  Lwt.bind (Eliom_reference.get activation_code_ref) (function
-    | Some (number, code', _) when code = code' -> Os_db.Phone.add myid number
-    | _ -> Lwt.return_false)
+  match Eliom_reference.get activation_code_ref with
+  | Some (number, code', _) when code = code' -> Os_db.Phone.add myid number
+  | _ -> false
 
-let%rpc confirm_code_extra myid (code : string) : bool Lwt.t =
-  confirm_code myid code
+let%rpc confirm_code_extra myid (code : string) : bool = confirm_code myid code
 
 let%server
     confirm_code_signup_no_connect ~first_name ~last_name ~code ~password ()
   =
-  Lwt.bind (Eliom_reference.get activation_code_ref) (function
-    | Some (number, code', _) when code = code' ->
-        let* () = Eliom_reference.set activation_code_ref None in
-        let* user =
-          Os_user.create ~password ~firstname:first_name ~lastname:last_name ()
-        in
-        let userid = Os_user.userid_of_user user in
-        let* _ = Os_db.Phone.add userid number in
-        Lwt.return_some userid
-    | _ -> Lwt.return_none)
+  match Eliom_reference.get activation_code_ref with
+  | Some (number, code', _) when code = code' ->
+      let () = Eliom_reference.set activation_code_ref None in
+      let user =
+        Os_user.create ~password ~firstname:first_name ~lastname:last_name ()
+      in
+      let userid = Os_user.userid_of_user user in
+      let _ = Os_db.Phone.add userid number in
+      Some userid
+  | _ -> None
 
 let%rpc
     confirm_code_signup
@@ -121,37 +109,34 @@ let%rpc
       ~(last_name : string)
       ~(code : string)
       ~(password : string)
-      () : bool Lwt.t
+      () : bool
   =
-  Lwt.bind
-    (confirm_code_signup_no_connect ~first_name ~last_name ~code ~password ())
-    (function
-    | None -> Lwt.return_false
-    | Some userid ->
-        let* () = Os_session.connect userid in
-        Lwt.return_true)
+  match
+    confirm_code_signup_no_connect ~first_name ~last_name ~code ~password ()
+  with
+  | None -> false
+  | Some userid ->
+      let () = Os_session.connect userid in
+      true
 
-let%rpc confirm_code_recovery (code : string) : bool Lwt.t =
-  Lwt.bind (Eliom_reference.get recovery_code_ref) (function
-    | Some (number, code', _) when code = code' ->
-        Lwt.bind (Os_db.Phone.userid number) (function
-          | Some userid ->
-              let* () = Os_session.connect userid in
-              Lwt.return_true
-          | None -> Lwt.return_false)
-    | _ -> Lwt.return_false)
+let%rpc confirm_code_recovery (code : string) : bool =
+  match Eliom_reference.get recovery_code_ref with
+  | Some (number, code', _) when code = code' -> (
+    match Os_db.Phone.userid number with
+    | Some userid ->
+        let () = Os_session.connect userid in
+        true
+    | None -> false)
+  | _ -> false
 
 let%rpc connect ~(keepmeloggedin : bool) ~(password : string) (number : string)
-  : [`Login_ok | `Wrong_password | `No_such_user | `Password_not_set] Lwt.t
+  : [`Login_ok | `Wrong_password | `No_such_user | `Password_not_set]
   =
-  Lwt.catch
-    (fun () ->
-       let* userid = Os_db.User.verify_password_phone ~password ~number in
-       let* () = Os_session.connect ~expire:(not keepmeloggedin) userid in
-       Lwt.return `Login_ok)
-    (function
-      | Os_db.Empty_password | Os_db.Wrong_password ->
-          Lwt.return `Wrong_password
-      | Os_db.No_such_user -> Lwt.return `No_such_user
-      | Os_db.Password_not_set -> Lwt.return `Password_not_set
-      | exc -> Lwt.reraise exc)
+  try
+    let userid = Os_db.User.verify_password_phone ~password ~number in
+    let () = Os_session.connect ~expire:(not keepmeloggedin) userid in
+    `Login_ok
+  with
+  | Os_db.Empty_password | Os_db.Wrong_password -> `Wrong_password
+  | Os_db.No_such_user -> `No_such_user
+  | Os_db.Password_not_set -> `Password_not_set

@@ -315,7 +315,7 @@ val connection_box :
   -> ?text_sign_up:string
   -> ?text_send_button:string
   -> unit
-  -> [> Html_types.div] Eliom_content.Html.D.elt Lwt.t
+  -> [> Html_types.div] Eliom_content.Html.D.elt
 (** A box (in a div with the CSS class ["os-connection-box"]) with a sign in and
     a sign out button. [?text_sign_in] (resp. [text_sign_up]) is the text for the
     sign in (resp. sign up) button, default is ["Sign in"] (resp. ["Sign up"]).
@@ -332,7 +332,7 @@ val user_box :
   -> ?text_send_button:string
   -> ?user:Os_types.User.t
   -> unit
-  -> [> Html_types.div] Eliom_content.Html.F.elt Lwt.t
+  -> [> Html_types.div] Eliom_content.Html.F.elt
 (** Return {!connection_box} if no user is connected (i.e. [user] is [None]).
     Else {!connected_user_box}.
  *)

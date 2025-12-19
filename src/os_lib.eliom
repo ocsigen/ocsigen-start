@@ -18,9 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open%shared Lwt.Syntax
 open%client Js_of_ocaml
-open%client Js_of_ocaml_lwt
+open%client Js_of_ocaml_eio
 
 let%client reload () =
   Eliom_client.change_page ~replace:true
@@ -30,11 +29,11 @@ let%shared memoizator f =
   let value_ref = ref None in
   fun () ->
     match !value_ref with
-    | Some value -> Lwt.return value
+    | Some value -> value
     | None ->
-        let* value = f () in
+        let value = f () in
         value_ref := Some value;
-        Lwt.return value
+        value
 
 let%shared string_repeat s n =
   let b = Buffer.create (n * String.length s) in
@@ -132,9 +131,9 @@ module Email_or_phone = struct
 end
 
 let%client on_enter ~f inp =
-  Lwt.async @@ fun () ->
-  Lwt_js_events.keydowns inp @@ fun ev _ ->
-  if ev##.keyCode = 13 then f (Js.to_string inp##.value) else Lwt.return_unit
+  Eio_js.start @@ fun () ->
+  Eio_js_events.keydowns inp (fun ev ->
+      if ev##.keyCode = 13 then f (Js.to_string inp##.value))
 
 (* TODO: Build a nice Ot_form module with such functions *)
 let%shared
@@ -142,13 +141,13 @@ let%shared
       ?(validate : (string -> bool) Eliom_client_value.t option)
       ?button
       (e : Html_types.input Eliom_content.Html.elt)
-      (f : (string -> unit Lwt.t) Eliom_client_value.t)
+      (f : (string -> unit) Eliom_client_value.t)
   =
   ignore
     [%client
       (let e = Eliom_content.Html.To_dom.of_input ~%e in
        let f =
-         let f = ~%(f : (string -> unit Lwt.t) Eliom_client_value.t) in
+         let f = ~%(f : (string -> unit) Eliom_client_value.t) in
          match ~%validate with
          | Some validate ->
              fun v ->
@@ -165,9 +164,9 @@ let%shared
                 option)
        with
        | Some button ->
-           Lwt.async @@ fun () ->
-           Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element button)
-           @@ fun _ _ -> f (Js.to_string e##.value)
+           Eio_js.start @@ fun () ->
+           Eio_js_events.clicks (Eliom_content.Html.To_dom.of_element button)
+             (fun _ -> f (Js.to_string e##.value))
        | None -> ()
        : unit)]
 
@@ -180,13 +179,11 @@ let%shared lwt_bound_input_enter ?(a = []) ?button ?validate f =
 
 module Http = struct
   let string_of_stream ?(len = 16384) contents =
-    Lwt.try_bind
-      (fun () ->
-         Ocsigen_stream.string_of_stream len (Ocsigen_stream.get contents))
-      (fun r ->
-         let* () = Ocsigen_stream.finalize contents `Success in
-         Lwt.return r)
-      (fun e ->
-         let* () = Ocsigen_stream.finalize contents `Failure in
-         Lwt.fail e)
+    match Ocsigen_stream.string_of_stream len (Ocsigen_stream.get contents) with
+    | r ->
+        let () = Ocsigen_stream.finalize contents `Success in
+        r
+    | exception e ->
+        let () = Ocsigen_stream.finalize contents `Failure in
+        raise e
 end

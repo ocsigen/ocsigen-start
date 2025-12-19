@@ -39,4 +39,4 @@ val restart_process : unit -> unit
     subproject="server" | module Eliom_client.exit_to>>
  *)
 
-val set_error_handler : (exn -> unit Lwt.t) -> unit
+val set_error_handler : (exn -> unit) -> unit

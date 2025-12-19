@@ -50,11 +50,11 @@ val name_of_group : Os_types.Group.t -> string
 val desc_of_group : Os_types.Group.t -> string option
 (** [desc_of_group group] returns the group description. *)
 
-val create : ?description:string -> string -> Os_types.Group.t Lwt.t
+val create : ?description:string -> string -> Os_types.Group.t
 (** [create ~description name] creates a new group in the database and returns
     it as a record of type [Os_types.Group.t]. *)
 
-val group_of_name : string -> Os_types.Group.t Lwt.t
+val group_of_name : string -> Os_types.Group.t
 (** Overwrites the function [group_of_name] of [Os_db.Group] and use
     the [get] function of the cache module. *)
 
@@ -69,25 +69,25 @@ val group_of_name : string -> Os_types.Group.t Lwt.t
 val add_user_in_group :
    group:Os_types.Group.t
   -> userid:Os_types.User.id
-  -> unit Lwt.t
+  -> unit
 (** [add_user_in_group ~group ~userid] adds the user with ID [userid] to
     [group]. *)
 
 val remove_user_in_group :
    group:Os_types.Group.t
   -> userid:Os_types.User.id
-  -> unit Lwt.t
+  -> unit
 (** [remove_user_in_group ~group ~userid] removes the user with ID [userid] from
     [group]. *)
 
 val in_group :
-   ?dbh:Os_db.PGOCaml.pa_pg_data Os_db.PGOCaml.t
+   ?dbh:PGOCaml.pa_pg_data PGOCaml.t
   -> group:Os_types.Group.t
   -> userid:Os_types.User.id
   -> unit
-  -> bool Lwt.t
+  -> bool
 (** [in_group ~group ~userid] returns [true] if the user with ID [userid] is in
     [group]. *)
 
-val all : unit -> Os_types.Group.t list Lwt.t
+val all : unit -> Os_types.Group.t list
 (** [all ()] returns all the groups of the database. *)

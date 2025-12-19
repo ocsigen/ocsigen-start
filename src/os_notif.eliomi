@@ -51,7 +51,7 @@ module type ARG = sig
   type server_notif
   type client_notif
 
-  val prepare : User.id option -> server_notif -> client_notif option Lwt.t
+  val prepare : User.id option -> server_notif -> client_notif option
   val equal_key : key -> key -> bool
   val max_resource : int
   val max_identity_per_resource : int
