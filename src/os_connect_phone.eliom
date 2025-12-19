@@ -1,5 +1,3 @@
-open Eio.Std
-
 (* Ocsigen Start
  * http://www.ocsigen.org/ocsigen-start
  *
@@ -64,7 +62,7 @@ let%server request_code reference number =
     then
       let attempt = attempt + 1 and code = activation_code () in
       let () = Eliom_reference.set reference (Some (number, code, attempt)) in
-      try (send_sms ~number code :> (unit, sms_error) result Promise.t)
+      try (send_sms ~number code :> (unit, sms_error) result)
       with _ -> Error `Send
     else Error `Limit
   with _ -> Error `Unknown

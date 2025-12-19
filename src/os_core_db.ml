@@ -18,37 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open Resource_pooling
-
 let section = Logs.Src.create "os:db"
 let ( >>= ) = fun x1 x2 -> x2 x1
-
-module Lwt_thread = struct
-  let close_in = fun x1 -> Eio.Resource.close x1
-
-  let really_input
-        (* TODO: ciao-lwt: [x2] should be a [Cstruct.t]. *)
-        (* TODO: ciao-lwt: [Eio.Flow.single_read] operates on a [Flow.source] but [x1] is likely of type [Eio.Buf_read.t]. Rewrite this code to use [Buf_read] (which contains an internal buffer) or change the call to [Eio.Buf_read.of_flow] used to create the buffer. *)
-        (* TODO: ciao-lwt: Dropped expression (buffer offset): [x3]. This will behave as if it was [0]. *)
-        (* TODO: ciao-lwt: Dropped expression (buffer length): [x4]. This will behave as if it was [Cstruct.length buffer]. *)
-    =
-   fun x1 x2 x3 x4 -> Eio.Flow.read_exact x1 x2
-
-  let input_binary_int = Lwt_io.BE.read_int
-  let input_char = Lwt_io.read_char
-  let output_string = fun x1 x2 -> Eio.Buf_write.string x1 x2
-  let output_binary_int = Lwt_io.BE.write_int
-  let output_char = Lwt_io.write_char
-  let flush = fun x1 -> Eio.Buf_write.flush x1
-  let open_connection x = Lwt_io.open_connection x
-
-  type out_channel = Eio.Buf_write.t
-  type in_channel = Eio.Buf_read.t
-end
-
-module Lwt_PGOCaml = PGOCaml_generic.Make (Lwt_thread)
-module PGOCaml = Lwt_PGOCaml
-
 let host_r = ref None
 let port_r = ref None
 let user_r = ref None
@@ -60,7 +31,7 @@ let dispose db = try PGOCaml.close db with _ -> ()
 
 let connect () =
   let h =
-    Lwt_PGOCaml.connect ?host:!host_r ?port:!port_r ?user:!user_r
+    PGOCaml.connect ?host:!host_r ?port:!port_r ?user:!user_r
       ?password:!password_r ?database:!database_r
       ?unix_domain_socket_dir:!unix_domain_socket_dir_r ()
   in
@@ -77,14 +48,14 @@ let connect () =
 
 let validate db =
   try
-    let () = Lwt_PGOCaml.ping db in
+    let () = PGOCaml.ping db in
     true
   with _ -> false
 
-let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Resource_pool.t ref =
-  ref @@ Resource_pool.create 16 ~validate ~dispose connect
+let pool : (string, bool) Hashtbl.t PGOCaml.t Eio.Pool.t ref =
+  ref @@ Eio.Pool.create 16 ~validate ~dispose connect
 
-let set_pool_size n = pool := Resource_pool.create n ~validate ~dispose connect
+let set_pool_size n = pool := Eio.Pool.create n ~validate ~dispose connect
 
 let init
       ?host
@@ -114,44 +85,43 @@ let connection_wrapper = ref {f = (fun _ f -> f ())}
 let set_connection_wrapper f = connection_wrapper := f
 
 let use_pool f =
-  Resource_pool.use !pool @@ fun db ->
+  Eio.Pool.use !pool @@ fun db ->
   !connection_wrapper.f db @@ fun () ->
   try f db with
-  | Lwt_PGOCaml.Error msg as e ->
+  | PGOCaml.Error msg as e ->
       Logs.err ~src:section (fun fmt -> fmt "postgresql protocol error: %s" msg);
-      let () = Lwt_PGOCaml.close db in
+      let () = PGOCaml.close db in
       raise e
   | (Unix.Unix_error _ | End_of_file) as e ->
       Logs.err ~src:section (fun fmt ->
         fmt ("unix error" ^^ "@\n%s") (Printexc.to_string e));
-      let () = Lwt_PGOCaml.close db in
+      let () = PGOCaml.close db in
       raise e
-  | Lwt.Canceled as e ->
-      Logs.err ~src:section (fun fmt -> fmt "thread canceled");
+  | Eio.Cancel.Cancelled _ as e ->
+      Logs.err ~src:section (fun fmt -> fmt "fiber canceled");
       let () = PGOCaml.close db in
       raise e
 
 let transaction_block db f =
   try
-    Lwt_PGOCaml.begin_work db >>= fun _ ->
+    PGOCaml.begin_work db >>= fun _ ->
     let r = f () in
-    let () = Lwt_PGOCaml.commit db in
+    let () = PGOCaml.commit db in
     r
   with
-  | (Lwt_PGOCaml.Error _ | Lwt.Canceled | Unix.Unix_error _ | End_of_file) as e
-    ->
+  | (PGOCaml.Error _ | Eio.Cancel.Cancelled _ | Unix.Unix_error _ | End_of_file) as e ->
       raise
         (* The connection is going to be closed by [use_pool],
         so no need to try to rollback *)
         e
   | e ->
       let () =
-        try Lwt_PGOCaml.rollback db
-        with Lwt_PGOCaml.PostgreSQL_Error _ ->
+        try PGOCaml.rollback db
+        with PGOCaml.PostgreSQL_Error _ ->
           (* If the rollback fails, for instance due to a timeout,
            it seems better to close the connection. *)
           Logs.err ~src:section (fun fmt -> fmt "rollback failed");
-          Lwt_PGOCaml.close db
+          PGOCaml.close db
       in
       raise e
 

@@ -54,8 +54,8 @@ SASS_TEMPORARY_PROJECT_NAME := os_temporary_project_name
 ##----------------------------------------------------------------------
 
 # OCamlfind packages for the server
-SERVER_PACKAGES    := calendar safepass \
-                      ocsigen-toolkit.server yojson re.str cohttp-lwt-unix
+SERVER_PACKAGES    := calendar safepass pgocaml \
+                      ocsigen-toolkit.server yojson re.str cohttp-eio
 
 SERVER_PPX_PACKAGES := js_of_ocaml-ppx_deriving_json ocsigen-ppx-rpc
 

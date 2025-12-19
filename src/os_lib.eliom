@@ -19,7 +19,7 @@
  *)
 
 open%client Js_of_ocaml
-open%client Js_of_ocaml_lwt
+open%client Js_of_ocaml_eio
 
 let%client reload () =
   Eliom_client.change_page ~replace:true
@@ -131,9 +131,9 @@ module Email_or_phone = struct
 end
 
 let%client on_enter ~f inp =
-  Lwt.async @@ fun () ->
-  Lwt_js_events.keydowns inp @@ fun ev _ ->
-  if ev##.keyCode = 13 then f (Js.to_string inp##.value) else Lwt.return_unit
+  Eio_js.start @@ fun () ->
+  Eio_js_events.keydowns inp (fun ev ->
+      if ev##.keyCode = 13 then f (Js.to_string inp##.value))
 
 (* TODO: Build a nice Ot_form module with such functions *)
 let%shared
@@ -164,9 +164,9 @@ let%shared
                 option)
        with
        | Some button ->
-           Lwt.async @@ fun () ->
-           Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element button)
-           @@ fun _ _ -> f (Js.to_string e##.value)
+           Eio_js.start @@ fun () ->
+           Eio_js_events.clicks (Eliom_content.Html.To_dom.of_element button)
+             (fun _ -> f (Js.to_string e##.value))
        | None -> ()
        : unit)]
 

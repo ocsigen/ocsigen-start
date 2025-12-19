@@ -81,7 +81,7 @@ val remove_user_in_group :
     [group]. *)
 
 val in_group :
-   ?dbh:Os_db.PGOCaml.pa_pg_data Os_db.PGOCaml.t
+   ?dbh:PGOCaml.pa_pg_data PGOCaml.t
   -> group:Os_types.Group.t
   -> userid:Os_types.User.id
   -> unit

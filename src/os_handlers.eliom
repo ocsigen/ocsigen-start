@@ -377,25 +377,22 @@ let%client add_email_handler () = add_email_rpc
 let%shared _ = Os_comet.__link (* to make sure os_comet is linked *)
 
 let%client input_popup ?(button_label = "OK") f =
-  let w, u = Lwt.wait () in
+  let w, u = Eio.Promise.create () in
   let content close =
     let open Eliom_content.Html in
     let button = D.button ~a:[D.a_class ["button"]] [D.txt button_label] in
     let inp =
-      let f code =
-        let* () = close () in
-        Lwt.wakeup u (); f code
-      in
+      let f code = close (); Eio.Promise.resolve u (); f code in
       Os_lib.lwt_bound_input_enter ~button f
     in
-    Lwt.return (D.div [button; inp])
+    D.div [button; inp]
   in
-  let* _ = Ot_popup.popup ~close_button:[Os_icons.F.close ()] content in
-  w
+  let _ = Ot_popup.popup ~close_button:[Os_icons.F.close ()] content in
+  Eio.Promise.await w
 
 let%client confirm_code_popup ~dest f =
   input_popup @@ fun code ->
-  let* b = f code in
+  let b = f code in
   if b
   then
     let service =
@@ -405,10 +402,8 @@ let%client confirm_code_popup ~dest f =
     in
     match service with
     | Some service -> Eliom_client.change_page ~service () ()
-    | None -> Lwt.fail_with "confirm_popup: settings service unknown"
-  else (
-    Os_msg.msg ~level:`Err ~duration:2. "Wrong SMS activation code";
-    Lwt.return_unit)
+    | None -> failwith "confirm_popup: settings service unknown"
+  else Os_msg.msg ~level:`Err ~duration:2. "Wrong SMS activation code"
 
 (* We only need confirm_code_*_service to implement the activation
    UI. Assuming normal user behavior, we will only ever call them via
@@ -424,14 +419,11 @@ let%server confirm_code_extra_handler = confirm_code_handler
 let%server confirm_code_recovery_handler = confirm_code_handler
 
 let%client request_activation_code_wrapper number f =
-  Lwt.bind (Os_connect_phone.request_code number) (function
-    | Ok () -> f ()
-    | Error `Ownership ->
-        Os_msg.msg ~level:`Err ~duration:2. "Phone taken";
-        Lwt.return_unit
-    | Error (`Unknown | `Send | `Limit | `Invalid_number) ->
-        Os_msg.msg ~level:`Err ~duration:2. "SMS error";
-        Lwt.return_unit)
+  match Os_connect_phone.request_code number with
+  | Ok () -> f ()
+  | Error `Ownership -> Os_msg.msg ~level:`Err ~duration:2. "Phone taken"
+  | Error (`Unknown | `Send | `Limit | `Invalid_number) ->
+      Os_msg.msg ~level:`Err ~duration:2. "SMS error"
 
 let%client
     confirm_code_signup_handler () (first_name, (last_name, (password, number)))
@@ -445,10 +437,9 @@ let%client confirm_code_extra_handler () number =
   confirm_code_popup ~dest:`Settings Os_connect_phone.confirm_code_extra
 
 let%client confirm_code_recovery_handler () number =
-  Lwt.bind (Os_connect_phone.request_recovery_code number) (function
-    | Ok () ->
-        confirm_code_popup ~dest:`Settings
-          Os_connect_phone.confirm_code_recovery
-    | Error (`Unknown | `Send | `Limit | _) ->
-        Os_msg.msg ~level:`Err ~duration:2. "SMS error";
-        Lwt.return ())
+  match Os_connect_phone.request_recovery_code number with
+  | Ok () ->
+      confirm_code_popup ~dest:`Settings
+        Os_connect_phone.confirm_code_recovery
+  | Error (`Unknown | `Send | `Limit | _) ->
+      Os_msg.msg ~level:`Err ~duration:2. "SMS error"

@@ -109,7 +109,7 @@ val disconnect_all :
 
 [%%client.start]
 
-val disconnect_all : ?user_indep:bool -> unit -> unit Lwt.t
+val disconnect_all : ?user_indep:bool -> unit -> unit
 (** Close all sessions of current user.
     If [?user_indep] is [true] (default),
     will also affect [user_indep_session_scope].

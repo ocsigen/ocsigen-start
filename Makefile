@@ -62,7 +62,7 @@ eliomdep=$(3)
 # endif
 objs=$(patsubst %.ml,$(1)/%.$(2),$(patsubst %.eliom,$(1)/%.$(2),$(filter %.eliom %.ml,$(3))))
 #depsort=$(call objs,$(1),$(2),$(call eliomdep,$(3),$(4),$(5)))
-depsort=$(shell ocaml tools/sort_deps.ml .depend $(patsubst %.ml,$(1)/%.$(2),$(patsubst %.eliom,$(1)/%.$(2),$(filter %.eliom %.ml,$(5)))))
+depsort=$(shell ocaml tools/sort_deps.ml .depend -I str $(patsubst %.ml,$(1)/%.$(2),$(patsubst %.eliom,$(1)/%.$(2),$(filter %.eliom %.ml,$(5)))))
 
 $(LIBDIR):
 	mkdir $(LIBDIR)
@@ -231,7 +231,7 @@ COMMON_OPTIONS := -colorize-code -stars -sort
 eliomdoc_wiki = ODOC_WIKI_SUBPROJECT="$(1)" \
                 eliomdoc \
                 -$(1) \
-                -ppx -package resource-pooling,pgocaml,yojson,calendar,ocsigen-toolkit.$(1) \
+                -ppx -package pgocaml,yojson,calendar,ocsigen-toolkit.$(1) \
                 -intro doc/indexdoc.$(1) $(COMMON_OPTIONS) \
                 -i $(shell ocamlfind query wikidoc) \
                 -g odoc_wiki.cma \
@@ -242,7 +242,7 @@ eliomdoc_wiki = ODOC_WIKI_SUBPROJECT="$(1)" \
 eliomdoc_html = ODOC_WIKI_SUBPROJECT="$(1)" \
                 eliomdoc \
                 -$(1) \
-                -ppx -package resource-pooling,pgocaml,yojson,calendar,ocsigen-toolkit.$(1) \
+                -ppx -package pgocaml,yojson,calendar,ocsigen-toolkit.$(1) \
                 -intro doc/indexdoc.$(1) \
                 $(COMMON_OPTIONS) \
                 -html \

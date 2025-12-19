@@ -23,7 +23,7 @@
 
 [%%client.start]
 
-val reload : unit -> unit Lwt.t
+val reload : unit -> unit
 (** [reload ()] reloads the current page. *)
 
 [%%shared.start]

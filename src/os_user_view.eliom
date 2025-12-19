@@ -18,19 +18,18 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open%client Lwt.Syntax
 open%shared Eliom_content.Html
 open%shared Eliom_content.Html.F
 open%client Js_of_ocaml
-open%client Js_of_ocaml_lwt
+open%client Js_of_ocaml_eio
 
 let%shared enable_phone = ref false
 
 let%client check_password_confirmation ~password ~confirmation =
   let password_dom = To_dom.of_input password in
   let confirmation_dom = To_dom.of_input confirmation in
-  Lwt_js_events.async (fun () ->
-    Lwt_js_events.inputs confirmation_dom (fun _ _ ->
+  Eio_js_events.async (fun () ->
+    Eio_js_events.inputs confirmation_dom (fun _ ->
       ignore
         (if
            Js.to_string password_dom##.value
@@ -38,8 +37,7 @@ let%client check_password_confirmation ~password ~confirmation =
          then
            (Js.Unsafe.coerce confirmation_dom)##(setCustomValidity
                                                    "Passwords do not match")
-         else (Js.Unsafe.coerce confirmation_dom)##(setCustomValidity ""));
-      Lwt.return_unit))
+         else (Js.Unsafe.coerce confirmation_dom)##(setCustomValidity ""))))
 
 let%shared
     generic_email_form
@@ -67,30 +65,21 @@ let%shared
 let%client form_override_phone phone_input form =
   let phone_input = To_dom.of_input phone_input
   and form = To_dom.of_form form in
-  Lwt.async @@ fun () ->
-  Lwt_js_events.submits form @@ fun ev _ ->
+  Eio_js.start @@ fun () ->
+  Eio_js_events.submits form @@ fun ev ->
   let number = Js.to_string phone_input##.value in
   if number <> ""
-  then
-    Lwt.bind
-      (let password = (Js.Unsafe.coerce form)##.password##.value |> Js.to_string
-       and keepmeloggedin =
-         (Js.Unsafe.coerce form)##.keepmeloggedin##.checked |> Js.to_bool
-       in
-       Dom.preventDefault ev;
-       Os_connect_phone.connect ~keepmeloggedin ~password number)
-      (function
-        | `Login_ok -> Os_lib.reload ()
-        | `Wrong_password ->
-            Os_msg.msg ~level:`Err "Wrong password";
-            Lwt.return_unit
-        | `No_such_user ->
-            Os_msg.msg ~level:`Err "No such user";
-            Lwt.return_unit
-        | `Password_not_set ->
-            Os_msg.msg ~level:`Err "User password not set";
-            Lwt.return_unit)
-  else Lwt.return_unit
+  then (
+    let password = (Js.Unsafe.coerce form)##.password##.value |> Js.to_string
+    and keepmeloggedin =
+      (Js.Unsafe.coerce form)##.keepmeloggedin##.checked |> Js.to_bool
+    in
+    Dom.preventDefault ev;
+    match Os_connect_phone.connect ~keepmeloggedin ~password number with
+    | `Login_ok -> Os_lib.reload ()
+    | `Wrong_password -> Os_msg.msg ~level:`Err "Wrong password"
+    | `No_such_user -> Os_msg.msg ~level:`Err "No such user"
+    | `Password_not_set -> Os_msg.msg ~level:`Err "User password not set")
 
 let%shared
     connect_form
@@ -302,29 +291,26 @@ let%shared
       (a_onclick
          [%client
            (fun _ ->
-              Lwt.async (fun () ->
+              Eio_js.start (fun () ->
                 ~%onclick ();
                 let upload_service ?progress ?cropping file =
                   Ot_picture_uploader.ocaml_service_upload ?progress ?cropping
                     ~service:~%service ~arg:() file
                 in
-                Lwt.catch
-                  (fun () ->
-                     ignore
-                     @@ Ot_popup.popup
-                          ~close_button:[Os_icons.F.close ()]
-                          ~onclose:(fun () ->
-                            Eliom_client.change_page
-                              ~service:Eliom_service.reload_action () ())
-                          (fun close ->
-                             Ot_picture_uploader.mk_form ~crop:~%crop
-                               ~input:~%input ~submit:~%submit
-                               ~after_submit:close upload_service);
-                     Lwt.return_unit)
-                  (fun exn ->
-                     Os_msg.msg ~level:`Err "Error while uploading the picture";
-                     Logs.info (fun fmt -> fmt "→ %s" (Printexc.to_string exn));
-                     Lwt.return_unit))
+                try
+                  ignore
+                  @@ Ot_popup.popup
+                       ~close_button:[Os_icons.F.close ()]
+                       ~onclose:(fun () ->
+                         Eliom_client.change_page
+                           ~service:Eliom_service.reload_action () ())
+                       (fun close ->
+                          Ot_picture_uploader.mk_form ~crop:~%crop
+                            ~input:~%input ~submit:~%submit
+                            ~after_submit:close upload_service)
+                with exn ->
+                  Os_msg.msg ~level:`Err "Error while uploading the picture";
+                  Logs.info (fun fmt -> fmt "→ %s" (Printexc.to_string exn)))
             : _)]
       :: a)
     content
@@ -339,12 +325,11 @@ let%shared
   let l = D.Raw.a [txt text_link] in
   ignore
     [%client
-      (Lwt_js_events.(
+      (Eio_js_events.(
          async (fun () ->
-           clicks (To_dom.of_element ~%l) (fun _ _ ->
+           clicks (To_dom.of_element ~%l) (fun _ ->
              ~%close ();
-             Eliom_client.exit_to ~service:Os_tips.reset_tips_service () ();
-             Lwt.return_unit)))
+             Eliom_client.exit_to ~service:Os_tips.reset_tips_service () ())))
        : unit)];
   l
 
@@ -352,9 +337,9 @@ let%shared disconnect_all_link ?(text_link = "Logout on all my devices") () =
   let l = D.Raw.a [txt text_link] in
   ignore
     [%client
-      (Lwt_js_events.(
+      (Eio_js_events.(
          async (fun () ->
-           clicks (To_dom.of_element ~%l) (fun _ _ ->
+           clicks (To_dom.of_element ~%l) (fun _ ->
              Os_session.disconnect_all ())))
        : unit)];
   l
@@ -370,15 +355,15 @@ let%shared
   =
   ignore
     [%client
-      (Lwt.async (fun () ->
-         Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
-           (fun _ _ ->
-              let* _ =
+      (Eio_js.start (fun () ->
+         Eio_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
+           (fun _ ->
+              let _ =
                 Ot_popup.popup ?a:~%a
                   ~close_button:[Os_icons.F.close ()]
                   ~%popup_content
               in
-              Lwt.return_unit))
+              ()))
        : _)]
 
 let%client
@@ -392,7 +377,7 @@ let%client
   =
   let popup_content _ =
     let h = h2 [txt content_popup] in
-    Lwt.return @@ div
+    div
     @@
     if !enable_phone
     then
@@ -427,8 +412,7 @@ let%shared
   let popup_content =
     [%client
       fun close ->
-        Lwt.return
-        @@ div
+        div
              [ h2 [txt ~%text_button]
              ; connect_form ~a_placeholder_email:~%a_placeholder_email
                  ~a_placeholder_phone:~%a_placeholder_phone
@@ -438,7 +422,7 @@ let%shared
              ; forgotpwd_button ~content_popup:~%content_popup_forgotpwd
                  ~text_button:~%text_button_forgotpwd
                  ~text_send_button:~%text_send_button
-                 ~close:(fun () -> Lwt.async close)
+                 ~close:(fun () -> Eio_js.start close)
                  () ]]
   in
   let button_name = text_button in
@@ -464,7 +448,7 @@ let%shared
           ; sign_up_form ~a_placeholder_email:~%a_placeholder_email
               ~text:~%text_send_button () ]
         in
-        Lwt.return @@ div
+        div
         @@
         if !enable_phone
         then
@@ -485,7 +469,7 @@ let%shared disconnect_link ?(text_logout = "Logout") ?(a = []) () =
       (a_onclick
          [%client
            fun _ ->
-             Lwt.async (fun () ->
+             Eio_js.start (fun () ->
                Eliom_client.change_page ~service:Os_services.disconnect_service
                  () ())]
       :: a)

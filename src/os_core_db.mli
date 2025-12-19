@@ -1,5 +1,3 @@
-open Eio.Std
-
 (* Ocsigen-start
 
  * http://www.ocsigen.org/ocsigen-start
@@ -22,11 +20,6 @@ open Eio.Std
  *)
 
 (** This module defines low level functions for database requests. *)
-
-open Resource_pooling
-
-module PGOCaml :
-  PGOCaml_generic.PGOCAML_GENERIC with type 'a monad = 'a Promise.t
 
 val init :
    ?host:string
@@ -52,7 +45,7 @@ val without_transaction : (PGOCaml.pa_pg_data PGOCaml.t -> 'a) -> 'a
 (** [without_transaction f] executes function [f] outside a database
     transaction. The argument of [f] is a PGOCaml database handle. *)
 
-val connection_pool : unit -> PGOCaml.pa_pg_data PGOCaml.t Resource_pool.t
+val connection_pool : unit -> PGOCaml.pa_pg_data PGOCaml.t Eio.Pool.t
 (** Direct access to the connection pool *)
 
 type wrapper = {f : 'a. PGOCaml.pa_pg_data PGOCaml.t -> (unit -> 'a) -> 'a}

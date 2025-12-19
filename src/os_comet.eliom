@@ -17,10 +17,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-
-open%client Lwt.Syntax
 open%client Js_of_ocaml
-open%client Js_of_ocaml_lwt
+open%client Js_of_ocaml_eio
 
 let%shared __link = () (* to make sure os_comet is linked *)
 
@@ -51,8 +49,7 @@ let%client restart_process () =
   then Eliom_client.exit_to ~service:Eliom_service.reload_action () ()
 
 let%client _ =
-  Eliom_comet.set_handle_exn_function (fun ?exn:_ () ->
-    restart_process (); Lwt.return_unit)
+  Eliom_comet.set_handle_exn_function (fun ?exn:_ () -> restart_process ())
 
 (* We create a channel on scope user_indep_process_scope,
    to monitor the application.
@@ -90,21 +87,18 @@ let%client handle_error =
       fmt
         ("Exception received on Os_comet's monitor channel: " ^^ "@\n%s")
         (Printexc.to_string exn));
-    restart_process ();
-    Lwt.return_unit)
+    restart_process ())
 
 let%client set_error_handler f = handle_error := f
 
 let%client handle_message = function
   | Error exn -> !handle_error exn
-  | Ok Heartbeat ->
-      Logs.info (fun fmt -> fmt "poum");
-      Lwt.return_unit
+  | Ok Heartbeat -> Logs.info (fun fmt -> fmt "poum")
   | Ok Connection_changed ->
       Os_msg.msg ~level:`Err
         "Connection has changed from outside. Program will restart.";
-      let* () = Lwt_js.sleep 2. in
-      restart_process (); Lwt.return_unit
+      Eio_js.sleep 2.;
+      restart_process ()
 
 let%server warn_state c state =
   match Eliom_reference.Volatile.Ext.get state monitor_channel_ref with
@@ -120,9 +114,9 @@ let%server _ =
     Eliom_reference.Volatile.set monitor_channel_ref (Some channel);
     ignore
       [%client
-        (Lwt.async (fun () ->
-           Lwt_stream.iter_s handle_message
-             (Lwt_stream.wrap_exn ~%(fst channel)))
+        (Eio_js.start (fun () ->
+           Eliom_stream.iter_s handle_message
+             (Eliom_stream.wrap_exn ~%(fst channel)))
          : unit)]);
   let warn c =
     (* User connected or disconnected.

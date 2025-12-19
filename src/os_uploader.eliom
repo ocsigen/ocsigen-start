@@ -23,41 +23,42 @@ exception Error_while_cropping of Unix.process_status
 exception Error_while_resizing of Unix.process_status]
 
 let%server resize_image ~src ?(dst = src) ~width ~height () =
-  let resize_unix_result =
-    Lwt_process.exec
-      ( ""
-      , [| "convert"
-         ; "+repage"
-         ; "-strip"
-         ; "-interlace"
-         ; "Plane"
-         ; "-auto-orient"
-         ; "-define"
-         ; Printf.sprintf "jpeg:size=%dx%d" (2 * width) (2 * height)
-         ; "-resize"
-         ; Printf.sprintf "%dx%d!" width height
-         ; "-quality"
-         ; "85"
-         ; (* In case of transparent image *)
-           "-background"
-         ; "white"
-         ; "-flatten"
-         ; src
-         ; "jpg:" ^ dst |] )
-  in
-  match resize_unix_result with
-  | Unix.WEXITED status_code when status_code = 0 -> ()
-  | unix_process_status -> raise (Error_while_resizing unix_process_status)
+  let env = Stdlib.Option.get (Eio.Fiber.get Ocsigen_lib.env) in
+  try
+    Eio.Process.run env#process_mgr
+      [ "convert"
+      ; "+repage"
+      ; "-strip"
+      ; "-interlace"
+      ; "Plane"
+      ; "-auto-orient"
+      ; "-define"
+      ; Printf.sprintf "jpeg:size=%dx%d" (2 * width) (2 * height)
+      ; "-resize"
+      ; Printf.sprintf "%dx%d!" width height
+      ; "-quality"
+      ; "85"
+      ; (* In case of transparent image *)
+        "-background"
+      ; "white"
+      ; "-flatten"
+      ; src
+      ; "jpg:" ^ dst ]
+  with _ -> raise (Error_while_resizing (Unix.WEXITED 1))
 
 let%server get_image_width file =
+  let env = Stdlib.Option.get (Eio.Fiber.get Ocsigen_lib.env) in
   let width =
-    Lwt_process.pread ("", [|"convert"; file; "-print"; "%w"; "/dev/null"|])
+    Eio.Process.parse_out env#process_mgr Eio.Buf_read.line
+      ["convert"; file; "-print"; "%w"; "/dev/null"]
   in
   int_of_string width
 
 let%server get_image_height file =
+  let env = Stdlib.Option.get (Eio.Fiber.get Ocsigen_lib.env) in
   let height =
-    Lwt_process.pread ("", [|"convert"; file; "-print"; "%h"; "/dev/null"|])
+    Eio.Process.parse_out env#process_mgr Eio.Buf_read.line
+      ["convert"; file; "-print"; "%h"; "/dev/null"]
   in
   int_of_string height
 
@@ -77,20 +78,17 @@ let%server crop_image ~src ?(dst = src) ?ratio ~top ~right ~bottom ~left () =
     | None -> height_src - top_px - pixel_of_percent bottom height_src
     | Some ratio -> truncate (float_of_int width_cropped /. ratio)
   in
-  let crop_unix_result =
-    Lwt_process.exec
-      ( ""
-      , [| "convert"
-         ; "-crop"
-         ; Printf.sprintf "%dx%d+%d+%d" width_cropped height_cropped left_px
-             top_px
-         ; src
-         ; dst |] )
-  in
-  match crop_unix_result with
-  | Unix.WEXITED status_code when status_code = 0 ->
-      resize_image ~src:dst ~dst ~width:width_cropped ~height:height_cropped ()
-  | unix_process_status -> raise (Error_while_cropping unix_process_status)
+  let env = Stdlib.Option.get (Eio.Fiber.get Ocsigen_lib.env) in
+  (try
+     Eio.Process.run env#process_mgr
+       [ "convert"
+       ; "-crop"
+       ; Printf.sprintf "%dx%d+%d+%d" width_cropped height_cropped left_px
+           top_px
+       ; src
+       ; dst ]
+   with _ -> raise (Error_while_cropping (Unix.WEXITED 1)));
+  resize_image ~src:dst ~dst ~width:width_cropped ~height:height_cropped ()
 
 let%server record_image directory ?ratio ?cropping file =
   let make_file_saver cp () =
@@ -108,7 +106,7 @@ let%server record_image directory ?ratio ?cropping file =
     match cropping with
     | Some (top, right, bottom, left) ->
         fun src dst -> crop_image ~src ~dst ?ratio ~top ~right ~bottom ~left ()
-    | None -> Lwt_unix.link
+    | None -> fun src dst -> Unix.link src dst
   in
   let file_saver = make_file_saver cp () in
   file_saver file

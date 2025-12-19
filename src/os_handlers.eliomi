@@ -145,7 +145,7 @@ val set_personal_data_handler :
 
 [%%client.start]
 
-val set_password_rpc : string * string -> unit Lwt.t
+val set_password_rpc : string * string -> unit
 (** [set_password_rpc (password, confirmation_password)] is a RPC to
     [set_password].
  *)

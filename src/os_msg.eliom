@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open%client Lwt.Syntax
+open%client Js_of_ocaml_eio
 open%client Eliom_content.Html
 open%client Eliom_content.Html.F
 open%client Js_of_ocaml
@@ -45,16 +45,15 @@ let%shared
     [%client
       (let c = if ~%level = `Msg then [] else ["os-err"] in
        let message_dom = To_dom.of_p (D.p ~a:[a_class c] [txt ~%message]) in
-       Lwt.async (fun () ->
-         let* () =
-           if ~%onload then Eliom_client.lwt_onload () else Lwt.return_unit
-         in
+       Eio_js.start (fun () ->
+         (if ~%onload then
+            (* Wait for onload event if requested *)
+            ignore (Eio_js_events.onload ()));
          let msgbox = msgbox () in
          Logs.info (fun fmt -> fmt "%s" ~%message);
          Dom.appendChild msgbox message_dom;
-         let* () = Js_of_ocaml_lwt.Lwt_js.sleep ~%duration in
-         Dom.removeChild msgbox message_dom;
-         Lwt.return_unit)
+         Eio_js.sleep ~%duration;
+         Dom.removeChild msgbox message_dom)
        : unit)]
 
 let action_link_key_created =
