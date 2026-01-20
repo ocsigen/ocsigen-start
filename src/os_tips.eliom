@@ -170,7 +170,8 @@ let%shared
 
 let%client onload_waiter () =
   let t, u = Eio.Promise.create () in
-  Eliom_client.onload (fun () -> Eio.Promise.resolve_ok u ());
+  Eliom_client.onload (fun () ->
+    Eio_js.start (fun () -> Eio.Promise.resolve_ok u ()));
   t, u
 
 (* This promise is used to display only one tip at a time *)
