@@ -355,7 +355,7 @@ let%shared
   =
   ignore
     [%client
-      (Eio_js.start (fun () ->
+      (Eio_js_events.async (fun () ->
          Eio_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
            (fun _ ->
               let _ =

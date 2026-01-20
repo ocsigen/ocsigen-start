@@ -129,7 +129,10 @@ let create ?password ?avatar ?language ?email ~firstname ~lastname () =
       Os_db.User.create ~firstname ~lastname ?password ?avatar ?language ?email
         ()
     in
-    user_of_userid userid
+    Logs.warn (fun fmt -> fmt "[Os_user.create] Created user with id %Ld, now calling user_of_userid" userid);
+    let u = user_of_userid userid in
+    Logs.warn (fun fmt -> fmt "[Os_user.create] user_of_userid succeeded");
+    u
   in
   match email with
   | Some email -> (

@@ -314,11 +314,13 @@ let%server
   let new_process =
     (not force_unconnected) && Eliom_reference.Volatile.get new_process_eref
   in
+  Printf.printf "[Os_session] gen_wrapper: new_process=%b\n%!" new_process;
   let uid = if force_unconnected then None else get_session () in
   let () = request_action uid in
   let () =
     if new_process
     then (
+      Printf.printf "[Os_session] gen_wrapper: calling start_process_action\n%!";
       Eliom_reference.Volatile.set new_process_eref false;
       start_process_action uid)
     else ()

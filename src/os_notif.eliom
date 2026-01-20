@@ -1,4 +1,4 @@
-open Eio.Std
+open%server Eio.Std
 
 (* Ocsigen-start
  * http://www.ocsigen.org/ocsigen-start
