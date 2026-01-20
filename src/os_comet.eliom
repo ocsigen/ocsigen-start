@@ -21,6 +21,7 @@ open%client Js_of_ocaml
 open%client Js_of_ocaml_eio
 
 let%shared __link = () (* to make sure os_comet is linked *)
+let%client () = Js_of_ocaml.Console.console##log (Js_of_ocaml.Js.string "[DEBUG OS] os_comet.eliom: client section start")
 
 let%client cookies_enabled () =
   try

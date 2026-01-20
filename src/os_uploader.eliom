@@ -18,6 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+let%client () = print_endline "[DEBUG] Os_uploader"
+
 [%%server
 exception Error_while_cropping of Unix.process_status
 exception Error_while_resizing of Unix.process_status]

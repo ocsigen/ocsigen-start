@@ -18,6 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+let%client () = print_endline "[DEBUG] Os_user"
+
 [%%shared
 type id = Os_types.User.id [@@deriving json]
 

@@ -28,6 +28,8 @@
 open%client Js_of_ocaml
 open%client Js_of_ocaml_eio
 
+let%client () = print_endline "[DEBUG] Os_date"
+
 let%client timezone =
   (* Use Intl API if available. Revert to using the time zone offset
      otherwise. *)

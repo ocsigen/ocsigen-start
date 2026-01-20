@@ -1,3 +1,5 @@
+let%client () = print_endline "[DEBUG] Os_notif"
+
 open Eio.Std
 
 (* Ocsigen-start

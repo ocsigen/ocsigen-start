@@ -19,6 +19,7 @@
  *)
 
 open%client Js_of_ocaml
+let%client () = print_endline "[DEBUG] Os_platform"
 
 [%%shared
 type t =
