@@ -168,6 +168,8 @@ let%shared
         Some box
   | _ -> None
 
+(* Create a promise that will be resolved when onload fires.
+   Must be called inside an Eio fiber. *)
 let%client onload_waiter () =
   let t, u = Eio.Promise.create () in
   Eliom_client.onload (fun () ->
@@ -175,13 +177,30 @@ let%client onload_waiter () =
   t, u
 
 (* This promise is used to display only one tip at a time *)
-let%client waiter = ref (onload_waiter ())
+(* Initialized lazily to avoid calling Eio.Promise.create at toplevel *)
+(* We use a lazy value that is forced only inside an Eio fiber *)
+let%client waiter = ref None
+let%client get_waiter () =
+  match !waiter with
+  | Some w -> Lazy.force w
+  | None ->
+      let w = lazy (onload_waiter ()) in
+      waiter := Some w;
+      Lazy.force w
 
 exception%client Page_changed
 
+(* Called by onchangepage - invalidates the current waiter so a new one
+   will be created on next get_waiter call *)
 let%client rec onchangepage_handler _ =
-  Eio.Promise.resolve_error (snd !waiter) (Eio.Cancel.Cancelled Page_changed);
-  waiter := onload_waiter ();
+  (match !waiter with
+   | Some w when Lazy.is_val w ->
+       (* Only resolve if the lazy was forced (promise was created) *)
+       Eio_js.start (fun () ->
+         Eio.Promise.resolve_error (snd (Lazy.force w)) (Eio.Cancel.Cancelled Page_changed))
+   | _ -> ());
+  (* Create a new lazy for the next waiter - it will be forced inside an Eio fiber *)
+  waiter := Some (lazy (onload_waiter ()));
   (* onchangepage handlers are one-off, register ourselves again for
      next time *)
   Eliom_client.onchangepage onchangepage_handler
@@ -207,9 +226,11 @@ let%client
       ()
   =
   Eio_js.start (fun () ->
-    let current_waiter = fst !waiter in
-    waiter := Eio.Promise.create ();
-    let _new_promise, new_resolver = !waiter in
+    let current_waiter = fst (get_waiter ()) in
+    (* Create the new waiter inside the Eio fiber, wrapped in lazy (already forced) *)
+    let new_w = Eio.Promise.create () in
+    waiter := Some (lazy new_w);
+    let _new_promise, new_resolver = Lazy.force (Option.get !waiter) in
     Eio.Promise.await_exn current_waiter;
     let bec = D.div ~a:[a_class ["os-tip-bec"]] [] in
     let box_ref = ref None in

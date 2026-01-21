@@ -1,6 +1,4 @@
-let%client () = print_endline "[DEBUG] Os_notif"
-
-open Eio.Std
+open%server Eio.Std
 
 (* Ocsigen-start
  * http://www.ocsigen.org/ocsigen-start

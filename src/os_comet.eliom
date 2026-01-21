@@ -17,11 +17,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-open%client Js_of_ocaml
-open%client Js_of_ocaml_eio
+
+let%client () = print_endline "[DEBUG] Os_comet"
 
 let%shared __link = () (* to make sure os_comet is linked *)
-let%client () = Js_of_ocaml.Console.console##log (Js_of_ocaml.Js.string "[DEBUG OS] os_comet.eliom: client section start")
+
+(* TEMPORARILY DISABLED FOR DEBUGGING
+
+open%client Js_of_ocaml
+open%client Js_of_ocaml_eio
 
 let%client cookies_enabled () =
   try
@@ -137,3 +141,4 @@ let%server _ =
   let warn_connection_change _ = warn Connection_changed in
   Os_session.on_open_session warn_connection_change;
   Os_session.on_post_close_session warn_connection_change
+*)
