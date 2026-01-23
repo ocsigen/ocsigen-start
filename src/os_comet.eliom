@@ -18,8 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-let%client () = print_endline "[DEBUG] Os_comet"
-
 let%shared __link = () (* to make sure os_comet is linked *)
 
 (* TEMPORARILY DISABLED FOR DEBUGGING

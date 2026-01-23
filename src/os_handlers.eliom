@@ -1,5 +1,3 @@
-let%client () = print_endline "[DEBUG] Os_handlers"
-
 open Eio.Std
 
 (* Ocsigen-start

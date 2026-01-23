@@ -18,8 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-let%client () = print_endline "[DEBUG] Os_user_view"
-
 open%shared Eliom_content.Html
 open%shared Eliom_content.Html.F
 open%client Js_of_ocaml
@@ -357,12 +355,9 @@ let%shared
   =
   ignore
     [%client
-      (print_endline "[DEBUG] bind_popup_button: setting up click handler";
-       Eio_js_events.async (fun () ->
-         print_endline "[DEBUG] bind_popup_button: async started, registering clicks";
+      (Eio_js_events.async (fun () ->
          Eio_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
            (fun _ ->
-              print_endline "[DEBUG] bind_popup_button: CLICK received!";
               let _ =
                 Ot_popup.popup ?a:~%a
                   ~close_button:[Os_icons.F.close ()]

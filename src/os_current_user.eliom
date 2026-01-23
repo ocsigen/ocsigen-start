@@ -32,7 +32,6 @@ let%server me : current_user Eliom_reference.Volatile.eref =
   (* This is a request cache of current user *)
   Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope CU_idontknown
 
-let%client () = Js_of_ocaml.Console.console##log (Js_of_ocaml.Js.string "[DEBUG OS] os_current_user.eliom: client section start")
 let%client me : current_user ref = ref CU_notconnected
 (*on client side the default is not connected *)
 

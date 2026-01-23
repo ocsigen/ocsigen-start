@@ -137,10 +137,7 @@ let confirm_code_recovery_service =
     ~meth:(Eliom_service.Post (unit, string "number"))
     ()
 
-let%client () = Js_of_ocaml.Console.console##log (Js_of_ocaml.Js.string "[DEBUG OS] os_services.eliom: BEFORE injections")
-let%client main_service =
-  Js_of_ocaml.Console.console##log (Js_of_ocaml.Js.string "[DEBUG OS] os_services.eliom: getting main_service injection");
-  ~%main_service
+let%client main_service = ~%main_service
 let%client preregister_service = ~%preregister_service
 let%client forgot_password_service = ~%forgot_password_service
 let%client set_personal_data_service = ~%set_personal_data_service

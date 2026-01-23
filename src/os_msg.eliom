@@ -18,8 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-let%client () = print_endline "[DEBUG] Os_msg"
-
 open%client Js_of_ocaml_eio
 open%client Eliom_content.Html
 open%client Eliom_content.Html.F

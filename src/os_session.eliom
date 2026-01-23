@@ -339,7 +339,6 @@ let%server
       connected id gp pp
     with Permission_denied -> deny_fun uid)
 
-let%client () = Js_of_ocaml.Console.console##log (Js_of_ocaml.Js.string "[DEBUG OS] os_session.eliom: client section start")
 let%client get_current_userid_o = ref (fun () -> assert false)
 
 (* On client-side, we do no security check.

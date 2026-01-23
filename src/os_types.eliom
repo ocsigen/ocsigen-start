@@ -26,8 +26,6 @@
     dependencies between different modules for only one type.
  **)
 
-let%client () = print_endline "[DEBUG] Os_types"
-
 [%%shared.start]
 
 module User = struct

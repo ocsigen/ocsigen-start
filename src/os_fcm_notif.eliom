@@ -18,8 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-let%client () = print_endline "[DEBUG] Os_fcm_notif"
-
 exception FCM_empty_response
 exception FCM_no_json_response of string
 exception FCM_missing_field of string
