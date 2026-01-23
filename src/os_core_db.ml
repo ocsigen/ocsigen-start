@@ -85,9 +85,15 @@ let connection_wrapper = ref {f = (fun _ f -> f ())}
 let set_connection_wrapper f = connection_wrapper := f
 
 let use_pool f =
+  Logs.warn ~src:section (fun fmt -> fmt "[use_pool] acquiring connection");
   Eio.Pool.use !pool @@ fun db ->
+  Logs.warn ~src:section (fun fmt -> fmt "[use_pool] got connection");
   !connection_wrapper.f db @@ fun () ->
-  try f db with
+  try
+    let r = f db in
+    Logs.warn ~src:section (fun fmt -> fmt "[use_pool] f done, releasing connection");
+    r
+  with
   | PGOCaml.Error msg as e ->
       Logs.err ~src:section (fun fmt -> fmt "postgresql protocol error: %s" msg);
       let () = PGOCaml.close db in
@@ -105,8 +111,11 @@ let use_pool f =
 let transaction_block db f =
   try
     PGOCaml.begin_work db >>= fun _ ->
+    Logs.warn ~src:section (fun fmt -> fmt "[transaction_block] begin_work done");
     let r = f () in
+    Logs.warn ~src:section (fun fmt -> fmt "[transaction_block] f() done, about to commit");
     let () = PGOCaml.commit db in
+    Logs.warn ~src:section (fun fmt -> fmt "[transaction_block] commit done");
     r
   with
   | (PGOCaml.Error _ | Eio.Cancel.Cancelled _ | Unix.Unix_error _ | End_of_file) as e ->

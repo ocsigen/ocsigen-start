@@ -10,7 +10,7 @@ exception Main_email_removal_attempt
 exception Account_not_activated
 
 let ( >>= ) = fun x1 x2 -> x2 x1
-let one f ~success ~fail q = f q >>= function r :: _ -> success r | _ -> fail
+let one f ~success ~fail q = f q >>= function r :: _ -> success r | _ -> fail ()
 
 let pwd_crypt_ref =
   ref
@@ -24,7 +24,7 @@ module Email = struct
   let available email =
     one without_transaction
       ~success:(fun _ -> false)
-      ~fail:true
+      ~fail:(fun () -> true)
       (fun dbh ->
          PGOCaml.bind
            (let dbh = dbh in
@@ -115,7 +115,7 @@ module User = struct
   let userid_of_email email =
     one without_transaction
       ~success:(fun userid -> userid)
-      ~fail:(raise No_such_resource)
+      ~fail:(fun () -> raise No_such_resource)
       (fun dbh ->
          PGOCaml.bind
            (let dbh = dbh in
@@ -210,7 +210,7 @@ module User = struct
   let is_email_validated userid email =
     one without_transaction
       ~success:(fun _ -> true)
-      ~fail:false
+      ~fail:(fun () -> false)
       (fun dbh ->
          PGOCaml.bind
            (let dbh = dbh in
@@ -602,7 +602,7 @@ module User = struct
   let is_preregistered email =
     one without_transaction
       ~success:(fun _ -> true)
-      ~fail:false
+      ~fail:(fun () -> false)
       (fun dbh ->
          PGOCaml.bind
            (let dbh = dbh in
@@ -1432,7 +1432,7 @@ module User = struct
               if validated then userid else raise Account_not_activated
           | Some _ -> raise Wrong_password
           | _ -> raise Password_not_set)
-        ~fail:(raise No_such_user)
+        ~fail:(fun () -> raise No_such_user)
 
   let verify_password_phone ~number ~password =
     if password = ""
@@ -1533,7 +1533,7 @@ module User = struct
               userid
           | Some _ -> raise Wrong_password
           | _ -> raise Password_not_set)
-        ~fail:(raise No_such_user)
+        ~fail:(fun () -> raise No_such_user)
 
   let user_of_userid userid =
     one without_transaction
@@ -1541,7 +1541,7 @@ module User = struct
         (fun
           (userid, firstname, lastname, avatar, has_password, language) ->
         userid, firstname, lastname, avatar, has_password = Some true, language)
-      ~fail:(raise No_such_resource)
+      ~fail:(fun () -> raise No_such_resource)
       (fun dbh ->
          PGOCaml.bind
            (let dbh = dbh in
@@ -1655,7 +1655,7 @@ module User = struct
     full_transaction_block (fun dbh ->
       one
         (fun q -> q dbh)
-        ~fail:(raise No_such_resource)
+        ~fail:(fun () -> raise No_such_resource)
         (fun dbh ->
            PGOCaml.bind
              (let dbh = dbh in
@@ -2096,7 +2096,7 @@ module User = struct
   let email_of_userid userid =
     one without_transaction
       ~success:(fun main_email -> main_email)
-      ~fail:(raise No_such_resource)
+      ~fail:(fun () -> raise No_such_resource)
       (fun dbh ->
          PGOCaml.bind
            (let dbh = dbh in
@@ -2183,7 +2183,7 @@ module User = struct
   let is_main_email ~userid ~email =
     one without_transaction
       ~success:(fun _ -> true)
-      ~fail:false
+      ~fail:(fun () -> false)
       (fun dbh ->
          PGOCaml.bind
            (let dbh = dbh in
@@ -2408,7 +2408,7 @@ module User = struct
   let get_language userid =
     one without_transaction
       ~success:(fun language -> language)
-      ~fail:(raise No_such_resource)
+      ~fail:(fun () -> raise No_such_resource)
       (fun dbh ->
          PGOCaml.bind
            (let dbh = dbh in
@@ -3014,7 +3014,7 @@ module Groups = struct
       | None -> without_transaction
       | Some dbh -> fun f -> f dbh)
       ~success:(fun _ -> true)
-      ~fail:false
+      ~fail:(fun () -> false)
       (fun dbh ->
          PGOCaml.bind
            (let dbh = dbh in

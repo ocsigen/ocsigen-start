@@ -47,8 +47,8 @@ let%shared
        let message_dom = To_dom.of_p (D.p ~a:[a_class c] [txt ~%message]) in
        Eio_js.start (fun () ->
          (if ~%onload then
-            (* Wait for onload event if requested *)
-            ignore (Eio_js_events.onload ()));
+            (* Wait for Eliom's onload event (not browser's load event) *)
+            Eio.Promise.await (Eliom_client.onload_promise ()));
          let msgbox = msgbox () in
          Logs.info (fun fmt -> fmt "%s" ~%message);
          Dom.appendChild msgbox message_dom;
