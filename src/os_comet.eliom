@@ -19,7 +19,10 @@
  *)
 
 let%client () = print_endline "[DEBUG] Os_comet"
+
 let%shared __link = () (* to make sure os_comet is linked *)
+
+(* TEMPORARILY DISABLED FOR DEBUGGING
 
 open%client Js_of_ocaml
 open%client Js_of_ocaml_eio
@@ -138,3 +141,4 @@ let%server _ =
   let warn_connection_change _ = warn Connection_changed in
   Os_session.on_open_session warn_connection_change;
   Os_session.on_post_close_session warn_connection_change
+*)
