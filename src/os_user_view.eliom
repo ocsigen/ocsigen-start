@@ -357,9 +357,12 @@ let%shared
   =
   ignore
     [%client
-      (Eio_js.start (fun () ->
+      (print_endline "[DEBUG] bind_popup_button: setting up click handler";
+       Eio_js_events.async (fun () ->
+         print_endline "[DEBUG] bind_popup_button: async started, registering clicks";
          Eio_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
            (fun _ ->
+              print_endline "[DEBUG] bind_popup_button: CLICK received!";
               let _ =
                 Ot_popup.popup ?a:~%a
                   ~close_button:[Os_icons.F.close ()]
