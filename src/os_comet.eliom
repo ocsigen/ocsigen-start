@@ -20,8 +20,6 @@
 
 let%shared __link = () (* to make sure os_comet is linked *)
 
-(* TEMPORARILY DISABLED FOR DEBUGGING
-
 open%client Js_of_ocaml
 open%client Js_of_ocaml_eio
 
@@ -52,7 +50,12 @@ let%client restart_process () =
   then Eliom_client.exit_to ~service:Eliom_service.reload_action () ()
 
 let%client _ =
-  Eliom_comet.set_handle_exn_function (fun ?exn:_ () -> restart_process ())
+  Eliom_comet.set_handle_exn_function (fun ?exn () ->
+    Logs.err (fun fmt ->
+      fmt "Eliom_comet exception: %s"
+        (match exn with Some e -> Printexc.to_string e | None -> "unknown"))
+    (* TODO: re-enable restart_process () after fixing comet channel issues *)
+  )
 
 (* We create a channel on scope user_indep_process_scope,
    to monitor the application.
@@ -86,11 +89,12 @@ let already_send_ref =
 
 let%client handle_error =
   ref (fun exn ->
-    Logs.info (fun fmt ->
+    Logs.err (fun fmt ->
       fmt
         ("Exception received on Os_comet's monitor channel: " ^^ "@\n%s")
-        (Printexc.to_string exn));
-    restart_process ())
+        (Printexc.to_string exn))
+    (* TODO: re-enable restart_process () after fixing comet channel issues *)
+    )
 
 let%client set_error_handler f = handle_error := f
 
@@ -115,9 +119,12 @@ let%server _ =
   Os_session.on_start_process (fun _ ->
     let channel = create_monitor_channel () in
     Eliom_reference.Volatile.set monitor_channel_ref (Some channel);
+    Logs.info (fun fmt -> fmt "[Os_comet] Monitor channel created on server");
     ignore
       [%client
-        (Eio_js.start (fun () ->
+        (Logs.info (fun fmt -> fmt "[Os_comet] Client starting monitor channel listener");
+         Eio_js.start (fun () ->
+           Logs.info (fun fmt -> fmt "[Os_comet] Inside Eio_js.start, about to iter_s");
            Eliom_stream.iter_s handle_message
              (Eliom_stream.wrap_exn ~%(fst channel)))
          : unit)]);
@@ -139,4 +146,3 @@ let%server _ =
   let warn_connection_change _ = warn Connection_changed in
   Os_session.on_open_session warn_connection_change;
   Os_session.on_post_close_session warn_connection_change
-*)

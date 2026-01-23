@@ -28,7 +28,6 @@
 
 val __link : unit
 
-(* TEMPORARILY DISABLED FOR DEBUGGING
 [%%client.start]
 
 val restart_process : unit -> unit
@@ -41,4 +40,3 @@ val restart_process : unit -> unit
  *)
 
 val set_error_handler : (exn -> unit) -> unit
-*)
