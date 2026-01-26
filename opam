@@ -31,6 +31,7 @@ depends: [
   "cohttp-lwt-unix"
   "js_of_ocaml" {>= "6.0.0"}
   "re" {>= "1.7.2"}
+  "resource-pooling"
 ]
 depexts: [
   ["imagemagick" "ruby-sass" "postgresql" "postgresql-common"] {os-family = "debian"}
