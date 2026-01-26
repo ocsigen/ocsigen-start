@@ -21,9 +21,6 @@
 
 (** This module defines low level functions for database requests. *)
 
-open Resource_pooling
-module PGOCaml : PGOCaml_generic.PGOCAML_GENERIC with type 'a monad = 'a Lwt.t
-
 val init :
    ?host:string
   -> ?port:int
@@ -32,7 +29,7 @@ val init :
   -> ?database:string
   -> ?unix_domain_socket_dir:string
   -> ?pool_size:int
-  -> ?init:(PGOCaml.pa_pg_data PGOCaml.t -> unit Lwt.t)
+  -> ?init:(PGOCaml.pa_pg_data PGOCaml.t -> unit)
   -> unit
   -> unit
 (** [init ?host ?port ?user ?password ?database ?unix_domain_socket_dir ?init ()]
@@ -40,21 +37,18 @@ val init :
     function [init] invoked each time a connection is created.
 *)
 
-val full_transaction_block :
-   (PGOCaml.pa_pg_data PGOCaml.t -> 'a Lwt.t)
-  -> 'a Lwt.t
+val full_transaction_block : (PGOCaml.pa_pg_data PGOCaml.t -> 'a) -> 'a
 (** [full_transaction_block f] executes function [f] within a database
     transaction. The argument of [f] is a PGOCaml database handle. *)
 
-val without_transaction : (PGOCaml.pa_pg_data PGOCaml.t -> 'a Lwt.t) -> 'a Lwt.t
+val without_transaction : (PGOCaml.pa_pg_data PGOCaml.t -> 'a) -> 'a
 (** [without_transaction f] executes function [f] outside a database
     transaction. The argument of [f] is a PGOCaml database handle. *)
 
-val connection_pool : unit -> PGOCaml.pa_pg_data PGOCaml.t Resource_pool.t
+val connection_pool : unit -> PGOCaml.pa_pg_data PGOCaml.t Eio.Pool.t
 (** Direct access to the connection pool *)
 
-type wrapper =
-  {f : 'a. PGOCaml.pa_pg_data PGOCaml.t -> (unit -> 'a Lwt.t) -> 'a Lwt.t}
+type wrapper = {f : 'a. PGOCaml.pa_pg_data PGOCaml.t -> (unit -> 'a) -> 'a}
 (** Setup a wrapper function which is used each time a connection is
    acquired. This function can perform some actions before and/or
    after the connection is used. *)

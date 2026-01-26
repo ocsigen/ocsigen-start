@@ -55,7 +55,7 @@ val pwd_crypt_ref :
 
 (** This module is used for low-level email management with database. *)
 module Email : sig
-  val available : string -> bool Lwt.t
+  val available : string -> bool
   (** [available email] returns [true] if [email] is not already used. Else, it
       returns [false].
    *)
@@ -65,19 +65,19 @@ end
 module User : sig
   exception Invalid_action_link_key of Os_types.User.id
 
-  val userid_of_email : string -> Os_types.User.id Lwt.t
+  val userid_of_email : string -> Os_types.User.id
   (** [userid_of_email email] returns the userid of the user which has the email
       [email]. *)
 
-  val is_registered : string -> bool Lwt.t
+  val is_registered : string -> bool
   (** [is_registered email] returns [true] if the email is already registered.
       Else, it returns [false]. *)
 
-  val is_email_validated : Os_types.User.id -> string -> bool Lwt.t
+  val is_email_validated : Os_types.User.id -> string -> bool
   (** [is_email_validated userid email] returns [true] if [email] has been
       validated by the user with id [userid]. *)
 
-  val set_email_validated : Os_types.User.id -> string -> unit Lwt.t
+  val set_email_validated : Os_types.User.id -> string -> unit
   (** [set_email_validated userid email] valids [email] for the user with id
       [userid]. *)
 
@@ -94,19 +94,19 @@ module User : sig
     -> userid:Os_types.User.id
     -> email:string
     -> unit
-    -> unit Lwt.t
+    -> unit
 
-  val add_preregister : string -> unit Lwt.t
+  val add_preregister : string -> unit
   (** [add_preregister email] preregisters [email] in the database. *)
 
-  val remove_preregister : string -> unit Lwt.t
+  val remove_preregister : string -> unit
   (** [remove_preregister email] removes [email] from the database. *)
 
-  val is_preregistered : string -> bool Lwt.t
+  val is_preregistered : string -> bool
   (** [is_preregistered email] returns [true] if [email] is already
       registered. Else, it returns [false]. *)
 
-  val all : ?limit:int64 -> unit -> string list Lwt.t
+  val all : ?limit:int64 -> unit -> string list
   (** [all ?limit ()] get all email addresses with a limit of [limit] (default
       is 10). *)
 
@@ -118,7 +118,7 @@ module User : sig
     -> firstname:string
     -> lastname:string
     -> unit
-    -> Os_types.User.id Lwt.t
+    -> Os_types.User.id
   (** [create ?password ?avatar ?language ~firstname ~lastname email] creates a new user
       in the database and returns the userid of the new user.
       Email, first name, last name and language are mandatory to create a new
@@ -134,37 +134,34 @@ module User : sig
     -> firstname:string
     -> lastname:string
     -> Os_types.User.id
-    -> unit Lwt.t
+    -> unit
   (** [update ?password ?avatar ?language ~firstname ~lastname userid] updates the user
       profile with [userid].
       If [password] is passed as an empty string, it fails with the message
       ["empty password"]. TODO: change it to an exception?
    *)
 
-  val update_password : userid:Os_types.User.id -> password:string -> unit Lwt.t
+  val update_password : userid:Os_types.User.id -> password:string -> unit
   (** [update_password ~userid ~new_password] updates the password of the user
       with ID [userid].
       If [password] is passed as an empty string, it fails with the message
       ["empty password"]. TODO: change it to an exception?
    *)
 
-  val update_avatar : userid:Os_types.User.id -> avatar:string -> unit Lwt.t
+  val update_avatar : userid:Os_types.User.id -> avatar:string -> unit
   (** [update_avatar ~userid ~avatar] updates the avatar of the user
       with ID [userid]. *)
 
-  val update_main_email : userid:Os_types.User.id -> email:string -> unit Lwt.t
+  val update_main_email : userid:Os_types.User.id -> email:string -> unit
   (** [update_main_email ~userid ~email] updates the main email of the user
       with ID [userid]. *)
 
-  val update_language : userid:Os_types.User.id -> language:string -> unit Lwt.t
+  val update_language : userid:Os_types.User.id -> language:string -> unit
   (** [update_language ~userid ~language] updates the language of the user with
       ID [userid].
    *)
 
-  val verify_password :
-     email:string
-    -> password:string
-    -> Os_types.User.id Lwt.t
+  val verify_password : email:string -> password:string -> Os_types.User.id
   (** [verify_password ~email ~password] returns the userid if user with email
       [email] is registered with the password [password].
       If [password] the password is wrong,
@@ -178,7 +175,7 @@ module User : sig
   val verify_password_phone :
      number:string
     -> password:string
-    -> Os_types.User.id Lwt.t
+    -> Os_types.User.id
   (** [verify_password_phone ~number ~password]
       returns the userid if user
       who owns [number] and whose password is [password].
@@ -190,13 +187,7 @@ module User : sig
 
   val user_of_userid :
      Os_types.User.id
-    -> (Os_types.User.id
-       * string
-       * string
-       * string option
-       * bool
-       * string option)
-         Lwt.t
+    -> Os_types.User.id * string * string * string option * bool * string option
   (** [user_of_userid userid] returns a tuple [(userid, firstname, lastname,
       avatar, bool_password, language)] describing the information about
       the user with ID [userid].
@@ -205,51 +196,46 @@ module User : sig
       If there is no such user, it fails with {!No_such_resource}.
    *)
 
-  val get_actionlinkkey_info : string -> Os_types.Action_link_key.info Lwt.t
+  val get_actionlinkkey_info : string -> Os_types.Action_link_key.info
   (** [get_actionlinkkey_info key] returns the information about the
       action link [key] as a type {!Os_types.Action_link_key.info}. *)
 
-  val emails_of_userid : Os_types.User.id -> string list Lwt.t
+  val emails_of_userid : Os_types.User.id -> string list
   (** [emails_of_userid userid] returns all emails registered for the user with
       ID [userid].
       If there is no user with [userid] as ID, it fails with
       {!No_such_resource}.
       *)
 
-  val emails_of_userid_with_status :
-     Os_types.User.id
-    -> (string * bool) list Lwt.t
+  val emails_of_userid_with_status : Os_types.User.id -> (string * bool) list
   (** Like [emails_of_userid], but also returns validation
       status. This way we perform fewer DB queries. *)
 
-  val email_of_userid : Os_types.User.id -> string option Lwt.t
+  val email_of_userid : Os_types.User.id -> string option
   (** [email_of_userid userid] returns the main email registered for the user
       with ID [userid].
       If there is no such user, it fails with
       {!No_such_resource}.
       *)
 
-  val is_main_email : userid:Os_types.User.id -> email:string -> bool Lwt.t
+  val is_main_email : userid:Os_types.User.id -> email:string -> bool
   (** [is_main_email ~email ~userid] returns [true] if the main email of the
       user with ID [userid] is [email].
       If there is no such user or if [email] is not the main
       email, it returns [false].
    *)
 
-  val add_email_to_user : userid:Os_types.User.id -> email:string -> unit Lwt.t
+  val add_email_to_user : userid:Os_types.User.id -> email:string -> unit
   (** [add_email_to_user ~userid ~email] add [email] to user with ID [userid].
     *)
 
-  val remove_email_from_user :
-     userid:Os_types.User.id
-    -> email:string
-    -> unit Lwt.t
+  val remove_email_from_user : userid:Os_types.User.id -> email:string -> unit
   (** [remove_email_from_user ~userid ~email] removes the email [email] from the
       emails list of user with ID [userid].
       If [email] is the main email, it fails with {!Main_email_removal_attempt}.
    *)
 
-  val get_language : Os_types.User.id -> string option Lwt.t
+  val get_language : Os_types.User.id -> string option
   (** [get_language userid] returns the language of the user with ID [userid] *)
 
   val get_users :
@@ -262,7 +248,6 @@ module User : sig
        * bool
        * string option)
          list
-         Lwt.t
   (** [get_users ~pattern ()] returns all users matching the pattern [pattern]
       as a tuple [(userid, firstname, lastname, avatar, bool_password,
       language)].
@@ -271,13 +256,11 @@ end
 
 (** This module is low-level and used to manage groups of user. *)
 module Groups : sig
-  val create : ?description:string -> string -> unit Lwt.t
+  val create : ?description:string -> string -> unit
   (** [create ?description name] creates a new group with name [name] and with
       description [description]. *)
 
-  val group_of_name :
-     string
-    -> (Os_types.Group.id * string * string option) Lwt.t
+  val group_of_name : string -> Os_types.Group.id * string * string option
   (** [group_of_name name] returns a tuple [(groupid, name, description)]
       describing the group.
       If no group has the name [name], it fails with {!No_such_resource}.
@@ -286,14 +269,14 @@ module Groups : sig
   val add_user_in_group :
      groupid:Os_types.Group.id
     -> userid:Os_types.User.id
-    -> unit Lwt.t
+    -> unit
   (** [add_user_in_group ~groupid ~userid] adds the user with ID [userid] in the
       group with ID [groupid] *)
 
   val remove_user_in_group :
      groupid:Os_types.Group.id
     -> userid:Os_types.User.id
-    -> unit Lwt.t
+    -> unit
   (** [remove_user_in_group ~groupid ~userid] removes the user with ID [userid]
       in the group with ID [groupid] *)
 
@@ -302,32 +285,32 @@ module Groups : sig
     -> groupid:Os_types.Group.id
     -> userid:Os_types.User.id
     -> unit
-    -> bool Lwt.t
+    -> bool
   (** [in_group ~groupid ~userid] returns [true] if the user with ID [userid] is
       in the group with ID [groupid]. *)
 
-  val all : unit -> (Os_types.Group.id * string * string option) list Lwt.t
+  val all : unit -> (Os_types.Group.id * string * string option) list
   (** [all ()] returns all groups as list of tuple [(groupid, name,
       description)]. *)
 end
 
 (** Manage user phone numbers *)
 module Phone : sig
-  val add : int64 -> string -> bool Lwt.t
+  val add : int64 -> string -> bool
   (** [add userid number] associates [number] with the user
       [userid]. Returns [true] on success. *)
 
-  val exists : string -> bool Lwt.t
+  val exists : string -> bool
   (** Does the number exist in the database? *)
 
-  val userid : string -> Os_types.User.id option Lwt.t
+  val userid : string -> Os_types.User.id option
   (** The user corresponding to a phone number (if any). *)
 
-  val delete : int64 -> string -> unit Lwt.t
+  val delete : int64 -> string -> unit
   (** [delete userid number] deletes [number], which has to be
       associated to [userid]. *)
 
-  val get_list : int64 -> string list Lwt.t
+  val get_list : int64 -> string list
   (** [get_list userid] returns the list of number associated to the
       user. *)
 end

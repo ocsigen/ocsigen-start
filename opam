@@ -28,7 +28,6 @@ depends: [
   "ocsigen-ppx-rpc" {>= "1.1"}
   "ocsigen-i18n" {>= "3.7.0"}
   "yojson" {>= "1.6.0"}
-  "resource-pooling" {>= "1.0" & < "2.0"}
   "cohttp-lwt-unix"
   "js_of_ocaml" {>= "6.0.0"}
   "re" {>= "1.7.2"}

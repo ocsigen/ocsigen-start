@@ -29,10 +29,10 @@ exception Error_while_cropping of Unix.process_status
 exception Error_while_resizing of Unix.process_status
 (** Raised if an error occurred while resizing a picture. The corresponding code status is given in parameter. *)
 
-val get_image_height : string -> int Lwt.t
+val get_image_height : string -> int
 (** Return the height of the given image. *)
 
-val get_image_width : string -> int Lwt.t
+val get_image_width : string -> int
 (** Return the width of the given image. *)
 
 val resize_image :
@@ -41,7 +41,7 @@ val resize_image :
   -> width:int
   -> height:int
   -> unit
-  -> unit Lwt.t
+  -> unit
 (** Resize the given image ([src]) and save it to [dst] (default is the source
    file). If an error occurred, it raises the exception [Error_while_resizing]
    with the corresponding unix process status.
@@ -56,7 +56,7 @@ val crop_image :
   -> bottom:float
   -> left:float
   -> unit
-  -> unit Lwt.t
+  -> unit
 (** [crop_image ~src ?dst ?ratio ~top ~right ~bottom ~left] crops the image
     saved in [src] and saves the result in [dst] (default is the source file).
     [top], [right], [bottom] and [left] are the number of pixels the image must
@@ -71,7 +71,7 @@ val record_image :
   -> ?ratio:float
   -> ?cropping:float * float * float * float
   -> Ocsigen_extensions.file_info
-  -> string Lwt.t
+  -> string
 (** [record_image directory ?ratio ?cropping:(top, right, bottom, left) file]
     crops the image like [crop_image] and save it in the directory [directory].
     If an error occurred, it raises the exception [Error_while_resizing] or

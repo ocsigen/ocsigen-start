@@ -53,8 +53,7 @@ let default_send ?url:_ ~from_addr ~to_addrs ~subject:_ content =
   echo "]";
   printf "[content]:\n%s\n" content;
   echo "Please set your own sendmail function using Os_email.set_send";
-  flush ();
-  Lwt.return ()
+  flush ()
 
 let send_ref = ref default_send
 

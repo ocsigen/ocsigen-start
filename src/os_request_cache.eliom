@@ -18,8 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open Lwt.Syntax
-
 module type Cache_sig = sig
   type key
   type value
@@ -27,7 +25,7 @@ module type Cache_sig = sig
   val has : key -> bool
   val set : key -> value -> unit
   val reset : key -> unit
-  val get : key -> value Lwt.t
+  val get : key -> value
 end
 
 module Make (M : sig
@@ -35,7 +33,7 @@ module Make (M : sig
     type value
 
     val compare : key -> key -> int
-    val get : key -> value Lwt.t
+    val get : key -> value
   end) =
 struct
   type key = M.key
@@ -74,9 +72,9 @@ struct
     then M.get k (* Not during a request. No cache. *)
     else
       let table = Eliom_reference.Volatile.get cache in
-      try Lwt.return (MMap.find k table)
+      try MMap.find k table
       with Not_found ->
-        let* ret = M.get k in
+        let ret = M.get k in
         Eliom_reference.Volatile.set cache (MMap.add k ret table);
-        Lwt.return ret
+        ret
 end

@@ -70,7 +70,7 @@ module type PAGE = sig
   (** [other_head] is a list of custom elements to add in the head section.
       It can be used to add <meta> elements, for example. *)
 
-  val default_error_page : 'a -> 'b -> exn -> content Lwt.t
+  val default_error_page : 'a -> 'b -> exn -> content
   (** [default_error_page get_param post_param exn] is the default error page.
       [get_param] (resp. [post_param]) is the GET (resp. POST) parameters sent
       to the error page.
@@ -83,19 +83,15 @@ module type PAGE = sig
     -> 'a
     -> 'b
     -> exn
-    -> content Lwt.t
+    -> content
   (** [default_connected_error_page userid_o get_param post_param exn] is the
       default error page for connected pages.
    *)
 
-  val default_predicate : 'a -> 'b -> bool Lwt.t
+  val default_predicate : 'a -> 'b -> bool
   (** [default_predicate get_param post_param] is the default predicate. *)
 
-  val default_connected_predicate :
-     Os_types.User.id option
-    -> 'a
-    -> 'b
-    -> bool Lwt.t
+  val default_connected_predicate : Os_types.User.id option -> 'a -> 'b -> bool
   (** [default_connected_predicate userid_o get_param post_param] is the default
       predicate for connected pages.
    *)
@@ -117,12 +113,12 @@ module Make (_ : PAGE) : sig
       for this app *)
 
   val page :
-     ?predicate:('a -> 'b -> bool Lwt.t)
-    -> ?fallback:('a -> 'b -> exn -> content Lwt.t)
-    -> ('a -> 'b -> content Lwt.t)
+     ?predicate:('a -> 'b -> bool)
+    -> ?fallback:('a -> 'b -> exn -> content)
+    -> ('a -> 'b -> content)
     -> 'a
     -> 'b
-    -> Html_types.html Eliom_content.Html.elt Lwt.t
+    -> Html_types.html Eliom_content.Html.elt
   (** Default wrapper for service handler generating pages.
       It takes as parameter a function generating page content
       (body content) and transforms it into a function generating
@@ -138,12 +134,12 @@ module Make (_ : PAGE) : sig
     val connected_page :
        ?allow:Os_types.Group.t list
       -> ?deny:Os_types.Group.t list
-      -> ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool Lwt.t)
-      -> ?fallback:(Os_types.User.id option -> 'a -> 'b -> exn -> content Lwt.t)
-      -> (Os_types.User.id option -> 'a -> 'b -> content Lwt.t)
+      -> ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool)
+      -> ?fallback:(Os_types.User.id option -> 'a -> 'b -> exn -> content)
+      -> (Os_types.User.id option -> 'a -> 'b -> content)
       -> 'a
       -> 'b
-      -> Html_types.html Eliom_content.Html.elt Lwt.t
+      -> Html_types.html Eliom_content.Html.elt
     (** Wrapper for pages that first checks if the user is connected.
       See {!Os_session.Opt.connected_fun}.
   *)
@@ -152,12 +148,12 @@ module Make (_ : PAGE) : sig
   val connected_page :
      ?allow:Os_types.Group.t list
     -> ?deny:Os_types.Group.t list
-    -> ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool Lwt.t)
-    -> ?fallback:(Os_types.User.id option -> 'a -> 'b -> exn -> content Lwt.t)
-    -> (Os_types.User.id -> 'a -> 'b -> content Lwt.t)
+    -> ?predicate:(Os_types.User.id option -> 'a -> 'b -> bool)
+    -> ?fallback:(Os_types.User.id option -> 'a -> 'b -> exn -> content)
+    -> (Os_types.User.id -> 'a -> 'b -> content)
     -> 'a
     -> 'b
-    -> Html_types.html Eliom_content.Html.elt Lwt.t
+    -> Html_types.html Eliom_content.Html.elt
   (** Wrapper for pages that first checks if the user is connected.
       See {!Os_session.connected_fun}.
   *)

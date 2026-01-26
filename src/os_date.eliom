@@ -26,6 +26,7 @@
 *)
 
 open%client Js_of_ocaml
+open%client Js_of_ocaml_eio
 
 let%client timezone =
   (* Use Intl API if available. Revert to using the time zone offset
@@ -75,16 +76,14 @@ let initialize tz =
   Eliom_reference.Volatile.set user_tz_sr tz
 
 (* When the browser is loaded, we init the timezone *)
-let%rpc init_time_rpc (tz : string) : unit Lwt.t =
-  initialize tz; Lwt.return_unit
-
+let%rpc init_time_rpc (tz : string) : unit = initialize tz
 let%client auto_init = ref true
 let%client disable_auto_init () = auto_init := false
 
 let%client _ =
   (* We wait for the client process to be fully loaded: *)
   Eliom_client.onload (fun () ->
-    if !auto_init then Lwt.async (fun () -> init_time_rpc timezone))
+    if !auto_init then Eio_js.start (fun () -> init_time_rpc timezone))
 
 [%%shared
 open CalendarLib

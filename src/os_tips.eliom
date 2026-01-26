@@ -18,11 +18,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open%shared Lwt.Syntax
 open%shared Eliom_content.Html
 open%shared Eliom_content.Html.F
 open%client Js_of_ocaml
-open%client Js_of_ocaml_lwt
+open%client Js_of_ocaml_eio
 module%shared Stringset = Set.Make (String)
 
 (* tips_seen is a group persistent reference recording which tips have
@@ -65,17 +64,16 @@ let%server get_tips_seen () = Eliom_reference.Volatile.get seen_by_user
    tabs at a time which means that the user may see the same tip several
    times in that case. *)
 let%client tips_seen_client_ref = ref Stringset.empty
-let%client get_tips_seen () = Lwt.return !tips_seen_client_ref
+let%client get_tips_seen () = !tips_seen_client_ref
 
 let%server () =
   Os_session.on_start_connected_process (fun _ ->
-    let* tips = get_tips_seen () in
-    ignore [%client (tips_seen_client_ref := ~%tips : unit)];
-    Lwt.return_unit)
+    let tips = get_tips_seen () in
+    ignore [%client (tips_seen_client_ref := ~%tips : unit)])
 
 (* notify the server that a user has seen a tip *)
-let%rpc set_tip_seen (name : string) : unit Lwt.t =
-  let* prev = Eliom_reference.Volatile.get seen_by_user in
+let%rpc set_tip_seen (name : string) : unit =
+  let prev = Eliom_reference.Volatile.get seen_by_user in
   let newset = Stringset.add (name : string) prev in
   match Os_current_user.Opt.get_current_userid () with
   | None -> Eliom_reference.set tips_seen_not_connected newset
@@ -86,8 +84,8 @@ let%client set_tip_seen name =
   set_tip_seen name
 
 (* counterpart of set_tip_seen *)
-let%rpc unset_tip_seen (name : string) : unit Lwt.t =
-  let* prev = Eliom_reference.Volatile.get seen_by_user in
+let%rpc unset_tip_seen (name : string) : unit =
+  let prev = Eliom_reference.Volatile.get seen_by_user in
   let newset = Stringset.remove name prev in
   match Os_current_user.Opt.get_current_userid () with
   | None -> Eliom_reference.set tips_seen_not_connected newset
@@ -98,8 +96,8 @@ let%client unset_tip_seen name =
   unset_tip_seen name
 
 let%shared tip_seen name =
-  let* seen = get_tips_seen () in
-  Lwt.return @@ Stringset.mem name seen
+  let seen = get_tips_seen () in
+  Stringset.mem name seen
 
 (* I want to see the tips again *)
 let%server reset_tips_user myid_o =
@@ -107,7 +105,7 @@ let%server reset_tips_user myid_o =
   | None -> Eliom_reference.set tips_seen_not_connected Stringset.empty
   | _ -> Eliom_reference.set tips_seen Stringset.empty
 
-let%rpc reset_tips myid_o () : unit Lwt.t = reset_tips_user myid_o
+let%rpc reset_tips myid_o () : unit = reset_tips_user myid_o
 
 let%server reset_tips_service =
   Eliom_service.create ~name:"resettips" ~path:Eliom_service.No_path
@@ -130,7 +128,7 @@ let%shared
     block
       ?(a = [])
       ?(recipient = `All)
-      ?(onclose = [%client (fun () -> Lwt.return_unit : unit -> unit Lwt.t)])
+      ?(onclose = [%client (fun () -> () : unit -> unit)])
       ~name
       ~content
       ()
@@ -138,23 +136,21 @@ let%shared
   let myid_o = Os_current_user.Opt.get_current_userid () in
   match recipient, myid_o with
   | `All, _ | `Not_connected, None | `Connected, Some _ ->
-      let* seen = get_tips_seen () in
+      let seen = get_tips_seen () in
       if Stringset.mem name seen
-      then Lwt.return_none
+      then None
       else
         let box_ref = ref None in
-        let close : (unit -> unit Lwt.t) Eliom_client_value.t =
+        let close : (unit -> unit) Eliom_client_value.t =
           [%client
             fun () ->
-              let* () = ~%onclose () in
-              let () =
-                match !(~%box_ref) with
-                | Some x -> Manip.removeSelf x
-                | None -> ()
-              in
+              ~%onclose ();
+              (match !(~%box_ref) with
+              | Some x -> Manip.removeSelf x
+              | None -> ());
               set_tip_seen ~%name]
         in
-        let* c = content close in
+        let c = content close in
         let c = [div ~a:[a_class ["os-tip-content"]] c] in
         let box =
           D.div
@@ -162,28 +158,50 @@ let%shared
             (Os_icons.D.close
                ~a:
                  [ a_class ["os-tip-close"]
-                 ; a_onclick [%client fun _ -> Lwt.async ~%close] ]
+                 ; a_onclick [%client fun _ -> Eio_js.start ~%close] ]
                ()
             :: c)
         in
         box_ref := Some box;
-        Lwt.return_some box
-  | _ -> Lwt.return_none
+        Some box
+  | _ -> None
 
+(* Create a promise that will be resolved when onload fires.
+   Must be called inside an Eio fiber. *)
 let%client onload_waiter () =
-  let* _ = Eliom_client.lwt_onload () in
-  Lwt.return_unit
+  let t, u = Eio.Promise.create () in
+  Eliom_client.onload (fun () ->
+    Eio_js.start (fun () -> Eio.Promise.resolve_ok u ()));
+  t, u
 
-(* This thread is used to display only one tip at a time *)
-let%client waiter = ref (onload_waiter ())
+(* This promise is used to display only one tip at a time *)
+(* Initialized lazily to avoid calling Eio.Promise.create at toplevel *)
+(* We use a lazy value that is forced only inside an Eio fiber *)
+let%client waiter = ref None
+let%client get_waiter () =
+  match !waiter with
+  | Some w -> Lazy.force w
+  | None ->
+      let w = lazy (onload_waiter ()) in
+      waiter := Some w;
+      Lazy.force w
 
+exception%client Page_changed
+
+(* Called by onchangepage - invalidates the current waiter so a new one
+   will be created on next get_waiter call *)
 let%client rec onchangepage_handler _ =
-  Lwt.cancel !waiter;
-  waiter := onload_waiter ();
+  (match !waiter with
+   | Some w when Lazy.is_val w ->
+       (* Only resolve if the lazy was forced (promise was created) *)
+       Eio_js.start (fun () ->
+         Eio.Promise.resolve_error (snd (Lazy.force w)) (Eio.Cancel.Cancelled Page_changed))
+   | _ -> ());
+  (* Create a new lazy for the next waiter - it will be forced inside an Eio fiber *)
+  waiter := Some (lazy (onload_waiter ()));
   (* onchangepage handlers are one-off, register ourselves again for
      next time *)
-  Eliom_client.onchangepage onchangepage_handler;
-  Lwt.return_unit
+  Eliom_client.onchangepage onchangepage_handler
 
 let%client () = Eliom_client.onchangepage onchangepage_handler
 
@@ -200,92 +218,94 @@ let%client
       ?width
       ?(parent_node : _ elt option)
       ?(delay = 0.0)
-      ?(onclose = fun () -> Lwt.return_unit)
+      ?(onclose = fun () -> ())
       ~name
       ~content
       ()
   =
-  let current_waiter = !waiter in
-  let new_waiter, new_wakener = Lwt.task () in
-  waiter := new_waiter;
-  let* () = current_waiter in
-  let bec = D.div ~a:[a_class ["os-tip-bec"]] [] in
-  let box_ref = ref None in
-  let close () =
-    let* () = onclose () in
-    let () = match !box_ref with Some x -> Manip.removeSelf x | None -> () in
-    Lwt.wakeup new_wakener ();
-    set_tip_seen (name : string)
-  in
-  let* c = content close in
-  let c = [div ~a:[a_class ["os-tip-content"]] c] in
-  let box =
-    D.div
-      ~a:(a_class ["os-tip"; "os-tip-bubble"] :: a)
-      (Os_icons.D.close
-         ~a:[a_class ["os-tip-close"]; a_onclick (fun _ -> Lwt.async close)]
-         ()
-      :: (match arrow with None -> c | _ -> bec :: c))
-  in
-  box_ref := Some box;
-  let parent_node =
-    match parent_node with
-    | None -> Dom_html.document##.body
-    | Some p -> To_dom.of_element p
-  in
-  let* () = Ot_nodeready.nodeready parent_node in
-  let* () = Lwt_js.sleep delay in
-  let box = To_dom.of_element box in
-  Dom.appendChild parent_node box;
-  box##.style##.opacity := Js.string "0";
-  Eliom_lib.Option.iter
-    (fun v -> box##.style##.top := Js.string (Printf.sprintf "%ipx" v))
-    top;
-  Eliom_lib.Option.iter
-    (fun v -> box##.style##.left := Js.string (Printf.sprintf "%ipx" v))
-    left;
-  Eliom_lib.Option.iter
-    (fun v -> box##.style##.right := Js.string (Printf.sprintf "%ipx" v))
-    right;
-  Eliom_lib.Option.iter
-    (fun v -> box##.style##.bottom := Js.string (Printf.sprintf "%ipx" v))
-    bottom;
-  Eliom_lib.Option.iter
-    (fun v -> box##.style##.width := Js.string (Printf.sprintf "%ipx" v))
-    width;
-  Eliom_lib.Option.iter
-    (fun v -> box##.style##.height := Js.string (Printf.sprintf "%ipx" v))
-    height;
-  Eliom_lib.Option.iter
-    (fun a ->
-       let bec = To_dom.of_element bec in
-       let bec_size = bec##.offsetWidth in
-       let offset = Printf.sprintf "-%dpx" (bec_size / 2) in
-       match a with
-       | `top i ->
-           bec##.style##.top := Js.string offset;
-           bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
-           bec##.style##.borderBottom := Js.string "none";
-           bec##.style##.borderRight := Js.string "none"
-       | `left i ->
-           bec##.style##.left := Js.string offset;
-           bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
-           bec##.style##.borderTop := Js.string "none";
-           bec##.style##.borderRight := Js.string "none"
-       | `bottom i ->
-           bec##.style##.bottom := Js.string offset;
-           bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
-           bec##.style##.borderTop := Js.string "none";
-           bec##.style##.borderLeft := Js.string "none"
-       | `right i ->
-           bec##.style##.right := Js.string offset;
-           bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
-           bec##.style##.borderBottom := Js.string "none";
-           bec##.style##.borderLeft := Js.string "none")
-    arrow;
-  let* () = Lwt_js_events.request_animation_frame () in
-  box##.style##.opacity := Js.string "1";
-  Lwt.return_unit
+  Eio_js.start (fun () ->
+    let current_waiter = fst (get_waiter ()) in
+    (* Create the new waiter inside the Eio fiber, wrapped in lazy (already forced) *)
+    let new_w = Eio.Promise.create () in
+    waiter := Some (lazy new_w);
+    let _new_promise, new_resolver = Lazy.force (Option.get !waiter) in
+    Eio.Promise.await_exn current_waiter;
+    let bec = D.div ~a:[a_class ["os-tip-bec"]] [] in
+    let box_ref = ref None in
+    let close () =
+      onclose ();
+      (match !box_ref with Some x -> Manip.removeSelf x | None -> ());
+      Eio.Promise.resolve_ok new_resolver ();
+      set_tip_seen (name : string)
+    in
+    let c = content close in
+    let c = [div ~a:[a_class ["os-tip-content"]] c] in
+    let box =
+      D.div
+        ~a:(a_class ["os-tip"; "os-tip-bubble"] :: a)
+        (Os_icons.D.close
+           ~a:[a_class ["os-tip-close"]; a_onclick (fun _ -> Eio_js.start close)]
+           ()
+        :: (match arrow with None -> c | _ -> bec :: c))
+    in
+    box_ref := Some box;
+    let parent_node =
+      match parent_node with
+      | None -> Dom_html.document##.body
+      | Some p -> To_dom.of_element p
+    in
+    Ot_nodeready.nodeready parent_node;
+    Eio_js.sleep delay;
+    let box = To_dom.of_element box in
+    Dom.appendChild parent_node box;
+    box##.style##.opacity := Js.string "0";
+    Eliom_lib.Option.iter
+      (fun v -> box##.style##.top := Js.string (Printf.sprintf "%ipx" v))
+      top;
+    Eliom_lib.Option.iter
+      (fun v -> box##.style##.left := Js.string (Printf.sprintf "%ipx" v))
+      left;
+    Eliom_lib.Option.iter
+      (fun v -> box##.style##.right := Js.string (Printf.sprintf "%ipx" v))
+      right;
+    Eliom_lib.Option.iter
+      (fun v -> box##.style##.bottom := Js.string (Printf.sprintf "%ipx" v))
+      bottom;
+    Eliom_lib.Option.iter
+      (fun v -> box##.style##.width := Js.string (Printf.sprintf "%ipx" v))
+      width;
+    Eliom_lib.Option.iter
+      (fun v -> box##.style##.height := Js.string (Printf.sprintf "%ipx" v))
+      height;
+    Eliom_lib.Option.iter
+      (fun a ->
+         let bec = To_dom.of_element bec in
+         let bec_size = bec##.offsetWidth in
+         let offset = Printf.sprintf "-%dpx" (bec_size / 2) in
+         match a with
+         | `top i ->
+             bec##.style##.top := Js.string offset;
+             bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
+             bec##.style##.borderBottom := Js.string "none";
+             bec##.style##.borderRight := Js.string "none"
+         | `left i ->
+             bec##.style##.left := Js.string offset;
+             bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
+             bec##.style##.borderTop := Js.string "none";
+             bec##.style##.borderRight := Js.string "none"
+         | `bottom i ->
+             bec##.style##.bottom := Js.string offset;
+             bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
+             bec##.style##.borderTop := Js.string "none";
+             bec##.style##.borderLeft := Js.string "none"
+         | `right i ->
+             bec##.style##.right := Js.string offset;
+             bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
+             bec##.style##.borderBottom := Js.string "none";
+             bec##.style##.borderLeft := Js.string "none")
+      arrow;
+    ignore (Eio_js_events.request_animation_frame ());
+    box##.style##.opacity := Js.string "1")
 
 (* Function to be called on server to display a tip *)
 let%shared
@@ -310,23 +330,22 @@ let%shared
       ?onclose
       ~(name : string)
       ~(content :
-         ((unit -> unit Lwt.t)
-          -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
+         ((unit -> unit) -> Html_types.div_content Eliom_content.Html.elt list)
            Eliom_client_value.t)
       ()
   =
   let delay : float option = delay in
-  let onclose : (unit -> unit Lwt.t) Eliom_client_value.t option = onclose in
+  let onclose : (unit -> unit) Eliom_client_value.t option = onclose in
   let myid_o = Os_current_user.Opt.get_current_userid () in
   match recipient, myid_o with
   | `All, _ | `Not_connected, None | `Connected, Some _ ->
-      let* seen = get_tips_seen () in
+      let seen = get_tips_seen () in
       if Stringset.mem name seen
-      then Lwt.return_unit
+      then ()
       else
         let _ =
           [%client
-            (Lwt.async (fun () ->
+            (Eio_js.start (fun () ->
                display_bubble ?a:~%a ?arrow:~%arrow ?top:~%top ?left:~%left
                  ?right:~%right ?bottom:~%bottom ?height:~%height ?width:~%width
                  ?parent_node:~%parent_node ?delay:~%delay ?onclose:~%onclose
@@ -334,5 +353,5 @@ let%shared
                  ~content:~%content ())
              : unit)]
         in
-        Lwt.return_unit
-  | _ -> Lwt.return_unit
+        ()
+  | _ -> ()

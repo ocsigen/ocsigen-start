@@ -1,3 +1,5 @@
+open Eio.Std
+
 (* Ocsigen-start
  * http://www.ocsigen.org/ocsigen-start
  *
@@ -20,7 +22,6 @@
 
 (** Registration of default services *)
 
-open%shared Lwt.Syntax
 open%client Eliom_content.Html.F
 open%client Js_of_ocaml
 
@@ -38,11 +39,9 @@ let%server
       (((firstname, lastname), (pwd, pwd2)) as pd)
   =
   if firstname = "" || lastname = "" || pwd <> pwd2
-  then (
-    Eliom_reference.Volatile.set Os_msg.wrong_pdata (Some pd);
-    Lwt.return_unit)
+  then Eliom_reference.Volatile.set Os_msg.wrong_pdata (Some pd)
   else
-    let* user = Os_user.user_of_userid myid in
+    let user = Os_user.user_of_userid myid in
     let open Os_types.User in
     let record = {user with fn = firstname; ln = lastname} in
     Os_user.update' ~password:pwd record
@@ -50,15 +49,13 @@ let%server
 (* Set password handler *)
 let%server set_password_handler myid () (pwd, pwd2) =
   if pwd <> pwd2
-  then (
-    Os_msg.msg ~level:`Err ~onload:true "Passwords do not match";
-    Lwt.return_unit)
+  then Os_msg.msg ~level:`Err ~onload:true "Passwords do not match"
   else
-    let* user = Os_user.user_of_userid myid in
+    let user = Os_user.user_of_userid myid in
     Os_user.update' ~password:pwd user
 
 (* Set password RPC *)
-let%rpc set_password_rpc myid (p : string * string) : unit Lwt.t =
+let%rpc set_password_rpc myid (p : string * string) : unit =
   set_password_handler myid () p
 
 let%server
@@ -81,13 +78,14 @@ let%server
   then print_endline ("Debug: action link created: " ^ act_link);
   if send_email
   then
-    Lwt.async (fun () ->
-      Lwt.catch
-        (fun () ->
+    Fiber.fork
+      ~sw:(Stdlib.Option.get (Fiber.get Ocsigen_lib.current_switch))
+      (fun () ->
+         try
            Os_email.send
              ~to_addrs:["", email]
-             ~subject:"creation" ~url:act_link [text])
-        (fun _ -> Lwt.return_unit));
+             ~subject:"creation" ~url:act_link [text]
+         with _ -> ());
   act_key
 
 (** For default value of [autoconnect], cf. [Os_user.add_actionlinkkey]. *)
@@ -104,11 +102,11 @@ let%server
   =
   let act_key = generate_action_link_key ~service ~text:msg email in
   Eliom_reference.Volatile.set Os_msg.action_link_key_created true;
-  let* () =
+  let () =
     Os_user.add_actionlinkkey ?autoconnect ?action ?validity ?expiry ~act_key
       ~userid ~email ()
   in
-  Lwt.return_unit
+  ()
 
 (* Sign up *)
 let%server sign_up_handler () email =
@@ -120,52 +118,42 @@ let%server sign_up_handler () email =
       ~expiry:CalendarLib.Calendar.(add (now ()) (Period.hour 1))
       ~autoconnect:true msg Os_services.main_service email userid
   in
-  Lwt.catch
-    (fun () ->
-       let* user = Os_user.create ~firstname:"" ~lastname:"" ~email () in
-       let userid = Os_user.userid_of_user user in
-       Os_msg.msg ~onload:true ~level:`Msg ~duration:6.
-         "An e-mail was sent to this address. Click on the link it contains to activate your account.";
-       send_action_link email userid)
-    (function
-      | Os_user.Already_exists userid ->
-          let*
-              (* If email is not validated, the user never logged in,
+  try
+    let user = Os_user.create ~firstname:"" ~lastname:"" ~email () in
+    let userid = Os_user.userid_of_user user in
+    Os_msg.msg ~onload:true ~level:`Msg ~duration:6.
+      "An e-mail was sent to this address. Click on the link it contains to activate your account.";
+    send_action_link email userid
+  with Os_user.Already_exists userid ->
+    let
+        (* If email is not validated, the user never logged in,
        I send an action link, as if it were a new user. *)
-                validated
-            =
-            Os_db.User.is_email_validated userid email
-          in
-          if not validated
-          then send_action_link email userid
-          else (
-            Eliom_reference.Volatile.set Os_user.user_already_exists true;
-            Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
-            Lwt.return_unit)
-      | exc -> Lwt.reraise exc)
+          validated
+      =
+      Os_db.User.is_email_validated userid email
+    in
+    if not validated
+    then send_action_link email userid
+    else (
+      Eliom_reference.Volatile.set Os_user.user_already_exists true;
+      Os_msg.msg ~level:`Err ~onload:true "E-mail already exists")
 
-let%rpc sign_up_handler_rpc (email : string) : unit Lwt.t =
-  sign_up_handler () email
-
+let%rpc sign_up_handler_rpc (email : string) : unit = sign_up_handler () email
 let%client sign_up_handler () v = sign_up_handler_rpc v
 
 (* Forgot password *)
 let%server forgot_password_handler service () email =
-  Lwt.catch
-    (fun () ->
-       let* userid = Os_user.userid_of_email email in
-       let msg = "Hi,\r\nTo set a new password, please click on this link: " in
-       Os_msg.msg ~level:`Msg ~onload:true
-         "An email was sent to this address. Click on the link it contains to reset your password.";
-       send_action_link ~autoconnect:true ~action:`PasswordReset ~validity:1L
-         ~expiry:CalendarLib.Calendar.(add (now ()) (Period.hour 1))
-         msg service email userid)
-    (function
-      | Os_db.No_such_resource ->
-          Eliom_reference.Volatile.set Os_user.user_does_not_exist true;
-          Os_msg.msg ~level:`Err ~onload:true "User does not exist";
-          Lwt.return_unit
-      | exc -> Lwt.reraise exc)
+  try
+    let userid = Os_user.userid_of_email email in
+    let msg = "Hi,\r\nTo set a new password, please click on this link: " in
+    Os_msg.msg ~level:`Msg ~onload:true
+      "An email was sent to this address. Click on the link it contains to reset your password.";
+    send_action_link ~autoconnect:true ~action:`PasswordReset ~validity:1L
+      ~expiry:CalendarLib.Calendar.(add (now ()) (Period.hour 1))
+      msg service email userid
+  with Os_db.No_such_resource ->
+    Eliom_reference.Volatile.set Os_user.user_does_not_exist true;
+    Os_msg.msg ~level:`Err ~onload:true "User does not exist"
 
 let%client restart ?url () =
   (* Restart the client.
@@ -197,7 +185,7 @@ let%client restart ?url () =
    If [main_page] is true, it goes to the main page.
 *)
 let disconnect_handler ?(main_page = false) () () =
-  let*
+  let
       (* SECURITY: no check here because we disconnect the session cookie owner. *)
         ()
     =
@@ -213,8 +201,7 @@ let disconnect_handler ?(main_page = false) () () =
               Some
                 (make_uri ~absolute:true ~service:Eliom_service.reload_action ()))
          ()
-       : unit)];
-  Lwt.return_unit
+       : unit)]
 
 let%rpc disconnect_handler_rpc (main_page : bool) =
   disconnect_handler ~main_page () ()
@@ -224,32 +211,27 @@ let%client disconnect_handler ?(main_page = false) () () =
 
 (* Connection *)
 let connect_handler () ((login, pwd), keepmeloggedin) =
-  Lwt.catch
-    (fun () ->
-       let*
-           (* SECURITY: no check here. *)
-             userid
-         =
-         Os_user.verify_password ~email:login ~password:pwd
-       in
-       let* () = disconnect_handler () () in
-       Os_session.connect ~expire:(not keepmeloggedin) userid)
-    (function
-      | Os_db.Account_not_activated ->
-          Eliom_reference.Volatile.set Os_user.account_not_activated true;
-          Os_msg.msg ~level:`Err ~onload:true "Account not activated";
-          Lwt.return_unit
-      | Os_db.Empty_password | Os_db.Password_not_set | Os_db.Wrong_password ->
-          Eliom_reference.Volatile.set Os_user.wrong_password true;
-          Os_msg.msg ~level:`Err ~onload:true "Wrong password";
-          Lwt.return_unit
-      | Os_db.No_such_user ->
-          Eliom_reference.Volatile.set Os_user.no_such_user true;
-          Os_msg.msg ~level:`Err ~onload:true "No such user";
-          Lwt.return_unit
-      | exc -> Lwt.reraise exc)
+  try
+    let
+        (* SECURITY: no check here. *)
+          userid
+      =
+      Os_user.verify_password ~email:login ~password:pwd
+    in
+    let () = disconnect_handler () () in
+    Os_session.connect ~expire:(not keepmeloggedin) userid
+  with
+  | Os_db.Account_not_activated ->
+      Eliom_reference.Volatile.set Os_user.account_not_activated true;
+      Os_msg.msg ~level:`Err ~onload:true "Account not activated"
+  | Os_db.Empty_password | Os_db.Password_not_set | Os_db.Wrong_password ->
+      Eliom_reference.Volatile.set Os_user.wrong_password true;
+      Os_msg.msg ~level:`Err ~onload:true "Wrong password"
+  | Os_db.No_such_user ->
+      Eliom_reference.Volatile.set Os_user.no_such_user true;
+      Os_msg.msg ~level:`Err ~onload:true "No such user"
 
-let%rpc connect_handler_rpc (v : (string * string) * bool) : unit Lwt.t =
+let%rpc connect_handler_rpc (v : (string * string) * bool) : unit =
   connect_handler () v
 
 let%client connect_handler () v = connect_handler_rpc v
@@ -277,67 +259,62 @@ let%rpc action_link_handler_common myid_o (akey : string) :
   | `No_such_resource
   | `Reload
   | `Restart_if_app ]
-    Lwt.t
   =
-  Lwt.catch
-    (fun () ->
-       let open Os_types.Action_link_key in
-       let* ({userid; email; validity; expiry; action; data = _; autoconnect} as
-             action_link)
-         =
-         Os_user.get_actionlinkkey_info akey
-       in
-       let* () =
-         if action = `AccountActivation && validity <= 0L
-         then
-           match myid_o with
-           | Some myid ->
-               Lwt.fail
-                 (Account_already_activated_connected (action_link, myid))
-           | None ->
-               Lwt.fail (Account_already_activated_unconnected action_link)
-         else Lwt.return_unit
-       in
-       let outdated =
-         match expiry with
-         | None -> false
-         | Some e -> e <= CalendarLib.Calendar.now ()
-       in
-       let* () =
-         if validity <= 0L || outdated
-         then Lwt.fail (Invalid_action_key action_link)
-         else Lwt.return_unit
-       in
-       let* () =
-         if action = `AccountActivation || action = `PasswordReset
-         then Os_db.User.set_email_validated userid email
-         else Lwt.return_unit
-       in
-       if autoconnect && myid_o <> Some userid
-       then
-         let* () = Os_session.connect userid in
-         Lwt.return `Restart_if_app
-       else
-         match action with
-         | `Custom _s ->
-             let* existing_user = Os_db.User.is_email_validated userid email in
-             Lwt.return (`Custom_action_link (action_link, not existing_user))
-         | _ -> Lwt.return `Reload)
-    (function
-      | Os_db.No_such_resource -> Lwt.return `No_such_resource
-      | Invalid_action_key action_link ->
-          Eliom_reference.Volatile.set Os_user.action_link_key_outdated true;
-          Lwt.return (`Invalid_action_key action_link)
-      | Account_already_activated_unconnected action_link ->
-          Eliom_reference.Volatile.set Os_user.action_link_key_outdated true;
-          Lwt.return (`Account_already_activated_unconnected action_link)
-      | Account_already_activated_connected (_action_link, _) ->
-          Eliom_reference.Volatile.set Os_user.action_link_key_outdated true;
-          (* Just reload the page without the GET parameters to get rid of the key.
+  try
+    let open Os_types.Action_link_key in
+    let ({userid; email; validity; expiry; action; data = _; autoconnect} as
+         action_link)
+      =
+      Os_user.get_actionlinkkey_info akey
+    in
+    let () =
+      if action = `AccountActivation && validity <= 0L
+      then
+        match myid_o with
+        | Some myid ->
+            raise (Account_already_activated_connected (action_link, myid))
+        | None -> raise (Account_already_activated_unconnected action_link)
+      else ()
+    in
+    let outdated =
+      match expiry with
+      | None -> false
+      | Some e -> e <= CalendarLib.Calendar.now ()
+    in
+    let () =
+      if validity <= 0L || outdated
+      then raise (Invalid_action_key action_link)
+      else ()
+    in
+    let () =
+      if action = `AccountActivation || action = `PasswordReset
+      then Os_db.User.set_email_validated userid email
+      else ()
+    in
+    if autoconnect && myid_o <> Some userid
+    then
+      let () = Os_session.connect userid in
+      `Restart_if_app
+    else
+      match action with
+      | `Custom _s ->
+          let existing_user = Os_db.User.is_email_validated userid email in
+          `Custom_action_link (action_link, not existing_user)
+      | _ -> `Reload
+  with
+  | Os_db.No_such_resource -> `No_such_resource
+  | Invalid_action_key action_link ->
+      Eliom_reference.Volatile.set Os_user.action_link_key_outdated true;
+      `Invalid_action_key action_link
+  | Account_already_activated_unconnected action_link ->
+      Eliom_reference.Volatile.set Os_user.action_link_key_outdated true;
+      `Account_already_activated_unconnected action_link
+  | Account_already_activated_connected (_action_link, _) ->
+      Eliom_reference.Volatile.set Os_user.action_link_key_outdated true;
+      (* Just reload the page without the GET parameters to get rid of the key.
        If the user wasn't already logged in, let the exception pass to the
        next exception handler. *)
-          Lwt.return `Reload
-      | exc -> Lwt.reraise exc)
+      `Reload
 
 let%client restart_if_client_side () =
   restart
@@ -347,33 +324,32 @@ let%client restart_if_client_side () =
 let%server restart_if_client_side () = ()
 
 let%shared action_link_handler _myid_o akey () =
-  let* a = action_link_handler_common akey in
+  let a = action_link_handler_common akey in
   match a with
   | `Reload ->
       Eliom_registration.(
         appl_self_redirect Redirection.send
           (Redirection Eliom_service.reload_action))
-  | `No_such_resource -> Lwt.fail No_such_resource
-  | `Invalid_action_key action_link -> Lwt.fail (Invalid_action_key action_link)
+  | `No_such_resource -> raise No_such_resource
+  | `Invalid_action_key action_link -> raise (Invalid_action_key action_link)
   | `Restart_if_app ->
       restart_if_client_side ();
       Eliom_registration.(appl_self_redirect Action.send) ()
   | `Custom_action_link (action_link, phantom_user) ->
-      Lwt.fail (Custom_action_link (action_link, phantom_user))
+      raise (Custom_action_link (action_link, phantom_user))
   | `Account_already_activated_unconnected action_link ->
-      Lwt.fail (Account_already_activated_unconnected action_link)
+      raise (Account_already_activated_unconnected action_link)
 
 (* Preregister *)
 let preregister_handler () email =
-  let* is_preregistered = Os_user.is_preregistered email in
-  let* is_registered = Os_user.is_registered email in
+  let is_preregistered = Os_user.is_preregistered email in
+  let is_registered = Os_user.is_registered email in
   Printf.printf "%b:%b%!\n" is_preregistered is_registered;
   if not (is_preregistered || is_registered)
   then Os_user.add_preregister email
   else (
     Eliom_reference.Volatile.set Os_user.user_already_preregistered true;
-    Os_msg.msg ~level:`Err ~onload:true "E-mail already preregistered";
-    Lwt.return_unit)
+    Os_msg.msg ~level:`Err ~onload:true "E-mail already preregistered")
 
 (* Add email *)
 let add_email_handler =
@@ -387,41 +363,36 @@ let add_email_handler =
       | None -> Os_services.main_service)
   in
   let add_email myid () email =
-    let* available = Os_db.Email.available email in
+    let available = Os_db.Email.available email in
     if available
     then
-      let* () = Os_db.User.add_email_to_user ~userid:myid ~email in
+      let () = Os_db.User.add_email_to_user ~userid:myid ~email in
       send_act () email myid
-    else (
-      Eliom_reference.Volatile.set Os_user.user_already_exists true;
-      Lwt.return_unit)
+    else Eliom_reference.Volatile.set Os_user.user_already_exists true
   in
   Os_session.connected_fun add_email
 
-let%rpc add_email_rpc (email : string) : unit Lwt.t = add_email_handler () email
+let%rpc add_email_rpc (email : string) : unit = add_email_handler () email
 let%client add_email_handler () = add_email_rpc
 let%shared _ = Os_comet.__link (* to make sure os_comet is linked *)
 
 let%client input_popup ?(button_label = "OK") f =
-  let w, u = Lwt.wait () in
+  let w, u = Eio.Promise.create () in
   let content close =
     let open Eliom_content.Html in
     let button = D.button ~a:[D.a_class ["button"]] [D.txt button_label] in
     let inp =
-      let f code =
-        let* () = close () in
-        Lwt.wakeup u (); f code
-      in
+      let f code = close (); Eio.Promise.resolve u (); f code in
       Os_lib.lwt_bound_input_enter ~button f
     in
-    Lwt.return (D.div [button; inp])
+    D.div [button; inp]
   in
-  let* _ = Ot_popup.popup ~close_button:[Os_icons.F.close ()] content in
-  w
+  let _ = Ot_popup.popup ~close_button:[Os_icons.F.close ()] content in
+  Eio.Promise.await w
 
 let%client confirm_code_popup ~dest f =
   input_popup @@ fun code ->
-  let* b = f code in
+  let b = f code in
   if b
   then
     let service =
@@ -431,10 +402,8 @@ let%client confirm_code_popup ~dest f =
     in
     match service with
     | Some service -> Eliom_client.change_page ~service () ()
-    | None -> Lwt.fail_with "confirm_popup: settings service unknown"
-  else (
-    Os_msg.msg ~level:`Err ~duration:2. "Wrong SMS activation code";
-    Lwt.return_unit)
+    | None -> failwith "confirm_popup: settings service unknown"
+  else Os_msg.msg ~level:`Err ~duration:2. "Wrong SMS activation code"
 
 (* We only need confirm_code_*_service to implement the activation
    UI. Assuming normal user behavior, we will only ever call them via
@@ -443,22 +412,18 @@ let%client confirm_code_popup ~dest f =
    client.  Until we fix Eliom, we define dummy server-side
    handlers. *)
 let%server confirm_code_handler _ _ =
-  Lwt.fail_with
-    "Os_handlers.confirm_code_*_handler not implemented on the server"
+  failwith "Os_handlers.confirm_code_*_handler not implemented on the server"
 
 let%server confirm_code_signup_handler = confirm_code_handler
 let%server confirm_code_extra_handler = confirm_code_handler
 let%server confirm_code_recovery_handler = confirm_code_handler
 
 let%client request_activation_code_wrapper number f =
-  Lwt.bind (Os_connect_phone.request_code number) (function
-    | Ok () -> f ()
-    | Error `Ownership ->
-        Os_msg.msg ~level:`Err ~duration:2. "Phone taken";
-        Lwt.return_unit
-    | Error (`Unknown | `Send | `Limit | `Invalid_number) ->
-        Os_msg.msg ~level:`Err ~duration:2. "SMS error";
-        Lwt.return_unit)
+  match Os_connect_phone.request_code number with
+  | Ok () -> f ()
+  | Error `Ownership -> Os_msg.msg ~level:`Err ~duration:2. "Phone taken"
+  | Error (`Unknown | `Send | `Limit | `Invalid_number) ->
+      Os_msg.msg ~level:`Err ~duration:2. "SMS error"
 
 let%client
     confirm_code_signup_handler () (first_name, (last_name, (password, number)))
@@ -472,10 +437,9 @@ let%client confirm_code_extra_handler () number =
   confirm_code_popup ~dest:`Settings Os_connect_phone.confirm_code_extra
 
 let%client confirm_code_recovery_handler () number =
-  Lwt.bind (Os_connect_phone.request_recovery_code number) (function
-    | Ok () ->
-        confirm_code_popup ~dest:`Settings
-          Os_connect_phone.confirm_code_recovery
-    | Error (`Unknown | `Send | `Limit | _) ->
-        Os_msg.msg ~level:`Err ~duration:2. "SMS error";
-        Lwt.return ())
+  match Os_connect_phone.request_recovery_code number with
+  | Ok () ->
+      confirm_code_popup ~dest:`Settings
+        Os_connect_phone.confirm_code_recovery
+  | Error (`Unknown | `Send | `Limit | _) ->
+      Os_msg.msg ~level:`Err ~duration:2. "SMS error"

@@ -23,7 +23,7 @@
 
 [%%client.start]
 
-val reload : unit -> unit Lwt.t
+val reload : unit -> unit
 (** [reload ()] reloads the current page. *)
 
 [%%shared.start]
@@ -54,7 +54,7 @@ end
 val phone_regexp : Re.Str.regexp
 val email_regexp : Re.Str.regexp
 
-val memoizator : (unit -> 'a Lwt.t) -> unit -> 'a Lwt.t
+val memoizator : (unit -> 'a) -> unit -> 'a
 (** [memoizator f ()] caches the returned value of [f ()] *)
 
 val string_repeat : string -> int -> string
@@ -64,7 +64,7 @@ val lwt_bound_input_enter :
    ?a:[< Html_types.input_attrib] Eliom_content.Html.attrib list
   -> ?button:[< Html_types.button] Eliom_content.Html.elt
   -> ?validate:(string -> bool) Eliom_client_value.t
-  -> (string -> unit Lwt.t) Eliom_client_value.t
+  -> (string -> unit) Eliom_client_value.t
   -> [> `Input] Eliom_content.Html.elt
 (** [lwt_bound_input_enter f] produces an input element bound to [f],
     i.e., when the user submits the input, we call [f]. *)
@@ -73,7 +73,7 @@ val lwt_bind_input_enter :
    ?validate:(string -> bool) Eliom_client_value.t
   -> ?button:[< Html_types.button | Html_types.input] Eliom_content.Html.elt
   -> Html_types.input Eliom_content.Html.elt
-  -> (string -> unit Lwt.t) Eliom_client_value.t
+  -> (string -> unit) Eliom_client_value.t
   -> unit
 (** [lwt_bound_input_enter inp f] calls f whenever the user submits
     the contents of [inp]. *)
@@ -82,7 +82,7 @@ val lwt_bind_input_enter :
 
 (** This module contains functions about HTTP request. *)
 module Http : sig
-  val string_of_stream : ?len:int -> string Ocsigen_stream.t -> string Lwt.t
+  val string_of_stream : ?len:int -> string Ocsigen_stream.t -> string
   (** [string_of_stream ?len stream] creates a string of maximum length [len]
         (default is [16384]) from the stream [stream].
      *)
