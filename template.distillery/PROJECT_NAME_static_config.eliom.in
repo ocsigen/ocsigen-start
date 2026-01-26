@@ -13,10 +13,8 @@ let%server set_static_config () =
     Ocsigen_config.set_usedefaulthostname true;
     Ocsigen_config.set_command_pipe "local/var/run/%%%PROJECT_NAME%%%-cmd";
     Ocsigen_config.set_default_charset (Some "utf-8");
-    Ocsipersist_settings.set_host "%%PGHOST%%";
-    Ocsipersist_settings.set_port %%PGPORT%%;
-    Ocsipersist_settings.set_database "ocsipersist_%%%PROJECT_NAME%%%";
-    Ocsipersist.init ();
+    Ocsipersist_settings.set_db_file "local/var/data/ocsipersist-sqlite";
+    Ocsipersist.init ~env:(Option.get (Eio.Fiber.get Ocsigen_lib.env));
     %%%MODULE_NAME%%%_config.os_db_database := Some "%%PGDATABASE%%";
     %%%MODULE_NAME%%%_config.os_db_host := Some "%%PGHOST%%";
     %%%MODULE_NAME%%%_config.os_db_user :=

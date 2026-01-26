@@ -45,8 +45,8 @@ module Page_config = struct
     :: css_name_script
     @ app_js
 
-  let default_predicate _ _ = Lwt.return_true
-  let default_connected_predicate _ _ _ = Lwt.return_true
+  let default_predicate _ _ = true
+  let default_connected_predicate _ _ _ = true
 
   let default_error_page _ _ exn =
     %%%MODULE_NAME%%%_container.page None

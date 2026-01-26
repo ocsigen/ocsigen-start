@@ -6,13 +6,17 @@
  (name %%%PROJECT_NAME%%%)
  (modules
   (:standard \ %%%MODULE_NAME%%%_main))
- (libraries eliom.server ocsigen-start.server ocsipersist-pgsql ocsipersist-pgsql.settings)
+ (libraries
+  eliom.server
+  ocsigen-start.server
+  ocsipersist-sqlite
+  ocsipersist-sqlite.settings)
  (library_flags
   (:standard -linkall))
  (wrapped false)
  (preprocess
   (pps
-   pgocaml_ppx
+      pgocaml_ppx
    js_of_ocaml-ppx_deriving_json
    ocsigen-i18n
    ocsigen-ppx-rpc
@@ -34,13 +38,13 @@
  (libraries
   eliom.server
   ocsigen-start.server
-  ocsipersist-pgsql
+  ocsipersist-sqlite
   ocsigenserver.ext.staticmod
   %%%PROJECT_NAME%%%)
  (modules %%%MODULE_NAME%%%_main)
  (preprocess
   (pps
-   pgocaml_ppx
+      pgocaml_ppx
    js_of_ocaml-ppx_deriving_json
    ocsigen-i18n
    ocsigen-ppx-rpc
@@ -130,7 +134,7 @@
   (preprocess
    (pps
     js_of_ocaml-ppx
-    ocsigen-i18n
+        ocsigen-i18n
     --
     --prefix
     %%%MODULE_NAME%%%_
@@ -139,13 +143,15 @@
     --default-module
     %%%MODULE_NAME%%%_i18n))
   (js_of_ocaml
-   (build_runtime_flags :standard --enable use-js-string)
+   (build_runtime_flags :standard --enable use-js-string --enable effects)
    (flags
     :standard
     --enable
     with-js-error
     --enable
     use-js-string
+    --enable
+    effects
     --no-source-map))
   ; source maps are slow...
   (libraries eliom.client ocsigen-start.client))

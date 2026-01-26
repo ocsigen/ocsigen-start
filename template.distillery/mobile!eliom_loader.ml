@@ -2,18 +2,18 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 (* Load Eliom client-side program after storing global data in
-   localStorage. Compile as follos:
+   localStorage. Compile as follows:
 
    ocamlfind ocamlc \
-     -package js_of_ocaml,js_of_ocaml.ppx \
+     -package js_of_ocaml,js_of_ocaml-ppx,js_of_ocaml-eio \
      -linkpkg -o eliom_loader.byte \
      eliom_loader.ml
 
-   js_of_ocaml eliom_loader.byte
+   js_of_ocaml --effects=cps eliom_loader.byte
 *)
 
-open Lwt.Syntax
-module XmlHttpRequest = Js_of_ocaml_lwt.XmlHttpRequest
+module XmlHttpRequest = Js_of_ocaml_eio.XmlHttpRequest
+module Eio_js_events = Js_of_ocaml_eio.Eio_js_events
 
 (* Debug mode. Set to true if you want to use the debug mode. Used by "log".
 *)
@@ -24,14 +24,14 @@ let debug = false
  *)
 let log =
   if debug then (fun s ->
-    Js_of_ocaml.Firebug.console##log (Js_of_ocaml.Js.string s);
+    Js_of_ocaml.Console.console##log (Js_of_ocaml.Js.string s);
     let p = Js_of_ocaml.Dom_html.createP Js_of_ocaml.Dom_html.document in
     p##.style##.color := Js_of_ocaml.Js.string "#64b5f6";
     Js_of_ocaml.Dom.appendChild p
       (Js_of_ocaml.Dom_html.document##createTextNode (Js_of_ocaml.Js.string s));
     let container = Js_of_ocaml.Dom_html.getElementById "app-container" in
     Js_of_ocaml.Dom.appendChild container p)
-  else fun s -> ()
+  else fun _ -> ()
 
 (* Reference used by the binding to fetchUpdate to know if update has been done
  * or if it failed.
@@ -80,28 +80,27 @@ let rec add_retry_button wake msg =
           ignore Js_of_ocaml.Js.Unsafe.global##.chcp##fetchUpdate);
         if !data_upload_failed then (
           data_upload_failed := false;
-          Lwt.async (fun () -> get_data wake));
+          Eio_js_events.async (fun () -> get_data wake));
         Js_of_ocaml.Js._false);
   btn##.id := Js_of_ocaml.Js.string "retry-button";
   Js_of_ocaml.Dom.appendChild p btn;
   Js_of_ocaml.Dom.appendChild container p
 
 and get_data wake =
-  let* { XmlHttpRequest.content; code } = XmlHttpRequest.get url in
+  let { XmlHttpRequest.content; code; _ } = XmlHttpRequest.get url in
   if code = 200 then (
     log "Got global data";
     (storage ())##setItem
       (Js_of_ocaml.Js.string "__global_data")
       (Js_of_ocaml.Js.string content);
-    Lwt.wakeup wake ())
+    Eio.Promise.resolve wake ())
   else (
     log "Could not get global data";
     if not (!update_failed || !data_upload_failed) then (
       data_upload_failed := true;
       add_retry_button wake
         "Cannot connect to the server. Please make sure that this app has \
-         access to a data connection."));
-  Lwt.return_unit
+         access to a data connection."))
 
 (* Get the URL saved in the JavaScript variables "___eliom_html_url_" defined in
  * index.html and go this location.
@@ -120,9 +119,9 @@ let _ =
             ignore Js_of_ocaml.Js.Unsafe.global##.chcp##fetchUpdate;
             Js_of_ocaml.Js._true))
        Js_of_ocaml.Js._false;
-  (* Create two threads for success callbacks and error callbacks. *)
-  let wait_success, wake_success = Lwt.wait () in
-  let wait_error, wake_error = Lwt.wait () in
+  (* Create two promises for success callbacks and error callbacks. *)
+  let wait_success, wake_success = Eio.Promise.create () in
+  let wait_error, wake_error = Eio.Promise.create () in
   (* Callback when success.
    * [callback ev] will print the event if debug mode is activated.
    * Calls by the event chcp_nothingToUpdate.
@@ -131,7 +130,7 @@ let _ =
     Js_of_ocaml.Dom.handler (fun _ ->
         log ev;
         update_failed := false;
-        Lwt.wakeup wake_success ();
+        Eio.Promise.resolve wake_success ();
         Js_of_ocaml.Js._true)
   in
   (* Callback when errors.
@@ -151,7 +150,7 @@ let _ =
   in
   (* Callback to print a message *)
   let status_callback name =
-    Js_of_ocaml.Dom.handler (fun ev ->
+    Js_of_ocaml.Dom.handler (fun _ ->
         log name;
         Js_of_ocaml.Js.bool true)
   in
@@ -194,9 +193,9 @@ let _ =
       "chcp_beforeAssetsInstalledOnExternalStorage";
       "chcp_assetsInstalledOnExternalStorage";
     ];
-  Lwt.async @@ fun () ->
-  let* _ = Js_of_ocaml_lwt.Lwt_js_events.onload () in
-  let* _ = get_data wake_error in
-  let* _ = wait_error in
-  let* _ = wait_success in
-  Lwt.return (redirect ())
+  Js_of_ocaml_eio.Eio_js.start @@ fun () ->
+  let _ = Eio_js_events.onload () in
+  get_data wake_error;
+  let _ = Eio.Promise.await wait_error in
+  let _ = Eio.Promise.await wait_success in
+  redirect ()

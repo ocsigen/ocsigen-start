@@ -16,12 +16,6 @@ let%server demo =
 
 let%client demo = ~%demo
 
-let%server demo_popup =
-  Eliom_service.create ~path:(Eliom_service.Path ["demo-popup"])
-    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
-
-let%client demo_popup = ~%demo_popup
-
 let%server demo_rpc =
   Eliom_service.create ~path:(Eliom_service.Path ["demo-rpc"])
     ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
@@ -63,6 +57,12 @@ let%server demo_i18n =
     ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
 
 let%client demo_i18n = ~%demo_i18n
+
+let%server demo_popup =
+  Eliom_service.create ~path:(Eliom_service.Path ["demo-popup"])
+    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
+
+let%client demo_popup = ~%demo_popup
 
 let%server demo_tips =
   Eliom_service.create ~path:(Eliom_service.Path ["demo-tips"])

@@ -15,8 +15,10 @@ module Make (A : module type of Eliom_content.Html.F) = struct
       "i" is used because it is the de facto standard for icons. The
       optional parameter ~a is at the end to be able to add other CSS
       classes with predefined icons. *)
-  let icon classes
-      ?(a = ([] : Html_types.i_attrib Eliom_content.Html.attrib list)) ()
+  let icon
+        classes
+        ?(a = ([] : Html_types.i_attrib Eliom_content.Html.attrib list))
+        ()
     =
     A.i ~a:(A.a_class ("fa" :: classes) :: a) []
 

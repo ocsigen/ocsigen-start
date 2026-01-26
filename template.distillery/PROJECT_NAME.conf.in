@@ -27,11 +27,10 @@
       <ocsidbm name="ocsidbm"/>
     </extension>
     -->
-    <!--
     <extension findlib-package="ocsipersist-sqlite-config">
       <database file="%%DATADIR%%/ocsidb"/>
     </extension>
-    -->
+    <!--
     <extension findlib-package="ocsipersist-pgsql-config">
       <database
         host="%%DB_HOST%%"
@@ -41,6 +40,7 @@
         database="ocsipersist_%%%PROJECT_NAME%%%"
       />
     </extension>
+    -->
     <extension findlib-package="eliom.server">
       <!-- Ask Eliom to ignore UTM parameters and others: -->
       <ignoredgetparams regexp="utm_[a-z]*|[a-z]*clid|li_fat_id"/>

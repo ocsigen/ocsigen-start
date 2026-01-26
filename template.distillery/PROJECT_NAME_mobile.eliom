@@ -2,9 +2,9 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 [%%client.start]
-[%%client open Lwt.Syntax]
-[%%client open Js_of_ocaml]
-[%%client open Js_of_ocaml_lwt]
+
+open%client Js_of_ocaml
+open%client Js_of_ocaml_eio
 
 (* This RPC is called when client application is initialized. This
    way, the server sends necessary cookies to the client (the mobile
@@ -14,28 +14,34 @@
    The RPC only initializes Os_date by default, but you can add your
    own actions to be performed server side on first client request, if
    necessary. *)
-let%rpc init_request myid_o (tz : string) : unit Lwt.t =
-  ignore myid_o; Os_date.initialize tz; Lwt.return_unit
+let%rpc init_request myid_o (tz : string) : unit =
+  ignore myid_o; Os_date.initialize tz
 
-let to_lwt f =
-  let wait, wakeup = Lwt.wait () in
-  f (Lwt.wakeup wakeup);
-  wait
+(* Wait for an event using Eio. Must be called inside an Eio fiber. *)
+let await_event target event_name =
+  Eio_js_backend.await
+    ~setup:(fun ~resolve ~reject:_ ->
+      let handler = Js_of_ocaml.Dom_html.handler (fun _ ->
+        resolve ();
+        Js_of_ocaml.Js._true)
+      in
+      (* addEventListener returns an event_listener_id that can be used to remove it *)
+      Js_of_ocaml.Dom.addEventListener target
+        (Js_of_ocaml.Dom_html.Event.make event_name)
+        handler
+        Js_of_ocaml.Js._false)
+    ~cancel:(fun listener_id ->
+      Js_of_ocaml.Dom.removeEventListener listener_id)
 
-let ondeviceready =
-  to_lwt (fun cont ->
-    ignore
-    @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
-         (Js_of_ocaml.Dom_html.Event.make "deviceready")
-         (Js_of_ocaml.Dom_html.handler (fun _ -> cont (); Js_of_ocaml.Js._true))
-         Js_of_ocaml.Js._false)
+let ondeviceready () =
+  await_event Js_of_ocaml.Dom_html.document "deviceready"
 
 let app_started = ref false
 let initial_change_page = ref None
 
 let change_page_gen action =
   if !app_started
-  then Lwt.async action
+  then Eio_js.start action
   else if !initial_change_page = None
   then initial_change_page := Some action
 
@@ -44,8 +50,8 @@ let change_page_uri uri =
 
 let handle_initial_url () =
   let tz = Os_date.user_tz () in
-  let* () = init_request tz in
-  let* () = ondeviceready in
+  let () = init_request tz in
+  let () = ondeviceready () in
   app_started := true;
   match !initial_change_page with
   | None ->
@@ -54,15 +60,15 @@ let handle_initial_url () =
   | Some action -> action ()
 
 let () =
-  Lwt.async @@ fun () ->
-  if Eliom_client.is_client_app ()
-  then (
-    (* Initialize the application server-side; there should be a
+  Eio_js.start (fun () ->
+    if Eliom_client.is_client_app ()
+    then (
+      (* Initialize the application server-side; there should be a
        single initial request for that. *)
-    Os_date.disable_auto_init ();
-    let* _ = Lwt_js_events.onload () in
-    handle_initial_url ())
-  else Lwt.return_unit
+      Os_date.disable_auto_init ();
+      let _ = Js_of_ocaml_eio.Eio_js_events.onload () in
+      handle_initial_url ())
+    else ())
 
 (* Reactivate comet on resume and online events *)
 
@@ -110,9 +116,11 @@ type event =
       Js_of_ocaml.Js.js_string Js_of_ocaml.Js.t Js_of_ocaml.Js.readonly_prop
   ; params : 'a. 'a Js_of_ocaml.Js.t Js_of_ocaml.Js.readonly_prop >
 
+(* Returns the universal links API if available. Must be called inside an Eio fiber
+   since it waits for deviceready. *)
 let universal_links () =
-  let* () = ondeviceready in
-  Lwt.return @@ Js_of_ocaml.Js.Optdef.to_option
+  let () = ondeviceready () in
+  Js_of_ocaml.Js.Optdef.to_option
   @@ (Js_of_ocaml.Js.Unsafe.global##.universalLinks
       : < subscribe :
             Js_of_ocaml.Js.js_string Js_of_ocaml.Js.opt
@@ -124,8 +132,9 @@ let universal_links () =
           Js_of_ocaml.Js.t
           Js_of_ocaml.Js.Optdef.t)
 
-let _ =
-  Lwt.bind (universal_links ()) (function
+let () =
+  Eio_js.start (fun () ->
+    match universal_links () with
     | Some universal_links ->
         Js_of_ocaml.Console.console##log
           (Js_of_ocaml.Js.string "Universal links: registering");
@@ -136,9 +145,8 @@ let _ =
                ev##.url;
              change_page_uri (Js_of_ocaml.Js.to_string ev##.url)));
         Js_of_ocaml.Console.console##log
-          (Js_of_ocaml.Js.string "Universal links: registered");
-        Lwt.return_unit
-    | None -> Lwt.return_unit)
+          (Js_of_ocaml.Js.string "Universal links: registered")
+    | None -> ())
 
 (* Debugging *)
 
@@ -148,4 +156,5 @@ let _ =
    debugger console, you can do so by uncommenting the following
    lines.  *)
 (* let () = Eliom_config.debug_timings := true *)
-(* let () = Logs.set_level (Some Logs.Debug) *)
+(* let () = Logs.Src.set_level (Logs.Src.create "eliom.client") (Some Logs.Debug) *)
+(* let () = Logs.Src.set_level (Logs.Src.create "os") (Some Logs.Debug) *)

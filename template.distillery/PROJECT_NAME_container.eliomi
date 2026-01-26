@@ -8,18 +8,15 @@
 val os_header :
    ?user:Os_types.User.t
   -> unit
-  -> [> `Header] Eliom_content.Html.F.elt Lwt.t
+  -> [> `Header] Eliom_content.Html.F.elt
 (** [os_header ?user ()] defines the header for all pages. In this
     template, it's a userbox and the user name is displayed. *)
 
 val os_footer : unit -> [> `Footer] Eliom_content.Html.F.elt
 (** [os_footer ()] defines a footer for the page. *)
 
-val connected_welcome_box :
-   unit
-  -> [> Html_types.div] Eliom_content.Html.F.elt Lwt.t
-
-val get_user_data : Os_types.User.id option -> Os_types.User.t option Lwt.t
+val connected_welcome_box : unit -> [> Html_types.div] Eliom_content.Html.F.elt
+val get_user_data : Os_types.User.id option -> Os_types.User.t option
 
 val page :
    ?html_a:Html_types.html_attrib Eliom_content.Html.attrib list
@@ -29,7 +26,7 @@ val page :
   -> Os_types.User.id option
   -> [< Html_types.div_content_fun > `Div] Eliom_content.Html.F.elt
        Eliom_content.Html.F.list_wrap
-  -> Os_page.content Lwt.t
+  -> Os_page.content
 (** [page userid_o content] returns a page personalized for the user
     with id [myid_o] and with the content [content]. It adds a header,
     a footer, and a drawer menu.  If the user profile is not
@@ -37,6 +34,4 @@ val page :
 
 [%%shared.start]
 
-val get_wrong_pdata :
-   unit
-  -> ((string * string) * (string * string)) option Lwt.t
+val get_wrong_pdata : unit -> ((string * string) * (string * string)) option
