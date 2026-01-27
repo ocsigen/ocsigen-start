@@ -5,14 +5,13 @@
    localStorage. Compile as follos:
 
    ocamlfind ocamlc \
-     -package js_of_ocaml,js_of_ocaml.ppx \
+     -package js_of_ocaml,js_of_ocaml.ppx,lwt_ppx \
      -linkpkg -o eliom_loader.byte \
      eliom_loader.ml
 
    js_of_ocaml eliom_loader.byte
 *)
 
-open Lwt.Syntax
 module XmlHttpRequest = Js_of_ocaml_lwt.XmlHttpRequest
 
 (* Debug mode. Set to true if you want to use the debug mode. Used by "log".
@@ -24,16 +23,14 @@ let debug = false
  *)
 let log =
   if debug
-  then (
-    fun s ->
-      Js_of_ocaml.Firebug.console##log (Js_of_ocaml.Js.string s);
-      let p = Js_of_ocaml.Dom_html.createP Js_of_ocaml.Dom_html.document in
-      p##.style##.color := Js_of_ocaml.Js.string "#64b5f6";
-      Js_of_ocaml.Dom.appendChild p
-        (Js_of_ocaml.Dom_html.document##createTextNode
-           (Js_of_ocaml.Js.string s));
-      let container = Js_of_ocaml.Dom_html.getElementById "app-container" in
-      Js_of_ocaml.Dom.appendChild container p)
+  then (fun s ->
+    Js_of_ocaml.Console.console##log (Js_of_ocaml.Js.string s);
+    let p = Js_of_ocaml.Dom_html.createP Js_of_ocaml.Dom_html.document in
+    p##.style##.color := Js_of_ocaml.Js.string "#64b5f6";
+    Js_of_ocaml.Dom.appendChild p
+      (Js_of_ocaml.Dom_html.document##createTextNode (Js_of_ocaml.Js.string s));
+    let container = Js_of_ocaml.Dom_html.getElementById "app-container" in
+    Js_of_ocaml.Dom.appendChild container p)
   else fun s -> ()
 
 (* Reference used by the binding to fetchUpdate to know if update has been done
@@ -92,7 +89,7 @@ let rec add_retry_button wake msg =
   Js_of_ocaml.Dom.appendChild container p
 
 and get_data wake =
-  let* {XmlHttpRequest.content; code} = XmlHttpRequest.get url in
+  let%lwt {XmlHttpRequest.content; code} = XmlHttpRequest.get url in
   if code = 200
   then (
     log "Got global data";
@@ -196,8 +193,8 @@ let _ =
     ; "chcp_beforeAssetsInstalledOnExternalStorage"
     ; "chcp_assetsInstalledOnExternalStorage" ];
   Lwt.async @@ fun () ->
-  let* _ = Js_of_ocaml_lwt.Lwt_js_events.onload () in
-  let* _ = get_data wake_error in
-  let* _ = wait_error in
-  let* _ = wait_success in
+  let%lwt _ = Js_of_ocaml_lwt.Lwt_js_events.onload () in
+  let%lwt _ = get_data wake_error in
+  let%lwt _ = wait_error in
+  let%lwt _ = wait_success in
   Lwt.return (redirect ())
