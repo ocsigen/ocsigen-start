@@ -23,10 +23,10 @@ let sort l =
   let res = ref [] in
   List.iter
     (fun (target, deps) ->
-       let target = chop target in
-       if not (Hashtbl.mem edge_count target)
-       then Hashtbl.add edge_count target 0;
-       List.iter (fun dep -> add_edge target (chop dep)) deps)
+      let target = chop target in
+      if not (Hashtbl.mem edge_count target)
+      then Hashtbl.add edge_count target 0;
+      List.iter (fun dep -> add_edge target (chop dep)) deps)
     l;
   let q = Queue.create () in
   Hashtbl.iter
@@ -39,9 +39,9 @@ let sort l =
     Hashtbl.remove edges n;
     List.iter
       (fun target ->
-         let c = Hashtbl.find edge_count target - 1 in
-         Hashtbl.replace edge_count target c;
-         if c = 0 then Queue.add target q)
+        let c = Hashtbl.find edge_count target - 1 in
+        Hashtbl.replace edge_count target c;
+        if c = 0 then Queue.add target q)
       l
   done;
   if Hashtbl.length edges <> 0
@@ -69,5 +69,5 @@ let _ =
   done;
   List.iter
     (fun f ->
-       try Format.printf "%s@." (Hashtbl.find files f) with Not_found -> ())
+      try Format.printf "%s@." (Hashtbl.find files f) with Not_found -> ())
     lst

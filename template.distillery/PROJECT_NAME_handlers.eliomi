@@ -7,9 +7,7 @@
     handlers from OS (see {!Os_handlers}), it overrides some of them
     for the purposes of this template. *)
 
-[%%server.start]
-
-val upload_user_avatar_handler :
+val%server upload_user_avatar_handler :
    Os_types.User.id
   -> unit
   -> unit
@@ -18,9 +16,7 @@ val upload_user_avatar_handler :
 (** Update new user avatar with cropping option. The new avatar is saved
     and the old one is removed. *)
 
-[%%shared.start]
-
-val set_personal_data_handler :
+val%shared set_personal_data_handler :
    unit
   -> (string * string) * (string * string)
   -> unit Lwt.t
@@ -28,17 +24,17 @@ val set_personal_data_handler :
     {!Os_handlers.set_personal_data_handler} and gets the user information
     with {!Os_session.connected_fun}. *)
 
-val forgot_password_handler : unit -> string -> unit Lwt.t
+val%shared forgot_password_handler : unit -> string -> unit Lwt.t
 (** Reset forgotten password. It uses the default OS handler
     {!Os_handlers.forgot_password_handler} with the main service. *)
 
-val action_link_handler :
+val%shared action_link_handler :
    Os_types.User.id option
   -> string
   -> unit
   -> %%%MODULE_NAME%%%_base.App.result Lwt.t
 
-val set_password_handler :
+val%shared set_password_handler :
    unit
   -> string * string
   -> Eliom_service.non_ocaml Eliom_registration.redirection Lwt.t
@@ -46,7 +42,7 @@ val set_password_handler :
     {!Os_handlers.set_password_handler} and gets the user information
     with {!Os_session.connected_fun}. *)
 
-val preregister_handler : unit -> string -> unit Lwt.t
+val%shared preregister_handler : unit -> string -> unit Lwt.t
 
 (** The following functions are the handlers for the three main pages.
     They are created with {!%%%MODULE_NAME%%%_container.page} which
@@ -56,21 +52,21 @@ val preregister_handler : unit -> string -> unit Lwt.t
     For each of them, you can personalize the page for a specific user
     by sending the userid as first parameter. *)
 
-val main_service_handler :
+val%shared main_service_handler :
    Os_types.User.id option
   -> unit
   -> unit
   -> Os_page.content Lwt.t
 (** The first page of the application *)
 
-val about_handler :
+val%shared about_handler :
    Os_types.User.id option
   -> unit
   -> unit
   -> Os_page.content Lwt.t
 (** About page *)
 
-val settings_handler :
+val%shared settings_handler :
    Os_types.User.id option
   -> unit
   -> unit
@@ -79,7 +75,7 @@ val settings_handler :
     {!%%%MODULE_NAME%%%_container.get_user_data}), a settings
     container will be created. *)
 
-val update_language_handler :
+val%shared update_language_handler :
    unit
   -> string
   -> Eliom_registration.Action.page Lwt.t
