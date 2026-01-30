@@ -128,7 +128,7 @@
  client
  (executables
   (names %%%PROJECT_NAME%%%)
-  (modes js byte)
+  (modes js byte wasm)
   (preprocess
    (pps
     js_of_ocaml-ppx
@@ -151,6 +151,13 @@
     use-js-string
     --no-source-map))
   ; source maps are slow...
+  (wasm_of_ocaml
+   (flags
+    :standard
+    --enable
+    use-js-string
+    --enable
+    with-js-error))
   (libraries eliom.client ocsigen-start.client))
  (dynamic_include ../gen/dune.client))
 
@@ -162,6 +169,7 @@
   %%%PROJECT_NAME%%%.cma
   client/%%%PROJECT_NAME%%%.bc
   client/%%%PROJECT_NAME%%%.bc.js
+  client/%%%PROJECT_NAME%%%.bc.wasm.js
   tools/check_modules.ml)
  (action
   (run ocaml -I +unix -I +str tools/check_modules.ml %%%PROJECT_NAME%%%)))

@@ -3,6 +3,7 @@
 
 val app_name : string ref
 val css_name : string ref
+val wasm_name : string ref
 val avatar_dir : string list ref
 val os_db_host : string option ref
 val os_db_port : int option ref

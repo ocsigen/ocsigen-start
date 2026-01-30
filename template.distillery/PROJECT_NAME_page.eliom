@@ -17,11 +17,33 @@ let%server css_name_script =
 
 let%client css_name_script = []
 
+let%server wasm_name = !%%%MODULE_NAME%%%_config.wasm_name
+
+let%client wasm_name =
+  try Js_of_ocaml.Js.to_string Js_of_ocaml.Js.Unsafe.global##.___wasm_name_
+  with _ -> ""
+
+let%server wasm_name_script =
+  [script (cdata_script (Printf.sprintf "var __wasm_name = '%s';" wasm_name))]
+
+let%client wasm_name_script = []
+
 (* Warning: either we use exactly the same global node (and make sure
    global nodes work properly on client side), or we do not add the
    script on client side.  We chose the second solution. *)
-let%server app_js = [%%%MODULE_NAME%%%_base.App.application_script ~defer:true ()]
-let%client app_js = []
+let%server app_js () =
+  if wasm_name <> "" && (Eliom_request_info.get_sitedata ()).Eliom_common.enable_wasm
+  then
+    (* Use WASM detection script with hashed filenames *)
+    let app_name = !%%%MODULE_NAME%%%_config.app_name in
+    [%%%MODULE_NAME%%%_base.App.wasm_detection_script
+       ~defer:true
+       ~js_name:(app_name ^ ".js")
+       ~wasm_name
+       ()]
+  else [%%%MODULE_NAME%%%_base.App.application_script ~defer:true ()]
+
+let%client app_js () = []
 let%server the_local_js = []
 let%client the_local_js = [] (* in index.html *)
 let%shared the_local_css = [[css_name]]
@@ -33,14 +55,15 @@ module%shared Page_config = struct
   let local_js = the_local_js
   let local_css = the_local_css
 
-  let other_head =
+  let other_head () =
     meta
       ~a:
         [ a_name "viewport"
         ; a_content "width=device-width, initial-scale=1, user-scalable=no" ]
       ()
     :: css_name_script
-    @ app_js
+    @ wasm_name_script
+    @ app_js ()
 
   let default_predicate _ _ = Lwt.return_true
   let default_connected_predicate _ _ _ = Lwt.return_true
