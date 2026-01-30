@@ -64,7 +64,15 @@ let%server _ =
         ((* Eliom_config.debug_timings := true; *)
          Logs.set_level (Some Logs.Debug)
          : unit)];
-    Logs.set_level (Some Logs.Debug))
+    (* Enable Debug level only for ocsigenserver, eliom and %%%PROJECT_NAME%%% logs *)
+    Logs.Src.list ()
+    |> List.iter (fun src ->
+           let name = Logs.Src.name src in
+           if String.starts_with ~prefix:"ocsigenserver" name
+              || String.starts_with ~prefix:"eliom" name
+              || String.starts_with ~prefix:"%%%PROJECT_NAME%%%" name
+              || String.starts_with ~prefix:"%%%MODULE_NAME%%%" name
+           then Logs.Src.set_level src (Some Logs.Debug)))
 
 (* The modules below are all the modules that needs to be explicitely
    linked-in. *)
