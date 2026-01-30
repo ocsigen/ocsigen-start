@@ -1,2 +1,2 @@
 =Ocsigen start
-==[[intro|Introduction]]
+===[[intro|Introduction]]
