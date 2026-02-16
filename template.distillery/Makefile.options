@@ -150,6 +150,9 @@ SASS_PATH             := $(SASSDIR)/lib:$(LOCAL_STATIC_CSS)
 # JavaScript, ocsigenserver
 DEBUG                 := yes
 
+# Enable WASM compilation (yes/no): Requires wasm_of_ocaml (enabled by default)
+USE_WASM              := yes
+
 ##----------------------------------------------------------------------
 
 ##----------------------------------------------------------------------

@@ -18,6 +18,7 @@
 
 let app_name = ref ""
 let css_name = ref ""
+let wasm_name = ref ""
 
 (* The name of the avatar directory. *)
 let avatar_dir = ref []
@@ -38,7 +39,8 @@ let app =
   let open Ocsigen_extensions.Configuration in
   let attributes =
     [ attribute ~name:"name" ~obligatory:true (fun h -> app_name := h)
-    ; attribute ~name:"css" ~obligatory:true (fun h -> css_name := h) ]
+    ; attribute ~name:"css" ~obligatory:true (fun h -> css_name := h)
+    ; attribute ~name:"wasm" (fun h -> wasm_name := h) ]
   in
   element ~name:"app" ~obligatory:true ~attributes ()
 

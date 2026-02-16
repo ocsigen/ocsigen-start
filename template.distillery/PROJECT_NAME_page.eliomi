@@ -3,7 +3,9 @@
 
 val%shared css_name : string
 val%shared css_name_script : [> Html_types.script] Eliom_content.Html.F.elt list
-val%shared app_js : [> `Script] Eliom_content.Html.elt list
+val%shared wasm_name : string
+val%shared wasm_name_script : [> Html_types.script] Eliom_content.Html.F.elt list
+val%shared app_js : unit -> [> `Script] Eliom_content.Html.elt list
 val%shared the_local_js : 'a list
 val%shared the_local_css : string list list
 
@@ -13,7 +15,7 @@ module%shared Page_config : sig
   val title : string
   val local_js : 'a list
   val local_css : string list list
-  val other_head : [> Html_types.head_content] Eliom_content.Html.F.elt list
+  val other_head : unit -> Html_types.head_content_fun Eliom_content.Html.elt list
   val default_predicate : 'a -> 'b -> bool Lwt.t
   val default_connected_predicate : 'a -> 'b -> 'c -> bool Lwt.t
   val default_error_page : 'a -> 'b -> exn -> Os_page.content Lwt.t

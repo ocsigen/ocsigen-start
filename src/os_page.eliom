@@ -51,7 +51,7 @@ module type PAGE = sig
   val local_js : string list list
   val css : string list list
   val local_css : string list list
-  val other_head : Html_types.head_content_fun Eliom_content.Html.elt list
+  val other_head : unit -> Html_types.head_content_fun Eliom_content.Html.elt list
   val default_error_page : 'a -> 'b -> exn -> content Lwt.t
 
   val default_connected_error_page :
@@ -76,7 +76,7 @@ module Default_config = struct
   let css : string list list = []
   let local_js : string list list = []
   let local_css : string list list = []
-  let other_head : Html_types.head_content_fun Eliom_content.Html.elt list = []
+  let other_head () : Html_types.head_content_fun Eliom_content.Html.elt list = []
 
   let err_page exn =
     let de =
@@ -144,7 +144,7 @@ module Make (C : PAGE) = struct
     in
     html ~a:content.html_attrs
       (Eliom_tools.F.head ~title ~css ~js
-         ~other:(local_css @ local_js @ content.head @ C.other_head)
+         ~other:(local_css @ local_js @ content.head @ C.other_head ())
          ())
       (body
          ~a:(platform_attr :: connected_attr :: content.body_attrs)
