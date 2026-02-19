@@ -18,19 +18,19 @@ license: "LGPL-2.1-only WITH OCaml-LGPL-linking-exception"
 build: [ make "-j%{jobs}%" ]
 install: [ make "install" ]
 depends: [
-  "ocaml" {>= "4.08.1"}
+  "ocaml" {>= "4.10.0"}
   "pgocaml" {>= "4.0"}
   "pgocaml_ppx" {>= "4.0"}
   "safepass" {>= "3.0"}
   "ocsigen-i18n" {>= "4.0.0"}
-  "eliom" {>= "11.0.0" & < "12.0.0"}
+  "eliom" {>= "12.0.0" & < "13.0.0"}
   "ocsigen-toolkit" {>= "2.7.0"}
   "ocsigen-ppx-rpc" {>= "1.1"}
   "ocsigen-i18n" {>= "3.7.0"}
   "yojson" {>= "1.6.0"}
   "resource-pooling" {>= "1.0" & < "2.0"}
   "cohttp-lwt-unix"
-  "js_of_ocaml" {>= "6.0.0"}
+  "js_of_ocaml" {>= "6.3.2"}
   "re" {>= "1.7.2"}
   "ocsipersist-pgsql-config" {>= "2.0" & < "3.0"}
 ]
