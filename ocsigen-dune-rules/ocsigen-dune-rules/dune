@@ -1,0 +1,4 @@
+(executable
+ (public_name ocsigen-dune-rules)
+ (name main)
+ (libraries cmdliner))
