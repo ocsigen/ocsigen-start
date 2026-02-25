@@ -1,0 +1,5 @@
+(executable
+ (public_name ocsigen-ppx-client)
+ (package ocsigen-dune-rules)
+ (name main)
+ (libraries ocsigen-ppx-rpc eliom.ppx.client))
