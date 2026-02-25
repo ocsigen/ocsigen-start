@@ -1,0 +1,44 @@
+(env
+ (_
+  (flags
+   (:standard -w +A@3-4@5..15-9@20..68-37-39-44-48-69-34))))
+
+(library
+ (public_name ocsigen-start.server)
+ (name ocsigen_start)
+ (modes byte native)
+ (wrapped false)
+ (preprocess
+  (pps eliom.ppx.server js_of_ocaml-ppx_deriving_json ocsigen-ppx-rpc))
+ (libraries
+  eliom.server
+  js_of_ocaml
+  calendar
+  safepass
+  ocsigen-toolkit.server
+  yojson
+  re.str
+  cohttp-lwt-unix
+  pgocaml
+  resource-pooling))
+
+(subdir
+ client
+ (library
+  (public_name ocsigen-start.client)
+  (name ocsigen_start)
+  (modes byte)
+  (wrapped false)
+  (preprocess
+   (pps js_of_ocaml-ppx js_of_ocaml-ppx_deriving_json))
+  (libraries eliom.client calendar ocsigen-toolkit.client re.str js_of_ocaml))
+ (dynamic_include ../dune.client))
+
+(rule
+ (deps
+  (glob_files *.eliom)
+  (glob_files *.eliomi))
+ (action
+  (with-stdout-to
+   dune.client
+   (run ocsigen-dune-rules .))))
