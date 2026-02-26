@@ -62,7 +62,7 @@ val string_filter : (char -> bool) -> string -> string
 
 val lwt_bound_input_enter :
    ?a:[< Html_types.input_attrib] Eliom_content.Html.attrib list
-  -> ?button:[< Html_types.button] Eliom_content.Html.elt
+  -> ?button:[< `Button | `Input] Eliom_content.Html.elt
   -> ?validate:(string -> bool) Eliom_client_value.t
   -> (string -> unit Lwt.t) Eliom_client_value.t
   -> [> `Input] Eliom_content.Html.elt
@@ -71,8 +71,8 @@ val lwt_bound_input_enter :
 
 val lwt_bind_input_enter :
    ?validate:(string -> bool) Eliom_client_value.t
-  -> ?button:[< Html_types.button | Html_types.input] Eliom_content.Html.elt
-  -> Html_types.input Eliom_content.Html.elt
+  -> ?button:[< `Button | `Input] Eliom_content.Html.elt
+  -> [`Input] Eliom_content.Html.elt
   -> (string -> unit Lwt.t) Eliom_client_value.t
   -> unit
 (** [lwt_bound_input_enter inp f] calls f whenever the user submits

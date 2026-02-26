@@ -295,7 +295,7 @@ let%shared
            option)
       ?(recipient = `All)
       ?(arrow :
-         [< `left of int | `right of int | `top of int | `bottom of int]
+         [`left of int | `right of int | `top of int | `bottom of int]
            Eliom_client_value.t
            option)
       ?(top : int Eliom_client_value.t option)
@@ -315,6 +315,13 @@ let%shared
            Eliom_client_value.t)
       ()
   =
+  let a =
+    (a :> Html_types.div_attrib Eliom_content.Html.D.attrib list option)
+  in
+  let parent_node =
+    (parent_node
+      :> [`Body | Html_types.body_content] Eliom_content.Html.elt option)
+  in
   let delay : float option = delay in
   let onclose : (unit -> unit Lwt.t) Eliom_client_value.t option = onclose in
   let myid_o = Os_current_user.Opt.get_current_userid () in

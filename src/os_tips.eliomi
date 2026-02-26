@@ -26,7 +26,7 @@ val bubble :
    ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.D.attrib list
   -> ?recipient:[> `All | `Connected | `Not_connected]
   -> ?arrow:
-       [< `left of int | `right of int | `top of int | `bottom of int]
+       [`left of int | `right of int | `top of int | `bottom of int]
          Eliom_client_value.t
   -> ?top:int Eliom_client_value.t
   -> ?left:int Eliom_client_value.t
