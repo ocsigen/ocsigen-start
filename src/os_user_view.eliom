@@ -113,10 +113,13 @@ let%shared
   let form =
     D.Form.post_form ?a ~service:Os_services.connect_service
       (fun ((login, password), keepmeloggedin) ->
+         let pwd_input =
+           D.Form.input
+             ~a:[a_placeholder a_placeholder_pwd]
+             ~name:password ~input_type:`Password D.Form.string
+         in
          let l =
-           [ D.Form.input
-               ~a:[a_placeholder a_placeholder_pwd]
-               ~name:password ~input_type:`Password D.Form.string
+           [ Ot_form.password_toggle pwd_input
            ; label
                [ D.Form.bool_checkbox_one
                    ~a:[a_checked ()]
