@@ -6,8 +6,21 @@
 
 @import url('https://fonts.googleapis.com/css?family=Quicksand');
 
-$main-color: #25a;
-$dark-color: #445;
+$main-color: #2563eb;
+$main-color-light: #3b82f6;
+$main-color-dark: #1d4ed8;
+$dark-color: #1e293b;
+$text-color: #334155;
+$text-muted: #64748b;
+$border-color: #e2e8f0;
+$bg-subtle: #f8fafc;
+$success-color: #16a34a;
+$danger-color: #dc2626;
+$radius: 8px;
+$radius-lg: 12px;
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+$shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.12);
 $breakpoint1: 720px;
 
 html { box-sizing: border-box; }
@@ -15,8 +28,10 @@ html { box-sizing: border-box; }
 
 body {
     margin: 0;
-    font-size: 14px;
-    background-color: white;
+    font-size: 15px;
+    background-color: $bg-subtle;
+    color: $text-color;
+    line-height: 1.6;
 }
 
 body, input, textarea, keygen, select, button {
@@ -25,8 +40,12 @@ body, input, textarea, keygen, select, button {
 
 a, a:visited {
     text-decoration: none;
-    color: #666;
+    color: $main-color;
     cursor: pointer;
+    transition: color 0.15s ease;
+    &:hover {
+        color: $main-color-dark;
+    }
 }
 
 button, input {
@@ -38,19 +57,32 @@ button, input[type="submit"], input[type="button"] {
 }
 
 .button {
-    border-radius: 2px;
-    box-shadow: 0 2px 2px rgba(0,0,0,.28);
-    background-color: white;
-    color: #666;
-    text-transform: uppercase;
+    border-radius: $radius;
+    box-shadow: $shadow-sm;
+    background-color: $main-color;
+    color: white;
     font-size: 14px;
-    padding: 5px 16px;
+    font-weight: 600;
+    padding: 8px 20px;
     margin: 5px;
+    border: none;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    &:hover {
+        background-color: $main-color-dark;
+        box-shadow: $shadow;
+    }
 }
 
 input {
-    padding: 5px;
-    border-radius: 2px;
+    padding: 8px 12px;
+    border-radius: $radius;
+    border: 1px solid $border-color;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    &:focus {
+        outline: none;
+        border-color: $main-color-light;
+        box-shadow: 0 0 0 3px rgba($main-color, 0.1);
+    }
 }
 
 .connected-user-box {
@@ -70,15 +102,15 @@ input {
     position: fixed;
     top: 0;
     z-index: 1;
-    height: 50px;
+    height: 56px;
     width: 100%;
-    background-color: $main-color;
+    background-color: $dark-color;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 8px rgba(0,0,0,.28);
-    padding: 0 20px 0 50px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    padding: 0 24px 0 50px;
     .connected-user-box {
         color: white;
     }
@@ -87,7 +119,9 @@ input {
 a.os-page-header-app-name {
     text-decoration: none;
     color: white;
-    font-size: 30px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
 }
 
 .ot-dr-toggle-button {
@@ -105,14 +139,17 @@ a.os-page-header-app-name {
     }
     .os-drawer-item {
         display: block;
-        padding: 16px;
+        padding: 14px 20px;
+        font-size: 15px;
+        transition: background-color 0.15s ease;
     }
     a:hover {
-            background-color: $dark-color;
-            color: white;
-        }
+        background-color: rgba(0, 0, 0, 0.04);
+        color: $main-color;
+    }
     .connected-user-box {
-        border-bottom: 1px solid #ddd;
+        border-bottom: 1px solid $border-color;
+        padding: 16px 20px;
     }
 }
 
@@ -120,12 +157,16 @@ a.os-page-header-app-name {
     padding: 0;
     > li > a {
         display: block;
-        padding: 5px 5px 5px 50px;
+        padding: 8px 8px 8px 50px;
+        font-size: 14px;
+        color: $text-muted;
     }
 }
 
 .os-body {
-    padding: 66px 16px;
+    padding: 72px 24px 40px;
+    max-width: 960px;
+    margin: 0 auto;
 }
 
 .os-page-footer {
@@ -133,61 +174,303 @@ a.os-page-header-app-name {
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: #ddd;
-    padding: 16px;
-    font-size: 10px;
+    background-color: $dark-color;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 12px 16px;
+    font-size: 11px;
     text-align: center;
+    a, a:visited {
+        color: rgba(255, 255, 255, 0.8);
+        &:hover {
+            color: white;
+        }
+    }
 }
 
-.os-welcome-box, .os-settings, .os-sign-in, .os-sign-up, .os-forgot-pwd {
+/* --- Login / Sign-up / Forgot-password popup forms --- */
+.os-welcome-box, .os-sign-in, .os-sign-up, .os-forgot-pwd {
     h2 {
-        font-size: 14px;
-        margin: 16px 0 4px 0;
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 16px 0;
+        color: $dark-color;
     }
     form, .form-like {
         display: flex;
         margin: 0 auto;
         flex-direction: column;
-        background-color: #eee;
-        padding: 16px;
-        width: 350px;
+        background-color: white;
+        padding: 12px 0;
+        width: 100%;
+        max-width: 100%;
+        border-radius: $radius-lg;
+        gap: 6px;
     }
     input[type="checkbox"] {
         vertical-align: middle;
     }
-    input[type="submit"], button {
-        margin: 5px auto;
+    input[type="submit"], button:not(.ot-password-toggle) {
+        margin: 12px 0 4px;
+        padding: 10px 24px;
+        background-color: $main-color;
+        color: white;
+        border: none;
+        border-radius: $radius;
+        font-weight: 600;
+        font-size: 15px;
+        transition: background-color 0.15s ease;
+        &:hover {
+            background-color: $main-color-dark;
+        }
     }
     input[type="text"], input[type="password"],
     input[type="email"], input[type="tel"] {
-        width: 150px;
+        width: 100%;
         display: block;
-        margin: 5px auto;
+        margin: 4px 0;
+        padding: 10px 14px;
+        border: 1px solid $border-color;
+        border-radius: $radius;
+        font-size: 15px;
+        background-color: $bg-subtle;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        &:focus {
+            outline: none;
+            border-color: $main-color-light;
+            box-shadow: 0 0 0 3px rgba($main-color, 0.1);
+            background-color: white;
+        }
     }
     label {
-        font-size: 12px;
+        font-size: 13px;
+        font-weight: 600;
+        color: $text-muted;
+        margin-top: 4px;
+    }
+    .ot-password-container {
+        width: 100%;
+        margin: 4px 0;
+        border: 1px solid $border-color;
+        border-radius: $radius;
+        background-color: $bg-subtle;
+        overflow: hidden;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        &:focus-within {
+            border-color: $main-color-light;
+            box-shadow: 0 0 0 3px rgba($main-color, 0.1);
+            background-color: white;
+        }
+        input[type="password"], input[type="text"] {
+            margin: 0;
+            border: none;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            &:focus {
+                border: none;
+                box-shadow: none;
+            }
+        }
+        .ot-password-toggle {
+            margin: 0;
+            border: none;
+            border-left: 1px solid $border-color;
+            border-radius: 0;
+            background: transparent;
+            padding: 8px 12px;
+        }
     }
 }
 .os-sign-up-btn {
-    background-color: #fb8282;
+    background-color: $main-color;
     color: white;
+    border: none;
+    border-radius: $radius;
+    font-weight: 600;
+    &:hover {
+        background-color: $main-color-dark;
+    }
 }
 .os-forgot-pwd-link {
-    font-size: 12px;
+    font-size: 13px;
+    color: $text-muted;
+    margin-top: 8px;
+    &:hover {
+        color: $main-color;
+    }
+}
+
+/* --- Settings page --- */
+.os-settings {
+    h2 {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 16px 0;
+        color: $dark-color;
+    }
+    > p {
+        font-size: 16px;
+        font-weight: 700;
+        color: $dark-color;
+        margin: 24px 0 8px;
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+    form, .form-like {
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        padding: 20px 24px;
+        border-radius: $radius-lg;
+        border: 1px solid $border-color;
+        box-shadow: $shadow-sm;
+        gap: 6px;
+        max-width: 480px;
+    }
+    input[type="checkbox"] {
+        vertical-align: middle;
+    }
+    input[type="submit"], button:not(.ot-password-toggle) {
+        margin: 12px 0 4px;
+        padding: 10px 24px;
+        background-color: $main-color;
+        color: white;
+        border: none;
+        border-radius: $radius;
+        font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+        &:hover {
+            background-color: $main-color-dark;
+        }
+    }
+    input[type="text"], input[type="password"],
+    input[type="email"], input[type="tel"] {
+        width: 100%;
+        display: block;
+        margin: 4px 0;
+        padding: 10px 14px;
+        border: 1px solid $border-color;
+        border-radius: $radius;
+        font-size: 15px;
+        background-color: $bg-subtle;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        &:focus {
+            outline: none;
+            border-color: $main-color-light;
+            box-shadow: 0 0 0 3px rgba($main-color, 0.1);
+            background-color: white;
+        }
+    }
+    select {
+        width: 100%;
+        max-width: 300px;
+        padding: 10px 14px;
+        border: 1px solid $border-color;
+        border-radius: $radius;
+        font-size: 15px;
+        background-color: $bg-subtle;
+        cursor: pointer;
+        &:focus {
+            outline: none;
+            border-color: $main-color-light;
+        }
+    }
+    label {
+        font-size: 13px;
+        font-weight: 600;
+        color: $text-muted;
+        margin-top: 4px;
+    }
+    .ot-password-container {
+        width: 100%;
+        margin: 4px 0;
+        border: 1px solid $border-color;
+        border-radius: $radius;
+        background-color: $bg-subtle;
+        overflow: hidden;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        &:focus-within {
+            border-color: $main-color-light;
+            box-shadow: 0 0 0 3px rgba($main-color, 0.1);
+            background-color: white;
+        }
+        input[type="password"], input[type="text"] {
+            margin: 0;
+            border: none;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            &:focus {
+                border: none;
+                box-shadow: none;
+            }
+        }
+        .ot-password-toggle {
+            margin: 0;
+            border: none;
+            border-left: 1px solid $border-color;
+            border-radius: 0;
+            background: transparent;
+            padding: 8px 12px;
+        }
+    }
+    > a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 0;
+        color: $main-color;
+        font-size: 14px;
+        &:hover {
+            color: $main-color-dark;
+        }
+    }
+    > br {
+        display: none;
+    }
+}
+.os-settings-section {
+    background-color: white;
+    border: 1px solid $border-color;
+    border-radius: $radius-lg;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: $shadow-sm;
+    > p:first-child {
+        font-size: 16px;
+        font-weight: 700;
+        color: $dark-color;
+        margin: 0 0 16px;
+    }
+    form {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+    }
 }
 
 #os-msg {
     position: fixed;
-    top: 100px;
-    left: 0;
-    right: 0;
+    top: 72px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 100;
+    width: 100%;
+    max-width: 600px;
+    padding: 0 16px;
     p {
-        padding: 50px 0;
+        padding: 16px 24px;
         text-align: center;
-        background-color: rgba(200,220,240,0.9);
+        background-color: rgba(37, 99, 235, 0.95);
+        color: white;
+        border-radius: $radius;
+        box-shadow: $shadow-lg;
+        font-weight: 500;
         &.os-err {
-            background-color: rgba(200,0,0,0.7);
+            background-color: rgba(220, 38, 38, 0.95);
             color: white;
         }
     }
@@ -203,10 +486,12 @@ a.os-page-header-app-name {
     .os-page-header {
         display: block;
         height: 40vh;
+        background: linear-gradient(135deg, $dark-color 0%, lighten($dark-color, 12%) 100%);
         .os-page-header-app-name {
             display: block;
             position: absolute;
-            top: 30vh;
+            top: 28vh;
+            font-size: 32px;
         }
     }
     .os-body {
@@ -241,45 +526,65 @@ a.os-page-header-app-name {
     .os-page-header { display: block; }
 }
 
-.os-settings p {
-    text-align: center;
-}
-
 .os-emails {
     text-align: left;
-    display: flex;
-    justify-content: center;
     ul {
         list-style: none;
+        padding: 0;
+        margin: 0;
+        background-color: white;
+        border: 1px solid $border-color;
+        border-radius: $radius-lg;
+        overflow: hidden;
+        box-shadow: $shadow-sm;
         li {
-            padding: 5px 10px;
-            border-bottom: 1px solid #e5e5e5;
+            padding: 12px 16px;
+            border-bottom: 1px solid $border-color;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 8px;
+            &:last-child {
+                border-bottom: none;
+            }
             .os-settings-label {
-                font-weight: bold;
-                padding: 4px 10px;
+                font-weight: 600;
+                padding: 3px 10px;
                 margin-left: 4px;
-                border-radius: 3px;
+                border-radius: 20px;
+                font-size: 12px;
+                letter-spacing: 0.02em;
             }
             .os-settings-email {
                 flex-grow: 2;
-                padding-right: 20px;
+                padding-right: 12px;
+                font-size: 14px;
             }
             .os-main-email {
                 color: #fff;
-                background-color: #6cc664;
+                background-color: $success-color;
             }
             .os-validated-email {
                 color: #fff;
-                background-color: #25a;
+                background-color: $main-color;
             }
             .os-remove-email-button {
                 box-shadow: none;
-                font-size: 18px;
-                margin: 0px;
-                color: #bd2c00;
+                font-size: 16px;
+                margin: 0;
+                padding: 6px 8px;
+                color: $danger-color;
+                background: none;
+                border-radius: $radius;
+                transition: background-color 0.15s ease;
+                &:hover {
+                    background-color: rgba($danger-color, 0.08);
+                }
+            }
+            .button {
+                font-size: 12px;
+                padding: 5px 12px;
+                margin: 0 2px;
             }
         }
     }
@@ -299,6 +604,37 @@ a.os-page-header-app-name {
 }
 .ot-dr-left .os-avatar {
     margin-left: 16px;
+}
+
+/* --- Popup overrides --- */
+.ot-popup {
+    border-radius: $radius-lg;
+    box-shadow: $shadow-lg;
+    padding: 16px;
+    overflow: visible;
+    min-width: 340px;
+    max-width: 440px;
+}
+.ot-popup-close {
+    top: 8px;
+    right: 8px;
+    padding: 8px;
+    color: $text-muted;
+    background: white;
+    border-radius: 50%;
+    transition: color 0.15s ease, background-color 0.15s ease;
+    z-index: 3;
+    &:hover {
+        color: $dark-color;
+        background-color: $bg-subtle;
+    }
+}
+.ot-popup-content {
+    padding: 0;
+}
+.ot-popup-background {
+    background-color: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
 }
 
 /* Tips */
