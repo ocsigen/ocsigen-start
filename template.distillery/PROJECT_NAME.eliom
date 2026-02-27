@@ -80,6 +80,7 @@ let%server _ =
 module%shared Demo = Demo
 module%shared Demo_cache = Demo_cache
 module%shared Demo_calendar = Demo_calendar
+module%shared Demo_forms = Demo_forms
 module%shared Demo_carousel1 = Demo_carousel1
 module%shared Demo_carousel2 = Demo_carousel2
 module%shared Demo_carousel3 = Demo_carousel3

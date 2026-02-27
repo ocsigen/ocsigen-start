@@ -106,7 +106,8 @@ EXTERNAL_CSS_FILES    := $(SHAREDIR_OT_CSS)/ot_buttons.css \
                          $(SHAREDIR_OT_CSS)/ot_picture_uploader.css \
                          $(SHAREDIR_OT_CSS)/ot_popup.css \
                          $(SHAREDIR_OT_CSS)/ot_spinner.css \
-                         $(SHAREDIR_OT_CSS)/ot_page_transition.css
+                         $(SHAREDIR_OT_CSS)/ot_page_transition.css \
+                         $(SHAREDIR_OT_CSS)/ot_form.css
 
 # All CSS files which must be concatenated.
 # This variable is only used if SASS is deactivated.
