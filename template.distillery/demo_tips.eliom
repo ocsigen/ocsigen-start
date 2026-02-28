@@ -29,8 +29,8 @@ let%shared page () =
         [%i18n
           Demo.tips4
             ~set_page:
-              [a ~service:%%%MODULE_NAME%%%_services.settings_service [%i18n Demo.tips5] ()]]
-    ]
+              [ a ~service:%%%MODULE_NAME%%%_services.settings_service
+                  [%i18n Demo.tips5] () ]] ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server

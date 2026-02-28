@@ -26,7 +26,7 @@ let%server set_personal_data_handler =
   Os_session.connected_fun Os_handlers.set_personal_data_handler
 
 let%rpc set_personal_data_rpc (data : (string * string) * (string * string)) :
-    unit Lwt.t
+  unit Lwt.t
   =
   set_personal_data_handler () data
 
@@ -95,7 +95,8 @@ let%shared action_link_handler myid_o akey () =
                     ~a_placeholder_email:[%i18n S.your_email]
                     ~text:[%i18n S.sign_up] ~email () ] ]
           in
-          %%%MODULE_NAME%%%_base.App.send (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))
+          %%%MODULE_NAME%%%_base.App.send
+            (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))
         else
           let page =
             [ div
@@ -106,7 +107,8 @@ let%shared action_link_handler myid_o akey () =
                     ~text_keep_me_logged_in:[%i18n S.keep_logged_in]
                     ~text_sign_in:[%i18n S.sign_in] ~email () ] ]
           in
-          %%%MODULE_NAME%%%_base.App.send (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))
+          %%%MODULE_NAME%%%_base.App.send
+            (%%%MODULE_NAME%%%_page.make_page (Os_page.content page))
       else
         (*VVV In that case we must do something more complex. Check
                whether myid = userid and ask the user what he wants to

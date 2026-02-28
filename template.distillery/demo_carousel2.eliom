@@ -2,7 +2,6 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 (* Page with several tabs *)
 open%shared Eliom_content.Html
-
 open%shared Eliom_content.Html.F
 
 let%shared lorem_ipsum =
@@ -87,4 +86,6 @@ let%shared () =
   %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_carousel2
     ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
       let%lwt p = page () in
-      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-carousel2"]] myid_o p )
+      %%%MODULE_NAME%%%_container.page
+        ~a:[a_class ["os-page-demo-carousel2"]]
+        myid_o p )

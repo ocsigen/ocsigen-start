@@ -43,7 +43,8 @@ let%server _ =
     (* Set language according to user preferences. *)
     let%lwt language =
       match%lwt Os_user.get_language userid with
-      | Some lang -> Lwt.return (%%%MODULE_NAME%%%_i18n.guess_language_of_string lang)
+      | Some lang ->
+          Lwt.return (%%%MODULE_NAME%%%_i18n.guess_language_of_string lang)
       | None ->
           let%lwt best_language = best_matched_language () in
           ignore

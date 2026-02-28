@@ -2,7 +2,6 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 (* RPC button demo *)
 open%client Js_of_ocaml_lwt
-
 open%shared Eliom_content
 open%shared Html.D
 

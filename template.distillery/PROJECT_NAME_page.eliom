@@ -16,7 +16,6 @@ let%server css_name_script =
   [script (cdata_script (Printf.sprintf "var __css_name = '%s';" css_name))]
 
 let%client css_name_script = []
-
 let%server wasm_name = !%%%MODULE_NAME%%%_config.wasm_name
 
 let%client wasm_name =
@@ -32,15 +31,14 @@ let%client wasm_name_script = []
    global nodes work properly on client side), or we do not add the
    script on client side.  We chose the second solution. *)
 let%server app_js () =
-  if wasm_name <> "" && (Eliom_request_info.get_sitedata ()).Eliom_common.enable_wasm
+  if
+    wasm_name <> ""
+    && (Eliom_request_info.get_sitedata ()).Eliom_common.enable_wasm
   then
     (* Use WASM detection script with hashed filenames *)
     let app_name = !%%%MODULE_NAME%%%_config.app_name in
-    [%%%MODULE_NAME%%%_base.App.wasm_detection_script
-       ~defer:true
-       ~js_name:(app_name ^ ".js")
-       ~wasm_name
-       ()]
+    [ %%%MODULE_NAME%%%_base.App.wasm_detection_script ~defer:true
+        ~js_name:(app_name ^ ".js") ~wasm_name () ]
   else [%%%MODULE_NAME%%%_base.App.application_script ~defer:true ()]
 
 let%client app_js () = []
@@ -62,8 +60,7 @@ module%shared Page_config = struct
         ; a_content "width=device-width, initial-scale=1, user-scalable=no" ]
       ()
     :: css_name_script
-    @ wasm_name_script
-    @ app_js ()
+    @ wasm_name_script @ app_js ()
 
   let default_predicate _ _ = Lwt.return_true
   let default_connected_predicate _ _ _ = Lwt.return_true

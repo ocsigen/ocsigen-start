@@ -9,7 +9,9 @@ let%shared item text service =
   li [a ~a:[a_class ["os-drawer-item"]] ~service [txt text] ()]
 
 let%shared user_menu () =
-  [ item [%i18n S.settings ~capitalize:true] %%%MODULE_NAME%%%_services.settings_service
+  [ item
+      [%i18n S.settings ~capitalize:true]
+      %%%MODULE_NAME%%%_services.settings_service
   ; Eliom_content.Html.F.li
       [ Os_user_view.disconnect_link
           ~text_logout:[%i18n S.logout ~capitalize:true]

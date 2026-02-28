@@ -6,9 +6,7 @@ open%client Js_of_ocaml
 open%client Js_of_ocaml_lwt
 
 let%shared section title content =
-  div
-    ~a:[a_class ["demo-forms-section"]]
-    (h3 [txt title] :: content)
+  div ~a:[a_class ["demo-forms-section"]] (h3 [txt title] :: content)
 
 let%shared output_line label signal =
   p
@@ -35,18 +33,20 @@ let%shared page () =
   in
   let age_inp =
     D.Raw.input
-      ~a:[ a_input_type `Number
-         ; a_input_min (`Number 0)
-         ; a_input_max (`Number 150)
-         ; a_placeholder [%i18n Demo.S.form_standard_age] ]
+      ~a:
+        [ a_input_type `Number
+        ; a_input_min (`Number 0)
+        ; a_input_max (`Number 150)
+        ; a_placeholder [%i18n Demo.S.form_standard_age] ]
       ()
   in
   let date_inp = D.Raw.input ~a:[a_input_type `Date] () in
   let time_inp = D.Raw.input ~a:[a_input_type `Time] () in
   let pwd_inp =
     D.Raw.input
-      ~a:[ a_input_type `Password
-         ; a_placeholder [%i18n Demo.S.form_standard_password] ]
+      ~a:
+        [ a_input_type `Password
+        ; a_placeholder [%i18n Demo.S.form_standard_password] ]
       ()
   in
   let pwd_container = Ot_form.password_toggle pwd_inp in
@@ -63,32 +63,25 @@ let%shared page () =
       ; D.Raw.option ~a:[a_value "es"] (txt "Spain") ]
   in
   let radio_m =
-    D.Raw.input
-      ~a:[a_input_type `Radio; a_name "std-gender"; a_value "M"]
-      ()
+    D.Raw.input ~a:[a_input_type `Radio; a_name "std-gender"; a_value "M"] ()
   in
   let radio_f =
-    D.Raw.input
-      ~a:[a_input_type `Radio; a_name "std-gender"; a_value "F"]
-      ()
+    D.Raw.input ~a:[a_input_type `Radio; a_name "std-gender"; a_value "F"] ()
   in
   let radio_o =
-    D.Raw.input
-      ~a:[a_input_type `Radio; a_name "std-gender"; a_value "O"]
-      ()
+    D.Raw.input ~a:[a_input_type `Radio; a_name "std-gender"; a_value "O"] ()
   in
   let terms_cb = D.Raw.input ~a:[a_input_type `Checkbox] () in
   let satisfaction_inp =
     D.Raw.input
-      ~a:[ a_input_type `Range
-         ; a_input_min (`Number 0)
-         ; a_input_max (`Number 100)
-         ; a_value "50" ]
+      ~a:
+        [ a_input_type `Range
+        ; a_input_min (`Number 0)
+        ; a_input_max (`Number 100)
+        ; a_value "50" ]
       ()
   in
-  let color_inp =
-    D.Raw.input ~a:[a_input_type `Color; a_value "#2563eb"] ()
-  in
+  let color_inp = D.Raw.input ~a:[a_input_type `Color; a_value "#2563eb"] () in
   let submit_btn =
     D.button
       ~a:[a_button_type `Button; a_class ["button"]]
@@ -139,13 +132,11 @@ let%shared page () =
                 (get_input ~%satisfaction_inp)
             ; Printf.sprintf "%s: %s" ~%color_l (get_input ~%color_inp) ]
           in
-          result_el##.innerHTML :=
-            Js.string (String.concat "<br>" lines);
+          result_el##.innerHTML := Js.string (String.concat "<br>" lines);
           Lwt.return_unit))]
   in
   let field lbl content =
-    div ~a:[a_class ["demo-forms-field"]]
-      [label [strong [txt lbl]]; content]
+    div ~a:[a_class ["demo-forms-field"]] [label [strong [txt lbl]]; content]
   in
   let std_section =
     section [%i18n Demo.S.form_standard_title]
@@ -174,11 +165,13 @@ let%shared page () =
       ; div [submit_btn]
       ; div
           ~a:[a_class ["demo-forms-output"]]
-          [ strong [txt ([%i18n Demo.S.form_standard_result] ^ ":")]
-          ; result_div ] ]
+          [strong [txt ([%i18n Demo.S.form_standard_result] ^ ":")]; result_div]
+      ]
   in
   (* -- reactive_input -- *)
-  let ri_input, (ri_signal, _ri_set) = Ot_form.reactive_input ~value:"hello" () in
+  let ri_input, (ri_signal, _ri_set) =
+    Ot_form.reactive_input ~value:"hello" ()
+  in
   let ri_section =
     section [%i18n Demo.S.form_reactive_input_title]
       [ p [txt [%i18n Demo.S.form_reactive_input_desc]]
@@ -209,7 +202,8 @@ let%shared page () =
   in
   (* -- password_input -- *)
   let pw_container, _pw_input, (pw_visible_s, _pw_set_visible) =
-    Ot_form.password_input ~placeholder:[%i18n Demo.S.form_placeholder_password] ()
+    Ot_form.password_input ~placeholder:[%i18n Demo.S.form_placeholder_password]
+      ()
   in
   let true_s = [%i18n Demo.S.form_true] in
   let false_s = [%i18n Demo.S.form_false] in
@@ -228,11 +222,7 @@ let%shared page () =
   (* -- reactive_select -- *)
   let sel_elt, (sel_signal, _sel_set) =
     Ot_form.reactive_select
-      ~options:
-        [ "fr", "France"
-        ; "de", "Germany"
-        ; "it", "Italy"
-        ; "es", "Spain" ]
+      ~options:["fr", "France"; "de", "Germany"; "it", "Italy"; "es", "Spain"]
       ~selected:"fr" ()
   in
   let sel_section =
@@ -302,8 +292,7 @@ let%shared page () =
   (* -- radio_buttons -- *)
   let radio_react = Eliom_shared.React.S.create (Some 0) in
   let radio_labels =
-    Ot_form.radio_buttons
-      ~selection_react:radio_react ~name:"demo-radio"
+    Ot_form.radio_buttons ~selection_react:radio_react ~name:"demo-radio"
       [ [txt [%i18n Demo.S.form_radio_red]]
       ; [txt [%i18n Demo.S.form_radio_green]]
       ; [txt [%i18n Demo.S.form_radio_blue]] ]
@@ -320,20 +309,21 @@ let%shared page () =
               (Eliom_shared.React.S.map
                  [%shared
                    fun v ->
-                     match v with
-                     | None -> ~%none_s
-                     | Some i -> string_of_int i]
+                     match v with None -> ~%none_s | Some i -> string_of_int i]
                  (fst radio_react)) ] ]
   in
   (* -- int_input / optional_int_input -- *)
   let int_div, int_signal = Ot_form.int_input ~min:0 ~max:100 42 in
-  let oint_div, oint_signal = Ot_form.optional_int_input ~min:0 ~max:50 (Some 10) in
+  let oint_div, oint_signal =
+    Ot_form.optional_int_input ~min:0 ~max:50 (Some 10)
+  in
   let invalid_s = [%i18n Demo.S.form_invalid] in
   let int_section =
     section [%i18n Demo.S.form_int_input_title]
       [ p [txt [%i18n Demo.S.form_int_input_desc]]
       ; div
-          [ strong [txt "int_input: "]; int_div
+          [ strong [txt "int_input: "]
+          ; int_div
           ; p
               ~a:[a_class ["demo-forms-output"]]
               [ strong [txt ([%i18n Demo.S.form_label_value] ^ ": ")]
@@ -346,7 +336,8 @@ let%shared page () =
                          | Error () -> ~%invalid_s]
                      int_signal) ] ]
       ; div
-          [ strong [txt "optional_int_input: "]; oint_div
+          [ strong [txt "optional_int_input: "]
+          ; oint_div
           ; p
               ~a:[a_class ["demo-forms-output"]]
               [ strong [txt ([%i18n Demo.S.form_label_value] ^ ": ")]
@@ -376,8 +367,7 @@ let%shared page () =
                  [%shared
                    fun v ->
                      match v with
-                     | Some (y, m, d) ->
-                         Printf.sprintf "%04d-%02d-%02d" y m d
+                     | Some (y, m, d) -> Printf.sprintf "%04d-%02d-%02d" y m d
                      | None -> ~%none_s]
                  date_signal) ] ]
   in
@@ -424,17 +414,16 @@ let%shared page () =
   in
   let pds_section =
     section [%i18n Demo.S.form_prevent_double_title]
-      [ p [txt [%i18n Demo.S.form_prevent_double_desc]]
-      ; pds_button ]
+      [p [txt [%i18n Demo.S.form_prevent_double_desc]]; pds_button]
   in
   (* -- input_validation_tools -- *)
   let even_error = [%i18n Demo.S.form_even_error] in
   let val_attrs, val_class, val_result =
-    Ot_form.input_validation_tools
-      ~init:""
+    Ot_form.input_validation_tools ~init:""
       [%shared
         fun s ->
-          if String.length s = 0 then Ok ""
+          if String.length s = 0
+          then Ok ""
           else
             match int_of_string_opt s with
             | Some n when n mod 2 = 0 -> Ok s
@@ -442,9 +431,10 @@ let%shared page () =
   in
   let val_input =
     D.Raw.input
-      ~a:(a_input_type `Text
-         :: a_placeholder [%i18n Demo.S.form_placeholder_even]
-         :: val_class :: val_attrs)
+      ~a:
+        (a_input_type `Text
+        :: a_placeholder [%i18n Demo.S.form_placeholder_even]
+        :: val_class :: val_attrs)
       ()
   in
   let () = Ot_form.graceful_invalid_style val_input in
@@ -488,9 +478,7 @@ let%shared page () =
   in
   let fs_section =
     section [%i18n Demo.S.form_fieldset_title]
-      [ p [txt [%i18n Demo.S.form_fieldset_desc]]
-      ; div [fs_toggle]
-      ; fs ]
+      [p [txt [%i18n Demo.S.form_fieldset_desc]]; div [fs_toggle]; fs]
   in
   (* -- lwt_bound_input_enter -- *)
   let enter_output = Eliom_shared.React.S.create "" in
@@ -534,4 +522,5 @@ let%shared () =
   %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_forms
     ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
       let%lwt p = page () in
-      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-forms"]] myid_o p )
+      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-forms"]] myid_o p
+    )
