@@ -110,10 +110,23 @@ tips5	settings page	page Paramètres
 form_widgets	Form widgets	Widgets de formulaire
 form_intro	This page demonstrates form widgets from the Ot_form module. The first section shows a standard (non-reactive) form. The following sections show reactive widgets.	Cette page présente les widgets de formulaire du module Ot_form. La première section montre un formulaire standard (non réactif). Les sections suivantes montrent les widgets réactifs.
 form_standard_title	Standard form	Formulaire standard
-form_standard_desc	A basic form using Lwt_js_events for event binding. Values are read on submit.	Un formulaire basique utilisant Lwt_js_events pour le binding des événements. Les valeurs sont lues à la soumission.
+form_standard_desc	A standard form showcasing all HTML input types. Values are read on submit.	Un formulaire standard présentant tous les types d'entrées HTML. Les valeurs sont lues à la soumission.
 form_standard_name	Name	Nom
 form_standard_email	Email	Email
+form_standard_phone	Phone	Téléphone
+form_standard_age	Age	Âge
+form_standard_birthdate	Birthdate	Date de naissance
+form_standard_time	Time	Heure
+form_standard_password	Password	Mot de passe
 form_standard_message	Message	Message
+form_standard_country	Country	Pays
+form_standard_gender	Gender	Genre
+form_standard_gender_m	Male	Homme
+form_standard_gender_f	Female	Femme
+form_standard_gender_o	Other	Autre
+form_standard_terms	I accept the terms	J'accepte les conditions
+form_standard_satisfaction	Satisfaction	Satisfaction
+form_standard_color	Favorite color	Couleur préférée
 form_standard_submit	Submit	Envoyer
 form_standard_result	Result	Résultat
 form_reactive_input_title	reactive_input	reactive_input
