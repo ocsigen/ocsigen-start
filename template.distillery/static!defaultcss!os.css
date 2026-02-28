@@ -132,6 +132,14 @@ a.os-page-header-app-name {
   margin: 5px auto; }
 .os-welcome-box label, .os-settings label, .os-sign-in label, .os-sign-up label, .os-forgot-pwd label {
   font-size: 12px; }
+.os-welcome-box .ot-password-container, .os-settings .ot-password-container, .os-sign-in .ot-password-container, .os-sign-up .ot-password-container, .os-forgot-pwd .ot-password-container {
+  width: 150px;
+  margin: 5px auto; }
+  .os-welcome-box .ot-password-container input[type="password"], .os-welcome-box .ot-password-container input[type="text"], .os-settings .ot-password-container input[type="password"], .os-settings .ot-password-container input[type="text"], .os-sign-in .ot-password-container input[type="password"], .os-sign-in .ot-password-container input[type="text"], .os-sign-up .ot-password-container input[type="password"], .os-sign-up .ot-password-container input[type="text"], .os-forgot-pwd .ot-password-container input[type="password"], .os-forgot-pwd .ot-password-container input[type="text"] {
+    width: auto;
+    margin: 0; }
+  .os-welcome-box .ot-password-container .ot-password-toggle, .os-settings .ot-password-container .ot-password-toggle, .os-sign-in .ot-password-container .ot-password-toggle, .os-sign-up .ot-password-container .ot-password-toggle, .os-forgot-pwd .ot-password-container .ot-password-toggle {
+    margin: 0; }
 
 .os-sign-up-btn {
   background-color: #fb8282;

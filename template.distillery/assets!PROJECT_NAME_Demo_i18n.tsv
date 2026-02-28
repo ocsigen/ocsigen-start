@@ -107,6 +107,104 @@ tips2	Module {{os_tips}} implements a way to display tips in the page to the use
 tips3	This page contains a tip, that you will see only as connected user, until you close it.	Cette page contient une astuce, que vous allez voir seulement en tant qu'utilisateur connecté, jusqu'à ce que vous la fermiez.
 tips4	It is possible to reset the set of already seen tips from the {{set_page}}.	Il est possible de réinitialiser l'ensemble des astuces déjà vues depuis la page {{set_page}}.
 tips5	settings page	page Paramètres
+form_widgets	Form widgets	Widgets de formulaire
+form_intro	This page demonstrates form widgets from the Ot_form module. The first section shows a standard (non-reactive) form. The following sections show reactive widgets.	Cette page présente les widgets de formulaire du module Ot_form. La première section montre un formulaire standard (non réactif). Les sections suivantes montrent les widgets réactifs.
+form_standard_title	Standard form	Formulaire standard
+form_standard_desc	A standard form showcasing all HTML input types. Values are read on submit.	Un formulaire standard présentant tous les types d'entrées HTML. Les valeurs sont lues à la soumission.
+form_standard_name	Name	Nom
+form_standard_email	Email	Email
+form_standard_phone	Phone	Téléphone
+form_standard_age	Age	Âge
+form_standard_birthdate	Birthdate	Date de naissance
+form_standard_time	Time	Heure
+form_standard_password	Password	Mot de passe
+form_standard_message	Message	Message
+form_standard_country	Country	Pays
+form_standard_gender	Gender	Genre
+form_standard_gender_m	Male	Homme
+form_standard_gender_f	Female	Femme
+form_standard_gender_o	Other	Autre
+form_standard_terms	I accept the terms	J'accepte les conditions
+form_standard_satisfaction	Satisfaction	Satisfaction
+form_standard_color	Favorite color	Couleur préférée
+form_standard_submit	Submit	Envoyer
+form_standard_result	Result	Résultat
+form_reactive_input_title	reactive_input	reactive_input
+form_reactive_input_desc	A reactive text input. The value is displayed below in real time.	Un champ texte réactif. La valeur est affichée en dessous en temps réel.
+form_reactive_textarea_title	reactive_textarea	reactive_textarea
+form_reactive_textarea_desc	A textarea with auto-resize. Try typing multiple lines.	Une zone de texte avec redimensionnement automatique. Essayez de taper plusieurs lignes.
+form_debounced_title	debounced_input	debounced_input
+form_debounced_desc	The raw signal updates on every keystroke. The debounced signal updates after 0.5s of inactivity. This is useful for example for search fields.	Le signal brut se met à jour à chaque frappe. Le signal debounced se met à jour après 0.5s d'inactivité. Utilisez ça par exemple pour des champs de recherche.
+form_password_title	password_input	password_input
+form_password_desc	A password input with a visibility toggle button.	Un champ mot de passe avec un bouton pour afficher/masquer.
+form_select_title	reactive_select	reactive_select
+form_select_desc	A select element with reactive tracking.	Un élément select avec suivi réactif.
+form_toggle_title	reactive_toggle_button	reactive_toggle_button
+form_toggle_desc	A button that alternates between on/off states.	Un bouton qui alterne entre les états on/off.
+form_checkbox_title	checkbox	checkbox
+form_checkbox_desc	Checkboxes with different styles.	Cases à cocher avec différents styles.
+form_reactive_checkbox_title	reactive_checkbox	reactive_checkbox
+form_reactive_checkbox_desc	A reactive checkbox. The state is tracked via a signal.	Une case à cocher réactive. L'état est suivi via un signal.
+form_radio_title	radio_buttons	radio_buttons
+form_radio_desc	A group of radio buttons with reactive selection.	Un groupe de boutons radio avec sélection réactive.
+form_int_input_title	int_input / optional_int_input	int_input / optional_int_input
+form_int_input_desc	Integer inputs with +/- buttons.	Champs entiers avec boutons +/-.
+form_date_title	reactive_date_input	reactive_date_input
+form_date_desc	An HTML5 date input with reactive signal.	Un champ date HTML5 avec signal réactif.
+form_time_title	reactive_time_input	reactive_time_input
+form_time_desc	An HTML5 time input with reactive signal.	Un champ heure HTML5 avec signal réactif.
+form_disableable_title	disableable_button	disableable_button
+form_disableable_desc	A button that can be reactively disabled. Use the toggle above to control it.	Un bouton qui peut être désactivé réactivement. Utilisez le toggle ci-dessus pour le contrôler.
+form_prevent_double_title	prevent_double_submit	prevent_double_submit
+form_prevent_double_desc	This button disables itself while the action runs (2 seconds). Try clicking it rapidly.	Ce bouton se désactive pendant l'exécution de l'action (2 secondes). Essayez de cliquer rapidement.
+form_validation_title	input_validation_tools	input_validation_tools
+form_validation_desc	Type a number. Validation error (shown after blur) if not even.	Tapez un nombre. Erreur de validation (affichée après perte du focus) si non pair.
+form_fieldset_title	reactive_fieldset	reactive_fieldset
+form_fieldset_desc	A fieldset that can be reactively disabled. All elements inside become disabled.	Un fieldset qui peut être désactivé réactivement. Tous les éléments à l'intérieur sont désactivés.
+form_enter_title	lwt_bound_input_enter	lwt_bound_input_enter
+form_enter_desc	Press Enter to trigger the action. The submitted value is shown below.	Appuyez sur Entrée pour déclencher l'action. La valeur soumise est affichée en dessous.
+form_label_value	Value	Valeur
+form_label_raw	Raw	Brut
+form_label_debounced	Debounced	Différé
+form_label_visible	Visible	Visible
+form_label_selected	Selected	Sélectionné
+form_label_state	State	État
+form_label_checked	Checked	Coché
+form_label_manually_changed	Manually changed	Changé manuellement
+form_label_selection	Selection	Sélection
+form_label_date	Date	Date
+form_label_time	Time	Heure
+form_label_result	Result	Résultat
+form_label_submitted	Submitted	Soumis
+form_toggle_label	Toggle me	Basculer
+form_checkbox_box	Box style	Style boîte
+form_checkbox_toggle	Toggle style	Style interrupteur
+form_checkbox_bullet	Bullet style	Style puce
+form_check_me	Check me	Cochez-moi
+form_radio_red	Red	Rouge
+form_radio_green	Green	Vert
+form_radio_blue	Blue	Bleu
+form_disable_below	Disable button below	Désactiver le bouton ci-dessous
+form_can_be_disabled	I can be disabled	Je peux être désactivé
+form_click_2s	Click me (2s action)	Cliquez (action 2s)
+form_disable_fieldset	Disable fieldset	Désactiver le fieldset
+form_fieldset_content	Fieldset content:	Contenu du fieldset :
+form_button_inside	A button inside	Un bouton à l'intérieur
+form_placeholder_type_here	Type here ...	Tapez ici...
+form_placeholder_password	Enter password	Entrez le mot de passe
+form_placeholder_even	Even number	Nombre pair
+form_placeholder_enter	Press Enter	Appuyez sur Entrée
+form_on	ON	ON
+form_off	OFF	OFF
+form_none	none	aucun
+form_invalid	invalid	invalide
+form_true	true	vrai
+form_false	false	faux
+form_field_1	Field 1	Champ 1
+form_field_2	Field 2	Champ 2
+form_ok_prefix	Ok: 	Ok :
+form_error_prefix	Error: 	Erreur :
+form_even_error	Please enter an even number	Veuillez entrer un nombre pair
 tongue_1	Tongue	Languette
 tuesday	Tuesday	Mardi
 users	Users	Utilisateurs

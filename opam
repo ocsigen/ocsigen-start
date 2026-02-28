@@ -33,9 +33,10 @@ depends: [
   "js_of_ocaml" {>= "6.3.2"}
   "re" {>= "1.7.2"}
   "ocsipersist-pgsql-config" {>= "2.0" & < "3.0"}
+  "conf-postgresql"
 ]
 depexts: [
-  ["imagemagick" "ruby-sass" "postgresql" "postgresql-common"] {os-family = "debian"}
-  ["postgresql" "md5sha1sum" "sassc"] {os = "macos" & os-distribution = "homebrew"}
+  ["imagemagick" "ruby-sass"] {os-family = "debian"}
+  ["md5sha1sum" "sassc"] {os = "macos" & os-distribution = "homebrew"}
 ]
 x-maintenance-intent: ["(latest)" ]
