@@ -1,0 +1,4 @@
+depexts: [
+  ["imagemagick" "ruby-sass"] {os-family = "debian"}
+  ["md5sha1sum" "sassc"] {os = "macos" & os-distribution = "homebrew"}
+]
