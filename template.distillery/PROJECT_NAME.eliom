@@ -36,7 +36,8 @@ let%shared () =
     ~service:Os_services.update_language_service
     %%%MODULE_NAME%%%_handlers.update_language_handler;
   %%%MODULE_NAME%%%_base.App.register ~service:Os_services.main_service
-    (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.main_service_handler);
+    (%%%MODULE_NAME%%%_page.Opt.connected_page
+       %%%MODULE_NAME%%%_handlers.main_service_handler);
   %%%MODULE_NAME%%%_base.App.register ~service:%%%MODULE_NAME%%%_services.about_service
     (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.about_handler);
   %%%MODULE_NAME%%%_base.App.register ~service:%%%MODULE_NAME%%%_services.settings_service
@@ -67,12 +68,13 @@ let%server _ =
     (* Enable Debug level only for ocsigenserver, eliom and %%%PROJECT_NAME%%% logs *)
     Logs.Src.list ()
     |> List.iter (fun src ->
-           let name = Logs.Src.name src in
-           if String.starts_with ~prefix:"ocsigenserver" name
-              || String.starts_with ~prefix:"eliom" name
-              || String.starts_with ~prefix:"%%%PROJECT_NAME%%%" name
-              || String.starts_with ~prefix:"%%%MODULE_NAME%%%" name
-           then Logs.Src.set_level src (Some Logs.Debug)))
+      let name = Logs.Src.name src in
+      if
+        String.starts_with ~prefix:"ocsigenserver" name
+        || String.starts_with ~prefix:"eliom" name
+        || String.starts_with ~prefix:"%%%PROJECT_NAME%%%" name
+        || String.starts_with ~prefix:"%%%MODULE_NAME%%%" name
+      then Logs.Src.set_level src (Some Logs.Debug)))
 
 (* The modules below are all the modules that needs to be explicitely
    linked-in. *)
@@ -80,6 +82,7 @@ let%server _ =
 module%shared Demo = Demo
 module%shared Demo_cache = Demo_cache
 module%shared Demo_calendar = Demo_calendar
+module%shared Demo_forms = Demo_forms
 module%shared Demo_carousel1 = Demo_carousel1
 module%shared Demo_carousel2 = Demo_carousel2
 module%shared Demo_carousel3 = Demo_carousel3
@@ -99,7 +102,6 @@ module%shared Demo_tips = Demo_tips
 module%shared Demo_tongue = Demo_tongue
 module%shared Demo_users = Demo_users
 module%shared %%%MODULE_NAME%%%_config = %%%MODULE_NAME%%%_config
-
 module%client %%%MODULE_NAME%%%_language = %%%MODULE_NAME%%%_language
 module%client %%%MODULE_NAME%%%_mobile = %%%MODULE_NAME%%%_mobile
 module%client %%%MODULE_NAME%%%_phone_connect = %%%MODULE_NAME%%%_phone_connect

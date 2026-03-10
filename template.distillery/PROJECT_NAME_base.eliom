@@ -8,7 +8,9 @@ let%shared displayed_app_name = "%%%PROJECT_NAME%%%"
 
 (* Database initialization *)
 let () =
-  Os_db.init ?host:!%%%MODULE_NAME%%%_config.os_db_host ?port:!%%%MODULE_NAME%%%_config.os_db_port
+  Os_db.init
+    ?host:!%%%MODULE_NAME%%%_config.os_db_host
+    ?port:!%%%MODULE_NAME%%%_config.os_db_port
     ?user:!%%%MODULE_NAME%%%_config.os_db_user
     ?password:!%%%MODULE_NAME%%%_config.os_db_password
     ?database:!%%%MODULE_NAME%%%_config.os_db_database

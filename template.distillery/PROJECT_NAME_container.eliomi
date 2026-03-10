@@ -17,7 +17,9 @@ val%shared connected_welcome_box :
    unit
   -> [> Html_types.div] Eliom_content.Html.F.elt Lwt.t
 
-val%shared get_user_data : Os_types.User.id option -> Os_types.User.t option Lwt.t
+val%shared get_user_data :
+   Os_types.User.id option
+  -> Os_types.User.t option Lwt.t
 
 val%shared page :
    ?html_a:Html_types.html_attrib Eliom_content.Html.attrib list

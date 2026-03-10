@@ -176,3 +176,77 @@
     height: 300px;
   }
 }
+.os-page-demo-forms > .os-body {
+  .demo-forms-section {
+    margin-bottom: 2em;
+    padding: 1em 1.2em;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background-color: #fafafa;
+    h3 {
+      margin-top: 0;
+      padding-bottom: 0.4em;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 1.1em;
+    }
+  }
+  .demo-forms-output {
+    margin: 0.4em 0;
+    padding: 0.5em 0.8em;
+    background-color: #f0f4f8;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  input[type="password"],
+  textarea,
+  select {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    padding: 0.5em;
+    margin: 0.4em 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box;
+  }
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+  .button,
+  button:not(.ot-password-toggle):not(.ot-toggle-button):not(.ot-form-step-button) {
+    padding: 0.5em 1.2em;
+    margin: 0.5em 0;
+    border: none;
+    border-radius: 4px;
+    background-color: #4a90d9;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    &:hover {
+      background-color: #3a7bc8;
+    }
+    &:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+  }
+  .ot-password-container {
+    max-width: 400px;
+    input {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+  .ot-password-toggle {
+    margin: 0.4em 0;
+    border-radius: 0 4px 4px 0;
+  }
+}

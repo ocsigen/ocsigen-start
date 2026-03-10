@@ -63,4 +63,5 @@
   (ocsipersist-pgsql-config
    (and
     (>= "2.0")
-    (< "3.0")))))
+    (< "3.0")))
+  conf-postgresql))

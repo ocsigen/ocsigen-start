@@ -136,6 +136,12 @@ let%server demo_pagetransition =
 
 let%client demo_pagetransition = ~%demo_pagetransition
 
+let%server demo_forms =
+  Eliom_service.create ~path:(Eliom_service.Path ["demo-forms"])
+    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
+
+let%client demo_forms = ~%demo_forms
+
 let%server detail_page =
   Eliom_service.create
     ~path:(Eliom_service.Path ["demo-page-transition"; "detail"; ""])

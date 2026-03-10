@@ -7,7 +7,6 @@
    the client. Also the scroll position is restored that the page had
    at the end of the last visit. *)
 open%shared Eliom_content
-
 open%shared Html
 open%shared Html.D
 open%client Js_of_ocaml_lwt

@@ -2,13 +2,13 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 (* Carousel demo *)
 open%client Eliom_content.Html
-
 open%shared Eliom_content.Html.F
 
 (* Bind arrow keys *)
-let%shared bind_keys
-    (change : ([`Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t)
-    (carousel : [`Div] Eliom_content.Html.elt)
+let%shared
+    bind_keys
+      (change : ([`Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t)
+      (carousel : [`Div] Eliom_content.Html.elt)
   =
   ignore
     [%client
@@ -72,4 +72,6 @@ let%shared () =
   %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_carousel1
     ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
       let%lwt p = page () in
-      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-carousel1"]] myid_o p )
+      %%%MODULE_NAME%%%_container.page
+        ~a:[a_class ["os-page-demo-carousel1"]]
+        myid_o p )
