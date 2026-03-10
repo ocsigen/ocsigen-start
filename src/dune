@@ -12,7 +12,6 @@
   (pps eliom.ppx.server js_of_ocaml-ppx_deriving_json ocsigen-ppx-rpc))
  (libraries
   eliom.server
-  js_of_ocaml
   calendar
   safepass
   ocsigen-toolkit.server
