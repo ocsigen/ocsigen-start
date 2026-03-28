@@ -184,7 +184,8 @@ val home_button :
 val avatar : Os_types.User.t -> [> `I | `Img] Eliom.Content.Html.F.elt
 (** [avatar user] creates an image HTML tag (with Eliom.Content.HTML.F) with an
     alt attribute to ["picture"] and with class ["os-avatar"]. If the user has
-    no avatar, the default icon representing the user (see {!Ot_icons.F.user}) is returned.
+    no avatar, the default icon representing the user (see <<a_api
+    project="ocsigen-toolkit" | val Ot.Icons.F.user >>) is returned.
 
     @param user the user. *)
 
@@ -241,7 +242,7 @@ val upload_pic_link :
        Html_types.button_attrib Eliom.Content.Html.D.Raw.attrib list
        * Html_types.button_content_fun Eliom.Content.Html.D.Raw.elt list
   -> ?onclick:(unit -> unit) Eliom.Client_value.t
-  -> (unit, unit) Ot_picture_uploader.service
+  -> (unit, unit) Ot.Picture_uploader.service
   -> [> `A of Html_types.a_content] Eliom.Content.Html.D.Raw.elt
 (** [upload_pic_link ?a ?content ?crop ?input ?submit action_after_submit
     service userid]

@@ -416,7 +416,7 @@ let%client input_popup ?(button_label = "OK") f =
     in
     Lwt.return (D.div [button; inp])
   in
-  let* _ = Ot_popup.popup ~close_button:[Os_icons.F.close ()] content in
+  let* _ = Ot.Popup.popup ~close_button:[Os_icons.F.close ()] content in
   w
 
 let%client confirm_code_popup ~dest f =

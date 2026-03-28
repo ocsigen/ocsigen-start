@@ -34,5 +34,5 @@ let%shared make ?user () =
         let user_box = Os_user_view.connected_user_box ~user in
         [user_box; menu]
   in
-  let drawer, _, _ = Ot_drawer.drawer contents in
+  let drawer, _, _ = Ot.Drawer.drawer contents in
   drawer
