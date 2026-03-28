@@ -103,7 +103,7 @@ let%server record_image directory ?ratio ?cropping file =
     fun file_info ->
       let fname = new_filename () in
       let fpath = directory ^ "/" ^ fname in
-      let* () = cp (Eliom_request_info.get_tmp_filename file_info) fpath in
+      let* () = cp (Eliom.Request_info.get_tmp_filename file_info) fpath in
       Lwt.return fname
   in
   let cp =

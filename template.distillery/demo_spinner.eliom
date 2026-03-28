@@ -2,7 +2,7 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 (* Spinner demo *)
 open%client Js_of_ocaml_lwt
-open%shared Eliom_content
+open%shared Eliom.Content
 open%shared Html.D
 
 (* Build the spinner *)
@@ -13,22 +13,22 @@ let%client make_spinner () =
     (* sleep for 5 seconds to simulate a delay, then return content *)
     (let%lwt () = Lwt_js.sleep 5. in
      Lwt.return
-       Eliom_content.Html.D.
+       Eliom.Content.Html.D.
          [ txt [%i18n Demo.S.spinner_content_ready]
          ; txt " "
          ; txt [%i18n Demo.S.spinner_message_replace_spinner] ])
 
 (* Page for this demo *)
-let%shared page () : Html_types.div_content Eliom_content.Html.elt list Lwt.t =
+let%shared page () : Html_types.div_content Eliom.Content.Html.elt list Lwt.t =
   Lwt.return
-    Eliom_content.Html.
+    Eliom.Content.Html.
       [ F.h1 [%i18n Demo.spinner]
       ; F.p [F.txt [%i18n Demo.S.spinner_description_ot]]
       ; F.p [F.txt [%i18n Demo.S.spinner_description_1]]
       ; F.p [F.txt [%i18n Demo.S.spinner_description_2]]
       ; F.p [F.txt [%i18n Demo.S.spinner_description_3]]
       ; F.p [F.txt [%i18n Demo.S.spinner_generated_client_side]]
-      ; C.node [%client (make_spinner () : [> `Div] Eliom_content.Html.elt)] ]
+      ; C.node [%client (make_spinner () : [> `Div] Eliom.Content.Html.elt)] ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server

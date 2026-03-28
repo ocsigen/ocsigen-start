@@ -19,8 +19,8 @@
  *)
 
 open%client Lwt.Syntax
-open%client Eliom_content.Html
-open%client Eliom_content.Html.F
+open%client Eliom.Content.Html
+open%client Eliom.Content.Html.F
 open%client Js_of_ocaml
 
 let%client msgbox () =
@@ -47,7 +47,7 @@ let%shared
        let message_dom = To_dom.of_p (D.p ~a:[a_class c] [txt ~%message]) in
        Lwt.async (fun () ->
          let* () =
-           if ~%onload then Eliom_client.lwt_onload () else Lwt.return_unit
+           if ~%onload then Eliom.Client.lwt_onload () else Lwt.return_unit
          in
          let msgbox = msgbox () in
          Logs.info (fun fmt -> fmt "%s" ~%message);
@@ -58,8 +58,8 @@ let%shared
        : unit)]
 
 let action_link_key_created =
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope false
 
 let wrong_pdata =
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope
     (None : ((string * string) * (string * string)) option)

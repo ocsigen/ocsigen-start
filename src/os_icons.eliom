@@ -21,19 +21,19 @@
 [%%shared
 module type ICSIG = sig
   val user :
-     ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list
+     ?a:Html_types.i_attrib Eliom.Content.Html.D.attrib list
     -> unit
-    -> [> Html_types.i] Eliom_content.Html.D.elt
+    -> [> Html_types.i] Eliom.Content.Html.D.elt
 
   val signout :
-     ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list
+     ?a:Html_types.i_attrib Eliom.Content.Html.D.attrib list
     -> unit
-    -> [> Html_types.i] Eliom_content.Html.D.elt
+    -> [> Html_types.i] Eliom.Content.Html.D.elt
 
   val close :
-     ?a:Html_types.i_attrib Eliom_content.Html.D.attrib list
+     ?a:Html_types.i_attrib Eliom.Content.Html.D.attrib list
     -> unit
-    -> [> Html_types.i] Eliom_content.Html.D.elt
+    -> [> Html_types.i] Eliom.Content.Html.D.elt
 end
 
 module D = struct
@@ -43,18 +43,18 @@ module D = struct
 
   let user ?a () =
     (!user_r ?a ()
-      : Html_types.i Eliom_content.Html.D.elt
-      :> [> Html_types.i] Eliom_content.Html.D.elt)
+      : Html_types.i Eliom.Content.Html.D.elt
+      :> [> Html_types.i] Eliom.Content.Html.D.elt)
 
   let signout ?a () =
     (!signout_r ?a ()
-      : Html_types.i Eliom_content.Html.D.elt
-      :> [> Html_types.i] Eliom_content.Html.D.elt)
+      : Html_types.i Eliom.Content.Html.D.elt
+      :> [> Html_types.i] Eliom.Content.Html.D.elt)
 
   let close ?a () =
     (!close_r ?a ()
-      : Html_types.i Eliom_content.Html.D.elt
-      :> [> Html_types.i] Eliom_content.Html.D.elt)
+      : Html_types.i Eliom.Content.Html.D.elt
+      :> [> Html_types.i] Eliom.Content.Html.D.elt)
 end
 
 module F = struct
@@ -64,18 +64,18 @@ module F = struct
 
   let user ?a () =
     (!user_r ?a ()
-      : Html_types.i Eliom_content.Html.D.elt
-      :> [> Html_types.i] Eliom_content.Html.D.elt)
+      : Html_types.i Eliom.Content.Html.D.elt
+      :> [> Html_types.i] Eliom.Content.Html.D.elt)
 
   let signout ?a () =
     (!signout_r ?a ()
-      : Html_types.i Eliom_content.Html.D.elt
-      :> [> Html_types.i] Eliom_content.Html.D.elt)
+      : Html_types.i Eliom.Content.Html.D.elt
+      :> [> Html_types.i] Eliom.Content.Html.D.elt)
 
   let close ?a () =
     (!close_r ?a ()
-      : Html_types.i Eliom_content.Html.D.elt
-      :> [> Html_types.i] Eliom_content.Html.D.elt)
+      : Html_types.i Eliom.Content.Html.D.elt
+      :> [> Html_types.i] Eliom.Content.Html.D.elt)
 end
 
 module Register (FF : ICSIG) (DD : ICSIG) = struct

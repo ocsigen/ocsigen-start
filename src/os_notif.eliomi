@@ -20,8 +20,8 @@
 
 (** Server to client notifications.
     
-    This module is a version of [Eliom_notif] that fixes the types [identity] of
-    [Eliom_notif.S] to [Os_types.User.id option] ([option] so that users can be
+    This module is a version of [Eliom.Notif] that fixes the types [identity] of
+    [Eliom.Notif.S] to [Os_types.User.id option] ([option] so that users can be
     notified that are not logged in). It takes care of (de)initialisation so
     [init] and [deinit] need not be called anymore. Also it adds a specialised
     version of [unlisten_user].
@@ -30,10 +30,10 @@
 open Os_types
 
 module type S = sig
-  include Eliom_notif.S with type identity = User.id option
+  include Eliom.Notif.S with type identity = User.id option
 
   val unlisten_user :
-     ?sitedata:Eliom_common.sitedata
+     ?sitedata:Eliom.Eliom_common.sitedata
     -> userid:User.id
     -> key
     -> unit
@@ -45,7 +45,7 @@ module type S = sig
 end
 
 (** [ARG] is for making [Make].
-    It is a simplified version of [Eliom_notif.ARG]. *)
+    It is a simplified version of [Eliom.Notif.ARG]. *)
 module type ARG = sig
   type key
   type server_notif
@@ -57,7 +57,7 @@ module type ARG = sig
   val max_identity_per_resource : int
 end
 
-(** see [Eliom_notif.Make] *)
+(** see [Eliom.Notif.Make] *)
 module Make (A : ARG) :
   S
   with type key = A.key
@@ -65,7 +65,7 @@ module Make (A : ARG) :
    and type client_notif = A.client_notif
 
 (** [ARG_SIMPLE] is for making [Make_Simple].
-    It is a simplified version of [Eliom_notif.ARG_SIMPLE] *)
+    It is a simplified version of [Eliom.Notif.ARG_SIMPLE] *)
 module type ARG_SIMPLE = sig
   type key
   type notification

@@ -778,7 +778,7 @@ module User = struct
     else
       full_transaction_block (fun dbh ->
         let password_o =
-          Eliom_lib.Option.map (fun p -> fst !pwd_crypt_ref p) password
+          Eliom.Lib.Option.map (fun p -> fst !pwd_crypt_ref p) password
         in
         let* userid =
           Lwt.bind
