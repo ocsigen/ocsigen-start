@@ -10,9 +10,11 @@
  (wrapped false)
  (preprocess
   (pps eliom.ppx.server js_of_ocaml-ppx_deriving_json ocsigen-ppx-rpc))
+ (flags
+  (:standard
+   (:include type_includes)))
  (libraries
   eliom.server
-  js_of_ocaml
   calendar
   safepass
   ocsigen-toolkit.server
@@ -33,6 +35,14 @@
    (pps js_of_ocaml-ppx js_of_ocaml-ppx_deriving_json))
   (libraries eliom.client calendar ocsigen-toolkit.client re.str js_of_ocaml))
  (dynamic_include ../dune.client))
+
+(rule
+ (target type_includes)
+ (deps (universe))
+ (action
+  (with-stdout-to
+   %{target}
+   (system "printf '('; ocamlfind query -i-format js_of_ocaml; printf ')'"))))
 
 (rule
  (deps
