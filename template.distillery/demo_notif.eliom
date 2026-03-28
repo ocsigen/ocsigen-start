@@ -2,7 +2,7 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 (* Notification demo *)
 open%client Js_of_ocaml_lwt
-open%shared Eliom_content
+open%shared Eliom.Content
 open%shared Html.D
 
 (* Instantiate function Os.Notif.Simple for each kind of notification
@@ -38,14 +38,14 @@ let%rpc listen () : unit Lwt.t = Notif.listen (); Lwt.return_unit
    happens. *)
 let%server () =
   Os.Session.on_start_process (fun _ ->
-    let e : (unit * string) Eliom_react.Down.t = Notif.client_ev () in
+    let e : (unit * string) Eliom.Eliom_react.Down.t = Notif.client_ev () in
     ignore
       [%client
-        (Eliom_lib.Dom_reference.retain Js_of_ocaml.Dom_html.window
+        (Eliom.Lib.Dom_reference.retain Js_of_ocaml.Dom_html.window
            ~keep:
              (React.E.map
                 (fun (_, msg) ->
-                   (* Eliom_lib.alert "%s" msg *)
+                   (* Eliom.Lib.alert "%s" msg *)
                    Os.Msg.msg ~level:`Msg (Printf.sprintf "%s" msg))
                 ~%e)
          : unit)];
@@ -53,22 +53,22 @@ let%server () =
 
 (* Make a text input field that calls [f s] for each [s] submitted *)
 let%shared make_form msg f =
-  let inp = Eliom_content.Html.D.Raw.input ()
+  let inp = Eliom.Content.Html.D.Raw.input ()
   and btn =
-    Eliom_content.Html.(D.button ~a:[D.a_class ["button"]] [D.txt msg])
+    Eliom.Content.Html.(D.button ~a:[D.a_class ["button"]] [D.txt msg])
   in
   ignore
     [%client
       (Lwt.async @@ fun () ->
-       let btn = Eliom_content.Html.To_dom.of_element ~%btn
-       and inp = Eliom_content.Html.To_dom.of_input ~%inp in
+       let btn = Eliom.Content.Html.To_dom.of_element ~%btn
+       and inp = Eliom.Content.Html.To_dom.of_input ~%inp in
        Lwt_js_events.clicks btn @@ fun _ _ ->
        let v = Js_of_ocaml.Js.to_string inp##.value in
        let%lwt () = ~%f v in
        inp##.value := Js_of_ocaml.Js.string "";
        Lwt.return_unit
        : unit)];
-  Eliom_content.Html.D.div [inp; btn]
+  Eliom.Content.Html.D.div [inp; btn]
 
 let%rpc unlisten () : unit Lwt.t = Notif.unlisten (); Lwt.return_unit
 
@@ -77,11 +77,11 @@ let%shared page () =
   (* Subscribe to notifications when entering this page: *)
   let%lwt () = listen () in
   (* Unsubscribe from notifications when user leaves this page *)
-  let (_ : unit Eliom_client_value.t) =
-    [%client Eliom_client.Page_status.ondead (fun () -> Lwt.async unlisten)]
+  let (_ : unit Eliom.Client_value.t) =
+    [%client Eliom.Client.Page_status.ondead (fun () -> Lwt.async unlisten)]
   in
   Lwt.return
-    Eliom_content.Html.F.
+    Eliom.Content.Html.F.
       [ h1 [%i18n Demo.notification]
       ; p
           ([%i18n

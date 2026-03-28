@@ -3,7 +3,7 @@
 open%client Js_of_ocaml_lwt
 
 let%shared update_main_email_button email =
-  let open Eliom_content.Html in
+  let open Eliom.Content.Html in
   let button =
     D.button
       ~a:[D.a_class ["button"]]
@@ -12,17 +12,17 @@ let%shared update_main_email_button email =
   ignore
     [%client
       (Lwt.async (fun () ->
-         Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
+         Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%button)
            (fun _ _ ->
               let%lwt () = Os.Current_user.update_main_email ~%email in
-              Eliom_client.change_page
+              Eliom.Client.change_page
                 ~service:%%%MODULE_NAME%%%_services.settings_service () ()))
        : unit)];
   button
 
 (* A button to remove the email from the database *)
 let%shared delete_email_button email =
-  let open Eliom_content.Html in
+  let open Eliom.Content.Html in
   let button =
     D.button
       ~a:[D.a_class ["button"; "os-remove-email-button"]]
@@ -31,10 +31,10 @@ let%shared delete_email_button email =
   ignore
     [%client
       (Lwt.async (fun () ->
-         Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
+         Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%button)
            (fun _ _ ->
               let%lwt () = Os.Current_user.remove_email_from_user ~%email in
-              Eliom_client.change_page
+              Eliom.Client.change_page
                 ~service:%%%MODULE_NAME%%%_services.settings_service () ()))
        : unit)];
   button
@@ -50,7 +50,7 @@ let%shared buttons_of_email is_main_email is_validated email =
 
 (* A list of labels describing the email properties. *)
 let%shared labels_of_email is_main_email is_validated =
-  let open Eliom_content.Html.F in
+  let open Eliom.Content.Html.F in
   let valid_label =
     span
       ~a:[a_class ["os-settings-label"; "os-validated-email"]]
@@ -74,7 +74,7 @@ let%shared li_of_email main_email (email, is_validated) =
     | Some main_email -> main_email = email
     | None -> false
   in
-  let open Eliom_content.Html.D in
+  let open Eliom.Content.Html.D in
   let labels = labels_of_email is_main_email is_validated
   and buttons = buttons_of_email is_main_email is_validated email
   and email = span ~a:[a_class ["os-settings-email"]] [txt email] in
@@ -83,7 +83,7 @@ let%shared li_of_email main_email (email, is_validated) =
 let%shared ul_of_emails (main_email, emails) =
   let li_of_email = li_of_email main_email in
   let%lwt li_list = Lwt_list.map_s li_of_email emails in
-  Lwt.return Eliom_content.Html.D.(div ~a:[a_class ["os-emails"]] [ul li_list])
+  Lwt.return Eliom.Content.Html.D.(div ~a:[a_class ["os-emails"]] [ul li_list])
 
 (* List with information about emails *)
 let%rpc get_emails myid () : (string option * (string * bool) list) Lwt.t =
@@ -99,7 +99,7 @@ let%rpc get_emails myid () : (string option * (string * bool) list) Lwt.t =
   Lwt.return (main_email, emails)
 
 let%shared select_language_form select_language_name =
-  let open Eliom_content.Html in
+  let open Eliom.Content.Html in
   let current_language = %%%MODULE_NAME%%%_i18n.get_language () in
   let all_languages_except_current =
     List.filter (fun l -> l <> current_language) %%%MODULE_NAME%%%_i18n.languages
@@ -125,7 +125,7 @@ let%shared settings_content () =
   let%lwt emails = get_emails () in
   let%lwt emails = ul_of_emails emails in
   Lwt.return
-  @@ Eliom_content.Html.D.
+  @@ Eliom.Content.Html.D.
        [ div
            ~a:[a_class ["os-settings"]]
            [ p [%i18n change_password ~capitalize:true]

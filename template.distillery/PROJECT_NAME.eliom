@@ -4,35 +4,35 @@
 let%client add_email_notif () = ()
 
 let%server add_email_notif () =
-  if Eliom_reference.Volatile.get Os.User.user_already_exists
+  if Eliom.Reference.Volatile.get Os.User.user_already_exists
   then Os.Msg.msg ~level:`Err ~onload:true [%i18n S.email_already_exists]
 
 let%shared () =
   (* Registering services. Feel free to customize handlers. *)
-  Eliom_registration.Action.register
+  Eliom.Registration.Action.register
     ~service:Os.Services.set_personal_data_service
     %%%MODULE_NAME%%%_handlers.set_personal_data_handler;
-  Eliom_registration.Redirection.register
+  Eliom.Registration.Redirection.register
     ~service:Os.Services.set_password_service
     %%%MODULE_NAME%%%_handlers.set_password_handler;
-  Eliom_registration.Action.register
+  Eliom.Registration.Action.register
     ~service:Os.Services.forgot_password_service
     %%%MODULE_NAME%%%_handlers.forgot_password_handler;
-  Eliom_registration.Action.register ~service:Os.Services.preregister_service
+  Eliom.Registration.Action.register ~service:Os.Services.preregister_service
     %%%MODULE_NAME%%%_handlers.preregister_handler;
-  Eliom_registration.Action.register ~service:Os.Services.sign_up_service
+  Eliom.Registration.Action.register ~service:Os.Services.sign_up_service
     Os.Handlers.sign_up_handler;
-  Eliom_registration.Action.register ~service:Os.Services.connect_service
+  Eliom.Registration.Action.register ~service:Os.Services.connect_service
     Os.Handlers.connect_handler;
-  Eliom_registration.Unit.register ~service:Os.Services.disconnect_service
+  Eliom.Registration.Unit.register ~service:Os.Services.disconnect_service
     (Os.Handlers.disconnect_handler ~main_page:true);
-  Eliom_registration.Any.register ~service:Os.Services.action_link_service
+  Eliom.Registration.Any.register ~service:Os.Services.action_link_service
     (Os.Session.Opt.connected_fun %%%MODULE_NAME%%%_handlers.action_link_handler);
-  Eliom_registration.Action.register ~service:Os.Services.add_email_service
+  Eliom.Registration.Action.register ~service:Os.Services.add_email_service
     (fun () email ->
        let%lwt () = Os.Handlers.add_email_handler () email in
        add_email_notif (); Lwt.return_unit);
-  Eliom_registration.Action.register
+  Eliom.Registration.Action.register
     ~service:Os.Services.update_language_service
     %%%MODULE_NAME%%%_handlers.update_language_handler;
   %%%MODULE_NAME%%%_base.App.register ~service:Os.Services.main_service
@@ -44,7 +44,7 @@ let%shared () =
     (%%%MODULE_NAME%%%_page.Opt.connected_page %%%MODULE_NAME%%%_handlers.settings_handler)
 
 let%server () =
-  Eliom_registration.Ocaml.register
+  Eliom.Registration.Ocaml.register
     ~service:%%%MODULE_NAME%%%_services.upload_user_avatar_service
     (Os.Session.connected_fun %%%MODULE_NAME%%%_handlers.upload_user_avatar_handler)
 
@@ -58,11 +58,11 @@ let%server () =
    (or Log.debug, Log.warn, Log.err etc.)
 *)
 let%server _ =
-  if Eliom_config.get_debugmode ()
+  if Eliom.Config.get_debugmode ()
   then (
     ignore
       [%client
-        ((* Eliom_config.debug_timings := true; *)
+        ((* Eliom.Config.debug_timings := true; *)
          Logs.set_level (Some Logs.Debug)
          : unit)];
     (* Enable Debug level only for ocsigenserver, eliom and %%%PROJECT_NAME%%% logs *)
