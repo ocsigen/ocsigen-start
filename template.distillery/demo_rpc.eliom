@@ -2,7 +2,7 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 (* RPC button demo *)
 open%client Js_of_ocaml_lwt
-open%shared Eliom.Content
+open%shared Eliom_content
 open%shared Html.D
 
 (* A server-side reference that stores data for the current browser
@@ -11,23 +11,23 @@ open%shared Html.D
    like client-process (a tab of a browser) or session-group (a user).
 *)
 let%server my_ref =
-  Eliom.Reference.eref ~scope:Eliom.Eliom_common.default_session_scope 0
+  Eliom_reference.eref ~scope:Eliom_common.default_session_scope 0
 
 (* Server-side function that increments my_ref and returns new val *)
 let%rpc incr_my_ref () : int Lwt.t =
-  let%lwt v = Eliom.Reference.get my_ref in
+  let%lwt v = Eliom_reference.get my_ref in
   let v = v + 1 in
-  let%lwt () = Eliom.Reference.set my_ref v in
+  let%lwt () = Eliom_reference.set my_ref v in
   Lwt.return v
 
 let%shared button msg f =
   let btn =
-    Eliom.Content.Html.(D.button ~a:[D.a_class ["button"]] [D.txt msg])
+    Eliom_content.Html.(D.button ~a:[D.a_class ["button"]] [D.txt msg])
   in
   ignore
     [%client
       (Lwt.async @@ fun () ->
-       Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%btn)
+       Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%btn)
          (fun _ _ -> ~%f ())
        : unit)];
   btn
@@ -39,12 +39,12 @@ let%shared page () =
       [%client
         (fun () ->
            let%lwt v = incr_my_ref () in
-           Eliom.Lib.alert "Update: %d" v;
+           Eliom_lib.alert "Update: %d" v;
            Lwt.return_unit
          : unit -> unit Lwt.t)]
   in
   Lwt.return
-    Eliom.Content.Html.
+    Eliom_content.Html.
       [ F.h1 [%i18n Demo.rpc_button]
       ; F.p [F.txt [%i18n Demo.S.rpc_button_description]]
       ; F.p [btn] ]

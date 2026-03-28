@@ -3,21 +3,21 @@
 
 (** Demo for refreshable content *)
 
-open%shared Eliom.Content.Html
-open%shared Eliom.Content.Html.D
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.D
 
 let%shared page () =
-  let counter_sig, set_counter = Eliom.Shared.React.S.create 0 in
+  let counter_sig, set_counter = Eliom_shared.React.S.create 0 in
   let reload =
     [%client
       fun () ->
         let%lwt _ = Js_of_ocaml_lwt.Lwt_js.sleep 1. in
-        let n = Eliom.Shared.React.S.value ~%counter_sig in
+        let n = Eliom_shared.React.S.value ~%counter_sig in
         ~%set_counter (n + 1);
         Lwt.return_true]
   in
   let counter_node_sig =
-    Eliom.Shared.React.S.map
+    Eliom_shared.React.S.map
       [%shared
         fun n ->
           let n = [F.txt @@ string_of_int n] in

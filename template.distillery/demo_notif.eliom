@@ -2,16 +2,16 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 (* Notification demo *)
 open%client Js_of_ocaml_lwt
-open%shared Eliom.Content
+open%shared Eliom_content
 open%shared Html.D
 
-(* Instantiate function Os_notif.Simple for each kind of notification
+(* Instantiate function Os.Notif.Simple for each kind of notification
    you need.
    The key is the resource ID. For example, if you are implementing a
    messaging application, it can be the chatroom ID
    (for example type key = int64).
 *)
-module Notif = Os_notif.Make_Simple (struct
+module Notif = Os.Notif.Make_Simple (struct
     type key = unit
 
     (* The resources identifiers.
@@ -28,7 +28,7 @@ let%rpc notify (v : string) : unit Lwt.t =
   Notif.notify (* ~notfor:`Me *) (() : Notif.key) v;
   (* Use ~notfor:`Me to avoid receiving the message in this tab,
      or ~notfor:(`User myid) to avoid sending to the current user.
-     (Where myid is Os_current_user.get_current_userid ())
+     (Where myid is Os.Current_user.get_current_userid ())
   *)
   Lwt.return_unit
 
@@ -37,38 +37,38 @@ let%rpc listen () : unit Lwt.t = Notif.listen (); Lwt.return_unit
 (* Display a message every time the React event [e = Notif.client_ev ()]
    happens. *)
 let%server () =
-  Os_session.on_start_process (fun _ ->
-    let e : (unit * string) Eliom.Eliom_react.Down.t = Notif.client_ev () in
+  Os.Session.on_start_process (fun _ ->
+    let e : (unit * string) Eliom_react.Down.t = Notif.client_ev () in
     ignore
       [%client
-        (Eliom.Lib.Dom_reference.retain Js_of_ocaml.Dom_html.window
+        (Eliom_lib.Dom_reference.retain Js_of_ocaml.Dom_html.window
            ~keep:
              (React.E.map
                 (fun (_, msg) ->
-                   (* Eliom.Lib.alert "%s" msg *)
-                   Os_msg.msg ~level:`Msg (Printf.sprintf "%s" msg))
+                   (* Eliom_lib.alert "%s" msg *)
+                   Os.Msg.msg ~level:`Msg (Printf.sprintf "%s" msg))
                 ~%e)
          : unit)];
     Lwt.return_unit)
 
 (* Make a text input field that calls [f s] for each [s] submitted *)
 let%shared make_form msg f =
-  let inp = Eliom.Content.Html.D.Raw.input ()
+  let inp = Eliom_content.Html.D.Raw.input ()
   and btn =
-    Eliom.Content.Html.(D.button ~a:[D.a_class ["button"]] [D.txt msg])
+    Eliom_content.Html.(D.button ~a:[D.a_class ["button"]] [D.txt msg])
   in
   ignore
     [%client
       (Lwt.async @@ fun () ->
-       let btn = Eliom.Content.Html.To_dom.of_element ~%btn
-       and inp = Eliom.Content.Html.To_dom.of_input ~%inp in
+       let btn = Eliom_content.Html.To_dom.of_element ~%btn
+       and inp = Eliom_content.Html.To_dom.of_input ~%inp in
        Lwt_js_events.clicks btn @@ fun _ _ ->
        let v = Js_of_ocaml.Js.to_string inp##.value in
        let%lwt () = ~%f v in
        inp##.value := Js_of_ocaml.Js.string "";
        Lwt.return_unit
        : unit)];
-  Eliom.Content.Html.D.div [inp; btn]
+  Eliom_content.Html.D.div [inp; btn]
 
 let%rpc unlisten () : unit Lwt.t = Notif.unlisten (); Lwt.return_unit
 
@@ -77,15 +77,15 @@ let%shared page () =
   (* Subscribe to notifications when entering this page: *)
   let%lwt () = listen () in
   (* Unsubscribe from notifications when user leaves this page *)
-  let (_ : unit Eliom.Client_value.t) =
-    [%client Eliom.Client.Page_status.ondead (fun () -> Lwt.async unlisten)]
+  let (_ : unit Eliom_client_value.t) =
+    [%client Eliom_client.Page_status.ondead (fun () -> Lwt.async unlisten)]
   in
   Lwt.return
-    Eliom.Content.Html.F.
+    Eliom_content.Html.F.
       [ h1 [%i18n Demo.notification]
       ; p
           ([%i18n
-             Demo.exchange_msg_between_users ~os_notif:[code [txt "Os_notif"]]]
+             Demo.exchange_msg_between_users ~os_notif:[code [txt "Os.Notif"]]]
           @ [ br ()
             ; txt [%i18n Demo.S.open_multiple_tabs_browsers]
             ; br ()

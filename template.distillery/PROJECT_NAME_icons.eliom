@@ -7,7 +7,7 @@
     http://fontawesome.io/ for more information and for the complete
     list of CSS classes values. *)
 
-module%shared Make (A : module type of Eliom.Content.Html.F) = struct
+module%shared Make (A : module type of Eliom_content.Html.F) = struct
   (** [icon classes ~a:other_css_classes ()] create an icon HTML
       attribute with "fa" and [classes] as CSS classes. The HTML tag
       "i" is used because it is the de facto standard for icons. The
@@ -15,7 +15,7 @@ module%shared Make (A : module type of Eliom.Content.Html.F) = struct
       classes with predefined icons. *)
   let icon
         classes
-        ?(a = ([] : Html_types.i_attrib Eliom.Content.Html.attrib list))
+        ?(a = ([] : Html_types.i_attrib Eliom_content.Html.attrib list))
         ()
     =
     A.i ~a:(A.a_class ("fa" :: classes) :: a) []
@@ -31,8 +31,8 @@ module%shared Make (A : module type of Eliom.Content.Html.F) = struct
      complete list of CSS classes available by default. *)
 end
 
-module%shared F = Make (Eliom.Content.Html.F)
-module%shared D = Make (Eliom.Content.Html.D)
+module%shared F = Make (Eliom_content.Html.F)
+module%shared D = Make (Eliom_content.Html.D)
 
-(* Register this module for use by Os_icon. *)
-module%shared Empty = Os_icons.Register (F) (D)
+(* Register this module for use by Os.Icon. *)
+module%shared Empty = Os.Icons.Register (F) (D)

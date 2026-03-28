@@ -26,7 +26,7 @@ let%shared demos =
   ]
 
 let%shared drawer_contents () =
-  let open Eliom.Content.Html.F in
+  let open Eliom_content.Html.F in
   let make_link (name, service) = li [a ~service [txt @@ name ()] ()] in
   let submenu =
     ul ~a:[a_class ["os-drawer-submenu"]] (List.map make_link demos)
