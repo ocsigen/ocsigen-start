@@ -1,7 +1,7 @@
 (* Demo page for Ot_form widgets *)
 
-open%shared Eliom_content.Html
-open%shared Eliom_content.Html.F
+open%shared Eliom.Content.Html
+open%shared Eliom.Content.Html.F
 open%client Js_of_ocaml
 open%client Js_of_ocaml_lwt
 
@@ -12,7 +12,7 @@ let%shared output_line label signal =
   p
     ~a:[a_class ["demo-forms-output"]]
     [ strong [txt (label ^ ": ")]
-    ; R.txt (Eliom_shared.React.S.map [%shared fun v -> v] signal) ]
+    ; R.txt (Eliom.Shared.React.S.map [%shared fun v -> v] signal) ]
 
 let%shared page () =
   (* -- standard form -- *)
@@ -101,7 +101,7 @@ let%shared page () =
   let terms_l = [%i18n Demo.S.form_standard_terms] in
   let satisfaction_l = [%i18n Demo.S.form_standard_satisfaction] in
   let color_l = [%i18n Demo.S.form_standard_color] in
-  let (_ : unit Eliom_client_value.t) =
+  let (_ : unit Eliom.Client_value.t) =
     [%client
       let btn_el = To_dom.of_element ~%submit_btn in
       let result_el = To_dom.of_element ~%result_div in
@@ -215,7 +215,7 @@ let%shared page () =
           ~a:[a_class ["demo-forms-output"]]
           [ strong [txt ([%i18n Demo.S.form_label_visible] ^ ": ")]
           ; R.txt
-              (Eliom_shared.React.S.map
+              (Eliom.Shared.React.S.map
                  [%shared fun v -> if v then ~%true_s else ~%false_s]
                  pw_visible_s) ] ]
   in
@@ -245,7 +245,7 @@ let%shared page () =
           ~a:[a_class ["demo-forms-output"]]
           [ strong [txt ([%i18n Demo.S.form_label_state] ^ ": ")]
           ; R.txt
-              (Eliom_shared.React.S.map
+              (Eliom.Shared.React.S.map
                  [%shared fun v -> if v then ~%on_s else ~%off_s]
                  toggle_s) ] ]
   in
@@ -278,19 +278,19 @@ let%shared page () =
           ~a:[a_class ["demo-forms-output"]]
           [ strong [txt ([%i18n Demo.S.form_label_checked] ^ ": ")]
           ; R.txt
-              (Eliom_shared.React.S.map
+              (Eliom.Shared.React.S.map
                  [%shared fun v -> if v then ~%true_s else ~%false_s]
                  rcb#value) ]
       ; p
           ~a:[a_class ["demo-forms-output"]]
           [ strong [txt ([%i18n Demo.S.form_label_manually_changed] ^ ": ")]
           ; R.txt
-              (Eliom_shared.React.S.map
+              (Eliom.Shared.React.S.map
                  [%shared fun v -> if v then ~%true_s else ~%false_s]
                  rcb#manually_changed) ] ]
   in
   (* -- radio_buttons -- *)
-  let radio_react = Eliom_shared.React.S.create (Some 0) in
+  let radio_react = Eliom.Shared.React.S.create (Some 0) in
   let radio_labels =
     Ot_form.radio_buttons ~selection_react:radio_react ~name:"demo-radio"
       [ [txt [%i18n Demo.S.form_radio_red]]
@@ -306,7 +306,7 @@ let%shared page () =
           ~a:[a_class ["demo-forms-output"]]
           [ strong [txt ([%i18n Demo.S.form_label_selection] ^ ": ")]
           ; R.txt
-              (Eliom_shared.React.S.map
+              (Eliom.Shared.React.S.map
                  [%shared
                    fun v ->
                      match v with None -> ~%none_s | Some i -> string_of_int i]
@@ -328,7 +328,7 @@ let%shared page () =
               ~a:[a_class ["demo-forms-output"]]
               [ strong [txt ([%i18n Demo.S.form_label_value] ^ ": ")]
               ; R.txt
-                  (Eliom_shared.React.S.map
+                  (Eliom.Shared.React.S.map
                      [%shared
                        fun v ->
                          match v with
@@ -342,7 +342,7 @@ let%shared page () =
               ~a:[a_class ["demo-forms-output"]]
               [ strong [txt ([%i18n Demo.S.form_label_value] ^ ": ")]
               ; R.txt
-                  (Eliom_shared.React.S.map
+                  (Eliom.Shared.React.S.map
                      [%shared
                        fun v ->
                          match v with
@@ -363,7 +363,7 @@ let%shared page () =
           ~a:[a_class ["demo-forms-output"]]
           [ strong [txt ([%i18n Demo.S.form_label_date] ^ ": ")]
           ; R.txt
-              (Eliom_shared.React.S.map
+              (Eliom.Shared.React.S.map
                  [%shared
                    fun v ->
                      match v with
@@ -383,7 +383,7 @@ let%shared page () =
           ~a:[a_class ["demo-forms-output"]]
           [ strong [txt ([%i18n Demo.S.form_label_time] ^ ": ")]
           ; R.txt
-              (Eliom_shared.React.S.map
+              (Eliom.Shared.React.S.map
                  [%shared
                    fun v ->
                      match v with
@@ -448,7 +448,7 @@ let%shared page () =
           ~a:[a_class ["demo-forms-output"]]
           [ strong [txt ([%i18n Demo.S.form_label_result] ^ ": ")]
           ; R.txt
-              (Eliom_shared.React.S.map
+              (Eliom.Shared.React.S.map
                  [%shared
                    fun v ->
                      match v with
@@ -473,7 +473,7 @@ let%shared page () =
       ; div [fs_input1]
       ; div [fs_input2]
       ; Ot_form.disableable_button
-          ~disabled:(Eliom_shared.React.S.const false)
+          ~disabled:(Eliom.Shared.React.S.const false)
           [txt [%i18n Demo.S.form_button_inside]] ]
   in
   let fs_section =
@@ -481,7 +481,7 @@ let%shared page () =
       [p [txt [%i18n Demo.S.form_fieldset_desc]]; div [fs_toggle]; fs]
   in
   (* -- lwt_bound_input_enter -- *)
-  let enter_output = Eliom_shared.React.S.create "" in
+  let enter_output = Eliom.Shared.React.S.create "" in
   let enter_input =
     Ot_form.lwt_bound_input_enter
       ~a:[a_placeholder [%i18n Demo.S.form_placeholder_enter]]

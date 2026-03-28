@@ -19,18 +19,18 @@
  *)
 
 (** This module implements a cache of user using <<a_api project="eliom" |
-    module Eliom_cscache>> which allows to keep synchronized the cache between
+    module Eliom.Cscache>> which allows to keep synchronized the cache between
     the client and the server.
     Even if there is a cache implementing in {!Os_user} to avoid to do database
     requests, this last one is implementing only server side.
 
-    TODO: This module must be compared to [Os_request_cache], [Eliom_cscache]
+    TODO: This module must be compared to [Os_request_cache], [Eliom.Cscache]
     and [Os_user.MCache]. The idea behind these different modules must be
     compared.
  *)
 
-let%server cache : (Os_types.User.id, Os_types.User.t) Eliom_cscache.t =
-  Eliom_cscache.create ()
+let%server cache : (Os_types.User.id, Os_types.User.t) Eliom.Cscache.t =
+  Eliom.Cscache.create ()
 
 let%server get_data_from_db _myid_o userid = Os_user.user_of_userid userid
 
@@ -41,4 +41,4 @@ let%server get_data_from_db_for_client myid_o userid =
   get_data_from_db myid_o userid
 
 let%shared get_data_from_cache userid =
-  Eliom_cscache.find ~%cache get_data userid
+  Eliom.Cscache.find ~%cache get_data userid

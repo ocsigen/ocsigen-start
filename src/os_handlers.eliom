@@ -21,7 +21,7 @@
 (** Registration of default services *)
 
 open%shared Lwt.Syntax
-open%client Eliom_content.Html.F
+open%client Eliom.Content.Html.F
 open%client Js_of_ocaml
 
 let%client storage () =
@@ -39,7 +39,7 @@ let%server
   =
   if firstname = "" || lastname = "" || pwd <> pwd2
   then (
-    Eliom_reference.Volatile.set Os_msg.wrong_pdata (Some pd);
+    Eliom.Reference.Volatile.set Os_msg.wrong_pdata (Some pd);
     Lwt.return_unit)
   else
     let* user = Os_user.user_of_userid myid in
@@ -70,10 +70,10 @@ let%server
       email
   =
   let service =
-    Eliom_service.attach ~fallback:service
+    Eliom.Service.attach ~fallback:service
       ~service:Os_services.action_link_service ()
   in
-  let act_link = Eliom_uri.make_string_uri ~absolute:true ~service act_key in
+  let act_link = Eliom.Eliom_uri.make_string_uri ~absolute:true ~service act_key in
   (* For debugging we print the action link on standard output
      to make possible to connect even if the mail transport is not
      configured. *)
@@ -103,7 +103,7 @@ let%server
       userid
   =
   let act_key = generate_action_link_key ~service ~text:msg email in
-  Eliom_reference.Volatile.set Os_msg.action_link_key_created true;
+  Eliom.Reference.Volatile.set Os_msg.action_link_key_created true;
   let* () =
     Os_user.add_actionlinkkey ?autoconnect ?action ?validity ?expiry ~act_key
       ~userid ~email ()
@@ -139,7 +139,7 @@ let%server sign_up_handler () email =
           if not validated
           then send_action_link email userid
           else (
-            Eliom_reference.Volatile.set Os_user.user_already_exists true;
+            Eliom.Reference.Volatile.set Os_user.user_already_exists true;
             Os_msg.msg ~level:`Err ~onload:true "E-mail already exists";
             Lwt.return_unit)
       | exc -> Lwt.reraise exc)
@@ -162,7 +162,7 @@ let%server forgot_password_handler service () email =
          msg service email userid)
     (function
       | Os_db.No_such_resource ->
-          Eliom_reference.Volatile.set Os_user.user_does_not_exist true;
+          Eliom.Reference.Volatile.set Os_user.user_does_not_exist true;
           Os_msg.msg ~level:`Err ~onload:true "User does not exist";
           Lwt.return_unit
       | exc -> Lwt.reraise exc)
@@ -172,7 +172,7 @@ let%client restart ?url () =
      On a Web app, it is just reloading the page.
      On a mobile app, we want to restart from eliom.html.
   *)
-  if Eliom_client.is_client_app ()
+  if Eliom.Client.is_client_app ()
   then (
     (match url with
     | Some url ->
@@ -182,7 +182,7 @@ let%client restart ?url () =
   else
     match url with
     | Some url ->
-        (* [Eliom_client.exit_to] ends up setting [.href], so we do the
+        (* [Eliom.Client.exit_to] ends up setting [.href], so we do the
          same. We do not have an "untyped" [exit_to], and
          reconstructing the params from the URL only to rebuild the
          URL would be crazy *)
@@ -190,7 +190,7 @@ let%client restart ?url () =
     | None ->
         (* By default, we restart at main page, to have the same behaviour
          as in the app. *)
-        Eliom_client.exit_to ~service:Os_services.main_service () ()
+        Eliom.Client.exit_to ~service:Os_services.main_service () ()
 
 (* Disconnection *)
 (* By default, disconnect_handler stays on the same page.
@@ -211,7 +211,7 @@ let disconnect_handler ?(main_page = false) () () =
             then None
             else
               Some
-                (make_uri ~absolute:true ~service:Eliom_service.reload_action ()))
+                (make_uri ~absolute:true ~service:Eliom.Service.reload_action ()))
          ()
        : unit)];
   Lwt.return_unit
@@ -236,15 +236,15 @@ let connect_handler () ((login, pwd), keepmeloggedin) =
        Os_session.connect ~expire:(not keepmeloggedin) userid)
     (function
       | Os_db.Account_not_activated ->
-          Eliom_reference.Volatile.set Os_user.account_not_activated true;
+          Eliom.Reference.Volatile.set Os_user.account_not_activated true;
           Os_msg.msg ~level:`Err ~onload:true "Account not activated";
           Lwt.return_unit
       | Os_db.Empty_password | Os_db.Password_not_set | Os_db.Wrong_password ->
-          Eliom_reference.Volatile.set Os_user.wrong_password true;
+          Eliom.Reference.Volatile.set Os_user.wrong_password true;
           Os_msg.msg ~level:`Err ~onload:true "Wrong password";
           Lwt.return_unit
       | Os_db.No_such_user ->
-          Eliom_reference.Volatile.set Os_user.no_such_user true;
+          Eliom.Reference.Volatile.set Os_user.no_such_user true;
           Os_msg.msg ~level:`Err ~onload:true "No such user";
           Lwt.return_unit
       | exc -> Lwt.reraise exc)
@@ -326,13 +326,13 @@ let%rpc action_link_handler_common myid_o (akey : string) :
     (function
       | Os_db.No_such_resource -> Lwt.return `No_such_resource
       | Invalid_action_key action_link ->
-          Eliom_reference.Volatile.set Os_user.action_link_key_outdated true;
+          Eliom.Reference.Volatile.set Os_user.action_link_key_outdated true;
           Lwt.return (`Invalid_action_key action_link)
       | Account_already_activated_unconnected action_link ->
-          Eliom_reference.Volatile.set Os_user.action_link_key_outdated true;
+          Eliom.Reference.Volatile.set Os_user.action_link_key_outdated true;
           Lwt.return (`Account_already_activated_unconnected action_link)
       | Account_already_activated_connected (_action_link, _) ->
-          Eliom_reference.Volatile.set Os_user.action_link_key_outdated true;
+          Eliom.Reference.Volatile.set Os_user.action_link_key_outdated true;
           (* Just reload the page without the GET parameters to get rid of the key.
        If the user wasn't already logged in, let the exception pass to the
        next exception handler. *)
@@ -341,7 +341,7 @@ let%rpc action_link_handler_common myid_o (akey : string) :
 
 let%client restart_if_client_side () =
   restart
-    ~url:(make_uri ~absolute:true ~service:Eliom_service.reload_action ())
+    ~url:(make_uri ~absolute:true ~service:Eliom.Service.reload_action ())
     ()
 
 let%server restart_if_client_side () = ()
@@ -350,14 +350,14 @@ let%shared action_link_handler _myid_o akey () =
   let* a = action_link_handler_common akey in
   match a with
   | `Reload ->
-      Eliom_registration.(
+      Eliom.Registration.(
         appl_self_redirect Redirection.send
-          (Redirection Eliom_service.reload_action))
+          (Redirection Eliom.Service.reload_action))
   | `No_such_resource -> Lwt.fail No_such_resource
   | `Invalid_action_key action_link -> Lwt.fail (Invalid_action_key action_link)
   | `Restart_if_app ->
       restart_if_client_side ();
-      Eliom_registration.(appl_self_redirect Action.send) ()
+      Eliom.Registration.(appl_self_redirect Action.send) ()
   | `Custom_action_link (action_link, phantom_user) ->
       Lwt.fail (Custom_action_link (action_link, phantom_user))
   | `Account_already_activated_unconnected action_link ->
@@ -371,7 +371,7 @@ let preregister_handler () email =
   if not (is_preregistered || is_registered)
   then Os_user.add_preregister email
   else (
-    Eliom_reference.Volatile.set Os_user.user_already_preregistered true;
+    Eliom.Reference.Volatile.set Os_user.user_already_preregistered true;
     Os_msg.msg ~level:`Err ~onload:true "E-mail already preregistered";
     Lwt.return_unit)
 
@@ -393,7 +393,7 @@ let add_email_handler =
       let* () = Os_db.User.add_email_to_user ~userid:myid ~email in
       send_act () email myid
     else (
-      Eliom_reference.Volatile.set Os_user.user_already_exists true;
+      Eliom.Reference.Volatile.set Os_user.user_already_exists true;
       Lwt.return_unit)
   in
   Os_session.connected_fun add_email
@@ -405,7 +405,7 @@ let%shared _ = Os_comet.__link (* to make sure os_comet is linked *)
 let%client input_popup ?(button_label = "OK") f =
   let w, u = Lwt.wait () in
   let content close =
-    let open Eliom_content.Html in
+    let open Eliom.Content.Html in
     let button = D.button ~a:[D.a_class ["button"]] [D.txt button_label] in
     let inp =
       let f code =
@@ -430,7 +430,7 @@ let%client confirm_code_popup ~dest f =
       | `Main -> Some Os_services.main_service
     in
     match service with
-    | Some service -> Eliom_client.change_page ~service () ()
+    | Some service -> Eliom.Client.change_page ~service () ()
     | None -> Lwt.fail_with "confirm_popup: settings service unknown"
   else (
     Os_msg.msg ~level:`Err ~duration:2. "Wrong SMS activation code";
@@ -438,7 +438,7 @@ let%client confirm_code_popup ~dest f =
 
 (* We only need confirm_code_*_service to implement the activation
    UI. Assuming normal user behavior, we will only ever call them via
-   a client-side Eliom_client.change_page, so no server implementation
+   a client-side Eliom.Client.change_page, so no server implementation
    is needed. Currently we can't register a service only on the
    client.  Until we fix Eliom, we define dummy server-side
    handlers. *)

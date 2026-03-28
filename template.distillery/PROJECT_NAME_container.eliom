@@ -2,7 +2,7 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 let%shared os_header ?user () =
-  let open Eliom_content.Html.F in
+  let open Eliom.Content.Html.F in
   let%lwt user_box =
     Os_user_view.user_box ~a_placeholder_email:[%i18n S.your_email]
       ~a_placeholder_pwd:[%i18n S.your_password]
@@ -24,7 +24,7 @@ let%shared os_header ?user () =
        ; user_box ])
 
 let%shared os_footer () =
-  let open Eliom_content.Html.F in
+  let open Eliom.Content.Html.F in
   footer
     ~a:[a_class ["os-page-footer"]]
     [ p
@@ -39,10 +39,10 @@ let%shared os_footer () =
 let%rpc get_wrong_pdata () :
   ((string * string) * (string * string)) option Lwt.t
   =
-  Lwt.return @@ Eliom_reference.Volatile.get Os_msg.wrong_pdata
+  Lwt.return @@ Eliom.Reference.Volatile.get Os_msg.wrong_pdata
 
 let%shared connected_welcome_box () =
-  let open Eliom_content.Html.F in
+  let open Eliom.Content.Html.F in
   let%lwt wrong_pdata = get_wrong_pdata () in
   let info, ((fn, ln), (p1, p2)) =
     match wrong_pdata with
@@ -85,6 +85,6 @@ let%shared page ?html_a ?a ?title ?head myid_o content =
   Lwt.return
     (Os_page.content ?html_a ?a ?title ?head
        [ h
-       ; Eliom_content.Html.F.(div ~a:[a_class ["os-body"]] content)
+       ; Eliom.Content.Html.F.(div ~a:[a_class ["os-body"]] content)
        ; os_footer ()
        ; %%%MODULE_NAME%%%_drawer.make ?user:me () ])

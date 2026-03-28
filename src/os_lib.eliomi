@@ -61,19 +61,19 @@ val string_repeat : string -> int -> string
 val string_filter : (char -> bool) -> string -> string
 
 val lwt_bound_input_enter :
-   ?a:[< Html_types.input_attrib] Eliom_content.Html.attrib list
-  -> ?button:[< `Button | `Input] Eliom_content.Html.elt
-  -> ?validate:(string -> bool) Eliom_client_value.t
-  -> (string -> unit Lwt.t) Eliom_client_value.t
-  -> [> `Input] Eliom_content.Html.elt
+   ?a:[< Html_types.input_attrib] Eliom.Content.Html.attrib list
+  -> ?button:[< `Button | `Input] Eliom.Content.Html.elt
+  -> ?validate:(string -> bool) Eliom.Client_value.t
+  -> (string -> unit Lwt.t) Eliom.Client_value.t
+  -> [> `Input] Eliom.Content.Html.elt
 (** [lwt_bound_input_enter f] produces an input element bound to [f],
     i.e., when the user submits the input, we call [f]. *)
 
 val lwt_bind_input_enter :
-   ?validate:(string -> bool) Eliom_client_value.t
-  -> ?button:[< `Button | `Input] Eliom_content.Html.elt
-  -> [`Input] Eliom_content.Html.elt
-  -> (string -> unit Lwt.t) Eliom_client_value.t
+   ?validate:(string -> bool) Eliom.Client_value.t
+  -> ?button:[< `Button | `Input] Eliom.Content.Html.elt
+  -> [`Input] Eliom.Content.Html.elt
+  -> (string -> unit Lwt.t) Eliom.Client_value.t
   -> unit
 (** [lwt_bound_input_enter inp f] calls f whenever the user submits
     the contents of [inp]. *)

@@ -23,8 +23,8 @@ open%client Js_of_ocaml
 open%client Js_of_ocaml_lwt
 
 let%client reload () =
-  Eliom_client.change_page ~replace:true
-    ~service:Eliom_service.reload_action_hidden () ()
+  Eliom.Client.change_page ~replace:true
+    ~service:Eliom.Service.reload_action_hidden () ()
 
 let%shared memoizator f =
   let value_ref = ref None in
@@ -139,16 +139,16 @@ let%client on_enter ~f inp =
 (* TODO: Build a nice Ot_form module with such functions *)
 let%shared
     lwt_bind_input_enter
-      ?(validate : (string -> bool) Eliom_client_value.t option)
-      ?(button : [< `Button | `Input] Eliom_content.Html.elt option)
-      (e : [`Input] Eliom_content.Html.elt)
-      (f : (string -> unit Lwt.t) Eliom_client_value.t)
+      ?(validate : (string -> bool) Eliom.Client_value.t option)
+      ?(button : [< `Button | `Input] Eliom.Content.Html.elt option)
+      (e : [`Input] Eliom.Content.Html.elt)
+      (f : (string -> unit Lwt.t) Eliom.Client_value.t)
   =
   ignore
     [%client
-      (let e = Eliom_content.Html.To_dom.of_input ~%e in
+      (let e = Eliom.Content.Html.To_dom.of_input ~%e in
        let f =
-         let f = ~%(f : (string -> unit Lwt.t) Eliom_client_value.t) in
+         let f = ~%(f : (string -> unit Lwt.t) Eliom.Client_value.t) in
          match ~%validate with
          | Some validate ->
              fun v ->
@@ -159,16 +159,16 @@ let%shared
          | None -> f
        in
        on_enter ~f e;
-       match ~%(button :> [`Button | `Input] Eliom_content.Html.elt option) with
+       match ~%(button :> [`Button | `Input] Eliom.Content.Html.elt option) with
        | Some button ->
            Lwt.async @@ fun () ->
-           Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element button)
+           Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element button)
            @@ fun _ _ -> f (Js.to_string e##.value)
        | None -> ()
        : unit)]
 
 let%shared lwt_bound_input_enter ?(a = []) ?button ?validate f =
-  let e = Eliom_content.Html.D.Raw.input ~a () in
+  let e = Eliom.Content.Html.D.Raw.input ~a () in
   lwt_bind_input_enter ?button ?validate e f;
   e
 

@@ -49,25 +49,25 @@ val password_set : Os_types.User.id -> bool Lwt.t
     a password. Else [false].
  *)
 
-val wrong_password : bool Eliom_reference.Volatile.eref
+val wrong_password : bool Eliom.Reference.Volatile.eref
 (** Reference used to remember if a wrong password has been already typed. *)
 
-val no_such_user : bool Eliom_reference.Volatile.eref
+val no_such_user : bool Eliom.Reference.Volatile.eref
 (** Reference used to remember if a wrong user has already been typed. *)
 
-val account_not_activated : bool Eliom_reference.Volatile.eref
+val account_not_activated : bool Eliom.Reference.Volatile.eref
 (** Reference used to remember if the account is activated. *)
 
-val user_already_exists : bool Eliom_reference.Volatile.eref
+val user_already_exists : bool Eliom.Reference.Volatile.eref
 (** Reference used to remember if the user already exists. *)
 
-val user_does_not_exist : bool Eliom_reference.Volatile.eref
+val user_does_not_exist : bool Eliom.Reference.Volatile.eref
 (** Reference used to remember if the user exists. *)
 
-val user_already_preregistered : bool Eliom_reference.Volatile.eref
+val user_already_preregistered : bool Eliom.Reference.Volatile.eref
 (** Reference used to remember if the user is already preregistered. *)
 
-val action_link_key_outdated : bool Eliom_reference.Volatile.eref
+val action_link_key_outdated : bool Eliom.Reference.Volatile.eref
 (** Reference used to remember if an action link key is outdated. *)
 
 [%%shared.start]
@@ -89,7 +89,7 @@ val avatar_of_user : Os_types.User.t -> string option
 val avatar_uri_of_avatar :
    ?absolute_path:bool
   -> string
-  -> Eliom_content.Xml.uri
+  -> Eliom.Content.Xml.uri
 (** [avatar_uri_of_avatar ?absolute_path avatar] returns the URI (absolute or
     relative) depending on the value of [absolute_path]) of the avatar
     [avatar].
@@ -98,7 +98,7 @@ val avatar_uri_of_avatar :
 val avatar_uri_of_user :
    ?absolute_path:bool
   -> Os_types.User.t
-  -> Eliom_content.Xml.uri option
+  -> Eliom.Content.Xml.uri option
 (** [avatar_uri_of_user user] returns the avatar URI (absolute or relative)
     depending on the value of [absolute_path]) of the avatar of the user [user].
     It returns [None] is the user [user] has no avatar.
