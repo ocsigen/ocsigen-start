@@ -21,13 +21,13 @@
 open Lwt.Syntax
 
 let log_section = Logs.Src.create "os:session"
-let user_indep_state_hierarchy = Eliom.Eliom_common.create_scope_hierarchy "userindep"
+let user_indep_state_hierarchy = Eliom.Common.create_scope_hierarchy "userindep"
 let user_indep_process_scope = `Client_process user_indep_state_hierarchy
 let user_indep_session_scope = `Session user_indep_state_hierarchy
 
 (* We make it possible to acces the user_indep scope from connected scope *)
 let current_user_indep_session_state =
-  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.default_session_scope None
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Common.default_session_scope None
 
 let new_process_eref =
   Eliom.Reference.Volatile.eref ~scope:user_indep_process_scope true
@@ -77,7 +77,7 @@ exception Permission_denied]
 
 let connect_volatile uid =
   Eliom.State.set_volatile_data_session_group
-    ~scope:Eliom.Eliom_common.default_session_scope uid;
+    ~scope:Eliom.Common.default_session_scope uid;
   let uid = Int64.of_string uid in
   Eliom.Reference.Volatile.set current_user_indep_session_state
     (Some
@@ -88,7 +88,7 @@ let connect_volatile uid =
 let connect_string uid =
   let* () =
     Eliom.State.set_persistent_data_session_group
-      ~scope:Eliom.Eliom_common.default_session_scope uid
+      ~scope:Eliom.Common.default_session_scope uid
   in
   let* () = connect_volatile uid in
   let uid = Int64.of_string uid in
@@ -96,9 +96,9 @@ let connect_string uid =
 
 let disconnect () =
   let* () = pre_close_session_action () in
-  let* () = Eliom.State.discard ~scope:Eliom.Eliom_common.default_session_scope () in
-  let* () = Eliom.State.discard ~scope:Eliom.Eliom_common.default_process_scope () in
-  let* () = Eliom.State.discard ~scope:Eliom.Eliom_common.request_scope () in
+  let* () = Eliom.State.discard ~scope:Eliom.Common.default_session_scope () in
+  let* () = Eliom.State.discard ~scope:Eliom.Common.default_process_scope () in
+  let* () = Eliom.State.discard ~scope:Eliom.Common.request_scope () in
   post_close_session_action ()
 
 let connect ?(expire = false) userid =
@@ -106,7 +106,7 @@ let connect ?(expire = false) userid =
   let* () =
     if expire
     then (
-      let open Eliom.Eliom_common in
+      let open Eliom.Common in
       let cookie_scope = (default_session_scope :> cookie_scope) in
       Eliom.State.set_service_cookie_exp_date ~cookie_scope None;
       Eliom.State.set_volatile_data_cookie_exp_date ~cookie_scope None;
@@ -145,11 +145,11 @@ let disconnect_all
       let group_name = Int64.to_string userid in
       let states =
         [ Eliom.State.Ext.volatile_data_group_state
-            ~scope:Eliom.Eliom_common.default_group_scope group_name
+            ~scope:Eliom.Common.default_group_scope group_name
         ; Eliom.State.Ext.persistent_data_group_state
-            ~scope:Eliom.Eliom_common.default_group_scope group_name
+            ~scope:Eliom.Common.default_group_scope group_name
         ; Eliom.State.Ext.service_group_state
-            ~scope:Eliom.Eliom_common.default_group_scope group_name ]
+            ~scope:Eliom.Common.default_group_scope group_name ]
       in
       let* ui_states =
         List.fold_left
@@ -171,7 +171,7 @@ let disconnect_all
           (Eliom.State.Ext.fold_volatile_sub_states ?sitedata
              ~state:
                (Eliom.State.Ext.volatile_data_group_state
-                  ~scope:Eliom.Eliom_common.default_group_scope group_name)
+                  ~scope:Eliom.Common.default_group_scope group_name)
              (fun acc s -> s :: acc)
              [])
       in

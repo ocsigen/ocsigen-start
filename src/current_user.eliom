@@ -32,7 +32,7 @@ let%shared please_use_connected_fun =
 (* current user *)
 let%server me : current_user Eliom.Reference.Volatile.eref =
   (* This is a request cache of current user *)
-  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope CU_idontknown
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Common.request_scope CU_idontknown
 
 let%client me : current_user ref = ref CU_notconnected
 (*on client side the default is not connected *)

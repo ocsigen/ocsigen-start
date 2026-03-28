@@ -36,10 +36,10 @@ let activation_code =
     Printf.sprintf "%04Ld" n
 
 let activation_code_ref =
-  Eliom.Reference.eref ~scope:Eliom.Eliom_common.default_process_scope None
+  Eliom.Reference.eref ~scope:Eliom.Common.default_process_scope None
 
 let recovery_code_ref =
-  Eliom.Reference.eref ~scope:Eliom.Eliom_common.default_process_scope None
+  Eliom.Reference.eref ~scope:Eliom.Common.default_process_scope None
 
 let send_sms_handler =
   ref @@ fun ~number message ->

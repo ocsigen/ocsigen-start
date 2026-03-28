@@ -51,7 +51,7 @@ let user_tz_sr =
   Eliom.Reference.Volatile.eref ~scope:Session.user_indep_session_scope None
 
 let user_tz_gr =
-  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.default_group_scope None
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Common.default_group_scope None
 (* We use 2 scopes in order to have the timezone set asap:
    - if user connected, we use last tz set by user
    - if not connected but new tab, we use same scope as other tabs

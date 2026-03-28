@@ -58,8 +58,8 @@ let%shared
        : unit)]
 
 let action_link_key_created =
-  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope false
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Common.request_scope false
 
 let wrong_pdata =
-  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Common.request_scope
     (None : ((string * string) * (string * string)) option)
