@@ -1,10 +1,18 @@
 ==
-
-=@@id="1_ServerAPI"@@~Server ~A~P~I=
-
-
-
-
+* <<a_api subproject="server" text="Index of types" | index types >>
+* <<a_api subproject="server" text="Index of exceptions" | index exceptions >>
+* <<a_api subproject="server" text="Index of values" | index values >>
+* <<a_api subproject="server" text="Index of modules" | index modules >>
+* <<a_api subproject="server" text="Index of module types" | index module types >>
+\
+|<<a_api subproject="server" | module Os_comet >>|<<div class="odocwiki_info"|~This module provides function to monitor communications between the server
+    clients~.
+>>
+|
+|<<a_api subproject="server" | module Os_connect_phone >>||
+|<<a_api subproject="server" | module Os_core_db >>|<<div class="odocwiki_info"|~This module defines low level functions for database requests~.
+>>
+|
 |<<a_api subproject="server" | module Os_current_user >>|<<div class="odocwiki_info"|~This module provides functions and types to manage the current user~.
 >>
 |
@@ -73,7 +81,7 @@
 >>
 |
 |<<a_api subproject="server" | module Os_user_proxy >>|<<div class="odocwiki_info"|~This module implements a cache of user using ~<~<a~_api project~="eliom" ~|
-    module ~Eliom~_cscache~>~> which allows to keep synchronized the cache between
+    module ~Eliom~.~Cscache~>~> which allows to keep synchronized the cache between
     the client and the server~.
 >>
 |
@@ -81,18 +89,4 @@
     settings buttons and other common contents arising in applications~.
 >>
 |
-
-
-
-
-
-==@@id="2_Index"@@~Index==
-
-
-
-* <<a_api subproject="server" text="Index of types" | index types >>
-* <<a_api subproject="server" text="Index of exceptions" | index exceptions >>
-* <<a_api subproject="server" text="Index of values" | index values >>
-* <<a_api subproject="server" text="Index of modules" | index modules >>
-* <<a_api subproject="server" text="Index of module types" | index module types >>
 

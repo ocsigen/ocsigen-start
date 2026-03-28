@@ -36,7 +36,7 @@
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Make"| module Os_page.Make >> ~[<<a_api subproject="server" | module Os_page >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Make"| module Os_notif.Make >> ~[<<a_api subproject="server" | module Os_notif >>~]|<<div class="odocwiki_info"|see <<span class="odocwiki_inlinecode"|~Eliom~_notif~.~Make>>
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Make"| module Os_notif.Make >> ~[<<a_api subproject="server" | module Os_notif >>~]|<<div class="odocwiki_info"|see <<span class="odocwiki_inlinecode"|~Eliom~.~Notif~.~Make>>
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Make_Simple"| module Os_notif.Make_Simple >> ~[<<a_api subproject="server" | module Os_notif >>~]|<<div class="odocwiki_info"|~Use this functor in case messages are to be delivered only to clients
@@ -132,7 +132,7 @@
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Os_user_proxy"| module Os_user_proxy >> |<<div class="odocwiki_info"|~This module implements a cache of user using ~<~<a~_api project~="eliom" ~|
-    module ~Eliom~_cscache~>~> which allows to keep synchronized the cache between
+    module ~Eliom~.~Cscache~>~> which allows to keep synchronized the cache between
     the client and the server~.
 >>
 |

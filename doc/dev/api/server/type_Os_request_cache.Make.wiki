@@ -1,12 +1,11 @@
-<<code language="ocaml" | functor
-  (M : sig
-         type key
-         type value
-         val compare :
-           Os_request_cache.Make.key -> Os_request_cache.Make.key -> int
-         val get :
-           Os_request_cache.Make.key -> Os_request_cache.Make.value Lwt.t
-       end)
+<<code language="ocaml" | (M : sig
+       type key
+       type value
+       val compare :
+         Os_request_cache.Make.key -> Os_request_cache.Make.key -> int
+       val get :
+         Os_request_cache.Make.key -> Os_request_cache.Make.value Lwt.t
+     end)
   ->
   sig
     type key = M.key

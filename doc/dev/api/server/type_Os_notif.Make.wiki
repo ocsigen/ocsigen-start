@@ -1,4 +1,4 @@
-<<code language="ocaml" | functor (A : ARG) ->
+<<code language="ocaml" | (A : ARG) ->
   sig
     type identity = Os_types.User.id option
     type key = A.key
@@ -11,14 +11,14 @@
     module Ext :
       sig
         val unlisten :
-          ?sitedata:Eliom_common.sitedata ->
-          ([< `Client_process ], [< `Data ]) Eliom_state.Ext.state ->
+          ?sitedata:Eliom.Eliom_common.sitedata ->
+          ([< `Client_process ], [< `Data ]) Eliom.State.Ext.state ->
           key -> unit
       end
-    val client_ev : unit -> (key * client_notif) Eliom_react.Down.t
+    val client_ev : unit -> (key * client_notif) Eliom.Eliom_react.Down.t
     val clean : unit -> unit
     val unlisten_user :
-      ?sitedata:Eliom_common.sitedata ->
+      ?sitedata:Eliom.Eliom_common.sitedata ->
       userid:Os_types.User.id -> key -> unit
     val notify :
       ?notfor:[ `Me | `User of Os_types.User.id ] ->

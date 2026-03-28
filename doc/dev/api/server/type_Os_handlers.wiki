@@ -12,16 +12,16 @@
     int64 option ->
     string ->
     unit ->
-    'a Eliom_registration.application_content Eliom_registration.kind Lwt.t
+    'a Eliom.Registration.application_content Eliom.Registration.kind Lwt.t
   val confirm_code_signup_handler :
     unit -> string * (string * (string * string)) -> unit Lwt.t
   val confirm_code_extra_handler : unit -> string -> unit Lwt.t
   val confirm_code_recovery_handler : unit -> string -> unit Lwt.t
   val forgot_password_handler :
-    (unit, unit, Eliom_service.get, Eliom_service.att, 'a,
-     Eliom_service.non_ext, 'b, [< `WithSuffix | `WithoutSuffix ], unit,
+    (unit, unit, Eliom.Service.get, Eliom.Service.att, 'a,
+     Eliom.Service.non_ext, 'b, [< `WithSuffix | `WithoutSuffix ], unit,
      unit, 'c)
-    Eliom_service.t -> unit -> string -> unit Lwt.t
+    Eliom.Service.t -> unit -> string -> unit Lwt.t
   val preregister_handler : unit -> string -> unit Lwt.t
   val set_password_handler :
     Os_types.User.id -> unit -> string * string -> unit Lwt.t

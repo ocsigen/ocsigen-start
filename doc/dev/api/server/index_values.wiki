@@ -192,7 +192,7 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="available"| value Os_db.Email.available >> ~[<<a_api subproject="server" | module Os_db.Email >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|available email>> returns <<span class="odocwiki_inlinecode"|true>> if <<span class="odocwiki_inlinecode"|email>> is not already used~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="avatar"| value Os_user_view.avatar >> ~[<<a_api subproject="server" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|avatar user>> creates an image ~H~T~M~L tag ~(with ~Eliom~_content~.~H~T~M~L~.~F~) with an
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="avatar"| value Os_user_view.avatar >> ~[<<a_api subproject="server" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|avatar user>> creates an image ~H~T~M~L tag ~(with ~Eliom~.~Content~.~H~T~M~L~.~F~) with an
     alt attribute to <<span class="odocwiki_inlinecode"|"picture">> and with class <<span class="odocwiki_inlinecode"|"os~-avatar">>~.
 >>
 |

@@ -6,5 +6,5 @@
     ?fallback:(Os_types.User.id option ->
                'a -> 'b -> exn -> Os_page.content Lwt.t) ->
     (Os_types.User.id option -> 'a -> 'b -> Os_page.content Lwt.t) ->
-    'a -> 'b -> Html_types.html Eliom_content.Html.elt Lwt.t
+    'a -> 'b -> Html_types.html Eliom.Content.Html.elt Lwt.t
 end >>

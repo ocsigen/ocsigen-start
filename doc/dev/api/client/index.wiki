@@ -1,14 +1,18 @@
 ==
-
-=@@id="1_ClientAPI"@@~Client ~A~P~I=
-
-
-
-
+* <<a_api subproject="client" text="Index of types" | index types >>
+* <<a_api subproject="client" text="Index of exceptions" | index exceptions >>
+* <<a_api subproject="client" text="Index of values" | index values >>
+* <<a_api subproject="client" text="Index of modules" | index modules >>
+* <<a_api subproject="client" text="Index of module types" | index module types >>
+\
+|<<a_api subproject="client" | module Os_comet >>||
+|<<a_api subproject="client" | module Os_connect_phone >>||
 |<<a_api subproject="client" | module Os_current_user >>|<<div class="odocwiki_info"|~This module provides functions and types to manage the current user~.
 >>
 |
 |<<a_api subproject="client" | module Os_date >>||
+|<<a_api subproject="client" | module Os_email >>||
+|<<a_api subproject="client" | module Os_fcm_notif >>||
 |<<a_api subproject="client" | module Os_handlers >>|<<div class="odocwiki_info"|~This module contains pre~-defined handlers for connect~, disconnect~, sign up~,
     add a new email~, etc~.
 >>
@@ -36,21 +40,8 @@
 |<<a_api subproject="client" | module Os_types >>|<<div class="odocwiki_info"|~Types related to users~.
 >>
 |
+|<<a_api subproject="client" | module Os_uploader >>||
 |<<a_api subproject="client" | module Os_user >>||
 |<<a_api subproject="client" | module Os_user_proxy >>||
 |<<a_api subproject="client" | module Os_user_view >>||
-
-
-
-
-
-==@@id="2_Index"@@~Index==
-
-
-
-* <<a_api subproject="client" text="Index of types" | index types >>
-* <<a_api subproject="client" text="Index of exceptions" | index exceptions >>
-* <<a_api subproject="client" text="Index of values" | index values >>
-* <<a_api subproject="client" text="Index of modules" | index modules >>
-* <<a_api subproject="client" text="Index of module types" | index module types >>
 

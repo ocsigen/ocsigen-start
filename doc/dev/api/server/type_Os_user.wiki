@@ -11,21 +11,21 @@
   exception Already_exists of Os_types.User.id
   exception No_such_user
   val password_set : Os_types.User.id -> bool Lwt.t
-  val wrong_password : bool Eliom_reference.Volatile.eref
-  val no_such_user : bool Eliom_reference.Volatile.eref
-  val account_not_activated : bool Eliom_reference.Volatile.eref
-  val user_already_exists : bool Eliom_reference.Volatile.eref
-  val user_does_not_exist : bool Eliom_reference.Volatile.eref
-  val user_already_preregistered : bool Eliom_reference.Volatile.eref
-  val action_link_key_outdated : bool Eliom_reference.Volatile.eref
+  val wrong_password : bool Eliom.Reference.Volatile.eref
+  val no_such_user : bool Eliom.Reference.Volatile.eref
+  val account_not_activated : bool Eliom.Reference.Volatile.eref
+  val user_already_exists : bool Eliom.Reference.Volatile.eref
+  val user_does_not_exist : bool Eliom.Reference.Volatile.eref
+  val user_already_preregistered : bool Eliom.Reference.Volatile.eref
+  val action_link_key_outdated : bool Eliom.Reference.Volatile.eref
   val userid_of_user : Os_types.User.t -> Os_types.User.id
   val firstname_of_user : Os_types.User.t -> string
   val lastname_of_user : Os_types.User.t -> string
   val avatar_of_user : Os_types.User.t -> string option
   val avatar_uri_of_avatar :
-    ?absolute_path:bool -> string -> Eliom_content.Xml.uri
+    ?absolute_path:bool -> string -> Eliom.Content.Xml.uri
   val avatar_uri_of_user :
-    ?absolute_path:bool -> Os_types.User.t -> Eliom_content.Xml.uri option
+    ?absolute_path:bool -> Os_types.User.t -> Eliom.Content.Xml.uri option
   val language_of_user : Os_types.User.t -> string option
   val fullname_of_user : Os_types.User.t -> string
   val is_complete : Os_types.User.t -> bool

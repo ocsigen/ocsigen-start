@@ -17,7 +17,7 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="add_email_service"| value Os_services.add_email_service >> ~[<<a_api subproject="client" | module Os_services >>~]|<<div class="odocwiki_info"|~A ~P~O~S~T service to add an email to a user~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="avatar"| value Os_user_view.avatar >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|avatar user>> creates an image ~H~T~M~L tag ~(with ~Eliom~_content~.~H~T~M~L~.~F~) with an
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="avatar"| value Os_user_view.avatar >> ~[<<a_api subproject="client" | module Os_user_view >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|avatar user>> creates an image ~H~T~M~L tag ~(with ~Eliom~.~Content~.~H~T~M~L~.~F~) with an
     alt attribute to <<span class="odocwiki_inlinecode"|"picture">> and with class <<span class="odocwiki_inlinecode"|"os~-avatar">>~.
 >>
 |
