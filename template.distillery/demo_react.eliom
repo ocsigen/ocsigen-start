@@ -4,42 +4,42 @@
 (** Demo for shared reactive content *)
 
 open%client Js_of_ocaml_lwt
-open%shared Eliom.Content
+open%shared Eliom_content
 open%shared Html.D
 
 (* Make a text input field that calls [f s] for each [s] submitted *)
 let%shared make_form msg f =
-  let inp = Eliom.Content.Html.D.Raw.input ()
+  let inp = Eliom_content.Html.D.Raw.input ()
   and btn =
-    Eliom.Content.Html.(D.button ~a:[D.a_class ["button"]] [D.txt msg])
+    Eliom_content.Html.(D.button ~a:[D.a_class ["button"]] [D.txt msg])
   in
   ignore
     [%client
       (Lwt.async @@ fun () ->
-       let btn = Eliom.Content.Html.To_dom.of_element ~%btn
-       and inp = Eliom.Content.Html.To_dom.of_input ~%inp in
+       let btn = Eliom_content.Html.To_dom.of_element ~%btn
+       and inp = Eliom_content.Html.To_dom.of_input ~%inp in
        Lwt_js_events.clicks btn @@ fun _ _ ->
        let v = Js_of_ocaml.Js.to_string inp##.value in
        let%lwt () = ~%f v in
        inp##.value := Js_of_ocaml.Js.string "";
        Lwt.return_unit
        : unit)];
-  Eliom.Content.Html.D.div [inp; btn]
+  Eliom_content.Html.D.div [inp; btn]
 
 (* Page for this demo *)
 let%shared page () =
   (* Client reactive list, initially empty.
      It can be defined either from client or server side,
      (depending on whether this code is executed client or server-side).
-     Use Eliom.Shared.ReactiveData.RList for lists or
-     Eliom.Shared.React.S for other data types.
+     Use Eliom_shared.ReactiveData.RList for lists or
+     Eliom_shared.React.S for other data types.
   *)
-  let l, h = Eliom.Shared.ReactiveData.RList.create [] in
+  let l, h = Eliom_shared.ReactiveData.RList.create [] in
   let inp =
     (* Form that performs a cons (client-side). *)
     make_form [%i18n Demo.S.reactive_programming_button]
       [%client
-        (fun v -> Lwt.return (Eliom.Shared.ReactiveData.RList.cons v ~%h)
+        (fun v -> Lwt.return (Eliom_shared.ReactiveData.RList.cons v ~%h)
          : string -> unit Lwt.t)]
   and l =
     (* Produce <li> items from l contents.
@@ -47,12 +47,12 @@ let%shared page () =
        to compute the initial page. It will then be called client-side
        every time the reactive list changes to update the
        page automatically. *)
-    Eliom.Shared.ReactiveData.RList.map
-      [%shared (fun s -> Eliom.Content.Html.(D.li [D.txt s]) : _ -> _)]
+    Eliom_shared.ReactiveData.RList.map
+      [%shared (fun s -> Eliom_content.Html.(D.li [D.txt s]) : _ -> _)]
       l
   in
   Lwt.return
-    Eliom.Content.Html.
+    Eliom_content.Html.
       [ F.h1 [%i18n Demo.reactive_programming]
       ; F.p [F.txt [%i18n Demo.S.reactive_programming_1]]
       ; F.p [F.txt [%i18n Demo.S.reactive_programming_2]]

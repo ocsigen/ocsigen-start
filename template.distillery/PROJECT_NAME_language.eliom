@@ -3,7 +3,7 @@
 
 let%server best_matched_language () =
   (* lang contains a list of (language_as_string, quality_value) *)
-  let lang = Eliom.Request_info.get_accept_language () in
+  let lang = Eliom_request_info.get_accept_language () in
   (* If no quality is given, we suppose it's 1 *)
   let lang =
     List.map (fun (s, q) -> s, match q with Some q -> q | None -> 1.) lang
@@ -24,31 +24,31 @@ let%server best_matched_language () =
 
 let%server update_language lang =
   let language = %%%MODULE_NAME%%%_i18n.string_of_language lang in
-  let myid_o = Os_current_user.Opt.get_current_userid () in
+  let myid_o = Os.Current_user.Opt.get_current_userid () in
   (* Update the server and client values *)
   %%%MODULE_NAME%%%_i18n.set_language lang;
   ignore [%client (%%%MODULE_NAME%%%_i18n.set_language ~%lang : unit)];
   (* Update in the database if a user is connected *)
   match myid_o with
   | None -> Lwt.return_unit
-  | Some userid -> Os_user.update_language ~userid ~language
+  | Some userid -> Os.User.update_language ~userid ~language
 
 let%server _ =
-  Os_session.on_start_process (fun _ ->
+  Os.Session.on_start_process (fun _ ->
     (* Guess a default language. *)
     let%lwt lang = best_matched_language () in
     ignore (update_language lang);
     Lwt.return_unit);
-  Os_session.on_start_connected_process (fun userid ->
+  Os.Session.on_start_connected_process (fun userid ->
     (* Set language according to user preferences. *)
     let%lwt language =
-      match%lwt Os_user.get_language userid with
+      match%lwt Os.User.get_language userid with
       | Some lang ->
           Lwt.return (%%%MODULE_NAME%%%_i18n.guess_language_of_string lang)
       | None ->
           let%lwt best_language = best_matched_language () in
           ignore
-            (Os_user.update_language ~userid
+            (Os.User.update_language ~userid
                ~language:(%%%MODULE_NAME%%%_i18n.string_of_language best_language));
           Lwt.return best_language
     in

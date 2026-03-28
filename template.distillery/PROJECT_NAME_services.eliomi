@@ -4,57 +4,57 @@
 val%shared about_service :
   ( unit
     , unit
-    , Eliom.Service.get
-    , Eliom.Service.att
-    , Eliom.Service.non_co
-    , Eliom.Service.non_ext
-    , Eliom.Service.reg
+    , Eliom_service.get
+    , Eliom_service.att
+    , Eliom_service.non_co
+    , Eliom_service.non_ext
+    , Eliom_service.reg
     , [`WithoutSuffix]
     , unit
     , unit
-    , Eliom.Service.non_ocaml )
-    Eliom.Service.t
+    , Eliom_service.non_ocaml )
+    Eliom_service.t
 
 val%shared upload_user_avatar_service : (unit, unit) Ot.Picture_uploader.service
 
 val%shared settings_service :
   ( unit
     , unit
-    , Eliom.Service.get
-    , Eliom.Service.att
-    , Eliom.Service.non_co
-    , Eliom.Service.non_ext
-    , Eliom.Service.reg
+    , Eliom_service.get
+    , Eliom_service.att
+    , Eliom_service.non_co
+    , Eliom_service.non_ext
+    , Eliom_service.reg
     , [`WithoutSuffix]
     , unit
     , unit
-    , Eliom.Service.non_ocaml )
-    Eliom.Service.t
+    , Eliom_service.non_ocaml )
+    Eliom_service.t
 
 val%shared os_github_service :
   ( unit
     , unit
-    , Eliom.Service.get
-    , Eliom.Service.att
-    , Eliom.Service.non_co
-    , Eliom.Service.ext
-    , Eliom.Service.non_reg
+    , Eliom_service.get
+    , Eliom_service.att
+    , Eliom_service.non_co
+    , Eliom_service.ext
+    , Eliom_service.non_reg
     , [`WithoutSuffix]
     , unit
     , unit
-    , Eliom.Service.non_ocaml )
-    Eliom.Service.t
+    , Eliom_service.non_ocaml )
+    Eliom_service.t
 
 val%shared ocsigen_service :
   ( unit
     , unit
-    , Eliom.Service.get
-    , Eliom.Service.att
-    , Eliom.Service.non_co
-    , Eliom.Service.ext
-    , Eliom.Service.non_reg
+    , Eliom_service.get
+    , Eliom_service.att
+    , Eliom_service.non_co
+    , Eliom_service.ext
+    , Eliom_service.non_reg
     , [`WithoutSuffix]
     , unit
     , unit
-    , Eliom.Service.non_ocaml )
-    Eliom.Service.t
+    , Eliom_service.non_ocaml )
+    Eliom_service.t
