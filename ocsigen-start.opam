@@ -15,8 +15,7 @@ homepage: "https://ocsigen.org/ocsigen-start/"
 bug-reports: "https://github.com/ocsigen/ocsigen-start/issues"
 dev-repo: "git+https://github.com/ocsigen/ocsigen-start.git"
 license: "LGPL-2.1-only WITH OCaml-LGPL-linking-exception"
-build: [ make "-j%{jobs}%" ]
-install: [ make "install" ]
+build: [ ["dune" "build" "-p" name "-j" jobs] ]
 depends: [
   "ocaml" {>= "4.10.0"}
   "pgocaml" {>= "4.0"}
