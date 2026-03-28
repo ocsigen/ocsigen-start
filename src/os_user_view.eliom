@@ -19,8 +19,8 @@
  *)
 
 open%client Lwt.Syntax
-open%shared Eliom_content.Html
-open%shared Eliom_content.Html.F
+open%shared Eliom.Content.Html
+open%shared Eliom.Content.Html.F
 open%client Js_of_ocaml
 open%client Js_of_ocaml_lwt
 
@@ -171,12 +171,12 @@ let%client phone_input ~placeholder ~label f =
 
 let%client sign_up_by_phone_input ~placeholder label =
   phone_input ~placeholder ~label @@ fun number ->
-  Eliom_client.change_page ~service:Os_services.confirm_code_signup_service ()
+  Eliom.Client.change_page ~service:Os_services.confirm_code_signup_service ()
     ("", ("", ("", number)))
 
 let%client forgot_password_phone_input ~placeholder label =
   phone_input ~placeholder ~label
-    (Eliom_client.change_page ~service:Os_services.confirm_code_remind_service
+    (Eliom.Client.change_page ~service:Os_services.confirm_code_remind_service
        ())
 
 let%shared
@@ -289,14 +289,14 @@ let%shared
       ?(content = [txt "Change profile picture"])
       ?(crop = Some 1.)
       ?(input :
-          Html_types.label_attrib Eliom_content.Html.D.Raw.attrib list
-          * Html_types.label_content_fun Eliom_content.Html.D.Raw.elt list =
+          Html_types.label_attrib Eliom.Content.Html.D.Raw.attrib list
+          * Html_types.label_content_fun Eliom.Content.Html.D.Raw.elt list =
         [], [])
       ?(submit :
-          Html_types.button_attrib Eliom_content.Html.D.Raw.attrib list
-          * Html_types.button_content_fun Eliom_content.Html.D.Raw.elt list =
+          Html_types.button_attrib Eliom.Content.Html.D.Raw.attrib list
+          * Html_types.button_content_fun Eliom.Content.Html.D.Raw.elt list =
         [], [txt "Submit"])
-      ?(onclick : (unit -> unit) Eliom_client_value.t =
+      ?(onclick : (unit -> unit) Eliom.Client_value.t =
         [%client (fun () -> () : unit -> unit)])
       (service : (unit, unit) Ot_picture_uploader.service)
   =
@@ -317,8 +317,8 @@ let%shared
                      @@ Ot_popup.popup
                           ~close_button:[Os_icons.F.close ()]
                           ~onclose:(fun () ->
-                            Eliom_client.change_page
-                              ~service:Eliom_service.reload_action () ())
+                            Eliom.Client.change_page
+                              ~service:Eliom.Service.reload_action () ())
                           (fun close ->
                              Ot_picture_uploader.mk_form ~crop:~%crop
                                ~input:~%input ~submit:~%submit
@@ -335,7 +335,7 @@ let%shared
 let%shared
     reset_tips_link
       ?(text_link = "See help again from beginning")
-      ?(close : (unit -> unit) Eliom_client_value.t =
+      ?(close : (unit -> unit) Eliom.Client_value.t =
         [%client (fun () -> () : unit -> unit)])
       ()
   =
@@ -346,7 +346,7 @@ let%shared
          async (fun () ->
            clicks (To_dom.of_element ~%l) (fun _ _ ->
              ~%close ();
-             Eliom_client.exit_to ~service:Os_tips.reset_tips_service () ();
+             Eliom.Client.exit_to ~service:Os_tips.reset_tips_service () ();
              Lwt.return_unit)))
        : unit)];
   l
@@ -368,14 +368,14 @@ let%shared
       ~button
       ~(popup_content :
          ((unit -> unit Lwt.t)
-          -> [< Html_types.div_content] Eliom_content.Html.elt Lwt.t)
-           Eliom_client_value.t)
+          -> [< Html_types.div_content] Eliom.Content.Html.elt Lwt.t)
+           Eliom.Client_value.t)
       ()
   =
   ignore
     [%client
       (Lwt.async (fun () ->
-         Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element ~%button)
+         Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%button)
            (fun _ _ ->
               let* _ =
                 Ot_popup.popup ?a:~%a
@@ -484,13 +484,13 @@ let%shared
   button
 
 let%shared disconnect_link ?(text_logout = "Logout") ?(a = []) () =
-  Eliom_content.Html.D.Raw.a
+  Eliom.Content.Html.D.Raw.a
     ~a:
       (a_onclick
          [%client
            fun _ ->
              Lwt.async (fun () ->
-               Eliom_client.change_page ~service:Os_services.disconnect_service
+               Eliom.Client.change_page ~service:Os_services.disconnect_service
                  () ())]
       :: a)
     [Os_icons.F.signout (); txt text_logout]

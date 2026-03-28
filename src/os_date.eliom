@@ -48,10 +48,10 @@ let%client timezone =
       Printf.sprintf "Etc/GMT%+d" ((new%js Js.date_now)##getTimezoneOffset / 60)
 
 let user_tz_sr =
-  Eliom_reference.Volatile.eref ~scope:Os_session.user_indep_session_scope None
+  Eliom.Reference.Volatile.eref ~scope:Os_session.user_indep_session_scope None
 
 let user_tz_gr =
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.default_group_scope None
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.default_group_scope None
 (* We use 2 scopes in order to have the timezone set asap:
    - if user connected, we use last tz set by user
    - if not connected but new tab, we use same scope as other tabs
@@ -59,9 +59,9 @@ let user_tz_gr =
 
 let user_tz_opt () =
   (* We take by default the timezone of the browser (session), if already set *)
-  let tz = Eliom_reference.Volatile.get user_tz_sr in
+  let tz = Eliom.Reference.Volatile.get user_tz_sr in
   if tz = None (* not set *)
-  then Eliom_reference.Volatile.get user_tz_gr
+  then Eliom.Reference.Volatile.get user_tz_gr
   else tz
 
 let user_tz () = match user_tz_opt () with None -> "UTC" | Some v -> v
@@ -71,8 +71,8 @@ let%client user_tz () = timezone
    the time zone of the client *)
 let initialize tz =
   let tz = Some tz in
-  Eliom_reference.Volatile.set user_tz_gr tz;
-  Eliom_reference.Volatile.set user_tz_sr tz
+  Eliom.Reference.Volatile.set user_tz_gr tz;
+  Eliom.Reference.Volatile.set user_tz_sr tz
 
 (* When the browser is loaded, we init the timezone *)
 let%rpc init_time_rpc (tz : string) : unit Lwt.t =
@@ -83,7 +83,7 @@ let%client disable_auto_init () = auto_init := false
 
 let%client _ =
   (* We wait for the client process to be fully loaded: *)
-  Eliom_client.onload (fun () ->
+  Eliom.Client.onload (fun () ->
     if !auto_init then Lwt.async (fun () -> init_time_rpc timezone))
 
 [%%shared

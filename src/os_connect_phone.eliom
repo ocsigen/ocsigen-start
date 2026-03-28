@@ -36,10 +36,10 @@ let activation_code =
     Printf.sprintf "%04Ld" n
 
 let activation_code_ref =
-  Eliom_reference.eref ~scope:Eliom_common.default_process_scope None
+  Eliom.Reference.eref ~scope:Eliom.Eliom_common.default_process_scope None
 
 let recovery_code_ref =
-  Eliom_reference.eref ~scope:Eliom_common.default_process_scope None
+  Eliom.Reference.eref ~scope:Eliom.Eliom_common.default_process_scope None
 
 let send_sms_handler =
   ref @@ fun ~number message ->
@@ -57,7 +57,7 @@ let%server request_code reference number =
   Lwt.catch
     (fun () ->
        let* attempt =
-         Lwt.bind (Eliom_reference.get reference) (function
+         Lwt.bind (Eliom.Reference.get reference) (function
            | Some (_, _, attempt) -> Lwt.return attempt
            | None -> Lwt.return 0)
        in
@@ -65,7 +65,7 @@ let%server request_code reference number =
        then
          let attempt = attempt + 1 and code = activation_code () in
          let* () =
-           Eliom_reference.set reference (Some (number, code, attempt))
+           Eliom.Reference.set reference (Some (number, code, attempt))
          in
          Lwt.catch
            (fun () -> (send_sms ~number code :> (unit, sms_error) result Lwt.t))
@@ -94,7 +94,7 @@ let%rpc request_code (number : string) : (unit, sms_error) result Lwt.t =
   else request_code activation_code_ref number
 
 let%server confirm_code myid code =
-  Lwt.bind (Eliom_reference.get activation_code_ref) (function
+  Lwt.bind (Eliom.Reference.get activation_code_ref) (function
     | Some (number, code', _) when code = code' -> Os_db.Phone.add myid number
     | _ -> Lwt.return_false)
 
@@ -104,9 +104,9 @@ let%rpc confirm_code_extra myid (code : string) : bool Lwt.t =
 let%server
     confirm_code_signup_no_connect ~first_name ~last_name ~code ~password ()
   =
-  Lwt.bind (Eliom_reference.get activation_code_ref) (function
+  Lwt.bind (Eliom.Reference.get activation_code_ref) (function
     | Some (number, code', _) when code = code' ->
-        let* () = Eliom_reference.set activation_code_ref None in
+        let* () = Eliom.Reference.set activation_code_ref None in
         let* user =
           Os_user.create ~password ~firstname:first_name ~lastname:last_name ()
         in
@@ -132,7 +132,7 @@ let%rpc
         Lwt.return_true)
 
 let%rpc confirm_code_recovery (code : string) : bool Lwt.t =
-  Lwt.bind (Eliom_reference.get recovery_code_ref) (function
+  Lwt.bind (Eliom.Reference.get recovery_code_ref) (function
     | Some (number, code', _) when code = code' ->
         Lwt.bind (Os_db.Phone.userid number) (function
           | Some userid ->

@@ -36,10 +36,10 @@ let%client cookies_enabled () =
   with _ -> false
 
 let%client restart_process () =
-  if Eliom_client.is_client_app ()
+  if Eliom.Client.is_client_app ()
   then
-    Eliom_client.exit_to ~absolute:false
-      ~service:(Eliom_service.static_dir ())
+    Eliom.Client.exit_to ~absolute:false
+      ~service:(Eliom.Service.static_dir ())
       ["index.html"] ()
   else if
     (* If cookies do not work,
@@ -48,10 +48,10 @@ let%client restart_process () =
        if cookies are deactivated of if the app is running in an iframe
        and the browser forbids third party cookies. *)
     cookies_enabled ()
-  then Eliom_client.exit_to ~service:Eliom_service.reload_action () ()
+  then Eliom.Client.exit_to ~service:Eliom.Service.reload_action () ()
 
 let%client _ =
-  Eliom_comet.set_handle_exn_function (fun ?exn:_ () ->
+  Eliom.Comet.set_handle_exn_function (fun ?exn:_ () ->
     restart_process (); Lwt.return_unit)
 
 (* We create a channel on scope user_indep_process_scope,
@@ -67,7 +67,7 @@ type%shared msg =
 let create_monitor_channel () =
   let monitor_stream, monitor_send = React.E.create () in
   let channel =
-    Eliom_comet.Channel.create_from_events
+    Eliom.Comet.Channel.create_from_events
       ~scope:Os_session.user_indep_process_scope ~name:"monitor" monitor_stream
   in
   channel, fun ev -> monitor_send ev
@@ -79,10 +79,10 @@ let create_monitor_channel () =
    after timeout.
 *)
 let monitor_channel_ref =
-  Eliom_reference.Volatile.eref ~scope:Os_session.user_indep_process_scope None
+  Eliom.Reference.Volatile.eref ~scope:Os_session.user_indep_process_scope None
 
 let already_send_ref =
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope false
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope false
 
 let%client handle_error =
   ref (fun exn ->
@@ -107,7 +107,7 @@ let%client handle_message = function
       restart_process (); Lwt.return_unit
 
 let%server warn_state c state =
-  match Eliom_reference.Volatile.Ext.get state monitor_channel_ref with
+  match Eliom.Reference.Volatile.Ext.get state monitor_channel_ref with
   | Some (_, send) -> send c
   | None -> ()
 
@@ -117,7 +117,7 @@ let%server _ =
 let%server _ =
   Os_session.on_start_process (fun _ ->
     let channel = create_monitor_channel () in
-    Eliom_reference.Volatile.set monitor_channel_ref (Some channel);
+    Eliom.Reference.Volatile.set monitor_channel_ref (Some channel);
     ignore
       [%client
         (Lwt.async (fun () ->
@@ -128,15 +128,15 @@ let%server _ =
   let warn c =
     (* User connected or disconnected.
        I want to send the message on all tabs of the browser: *)
-    if not (Eliom_reference.Volatile.get already_send_ref)
+    if not (Eliom.Reference.Volatile.get already_send_ref)
     then (
-      Eliom_reference.Volatile.set already_send_ref true;
-      let cur = Eliom_reference.Volatile.get monitor_channel_ref in
-      Eliom_state.Ext.iter_volatile_sub_states
+      Eliom.Reference.Volatile.set already_send_ref true;
+      let cur = Eliom.Reference.Volatile.get monitor_channel_ref in
+      Eliom.State.Ext.iter_volatile_sub_states
         ~state:
-          (Eliom_state.Ext.current_volatile_data_state
+          (Eliom.State.Ext.current_volatile_data_state
              ~scope:Os_session.user_indep_session_scope ()) (fun state ->
-        match Eliom_reference.Volatile.Ext.get state monitor_channel_ref with
+        match Eliom.Reference.Volatile.Ext.get state monitor_channel_ref with
         | Some (_, send) as v -> if not (v == cur) then send c
         | None -> ()));
     Lwt.return_unit

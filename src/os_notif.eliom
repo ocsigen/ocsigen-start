@@ -21,10 +21,10 @@
 open Os_types
 
 module type S = sig
-  include Eliom_notif.S with type identity = User.id option
+  include Eliom.Notif.S with type identity = User.id option
 
   val unlisten_user :
-     ?sitedata:Eliom_common.sitedata
+     ?sitedata:Eliom.Eliom_common.sitedata
     -> userid:User.id
     -> key
     -> unit
@@ -48,7 +48,7 @@ module Make (A : ARG) :
   with type key = A.key
    and type server_notif = A.server_notif
    and type client_notif = A.client_notif = struct
-  include Eliom_notif.Make (struct
+  include Eliom.Notif.Make (struct
       type identity = User.id option
       type key = A.key
       type server_notif = A.server_notif
@@ -67,14 +67,14 @@ module Make (A : ARG) :
 
   let unlisten_user ?sitedata ~userid (id : A.key) =
     let state =
-      Eliom_state.Ext.volatile_data_group_state
-        ~scope:Eliom_common.default_group_scope (Int64.to_string userid)
+      Eliom.State.Ext.volatile_data_group_state
+        ~scope:Eliom.Eliom_common.default_group_scope (Int64.to_string userid)
     in
     Lwt.async @@ fun () ->
     (* Iterating on all sessions in group: *)
-    Eliom_state.Ext.iter_sub_states ?sitedata ~state @@ fun state ->
+    Eliom.State.Ext.iter_sub_states ?sitedata ~state @@ fun state ->
     (* Iterating on all client processes in session: *)
-    Eliom_state.Ext.iter_sub_states ?sitedata ~state (fun state ->
+    Eliom.State.Ext.iter_sub_states ?sitedata ~state (fun state ->
       Ext.unlisten state id; Lwt.return_unit)
 
   let notify ?notfor key notif =

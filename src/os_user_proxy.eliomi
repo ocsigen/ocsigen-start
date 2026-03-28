@@ -20,7 +20,7 @@
  *)
 
 (** This module implements a cache of user using <<a_api project="eliom" |
-    module Eliom_cscache>> which allows to keep synchronized the cache between
+    module Eliom.Cscache>> which allows to keep synchronized the cache between
     the client and the server.
     Even if there is a cache implemented in {!Os_user} to avoid to do database
     requests, this last one is implementing only server side. Same for
@@ -29,7 +29,7 @@
 
 [%%server.start]
 
-val cache : (Os_types.User.id, Os_types.User.t) Eliom_cscache.t
+val cache : (Os_types.User.id, Os_types.User.t) Eliom.Cscache.t
 (** Cache keeping userid and user information as a {!Os_types.user} type. *)
 
 val get_data_from_db : 'a -> Os_types.User.id -> Os_types.User.t Lwt.t

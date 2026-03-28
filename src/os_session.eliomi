@@ -63,9 +63,9 @@ val on_denied_request : (Os_types.User.id option -> unit Lwt.t) -> unit
     server side data for one browser or tab, but not user dependent.
     (Remains when user logs out). *)
 
-val user_indep_state_hierarchy : Eliom_common.scope_hierarchy
-val user_indep_process_scope : [> Eliom_common.client_process_scope]
-val user_indep_session_scope : [> Eliom_common.session_scope]
+val user_indep_state_hierarchy : Eliom.Eliom_common.scope_hierarchy
+val user_indep_process_scope : [> Eliom.Eliom_common.client_process_scope]
+val user_indep_session_scope : [> Eliom.Eliom_common.session_scope]
 
 [%%shared.start]
 
@@ -86,7 +86,7 @@ val connect : ?expire:bool -> Os_types.User.id -> unit Lwt.t
 *)
 
 val disconnect_all :
-   ?sitedata:Eliom_common.sitedata
+   ?sitedata:Eliom.Eliom_common.sitedata
   -> ?userid:Os_types.User.id
   -> ?user_indep:bool
   -> ?with_restart:bool
@@ -103,7 +103,7 @@ val disconnect_all :
     - [?userid] must not be [None]
     - [?with_restart] must be [false]
     - you must provide the extra parameter [?sitedata],
-      that you can get by calling [Eliom_request_info.get_sitedata]
+      that you can get by calling [Eliom.Request_info.get_sitedata]
       during the initialisation phase of the Eliom module.
 *)
 
@@ -218,5 +218,5 @@ val get_current_userid_o : (unit -> Os_types.User.id option) ref
 [%%server.start]
 
 val set_warn_connection_change :
-   (([`Session], [`Data]) Eliom_state.Ext.state -> unit)
+   (([`Session], [`Data]) Eliom.State.Ext.state -> unit)
   -> unit

@@ -30,9 +30,9 @@ let%shared please_use_connected_fun =
   "ERROR: Os_current_user is usable only with connected functions (see Os_session)"
 
 (* current user *)
-let%server me : current_user Eliom_reference.Volatile.eref =
+let%server me : current_user Eliom.Reference.Volatile.eref =
   (* This is a request cache of current user *)
-  Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope CU_idontknown
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope CU_idontknown
 
 let%client me : current_user ref = ref CU_notconnected
 (*on client side the default is not connected *)
@@ -60,7 +60,7 @@ let%client get_current_user () =
    But do not trust a user sent by the client ...
 *)
 let%server get_current_user () =
-  match Eliom_reference.Volatile.get me with
+  match Eliom.Reference.Volatile.get me with
   | CU_user a -> a
   | CU_idontknown ->
       prerr_endline please_use_connected_fun;
@@ -68,7 +68,7 @@ let%server get_current_user () =
   | CU_notconnected -> raise Os_session.Not_connected
 
 let%server get_current_user_option () =
-  let u = Eliom_reference.Volatile.get me in
+  let u = Eliom.Reference.Volatile.get me in
   match u with
   | CU_user a -> Some a
   | CU_idontknown -> failwith please_use_connected_fun
@@ -81,21 +81,21 @@ module Opt = struct
   let get_current_user = get_current_user_option
 
   let get_current_userid () =
-    Eliom_lib.Option.map Os_user.userid_of_user (get_current_user_option ())
+    Eliom.Lib.Option.map Os_user.userid_of_user (get_current_user_option ())
 end]
 
 let%client _ = Os_session.get_current_userid_o := Opt.get_current_userid
 
 let%server set_user_server myid =
   let* u = Os_user.user_of_userid myid in
-  Eliom_reference.Volatile.set me (CU_user u);
+  Eliom.Reference.Volatile.set me (CU_user u);
   Lwt.return_unit
 
 let%server unset_user_server () =
-  Eliom_reference.Volatile.set me CU_notconnected
+  Eliom.Reference.Volatile.set me CU_notconnected
 
 let%server set_user_client () =
-  let u = Eliom_reference.Volatile.get me in
+  let u = Eliom.Reference.Volatile.get me in
   ignore [%client (me := ~%u : unit)]
 
 let%server unset_user_client () =

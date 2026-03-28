@@ -35,8 +35,8 @@ val restart_process : unit -> unit
     For mobile application, it restarts the application by going to
     ["index.html"].
     For other types of clients, <<a_api subproject="server" |
-    module Eliom_service.reload_action>> is used as argument of <<a_api
-    subproject="server" | module Eliom_client.exit_to>>
+    module Eliom.Service.reload_action>> is used as argument of <<a_api
+    subproject="server" | module Eliom.Client.exit_to>>
  *)
 
 val set_error_handler : (exn -> unit Lwt.t) -> unit

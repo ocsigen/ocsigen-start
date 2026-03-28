@@ -51,32 +51,32 @@ struct
   (* we use an eliom reference with the restrictive request scope, which is
      sufficient and safe (SECURITY) *)
   let cache =
-    Eliom_reference.Volatile.eref ~scope:Eliom_common.request_scope MMap.empty
+    Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope MMap.empty
 
   let has k =
-    Eliom_common.get_sp_option () <> None
-    && MMap.mem k (Eliom_reference.Volatile.get cache)
+    Eliom.Eliom_common.get_sp_option () <> None
+    && MMap.mem k (Eliom.Reference.Volatile.get cache)
 
   let set k v =
-    if Eliom_common.get_sp_option () <> None
+    if Eliom.Eliom_common.get_sp_option () <> None
     then
-      let table = Eliom_reference.Volatile.get cache in
-      Eliom_reference.Volatile.set cache (MMap.add k v table)
+      let table = Eliom.Reference.Volatile.get cache in
+      Eliom.Reference.Volatile.set cache (MMap.add k v table)
 
   let reset (k : M.key) =
-    if Eliom_common.get_sp_option () <> None
+    if Eliom.Eliom_common.get_sp_option () <> None
     then
-      let table = Eliom_reference.Volatile.get cache in
-      Eliom_reference.Volatile.set cache (MMap.remove k table)
+      let table = Eliom.Reference.Volatile.get cache in
+      Eliom.Reference.Volatile.set cache (MMap.remove k table)
 
   let get (k : M.key) =
-    if Eliom_common.get_sp_option () = None
+    if Eliom.Eliom_common.get_sp_option () = None
     then M.get k (* Not during a request. No cache. *)
     else
-      let table = Eliom_reference.Volatile.get cache in
+      let table = Eliom.Reference.Volatile.get cache in
       try Lwt.return (MMap.find k table)
       with Not_found ->
         let* ret = M.get k in
-        Eliom_reference.Volatile.set cache (MMap.add k ret table);
+        Eliom.Reference.Volatile.set cache (MMap.add k ret table);
         Lwt.return ret
 end

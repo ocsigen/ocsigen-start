@@ -53,12 +53,12 @@ val msg :
 val set_default_duration : float -> unit
 (** Set default message duration (default 4s) *)
 
-val action_link_key_created : bool Eliom_reference.Volatile.eref
+val action_link_key_created : bool Eliom.Reference.Volatile.eref
 (** Set to [true] if an action link key has been already created and sent to the
     user email, else [false]. Default is [false]. *)
 
 val wrong_pdata :
-  ((string * string) * (string * string)) option Eliom_reference.Volatile.eref
+  ((string * string) * (string * string)) option Eliom.Reference.Volatile.eref
 (** [((firstname, lastname), (password, password_confirmation)) option]
     is a reference used to remember information about the user during a
     request when something went wrong (for example in a form when the password

@@ -71,7 +71,7 @@ val action_link_handler :
    int64 option
   -> string
   -> unit
-  -> 'a Eliom_registration.application_content Eliom_registration.kind Lwt.t
+  -> 'a Eliom.Registration.application_content Eliom.Registration.kind Lwt.t
 (** [action_link_handler userid_o activation_key ()] is the handler for
     activation keys.
 
@@ -105,16 +105,16 @@ val confirm_code_recovery_handler : unit -> string -> unit Lwt.t
 val forgot_password_handler :
    ( unit
      , unit
-     , Eliom_service.get
-     , Eliom_service.att
+     , Eliom.Service.get
+     , Eliom.Service.att
      , _
-     , Eliom_service.non_ext
+     , Eliom.Service.non_ext
      , _
      , _
      , unit
      , unit
      , 'c )
-     Eliom_service.t
+     Eliom.Service.t
   -> unit
   -> string
   -> unit Lwt.t

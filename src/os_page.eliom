@@ -19,22 +19,22 @@
  *)
 
 open%shared Lwt.Syntax
-open%shared Eliom_content.Html.F
+open%shared Eliom.Content.Html.F
 open%client Js_of_ocaml
 
 [%%shared
 exception Predicate_failed of exn option
 
 type content =
-  { html_attrs : Html_types.html_attrib Eliom_content.Html.attrib list
+  { html_attrs : Html_types.html_attrib Eliom.Content.Html.attrib list
   ; title : string option
   ; head : Html_types.head_content_fun elt list
-  ; body_attrs : Html_types.body_attrib Eliom_content.Html.attrib list
+  ; body_attrs : Html_types.body_attrib Eliom.Content.Html.attrib list
   ; body : Html_types.body_content elt list }]
 
 let%shared content ?(html_a = []) ?(a = []) ?title ?(head = []) body =
   let html_attrs =
-    if Eliom_client.is_client_app ()
+    if Eliom.Client.is_client_app ()
     then a_class ["os-client-app"] :: html_a
     else html_a
   in
@@ -51,7 +51,7 @@ module type PAGE = sig
   val local_js : string list list
   val css : string list list
   val local_css : string list list
-  val other_head : unit -> Html_types.head_content_fun Eliom_content.Html.elt list
+  val other_head : unit -> Html_types.head_content_fun Eliom.Content.Html.elt list
   val default_error_page : 'a -> 'b -> exn -> content Lwt.t
 
   val default_connected_error_page :
@@ -76,7 +76,7 @@ module Default_config = struct
   let css : string list list = []
   let local_js : string list list = []
   let local_css : string list list = []
-  let other_head () : Html_types.head_content_fun Eliom_content.Html.elt list = []
+  let other_head () : Html_types.head_content_fun Eliom.Content.Html.elt list = []
 
   let err_page exn =
     let de =
@@ -106,10 +106,10 @@ module Make (C : PAGE) = struct
   let local_css =
     List.map
       (fun cssname ->
-         Eliom_content.Html.F.css_link
+         Eliom.Content.Html.F.css_link
            ~uri:
              (make_uri ~absolute:false
-                ~service:(Eliom_service.static_dir ())
+                ~service:(Eliom.Service.static_dir ())
                 ("css" :: cssname))
            ())
       C.local_css
@@ -117,11 +117,11 @@ module Make (C : PAGE) = struct
   let local_js =
     List.map
       (fun cssname ->
-         Eliom_content.Html.F.js_script
+         Eliom.Content.Html.F.js_script
            ~a:[a_defer ()]
            ~uri:
              (make_uri ~absolute:false
-                ~service:(Eliom_service.static_dir ())
+                ~service:(Eliom.Service.static_dir ())
                 ("js" :: cssname))
            ())
       C.local_js
@@ -143,7 +143,7 @@ module Make (C : PAGE) = struct
             Dom_html.document##.documentElement##.classList##add platform]
     in
     html ~a:content.html_attrs
-      (Eliom_tools.F.head ~title ~css ~js
+      (Eliom.Tools.F.head ~title ~css ~js
          ~other:(local_css @ local_js @ content.head @ C.other_head ())
          ())
       (body
