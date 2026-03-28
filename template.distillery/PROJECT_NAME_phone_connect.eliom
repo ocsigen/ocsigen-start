@@ -5,7 +5,7 @@
 
    [enable] has to be set to [true].
 
-   Use [Os_connect_phone.set_send_sms_handler] to register your
+   Use [Os.Connect_phone.set_send_sms_handler] to register your
    SMS-sending function, e.g., by using Amazon SNS or Twilio.
 
    You can remove this file if you don't need this functionality. *)
@@ -15,20 +15,20 @@ let%shared enable = false
 let%server () =
   if enable
   then
-    Os_connect_phone.set_send_sms_handler (fun ~number message ->
+    Os.Connect_phone.set_send_sms_handler (fun ~number message ->
       Printf.printf "Send SMS %s to %s\n%!" message number;
       Lwt.return (Ok ()))
 
 let%shared () =
   if enable
   then (
-    Os_user_view.enable_phone ();
-    Eliom.Registration.Action.register
-      ~service:Os_services.confirm_code_recovery_service
-      Os_handlers.confirm_code_recovery_handler;
-    Eliom.Registration.Action.register
-      ~service:Os_services.confirm_code_extra_service
-      Os_handlers.confirm_code_extra_handler;
-    Eliom.Registration.Action.register
-      ~service:Os_services.confirm_code_signup_service
-      Os_handlers.confirm_code_signup_handler)
+    Os.User_view.enable_phone ();
+    Eliom_registration.Action.register
+      ~service:Os.Services.confirm_code_recovery_service
+      Os.Handlers.confirm_code_recovery_handler;
+    Eliom_registration.Action.register
+      ~service:Os.Services.confirm_code_extra_service
+      Os.Handlers.confirm_code_extra_handler;
+    Eliom_registration.Action.register
+      ~service:Os.Services.confirm_code_signup_service
+      Os.Handlers.confirm_code_signup_handler)

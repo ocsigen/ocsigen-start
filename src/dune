@@ -7,9 +7,9 @@
  (public_name ocsigen-start.server)
  (name ocsigen_start)
  (modes byte native)
- (wrapped false)
+ (wrapped (module_name Os))
  (preprocess
-  (pps eliom.ppx.server js_of_ocaml-ppx_deriving_json ocsigen-ppx-rpc))
+  (pps eliom.ppx.server js_of_ocaml-ppx_deriving_json ocsigen-ppx-rpc -- --rpc-internal))
  (flags
   (:standard
    (:include type_includes)))
@@ -30,7 +30,7 @@
   (public_name ocsigen-start.client)
   (name ocsigen_start)
   (modes byte)
-  (wrapped false)
+  (wrapped (module_name Os))
   (preprocess
    (pps js_of_ocaml-ppx js_of_ocaml-ppx_deriving_json))
   (libraries eliom.client calendar ocsigen-toolkit.client re.str js_of_ocaml))
@@ -51,4 +51,4 @@
  (action
   (with-stdout-to
    dune.client
-   (run ocsigen-dune-rules .))))
+   (run ocsigen-dune-rules --internal-prefix Os .))))

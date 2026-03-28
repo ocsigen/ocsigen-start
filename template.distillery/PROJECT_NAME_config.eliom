@@ -49,7 +49,7 @@ let avatars =
   let open Ocsigen_extensions.Configuration in
   let attributes =
     [ attribute ~name:"dir" ~obligatory:true (fun h ->
-        avatar_dir := Eliom.Lib.String.split '/' h) ]
+        avatar_dir := Eliom_lib.String.split '/' h) ]
   in
   element ~name:"avatars" ~obligatory:true ~attributes ()
 
@@ -74,4 +74,4 @@ let os_db =
 
 let _ =
   if Ocsigen_config.has_configuration_file ()
-  then Eliom.Config.parse_config [app; avatars; os_db]
+  then Eliom_config.parse_config [app; avatars; os_db]

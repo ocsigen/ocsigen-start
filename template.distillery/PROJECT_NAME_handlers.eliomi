@@ -4,11 +4,11 @@
 (** This module defines handlers to upload avatar, upload personal
     data, set a new password, and also main handlers (main page, about
     page, and settings page).  In addition to including all default
-    handlers from OS (see {!Os_handlers}), it overrides some of them
+    handlers from OS (see {!Os.Handlers}), it overrides some of them
     for the purposes of this template. *)
 
 val%server upload_user_avatar_handler :
-   Os_types.User.id
+   Os.Types.User.id
   -> unit
   -> unit
      * ((float * float * float * float) option * Ocsigen_extensions.file_info)
@@ -21,15 +21,15 @@ val%shared set_personal_data_handler :
   -> (string * string) * (string * string)
   -> unit Lwt.t
 (** Update personal data. It uses the default OS handler
-    {!Os_handlers.set_personal_data_handler} and gets the user information
-    with {!Os_session.connected_fun}. *)
+    {!Os.Handlers.set_personal_data_handler} and gets the user information
+    with {!Os.Session.connected_fun}. *)
 
 val%shared forgot_password_handler : unit -> string -> unit Lwt.t
 (** Reset forgotten password. It uses the default OS handler
-    {!Os_handlers.forgot_password_handler} with the main service. *)
+    {!Os.Handlers.forgot_password_handler} with the main service. *)
 
 val%shared action_link_handler :
-   Os_types.User.id option
+   Os.Types.User.id option
   -> string
   -> unit
   -> %%%MODULE_NAME%%%_base.App.result Lwt.t
@@ -37,10 +37,10 @@ val%shared action_link_handler :
 val%shared set_password_handler :
    unit
   -> string * string
-  -> Eliom.Service.non_ocaml Eliom.Registration.redirection Lwt.t
+  -> Eliom_service.non_ocaml Eliom_registration.redirection Lwt.t
 (** Set a new password. It uses the default OS handler
-    {!Os_handlers.set_password_handler} and gets the user information
-    with {!Os_session.connected_fun}. *)
+    {!Os.Handlers.set_password_handler} and gets the user information
+    with {!Os.Session.connected_fun}. *)
 
 val%shared preregister_handler : unit -> string -> unit Lwt.t
 
@@ -53,24 +53,24 @@ val%shared preregister_handler : unit -> string -> unit Lwt.t
     by sending the userid as first parameter. *)
 
 val%shared main_service_handler :
-   Os_types.User.id option
+   Os.Types.User.id option
   -> unit
   -> unit
-  -> Os_page.content Lwt.t
+  -> Os.Page.content Lwt.t
 (** The first page of the application *)
 
 val%shared about_handler :
-   Os_types.User.id option
+   Os.Types.User.id option
   -> unit
   -> unit
-  -> Os_page.content Lwt.t
+  -> Os.Page.content Lwt.t
 (** About page *)
 
 val%shared settings_handler :
-   Os_types.User.id option
+   Os.Types.User.id option
   -> unit
   -> unit
-  -> Os_page.content Lwt.t
+  -> Os.Page.content Lwt.t
 (** Settings page. If the user is connected (see
     {!%%%MODULE_NAME%%%_container.get_user_data}), a settings
     container will be created. *)
@@ -78,4 +78,4 @@ val%shared settings_handler :
 val%shared update_language_handler :
    unit
   -> string
-  -> Eliom.Registration.Action.page Lwt.t
+  -> Eliom_registration.Action.page Lwt.t
