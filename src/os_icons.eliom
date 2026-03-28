@@ -37,9 +37,9 @@ module type ICSIG = sig
 end
 
 module D = struct
-  let user_r = ref Ot_icons.D.user
-  let signout_r = ref Ot_icons.D.signout
-  let close_r = ref Ot_icons.D.close
+  let user_r = ref Ot.Icons.D.user
+  let signout_r = ref Ot.Icons.D.signout
+  let close_r = ref Ot.Icons.D.close
 
   let user ?a () =
     (!user_r ?a ()
@@ -58,9 +58,9 @@ module D = struct
 end
 
 module F = struct
-  let user_r = ref Ot_icons.F.user
-  let signout_r = ref Ot_icons.F.signout
-  let close_r = ref Ot_icons.F.close
+  let user_r = ref Ot.Icons.F.user
+  let signout_r = ref Ot.Icons.F.signout
+  let close_r = ref Ot.Icons.F.close
 
   let user ?a () =
     (!user_r ?a ()

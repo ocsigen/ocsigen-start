@@ -25,7 +25,7 @@ let%rpc time_reactive () : string Eliom.Shared.React.S.t Lwt.t =
 (* Page for this demo *)
 let%shared page () =
   let time_picker, _, back_f =
-    Ot_time_picker.make ~h24:true ~action:[%client action] ()
+    Ot.Time_picker.make ~h24:true ~action:[%client action] ()
   in
   let button =
     Eliom.Content.Html.D.button [%i18n Demo.timepicker_back_to_hours]

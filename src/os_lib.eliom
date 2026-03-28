@@ -136,7 +136,7 @@ let%client on_enter ~f inp =
   Lwt_js_events.keydowns inp @@ fun ev _ ->
   if ev##.keyCode = 13 then f (Js.to_string inp##.value) else Lwt.return_unit
 
-(* TODO: Build a nice Ot_form module with such functions *)
+(* TODO: Build a nice Ot.Form module with such functions *)
 let%shared
     lwt_bind_input_enter
       ?(validate : (string -> bool) Eliom.Client_value.t option)

@@ -119,7 +119,7 @@ let%shared
              ~name:password ~input_type:`Password D.Form.string
          in
          let l =
-           [ Ot_form.password_toggle pwd_input
+           [ Ot.Form.password_toggle pwd_input
            ; label
                [ D.Form.bool_checkbox_one
                    ~a:[a_checked ()]
@@ -298,7 +298,7 @@ let%shared
         [], [txt "Submit"])
       ?(onclick : (unit -> unit) Eliom.Client_value.t =
         [%client (fun () -> () : unit -> unit)])
-      (service : (unit, unit) Ot_picture_uploader.service)
+      (service : (unit, unit) Ot.Picture_uploader.service)
   =
   D.Raw.a
     ~a:
@@ -308,19 +308,19 @@ let%shared
               Lwt.async (fun () ->
                 ~%onclick ();
                 let upload_service ?progress ?cropping file =
-                  Ot_picture_uploader.ocaml_service_upload ?progress ?cropping
+                  Ot.Picture_uploader.ocaml_service_upload ?progress ?cropping
                     ~service:~%service ~arg:() file
                 in
                 Lwt.catch
                   (fun () ->
                      ignore
-                     @@ Ot_popup.popup
+                     @@ Ot.Popup.popup
                           ~close_button:[Os_icons.F.close ()]
                           ~onclose:(fun () ->
                             Eliom.Client.change_page
                               ~service:Eliom.Service.reload_action () ())
                           (fun close ->
-                             Ot_picture_uploader.mk_form ~crop:~%crop
+                             Ot.Picture_uploader.mk_form ~crop:~%crop
                                ~input:~%input ~submit:~%submit
                                ~after_submit:close upload_service);
                      Lwt.return_unit)
@@ -378,7 +378,7 @@ let%shared
          Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%button)
            (fun _ _ ->
               let* _ =
-                Ot_popup.popup ?a:~%a
+                Ot.Popup.popup ?a:~%a
                   ~close_button:[Os_icons.F.close ()]
                   ~%popup_content
               in

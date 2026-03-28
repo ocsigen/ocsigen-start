@@ -54,7 +54,7 @@ let%shared page () =
   let update = [%client fst ~%carousel_change_signal] in
   let change = [%client fun a -> snd ~%carousel_change_signal ?step:None a] in
   let carousel, pos, _swipe_pos =
-    Ot_carousel.wheel
+    Ot.Carousel.wheel
       ~a:[a_class ["demo-carousel3"]]
       ~update ~vertical:true ~inertia:1. ~position:10 ~transition_duration:3.
       ~face_size:25 carousel_content
@@ -64,8 +64,8 @@ let%shared page () =
     ; p [%i18n Demo.carousel_third_example_1]
     ; carousel
     ; div
-        [ Ot_carousel.previous ~a:[a_class ["demo-prev"]] ~change ~pos []
-        ; Ot_carousel.next
+        [ Ot.Carousel.previous ~a:[a_class ["demo-prev"]] ~change ~pos []
+        ; Ot.Carousel.next
             ~a:[a_class ["demo-next"]]
             ~change ~pos
             ~vis_elts:(Eliom.Shared.React.S.const 1)

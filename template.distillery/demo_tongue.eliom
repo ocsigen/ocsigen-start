@@ -14,14 +14,14 @@ let%shared page () =
     ; div ~a:[a_class ["demo-tongue-6"]] [] ]
   in
   let tongue =
-    Ot_tongue.tongue ~side:`Bottom
+    Ot.Tongue.tongue ~side:`Bottom
       ~stops:[`Px 70; `Interval (`Percent 100, `Full_content)]
       ~init:(`Px 70) content
   in
   Lwt.return
     [ h1 [%i18n Demo.tongue_1]
     ; p [%i18n Demo.ot_tongue_1]
-    ; div ~a:[a_class ["demo-tongue"]] [tongue.Ot_tongue.elt] ]
+    ; div ~a:[a_class ["demo-tongue"]] [tongue.Ot.Tongue.elt] ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server

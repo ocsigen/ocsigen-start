@@ -7,9 +7,9 @@ open%shared Html.D
 
 (* Build the spinner *)
 let%client make_spinner () =
-  (* [Ot_spinner.with_spinner_no_lwt] accepts an Lwt thread "slowly"
+  (* [Ot.Spinner.with_spinner_no_lwt] accepts an Lwt thread "slowly"
      producing HTML content *)
-  Ot_spinner.with_spinner_no_lwt
+  Ot.Spinner.with_spinner_no_lwt
     (* sleep for 5 seconds to simulate a delay, then return content *)
     (let%lwt () = Lwt_js.sleep 5. in
      Lwt.return

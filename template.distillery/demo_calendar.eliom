@@ -39,7 +39,7 @@ let%rpc date_reactive () : string Eliom.Shared.React.S.t Lwt.t =
 (* Page for this demo *)
 let%shared page () =
   let calendar =
-    Ot_calendar.make ~click_non_highlighted:true ~action:[%client action] ()
+    Ot.Calendar.make ~click_non_highlighted:true ~action:[%client action] ()
   in
   let%lwt dr = date_reactive () in
   Lwt.return

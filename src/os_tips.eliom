@@ -233,7 +233,7 @@ let%client
     | None -> Dom_html.document##.body
     | Some p -> To_dom.of_element p
   in
-  let* () = Ot_nodeready.nodeready parent_node in
+  let* () = Ot.Nodeready.nodeready parent_node in
   let* () = Lwt_js.sleep delay in
   let box = To_dom.of_element box in
   Dom.appendChild parent_node box;

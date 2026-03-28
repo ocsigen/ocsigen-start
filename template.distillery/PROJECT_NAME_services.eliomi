@@ -15,7 +15,7 @@ val%shared about_service :
     , Eliom.Service.non_ocaml )
     Eliom.Service.t
 
-val%shared upload_user_avatar_service : (unit, unit) Ot_picture_uploader.service
+val%shared upload_user_avatar_service : (unit, unit) Ot.Picture_uploader.service
 
 val%shared settings_service :
   ( unit

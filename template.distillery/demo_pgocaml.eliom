@@ -12,7 +12,7 @@ let%rpc get_users () : string list Lwt.t =
 (* Generate page for this demo *)
 let%shared page () =
   let%lwt user_block =
-    Ot_spinner.with_spinner
+    Ot.Spinner.with_spinner
       (let%lwt users = get_users () in
        let users =
          List.map
