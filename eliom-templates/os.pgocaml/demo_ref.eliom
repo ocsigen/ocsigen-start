@@ -4,14 +4,14 @@
 open%shared Eliom.Content.Html.F
 
 (* An Eliom reference storing the last time the user visited the current
-   page. It has scope Eliom.Eliom_common.default_group_scope, which means that
+   page. It has scope Eliom.Common.default_group_scope, which means that
    the value will be different for each user of the Web site, but the same
    for all the sessions of a same user.
    Ocsigen Start is creating a session group for each user.
 *)
 let%server last_visit =
   Eliom.Reference.eref ~persistent:"demo_last_visit"
-    ~scope:Eliom.Eliom_common.default_group_scope None
+    ~scope:Eliom.Common.default_group_scope None
 
 (* Read & reset last_visit *)
 let%rpc get_reset_last_visit () : Os.Date.local_calendar option Lwt.t =

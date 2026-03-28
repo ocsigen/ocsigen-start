@@ -36,25 +36,25 @@ exception Already_exists of Types.User.id
 exception No_such_user]
 
 let%server wrong_password =
-  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope false
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Common.request_scope false
 
 let%server no_such_user =
-  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope false
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Common.request_scope false
 
 let%server account_not_activated =
-  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope false
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Common.request_scope false
 
 let%server user_already_exists =
-  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope false
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Common.request_scope false
 
 let%server user_does_not_exist =
-  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope false
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Common.request_scope false
 
 let%server user_already_preregistered =
-  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope false
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Common.request_scope false
 
 let%server action_link_key_outdated =
-  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope false
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Common.request_scope false
 
 (** Create a user of type [t] using db information. *)
 let create_user_from_db0 (userid, fn, ln, avatar, pwdset, language) =

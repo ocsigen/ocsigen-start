@@ -51,26 +51,26 @@ struct
   (* we use an eliom reference with the restrictive request scope, which is
      sufficient and safe (SECURITY) *)
   let cache =
-    Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope MMap.empty
+    Eliom.Reference.Volatile.eref ~scope:Eliom.Common.request_scope MMap.empty
 
   let has k =
-    Eliom.Eliom_common.get_sp_option () <> None
+    Eliom.Common.get_sp_option () <> None
     && MMap.mem k (Eliom.Reference.Volatile.get cache)
 
   let set k v =
-    if Eliom.Eliom_common.get_sp_option () <> None
+    if Eliom.Common.get_sp_option () <> None
     then
       let table = Eliom.Reference.Volatile.get cache in
       Eliom.Reference.Volatile.set cache (MMap.add k v table)
 
   let reset (k : M.key) =
-    if Eliom.Eliom_common.get_sp_option () <> None
+    if Eliom.Common.get_sp_option () <> None
     then
       let table = Eliom.Reference.Volatile.get cache in
       Eliom.Reference.Volatile.set cache (MMap.remove k table)
 
   let get (k : M.key) =
-    if Eliom.Eliom_common.get_sp_option () = None
+    if Eliom.Common.get_sp_option () = None
     then M.get k (* Not during a request. No cache. *)
     else
       let table = Eliom.Reference.Volatile.get cache in

@@ -24,7 +24,7 @@ module type S = sig
   include Eliom.Notif.S with type identity = User.id option
 
   val unlisten_user :
-     ?sitedata:Eliom.Eliom_common.sitedata
+     ?sitedata:Eliom.Common.sitedata
     -> userid:User.id
     -> key
     -> unit
@@ -68,7 +68,7 @@ module Make (A : ARG) :
   let unlisten_user ?sitedata ~userid (id : A.key) =
     let state =
       Eliom.State.Ext.volatile_data_group_state
-        ~scope:Eliom.Eliom_common.default_group_scope (Int64.to_string userid)
+        ~scope:Eliom.Common.default_group_scope (Int64.to_string userid)
     in
     Lwt.async @@ fun () ->
     (* Iterating on all sessions in group: *)

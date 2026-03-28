@@ -82,7 +82,7 @@ let monitor_channel_ref =
   Eliom.Reference.Volatile.eref ~scope:Session.user_indep_process_scope None
 
 let already_send_ref =
-  Eliom.Reference.Volatile.eref ~scope:Eliom.Eliom_common.request_scope false
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Common.request_scope false
 
 let%client handle_error =
   ref (fun exn ->
