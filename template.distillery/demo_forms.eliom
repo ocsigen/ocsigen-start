@@ -1,4 +1,4 @@
-(* Demo page for Ot_form widgets *)
+(* Demo page for Ot.Form widgets *)
 
 open%shared Eliom.Content.Html
 open%shared Eliom.Content.Html.F
@@ -49,7 +49,7 @@ let%shared page () =
         ; a_placeholder [%i18n Demo.S.form_standard_password] ]
       ()
   in
-  let pwd_container = Ot_form.password_toggle pwd_inp in
+  let pwd_container = Ot.Form.password_toggle pwd_inp in
   let msg_inp =
     D.Raw.textarea
       ~a:[a_placeholder [%i18n Demo.S.form_standard_message]]
@@ -170,7 +170,7 @@ let%shared page () =
   in
   (* -- reactive_input -- *)
   let ri_input, (ri_signal, _ri_set) =
-    Ot_form.reactive_input ~value:"hello" ()
+    Ot.Form.reactive_input ~value:"hello" ()
   in
   let ri_section =
     section [%i18n Demo.S.form_reactive_input_title]
@@ -180,7 +180,7 @@ let%shared page () =
   in
   (* -- reactive_textarea -- *)
   let rt_elt, (rt_signal, _rt_set) =
-    Ot_form.reactive_textarea ~resize:true ~a_rows:3
+    Ot.Form.reactive_textarea ~resize:true ~a_rows:3
       ~a_placeholder:[%i18n Demo.S.form_placeholder_type_here] ()
   in
   let rt_section =
@@ -191,7 +191,7 @@ let%shared page () =
   in
   (* -- debounced_input -- *)
   let db_input, (db_raw, db_debounced, _db_set) =
-    Ot_form.debounced_input ~delay:0.5 ~value:"" ()
+    Ot.Form.debounced_input ~delay:0.5 ~value:"" ()
   in
   let db_section =
     section [%i18n Demo.S.form_debounced_title]
@@ -202,7 +202,7 @@ let%shared page () =
   in
   (* -- password_input -- *)
   let pw_container, _pw_input, (pw_visible_s, _pw_set_visible) =
-    Ot_form.password_input ~placeholder:[%i18n Demo.S.form_placeholder_password]
+    Ot.Form.password_input ~placeholder:[%i18n Demo.S.form_placeholder_password]
       ()
   in
   let true_s = [%i18n Demo.S.form_true] in
@@ -221,7 +221,7 @@ let%shared page () =
   in
   (* -- reactive_select -- *)
   let sel_elt, (sel_signal, _sel_set) =
-    Ot_form.reactive_select
+    Ot.Form.reactive_select
       ~options:["fr", "France"; "de", "Germany"; "it", "Italy"; "es", "Spain"]
       ~selected:"fr" ()
   in
@@ -233,7 +233,7 @@ let%shared page () =
   in
   (* -- reactive_toggle_button -- *)
   let toggle_btn, (toggle_s, _toggle_set) =
-    Ot_form.reactive_toggle_button [txt [%i18n Demo.S.form_toggle_label]]
+    Ot.Form.reactive_toggle_button [txt [%i18n Demo.S.form_toggle_label]]
   in
   let on_s = [%i18n Demo.S.form_on] in
   let off_s = [%i18n Demo.S.form_off] in
@@ -251,13 +251,13 @@ let%shared page () =
   in
   (* -- checkbox -- *)
   let cb_label, _cb_input =
-    Ot_form.checkbox ~style:`Box [txt [%i18n Demo.S.form_checkbox_box]]
+    Ot.Form.checkbox ~style:`Box [txt [%i18n Demo.S.form_checkbox_box]]
   in
   let cb_label2, _cb_input2 =
-    Ot_form.checkbox ~style:`Toggle [txt [%i18n Demo.S.form_checkbox_toggle]]
+    Ot.Form.checkbox ~style:`Toggle [txt [%i18n Demo.S.form_checkbox_toggle]]
   in
   let cb_label3, _cb_input3 =
-    Ot_form.checkbox ~style:`Bullet [txt [%i18n Demo.S.form_checkbox_bullet]]
+    Ot.Form.checkbox ~style:`Bullet [txt [%i18n Demo.S.form_checkbox_bullet]]
   in
   let cb_section =
     section [%i18n Demo.S.form_checkbox_title]
@@ -268,7 +268,7 @@ let%shared page () =
   in
   (* -- reactive_checkbox -- *)
   let rcb =
-    Ot_form.reactive_checkbox ~style:`Box [txt [%i18n Demo.S.form_check_me]]
+    Ot.Form.reactive_checkbox ~style:`Box [txt [%i18n Demo.S.form_check_me]]
   in
   let rcb_section =
     section [%i18n Demo.S.form_reactive_checkbox_title]
@@ -292,7 +292,7 @@ let%shared page () =
   (* -- radio_buttons -- *)
   let radio_react = Eliom.Shared.React.S.create (Some 0) in
   let radio_labels =
-    Ot_form.radio_buttons ~selection_react:radio_react ~name:"demo-radio"
+    Ot.Form.radio_buttons ~selection_react:radio_react ~name:"demo-radio"
       [ [txt [%i18n Demo.S.form_radio_red]]
       ; [txt [%i18n Demo.S.form_radio_green]]
       ; [txt [%i18n Demo.S.form_radio_blue]] ]
@@ -313,9 +313,9 @@ let%shared page () =
                  (fst radio_react)) ] ]
   in
   (* -- int_input / optional_int_input -- *)
-  let int_div, int_signal = Ot_form.int_input ~min:0 ~max:100 42 in
+  let int_div, int_signal = Ot.Form.int_input ~min:0 ~max:100 42 in
   let oint_div, oint_signal =
-    Ot_form.optional_int_input ~min:0 ~max:50 (Some 10)
+    Ot.Form.optional_int_input ~min:0 ~max:50 (Some 10)
   in
   let invalid_s = [%i18n Demo.S.form_invalid] in
   let int_section =
@@ -353,7 +353,7 @@ let%shared page () =
   in
   (* -- reactive_date_input -- *)
   let date_input, (date_signal, _date_set) =
-    Ot_form.reactive_date_input ~value:(2025, 6, 15) ()
+    Ot.Form.reactive_date_input ~value:(2025, 6, 15) ()
   in
   let date_section =
     section [%i18n Demo.S.form_date_title]
@@ -373,7 +373,7 @@ let%shared page () =
   in
   (* -- reactive_time_input -- *)
   let time_input, (time_signal, _time_set) =
-    Ot_form.reactive_time_input ~value:(14, 30) ()
+    Ot.Form.reactive_time_input ~value:(14, 30) ()
   in
   let time_section =
     section [%i18n Demo.S.form_time_title]
@@ -393,11 +393,11 @@ let%shared page () =
   in
   (* -- disableable_button -- *)
   let dis_toggle_btn, (dis_s, _dis_set) =
-    Ot_form.reactive_toggle_button ~init:false
+    Ot.Form.reactive_toggle_button ~init:false
       [txt [%i18n Demo.S.form_disable_below]]
   in
   let dis_button =
-    Ot_form.disableable_button ~disabled:dis_s
+    Ot.Form.disableable_button ~disabled:dis_s
       [txt [%i18n Demo.S.form_can_be_disabled]]
   in
   let dis_section =
@@ -408,7 +408,7 @@ let%shared page () =
   in
   (* -- prevent_double_submit -- *)
   let pds_button =
-    Ot_form.prevent_double_submit
+    Ot.Form.prevent_double_submit
       ~f:[%client fun () -> Lwt_js.sleep 2.0]
       [txt [%i18n Demo.S.form_click_2s]]
   in
@@ -419,7 +419,7 @@ let%shared page () =
   (* -- input_validation_tools -- *)
   let even_error = [%i18n Demo.S.form_even_error] in
   let val_attrs, val_class, val_result =
-    Ot_form.input_validation_tools ~init:""
+    Ot.Form.input_validation_tools ~init:""
       [%shared
         fun s ->
           if String.length s = 0
@@ -437,7 +437,7 @@ let%shared page () =
         :: val_class :: val_attrs)
       ()
   in
-  let () = Ot_form.graceful_invalid_style val_input in
+  let () = Ot.Form.graceful_invalid_style val_input in
   let ok_prefix = [%i18n Demo.S.form_ok_prefix] in
   let error_prefix = [%i18n Demo.S.form_error_prefix] in
   let val_section =
@@ -458,21 +458,21 @@ let%shared page () =
   in
   (* -- reactive_fieldset -- *)
   let fs_toggle, (fs_disabled_s, _fs_set) =
-    Ot_form.reactive_toggle_button ~init:false
+    Ot.Form.reactive_toggle_button ~init:false
       [txt [%i18n Demo.S.form_disable_fieldset]]
   in
   let fs_input1, _ =
-    Ot_form.reactive_input ~value:[%i18n Demo.S.form_field_1] ()
+    Ot.Form.reactive_input ~value:[%i18n Demo.S.form_field_1] ()
   in
   let fs_input2, _ =
-    Ot_form.reactive_input ~value:[%i18n Demo.S.form_field_2] ()
+    Ot.Form.reactive_input ~value:[%i18n Demo.S.form_field_2] ()
   in
   let fs =
-    Ot_form.reactive_fieldset ~disabled:fs_disabled_s
+    Ot.Form.reactive_fieldset ~disabled:fs_disabled_s
       [ div [strong [txt [%i18n Demo.S.form_fieldset_content]]]
       ; div [fs_input1]
       ; div [fs_input2]
-      ; Ot_form.disableable_button
+      ; Ot.Form.disableable_button
           ~disabled:(Eliom.Shared.React.S.const false)
           [txt [%i18n Demo.S.form_button_inside]] ]
   in
@@ -483,7 +483,7 @@ let%shared page () =
   (* -- lwt_bound_input_enter -- *)
   let enter_output = Eliom.Shared.React.S.create "" in
   let enter_input =
-    Ot_form.lwt_bound_input_enter
+    Ot.Form.lwt_bound_input_enter
       ~a:[a_placeholder [%i18n Demo.S.form_placeholder_enter]]
       [%client
         fun v ->

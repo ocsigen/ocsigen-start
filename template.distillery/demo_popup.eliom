@@ -43,7 +43,7 @@ let%shared page () =
             We run it asynchronously. *)
          Lwt_js_events.clicks (To_dom.of_element ~%button) (fun _ _ ->
            let%lwt _ =
-             Ot_popup.popup
+             Ot.Popup.popup
                ~close_button:[Os_icons.F.close ()]
                (fun _ -> Lwt.return @@ p [%i18n Demo.popup_message])
            in

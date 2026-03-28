@@ -43,14 +43,14 @@ let%shared page () =
     [%client
       fun () ->
         let t = To_dom.of_element !(~%tabs_r) in
-        int_of_float (Ot_size.client_top t) + t##.offsetHeight]
+        int_of_float (Ot.Size.client_top t) + t##.offsetHeight]
   in
-  (* We want a "full-height" carousel. See Ot_carousel documentation. *)
-  let {Ot_carousel.elt = carousel; pos; swipe_pos} =
-    Ot_carousel.make ~update ~full_height:(`Header get_header_height)
+  (* We want a "full-height" carousel. See Ot.Carousel documentation. *)
+  let {Ot.Carousel.elt = carousel; pos; swipe_pos} =
+    Ot.Carousel.make ~update ~full_height:(`Header get_header_height)
       carousel_content
   in
-  let ribbon = Ot_carousel.ribbon ~change ~pos ~cursor:swipe_pos tab_content in
+  let ribbon = Ot.Carousel.ribbon ~change ~pos ~cursor:swipe_pos tab_content in
   let tabs =
     (* ribbon container is necessary for shadow,
        because position:sticky is not interpreted as relative
@@ -67,7 +67,7 @@ let%shared page () =
     [%client
       (Lwt.async (fun () ->
          Lwt.map ignore
-           (Ot_sticky.make_sticky ~ios_html_scroll_hack:true ~dir:`Top ~%tabs))
+           (Ot.Sticky.make_sticky ~ios_html_scroll_hack:true ~dir:`Top ~%tabs))
        : unit)];
   Lwt.return
     [ h1 [%i18n Demo.carousel_2]

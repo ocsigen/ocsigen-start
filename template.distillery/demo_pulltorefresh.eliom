@@ -32,7 +32,7 @@ let%shared page () =
       ; F.p [%i18n Demo.pull_to_refresh_2]
       ; R.node counter_node_sig ]
   in
-  Lwt.return @@ [Ot_pulltorefresh.make ~dragThreshold:15. ~content reload]
+  Lwt.return @@ [Ot.Pulltorefresh.make ~dragThreshold:15. ~content reload]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server

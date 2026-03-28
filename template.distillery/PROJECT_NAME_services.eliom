@@ -5,9 +5,9 @@ let%server about_service =
   Eliom.Service.create ~path:(Eliom.Service.Path ["about"])
     ~meth:(Eliom.Service.Get Eliom.Parameter.unit) ()
 
-let%server upload_user_avatar_service : (unit, unit) Ot_picture_uploader.service
+let%server upload_user_avatar_service : (unit, unit) Ot.Picture_uploader.service
   =
-  Ot_picture_uploader.mk_service "upload_user_avatar_service" [%json: unit]
+  Ot.Picture_uploader.mk_service "upload_user_avatar_service" [%json: unit]
 
 let%server settings_service =
   Eliom.Service.create ~path:(Eliom.Service.Path ["settings"])

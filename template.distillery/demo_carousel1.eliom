@@ -15,8 +15,8 @@ let%shared
       (let arrow_thread =
          (* Wait for the carousel to be in the page
           (in the case the page is generated client side): *)
-         let%lwt () = Ot_nodeready.nodeready (To_dom.of_element ~%carousel) in
-         Ot_carousel.bind_arrow_keys ~change:~%change
+         let%lwt () = Ot.Nodeready.nodeready (To_dom.of_element ~%carousel) in
+         Ot.Carousel.bind_arrow_keys ~change:~%change
            Js_of_ocaml.Dom_html.document##.body
        in
        (* Do not forget to cancel the thread when we remove the carousel
@@ -46,12 +46,12 @@ let%shared page () =
   let carousel_pages = ["1"; "2"; "3"; "4"] in
   let length = List.length carousel_pages in
   let carousel_content = List.map make_page carousel_pages in
-  let {Ot_carousel.elt = carousel; pos; vis_elts} =
-    Ot_carousel.make ~update carousel_content
+  let {Ot.Carousel.elt = carousel; pos; vis_elts} =
+    Ot.Carousel.make ~update carousel_content
   in
-  let bullets = Ot_carousel.bullets ~change ~pos ~length ~size:vis_elts () in
-  let prev = Ot_carousel.previous ~change ~pos [] in
-  let next = Ot_carousel.next ~change ~pos ~vis_elts ~length [] in
+  let bullets = Ot.Carousel.bullets ~change ~pos ~length ~size:vis_elts () in
+  let prev = Ot.Carousel.previous ~change ~pos [] in
+  let next = Ot.Carousel.next ~change ~pos ~vis_elts ~length [] in
   bind_keys change carousel;
   Lwt.return
     [ h1 [%i18n Demo.carousel_1]
