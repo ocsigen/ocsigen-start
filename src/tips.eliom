@@ -29,7 +29,7 @@ module%shared Stringset = Set.Make (String)
    already been seen by user *)
 let tips_seen =
   Eliom.Reference.eref ~persistent:"tips_seen1"
-    ~scope:Eliom.Eliom_common.default_group_scope Stringset.empty
+    ~scope:Eliom.Common.default_group_scope Stringset.empty
 (*VVV TODO: What if not connected? We don't want to keep the eref
   for all non-connected users. This is a weakness of persistent
   group eref. Use posgresql instead? *)
@@ -51,7 +51,7 @@ let tips_seen_not_connected =
 
 (* We cache the set during a request *)
 let seen_by_user =
-  Eliom.Reference.Volatile.eref_from_fun ~scope:Eliom.Eliom_common.request_scope
+  Eliom.Reference.Volatile.eref_from_fun ~scope:Eliom.Common.request_scope
     (fun () ->
        match Current_user.Opt.get_current_userid () with
        | None -> Eliom.Reference.get tips_seen_not_connected

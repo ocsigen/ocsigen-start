@@ -11,7 +11,7 @@ open%shared Html.D
    like client-process (a tab of a browser) or session-group (a user).
 *)
 let%server my_ref =
-  Eliom.Reference.eref ~scope:Eliom.Eliom_common.default_session_scope 0
+  Eliom.Reference.eref ~scope:Eliom.Common.default_session_scope 0
 
 (* Server-side function that increments my_ref and returns new val *)
 let%rpc incr_my_ref () : int Lwt.t =

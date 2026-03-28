@@ -33,7 +33,7 @@ module type S = sig
   include Eliom.Notif.S with type identity = User.id option
 
   val unlisten_user :
-     ?sitedata:Eliom.Eliom_common.sitedata
+     ?sitedata:Eliom.Common.sitedata
     -> userid:User.id
     -> key
     -> unit

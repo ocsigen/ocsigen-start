@@ -63,9 +63,9 @@ val on_denied_request : (Types.User.id option -> unit Lwt.t) -> unit
     server side data for one browser or tab, but not user dependent.
     (Remains when user logs out). *)
 
-val user_indep_state_hierarchy : Eliom.Eliom_common.scope_hierarchy
-val user_indep_process_scope : [> Eliom.Eliom_common.client_process_scope]
-val user_indep_session_scope : [> Eliom.Eliom_common.session_scope]
+val user_indep_state_hierarchy : Eliom.Common.scope_hierarchy
+val user_indep_process_scope : [> Eliom.Common.client_process_scope]
+val user_indep_session_scope : [> Eliom.Common.session_scope]
 
 [%%shared.start]
 
@@ -86,7 +86,7 @@ val connect : ?expire:bool -> Types.User.id -> unit Lwt.t
 *)
 
 val disconnect_all :
-   ?sitedata:Eliom.Eliom_common.sitedata
+   ?sitedata:Eliom.Common.sitedata
   -> ?userid:Types.User.id
   -> ?user_indep:bool
   -> ?with_restart:bool
