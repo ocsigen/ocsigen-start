@@ -2,25 +2,25 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 let%server about_service =
-  Eliom_service.create ~path:(Eliom_service.Path ["about"])
-    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
+  Eliom.Service.create ~path:(Eliom.Service.Path ["about"])
+    ~meth:(Eliom.Service.Get Eliom.Parameter.unit) ()
 
 let%server upload_user_avatar_service : (unit, unit) Ot.Picture_uploader.service
   =
   Ot.Picture_uploader.mk_service "upload_user_avatar_service" [%json: unit]
 
 let%server settings_service =
-  Eliom_service.create ~path:(Eliom_service.Path ["settings"])
-    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
+  Eliom.Service.create ~path:(Eliom.Service.Path ["settings"])
+    ~meth:(Eliom.Service.Get Eliom.Parameter.unit) ()
 
 let%server os_github_service =
-  Eliom_service.extern ~prefix:"http://github.com"
+  Eliom.Service.extern ~prefix:"http://github.com"
     ~path:["ocsigen"; "ocsigen-start"]
-    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
+    ~meth:(Eliom.Service.Get Eliom.Parameter.unit) ()
 
 let%server ocsigen_service =
-  Eliom_service.extern ~prefix:"http://ocsigen.org" ~path:[]
-    ~meth:(Eliom_service.Get Eliom_parameter.unit) ()
+  Eliom.Service.extern ~prefix:"http://ocsigen.org" ~path:[]
+    ~meth:(Eliom.Service.Get Eliom.Parameter.unit) ()
 
 let%client about_service = ~%about_service
 let%client upload_user_avatar_service = ~%upload_user_avatar_service

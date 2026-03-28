@@ -38,7 +38,7 @@ let%client change_page_gen action =
   then initial_change_page := Some action
 
 let%client change_page_uri uri =
-  change_page_gen (fun () -> Eliom_client.change_page_uri uri)
+  change_page_gen (fun () -> Eliom.Client.change_page_uri uri)
 
 let%client handle_initial_url () =
   let tz = Os.Date.user_tz () in
@@ -47,13 +47,13 @@ let%client handle_initial_url () =
   app_started := true;
   match !initial_change_page with
   | None ->
-      Eliom_client.change_page ~replace:true ~service:Os.Services.main_service
+      Eliom.Client.change_page ~replace:true ~service:Os.Services.main_service
         () ()
   | Some action -> action ()
 
 let%client () =
   Lwt.async @@ fun () ->
-  if Eliom_client.is_client_app ()
+  if Eliom.Client.is_client_app ()
   then (
     (* Initialize the application server-side; there should be a
        single initial request for that. *)
@@ -72,7 +72,7 @@ let%client () =
          (Js_of_ocaml.Dom_html.Event.make ev)
          (Js_of_ocaml.Dom_html.handler (fun _ ->
             Console.console##log (Js_of_ocaml.Js.string ev);
-            Eliom_comet.activate ();
+            Eliom.Comet.activate ();
             Js_of_ocaml.Js._true))
          Js_of_ocaml.Js._false
   in
@@ -145,5 +145,5 @@ let%client _ =
    If you need to display debugging messages in the client side JS
    debugger console, you can do so by uncommenting the following
    lines.  *)
-(* let () = Eliom_config.debug_timings := true *)
+(* let () = Eliom.Config.debug_timings := true *)
 (* let () = Logs.set_level (Some Logs.Debug) *)

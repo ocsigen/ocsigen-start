@@ -37,7 +37,7 @@ val%shared action_link_handler :
 val%shared set_password_handler :
    unit
   -> string * string
-  -> Eliom_service.non_ocaml Eliom_registration.redirection Lwt.t
+  -> Eliom.Service.non_ocaml Eliom.Registration.redirection Lwt.t
 (** Set a new password. It uses the default OS handler
     {!Os.Handlers.set_password_handler} and gets the user information
     with {!Os.Session.connected_fun}. *)
@@ -78,4 +78,4 @@ val%shared settings_handler :
 val%shared update_language_handler :
    unit
   -> string
-  -> Eliom_registration.Action.page Lwt.t
+  -> Eliom.Registration.Action.page Lwt.t

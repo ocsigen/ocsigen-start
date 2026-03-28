@@ -23,12 +23,12 @@ let%shared () =
   if enable
   then (
     Os.User_view.enable_phone ();
-    Eliom_registration.Action.register
+    Eliom.Registration.Action.register
       ~service:Os.Services.confirm_code_recovery_service
       Os.Handlers.confirm_code_recovery_handler;
-    Eliom_registration.Action.register
+    Eliom.Registration.Action.register
       ~service:Os.Services.confirm_code_extra_service
       Os.Handlers.confirm_code_extra_handler;
-    Eliom_registration.Action.register
+    Eliom.Registration.Action.register
       ~service:Os.Services.confirm_code_signup_service
       Os.Handlers.confirm_code_signup_handler)
