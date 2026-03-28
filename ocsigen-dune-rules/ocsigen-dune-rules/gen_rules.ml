@@ -1,16 +1,19 @@
 let pf = Printf.printf
 let spf = Printf.sprintf
 
+let extra_ppx_args = ref []
+
 let gen_eliom_ppx_rule ~target ~input ~args =
   (* The [chdir] instruction is needed to obtain the correct path for
      [-loc-filename] to be used in error messages. *)
+  let all_args = !extra_ppx_args @ args in
   pf
     {|(rule
  (with-stdout-to %s
   (chdir %%{workspace_root}
    (run ocsigen-ppx-client -as-pp -loc-filename %%{dep:%s} %s %%{dep:%s}))))
 |}
-    target input (String.concat " " args) input
+    target input (String.concat " " all_args) input
 
 let gen_rule_for_module ~server_rel_prefix ~impl fname =
   let target = Filename.basename fname in

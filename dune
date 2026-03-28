@@ -1,5 +1,9 @@
 (vendored_dirs ocsigen-dune-rules)
 
-(data_only_dirs template.distillery)
+(data_only_dirs eliom-templates)
 
-(include dune.install_template)
+(install
+ (package ocsigen-start)
+ (section lib)
+ (files
+  (glob_files eliom-templates/os.pgocaml/**)))
