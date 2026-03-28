@@ -2,13 +2,13 @@
    Feel free to use it, modify it, and redistribute it as you wish. *)
 
 val%shared css_name : string
-val%shared css_name_script : [> Html_types.script] Eliom_content.Html.F.elt list
+val%shared css_name_script : [> Html_types.script] Eliom.Content.Html.F.elt list
 val%shared wasm_name : string
 
 val%shared wasm_name_script :
-  [> Html_types.script] Eliom_content.Html.F.elt list
+  [> Html_types.script] Eliom.Content.Html.F.elt list
 
-val%shared app_js : unit -> [> `Script] Eliom_content.Html.elt list
+val%shared app_js : unit -> [> `Script] Eliom.Content.Html.elt list
 val%shared the_local_js : 'a list
 val%shared the_local_css : string list list
 
@@ -21,7 +21,7 @@ module%shared Page_config : sig
 
   val other_head :
      unit
-    -> Html_types.head_content_fun Eliom_content.Html.elt list
+    -> Html_types.head_content_fun Eliom.Content.Html.elt list
 
   val default_predicate : 'a -> 'b -> bool Lwt.t
   val default_connected_predicate : 'a -> 'b -> 'c -> bool Lwt.t
@@ -37,7 +37,7 @@ end
 
 val%shared make_page :
    Os.Page.content
-  -> [> Html_types.html] Eliom_content.Html.elt
+  -> [> Html_types.html] Eliom.Content.Html.elt
 
 val%shared page :
    ?predicate:('a -> 'b -> bool Lwt.t)
@@ -45,7 +45,7 @@ val%shared page :
   -> ('a -> 'b -> Os.Page.content Lwt.t)
   -> 'a
   -> 'b
-  -> Html_types.html Eliom_content.Html.elt Lwt.t
+  -> Html_types.html Eliom.Content.Html.elt Lwt.t
 
 module%shared Opt : sig
   val connected_page :
@@ -57,7 +57,7 @@ module%shared Opt : sig
     -> (Os.Types.User.id option -> 'a -> 'b -> Os.Page.content Lwt.t)
     -> 'a
     -> 'b
-    -> Html_types.html Eliom_content.Html.elt Lwt.t
+    -> Html_types.html Eliom.Content.Html.elt Lwt.t
 end
 
 val%shared connected_page :
@@ -69,4 +69,4 @@ val%shared connected_page :
   -> (Os.Types.User.id -> 'a -> 'b -> Os.Page.content Lwt.t)
   -> 'a
   -> 'b
-  -> Html_types.html Eliom_content.Html.elt Lwt.t
+  -> Html_types.html Eliom.Content.Html.elt Lwt.t
