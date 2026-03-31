@@ -6,4 +6,4 @@
  (package ocsigen-start)
  (section lib)
  (files
-  (glob_files eliom-templates/os.pgocaml/**)))
+  (glob_files eliom-templates/os/**)))
