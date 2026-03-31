@@ -57,10 +57,7 @@ module Make (A : ARG) :
       let prepare = A.prepare
       let equal_key = A.equal_key
       let equal_identity = ( = )
-
-      let get_identity () =
-        Lwt.return @@ Current_user.Opt.get_current_userid ()
-
+      let get_identity () = Lwt.return @@ Current_user.Opt.get_current_userid ()
       let max_resource = A.max_resource
       let max_identity_per_resource = A.max_identity_per_resource
     end)

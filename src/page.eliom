@@ -51,7 +51,11 @@ module type PAGE = sig
   val local_js : string list list
   val css : string list list
   val local_css : string list list
-  val other_head : unit -> Html_types.head_content_fun Eliom.Content.Html.elt list
+
+  val other_head :
+     unit
+    -> Html_types.head_content_fun Eliom.Content.Html.elt list
+
   val default_error_page : 'a -> 'b -> exn -> content Lwt.t
 
   val default_connected_error_page :
@@ -76,7 +80,9 @@ module Default_config = struct
   let css : string list list = []
   let local_js : string list list = []
   let local_css : string list list = []
-  let other_head () : Html_types.head_content_fun Eliom.Content.Html.elt list = []
+
+  let other_head () : Html_types.head_content_fun Eliom.Content.Html.elt list =
+    []
 
   let err_page exn =
     let de =
@@ -137,9 +143,7 @@ module Make (C : PAGE) = struct
       a_onload
         [%client
           fun _ : unit ->
-            let platform =
-              Js.string (Platform.css_class (Platform.get ()))
-            in
+            let platform = Js.string (Platform.css_class (Platform.get ())) in
             Dom_html.document##.documentElement##.classList##add platform]
     in
     html ~a:content.html_attrs

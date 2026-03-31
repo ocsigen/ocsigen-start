@@ -21,10 +21,7 @@
 open%server Lwt.Syntax
 
 [%%shared
-type current_user =
-  | CU_idontknown
-  | CU_notconnected
-  | CU_user of Types.User.t]
+type current_user = CU_idontknown | CU_notconnected | CU_user of Types.User.t]
 
 let%shared please_use_connected_fun =
   "ERROR: Current_user is usable only with connected functions (see Session)"

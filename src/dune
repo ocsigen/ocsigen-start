@@ -7,9 +7,15 @@
  (public_name ocsigen-start.server)
  (name ocsigen_start)
  (modes byte native)
- (wrapped (module_name Os))
+ (wrapped
+  (module_name Os))
  (preprocess
-  (pps eliom.ppx.server js_of_ocaml-ppx_deriving_json ocsigen-ppx-rpc -- --rpc-internal))
+  (pps
+   eliom.ppx.server
+   js_of_ocaml-ppx_deriving_json
+   ocsigen-ppx-rpc
+   --
+   --rpc-internal))
  (flags
   (:standard
    (:include type_includes)))
@@ -30,7 +36,8 @@
   (public_name ocsigen-start.client)
   (name ocsigen_start)
   (modes byte)
-  (wrapped (module_name Os))
+  (wrapped
+   (module_name Os))
   (preprocess
    (pps js_of_ocaml-ppx js_of_ocaml-ppx_deriving_json))
   (libraries eliom.client calendar ocsigen-toolkit.client re.str js_of_ocaml))
