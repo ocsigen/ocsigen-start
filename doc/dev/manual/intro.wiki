@@ -149,7 +149,7 @@ Ocsigen Start can be installed via
 The template application can be instantiated via {{{eliom-distillery}}}:
 
 <<code language="shell"|
-eliom-distillery -name $APP_NAME -template os.pgocaml
+eliom-distillery -name $APP_NAME -template os
 >>
 
 (Replace $APP_NAME by the name of your application).
