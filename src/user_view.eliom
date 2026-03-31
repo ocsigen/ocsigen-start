@@ -176,8 +176,7 @@ let%client sign_up_by_phone_input ~placeholder label =
 
 let%client forgot_password_phone_input ~placeholder label =
   phone_input ~placeholder ~label
-    (Eliom.Client.change_page ~service:Services.confirm_code_remind_service
-       ())
+    (Eliom.Client.change_page ~service:Services.confirm_code_remind_service ())
 
 let%shared
     information_form
@@ -357,8 +356,7 @@ let%shared disconnect_all_link ?(text_link = "Logout on all my devices") () =
     [%client
       (Lwt_js_events.(
          async (fun () ->
-           clicks (To_dom.of_element ~%l) (fun _ _ ->
-             Session.disconnect_all ())))
+           clicks (To_dom.of_element ~%l) (fun _ _ -> Session.disconnect_all ())))
        : unit)];
   l
 
@@ -490,8 +488,8 @@ let%shared disconnect_link ?(text_logout = "Logout") ?(a = []) () =
          [%client
            fun _ ->
              Lwt.async (fun () ->
-               Eliom.Client.change_page ~service:Services.disconnect_service
-                 () ())]
+               Eliom.Client.change_page ~service:Services.disconnect_service ()
+                 ())]
       :: a)
     [Icons.F.signout (); txt text_logout]
 

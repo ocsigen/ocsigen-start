@@ -150,8 +150,7 @@ let%rpc connect ~(keepmeloggedin : bool) ~(password : string) (number : string)
        let* () = Session.connect ~expire:(not keepmeloggedin) userid in
        Lwt.return `Login_ok)
     (function
-      | Db.Empty_password | Db.Wrong_password ->
-          Lwt.return `Wrong_password
+      | Db.Empty_password | Db.Wrong_password -> Lwt.return `Wrong_password
       | Db.No_such_user -> Lwt.return `No_such_user
       | Db.Password_not_set -> Lwt.return `Password_not_set
       | exc -> Lwt.reraise exc)

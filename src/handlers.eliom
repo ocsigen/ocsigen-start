@@ -70,10 +70,12 @@ let%server
       email
   =
   let service =
-    Eliom.Service.attach ~fallback:service
-      ~service:Services.action_link_service ()
+    Eliom.Service.attach ~fallback:service ~service:Services.action_link_service
+      ()
   in
-  let act_link = Eliom.Eliom_uri.make_string_uri ~absolute:true ~service act_key in
+  let act_link =
+    Eliom.Eliom_uri.make_string_uri ~absolute:true ~service act_key
+  in
   (* For debugging we print the action link on standard output
      to make possible to connect even if the mail transport is not
      configured. *)
@@ -443,8 +445,7 @@ let%client confirm_code_popup ~dest f =
    client.  Until we fix Eliom, we define dummy server-side
    handlers. *)
 let%server confirm_code_handler _ _ =
-  Lwt.fail_with
-    "Handlers.confirm_code_*_handler not implemented on the server"
+  Lwt.fail_with "Handlers.confirm_code_*_handler not implemented on the server"
 
 let%server confirm_code_signup_handler = confirm_code_handler
 let%server confirm_code_extra_handler = confirm_code_handler
@@ -474,8 +475,7 @@ let%client confirm_code_extra_handler () number =
 let%client confirm_code_recovery_handler () number =
   Lwt.bind (Connect_phone.request_recovery_code number) (function
     | Ok () ->
-        confirm_code_popup ~dest:`Settings
-          Connect_phone.confirm_code_recovery
+        confirm_code_popup ~dest:`Settings Connect_phone.confirm_code_recovery
     | Error (`Unknown | `Send | `Limit | _) ->
         Msg.msg ~level:`Err ~duration:2. "SMS error";
         Lwt.return ())

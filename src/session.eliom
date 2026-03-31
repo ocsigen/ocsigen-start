@@ -405,7 +405,6 @@ let%client disconnect =
        (connected_wrapper disconnect))
 
 let%client disconnect_all ?(user_indep = true) () =
-  ~%(Eliom.Client.server_function ~name:"Session.disconnect_all"
-       [%json: bool]
+  ~%(Eliom.Client.server_function ~name:"Session.disconnect_all" [%json: bool]
        (connected_wrapper (fun user_indep -> disconnect_all ~user_indep ())))
     user_indep

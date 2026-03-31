@@ -28,10 +28,7 @@
     Otherwise, an exception is raised.
 *)
 
-type current_user =
-  | CU_idontknown
-  | CU_notconnected
-  | CU_user of Types.User.t
+type current_user = CU_idontknown | CU_notconnected | CU_user of Types.User.t
 
 val get_current_user : unit -> Types.User.t
 (** [get_current_user ()] returns the current user as a {!Types.User.t} type.

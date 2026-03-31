@@ -274,10 +274,7 @@ val set_pwd_crypt_fun :
     by user, and as third parameter the hash found in database.
 *)
 
-val remove_email_from_user :
-   userid:Types.User.id
-  -> email:string
-  -> unit Lwt.t
+val remove_email_from_user : userid:Types.User.id -> email:string -> unit Lwt.t
 (** [remove_email_from_user ~userid ~email] removes the email [email] from the
     user with the id [userid]. If the email is registered as the main email for
     the user it fails with the exception {!Db.Main_email_removal_attempt}.
