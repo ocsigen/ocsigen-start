@@ -131,8 +131,7 @@ let create ?password ?avatar ?language ?email ~firstname ~lastname () =
   let password = match password with Some "" -> None | _ -> password in
   let really_create () =
     let* userid =
-      Db.User.create ~firstname ~lastname ?password ?avatar ?language ?email
-        ()
+      Db.User.create ~firstname ~lastname ?password ?avatar ?language ?email ()
     in
     user_of_userid userid
   in
@@ -178,8 +177,5 @@ let get_users ?pattern () =
   Lwt.return (List.map create_user_from_db users)
 
 let set_pwd_crypt_fun a = Db.pwd_crypt_ref := a
-
-let is_email_validated ~userid ~email =
-  Db.User.is_email_validated userid email
-
+let is_email_validated ~userid ~email = Db.User.is_email_validated userid email
 let is_main_email ~userid ~email = Db.User.is_main_email ~email ~userid

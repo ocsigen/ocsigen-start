@@ -161,10 +161,7 @@ module User : sig
       ID [userid].
    *)
 
-  val verify_password :
-     email:string
-    -> password:string
-    -> Types.User.id Lwt.t
+  val verify_password : email:string -> password:string -> Types.User.id Lwt.t
   (** [verify_password ~email ~password] returns the userid if user with email
       [email] is registered with the password [password].
       If [password] the password is wrong,
@@ -190,12 +187,7 @@ module User : sig
 
   val user_of_userid :
      Types.User.id
-    -> (Types.User.id
-       * string
-       * string
-       * string option
-       * bool
-       * string option)
+    -> (Types.User.id * string * string * string option * bool * string option)
          Lwt.t
   (** [user_of_userid userid] returns a tuple [(userid, firstname, lastname,
       avatar, bool_password, language)] describing the information about
@@ -216,9 +208,7 @@ module User : sig
       {!No_such_resource}.
       *)
 
-  val emails_of_userid_with_status :
-     Types.User.id
-    -> (string * bool) list Lwt.t
+  val emails_of_userid_with_status : Types.User.id -> (string * bool) list Lwt.t
   (** Like [emails_of_userid], but also returns validation
       status. This way we perform fewer DB queries. *)
 
@@ -255,12 +245,7 @@ module User : sig
   val get_users :
      ?pattern:string
     -> unit
-    -> (Types.User.id
-       * string
-       * string
-       * string option
-       * bool
-       * string option)
+    -> (Types.User.id * string * string * string option * bool * string option)
          list
          Lwt.t
   (** [get_users ~pattern ()] returns all users matching the pattern [pattern]
@@ -275,9 +260,7 @@ module Groups : sig
   (** [create ?description name] creates a new group with name [name] and with
       description [description]. *)
 
-  val group_of_name :
-     string
-    -> (Types.Group.id * string * string option) Lwt.t
+  val group_of_name : string -> (Types.Group.id * string * string option) Lwt.t
   (** [group_of_name name] returns a tuple [(groupid, name, description)]
       describing the group.
       If no group has the name [name], it fails with {!No_such_resource}.

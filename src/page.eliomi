@@ -66,7 +66,9 @@ module type PAGE = sig
       a mobile application.
       Os will automatically prepend the suffix ["css/"] as directory.  *)
 
-  val other_head : unit -> Html_types.head_content_fun Eliom.Content.Html.elt list
+  val other_head :
+     unit
+    -> Html_types.head_content_fun Eliom.Content.Html.elt list
   (** [other_head] is a list of custom elements to add in the head section.
       It can be used to add <meta> elements, for example. *)
 
