@@ -1,0 +1,15 @@
+<<code language="ocaml" | sig
+  val title : string
+  val js : string list list
+  val local_js : string list list
+  val css : string list list
+  val local_css : string list list
+  val other_head :
+    unit -> Html_types.head_content_fun Eliom.Content.Html.elt list
+  val default_error_page : 'a -> 'b -> exn -> Page.content Lwt.t
+  val default_connected_error_page :
+    Types.User.id option -> 'a -> 'b -> exn -> Page.content Lwt.t
+  val default_predicate : 'a -> 'b -> bool Lwt.t
+  val default_connected_predicate :
+    Types.User.id option -> 'a -> 'b -> bool Lwt.t
+end >>

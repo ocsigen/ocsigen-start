@@ -1,0 +1,14 @@
+<<code language="ocaml" | sig
+  type t =
+      Android
+    | IPhone
+    | IPad
+    | IPod
+    | IWatch
+    | BlackBerry
+    | Windows
+    | Unknown
+  val t_of_string : string -> Platform.t
+  val string_of_t : Platform.t -> string
+  val css_class : Platform.t -> string
+end >>

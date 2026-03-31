@@ -1,0 +1,4 @@
+<<code language="ocaml" | sig
+  val get_current_user : unit -> Types.User.t option
+  val get_current_userid : unit -> Types.User.id option
+end >>

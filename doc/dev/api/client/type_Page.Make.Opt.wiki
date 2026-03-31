@@ -1,0 +1,9 @@
+<<code language="ocaml" | sig
+  val connected_page :
+    ?allow:Types.Group.t list ->
+    ?deny:Types.Group.t list ->
+    ?predicate:(Types.User.id option -> 'a -> 'b -> bool Lwt.t) ->
+    ?fallback:(Types.User.id option -> 'a -> 'b -> exn -> Page.content Lwt.t) ->
+    (Types.User.id option -> 'a -> 'b -> Page.content Lwt.t) ->
+    'a -> 'b -> Html_types.html Eliom.Content.Html.elt Lwt.t
+end >>

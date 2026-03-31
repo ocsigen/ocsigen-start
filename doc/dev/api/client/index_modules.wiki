@@ -1,70 +1,78 @@
 =Index of modules=
 
 |@@ @style="tet-align: left;"@@\\A|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Action_link_key"| module Os_types.Action_link_key >> ~[<<a_api subproject="client" | module Os_types >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Almost"| module Os_lib.Email_or_phone.Almost >> ~[<<a_api subproject="client" | module Os_lib.Email_or_phone >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Action_link_key"| module Types.Action_link_key >> ~[<<a_api subproject="client" | module Types >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Almost"| module Lib.Email_or_phone.Almost >> ~[<<a_api subproject="client" | module Lib.Email_or_phone >>~]||
+|@@ @style="tet-align: left;"@@\\C|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Comet"| module Comet >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Connect_phone"| module Connect_phone >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Current_user"| module Current_user >> |<<div class="odocwiki_info"|~This module provides functions and types to manage the current user~.
+>>
+|
 |@@ @style="tet-align: left;"@@\\D|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="D"| module Os_icons.D >> ~[<<a_api subproject="client" | module Os_icons >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Default_config"| module Os_page.Default_config >> ~[<<a_api subproject="client" | module Os_page >>~]|<<div class="odocwiki_info"|~A default configuration for pages~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="D"| module Icons.D >> ~[<<a_api subproject="client" | module Icons >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Date"| module Date >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Default_config"| module Page.Default_config >> ~[<<a_api subproject="client" | module Page >>~]|<<div class="odocwiki_info"|~A default configuration for pages~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\E|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Email_or_phone"| module Os_lib.Email_or_phone >> ~[<<a_api subproject="client" | module Os_lib >>~]|<<div class="odocwiki_info"|~Parse strings that can be e~-mails or phones~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Email"| module Email >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Email_or_phone"| module Lib.Email_or_phone >> ~[<<a_api subproject="client" | module Lib >>~]|<<div class="odocwiki_info"|~Parse strings that can be e~-mails or phones~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\F|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="F"| module Os_icons.F >> ~[<<a_api subproject="client" | module Os_icons >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="F"| module Icons.F >> ~[<<a_api subproject="client" | module Icons >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Fcm_notif"| module Fcm_notif >> ||
 |@@ @style="tet-align: left;"@@\\G|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Group"| module Os_types.Group >> ~[<<a_api subproject="client" | module Os_types >>~]||
-|@@ @style="tet-align: left;"@@\\M|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Make"| module Os_page.Make >> ~[<<a_api subproject="client" | module Os_page >>~]||
-|@@ @style="tet-align: left;"@@\\O|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Opt"| module Os_session.Opt >> ~[<<a_api subproject="client" | module Os_session >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Opt"| module Os_page.Make.Opt >> ~[<<a_api subproject="client" | module Os_page.Make >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Opt"| module Os_current_user.Opt >> ~[<<a_api subproject="client" | module Os_current_user >>~]|<<div class="odocwiki_info"|~Instead of exception~, the module <<span class="odocwiki_inlinecode"|~Opt>> returns an option~.
->>
-|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_comet"| module Os_comet >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_connect_phone"| module Os_connect_phone >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_current_user"| module Os_current_user >> |<<div class="odocwiki_info"|~This module provides functions and types to manage the current user~.
->>
-|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_date"| module Os_date >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_email"| module Os_email >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_fcm_notif"| module Os_fcm_notif >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_handlers"| module Os_handlers >> |<<div class="odocwiki_info"|~This module contains pre~-defined handlers for connect~, disconnect~, sign up~,
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Group"| module Types.Group >> ~[<<a_api subproject="client" | module Types >>~]||
+|@@ @style="tet-align: left;"@@\\H|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Handlers"| module Handlers >> |<<div class="odocwiki_info"|~This module contains pre~-defined handlers for connect~, disconnect~, sign up~,
     add a new email~, etc~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_icons"| module Os_icons >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_lib"| module Os_lib >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_msg"| module Os_msg >> |<<div class="odocwiki_info"|~This module provides functions to display messages ~(client~-side or
+|@@ @style="tet-align: left;"@@\\I|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Icons"| module Icons >> ||
+|@@ @style="tet-align: left;"@@\\L|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Lib"| module Lib >> ||
+|@@ @style="tet-align: left;"@@\\M|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Make"| module Page.Make >> ~[<<a_api subproject="client" | module Page >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Msg"| module Msg >> |<<div class="odocwiki_info"|~This module provides functions to display messages ~(client~-side or
     server~-side~)~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_notif"| module Os_notif >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_page"| module Os_page >> |<<div class="odocwiki_info"|~Functor defining wrappers for services handlers returning pages~.
+|@@ @style="tet-align: left;"@@\\N|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Notif"| module Notif >> ||
+|@@ @style="tet-align: left;"@@\\O|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Opt"| module Session.Opt >> ~[<<a_api subproject="client" | module Session >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Opt"| module Page.Make.Opt >> ~[<<a_api subproject="client" | module Page.Make >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Opt"| module Current_user.Opt >> ~[<<a_api subproject="client" | module Current_user >>~]|<<div class="odocwiki_info"|~Instead of exception~, the module <<span class="odocwiki_inlinecode"|~Opt>> returns an option~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_platform"| module Os_platform >> |<<div class="odocwiki_info"|~Platform type~.
+|@@ @style="tet-align: left;"@@\\P|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Page"| module Page >> |<<div class="odocwiki_info"|~Functor defining wrappers for services handlers returning pages~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_request_cache"| module Os_request_cache >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_services"| module Os_services >> |<<div class="odocwiki_info"|~This module provides pre~-defined services for connect~, disconnect~, sign up~,
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Platform"| module Platform >> |<<div class="odocwiki_info"|~Platform type~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\R|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Register"| module Icons.Register >> ~[<<a_api subproject="client" | module Icons >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Request_cache"| module Request_cache >> ||
+|@@ @style="tet-align: left;"@@\\S|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Services"| module Services >> |<<div class="odocwiki_info"|~This module provides pre~-defined services for connect~, disconnect~, sign up~,
     add a new email~, etc~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_session"| module Os_session >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_tips"| module Os_tips >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_types"| module Os_types >> |<<div class="odocwiki_info"|~Types related to users~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Session"| module Session >> ||
+|@@ @style="tet-align: left;"@@\\T|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Tips"| module Tips >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Types"| module Types >> |<<div class="odocwiki_info"|~Types related to users~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_uploader"| module Os_uploader >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_user"| module Os_user >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_user_proxy"| module Os_user_proxy >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Os_user_view"| module Os_user_view >> ||
-|@@ @style="tet-align: left;"@@\\R|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Register"| module Os_icons.Register >> ~[<<a_api subproject="client" | module Os_icons >>~]||
 |@@ @style="tet-align: left;"@@\\U|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="User"| module Os_types.User >> ~[<<a_api subproject="client" | module Os_types >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Uploader"| module Uploader >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="User"| module User >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="User"| module Types.User >> ~[<<a_api subproject="client" | module Types >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="User_proxy"| module User_proxy >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="User_view"| module User_view >> ||
 \\

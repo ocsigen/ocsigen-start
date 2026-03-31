@@ -1,0 +1,7 @@
+<<code language="ocaml" | sig
+  val cache : (Types.User.id, Types.User.t) Eliom.Cscache.t
+  val get_data_from_db : 'a -> Types.User.id -> Types.User.t Lwt.t
+  val get_data_from_db_for_client : 'a -> Types.User.id -> Types.User.t Lwt.t
+  val get_data : Types.User.id -> Types.User.t Lwt.t
+  val get_data_from_cache : Types.User.id -> Types.User.t Lwt.t
+end >>

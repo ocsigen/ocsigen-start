@@ -1,0 +1,23 @@
+<<code language="ocaml" | sig
+  exception No_such_group
+  type id = Types.Group.id
+  type t =
+    Types.Group.t = {
+    id : Group.id;
+    name : string;
+    desc : string option;
+  }
+  val id_of_group : Types.Group.t -> Types.Group.id
+  val name_of_group : Types.Group.t -> string
+  val desc_of_group : Types.Group.t -> string option
+  val create : ?description:string -> string -> Types.Group.t Lwt.t
+  val group_of_name : string -> Types.Group.t Lwt.t
+  val add_user_in_group :
+    group:Types.Group.t -> userid:Types.User.id -> unit Lwt.t
+  val remove_user_in_group :
+    group:Types.Group.t -> userid:Types.User.id -> unit Lwt.t
+  val in_group :
+    ?dbh:Db.PGOCaml.pa_pg_data Db.PGOCaml.t ->
+    group:Types.Group.t -> userid:Types.User.id -> unit -> bool Lwt.t
+  val all : unit -> Types.Group.t list Lwt.t
+end >>

@@ -1,9 +1,9 @@
 =Index of module types=
 
 |@@ @style="tet-align: left;"@@\\I|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="ICSIG"| module type Os_icons.ICSIG >> ~[<<a_api subproject="client" | module Os_icons >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="ICSIG"| module type Icons.ICSIG >> ~[<<a_api subproject="client" | module Icons >>~]||
 |@@ @style="tet-align: left;"@@\\P|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="PAGE"| module type Os_page.PAGE >> ~[<<a_api subproject="client" | module Os_page >>~]|<<div class="odocwiki_info"|~The signature of the module to be given as parameter to the functor~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="PAGE"| module type Page.PAGE >> ~[<<a_api subproject="client" | module Page >>~]|<<div class="odocwiki_info"|~The signature of the module to be given as parameter to the functor~.
 >>
 |
 \\

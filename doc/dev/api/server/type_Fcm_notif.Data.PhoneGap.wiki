@@ -1,0 +1,39 @@
+<<code language="ocaml" | sig
+  val add_message : string -> Fcm_notif.Data.t -> Fcm_notif.Data.t
+  val add_title : string -> Fcm_notif.Data.t -> Fcm_notif.Data.t
+  val add_image : string -> Fcm_notif.Data.t -> Fcm_notif.Data.t
+  val add_soundname : string -> Fcm_notif.Data.t -> Fcm_notif.Data.t
+  val add_notification_id : int -> Fcm_notif.Data.t -> Fcm_notif.Data.t
+  val add_notification_channel_id :
+    string -> Fcm_notif.Data.t -> Fcm_notif.Data.t
+  module Style : sig type t = Inbox | Picture end
+  val add_style :
+    Fcm_notif.Data.PhoneGap.Style.t -> Fcm_notif.Data.t -> Fcm_notif.Data.t
+  val add_summary_text : string -> Fcm_notif.Data.t -> Fcm_notif.Data.t
+  module Action :
+    sig
+      type t
+      val to_json : Fcm_notif.Data.PhoneGap.Action.t -> Yojson.Safe.t
+      val create :
+        string ->
+        string -> string -> bool -> Fcm_notif.Data.PhoneGap.Action.t
+    end
+  val add_actions :
+    Fcm_notif.Data.PhoneGap.Action.t ->
+    Fcm_notif.Data.PhoneGap.Action.t -> Fcm_notif.Data.t -> Fcm_notif.Data.t
+  val add_led_color :
+    int -> int -> int -> int -> Fcm_notif.Data.t -> Fcm_notif.Data.t
+  val add_vibration_pattern :
+    int list -> Fcm_notif.Data.t -> Fcm_notif.Data.t
+  val add_badge : int -> Fcm_notif.Data.t -> Fcm_notif.Data.t
+  module Priority : sig type t = Minimum | Low | Default | High | Maximum end
+  val add_priority :
+    Fcm_notif.Data.PhoneGap.Priority.t ->
+    Fcm_notif.Data.t -> Fcm_notif.Data.t
+  val add_picture : string -> Fcm_notif.Data.t -> Fcm_notif.Data.t
+  val add_info : string -> Fcm_notif.Data.t -> Fcm_notif.Data.t
+  module Visibility : sig type t = Secret | Private | Public end
+  val add_visibility :
+    Fcm_notif.Data.PhoneGap.Visibility.t ->
+    Fcm_notif.Data.t -> Fcm_notif.Data.t
+end >>

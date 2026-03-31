@@ -5,43 +5,43 @@
 * <<a_api subproject="client" text="Index of modules" | index modules >>
 * <<a_api subproject="client" text="Index of module types" | index module types >>
 \
-|<<a_api subproject="client" | module Os_comet >>||
-|<<a_api subproject="client" | module Os_connect_phone >>||
-|<<a_api subproject="client" | module Os_current_user >>|<<div class="odocwiki_info"|~This module provides functions and types to manage the current user~.
+|<<a_api subproject="client" | module Comet >>||
+|<<a_api subproject="client" | module Connect_phone >>||
+|<<a_api subproject="client" | module Current_user >>|<<div class="odocwiki_info"|~This module provides functions and types to manage the current user~.
 >>
 |
-|<<a_api subproject="client" | module Os_date >>||
-|<<a_api subproject="client" | module Os_email >>||
-|<<a_api subproject="client" | module Os_fcm_notif >>||
-|<<a_api subproject="client" | module Os_handlers >>|<<div class="odocwiki_info"|~This module contains pre~-defined handlers for connect~, disconnect~, sign up~,
+|<<a_api subproject="client" | module Date >>||
+|<<a_api subproject="client" | module Email >>||
+|<<a_api subproject="client" | module Fcm_notif >>||
+|<<a_api subproject="client" | module Handlers >>|<<div class="odocwiki_info"|~This module contains pre~-defined handlers for connect~, disconnect~, sign up~,
     add a new email~, etc~.
 >>
 |
-|<<a_api subproject="client" | module Os_icons >>||
-|<<a_api subproject="client" | module Os_lib >>||
-|<<a_api subproject="client" | module Os_msg >>|<<div class="odocwiki_info"|~This module provides functions to display messages ~(client~-side or
+|<<a_api subproject="client" | module Icons >>||
+|<<a_api subproject="client" | module Lib >>||
+|<<a_api subproject="client" | module Msg >>|<<div class="odocwiki_info"|~This module provides functions to display messages ~(client~-side or
     server~-side~)~.
 >>
 |
-|<<a_api subproject="client" | module Os_notif >>||
-|<<a_api subproject="client" | module Os_page >>|<<div class="odocwiki_info"|~Functor defining wrappers for services handlers returning pages~.
+|<<a_api subproject="client" | module Notif >>||
+|<<a_api subproject="client" | module Page >>|<<div class="odocwiki_info"|~Functor defining wrappers for services handlers returning pages~.
 >>
 |
-|<<a_api subproject="client" | module Os_platform >>|<<div class="odocwiki_info"|~Platform type~.
+|<<a_api subproject="client" | module Platform >>|<<div class="odocwiki_info"|~Platform type~.
 >>
 |
-|<<a_api subproject="client" | module Os_request_cache >>||
-|<<a_api subproject="client" | module Os_services >>|<<div class="odocwiki_info"|~This module provides pre~-defined services for connect~, disconnect~, sign up~,
+|<<a_api subproject="client" | module Request_cache >>||
+|<<a_api subproject="client" | module Services >>|<<div class="odocwiki_info"|~This module provides pre~-defined services for connect~, disconnect~, sign up~,
     add a new email~, etc~.
 >>
 |
-|<<a_api subproject="client" | module Os_session >>||
-|<<a_api subproject="client" | module Os_tips >>||
-|<<a_api subproject="client" | module Os_types >>|<<div class="odocwiki_info"|~Types related to users~.
+|<<a_api subproject="client" | module Session >>||
+|<<a_api subproject="client" | module Tips >>||
+|<<a_api subproject="client" | module Types >>|<<div class="odocwiki_info"|~Types related to users~.
 >>
 |
-|<<a_api subproject="client" | module Os_uploader >>||
-|<<a_api subproject="client" | module Os_user >>||
-|<<a_api subproject="client" | module Os_user_proxy >>||
-|<<a_api subproject="client" | module Os_user_view >>||
+|<<a_api subproject="client" | module Uploader >>||
+|<<a_api subproject="client" | module User >>||
+|<<a_api subproject="client" | module User_proxy >>||
+|<<a_api subproject="client" | module User_view >>||
 

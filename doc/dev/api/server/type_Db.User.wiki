@@ -1,0 +1,58 @@
+<<code language="ocaml" | sig
+  exception Invalid_action_link_key of Types.User.id
+  val userid_of_email : string -> Types.User.id Lwt.t
+  val is_registered : string -> bool Lwt.t
+  val is_email_validated : Types.User.id -> string -> bool Lwt.t
+  val set_email_validated : Types.User.id -> string -> unit Lwt.t
+  val add_actionlinkkey :
+    ?autoconnect:bool ->
+    ?action:[< `AccountActivation | `Custom of string | `PasswordReset
+             > `AccountActivation ] ->
+    ?data:string ->
+    ?validity:int64 ->
+    ?expiry:CalendarLib.Calendar.t ->
+    act_key:string ->
+    userid:Types.User.id -> email:string -> unit -> unit Lwt.t
+  val add_preregister : string -> unit Lwt.t
+  val remove_preregister : string -> unit Lwt.t
+  val is_preregistered : string -> bool Lwt.t
+  val all : ?limit:int64 -> unit -> string list Lwt.t
+  val create :
+    ?password:string ->
+    ?avatar:string ->
+    ?language:string ->
+    ?email:string ->
+    firstname:string -> lastname:string -> unit -> Types.User.id Lwt.t
+  val update :
+    ?password:string ->
+    ?avatar:string ->
+    ?language:string ->
+    firstname:string -> lastname:string -> Types.User.id -> unit Lwt.t
+  val update_password : userid:Types.User.id -> password:string -> unit Lwt.t
+  val update_avatar : userid:Types.User.id -> avatar:string -> unit Lwt.t
+  val update_main_email : userid:Types.User.id -> email:string -> unit Lwt.t
+  val update_language : userid:Types.User.id -> language:string -> unit Lwt.t
+  val verify_password :
+    email:string -> password:string -> Types.User.id Lwt.t
+  val verify_password_phone :
+    number:string -> password:string -> Types.User.id Lwt.t
+  val user_of_userid :
+    Types.User.id ->
+    (Types.User.id * string * string * string option * bool * string option)
+    Lwt.t
+  val get_actionlinkkey_info : string -> Types.Action_link_key.info Lwt.t
+  val emails_of_userid : Types.User.id -> string list Lwt.t
+  val emails_of_userid_with_status :
+    Types.User.id -> (string * bool) list Lwt.t
+  val email_of_userid : Types.User.id -> string option Lwt.t
+  val is_main_email : userid:Types.User.id -> email:string -> bool Lwt.t
+  val add_email_to_user : userid:Types.User.id -> email:string -> unit Lwt.t
+  val remove_email_from_user :
+    userid:Types.User.id -> email:string -> unit Lwt.t
+  val get_language : Types.User.id -> string option Lwt.t
+  val get_users :
+    ?pattern:string ->
+    unit ->
+    (Types.User.id * string * string * string option * bool * string option)
+    list Lwt.t
+end >>

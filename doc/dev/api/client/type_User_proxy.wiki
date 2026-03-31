@@ -1,0 +1,4 @@
+<<code language="ocaml" | sig
+  val get_data : Types.User.id -> Types.User.t Lwt.t
+  val get_data_from_cache : Types.User.id -> Types.User.t Lwt.t
+end >>

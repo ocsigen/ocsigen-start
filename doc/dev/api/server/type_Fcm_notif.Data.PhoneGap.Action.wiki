@@ -1,0 +1,6 @@
+<<code language="ocaml" | sig
+  type t
+  val to_json : Fcm_notif.Data.PhoneGap.Action.t -> Yojson.Safe.t
+  val create :
+    string -> string -> string -> bool -> Fcm_notif.Data.PhoneGap.Action.t
+end >>

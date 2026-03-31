@@ -1,0 +1,30 @@
+<<code language="ocaml" | sig
+  module User :
+    sig
+      type id = int64
+      type t = {
+        userid : Types.User.id;
+        fn : string;
+        ln : string;
+        avatar : string option;
+        language : string option;
+      }
+    end
+  module Action_link_key :
+    sig
+      type info = {
+        userid : Types.User.id;
+        email : string;
+        validity : int64;
+        expiry : CalendarLib.Calendar.t option;
+        autoconnect : bool;
+        action : [ `AccountActivation | `Custom of string | `PasswordReset ];
+        data : string;
+      }
+    end
+  module Group :
+    sig
+      type id = int64
+      type t = { id : Types.Group.id; name : string; desc : string option; }
+    end
+end >>

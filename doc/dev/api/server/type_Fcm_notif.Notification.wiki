@@ -1,0 +1,34 @@
+<<code language="ocaml" | sig
+  type t
+  val to_json : Fcm_notif.Notification.t -> Yojson.Safe.t
+  val empty : unit -> Fcm_notif.Notification.t
+  val add_title :
+    string -> Fcm_notif.Notification.t -> Fcm_notif.Notification.t
+  val add_body :
+    string -> Fcm_notif.Notification.t -> Fcm_notif.Notification.t
+  val add_sound :
+    string -> Fcm_notif.Notification.t -> Fcm_notif.Notification.t
+  val add_click_action :
+    string -> Fcm_notif.Notification.t -> Fcm_notif.Notification.t
+  val add_raw_string :
+    string -> string -> Fcm_notif.Notification.t -> Fcm_notif.Notification.t
+  val add_raw_json :
+    string ->
+    Yojson.Safe.t -> Fcm_notif.Notification.t -> Fcm_notif.Notification.t
+  module Ios :
+    sig
+      val add_badge :
+        int -> Fcm_notif.Notification.t -> Fcm_notif.Notification.t
+    end
+  module Android :
+    sig
+      val add_icon :
+        string -> Fcm_notif.Notification.t -> Fcm_notif.Notification.t
+      val add_tag :
+        string -> Fcm_notif.Notification.t -> Fcm_notif.Notification.t
+      val add_color :
+        red:int ->
+        green:int ->
+        blue:int -> Fcm_notif.Notification.t -> Fcm_notif.Notification.t
+    end
+end >>

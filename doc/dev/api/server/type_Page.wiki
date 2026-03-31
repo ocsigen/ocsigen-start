@@ -1,0 +1,57 @@
+<<code language="ocaml" | sig
+  exception Predicate_failed of exn option
+  type content
+  val content :
+    ?html_a:Html_types.html_attrib Eliom.Content.Html.attrib list ->
+    ?a:Html_types.body_attrib Eliom.Content.Html.attrib list ->
+    ?title:string ->
+    ?head:[< Html_types.head_content_fun ] Eliom.Content.Html.elt list ->
+    [< Html_types.body_content ] Eliom.Content.Html.elt list -> Page.content
+  module type PAGE =
+    sig
+      val title : string
+      val js : string list list
+      val local_js : string list list
+      val css : string list list
+      val local_css : string list list
+      val other_head :
+        unit -> Html_types.head_content_fun Eliom.Content.Html.elt list
+      val default_error_page : 'a -> 'b -> exn -> Page.content Lwt.t
+      val default_connected_error_page :
+        Types.User.id option -> 'a -> 'b -> exn -> Page.content Lwt.t
+      val default_predicate : 'a -> 'b -> bool Lwt.t
+      val default_connected_predicate :
+        Types.User.id option -> 'a -> 'b -> bool Lwt.t
+    end
+  module Default_config : PAGE
+  module Make :
+    PAGE ->
+      sig
+        val make_page :
+          Page.content -> [> Html_types.html ] Eliom.Content.Html.elt
+        val page :
+          ?predicate:('a -> 'b -> bool Lwt.t) ->
+          ?fallback:('a -> 'b -> exn -> Page.content Lwt.t) ->
+          ('a -> 'b -> Page.content Lwt.t) ->
+          'a -> 'b -> Html_types.html Eliom.Content.Html.elt Lwt.t
+        module Opt :
+          sig
+            val connected_page :
+              ?allow:Types.Group.t list ->
+              ?deny:Types.Group.t list ->
+              ?predicate:(Types.User.id option -> 'a -> 'b -> bool Lwt.t) ->
+              ?fallback:(Types.User.id option ->
+                         'a -> 'b -> exn -> Page.content Lwt.t) ->
+              (Types.User.id option -> 'a -> 'b -> Page.content Lwt.t) ->
+              'a -> 'b -> Html_types.html Eliom.Content.Html.elt Lwt.t
+          end
+        val connected_page :
+          ?allow:Types.Group.t list ->
+          ?deny:Types.Group.t list ->
+          ?predicate:(Types.User.id option -> 'a -> 'b -> bool Lwt.t) ->
+          ?fallback:(Types.User.id option ->
+                     'a -> 'b -> exn -> Page.content Lwt.t) ->
+          (Types.User.id -> 'a -> 'b -> Page.content Lwt.t) ->
+          'a -> 'b -> Html_types.html Eliom.Content.Html.elt Lwt.t
+      end
+end >>

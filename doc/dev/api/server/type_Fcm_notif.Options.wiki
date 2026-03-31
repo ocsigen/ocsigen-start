@@ -1,0 +1,22 @@
+<<code language="ocaml" | sig
+  type t
+  val to_list : Fcm_notif.Options.t -> (string * Yojson.Safe.t) list
+  val create : string list -> Fcm_notif.Options.t
+  val add_raw_string :
+    string -> string -> Fcm_notif.Options.t -> Fcm_notif.Options.t
+  val add_raw_json :
+    string -> Yojson.Safe.t -> Fcm_notif.Options.t -> Fcm_notif.Options.t
+  val add_to : string -> Fcm_notif.Options.t -> Fcm_notif.Options.t
+  val add_condition : string -> Fcm_notif.Options.t -> Fcm_notif.Options.t
+  val add_collapse_key : string -> Fcm_notif.Options.t -> Fcm_notif.Options.t
+  module Priority : sig type t = Normal | High end
+  val add_priority :
+    Fcm_notif.Options.Priority.t ->
+    Fcm_notif.Options.t -> Fcm_notif.Options.t
+  val add_content_available :
+    bool -> Fcm_notif.Options.t -> Fcm_notif.Options.t
+  val add_time_to_live : int -> Fcm_notif.Options.t -> Fcm_notif.Options.t
+  val add_restricted_package_name :
+    string -> Fcm_notif.Options.t -> Fcm_notif.Options.t
+  val add_dry_run : bool -> Fcm_notif.Options.t -> Fcm_notif.Options.t
+end >>
