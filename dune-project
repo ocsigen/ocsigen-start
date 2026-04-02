@@ -4,6 +4,8 @@
 
 (generate_opam_files true)
 
+(using dune_site 0.1)
+
 (source
  (github ocsigen/ocsigen-start))
 

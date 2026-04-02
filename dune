@@ -1,3 +1,9 @@
 (vendored_dirs ocsigen-dune-rules)
 
 (data_only_dirs template.distillery)
+
+(install
+ (section lib_root)
+ (files
+  (glob_files_rec
+   (template.distillery/* with_prefix eliom/templates/os.pgocaml))))
