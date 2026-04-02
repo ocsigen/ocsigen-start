@@ -2,3 +2,6 @@ depexts: [
   ["imagemagick" "ruby-sass"] {os-family = "debian"}
   ["md5sha1sum" "sassc"] {os = "macos" & os-distribution = "homebrew"}
 ]
+pin-depends: [
+  ["ocsigen-toolkit.dev" "git+https://github.com/ocsigen/ocsigen-toolkit.git#d3361b2969cc94a9fdc3e5bc0282184777894b98"]
+]
