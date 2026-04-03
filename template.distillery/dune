@@ -64,7 +64,7 @@
    (with-stdin-from
     %{deps}
     (run
-     ocsigen-i18n-generator
+     ocsigen-i18n --eliom
      --languages
      en,fr
      --default-language
@@ -80,7 +80,7 @@
    (with-stdin-from
     %{deps}
     (run
-     ocsigen-i18n-generator
+     ocsigen-i18n --eliom
      --primary
      %%%PROJECT_NAME%%%_i18n.tsv
      --languages
