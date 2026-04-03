@@ -63,17 +63,13 @@
    %{target}
    (with-stdin-from
     %{deps}
-    (pipe-stdout
-     (run
-      ocsigen-i18n-generator
-      --languages
-      en,fr
-      --default-language
-      fr
-      %{deps})
-     (run
-      sed
-      "1 s/]/[@@deriving json]]\\n[%%shared [@@@ocaml.warning\"-27\"]]/"))))))
+    (run
+     ocsigen-i18n-generator
+     --languages
+     en,fr
+     --default-language
+     fr
+     %{deps})))))
 
 (rule
  (target %%%PROJECT_NAME%%%_Demo_i18n.eliom)
