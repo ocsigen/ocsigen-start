@@ -46,9 +46,7 @@
   (ocsigen-i18n
    (>= "4.0.0"))
   (eliom
-   (and
-    (>= "13.0~")
-    (< "14.0.0")))
+   (>= "13.0.0"))
   (ocsigen-toolkit
    (>= "2.7.0"))
   ocsigen-dune-rules
