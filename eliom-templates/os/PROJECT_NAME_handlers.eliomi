@@ -11,7 +11,7 @@ val%server upload_user_avatar_handler :
    Os.Types.User.id
   -> unit
   -> unit
-     * ((float * float * float * float) option * Ocsigen_extensions.file_info)
+     * ((float * float * float * float) option * Ocsigen.Extensions.file_info)
   -> unit Lwt.t
 (** Update new user avatar with cropping option. The new avatar is saved
     and the old one is removed. *)

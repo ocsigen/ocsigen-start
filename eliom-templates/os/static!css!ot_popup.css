@@ -1,0 +1,76 @@
+html.ot-with-popup,
+html.ot-with-popup>body {
+    overflow: hidden;
+    position: fixed;
+    /* To prevent scroll on mobile devices.
+                         One must also set top property manually
+                         to prevent scrolling page to top. */
+    width: 100%;
+}
+
+.ot-popup-background {
+    position: fixed;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+}
+
+.ot-popup {
+    position: relative;
+    margin: auto;
+    z-index: 2;
+    display: flex;
+    max-height: 100%;
+    min-height: 2em;
+    /* .ot-popup-close button */
+    overflow: auto;
+    background-color: #FFFFFF;
+    padding: .5em;
+    border-radius: 2px;
+}
+
+.ot-popup-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 2;
+    padding: 5px;
+}
+
+.ot-popup-content {
+    width: 100%;
+    flex: 1 1 auto;
+    overflow: auto;
+    display: flex;
+}
+
+.ot-hcf {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    overflow: auto;
+}
+
+.ot-hcf-header,
+.ot-hcf-footer {
+    flex-shrink: 0;
+}
+
+.ot-hcf-header:empty,
+.ot-hcf-footer:empty {
+    display: none;
+}
+
+.ot-hcf-content {
+    flex-grow: 1;
+    overflow: auto;
+}

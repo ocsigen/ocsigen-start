@@ -1,0 +1,172 @@
+/* Generic drawer stylesheet. */
+
+html.ot-drawer-open, html.ot-drawer-open > body {
+    overflow: hidden;
+    position: fixed ; /* To prevent scroll on mobile devices.
+                         One must also set top property manually
+                         to prevent scrolling page to top. */
+}
+
+/* .ot-dr-container.open .ot-dr-toggle-button { */
+/*     display: none; */
+/* } */
+
+/* @include media-screen-m-l { */
+/*     .ot-dr-toggle-button { */
+/*         top: 1rem; */
+/*     } */
+/* }  */
+
+/* .ot-dr-toggle-button::before { */
+/*     font-family: 'FontAwesome'; */
+/*     content: '\f0c9'; */
+/*     padding: 1rem; */
+/* } */
+
+/* .ot-dr-toggle-button.login::before { */
+/*     font-family: 'Ubuntu'; */
+/*     content: 'login'; */
+/* } */
+
+
+.ot-drawer-bckgrnd {
+    background-color: rgba(0,0,0,0);
+    transition: background-color .2s;
+}
+
+.ot-drawer-bckgrnd.ot-dr-closing,
+.ot-drawer-bckgrnd.ot-dr-opening,
+.ot-drawer-bckgrnd.ot-dr-open {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.ot-drawer-bckgrnd.ot-dr-open {
+    background-color: rgba(0,0,0,0.5);
+}
+
+.ot-drawer {
+
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+
+    /* [ overflow: visible ; ] is needed for the button
+     * to be displayed
+     * if the drawer needs to be scrollable, you probably will want
+     * to wrap the content into a wrapper
+     * with overflow-y: auto ; touch-action: pan-y; */
+    overflow: visible ;
+
+    transition: -webkit-transform .2s ease-out;
+    transition: transform .2s ease-out;
+
+    /* We set up drawer so that the default transform is the identity
+     * Otherwise, with Firefox, a transition is performed on page
+     * change. */
+
+    background-color: white;
+}
+
+@media (min-width: 720px) {
+    .ot-drawer.ot-dr-left, .ot-drawer.ot-dr-right {
+        width: 300px;
+    }
+
+    .ot-drawer.ot-dr-top, .ot-drawer.ot-dr-bottom {
+        height: 300px;
+    }
+}
+
+@media (max-width: 720px) {
+    .ot-drawer.ot-dr-left, .ot-drawer.ot-dr-right {
+        width: calc(100% - 50px);
+    }
+
+    .ot-drawer.ot-dr-top, .ot-drawer.ot-dr-bottom {
+        height: calc(100% - 50px);
+    }
+}
+
+.ot-drawer.ot-dr-top { bottom: 100% ; }
+.ot-drawer.ot-dr-right { left: 100% ; top: 0 }
+.ot-drawer.ot-dr-bottom { top: 100% ; }
+.ot-drawer.ot-dr-left { right: 100% ; top: 0 }
+
+.ot-dr-toggle-button::before { content: "≡"; }
+
+.ot-drawer-bckgrnd.ot-dr-open .ot-dr-top .ot-dr-toggle-button::before {
+    content: "︿" ;
+}
+
+.ot-drawer-bckgrnd.ot-dr-open .ot-dr-right .ot-dr-toggle-button::before {
+    content: "⟩" ;
+}
+
+.ot-drawer-bckgrnd.ot-dr-open .ot-dr-bottom .ot-dr-toggle-button::before {
+    content: "﹀" ;
+}
+
+.ot-drawer-bckgrnd.ot-dr-open .ot-dr-left .ot-dr-toggle-button::before {
+    content: "⟨" ;
+}
+
+.ot-drawer-bckgrnd.ot-dr-open .ot-dr-toggle-button {
+    background-color: #445;
+}
+
+.ot-drawer > .ot-dr-toggle-button {
+    position: absolute ;
+    cursor: pointer ;
+    height: 50px;
+    width: 50px;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    font-size: 30px;
+    outline: none;
+}
+
+.ot-drawer.ot-dr-top > .ot-dr-toggle-button {
+    top: 100% ;
+    right: calc(50% - 25px) ;
+}
+
+.ot-drawer.ot-dr-right > .ot-dr-toggle-button,
+.ot-drawer.ot-dr-left > .ot-dr-toggle-button {
+    top: 0 ;
+}
+
+.ot-drawer.ot-dr-bottom > .ot-dr-toggle-button {
+    bottom: 100% ;
+    left: calc(50% - 25px) ;
+}
+
+.ot-drawer.ot-dr-left > .ot-dr-toggle-button { left: 100% ; }
+.ot-drawer.ot-dr-right > .ot-dr-toggle-button { right: 100% ; }
+
+
+.ot-drawer-bckgrnd.ot-dr-open .ot-drawer.ot-dr-left  {
+    -webkit-transform: translateX(100%);
+    transform: translateX(100%);
+}
+
+.ot-drawer-bckgrnd.ot-dr-open .ot-drawer.ot-dr-right {
+    -webkit-transform: translateX(-100%);
+    transform: translateX(-100%);
+}
+
+.ot-drawer-bckgrnd.ot-dr-open .ot-drawer.ot-dr-top  {
+    -webkit-transform: translateY(100%);
+    transform: translateY(100%);
+}
+
+.ot-drawer-bckgrnd.ot-dr-open .ot-drawer.ot-dr-bottom {
+    -webkit-transform: translateY(-100%);
+    transform: translateY(-100%);
+}

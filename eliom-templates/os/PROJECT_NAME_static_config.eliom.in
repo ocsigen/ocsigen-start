@@ -2,17 +2,17 @@
    These information are taken from the config file otherwise.
 *)
 let%server set_static_config () =
-  if not (Ocsigen_config.has_configuration_file ())
+  if not (Ocsigen.Config.has_configuration_file ())
   then begin
-    Ocsigen_config.set_ports [`All, 8080];
-    Ocsigen_config.set_veryverbose ();
-    Ocsigen_config.set_debugmode true;
-    Ocsigen_config.set_logdir "local/var/log/%%%PROJECT_NAME%%%";
-    Ocsigen_config.set_datadir "local/var/data/%%%PROJECT_NAME%%%";
-    Ocsigen_config.set_uploaddir (Some "/tmp");
-    Ocsigen_config.set_usedefaulthostname true;
-    Ocsigen_config.set_command_pipe "local/var/run/%%%PROJECT_NAME%%%-cmd";
-    Ocsigen_config.set_default_charset (Some "utf-8");
+    Ocsigen.Config.set_ports [`All, 8080];
+    Ocsigen.Config.set_veryverbose ();
+    Ocsigen.Config.set_debugmode true;
+    Ocsigen.Config.set_logdir "local/var/log/%%%PROJECT_NAME%%%";
+    Ocsigen.Config.set_datadir "local/var/data/%%%PROJECT_NAME%%%";
+    Ocsigen.Config.set_uploaddir (Some "/tmp");
+    Ocsigen.Config.set_usedefaulthostname true;
+    Ocsigen.Config.set_command_pipe "local/var/run/%%%PROJECT_NAME%%%-cmd";
+    Ocsigen.Config.set_default_charset (Some "utf-8");
     Ocsipersist_settings.set_host "%%PGHOST%%";
     Ocsipersist_settings.set_port %%PGPORT%%;
     Ocsipersist_settings.set_database "ocsipersist_%%%PROJECT_NAME%%%";

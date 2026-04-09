@@ -36,7 +36,7 @@ let os_db_unix_domain_socket_dir = ref None
 
 (* Application configuration *)
 let app =
-  let open Ocsigen_extensions.Configuration in
+  let open Ocsigen.Extensions.Configuration in
   let attributes =
     [ attribute ~name:"name" ~obligatory:true (fun h -> app_name := h)
     ; attribute ~name:"css" ~obligatory:true (fun h -> css_name := h)
@@ -46,7 +46,7 @@ let app =
 
 (* Avatars configuration *)
 let avatars =
-  let open Ocsigen_extensions.Configuration in
+  let open Ocsigen.Extensions.Configuration in
   let attributes =
     [ attribute ~name:"dir" ~obligatory:true (fun h ->
         avatar_dir := Eliom.Lib.String.split '/' h) ]
@@ -55,7 +55,7 @@ let avatars =
 
 (* Database configuration *)
 let os_db =
-  let open Ocsigen_extensions.Configuration in
+  let open Ocsigen.Extensions.Configuration in
   let attributes =
     [ attribute ~name:"host" (fun h -> os_db_host := Some h)
     ; attribute ~name:"port" (fun h ->
@@ -63,7 +63,7 @@ let os_db =
           try Some (int_of_string h)
           with Failure _ ->
             raise
-            @@ Ocsigen_extensions.Error_in_config_file "port is not an integer")
+            @@ Ocsigen.Extensions.Error_in_config_file "port is not an integer")
     ; attribute ~name:"user" (fun h -> os_db_user := Some h)
     ; attribute ~name:"password" (fun h -> os_db_password := Some h)
     ; attribute ~name:"database" (fun h -> os_db_database := Some h)
@@ -73,5 +73,5 @@ let os_db =
   element ~name:"os-db" ~attributes ()
 
 let _ =
-  if Ocsigen_config.has_configuration_file ()
+  if Ocsigen.Config.has_configuration_file ()
   then Eliom.Config.parse_config [app; avatars; os_db]
