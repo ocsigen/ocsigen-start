@@ -23,7 +23,7 @@ open%server Lwt.Syntax
 type%shared sms_error_core = [`Unknown | `Send | `Limit | `Invalid_number]
 type%shared sms_error = [`Ownership | sms_error_core]
 
-(* adapted from Ocsigen_lib.make_cryptographic_safe_string *)
+(* adapted from Ocsigen_base.Lib.make_cryptographic_safe_string *)
 let activation_code =
   let rng = Cryptokit.Random.device_rng "/dev/urandom" in
   fun () ->
