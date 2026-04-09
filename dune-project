@@ -44,11 +44,10 @@
   (ocsigen-i18n
    (>= "4.0.0"))
   (eliom
-   (and
-    (>= "12.0.0")
-    (< "13.0.0")))
+   (>= "13.0.0"))
   (ocsigen-toolkit
    (>= "2.7.0"))
+  ocsigen-dune-rules
   (ocsigen-ppx-rpc
    (>= "1.1"))
   (yojson
