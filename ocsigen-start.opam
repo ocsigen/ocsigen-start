@@ -32,6 +32,7 @@ depends: [
   "re" {>= "1.7.2"}
   "ocsipersist-pgsql-config" {>= "2.0" & < "3.0"}
   "conf-postgresql"
+  "ocsigen-dune-rules"
 ]
 depexts: [
   ["imagemagick" "ruby-sass"] {os-family = "debian"}
