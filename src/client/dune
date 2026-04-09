@@ -1,0 +1,31 @@
+(include_subdirs qualified)
+
+(library
+ (public_name ocsigen-start.client)
+ (name ocsigen_start_client)
+ (modes byte)
+ (wrapped false)
+ (preprocess
+  (pps js_of_ocaml-ppx js_of_ocaml-ppx_deriving_json))
+ (libraries eliom.client calendar ocsigen-toolkit.client re.str js_of_ocaml))
+
+(include dune.client)
+
+(rule
+ (target dune.client)
+ (mode promote)
+ (deps
+  (glob_files ../Os/*.eliom)
+  (glob_files ../Os/*.eliomi))
+ (action
+  (with-stdout-to
+   %{target}
+   (run
+    ocsigen-dune-rules
+    --subdir
+    Os
+    --internal-prefix
+    Os
+    --server-objs-dir
+    ../.ocsigen_start_server.objs/byte
+    ../Os))))
