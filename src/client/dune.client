@@ -1,0 +1,220 @@
+(subdir Os
+ (rule
+  (with-stdout-to comet.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/comet.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Comet.cmo} %{dep:../../Os/comet.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to comet.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/comet.eliomi} -internal-prefix Os --intf %{dep:../../Os/comet.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to connect_phone.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/connect_phone.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Connect_phone.cmo} %{dep:../../Os/connect_phone.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to connect_phone.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/connect_phone.eliomi} -internal-prefix Os --intf %{dep:../../Os/connect_phone.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to current_user.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/current_user.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Current_user.cmo} %{dep:../../Os/current_user.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to current_user.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/current_user.eliomi} -internal-prefix Os --intf %{dep:../../Os/current_user.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to date.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/date.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Date.cmo} %{dep:../../Os/date.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to date.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/date.eliomi} -internal-prefix Os --intf %{dep:../../Os/date.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to email.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/email.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Email.cmo} %{dep:../../Os/email.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to email.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/email.eliomi} -internal-prefix Os --intf %{dep:../../Os/email.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to fcm_notif.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/fcm_notif.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Fcm_notif.cmo} %{dep:../../Os/fcm_notif.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to fcm_notif.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/fcm_notif.eliomi} -internal-prefix Os --intf %{dep:../../Os/fcm_notif.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to handlers.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/handlers.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Handlers.cmo} %{dep:../../Os/handlers.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to handlers.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/handlers.eliomi} -internal-prefix Os --intf %{dep:../../Os/handlers.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to icons.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/icons.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Icons.cmo} %{dep:../../Os/icons.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to icons.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/icons.eliomi} -internal-prefix Os --intf %{dep:../../Os/icons.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to lib.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/lib.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Lib.cmo} %{dep:../../Os/lib.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to lib.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/lib.eliomi} -internal-prefix Os --intf %{dep:../../Os/lib.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to msg.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/msg.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Msg.cmo} %{dep:../../Os/msg.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to msg.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/msg.eliomi} -internal-prefix Os --intf %{dep:../../Os/msg.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to notif.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/notif.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Notif.cmo} %{dep:../../Os/notif.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to notif.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/notif.eliomi} -internal-prefix Os --intf %{dep:../../Os/notif.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to page.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/page.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Page.cmo} %{dep:../../Os/page.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to page.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/page.eliomi} -internal-prefix Os --intf %{dep:../../Os/page.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to platform.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/platform.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Platform.cmo} %{dep:../../Os/platform.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to platform.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/platform.eliomi} -internal-prefix Os --intf %{dep:../../Os/platform.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to request_cache.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/request_cache.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Request_cache.cmo} %{dep:../../Os/request_cache.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to request_cache.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/request_cache.eliomi} -internal-prefix Os --intf %{dep:../../Os/request_cache.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to services.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/services.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Services.cmo} %{dep:../../Os/services.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to services.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/services.eliomi} -internal-prefix Os --intf %{dep:../../Os/services.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to session.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/session.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Session.cmo} %{dep:../../Os/session.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to session.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/session.eliomi} -internal-prefix Os --intf %{dep:../../Os/session.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to tips.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/tips.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Tips.cmo} %{dep:../../Os/tips.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to tips.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/tips.eliomi} -internal-prefix Os --intf %{dep:../../Os/tips.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to types.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/types.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Types.cmo} %{dep:../../Os/types.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to types.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/types.eliomi} -internal-prefix Os --intf %{dep:../../Os/types.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to uploader.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/uploader.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__Uploader.cmo} %{dep:../../Os/uploader.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to uploader.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/uploader.eliomi} -internal-prefix Os --intf %{dep:../../Os/uploader.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to user.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/user.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__User.cmo} %{dep:../../Os/user.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to user.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/user.eliomi} -internal-prefix Os --intf %{dep:../../Os/user.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to user_proxy.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/user_proxy.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__User_proxy.cmo} %{dep:../../Os/user_proxy.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to user_proxy.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/user_proxy.eliomi} -internal-prefix Os --intf %{dep:../../Os/user_proxy.eliomi})))))
+(subdir Os
+ (rule
+  (with-stdout-to user_view.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/user_view.eliom} -internal-prefix Os --impl -server-cmo %{dep:../../.ocsigen_start_server.objs/byte/os__User_view.cmo} %{dep:../../Os/user_view.eliom})))))
+(subdir Os
+ (rule
+  (with-stdout-to user_view.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Os/user_view.eliomi} -internal-prefix Os --intf %{dep:../../Os/user_view.eliomi})))))
