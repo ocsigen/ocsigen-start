@@ -178,11 +178,11 @@ module Http = struct
   let string_of_stream ?(len = 16384) contents =
     Lwt.try_bind
       (fun () ->
-         Ocsigen_stream.string_of_stream len (Ocsigen_stream.get contents))
+         Ocsigen_base.Ocsigen_stream.string_of_stream len (Ocsigen_base.Ocsigen_stream.get contents))
       (fun r ->
-         let* () = Ocsigen_stream.finalize contents `Success in
+         let* () = Ocsigen_base.Ocsigen_stream.finalize contents `Success in
          Lwt.return r)
       (fun e ->
-         let* () = Ocsigen_stream.finalize contents `Failure in
+         let* () = Ocsigen_base.Ocsigen_stream.finalize contents `Failure in
          Lwt.fail e)
 end

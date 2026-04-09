@@ -70,7 +70,7 @@ val record_image :
    string
   -> ?ratio:float
   -> ?cropping:float * float * float * float
-  -> Ocsigen_extensions.file_info
+  -> Ocsigen.Extensions.file_info
   -> string Lwt.t
 (** [record_image directory ?ratio ?cropping:(top, right, bottom, left) file]
     crops the image like [crop_image] and save it in the directory [directory].
