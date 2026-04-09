@@ -82,7 +82,7 @@ val lwt_bind_input_enter :
 
 (** This module contains functions about HTTP request. *)
 module Http : sig
-  val string_of_stream : ?len:int -> string Ocsigen_stream.t -> string Lwt.t
+  val string_of_stream : ?len:int -> string Ocsigen_base.Ocsigen_stream.t -> string Lwt.t
   (** [string_of_stream ?len stream] creates a string of maximum length [len]
         (default is [16384]) from the stream [stream].
      *)

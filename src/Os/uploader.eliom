@@ -97,7 +97,7 @@ let%server crop_image ~src ?(dst = src) ?ratio ~top ~right ~bottom ~left () =
 let%server record_image directory ?ratio ?cropping file =
   let make_file_saver cp () =
     let new_filename () =
-      Ocsigen_lib.make_cryptographic_safe_string ()
+      Ocsigen_base.Lib.make_cryptographic_safe_string ()
       |> String.map (function '+' -> '-' | '/' -> '_' | c -> c)
     in
     fun file_info ->

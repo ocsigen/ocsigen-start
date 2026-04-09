@@ -86,7 +86,7 @@ module Default_config = struct
 
   let err_page exn =
     let de =
-      if ~%(Ocsigen_config.get_debugmode ())
+      if ~%(Ocsigen.Config.get_debugmode ())
       then [p [txt "Debug info: "; em [txt (Printexc.to_string exn)]]]
       else []
     in

@@ -63,7 +63,7 @@ let%rpc set_password_rpc myid (p : string * string) : unit Lwt.t =
 
 let%server
     generate_action_link_key
-      ?(act_key = Ocsigen_lib.make_cryptographic_safe_string ())
+      ?(act_key = Ocsigen_base.Lib.make_cryptographic_safe_string ())
       ?(send_email = true)
       ~service
       ~text
@@ -79,7 +79,7 @@ let%server
   (* For debugging we print the action link on standard output
      to make possible to connect even if the mail transport is not
      configured. *)
-  if Ocsigen_config.get_debugmode ()
+  if Ocsigen.Config.get_debugmode ()
   then print_endline ("Debug: action link created: " ^ act_link);
   if send_email
   then
