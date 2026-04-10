@@ -1,0 +1,10 @@
+(include_subdirs no)
+
+(library
+ (name ocsigen_start_compat_client)
+ (public_name ocsigen-start-compat.client)
+ (synopsis "Backward-compatible Os_xxx module names (client-side)")
+ (wrapped false)
+ (modes byte)
+ (flags (:standard -w -70))
+ (libraries ocsigen-start.client))
