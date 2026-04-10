@@ -46,3 +46,32 @@ To get started, take a look at the generated README.md.
 
 You have also the complete manual and API available on
 the [Ocsigen website](http://ocsigen.org/ocsigen-start/)
+
+### Generating API documentation
+
+The API documentation is generated using `eliomdoc` (installed with Eliom)
+and the `wikidoc` ocamldoc plugin. Generated wiki files are stored in the
+`wikidoc` branch under `doc/dev/api/`.
+
+```bash
+# Generate server documentation
+eliomdoc -server -ppx -colorize-code -stars -sort \
+  -package eliom.server,calendar,ocsigenserver,ocsipersist,pgocaml,pgocaml_ppx,macaddr,yojson,ocsigen-toolkit.server,resource-pooling \
+  -I _build/default/src/.ocsigen_start.objs/byte \
+  -i $(ocamlfind query wikidoc) -g odoc_wiki.cma \
+  -d _build/doc/server -subproject server \
+  src/*.eliomi src/*.mli
+
+# Generate client documentation
+eliomdoc -client -ppx -colorize-code -stars -sort \
+  -package eliom.client,calendar,ocsigen-toolkit.client,js_of_ocaml,js_of_ocaml-lwt \
+  -I _build/default/src/.ocsigen_start.objs/byte \
+  -i $(ocamlfind query wikidoc) -g odoc_wiki.cma \
+  -d _build/doc/client -subproject client \
+  src/*.eliomi
+
+# Then copy to the wikidoc branch:
+git checkout wikidoc
+cp _build/doc/server/*.wiki doc/dev/api/server/
+cp _build/doc/client/*.wiki doc/dev/api/client/
+```

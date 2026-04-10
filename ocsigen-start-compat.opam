@@ -1,0 +1,19 @@
+opam-version: "2.0"
+name: "ocsigen-start-compat"
+version: "8.0.0"
+authors: "dev@ocsigen.org"
+maintainer: "dev@ocsigen.org"
+synopsis: "Backward-compatible Os_xxx module names for ocsigen-start"
+description: """
+Provides the old Os_xxx module names (e.g. Os_session, Os_user) as aliases
+to the new Os.Xxx modules. Use this package to ease migration of existing code.
+"""
+homepage: "https://ocsigen.org/ocsigen-start/"
+bug-reports: "https://github.com/ocsigen/ocsigen-start/issues"
+dev-repo: "git+https://github.com/ocsigen/ocsigen-start.git"
+license: "LGPL-2.1-only WITH OCaml-LGPL-linking-exception"
+build: [ ["dune" "build" "-p" name "-j" jobs] ]
+depends: [
+  "ocsigen-start" {= version}
+]
+x-maintenance-intent: ["(latest)" ]

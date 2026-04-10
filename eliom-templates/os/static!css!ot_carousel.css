@@ -1,0 +1,172 @@
+/* Ocsigen widget: carousel */
+
+.ot-carousel {
+
+    overflow: hidden ;
+    width: 200px; /* default size. Override this in your own stylesheet */
+    height: 150px; /* default size. Override this in your own stylesheet */
+
+}
+
+.ot-carousel > .ot-car2 {
+    display: flex ;
+    flex-wrap: nowrap ;
+
+//    transform: translate3d(0,0,0);
+    transition-property: transform, -webkit-transform;
+    transition-timing-function: cubic-bezier(.03,.84,.56,1);
+
+    height: 100%;
+    width: 100%;
+}
+.ot-carousel > .ot-car2.ot-swiping { will-change: transform; }
+
+.ot-carousel > .ot-car2 .ot-carpage {
+        width: 100% ;
+        height: 100% ;
+        margin-left: 0 ;
+        margin-right: 0 ;
+        flex-shrink: 0 ;
+        flex-grow: 0 ;
+}
+
+.ot-carousel.ot-horizontal {
+    touch-action: pan-y;
+}
+
+.ot-carousel.ot-horizontal > .ot-car2 {
+    flex-direction: row ;
+}
+
+.ot-carousel.ot-vertical {
+    touch-action: pan-x;
+}
+
+.ot-carousel.ot-vertical > .ot-car2 {
+    flex-direction: column ;
+}
+
+.ot-bullet-nav {
+    list-style-type: none ;
+    display: flex ;
+    flex-direction: row ;
+    justify-content: center ;
+}
+
+.ot-bullet-nav-item {
+
+    flex: 1 1 0 ;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.8);;
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+    margin: 4px;
+
+}
+
+.ot-bullet-nav-item.ot-active { background-color: rgba(255, 255, 255, 0.8); }
+
+.ot-car-ribbon {
+    position: relative;
+    user-select: none;
+    cursor: pointer;
+    touch-action: pan-x;
+}
+
+.ot-car-ribbon::after {
+    z-index: 1;
+    content: '';
+    position: absolute;
+    width: 100%;
+    bottom: -6px;
+    height: 6px;
+    background-image:
+    linear-gradient(to bottom, rgba(100,100,100, .3), rgba(100,100,100,0));
+}
+
+.ot-car-ribbon-list {
+    position: relative;
+    width: 100% ;
+    display: flex ;
+    left: 0;
+    width: 100% ;
+
+    white-space: nowrap;
+    padding: 20px 0;
+    margin: 0;
+}
+
+
+.ot-car-ribbon-list:not(.ot-notransition) {
+    transition-property: left;
+    transition-timing-function: cubic-bezier(.03,.84,.56,1);
+}
+
+.ot-car-ribbon-list-item {
+
+    display: inline-block;
+    cursor: pointer;
+    padding: 0 1rem;
+    flex-grow: 1;
+    flex-shrink: 0;
+    text-align: center;
+
+}
+
+
+.ot-car-prev, .ot-car-next {
+    background-color: transparent;
+}
+.ot-car-next.ot-blurred::before,
+.ot-car-prev.ot-blurred::before {
+    visibility: hidden;
+}
+.ot-car-prev::before {
+    content: '❬';
+}
+.ot-car-next::before {
+    content: '❭';
+}
+
+.ot-car-cursor {
+    box-sizing: border-box;
+    position: absolute;
+    height: 3px;
+    bottom: 0;
+    background-color: #66aaff;
+    transition-property: transform, width;
+    will-change: transform, width;
+}
+
+.ot-carousel.ot-full-height > .ot-car2:not(.ot-swiping)
+                                          > .ot-carpage:not(.ot-active) {
+    max-height: 100vh; /* We limit the size of non visible columns to avoid
+                          scrolling too much in small columns
+                          But NOT during swipe, as swiping might change the
+                          scroll position in page. */
+}
+
+.ot-carousel.ot-wheel {
+    height: 25px;
+    width: 200px;
+    overflow: visible;
+    margin: 100px auto;
+    perspective: 500px;
+}
+.ot-carousel.ot-wheel > .ot-car2 {
+    position: absolute;
+    transform-style: preserve-3d;
+}
+.ot-carousel.ot-wheel > .ot-car2 > .ot-carpage {
+    backface-visibility: hidden;
+    position: absolute;
+    height: 25px;
+    line-height: 25px;
+    vertical-align: middle;
+    transition: opacity 2s;
+    opacity: 1;
+}
+.ot-carousel.ot-wheel .ot-carpage.ot-hidden-wheel-face {
+    opacity: 0;
+}

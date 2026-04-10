@@ -1,0 +1,109 @@
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
+ *
+ * Copyright (C) Université Paris Diderot, CNRS, INRIA, Be Sport.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+
+open Types
+
+module type S = sig
+  include Eliom.Notif.S with type identity = User.id option
+
+  val unlisten_user :
+     ?sitedata:Eliom.Common.sitedata
+    -> userid:User.id
+    -> key
+    -> unit
+
+  val notify : ?notfor:[`Me | `User of User.id] -> key -> server_notif -> unit
+end
+
+module type ARG = sig
+  type key
+  type server_notif
+  type client_notif
+
+  val prepare : User.id option -> server_notif -> client_notif option Lwt.t
+  val equal_key : key -> key -> bool
+  val max_resource : int
+  val max_identity_per_resource : int
+end
+
+module Make (A : ARG) :
+  S
+  with type key = A.key
+   and type server_notif = A.server_notif
+   and type client_notif = A.client_notif = struct
+  include Eliom.Notif.Make (struct
+      type identity = User.id option
+      type key = A.key
+      type server_notif = A.server_notif
+      type client_notif = A.client_notif
+
+      let prepare = A.prepare
+      let equal_key = A.equal_key
+      let equal_identity = ( = )
+      let get_identity () = Lwt.return @@ Current_user.Opt.get_current_userid ()
+      let max_resource = A.max_resource
+      let max_identity_per_resource = A.max_identity_per_resource
+    end)
+
+  let unlisten_user ?sitedata ~userid (id : A.key) =
+    let state =
+      Eliom.State.Ext.volatile_data_group_state
+        ~scope:Eliom.Common.default_group_scope (Int64.to_string userid)
+    in
+    Lwt.async @@ fun () ->
+    (* Iterating on all sessions in group: *)
+    Eliom.State.Ext.iter_sub_states ?sitedata ~state @@ fun state ->
+    (* Iterating on all client processes in session: *)
+    Eliom.State.Ext.iter_sub_states ?sitedata ~state (fun state ->
+      Ext.unlisten state id; Lwt.return_unit)
+
+  let notify ?notfor key notif =
+    let notfor =
+      match notfor with
+      | None -> None
+      | Some `Me -> Some `Me
+      | Some (`User id) -> Some (`Id (Some id))
+    in
+    notify ?notfor key notif
+
+  let _ =
+    Session.on_start_process (fun _ -> init ());
+    Session.on_post_close_session (fun () -> deinit (); Lwt.return_unit)
+end
+
+module type ARG_SIMPLE = sig
+  type key
+  type notification
+end
+
+module Make_Simple (A : ARG_SIMPLE) :
+  S
+  with type key = A.key
+   and type server_notif = A.notification
+   and type client_notif = A.notification = Make (struct
+    type key = A.key
+    type server_notif = A.notification
+    type client_notif = A.notification
+
+    let prepare _ n = Lwt.return_some n
+    let equal_key = ( = )
+    let max_resource = 1000
+    let max_identity_per_resource = 10
+  end)

@@ -1,0 +1,7 @@
+(data_only_dirs eliom-templates)
+
+(install
+ (package ocsigen-start)
+ (section lib)
+ (files
+  (glob_files eliom-templates/os/**)))

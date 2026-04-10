@@ -1,0 +1,134 @@
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
+ *
+ * Copyright (C) Université Paris Diderot, CNRS, INRIA, Be Sport.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+
+open%server Lwt.Syntax
+
+[%%shared
+type current_user = CU_idontknown | CU_notconnected | CU_user of Types.User.t]
+
+let%shared please_use_connected_fun =
+  "ERROR: Current_user is usable only with connected functions (see Session)"
+
+(* current user *)
+let%server me : current_user Eliom.Reference.Volatile.eref =
+  (* This is a request cache of current user *)
+  Eliom.Reference.Volatile.eref ~scope:Eliom.Common.request_scope CU_idontknown
+
+let%client me : current_user ref = ref CU_notconnected
+(*on client side the default is not connected *)
+
+let%client get_current_user_option () =
+  match !me with
+  | CU_idontknown -> assert false
+  | CU_notconnected -> None
+  | CU_user u -> Some u
+
+let%client get_current_user () =
+  match !me with
+  | CU_user a -> a
+  | CU_idontknown ->
+      (* The programmer forgot connection_wrapper.
+       We ask him to fix his code. *)
+      prerr_endline please_use_connected_fun;
+      failwith please_use_connected_fun
+  | _ ->
+      prerr_endline "Not connected error in Current_user";
+      raise Session.Not_connected
+
+(* SECURITY: We can trust these functions on server side,
+   because the user is set at every request from the session cookie value.
+   But do not trust a user sent by the client ...
+*)
+let%server get_current_user () =
+  match Eliom.Reference.Volatile.get me with
+  | CU_user a -> a
+  | CU_idontknown ->
+      prerr_endline please_use_connected_fun;
+      failwith please_use_connected_fun
+  | CU_notconnected -> raise Session.Not_connected
+
+let%server get_current_user_option () =
+  let u = Eliom.Reference.Volatile.get me in
+  match u with
+  | CU_user a -> Some a
+  | CU_idontknown -> failwith please_use_connected_fun
+  | CU_notconnected -> None
+
+let%shared get_current_userid () = User.userid_of_user (get_current_user ())
+
+[%%shared
+module Opt = struct
+  let get_current_user = get_current_user_option
+
+  let get_current_userid () =
+    Eliom.Lib.Option.map User.userid_of_user (get_current_user_option ())
+end]
+
+let%client _ = Session.get_current_userid_o := Opt.get_current_userid
+
+let%server set_user_server myid =
+  let* u = User.user_of_userid myid in
+  Eliom.Reference.Volatile.set me (CU_user u);
+  Lwt.return_unit
+
+let%server unset_user_server () =
+  Eliom.Reference.Volatile.set me CU_notconnected
+
+let%server set_user_client () =
+  let u = Eliom.Reference.Volatile.get me in
+  ignore [%client (me := ~%u : unit)]
+
+let%server unset_user_client () =
+  ignore [%client (me := CU_notconnected : unit)]
+
+let%server () =
+  Session.on_request (fun myid_o ->
+    match myid_o with
+    | Some myid -> set_user_server myid
+    | None -> unset_user_server (); Lwt.return_unit);
+  Session.on_start_connected_process (fun myid ->
+    let* () = set_user_server myid in
+    set_user_client (); Lwt.return_unit);
+  Session.on_pre_close_session (fun () ->
+    unset_user_client ();
+    (*VVV!!! will affect only current tab!! *)
+    unset_user_server ();
+    (* ok this is a request reference *)
+    Lwt.return_unit)
+
+let%rpc remove_email_from_user (email : string) : unit Lwt.t =
+  let myid = get_current_userid () in
+  User.remove_email_from_user ~userid:myid ~email
+
+let%rpc update_main_email (email : string) : unit Lwt.t =
+  let myid = get_current_userid () in
+  User.update_main_email ~userid:myid ~email
+
+let%server is_email_validated email =
+  let myid = get_current_userid () in
+  User.is_email_validated ~userid:myid ~email
+
+let%server is_main_email email =
+  let myid = get_current_userid () in
+  User.is_main_email ~userid:myid ~email
+
+let%rpc update_language (language : string) : unit Lwt.t =
+  let myid = get_current_userid () in
+  User.update_language ~userid:myid ~language

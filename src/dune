@@ -1,0 +1,40 @@
+(include_subdirs qualified)
+
+(env
+ (_
+  (flags
+   (:standard -w +A@3-4@5..15-9@20..68-37-39-44-48-69-34))))
+
+(library
+ (public_name ocsigen-start.server)
+ (name ocsigen_start_server)
+ (modes byte native)
+ (wrapped false)
+ (preprocess
+  (pps
+   eliom.ppx.server
+   js_of_ocaml-ppx_deriving_json
+   ocsigen-ppx-rpc
+   --
+   --rpc-internal))
+ (flags
+  (:standard
+   (:include type_includes)))
+ (libraries
+  eliom.server
+  calendar
+  safepass
+  ocsigen-toolkit.server
+  yojson
+  re.str
+  cohttp-lwt-unix
+  pgocaml
+  resource-pooling))
+
+(rule
+ (target type_includes)
+ (deps (universe))
+ (action
+  (with-stdout-to
+   %{target}
+   (system "printf '('; ocamlfind query -i-format js_of_ocaml; printf ')'"))))

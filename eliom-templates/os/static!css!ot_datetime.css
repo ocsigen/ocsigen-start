@@ -1,0 +1,250 @@
+div.ot-toggle {
+    display: inline;
+    padding: 5px 1px 5px 1px;
+    border-radius: 5px
+}
+
+div.ot-inactive {
+    color: white;
+    display: inline;
+    padding: 3px;
+    border: solid 1px transparent;
+    cursor: pointer;
+}
+
+div.ot-active.ot-up {
+    color: green;
+    display: inline;
+    padding: 3px;
+    border: solid 1px green;
+    border-radius: 5px;
+}
+
+div.ot-active.ot-down {
+    color: red;
+    display: inline;
+    padding: 3px;
+    border: solid 1px red;
+    border-radius: 5px;
+}
+
+svg.ot-tp-clock {
+    width: 120px;
+    background-color: #eee;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+svg.ot-tp-clock.ot-tp-clock-24h {
+    width: 160px;
+    border-radius: 80px;
+}
+
+svg.ot-tp-clock text {
+    font-size: 11px;
+}
+
+svg.ot-tp-clock.ot-tp-clock-24h text {
+    font-size: 9px;
+}
+
+svg.ot-tp-clock path {
+    stroke: #333333;
+    stroke-width: 2px;
+}
+
+svg.ot-tp-clock path.ot-tp-hand {
+    stroke: #990000;
+    stroke-width: 1px;
+}
+
+svg.ot-tp-clock circle.ot-tp-hand-circle {
+    stroke: #ff5d55;
+    stroke-width: 1px;
+    fill: #ff5d55;
+    fill-opacity: 1;
+}
+
+svg.ot-tp-clock.ot-tp-click-anywhere {
+    cursor: pointer;
+}
+
+div.ot-tp-container {
+    padding: 16px;
+    display: block;
+    text-align: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.ot-tp-text {
+    cursor: pointer;
+}
+
+div.ot-tp-container div.ot-toggle {
+    display: inline;
+    padding: 5px 1px 5px 1px;
+    margin: 4px 0px 0px 0px;
+    border: solid 1px #333333;
+    border-radius: 5px
+}
+
+div.ot-tp-container div.ot-inactive {
+    color: black;
+    display: inline;
+    padding: 3px;
+    border: solid 1px transparent;
+    cursor: pointer;
+}
+
+div.ot-tp-container div.ot-active {
+    color: black;
+    background-color: #fafafa;
+    display: inline;
+    padding: 3px;
+    border: solid 1px #333333;
+    border-radius: 5px;
+}
+
+div.ot-tp-container div.ot-toggle {
+    display: inline-block;
+    padding: 5px 1px 5px 1px;
+    background-color: white;
+    border: 1px solid #333333;
+}
+
+div.ot-tp-container div.ot-tp-display {
+    display: block;
+    margin-left: 4px;
+    padding: 6px;
+    font-size: 22px;
+}
+.ot-c-next-year-button{
+    position: absolute;
+    right: 0px;
+    top: 10px;
+}
+.ot-c-next-button {
+    position: absolute;
+    right: 50px;
+    top: 10px;
+}
+.ot-c-prev-year-button{
+    position: absolute;
+    left: 0px;
+    top: 10px;
+}
+.ot-c-prev-button {
+    position: absolute;
+    left: 50px;
+    top: 10px;
+}
+.ot-c-select-month {
+    border: 0px;
+    outline: 0px;
+    width: 60px; 
+    text-align-last:center;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='-5 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-position: right 0px center;
+    background-repeat: no-repeat;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    font-weight: bold;
+    position: absolute;
+    z-index:1;
+    right: 200px;
+    top: 14px;
+}
+.ot-c-select-year {
+    border: 0px;
+    outline: 0px;
+    width: 60px; 
+    text-align-last:center;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='-5 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-position: right 0px center;
+    background-repeat: no-repeat;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    font-weight: bold;
+    position: absolute;
+    z-index:1;
+    right: 140px;
+    top: 14px;
+}
+.ot-c-select-month option, .ot-c-select-year option{
+    background: white;
+}
+.ot-c-out-period {
+    background-color: #fcfcfc;
+    color: rgb(200, 200, 200);
+    pointer-events: none;
+}
+.ot-c-table {
+    font-size: 14px;
+    line-height: 22px;
+    table-layout: fixed;
+}
+.ot-c-table th:not(.ot-c-header) {
+    vertical-align: middle;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    padding: 0 22px;
+    height: 36px;
+}
+.ot-c-table th.ot-c-header {
+    height: 43px;
+    font-size: 19px;
+    position: relative;
+    text-transform: capitalize;
+}
+.ot-c-table td {
+    vertical-align: middle;
+    text-align: center;
+    padding: 0;
+    height: 36px;
+    cursor: pointer;
+}
+.ot-c-table td:not(:empty):hover {
+    background-color: #eee;
+    border-radius: 5px;
+}
+.ot-c-clicked {
+    background-color: #990000;
+    border-radius: 50%;
+}
+.ot-c-prev-year-button,
+.ot-c-next-year-button,
+.ot-c-prev-button,
+.ot-c-next-button {
+    padding: 0 28px;
+    cursor: pointer;
+}
+th.ot-c-header {
+    text-align:center;
+}
+
+@keyframes shake-animation {
+    0%   {transform: translateX(0)}
+    25%  {transform: translateX(-5px)}
+    75%  {transform: translateX(5px)}
+    100% {transform: translateX(0)}
+}
+
+.ot-tp-clock-min {
+    animation-name: shake-animation;
+    animation-duration: .1s;
+}
+.ot-c-current>div {
+    color: white;
+    background-color: #ff5d55;
+    width: 27px;
+    line-height: 27px;
+    border-radius: 50%;
+    display: inline-block;
+}
