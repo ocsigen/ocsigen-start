@@ -140,8 +140,8 @@ let%client on_enter ~f inp =
 let%shared
     lwt_bind_input_enter
       ?(validate : (string -> bool) Eliom_client_value.t option)
-      ?button
-      (e : Html_types.input Eliom_content.Html.elt)
+      ?(button : [< `Button | `Input] Eliom_content.Html.elt option)
+      (e : [`Input] Eliom_content.Html.elt)
       (f : (string -> unit Lwt.t) Eliom_client_value.t)
   =
   ignore
@@ -159,11 +159,7 @@ let%shared
          | None -> f
        in
        on_enter ~f e;
-       match
-         ~%(button
-            : [< Html_types.button | Html_types.input] Eliom_content.Html.elt
-                option)
-       with
+       match ~%(button :> [`Button | `Input] Eliom_content.Html.elt option) with
        | Some button ->
            Lwt.async @@ fun () ->
            Lwt_js_events.clicks (Eliom_content.Html.To_dom.of_element button)
