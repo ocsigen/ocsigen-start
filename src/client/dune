@@ -22,6 +22,7 @@
    %{target}
    (run
     ocsigen-dune-rules
+    gen
     --subdir
     Os
     --internal-prefix
