@@ -4,6 +4,6 @@
 module%shared %%%MODULE_NAME%%% = %%%MODULE_NAME%%%
 
 let%server _ =
-  Ocsigen_server.start
-    [ Ocsigen_server.host
+  Ocsigen.Server.start
+    [ Ocsigen.Server.host
         [Staticmod.run ~dir:"local/var/www/%%%PROJECT_NAME%%%" (); Eliom.App.run ()] ]
