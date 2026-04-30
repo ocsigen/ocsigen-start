@@ -2,6 +2,8 @@
 
 (name ocsigen-start)
 
+(version 9.0.0~dev)
+
 (generate_opam_files true)
 
 (using dune_site 0.1)
