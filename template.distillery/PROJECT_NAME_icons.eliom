@@ -7,17 +7,7 @@
     http://fontawesome.io/ for more information and for the complete
     list of CSS classes values. *)
 
-(* Named signature instead of [module type of Eliom.Content.Html.F]
-   to work around OCaml wrapped module path identity issue. *)
-module type%shared ICON_HTML = sig
-  val i :
-     ?a:[< Html_types.i_attrib] Eliom.Content.Html.attrib list
-    -> [< Html_types.i_content_fun] Eliom.Content.Html.elt list
-    -> [> Html_types.i] Eliom.Content.Html.elt
-  val a_class : Html_types.nmtokens -> [> `Class] Eliom.Content.Html.attrib
-end
-
-module%shared Make (A : ICON_HTML) = struct
+module%shared Make (A : Eliom.Content.Html.T) = struct
   (** [icon classes ~a:other_css_classes ()] create an icon HTML
       attribute with "fa" and [classes] as CSS classes. The HTML tag
       "i" is used because it is the de facto standard for icons. The
