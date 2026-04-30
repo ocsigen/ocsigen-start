@@ -1,0 +1,106 @@
+.ot-pup-ctrls {
+    position: absolute ;
+    overflow: visible ;
+    top: 0px ;
+    left: 0px ;
+    right: 0px ;
+    bottom: 0px ;
+    cursor: move ;
+    will-change: bottom, left, right, top ;
+    border: 1px solid black;
+}
+
+.ot-no-file .ot-pup-ctrls {
+    border: none;
+}
+
+.ot-pup-ctrl { position: absolute ; }
+
+.ot-pup-ctrl-t {
+    top: 0px ;
+    left: 10px ;
+    right: 10px ;
+    height: 10px ;
+    cursor: n-resize ;
+}
+.ot-pup-ctrl-tr {
+    right: 0px ;
+    top: 0px ;
+    width: 10px ;
+    height: 10px ;
+    cursor: ne-resize ;
+}
+.ot-pup-ctrl-r {
+    right: 0px ;
+    top: 10px ;
+    bottom: 10px ;
+    width: 10px ;
+    cursor: e-resize ;
+}
+.ot-pup-ctrl-br {
+    right: 0px ;
+    bottom: 0px ;
+    width: 10px ;
+    height: 10px ;
+    cursor: se-resize ;
+}
+.ot-pup-ctrl-b {
+    bottom: 0px ;
+    left: 10px ;
+    right: 10px ;
+    height: 10px ;
+    cursor: s-resize ;
+}
+.ot-pup-ctrl-bl {
+    left: 0px ;
+    bottom: 0px ;
+    width: 10px ;
+    height: 10px ;
+    cursor: sw-resize ;
+}
+.ot-pup-ctrl-l {
+    left: 0px ;
+    top: 10px ;
+    bottom: 10px ;
+    width: 10px ;
+    cursor: w-resize ;
+}
+.ot-pup-ctrl-tl {
+    left: 0px ;
+    top: 0px ;
+    width: 10px ;
+    height: 10px ;
+    cursor: nw-resize ;
+}
+
+.ot-pup-fltr {
+    background-color: rgba(255, 255, 255, .5) ;
+    position: absolute ;
+    will-change: top,bottom,right,left,width,height ;
+}
+.ot-pup-fltr-t { top: 0px ; cursor: n-resize ; }
+.ot-pup-fltr-tr { top: 0px ; right: 0px ; cursor: ne-resize ; }
+.ot-pup-fltr-tl { top: 0px ; left: 0px ; cursor: nw-resize ; }
+.ot-pup-fltr-b { bottom: 0px ; cursor: s-resize ; }
+.ot-pup-fltr-br { bottom: 0px ; right: 0px ; cursor: se-resize ; }
+.ot-pup-fltr-bl { bottom: 0px ; left: 0px ; cursor: sw-resize ; }
+.ot-pup-fltr-l { left: 0px ; cursor: w-resize ; }
+.ot-pup-fltr-r { right: 0px ; cursor: e-resize ; }
+
+.ot-pup-crop-container {
+    position: absolute ;
+    top:0px ;
+    left:0px ;
+    right:0px ;
+    bottom:0px ;
+}
+
+.ot-pup-preview {
+    width: 100% ;
+    display: block ;
+}
+
+.ot-pup-container {
+    position: relative ;
+    width: 100% ;
+}
