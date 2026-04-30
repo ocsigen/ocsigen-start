@@ -68,3 +68,12 @@
     (>= "2.0")
     (< "3.0")))
   conf-postgresql))
+
+(package
+ (name ocsigen-start-compat)
+ (synopsis "Backward-compatible Os_xxx module names for ocsigen-start")
+ (description
+  "Provides the old Os_xxx module names (e.g. Os_session, Os_user) as aliases to the new Os.Xxx modules. Use this package to ease migration of existing code.")
+ (depends
+  (ocsigen-start
+   (= :version))))
