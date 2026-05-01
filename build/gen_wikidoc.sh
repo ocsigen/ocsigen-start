@@ -18,18 +18,20 @@ gen_doc() {
       CMI_DIR=_build/default/src/.ocsigen_start_server.objs/byte
       DUNE_DIR=src
       PACKAGES=eliom.server,calendar,ocsigenserver,ocsipersist,pgocaml,pgocaml_ppx,macaddr,yojson,ocsigen-toolkit.server,resource-pooling
+      # Server side: both .eliomi (shared) and .mli (server-only)
+      SOURCE_FILES=$(ls src/Os/*.eliomi src/Os/*.mli 2>/dev/null)
       ;;
     client)
       CMI_DIR=_build/default/src/client/.ocsigen_start_client.objs/byte
       DUNE_DIR=src/client
       PACKAGES=eliom.client,calendar,ocsigen-toolkit.client,js_of_ocaml,js_of_ocaml-lwt
+      # Client side: only .eliomi (shared); .mli files are server-only
+      SOURCE_FILES=$(ls src/Os/*.eliomi 2>/dev/null)
       ;;
     *)
       echo "Unknown side: $SIDE"; exit 1
       ;;
   esac
-
-  ELIOMI_DIR=src/Os
 
   dune build @check 2>/dev/null || true
 
@@ -65,8 +67,6 @@ gen_doc() {
   done
   echo "  total: $(ls "$TMPDIR"/*.cmi 2>/dev/null | wc -l) cmi files"
 
-  SOURCE_FILES=$(ls "$ELIOMI_DIR"/*.eliomi "$ELIOMI_DIR"/*.mli 2>/dev/null)
-
   OUTDIR=_build/doc/dev/api/$SIDE
   rm -rf "$OUTDIR"
   mkdir -p "$OUTDIR"
@@ -81,6 +81,7 @@ gen_doc() {
     -i "$WIKIDOC_DIR" \
     -g odoc_wiki.cma \
     -d "$OUTDIR" \
+    -intro "doc/$SIDE.indexdoc" \
     -subproject "$SIDE" \
     $SOURCE_FILES
 
