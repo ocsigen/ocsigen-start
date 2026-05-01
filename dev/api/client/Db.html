@@ -1,0 +1,168 @@
+<html><head><title>Module Db </title><meta charset="utf8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><link rel="stylesheet" href="https://ocsigen.org/css/style.css"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/themes/prism.min.css"/><script type="application/javascript" src="https://ocsigen.org/js/client.js">
+//<![CDATA[
+
+//]]>
+</script><script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-core.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-ocaml.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-clike.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-reason.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-javascript.min.js">
+//<![CDATA[
+
+//]]>
+</script></head><body class="Db ocsigen-start"><div class="project-page"><div class="page-header"><p class="logo-ocsigen"><a href="../.././../../" class="ocsimore_phrasing_link"><img src="../.././../../img/ocsigen-white.svg" alt="Ocsigen"/></a>
+</p><p class="logo-subproject">Start</p><div class="mainmenu"><p class="mainmenu-home"><a href="../.././../../" class="ocsimore_phrasing_link">Home</a></p><p class="mainmenu-doc"><a href="../.././../../tuto/" class="ocsimore_phrasing_link">Doc</a></p><p><a href="../.././../../eliom/" class="ocsimore_phrasing_link">Eliom</a></p><p><a href="../.././../../js_of_ocaml/" class="ocsimore_phrasing_link">Js_of_ocaml</a></p><p><a href="../.././../../ocsigenserver/" class="ocsimore_phrasing_link">Server</a></p><p><a href="../.././../../lwt/" class="ocsimore_phrasing_link">Lwt</a></p><p><a href="../.././../../tyxml/" class="ocsimore_phrasing_link">Tyxml</a></p><p class="mainmenu-current"><a href="../.././../../ocsigen-start/" class="ocsimore_phrasing_link">Start</a></p></div><form id="googlesearch" action="https://google.com/search"><input name="q" id="gsearch-box" placeholder="Search using Google"/><label for="gsearch-box"><img src="/img/search.svg" alt="" id="gsearch-icon"/></label><input type="submit" id="gsearch-submit" onclick="document.getElementById('gsearch-box').value += ' site:ocsigen.org';"/></form><aside class="how-drawer"><input id="how-drawer-toggle" type="checkbox"/><label for="how-drawer-toggle" id="how-drawer-label"><span class="how-drawer-icon"></span></label><nav class="how-drawer-content"><ul class="drawermainmenu"><li class="drawermainmenu-home"><a href="../.././../../" class="ocsimore_phrasing_link">Home</a>
+</li><li class="drawermainmenu-doc"><a href="../.././../../tuto/" class="ocsimore_phrasing_link">Doc</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../eliom/" class="ocsimore_phrasing_link">Eliom</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../js_of_ocaml/" class="ocsimore_phrasing_link">Js_of_ocaml</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsigenserver/" class="ocsimore_phrasing_link">Server</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../lwt/" class="ocsimore_phrasing_link">Lwt</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../tyxml/" class="ocsimore_phrasing_link">Tyxml</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsigen-toolkit/" class="ocsimore_phrasing_link">Toolkit</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsigen-start/" class="ocsimore_phrasing_link">Start</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsipersist/" class="ocsimore_phrasing_link">Ocsipersist</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsigen-i18n/" class="ocsimore_phrasing_link">i18n</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../html_of_wiki/" class="ocsimore_phrasing_link">html_of_wiki</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsimore/" class="ocsimore_phrasing_link">Ocsimore (<em>deprecated</em>)</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../projects" class="ocsimore_phrasing_link">Other projects</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../papers" class="ocsimore_phrasing_link">Research papers</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../credits" class="ocsimore_phrasing_link">Who does Ocsigen?</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../contributing" class="ocsimore_phrasing_link">Contributing</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../blog" class="ocsimore_phrasing_link">Blog</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../install" class="ocsimore_phrasing_link">Installation</a>
+</li><li class="drawermainmenu-page"><a href="https://github.com/ocsigen" class="ocsimore_phrasing_link">Source code</a>
+</li></ul><nav class="how-doctree"><h1>Ocsigen start</h1><h3><a href="../.././manual/intro" class="ocsimore_phrasing_link">Introduction</a></h3></nav></nav></aside></div><p class="reasonwarning">Warning: Reason support is experimental.
+We are looking for beta-tester and contributors.
+</p><button id="reason">Switch to </button><div class="twocols"><nav class="leftcol">Version <select class="how-versions" onchange="location = this.value;"><option value="../.././../dev/api/client/Db" selected="selected">dev</option><option value="../.././../6.x/api/client/Db">6.x</option><option value="../.././../4.x/api/client/Db">4.x</option></select><nav class="how-doctree"><h1>Ocsigen start</h1><h3><a href="../.././manual/intro" class="ocsimore_phrasing_link">Introduction</a></h3></nav></nav><article class="rightcol"><label class="csw-switch"><input type="checkbox" onchange="location = '.././server/Db';" checked="checked"/><span class="csw-slider csw-slider-style-round"></span><span class="csw-slider-no">Server version</span><span class="csw-slider-yes">Client version</span></label><h1>Module <span><a href="../.././api/client/Db">Db</a></span> </h1><pre class="ocsforge_color odocwiki_code"><span class="ocsforge_color_keyword">module</span> <span class="ocsforge_color_uid"><span class="ocsforge_color_uid">Db</span></span> <span class="ocsforge_color_delimiter">:</span> <span class="ocsforge_color_keyword">sig</span><span><a href="../.././api/client/Db">..</a></span><span class="ocsforge_color_keyword">end</span></pre><p>This module defines low level functions for database requests.
+</p><hr/><p>Exception raised when no resource corresponds to the database request.
+</p><p>Exception raised when password do not match.
+</p><p>Exception raised when user has no password.
+</p><p>Exception raised when users attempts to connect with unknown identifier.
+</p><p>Exception raised when user attempts to connect with empty password.
+</p><p>Exception raised when there is an attempt to remove the main email.
+</p><p>Exception raised when the account is not activated.
+</p><p><span class="odocwiki_inlinecode">pwd_crypt_ref</span> is a reference to <span class="odocwiki_inlinecode">(f_crypt, f_check)</span> where
+</p><ul><li> <span class="odocwiki_inlinecode">f_crypt pwd</span> is used to encrypt the password <span class="odocwiki_inlinecode">pwd</span>.
+</li><li> <span class="odocwiki_inlinecode">f_check userid pwd hashed_pwd</span> returns <span class="odocwiki_inlinecode">true</span> if the hash of <span class="odocwiki_inlinecode">pwd</span> and
+the hashed password <span class="odocwiki_inlinecode">hashed_pwd</span> of the user with id <span class="odocwiki_inlinecode">userid</span> match. If they
+don't match, it returns <span class="odocwiki_inlinecode">false</span>.
+</li></ul><p>This module is used for low-level email management with database.
+</p><p><span class="odocwiki_inlinecode">available email</span> returns <span class="odocwiki_inlinecode">true</span> if <span class="odocwiki_inlinecode">email</span> is not already used. Else, it
+returns <span class="odocwiki_inlinecode">false</span>.
+</p><p>This module is used for low-level user management with database.
+</p><p><span class="odocwiki_inlinecode">userid_of_email email</span> returns the userid of the user which has the email
+<span class="odocwiki_inlinecode">email</span>.
+</p><p><span class="odocwiki_inlinecode">is_registered email</span> returns <span class="odocwiki_inlinecode">true</span> if the email is already registered.
+Else, it returns <span class="odocwiki_inlinecode">false</span>.
+</p><p><span class="odocwiki_inlinecode">is_email_validated userid email</span> returns <span class="odocwiki_inlinecode">true</span> if <span class="odocwiki_inlinecode">email</span> has been
+validated by the user with id <span class="odocwiki_inlinecode">userid</span>.
+</p><p><span class="odocwiki_inlinecode">set_email_validated userid email</span> valids <span class="odocwiki_inlinecode">email</span> for the user with id
+<span class="odocwiki_inlinecode">userid</span>.
+</p><p><span class="odocwiki_inlinecode">add_preregister email</span> preregisters <span class="odocwiki_inlinecode">email</span> in the database.
+</p><p><span class="odocwiki_inlinecode">remove_preregister email</span> removes <span class="odocwiki_inlinecode">email</span> from the database.
+</p><p><span class="odocwiki_inlinecode">is_preregistered email</span> returns <span class="odocwiki_inlinecode">true</span> if <span class="odocwiki_inlinecode">email</span> is already
+registered. Else, it returns <span class="odocwiki_inlinecode">false</span>.
+</p><p><span class="odocwiki_inlinecode">all ?limit ()</span> get all email addresses with a limit of <span class="odocwiki_inlinecode">limit</span> (default
+is 10).
+</p><p><span class="odocwiki_inlinecode">create ?password ?avatar ?language ~firstname ~lastname email</span> creates a new user
+in the database and returns the userid of the new user.
+Email, first name, last name and language are mandatory to create a new
+user.
+If <span class="odocwiki_inlinecode">password</span> is passed as an empty string, it fails with the message
+<span class="odocwiki_inlinecode">&quot;empty password&quot;</span>. TODO: change it to an exception?
+</p><p><span class="odocwiki_inlinecode">update ?password ?avatar ?language ~firstname ~lastname userid</span> updates the user
+profile with <span class="odocwiki_inlinecode">userid</span>.
+If <span class="odocwiki_inlinecode">password</span> is passed as an empty string, it fails with the message
+<span class="odocwiki_inlinecode">&quot;empty password&quot;</span>. TODO: change it to an exception?
+</p><p><span class="odocwiki_inlinecode">update_password ~userid ~new_password</span> updates the password of the user
+with ID <span class="odocwiki_inlinecode">userid</span>.
+If <span class="odocwiki_inlinecode">password</span> is passed as an empty string, it fails with the message
+<span class="odocwiki_inlinecode">&quot;empty password&quot;</span>. TODO: change it to an exception?
+</p><p><span class="odocwiki_inlinecode">update_avatar ~userid ~avatar</span> updates the avatar of the user
+with ID <span class="odocwiki_inlinecode">userid</span>.
+</p><p><span class="odocwiki_inlinecode">update_main_email ~userid ~email</span> updates the main email of the user
+with ID <span class="odocwiki_inlinecode">userid</span>.
+</p><p><span class="odocwiki_inlinecode">update_language ~userid ~language</span> updates the language of the user with
+ID <span class="odocwiki_inlinecode">userid</span>.
+</p><p><span class="odocwiki_inlinecode">verify_password ~email ~password</span> returns the userid if user with email
+<span class="odocwiki_inlinecode">email</span> is registered with the password <span class="odocwiki_inlinecode">password</span>.
+If <span class="odocwiki_inlinecode">password</span> the password is wrong,
+it fails with exception <span class="odocwiki_inlinecode">Wrong_password</span>.
+If user exists but account is not validated,
+it fails with exception <span class="odocwiki_inlinecode">Account_not_activated</span>.
+If user has no password, it fails with exception <span class="odocwiki_inlinecode">Password_not_set</span>.
+If user is not found, it fails with exception <span class="odocwiki_inlinecode">No_such_user</span>.
+If password is empty, it fails with exception <span class="odocwiki_inlinecode">Empty_password</span>.
+</p><p><span class="odocwiki_inlinecode">verify_password_phone ~number ~password</span>
+returns the userid if user
+who owns <span class="odocwiki_inlinecode">number</span> and whose password is <span class="odocwiki_inlinecode">password</span>.
+If <span class="odocwiki_inlinecode">password</span> the password is wrong,
+it fails with exception <span class="odocwiki_inlinecode">Wrong_password</span>.
+If user has no password, it fails with exception <span class="odocwiki_inlinecode">Password_not_set</span>.
+If user is not found, it fails with exception <span class="odocwiki_inlinecode">No_such_user</span>.
+If password is empty, it fails with exception <span class="odocwiki_inlinecode">Empty_password</span>.
+</p><p><span class="odocwiki_inlinecode">user_of_userid userid</span> returns a tuple <span class="odocwiki_inlinecode">(userid, firstname, lastname,
+avatar, bool_password, language)</span> describing the information about
+the user with ID <span class="odocwiki_inlinecode">userid</span>.
+<span class="odocwiki_inlinecode">bool_password</span> is a boolean. Its value is <span class="odocwiki_inlinecode">true</span> if a password has been
+set. Else <span class="odocwiki_inlinecode">false</span>.
+If there is no such user, it fails with <span class="odocwiki_inlinecode">No_such_resource</span>.
+</p><p><span class="odocwiki_inlinecode">get_actionlinkkey_info key</span> returns the information about the
+action link <span class="odocwiki_inlinecode">key</span> as a type <span><a href="../.././api/client/Types.Action_link_key#TYPEinfo">Types.Action_link_key.info</a></span>.
+</p><p><span class="odocwiki_inlinecode">emails_of_userid userid</span> returns all emails registered for the user with
+ID <span class="odocwiki_inlinecode">userid</span>.
+If there is no user with <span class="odocwiki_inlinecode">userid</span> as ID, it fails with
+<span class="odocwiki_inlinecode">No_such_resource</span>.
+</p><p>Like <span class="odocwiki_inlinecode">emails_of_userid</span>, but also returns validation
+status. This way we perform fewer DB queries.
+</p><p><span class="odocwiki_inlinecode">email_of_userid userid</span> returns the main email registered for the user
+with ID <span class="odocwiki_inlinecode">userid</span>.
+If there is no such user, it fails with
+<span class="odocwiki_inlinecode">No_such_resource</span>.
+</p><p><span class="odocwiki_inlinecode">is_main_email ~email ~userid</span> returns <span class="odocwiki_inlinecode">true</span> if the main email of the
+user with ID <span class="odocwiki_inlinecode">userid</span> is <span class="odocwiki_inlinecode">email</span>.
+If there is no such user or if <span class="odocwiki_inlinecode">email</span> is not the main
+email, it returns <span class="odocwiki_inlinecode">false</span>.
+</p><p><span class="odocwiki_inlinecode">add_email_to_user ~userid ~email</span> add <span class="odocwiki_inlinecode">email</span> to user with ID <span class="odocwiki_inlinecode">userid</span>.
+</p><p><span class="odocwiki_inlinecode">remove_email_from_user ~userid ~email</span> removes the email <span class="odocwiki_inlinecode">email</span> from the
+emails list of user with ID <span class="odocwiki_inlinecode">userid</span>.
+If <span class="odocwiki_inlinecode">email</span> is the main email, it fails with <span class="odocwiki_inlinecode">Main_email_removal_attempt</span>.
+</p><p><span class="odocwiki_inlinecode">get_language userid</span> returns the language of the user with ID <span class="odocwiki_inlinecode">userid</span>
+</p><p><span class="odocwiki_inlinecode">get_users ~pattern ()</span> returns all users matching the pattern <span class="odocwiki_inlinecode">pattern</span>
+as a tuple <span class="odocwiki_inlinecode">(userid, firstname, lastname, avatar, bool_password,
+language)</span>.
+</p><p>This module is low-level and used to manage groups of user.
+</p><p><span class="odocwiki_inlinecode">create ?description name</span> creates a new group with name <span class="odocwiki_inlinecode">name</span> and with
+description <span class="odocwiki_inlinecode">description</span>.
+</p><p><span class="odocwiki_inlinecode">group_of_name name</span> returns a tuple <span class="odocwiki_inlinecode">(groupid, name, description)</span>
+describing the group.
+If no group has the name <span class="odocwiki_inlinecode">name</span>, it fails with <span class="odocwiki_inlinecode">No_such_resource</span>.
+</p><p><span class="odocwiki_inlinecode">add_user_in_group ~groupid ~userid</span> adds the user with ID <span class="odocwiki_inlinecode">userid</span> in the
+group with ID <span class="odocwiki_inlinecode">groupid</span>
+</p><p><span class="odocwiki_inlinecode">remove_user_in_group ~groupid ~userid</span> removes the user with ID <span class="odocwiki_inlinecode">userid</span>
+in the group with ID <span class="odocwiki_inlinecode">groupid</span>
+</p><p><span class="odocwiki_inlinecode">in_group ~groupid ~userid</span> returns <span class="odocwiki_inlinecode">true</span> if the user with ID <span class="odocwiki_inlinecode">userid</span> is
+in the group with ID <span class="odocwiki_inlinecode">groupid</span>.
+</p><p><span class="odocwiki_inlinecode">all ()</span> returns all groups as list of tuple <span class="odocwiki_inlinecode">(groupid, name,
+description)</span>.
+</p><p>Manage user phone numbers
+</p><p><span class="odocwiki_inlinecode">add userid number</span> associates <span class="odocwiki_inlinecode">number</span> with the user
+<span class="odocwiki_inlinecode">userid</span>. Returns <span class="odocwiki_inlinecode">true</span> on success.
+</p><p>Does the number exist in the database?
+</p><p>The user corresponding to a phone number (if any).
+</p><p><span class="odocwiki_inlinecode">delete userid number</span> deletes <span class="odocwiki_inlinecode">number</span>, which has to be
+associated to <span class="odocwiki_inlinecode">userid</span>.
+</p><p><span class="odocwiki_inlinecode">get_list userid</span> returns the list of number associated to the
+user.</p></article></div></div></body></html>
