@@ -7,12 +7,21 @@
 \
 |<<a_api subproject="client" | module Comet >>||
 |<<a_api subproject="client" | module Connect_phone >>||
+|<<a_api subproject="client" | module Core_db >>|<<div class="odocwiki_info"|~This module defines low level functions for database requests~.
+>>
+|
 |<<a_api subproject="client" | module Current_user >>|<<div class="odocwiki_info"|~This module provides functions and types to manage the current user~.
 >>
 |
 |<<a_api subproject="client" | module Date >>||
+|<<a_api subproject="client" | module Db >>|<<div class="odocwiki_info"|~This module defines low level functions for database requests~.
+>>
+|
 |<<a_api subproject="client" | module Email >>||
 |<<a_api subproject="client" | module Fcm_notif >>||
+|<<a_api subproject="client" | module Group >>|<<div class="odocwiki_info"|~Groups of users~.
+>>
+|
 |<<a_api subproject="client" | module Handlers >>|<<div class="odocwiki_info"|~This module contains pre~-defined handlers for connect~, disconnect~, sign up~,
     add a new email~, etc~.
 >>

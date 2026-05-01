@@ -38,6 +38,6 @@
   module Http :
     sig
       val string_of_stream :
-        ?len:int -> string Ocsigen_stream.t -> string Lwt.t
+        ?len:int -> string Ocsigen_base.Ocsigen_stream.t -> string Lwt.t
     end
 end >>

@@ -16,5 +16,5 @@
     string ->
     ?ratio:float ->
     ?cropping:float * float * float * float ->
-    Ocsigen_extensions.file_info -> string Lwt.t
+    Ocsigen.Extensions.file_info -> string Lwt.t
 end >>

@@ -1,0 +1,175 @@
+=Module <<a_api_type subproject="client" | module Db >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Db>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="client" text=".." | module Db >><<span class="ocsforge_color_keyword"|end>>>>~This module defines low level functions for database requests~.
+
+----
+
+~Exception raised when no resource corresponds to the database request~.
+
+~Exception raised when password do not match~.
+
+~Exception raised when user has no password~.
+
+~Exception raised when users attempts to connect with unknown identifier~.
+
+~Exception raised when user attempts to connect with empty password~.
+
+~Exception raised when there is an attempt to remove the main email~.
+
+~Exception raised when the account is not activated~.
+
+<<span class="odocwiki_inlinecode"|pwd~_crypt~_ref>> is a reference to <<span class="odocwiki_inlinecode"|~(f~_crypt~, f~_check~)>> where
+* <<span class="odocwiki_inlinecode"|f~_crypt pwd>> is used to encrypt the password <<span class="odocwiki_inlinecode"|pwd>>~.
+* <<span class="odocwiki_inlinecode"|f~_check userid pwd hashed~_pwd>> returns <<span class="odocwiki_inlinecode"|true>> if the hash of <<span class="odocwiki_inlinecode"|pwd>> and
+    the hashed password <<span class="odocwiki_inlinecode"|hashed~_pwd>> of the user with id <<span class="odocwiki_inlinecode"|userid>> match~. ~If they
+    don~'t match~, it returns <<span class="odocwiki_inlinecode"|false>>~.
+
+
+~This module is used for low~-level email management with database~.
+
+<<span class="odocwiki_inlinecode"|available email>> returns <<span class="odocwiki_inlinecode"|true>> if <<span class="odocwiki_inlinecode"|email>> is not already used~. ~Else~, it
+      returns <<span class="odocwiki_inlinecode"|false>>~.
+
+~This module is used for low~-level user management with database~.
+
+<<span class="odocwiki_inlinecode"|userid~_of~_email email>> returns the userid of the user which has the email
+      <<span class="odocwiki_inlinecode"|email>>~.
+
+<<span class="odocwiki_inlinecode"|is~_registered email>> returns <<span class="odocwiki_inlinecode"|true>> if the email is already registered~.
+      ~Else~, it returns <<span class="odocwiki_inlinecode"|false>>~.
+
+<<span class="odocwiki_inlinecode"|is~_email~_validated userid email>> returns <<span class="odocwiki_inlinecode"|true>> if <<span class="odocwiki_inlinecode"|email>> has been
+      validated by the user with id <<span class="odocwiki_inlinecode"|userid>>~.
+
+<<span class="odocwiki_inlinecode"|set~_email~_validated userid email>> valids <<span class="odocwiki_inlinecode"|email>> for the user with id
+      <<span class="odocwiki_inlinecode"|userid>>~.
+
+<<span class="odocwiki_inlinecode"|add~_preregister email>> preregisters <<span class="odocwiki_inlinecode"|email>> in the database~.
+
+<<span class="odocwiki_inlinecode"|remove~_preregister email>> removes <<span class="odocwiki_inlinecode"|email>> from the database~.
+
+<<span class="odocwiki_inlinecode"|is~_preregistered email>> returns <<span class="odocwiki_inlinecode"|true>> if <<span class="odocwiki_inlinecode"|email>> is already
+      registered~. ~Else~, it returns <<span class="odocwiki_inlinecode"|false>>~.
+
+<<span class="odocwiki_inlinecode"|all ~?limit ~(~)>> get all email addresses with a limit of <<span class="odocwiki_inlinecode"|limit>> ~(default
+      is ~1~0~)~.
+
+<<span class="odocwiki_inlinecode"|create ~?password ~?avatar ~?language ~~firstname ~~lastname email>> creates a new user
+      in the database and returns the userid of the new user~.
+      ~Email~, first name~, last name and language are mandatory to create a new
+      user~.
+      ~If <<span class="odocwiki_inlinecode"|password>> is passed as an empty string~, it fails with the message
+      <<span class="odocwiki_inlinecode"|"empty password">>~. ~T~O~D~O~: change it to an exception~?
+
+<<span class="odocwiki_inlinecode"|update ~?password ~?avatar ~?language ~~firstname ~~lastname userid>> updates the user
+      profile with <<span class="odocwiki_inlinecode"|userid>>~.
+      ~If <<span class="odocwiki_inlinecode"|password>> is passed as an empty string~, it fails with the message
+      <<span class="odocwiki_inlinecode"|"empty password">>~. ~T~O~D~O~: change it to an exception~?
+
+<<span class="odocwiki_inlinecode"|update~_password ~~userid ~~new~_password>> updates the password of the user
+      with ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
+      ~If <<span class="odocwiki_inlinecode"|password>> is passed as an empty string~, it fails with the message
+      <<span class="odocwiki_inlinecode"|"empty password">>~. ~T~O~D~O~: change it to an exception~?
+
+<<span class="odocwiki_inlinecode"|update~_avatar ~~userid ~~avatar>> updates the avatar of the user
+      with ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
+
+<<span class="odocwiki_inlinecode"|update~_main~_email ~~userid ~~email>> updates the main email of the user
+      with ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
+
+<<span class="odocwiki_inlinecode"|update~_language ~~userid ~~language>> updates the language of the user with
+      ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
+
+<<span class="odocwiki_inlinecode"|verify~_password ~~email ~~password>> returns the userid if user with email
+      <<span class="odocwiki_inlinecode"|email>> is registered with the password <<span class="odocwiki_inlinecode"|password>>~.
+      ~If <<span class="odocwiki_inlinecode"|password>> the password is wrong~,
+      it fails with exception <<span class="odocwiki_inlinecode"|~Wrong~_password>>~.
+      ~If user exists but account is not validated~,
+      it fails with exception <<span class="odocwiki_inlinecode"|~Account~_not~_activated>>~.
+      ~If user has no password~, it fails with exception <<span class="odocwiki_inlinecode"|~Password~_not~_set>>~.
+      ~If user is not found~, it fails with exception <<span class="odocwiki_inlinecode"|~No~_such~_user>>~.
+      ~If password is empty~, it fails with exception <<span class="odocwiki_inlinecode"|~Empty~_password>>~.
+
+<<span class="odocwiki_inlinecode"|verify~_password~_phone ~~number ~~password>>
+      returns the userid if user
+      who owns <<span class="odocwiki_inlinecode"|number>> and whose password is <<span class="odocwiki_inlinecode"|password>>~.
+      ~If <<span class="odocwiki_inlinecode"|password>> the password is wrong~,
+      it fails with exception <<span class="odocwiki_inlinecode"|~Wrong~_password>>~.
+      ~If user has no password~, it fails with exception <<span class="odocwiki_inlinecode"|~Password~_not~_set>>~.
+      ~If user is not found~, it fails with exception <<span class="odocwiki_inlinecode"|~No~_such~_user>>~.
+      ~If password is empty~, it fails with exception <<span class="odocwiki_inlinecode"|~Empty~_password>>~.
+
+<<span class="odocwiki_inlinecode"|user~_of~_userid userid>> returns a tuple <<span class="odocwiki_inlinecode"|~(userid~, firstname~, lastname~,
+      avatar~, bool~_password~, language~)>> describing the information about
+      the user with ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
+      <<span class="odocwiki_inlinecode"|bool~_password>> is a boolean~. ~Its value is <<span class="odocwiki_inlinecode"|true>> if a password has been
+      set~. ~Else <<span class="odocwiki_inlinecode"|false>>~.
+      ~If there is no such user~, it fails with <<span class="odocwiki_inlinecode"|~No~_such~_resource>>~.
+
+<<span class="odocwiki_inlinecode"|get~_actionlinkkey~_info key>> returns the information about the
+      action link <<span class="odocwiki_inlinecode"|key>> as a type <<a_api subproject="client" | type Types.Action_link_key.info >>~.
+
+<<span class="odocwiki_inlinecode"|emails~_of~_userid userid>> returns all emails registered for the user with
+      ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
+      ~If there is no user with <<span class="odocwiki_inlinecode"|userid>> as ~I~D~, it fails with
+      <<span class="odocwiki_inlinecode"|~No~_such~_resource>>~.
+
+~Like <<span class="odocwiki_inlinecode"|emails~_of~_userid>>~, but also returns validation
+      status~. ~This way we perform fewer ~D~B queries~.
+
+<<span class="odocwiki_inlinecode"|email~_of~_userid userid>> returns the main email registered for the user
+      with ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
+      ~If there is no such user~, it fails with
+      <<span class="odocwiki_inlinecode"|~No~_such~_resource>>~.
+
+<<span class="odocwiki_inlinecode"|is~_main~_email ~~email ~~userid>> returns <<span class="odocwiki_inlinecode"|true>> if the main email of the
+      user with ~I~D <<span class="odocwiki_inlinecode"|userid>> is <<span class="odocwiki_inlinecode"|email>>~.
+      ~If there is no such user or if <<span class="odocwiki_inlinecode"|email>> is not the main
+      email~, it returns <<span class="odocwiki_inlinecode"|false>>~.
+
+<<span class="odocwiki_inlinecode"|add~_email~_to~_user ~~userid ~~email>> add <<span class="odocwiki_inlinecode"|email>> to user with ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
+
+<<span class="odocwiki_inlinecode"|remove~_email~_from~_user ~~userid ~~email>> removes the email <<span class="odocwiki_inlinecode"|email>> from the
+      emails list of user with ~I~D <<span class="odocwiki_inlinecode"|userid>>~.
+      ~If <<span class="odocwiki_inlinecode"|email>> is the main email~, it fails with <<span class="odocwiki_inlinecode"|~Main~_email~_removal~_attempt>>~.
+
+<<span class="odocwiki_inlinecode"|get~_language userid>> returns the language of the user with ~I~D <<span class="odocwiki_inlinecode"|userid>>
+
+<<span class="odocwiki_inlinecode"|get~_users ~~pattern ~(~)>> returns all users matching the pattern <<span class="odocwiki_inlinecode"|pattern>>
+      as a tuple <<span class="odocwiki_inlinecode"|~(userid~, firstname~, lastname~, avatar~, bool~_password~,
+      language~)>>~.
+
+~This module is low~-level and used to manage groups of user~.
+
+<<span class="odocwiki_inlinecode"|create ~?description name>> creates a new group with name <<span class="odocwiki_inlinecode"|name>> and with
+      description <<span class="odocwiki_inlinecode"|description>>~.
+
+<<span class="odocwiki_inlinecode"|group~_of~_name name>> returns a tuple <<span class="odocwiki_inlinecode"|~(groupid~, name~, description~)>>
+      describing the group~.
+      ~If no group has the name <<span class="odocwiki_inlinecode"|name>>~, it fails with <<span class="odocwiki_inlinecode"|~No~_such~_resource>>~.
+
+<<span class="odocwiki_inlinecode"|add~_user~_in~_group ~~groupid ~~userid>> adds the user with ~I~D <<span class="odocwiki_inlinecode"|userid>> in the
+      group with ~I~D <<span class="odocwiki_inlinecode"|groupid>>
+
+<<span class="odocwiki_inlinecode"|remove~_user~_in~_group ~~groupid ~~userid>> removes the user with ~I~D <<span class="odocwiki_inlinecode"|userid>>
+      in the group with ~I~D <<span class="odocwiki_inlinecode"|groupid>>
+
+<<span class="odocwiki_inlinecode"|in~_group ~~groupid ~~userid>> returns <<span class="odocwiki_inlinecode"|true>> if the user with ~I~D <<span class="odocwiki_inlinecode"|userid>> is
+      in the group with ~I~D <<span class="odocwiki_inlinecode"|groupid>>~.
+
+<<span class="odocwiki_inlinecode"|all ~(~)>> returns all groups as list of tuple <<span class="odocwiki_inlinecode"|~(groupid~, name~,
+      description~)>>~.
+
+~Manage user phone numbers
+
+<<span class="odocwiki_inlinecode"|add userid number>> associates <<span class="odocwiki_inlinecode"|number>> with the user
+      <<span class="odocwiki_inlinecode"|userid>>~. ~Returns <<span class="odocwiki_inlinecode"|true>> on success~.
+
+~Does the number exist in the database~?
+
+~The user corresponding to a phone number ~(if any~)~.
+
+<<span class="odocwiki_inlinecode"|delete userid number>> deletes <<span class="odocwiki_inlinecode"|number>>~, which has to be
+      associated to <<span class="odocwiki_inlinecode"|userid>>~.
+
+<<span class="odocwiki_inlinecode"|get~_list userid>> returns the list of number associated to the
+      user~.
