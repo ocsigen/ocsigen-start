@@ -1,0 +1,35 @@
+=~Ocsigen ~Start client ~A~P~I
+==~User management
+===[[client/User|User]]
+===[[client/User_view|User_view]]
+===[[client/User_proxy|User_proxy]]
+===[[client/Current_user|Current_user]]
+===[[client/Session|Session]]
+===[[client/Connect_phone|Connect_phone]]
+==~Persistence
+===[[client/Types|Types]]
+===[[client/Email|Email]]
+==~Notifications
+===[[client/Notif|Notif]]
+===[[client/Msg|Msg]]
+===[[client/Fcm_notif|Fcm_notif]]
+==~Web pages and services
+===[[client/Page|Page]]
+===[[client/Services|Services]]
+===[[client/Handlers|Handlers]]
+===[[client/Icons|Icons]]
+===[[client/Tips|Tips]]
+===[[client/Uploader|Uploader]]
+===[[client/Request_cache|Request_cache]]
+==~Real~-time
+===[[client/Comet|Comet]]
+==~Utilities
+===[[client/Lib|Lib]]
+===[[client/Date|Date]]
+===[[client/Platform|Platform]]
+==~Indexes
+=== <<a_api subproject="client" text="Index of types" | index types >>
+=== <<a_api subproject="client" text="Index of exceptions" | index exceptions >>
+=== <<a_api subproject="client" text="Index of values" | index values >>
+=== <<a_api subproject="client" text="Index of modules" | index modules >>
+=== <<a_api subproject="client" text="Index of module types" | index module types >>

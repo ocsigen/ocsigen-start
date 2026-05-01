@@ -6,18 +6,12 @@
 |@@ @style="tet-align: left;"@@\\C|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Comet"| module Comet >> ||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Connect_phone"| module Connect_phone >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Core_db"| module Core_db >> |<<div class="odocwiki_info"|~This module defines low level functions for database requests~.
->>
-|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Current_user"| module Current_user >> |<<div class="odocwiki_info"|~This module provides functions and types to manage the current user~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\D|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="D"| module Icons.D >> ~[<<a_api subproject="client" | module Icons >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Date"| module Date >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Db"| module Db >> |<<div class="odocwiki_info"|~This module defines low level functions for database requests~.
->>
-|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Default_config"| module Page.Default_config >> ~[<<a_api subproject="client" | module Page >>~]|<<div class="odocwiki_info"|~A default configuration for pages~.
 >>
 |
@@ -31,9 +25,6 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Fcm_notif"| module Fcm_notif >> ||
 |@@ @style="tet-align: left;"@@\\G|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Group"| module Types.Group >> ~[<<a_api subproject="client" | module Types >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Group"| module Group >> |<<div class="odocwiki_info"|~Groups of users~.
->>
-|
 |@@ @style="tet-align: left;"@@\\H|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Handlers"| module Handlers >> |<<div class="odocwiki_info"|~This module contains pre~-defined handlers for connect~, disconnect~, sign up~,
     add a new email~, etc~.

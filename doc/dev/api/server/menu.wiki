@@ -1,0 +1,38 @@
+=~Ocsigen ~Start server ~A~P~I
+==~User management
+===[[server/User|User]]
+===[[server/User_view|User_view]]
+===[[server/User_proxy|User_proxy]]
+===[[server/Current_user|Current_user]]
+===[[server/Group|Group]]
+===[[server/Session|Session]]
+===[[server/Connect_phone|Connect_phone]]
+==~Persistence
+===[[server/Db|Db]]
+===[[server/Core_db|Core_db]]
+===[[server/Types|Types]]
+===[[server/Email|Email]]
+==~Notifications
+===[[server/Notif|Notif]]
+===[[server/Msg|Msg]]
+===[[server/Fcm_notif|Fcm_notif]]
+==~Web pages and services
+===[[server/Page|Page]]
+===[[server/Services|Services]]
+===[[server/Handlers|Handlers]]
+===[[server/Icons|Icons]]
+===[[server/Tips|Tips]]
+===[[server/Uploader|Uploader]]
+===[[server/Request_cache|Request_cache]]
+==~Real~-time
+===[[server/Comet|Comet]]
+==~Utilities
+===[[server/Lib|Lib]]
+===[[server/Date|Date]]
+===[[server/Platform|Platform]]
+==~Indexes
+=== <<a_api subproject="server" text="Index of types" | index types >>
+=== <<a_api subproject="server" text="Index of exceptions" | index exceptions >>
+=== <<a_api subproject="server" text="Index of values" | index values >>
+=== <<a_api subproject="server" text="Index of modules" | index modules >>
+=== <<a_api subproject="server" text="Index of module types" | index module types >>
