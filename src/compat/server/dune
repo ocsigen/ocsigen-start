@@ -5,5 +5,6 @@
  (public_name ocsigen-start-compat.server)
  (synopsis "Backward-compatible Os_xxx module names (server-side)")
  (wrapped false)
- (flags (:standard -w -70))
+ (flags
+  (:standard -w -70))
  (libraries ocsigen-start.server))

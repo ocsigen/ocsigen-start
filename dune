@@ -2,6 +2,7 @@
 
 ; Install the distillery template into lib/eliom/templates/os/ so that
 ; eliom-distillery picks it up at the standard location.
+
 (install
  (package ocsigen-start)
  (section lib_root)
