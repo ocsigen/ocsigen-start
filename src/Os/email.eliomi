@@ -33,11 +33,6 @@ val set_mailer : string -> unit
 val get_mailer : unit -> string
 (** [get_mailer ()] returns the name of mailer program. *)
 
-exception Invalid_mailer of string
-(** Exception raised if the mailer is invalid. You can raise an exception of
-    this type in email sending function if you use {!set_send}.
- *)
-
 val email_pattern : string
 (** The pattern used to check the validity of an e-mail address. *)
 
