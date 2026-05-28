@@ -21,15 +21,12 @@
 open Lwt.Syntax
 
 let log_section = Logs.Src.create "os:email"
-
-let log_section = Logs.Src.create "os:email"
 let email_pattern = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]+$"
 let from_addr = ref ("team DEFAULT", "noreply@DEFAULT.DEFAULT")
 let mailer = ref "sendmail"
 let set_from_addr s = from_addr := s
 let set_mailer s = mailer := s
 let get_mailer () = !mailer
-
 let email_pattern = email_pattern
 let email_regexp = Str.regexp_case_fold email_pattern
 let is_valid email = Str.string_match email_regexp email 0
@@ -50,25 +47,25 @@ let default_send ?url ~from_addr ~to_addrs ~subject content =
   in
   let message =
     Printf.sprintf
-      "From: %s\r\n\
-       To: %s\r\n\
-       Subject: %s\r\n\
-       MIME-Version: 1.0\r\n\
-       Content-Type: text/plain; charset=UTF-8\r\n\
-       Content-Transfer-Encoding: 8bit\r\n\
-       \r\n\
-       %s\r\n"
+      ("From: %s\r\n\
+        To: %s\r\n\
+        Subject: %s\r\n\
+        MIME-Version: 1.0\r\n\
+        Content-Type: text/plain; charset=UTF-8\r\n\
+        Content-Transfer-Encoding: 8bit\r\n\
+        \r\n\
+        %s\r\n" [@ocamlformat "disable"])
       from_header to_header subject body
   in
   let dump_to_stderr () =
     Logs.warn ~src:log_section (fun fmt ->
       fmt
-        "mailer %S not found; dumping email to stderr so the application \
-         remains usable. Configure a sendmail-compatible MTA, or call \
-         [Os.Email.set_mailer] / [Os.Email.set_send].@\n\
-         ---8<--- begin email ---8<---@\n\
-         %s\
-         ---8<--- end email ---8<---"
+        ("mailer %S not found; dumping email to stderr so the \
+          application remains usable. Configure a sendmail-compatible \
+          MTA, or call [Os.Email.set_mailer] / [Os.Email.set_send].@\n\
+          ---8<--- begin email ---8<---@\n\
+          %s\
+          ---8<--- end email ---8<---" [@ocamlformat "disable"])
         !mailer message)
   in
   Lwt.catch

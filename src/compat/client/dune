@@ -6,5 +6,6 @@
  (synopsis "Backward-compatible Os_xxx module names (client-side)")
  (wrapped false)
  (modes byte)
- (flags (:standard -w -70))
+ (flags
+  (:standard -w -70))
  (libraries ocsigen-start.client))
