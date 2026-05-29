@@ -10,7 +10,8 @@ open%shared Eliom.Content.Html.F
    Ocsigen Start is creating a session group for each user.
 *)
 let%server last_visit =
-  Eliom.Reference.eref ~persistent:"demo_last_visit"
+  Eliom.Reference.eref
+    ~persistent:("demo_last_visit", [%json: Os.Date.local_calendar option])
     ~scope:Eliom.Common.default_group_scope None
 
 (* Read & reset last_visit *)
