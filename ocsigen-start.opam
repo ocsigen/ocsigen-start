@@ -21,7 +21,7 @@ depends: [
   "pgocaml_ppx" {>= "4.0"}
   "safepass" {>= "3.0"}
   "ocsigen-i18n" {>= "4.0.0"}
-  "eliom" {>= "13.0.0"}
+  "eliom" {>= "13.0~"}
   "ocsigen-toolkit" {>= "2.7.0"}
   "ocsigen-dune-rules"
   "ocsigen-ppx-rpc" {>= "1.1"}
@@ -55,7 +55,4 @@ x-maintenance-intent: ["(latest)"]
 depexts: [
   ["imagemagick" "ruby-sass"] {os-family = "debian"}
   ["md5sha1sum" "sassc"] {os = "macos" & os-distribution = "homebrew"}
-]
-pin-depends: [
-  ["ocsigen-toolkit.dev" "git+https://github.com/ocsigen/ocsigen-toolkit.git#d3361b2969cc94a9fdc3e5bc0282184777894b98"]
 ]
