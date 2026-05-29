@@ -25,10 +25,16 @@ open%client Js_of_ocaml
 open%client Js_of_ocaml_lwt
 module%shared Stringset = Set.Make (String)
 
+(* Stringset values are persisted as sorted string lists. *)
+let%server stringset_json : Stringset.t Deriving_Json.t =
+  Deriving_Json.convert [%json: string list] Stringset.of_list
+    Stringset.elements
+
 (* tips_seen is a group persistent reference recording which tips have
    already been seen by user *)
 let tips_seen =
-  Eliom.Reference.eref ~persistent:"tips_seen1"
+  Eliom.Reference.eref
+    ~persistent:("tips_seen1", stringset_json)
     ~scope:Eliom.Common.default_group_scope Stringset.empty
 (*VVV TODO: What if not connected? We don't want to keep the eref
   for all non-connected users. This is a weakness of persistent
@@ -46,7 +52,8 @@ let tips_seen =
    For now, I'm using a session reference for not connected users ...
 *)
 let tips_seen_not_connected =
-  Eliom.Reference.eref ~persistent:"tips_seen_not_connected1"
+  Eliom.Reference.eref
+    ~persistent:("tips_seen_not_connected1", stringset_json)
     ~scope:Session.user_indep_session_scope Stringset.empty
 
 (* We cache the set during a request *)

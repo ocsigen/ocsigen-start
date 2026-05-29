@@ -91,6 +91,13 @@ open CalendarLib
 
 type local_calendar = CalendarLib.Calendar.t]
 
+let%server local_calendar_json : local_calendar Deriving_Json.t =
+  Deriving_Json.convert [%json: float] CalendarLib.Calendar.from_unixfloat
+    CalendarLib.Calendar.to_unixfloat
+
+let%server local_calendar_of_json = Deriving_Json.read local_calendar_json
+let%server local_calendar_to_json = Deriving_Json.write local_calendar_json
+
 (* Same as Unix.mktime when TZ=UTC, but avoid modifying this variable. *)
 let timegm =
   let days = [|0; 31; 59; 90; 120; 151; 181; 212; 243; 273; 304; 334|] in

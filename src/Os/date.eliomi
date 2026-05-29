@@ -38,6 +38,16 @@ type local_calendar
 
 [%%server.start]
 
+val local_calendar_of_json : Deriving_Json_lexer.lexbuf -> local_calendar
+val local_calendar_to_json : Buffer.t -> local_calendar -> unit
+
+val local_calendar_json : local_calendar Deriving_Json.t
+(** JSON codec for {!local_calendar} (the [_of_json]/[_to_json] pair
+    follows the {!Deriving_Json} convention so that
+    [\[%json: local_calendar\]] resolves to {!local_calendar_json}).
+    Suitable for persisting values through Ocsipersist. Encodes as a
+    Unix float. *)
+
 val to_utc : ?timezone:string -> local_calendar -> CalendarLib.Calendar.t
 (** Convert a local calendar to a UTC calendar. Use the client's
     timezone unless the optional [timezone] argument is provided. *)
