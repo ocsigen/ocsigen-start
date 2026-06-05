@@ -39,7 +39,7 @@ module User = struct
     ; avatar : string option
     ; language : string option }
   [@@deriving json]
-  (** Type representing a user. See <<a_api | module User >>. *)
+  (** Type representing a user. See {!User}. *)
 end
 
 module Action_link_key = struct
@@ -59,5 +59,5 @@ module Group = struct
   (** Type representing a group ID *)
 
   type t = {id : id; name : string; desc : string option}
-  (** Type representing a group. See <<a_api | module Group >> *)
+  (** Type representing a group. See {!Group} *)
 end
