@@ -1,0 +1,24 @@
+{0 Ocsigen Start}
+
+Ocsigen Start is a ready-to-use application skeleton for building
+client-server web and mobile applications with {{:../eliom}Eliom} and
+{{:../ocsigen-toolkit}Ocsigen Toolkit}. It ships with user management,
+notifications, a database schema and many code examples, so you can
+focus on your own features from day one.
+
+Ocsigen Start is part of the {{:https://ocsigen.org}Ocsigen project}.
+
+{1 Documentation}
+
+- {{!page-intro}Introduction} — installation, getting started and an
+  overview of the modules Ocsigen Start provides.
+- The server and client API of every module (use the {e Server API} /
+  {e Client API} switch to move between the two sides).
+
+{1 Installation}
+
+Ocsigen Start is available via OPAM:
+
+{[
+opam install ocsigen-start
+]}
