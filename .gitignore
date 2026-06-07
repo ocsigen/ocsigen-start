@@ -4,3 +4,4 @@ local/
 doc/client
 doc/server
 .*.sw*
+doc/manual/menu.wiki
