@@ -28,18 +28,18 @@ or the
 
 {%wodoc:div class="screenshots"%}
 {{:files/screenshots/start1.png}
-{{files/screenshots/start1.png|Ocsigen Start}}}
+{%wodoc:img src="files/screenshots/start1.png" alt="Ocsigen Start"%}}
 {{:files/screenshots/start2.png}
-{{files/screenshots/start2.png|Ocsigen Start}}}
+{%wodoc:img src="files/screenshots/start2.png" alt="Ocsigen Start"%}}
 {%wodoc:end%}
 
 {%wodoc:div class="screenshots"%}
 {{:files/screenshots/start-mobile-1.png}
-{{files/screenshots/start-mobile-1.png|Ocsigen Start}}}
+{%wodoc:img src="files/screenshots/start-mobile-1.png" alt="Ocsigen Start"%}}
 {{:files/screenshots/start-mobile-2.png}
-{{files/screenshots/start-mobile-2.png|Ocsigen Start}}}
+{%wodoc:img src="files/screenshots/start-mobile-2.png" alt="Ocsigen Start"%}}
 {{:files/screenshots/start-mobile-4.png}
-{{files/screenshots/start-mobile-4.png|Ocsigen Start}}}
+{%wodoc:img src="files/screenshots/start-mobile-4.png" alt="Ocsigen Start"%}}
 {%wodoc:end%}
 
 
@@ -57,24 +57,24 @@ It includes a demo of many features from Eliom, Js_of_ocaml, Tyxml, Ocsigen Tool
 
 {%wodoc:div class="screenshots"%}
 {{:files/screenshots/start3.png}
-{{files/screenshots/start3.png|Ocsigen Start}}}
+{%wodoc:img src="files/screenshots/start3.png" alt="Ocsigen Start"%}}
 {{:files/screenshots/start4.png}
-{{files/screenshots/start4.png|Ocsigen Start}}}
+{%wodoc:img src="files/screenshots/start4.png" alt="Ocsigen Start"%}}
 {{:files/screenshots/start5.png}
-{{files/screenshots/start5.png|Ocsigen Start}}}
+{%wodoc:img src="files/screenshots/start5.png" alt="Ocsigen Start"%}}
 {{:files/screenshots/start6.png}
-{{files/screenshots/start6.png|Ocsigen Start}}}
+{%wodoc:img src="files/screenshots/start6.png" alt="Ocsigen Start"%}}
 {%wodoc:end%}
 
 {%wodoc:div class="screenshots"%}
 {{:files/screenshots/start-mobile-3.png}
-{{files/screenshots/start-mobile-3.png|Ocsigen Start}}}
+{%wodoc:img src="files/screenshots/start-mobile-3.png" alt="Ocsigen Start"%}}
 {{:files/screenshots/start-mobile-6.png}
-{{files/screenshots/start-mobile-6.png|Ocsigen Start}}}
+{%wodoc:img src="files/screenshots/start-mobile-6.png" alt="Ocsigen Start"%}}
 {{:files/screenshots/start-mobile-7.png}
-{{files/screenshots/start-mobile-7.png|Ocsigen Start}}}
+{%wodoc:img src="files/screenshots/start-mobile-7.png" alt="Ocsigen Start"%}}
 {{:files/screenshots/start-mobile-8.png}
-{{files/screenshots/start-mobile-8.png|Ocsigen Start}}}
+{%wodoc:img src="files/screenshots/start-mobile-8.png" alt="Ocsigen Start"%}}
 {%wodoc:end%}
 
 
