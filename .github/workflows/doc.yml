@@ -1,0 +1,71 @@
+# Build the Ocsigen Start documentation (manual + server/client API) with
+# odoc_driver, theme it with the Ocsigen chrome (wodoc), and publish it on the
+# project's gh-pages branch, served at https://ocsigen.org/ocsigen-start/.
+# See doc/README.md.
+#
+# CI deploys ONLY the "dev" docs and ONLY from master. Stable versions are frozen
+# by hand at release time (see doc/README.md). Each run replaces only the dev/
+# directory; other version directories already on gh-pages are PRESERVED.
+name: Documentation
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch: {}
+
+jobs:
+  build-deploy:
+    if: github.repository == 'ocsigen/ocsigen-start'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: "5.4.0"
+
+      - name: Install dependencies
+        run: |
+          # The documented version is the INSTALLED ocsigen-start: install it from
+          # the ref being built so odoc_driver documents these sources.
+          opam install . --deps-only --with-doc
+          opam install . --with-doc
+          # odoc-driver with the cross-library link fix (not yet upstreamed).
+          opam pin add -n odoc https://github.com/balat/odoc.git#driver-sibling-lib-link-fix
+          opam pin add -n odoc-driver https://github.com/balat/odoc.git#driver-sibling-lib-link-fix
+          opam install odoc odoc-driver
+          opam pin add -n wodoc https://github.com/ocsigen/wodoc.git
+          opam install wodoc
+
+      - name: Build documentation (dev)
+        # wodoc build runs `odoc_driver ocsigen-start --remap` on the installed
+        # package (after preprocessing the installed manual .mld), assembles the
+        # themed site from doc/wodoc, fetches the shared menu from ocsigen.github.io.
+        run: >-
+          opam exec -- wodoc build --config doc/wodoc
+          --menu https://ocsigen.org/doc/menu.html
+          --out "$PWD/_doc-site/dev" --label dev
+
+      - name: Overlay manual assets (screenshots live on the wikidoc branch)
+        # The intro manual references files/screenshots/*.png (and the demo
+        # app downloads); these binaries are kept on the wikidoc branch, not in
+        # the .mli/.mld sources, so copy them into the built tree.
+        run: |
+          git fetch origin wikidoc
+          mkdir -p _doc-site/dev/files
+          git archive origin/wikidoc doc/dev/manual/files \
+            | tar -x --strip-components=4 -C _doc-site/dev/files
+
+      - name: Deploy to gh-pages (replace only dev/, keep the rest)
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: _doc-site/dev
+          target-folder: dev
+          clean: true
