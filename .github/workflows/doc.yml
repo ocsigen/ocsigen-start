@@ -1,16 +1,11 @@
-# Build the Ocsigen Start documentation (manual + server/client API) with odoc_driver,
-# theme it with the Ocsigen chrome (wodoc), and publish it on the project's
-# gh-pages branch, served at https://ocsigen.org/ocsigen-start/. See doc/README.md.
+# Build the Ocsigen Start documentation (manual + server/client API) with
+# odoc_driver, theme it with the Ocsigen chrome (wodoc), and publish it on the
+# project's gh-pages branch, served at https://ocsigen.org/ocsigen-start/.
+# See doc/README.md.
 #
-# CI deploys ONLY the "dev" docs and ONLY from master. Stable versions are built
-# by hand and committed to gh-pages at release time, so there is no dispatch /
-# release path here. Each run replaces only the dev/ directory; the other version
-# directories already on gh-pages are PRESERVED.
-#
-# PREREQUISITE: wodoc builds the API with `odoc_driver ocsigen-start --remap` on the
-# INSTALLED ocsigen-start, and its cross-library links need the odoc_driver `base_args`
-# fix, which is not yet upstreamed. Until it lands, the "Install dependencies" step
-# must pin odoc / odoc-driver from the patched source (see below).
+# CI deploys ONLY the "dev" docs and ONLY from master. Stable versions are frozen
+# by hand at release time (see doc/README.md). Each run replaces only the dev/
+# directory; other version directories already on gh-pages are PRESERVED.
 name: Documentation
 
 on:
@@ -23,6 +18,13 @@ on:
         required: false
         default: ""
 
+# Serialise gh-pages writes: a push (rebuilds dev/) and a release
+# workflow_dispatch (freezes <version>/ and repoints latest) must never push to
+# gh-pages at the same time, or the second push fails non-fast-forward.
+concurrency:
+  group: doc-deploy-${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   build-deploy:
     if: github.repository == 'ocsigen/ocsigen-start' && (github.event_name != 'workflow_dispatch' || github.event.inputs.version == '')
@@ -31,7 +33,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -40,35 +42,47 @@ jobs:
         with:
           ocaml-compiler: "5.4.0"
 
+      - name: Set up Binaryen
+        # ocsigen-start depends on wasm_of_ocaml-compiler, whose build needs a
+        # recent binaryen (wasm-merge); distro binaryen is too old. Same action as
+        # js_of_ocaml's own CI.
+        uses: Aandreba/setup-binaryen@v1.0.0
+        with:
+          token: ${{ github.token }}
+
       - name: Install dependencies
         run: |
-          # The documented version is the INSTALLED eliom: install it from the ref
-          # being built so odoc_driver documents these sources.
+          # Install ocsigen-start (from the ref being built) so odoc_driver
+          # documents these sources. It is installed WITHOUT --with-doc: its server
+          # and client libraries share module names, so building its own @doc
+          # collides ("Multiple rules for .../Os_*/index.html"). wodoc builds the
+          # docs via `odoc_driver --remap` instead.
           opam install . --deps-only --with-doc
-          opam install . --with-doc
-          # odoc-driver with the cross-library link fix (driver: link units only
-          # against their actual lib deps). TODO: drop the pin once it lands upstream.
-          opam pin add -n odoc https://github.com/balat/odoc.git#driver-sibling-lib-link-fix
-          opam pin add -n odoc-driver https://github.com/balat/odoc.git#driver-sibling-lib-link-fix
-          opam install odoc odoc-driver
-          # wodoc: the odoc driver that themes the pages with the Ocsigen chrome.
+          opam install .
+          # wodoc themes the pages. Its opam pin-depends pulls odoc / odoc-driver
+          # from the balat/odoc fork (the cross-library link fix, not yet upstream),
+          # so we do NOT pin odoc ourselves here.
           opam pin add -n wodoc https://github.com/ocsigen/wodoc.git
           opam install wodoc
 
-      - name: Overlay the manual menu (lives on the wikidoc branch)
-        run: |
-          git fetch origin wikidoc
-          mkdir -p doc/manual
-          git show origin/wikidoc:doc/dev/manual/menu.wiki > doc/manual/menu.wiki
-
       - name: Build documentation (dev)
-        # wodoc build runs `odoc_driver ocsigen-start --remap` on the installed package
-        # (after preprocessing the installed manual .mld), assembles the themed
-        # site from doc/wodoc, and fetches the shared menu from ocsigen.github.io.
+        # wodoc build runs `odoc_driver ocsigen-start --remap` on the installed
+        # package (after preprocessing the installed manual .mld), assembles the
+        # themed site from doc/wodoc, fetches the shared menu from ocsigen.github.io.
         run: >-
           opam exec -- wodoc build --config doc/wodoc
-          --menu https://ocsigen.org/wodoc/menu.html
+          --menu https://ocsigen.org/doc/menu.html
           --out "$PWD/_doc-site/dev" --label dev
+
+      - name: Overlay manual assets (screenshots live on the wikidoc branch)
+        # The intro manual references files/screenshots/*.png (and the demo
+        # app downloads); these binaries are kept on the wikidoc branch, not in
+        # the .mli/.mld sources, so copy them into the built tree.
+        run: |
+          git fetch origin wikidoc
+          mkdir -p _doc-site/dev/files
+          git archive origin/wikidoc doc/dev/manual/files \
+            | tar -x --strip-components=4 -C _doc-site/dev/files
 
       - name: Deploy to gh-pages (replace only dev/, keep the rest)
         uses: JamesIves/github-pages-deploy-action@v4
@@ -84,6 +98,10 @@ jobs:
     # No rebuild -- the docs of a release are exactly the dev docs at that point.
     if: github.repository == 'ocsigen/ocsigen-start' && github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
     runs-on: ubuntu-latest
+    # Pass the user-supplied version through the environment; never interpolate
+    # it directly into a run: shell (avoids command injection from the input).
+    env:
+      VERSION: ${{ github.event.inputs.version }}
     permissions:
       contents: write
     steps:
@@ -98,7 +116,7 @@ jobs:
           opam install wodoc
 
       - name: Checkout gh-pages
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: gh-pages
           path: site
@@ -109,7 +127,7 @@ jobs:
         # write the root index.html redirect if missing, refresh versions.json.
         run: >-
           opam exec -- wodoc release --site site --from dev
-          --version "${{ github.event.inputs.version }}"
+          --version "$VERSION"
 
       - name: Commit and push gh-pages
         run: |
@@ -118,5 +136,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
           git diff --cached --quiet \
-            || git commit -m "Release doc ${{ github.event.inputs.version }} (freeze dev, repoint latest)"
+            || git commit -m "Release doc $VERSION (freeze dev, repoint latest)"
           git push
