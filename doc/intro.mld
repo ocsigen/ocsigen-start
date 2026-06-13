@@ -80,7 +80,7 @@ It includes a demo of many features from Eliom, Js_of_ocaml, Tyxml, Ocsigen Tool
 
 {1 Getting started}
 
-Read {{:../tuto/start.html}this page} to learn how to build your first Ocsigen Start app in 5 minutes.
+Read {{:/tuto/latest/start.html}this page} to learn how to build your first Ocsigen Start app in 5 minutes.
 
 {1 Implementation overview}
 
@@ -213,13 +213,13 @@ connection forms, etc.
 - {!Os_services}:
   Eliom services pre-defined by Ocsigen Start. These produce the
   default user interface of the template.
-  See {{:../eliom/server-services.html}the Eliom manual page on services} for
+  See {{:/eliom/latest/server-services.html}the Eliom manual page on services} for
   a general introduction to Eliom services.
 
 - {!Os_handlers}:
   The handlers (functions) that implement the services in
   {!Os_services}.
-  {{:../eliom/server-outputs.html}The Eliom manual page on service handlers}
+  {{:/eliom/latest/server-outputs.html}The Eliom manual page on service handlers}
   explains how to implement handlers.
 
 - {!Os_session}:
