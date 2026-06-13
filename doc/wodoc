@@ -11,6 +11,15 @@
 (pub /ocsigen-start)
 (odoc-driver ocsigen-start)
 (landing intro.html)
+
+;; The shared manual nav (the two manual pages; the API module lists come from
+;; the per-side (indexdoc …) below). Only `dev` is rebuilt, so this static nav
+;; always matches the current manual.
+(nav
+ (section "Manual"
+  (link "Introduction" intro.html intro)
+  (link "Overview" index.html index)))
+
 (client-server
   (server (lib ocsigen-start.server) (indexdoc doc/indexdoc.server) (heading "Server API"))
   (client (lib ocsigen-start.client) (indexdoc doc/indexdoc.client) (heading "Client API")))
