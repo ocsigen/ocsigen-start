@@ -17,7 +17,7 @@ for iOS or Android (via {{:https://cordova.apache.org/}Cordova})..
 {1 Demo}
 
 If you want to test the demo application before installing Ocsigen Start,
-{b a live version is running {{:../ocsigen-start/demo/}here}}.
+{b a live version is running {{:/ocsigen-start/demo/}here}}.
 
 You can also download the mobile app
 {{:https://play.google.com/store/apps/details?id=com.osdemo.mobile}on Google Play store} (for Android)
