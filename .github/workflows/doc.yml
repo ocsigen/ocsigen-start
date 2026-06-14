@@ -42,16 +42,26 @@ jobs:
         with:
           ocaml-compiler: "5.4.0"
 
+      - name: Set up Binaryen
+        # ocsigen-start depends on wasm_of_ocaml-compiler, whose build needs a
+        # recent binaryen (wasm-merge); distro binaryen is too old. Same action as
+        # js_of_ocaml's own CI.
+        uses: Aandreba/setup-binaryen@v1.0.0
+        with:
+          token: ${{ github.token }}
+
       - name: Install dependencies
         run: |
-          # The documented version is the INSTALLED ocsigen-start: install it from
-          # the ref being built so odoc_driver documents these sources.
+          # Install ocsigen-start (from the ref being built) so odoc_driver
+          # documents these sources. It is installed WITHOUT --with-doc: its server
+          # and client libraries share module names, so building its own @doc
+          # collides ("Multiple rules for .../Os_*/index.html"). wodoc builds the
+          # docs via `odoc_driver --remap` instead.
           opam install . --deps-only --with-doc
-          opam install . --with-doc
-          # odoc-driver with the cross-library link fix (not yet upstreamed).
-          opam pin add -n odoc https://github.com/balat/odoc.git#driver-sibling-lib-link-fix
-          opam pin add -n odoc-driver https://github.com/balat/odoc.git#driver-sibling-lib-link-fix
-          opam install odoc odoc-driver
+          opam install .
+          # wodoc themes the pages. Its opam pin-depends pulls odoc / odoc-driver
+          # from the balat/odoc fork (the cross-library link fix, not yet upstream),
+          # so we do NOT pin odoc ourselves here.
           opam pin add -n wodoc https://github.com/ocsigen/wodoc.git
           opam install wodoc
 

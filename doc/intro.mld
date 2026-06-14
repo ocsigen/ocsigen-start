@@ -17,7 +17,7 @@ for iOS or Android (via {{:https://cordova.apache.org/}Cordova})..
 {1 Demo}
 
 If you want to test the demo application before installing Ocsigen Start,
-{b a live version is running {{:/ocsigen-start/demo/}here}}.
+{b a live version is running {{:https://ocsigen.org/ocsigen-start/demo/}here}}.
 
 You can also download the mobile app
 {{:https://play.google.com/store/apps/details?id=com.osdemo.mobile}on Google Play store} (for Android)
@@ -80,7 +80,7 @@ It includes a demo of many features from Eliom, Js_of_ocaml, Tyxml, Ocsigen Tool
 
 {1 Getting started}
 
-Read {{:/tuto/latest/start.html}this page} to learn how to build your first Ocsigen Start app in 5 minutes.
+Read {{:https://ocsigen.org/tuto/latest/start.html}this page} to learn how to build your first Ocsigen Start app in 5 minutes.
 
 {1 Implementation overview}
 
@@ -213,13 +213,13 @@ connection forms, etc.
 - {!Os_services}:
   Eliom services pre-defined by Ocsigen Start. These produce the
   default user interface of the template.
-  See {{:/eliom/latest/server-services.html}the Eliom manual page on services} for
+  See {{:https://ocsigen.org/eliom/latest/server-services.html}the Eliom manual page on services} for
   a general introduction to Eliom services.
 
 - {!Os_handlers}:
   The handlers (functions) that implement the services in
   {!Os_services}.
-  {{:/eliom/latest/server-outputs.html}The Eliom manual page on service handlers}
+  {{:https://ocsigen.org/eliom/latest/server-outputs.html}The Eliom manual page on service handlers}
   explains how to implement handlers.
 
 - {!Os_session}:
