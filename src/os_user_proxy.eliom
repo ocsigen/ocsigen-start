@@ -18,8 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(** This module implements a cache of user using <<a_api project="eliom" |
-    module Eliom_cscache>> which allows to keep synchronized the cache between
+(** This module implements a cache of user using {!Eliom_cscache} which allows to keep synchronized the cache between
     the client and the server.
     Even if there is a cache implementing in {!Os_user} to avoid to do database
     requests, this last one is implementing only server side.

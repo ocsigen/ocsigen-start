@@ -41,7 +41,7 @@ module User : sig
     ; avatar : string option
     ; language : string option }
   [@@deriving json]
-  (** Type representing a user. See <<a_api | module Os_user >>. *)
+  (** Type representing a user. See {!Os_user}. *)
 end
 
 (** Types related to action link keys *)
@@ -63,5 +63,5 @@ module Group : sig
   (** Type representing a group ID *)
 
   type t = {id : id; name : string; desc : string option}
-  (** Type representing a group. See <<a_api | module Os_group >> *)
+  (** Type representing a group. See {!Os_group} *)
 end

@@ -1,0 +1,83 @@
+# How the Ocsigen Start documentation is generated
+
+The Ocsigen Start documentation published at
+<https://ocsigen.org/ocsigen-start/> is built with **odoc** and themed with the
+Ocsigen site chrome by [**wodoc**](https://github.com/ocsigen/wodoc) (an odoc
+driver). The same odoc sources are also what ocaml.org renders.
+
+Ocsigen Start is a **client/server** project: it ships its server and client
+APIs as two libraries of the same package (`ocsigen-start.server` /
+`ocsigen-start.client`) with the **same module names**, so `dune build @doc`
+collides. The API is therefore built with `odoc_driver ocsigen-start --remap`
+(the engine ocaml.org uses) on the **installed** package — i.e. the documented
+version is whatever the build switch has installed.
+
+## Sources
+
+| What | Where | Format |
+|---|---|---|
+| Manual | the package's `(documentation)` `.mld` (`doc/*.mld`) | odoc pages |
+| Manual nav | the static `(nav …)` in [`doc/wodoc`](wodoc) | wodoc config |
+| Server / client API | the installed `ocsigen-start.server` / `.client` libraries | odoc comments |
+| Site configuration | [`doc/wodoc`](wodoc) | wodoc config (S-expression) |
+
+The whole site — per-side API navs, the client/server switch, the body colour,
+the shared manual nav, and the rewriting of sibling Ocsigen projects' cross-refs
+to relative links — is declared in [`doc/wodoc`](wodoc) and produced by a single
+`wodoc build`. There is **no `build.sh`** and no Python.
+
+## Build
+
+`wodoc build` documents the **installed** `ocsigen-start`, so install it first
+(from the ref you want to document) in a switch that also has `wodoc`:
+
+```
+opam install .                       # the version to document (NOT --with-doc:
+                                     # server+client share module names -> @doc collides)
+opam install wodoc                   # the odoc driver / theming
+wodoc build --config doc/wodoc --label dev --out _doc-site/dev \
+  --menu https://ocsigen.org/doc/menu.html
+```
+
+`wodoc build` runs `odoc_driver ocsigen-start --remap` on the installed package,
+assembles every page into the Ocsigen site and writes the version redirect. Add
+`--local` to fetch the shared `/css//img/` assets and preview offline.
+
+> **Toolchain (CI).** The cross-library link fix lives in the
+> [balat/odoc](https://github.com/balat/odoc) fork, which wodoc pulls in through
+> its opam `pin-depends`. Do **not** pin `odoc` yourself — that conflicts with
+> wodoc's pin. `wasm_of_ocaml-compiler` (a client-toolchain dep) needs a recent
+> binaryen, installed by the `Set up Binaryen` CI step.
+
+## Deployment (CI)
+
+[`.github/workflows/doc.yml`](../.github/workflows/doc.yml) builds and publishes to
+the project's **`gh-pages`** branch (served at `ocsigen.org/ocsigen-start/`). The
+CI triggers **only on `master`**, so pushing any other branch never deploys:
+
+- **push to `master`** → rebuilds and deploys the **`dev`** docs only.
+
+Stable versions are **not** built by CI on push: they are published by the
+`release` job (below). Each CI run replaces only the `dev/` directory; the other
+version directories (and the live `demo/`) already on `gh-pages` are preserved.
+
+## Releasing a stable version
+
+The CI builds only `dev/`. To publish a stable version, trigger the
+**Documentation** workflow's `release` job with the **version** input — either:
+
+- **CLI** (from a clone of the repo): `gh workflow run doc.yml -f version=1.2.3`
+- **GitHub UI**: repo → *Actions* → *Documentation* (left sidebar) → *Run workflow*
+  (top-right) → set **version** (e.g. `1.2.3`) → *Run workflow*.
+
+The `release` job freezes the current `dev/` docs as `/<version>/`, repoints the
+`latest` symlink, writes the root redirect and refreshes `versions.json` — via
+`wodoc release --from dev --version <version>`. No rebuild: the docs of a release
+are exactly the `dev` docs at that point.
+
+Equivalently, by hand on a `gh-pages` checkout:
+
+```
+wodoc release --site . --from dev --version <version>
+git add -A && git commit -m "Release doc <version>" && git push
+```
