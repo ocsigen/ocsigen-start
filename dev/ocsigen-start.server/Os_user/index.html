@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Module Os_user — Start</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="/css/ocsigen-odoc.css"/>
+  <script src="../../highlight.pack.js"></script>
+  <script src="../../wodoc-highlight.js"></script>
+</head>
+<body class="wodoc-page wodoc-doc wodoc-server">
+  <!-- Shared site menu — THE single source of truth for the header, top menu and
+     drawer of EVERY Ocsigen doc page (vitrine + all projects). Canonical copy
+     lives here in ocsigen.github.io; each project's build fetches it. Injected
+     by `wodoc assemble --menu`. Holes filled by the tool (braces omitted here so
+     this comment is not itself rewritten by the hole-filler):
+       subproject  the sub-project name shown next to the Ocsigen logo
+                   (empty on the vitrine), via --subproject
+       leftnav     the project's left navigation, expanded into BOTH the mobile
+                   drawer (below) and the left column (in the page template),
+                   via --leftnav
+     The current entry is highlighted by adding the `current` class to the
+     element carrying data-wodoc-page=<id>: --current on the vitrine (page id),
+     --menu-current in a project (the project id). Nothing is hardcoded here, so
+     this file is the ONLY place the menu is defined.
+
+     Links are the FINAL site paths (/<project>/, /<page>): the target layout
+     where each project is served at ocsigen.org/<project>/ — no transitional
+     /wodoc/ prefix. -->
+<div class="page-header">
+  <p class="logo-ocsigen"><a href="/"><img src="/img/ocsigen-white.svg" alt="Ocsigen"/></a></p>
+  <p class="logo-subproject">Start</p>
+
+  <div class="mainmenu">
+    <p class="mainmenu-home" data-wodoc-page="githubio"><a href="/">Home</a></p>
+    <p class="mainmenu-doc" data-wodoc-page="tuto"><a href="/tuto/">Doc</a></p>
+    <p data-wodoc-page="eliom"><a href="/eliom/">Eliom</a></p>
+    <p data-wodoc-page="js_of_ocaml"><a href="/js_of_ocaml/">Js_of_ocaml</a></p>
+    <p data-wodoc-page="ocsigenserver"><a href="/ocsigenserver/">Server</a></p>
+    <p data-wodoc-page="lwt"><a href="/lwt/">Lwt</a></p>
+    <p data-wodoc-page="tyxml"><a href="/tyxml/">Tyxml</a></p>
+    <p data-wodoc-page="ocsigen-start" class="current"><a href="/ocsigen-start/">Start</a></p>
+  </div>
+
+  <form id="googlesearch" action="https://google.com/search">
+    <input name="q" id="gsearch-box" placeholder="Search using Google"/>
+    <label for="gsearch-box"><img src="/img/search.svg" alt="" id="gsearch-icon"/></label>
+    <input type="submit" id="gsearch-submit" onclick="document.getElementById('gsearch-box').value += ' site:ocsigen.org';"/>
+  </form>
+
+  <aside class="how-drawer">
+    <input id="how-drawer-toggle" type="checkbox"/>
+    <label for="how-drawer-toggle" id="how-drawer-label"><span class="how-drawer-icon"></span></label>
+    <nav class="how-drawer-content">
+      <ul class="drawermainmenu">
+        <li class="drawermainmenu-home" data-wodoc-page="githubio"><a href="/">Home</a></li>
+        <li class="drawermainmenu-doc" data-wodoc-page="tuto"><a href="/tuto/">Doc</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="eliom"><a href="/eliom/">Eliom</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="js_of_ocaml"><a href="/js_of_ocaml/">Js_of_ocaml</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsigenserver"><a href="/ocsigenserver/">Server</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="lwt"><a href="/lwt/">Lwt</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="tyxml"><a href="/tyxml/">Tyxml</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsigen-toolkit"><a href="/ocsigen-toolkit/">Toolkit</a></li>
+        <li class="drawermainmenu-project current" data-wodoc-page="ocsigen-start"><a href="/ocsigen-start/">Start</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsipersist"><a href="/ocsipersist/">Ocsipersist</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="reactiveData"><a href="/reactiveData/">ReactiveData</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsigen-i18n"><a href="/ocsigen-i18n/">i18n</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="wodoc"><a href="/wodoc/">Wodoc</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="projects"><a href="/projects">Other projects</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="papers"><a href="/papers">Research papers</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="credits"><a href="/credits">Who does Ocsigen?</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="contributing"><a href="/contributing">Contributing</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="blog"><a href="/blog">Blog</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="install"><a href="/install">Installation</a></li>
+        <li class="drawermainmenu-page"><a href="https://github.com/ocsigen">Source code</a></li>
+      </ul>
+      <!-- On mobile the left column is hidden; its menu lives here in the burger
+           (.how-doctree, shown only on narrow screens), as the old site did.
+           Empty on the vitrine; the leftnav hole is filled (with the same
+           fragment as the left column) only on project pages. -->
+      <nav class="how-doctree"><div class="docversion">
+  <label>Version:
+    <select class="wodoc-version" onchange="wodocVersion(this.value)">
+      <option value="dev">dev</option>
+    </select>
+  </label>
+</div>
+<div class="cs-switch">
+  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
+  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+</div>
+<div class="page-toc">
+  <h3>On this page</h3>
+  
+</div>
+<nav class="api-nav manual-nav">
+<h3>Manual</h3>
+<ul class="api-section">
+<li class="ml3" data-wodoc-page="intro.html"><a href="../../intro.html">Introduction</a></li>
+<li class="ml3" data-wodoc-page="index.html"><a href="../../index.html">Overview</a></li>
+</ul>
+</nav>
+
+<nav class="api-nav">
+<h3>Server API</h3>
+<h4>Server API</h4>
+<ul class="api-section">
+<li data-wodoc-page="Os_current_user"><a href="../../ocsigen-start.server/Os_current_user/index.html">Os_current_user</a></li>
+<li data-wodoc-page="Os_date"><a href="../../ocsigen-start.server/Os_date/index.html">Os_date</a></li>
+<li data-wodoc-page="Os_db"><a href="../../ocsigen-start.server/Os_db/index.html">Os_db</a></li>
+<li data-wodoc-page="Os_email"><a href="../../ocsigen-start.server/Os_email/index.html">Os_email</a></li>
+<li data-wodoc-page="Os_fcm_notif"><a href="../../ocsigen-start.server/Os_fcm_notif/index.html">Os_fcm_notif</a></li>
+<li data-wodoc-page="Os_group"><a href="../../ocsigen-start.server/Os_group/index.html">Os_group</a></li>
+<li data-wodoc-page="Os_handlers"><a href="../../ocsigen-start.server/Os_handlers/index.html">Os_handlers</a></li>
+<li data-wodoc-page="Os_icons"><a href="../../ocsigen-start.server/Os_icons/index.html">Os_icons</a></li>
+<li data-wodoc-page="Os_lib"><a href="../../ocsigen-start.server/Os_lib/index.html">Os_lib</a></li>
+<li data-wodoc-page="Os_msg"><a href="../../ocsigen-start.server/Os_msg/index.html">Os_msg</a></li>
+<li data-wodoc-page="Os_notif"><a href="../../ocsigen-start.server/Os_notif/index.html">Os_notif</a></li>
+<li data-wodoc-page="Os_page"><a href="../../ocsigen-start.server/Os_page/index.html">Os_page</a></li>
+<li data-wodoc-page="Os_platform"><a href="../../ocsigen-start.server/Os_platform/index.html">Os_platform</a></li>
+<li data-wodoc-page="Os_request_cache"><a href="../../ocsigen-start.server/Os_request_cache/index.html">Os_request_cache</a></li>
+<li data-wodoc-page="Os_services"><a href="../../ocsigen-start.server/Os_services/index.html">Os_services</a></li>
+<li data-wodoc-page="Os_session"><a href="../../ocsigen-start.server/Os_session/index.html">Os_session</a></li>
+<li data-wodoc-page="Os_tips"><a href="../../ocsigen-start.server/Os_tips/index.html">Os_tips</a></li>
+<li data-wodoc-page="Os_types"><a href="../../ocsigen-start.server/Os_types/index.html">Os_types</a></li>
+<li data-wodoc-page="Os_uploader"><a href="../../ocsigen-start.server/Os_uploader/index.html">Os_uploader</a></li>
+<li data-wodoc-page="Os_user" class="current"><a href="../../ocsigen-start.server/Os_user/index.html">Os_user</a></li>
+<li data-wodoc-page="Os_user_proxy"><a href="../../ocsigen-start.server/Os_user_proxy/index.html">Os_user_proxy</a></li>
+<li data-wodoc-page="Os_user_view"><a href="../../ocsigen-start.server/Os_user_view/index.html">Os_user_view</a></li>
+</ul>
+</nav>
+</nav>
+    </nav>
+  </aside>
+</div>
+
+
+  <div class="project-page">
+    <div class="twocols">
+      <nav class="leftcol">
+        <div class="docversion">
+  <label>Version:
+    <select class="wodoc-version" onchange="wodocVersion(this.value)">
+      <option value="dev">dev</option>
+    </select>
+  </label>
+</div>
+<div class="cs-switch">
+  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
+  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+</div>
+<div class="page-toc">
+  <h3>On this page</h3>
+  
+</div>
+<nav class="api-nav manual-nav">
+<h3>Manual</h3>
+<ul class="api-section">
+<li class="ml3" data-wodoc-page="intro.html"><a href="../../intro.html">Introduction</a></li>
+<li class="ml3" data-wodoc-page="index.html"><a href="../../index.html">Overview</a></li>
+</ul>
+</nav>
+
+<nav class="api-nav">
+<h3>Server API</h3>
+<h4>Server API</h4>
+<ul class="api-section">
+<li data-wodoc-page="Os_current_user"><a href="../../ocsigen-start.server/Os_current_user/index.html">Os_current_user</a></li>
+<li data-wodoc-page="Os_date"><a href="../../ocsigen-start.server/Os_date/index.html">Os_date</a></li>
+<li data-wodoc-page="Os_db"><a href="../../ocsigen-start.server/Os_db/index.html">Os_db</a></li>
+<li data-wodoc-page="Os_email"><a href="../../ocsigen-start.server/Os_email/index.html">Os_email</a></li>
+<li data-wodoc-page="Os_fcm_notif"><a href="../../ocsigen-start.server/Os_fcm_notif/index.html">Os_fcm_notif</a></li>
+<li data-wodoc-page="Os_group"><a href="../../ocsigen-start.server/Os_group/index.html">Os_group</a></li>
+<li data-wodoc-page="Os_handlers"><a href="../../ocsigen-start.server/Os_handlers/index.html">Os_handlers</a></li>
+<li data-wodoc-page="Os_icons"><a href="../../ocsigen-start.server/Os_icons/index.html">Os_icons</a></li>
+<li data-wodoc-page="Os_lib"><a href="../../ocsigen-start.server/Os_lib/index.html">Os_lib</a></li>
+<li data-wodoc-page="Os_msg"><a href="../../ocsigen-start.server/Os_msg/index.html">Os_msg</a></li>
+<li data-wodoc-page="Os_notif"><a href="../../ocsigen-start.server/Os_notif/index.html">Os_notif</a></li>
+<li data-wodoc-page="Os_page"><a href="../../ocsigen-start.server/Os_page/index.html">Os_page</a></li>
+<li data-wodoc-page="Os_platform"><a href="../../ocsigen-start.server/Os_platform/index.html">Os_platform</a></li>
+<li data-wodoc-page="Os_request_cache"><a href="../../ocsigen-start.server/Os_request_cache/index.html">Os_request_cache</a></li>
+<li data-wodoc-page="Os_services"><a href="../../ocsigen-start.server/Os_services/index.html">Os_services</a></li>
+<li data-wodoc-page="Os_session"><a href="../../ocsigen-start.server/Os_session/index.html">Os_session</a></li>
+<li data-wodoc-page="Os_tips"><a href="../../ocsigen-start.server/Os_tips/index.html">Os_tips</a></li>
+<li data-wodoc-page="Os_types"><a href="../../ocsigen-start.server/Os_types/index.html">Os_types</a></li>
+<li data-wodoc-page="Os_uploader"><a href="../../ocsigen-start.server/Os_uploader/index.html">Os_uploader</a></li>
+<li data-wodoc-page="Os_user" class="current"><a href="../../ocsigen-start.server/Os_user/index.html">Os_user</a></li>
+<li data-wodoc-page="Os_user_proxy"><a href="../../ocsigen-start.server/Os_user_proxy/index.html">Os_user_proxy</a></li>
+<li data-wodoc-page="Os_user_view"><a href="../../ocsigen-start.server/Os_user_view/index.html">Os_user_view</a></li>
+</ul>
+</nav>
+
+      </nav>
+      <article class="rightcol">
+        <header class="odoc-preamble"><h1>Module <code><span>Os_user</span></code></h1><p>This module provides functions and types about users.</p></header>
+        <div class="odoc-content"><div class="odoc-spec"><div class="spec type anchored" id="type-id"><code><span><span class="keyword">type</span> id</span><span> = <a href="../Os_types/User/index.html#type-id">Os_types.User.id</a></span></code></div><div class="spec-doc"><p>Type alias to <a href="../Os_types/User/index.html#type-id"><code>Os_types.User.id</code></a> to allow to use <code>Os_user.id</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-id_of_json"><code><span><span class="keyword">val</span> id_of_json : <span><a href="https://ocaml.org/p/js_of_ocaml/6.3.2/doc/Deriving_Json_lexer/index.html#type-lexbuf">Deriving_Json_lexer.lexbuf</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-id">id</a></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-id_to_json"><code><span><span class="keyword">val</span> id_to_json : <span><a href="https://ocaml.org/p/ocaml-compiler/5.4.0/doc/Stdlib/Buffer/index.html#type-t">Buffer.t</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-id">id</a> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-id_json"><code><span><span class="keyword">val</span> id_json : <span><a href="#type-id">id</a> <a href="https://ocaml.org/p/js_of_ocaml/6.3.2/doc/Deriving_Json/index.html#type-t">Deriving_Json.t</a></span></span></code></div></div><div class="odoc-spec"><div class="spec type anchored" id="type-t"><code><span><span class="keyword">type</span> t</span><span> = <a href="../Os_types/User/index.html#type-t">Os_types.User.t</a></span><span> = </span><span>{</span></code><ol><li id="type-t.userid" class="def record field anchored"><code><span>userid : <a href="#type-id">id</a>;</span></code></li><li id="type-t.fn" class="def record field anchored"><code><span>fn : string;</span></code></li><li id="type-t.ln" class="def record field anchored"><code><span>ln : string;</span></code></li><li id="type-t.avatar" class="def record field anchored"><code><span>avatar : <span>string option</span>;</span></code></li><li id="type-t.language" class="def record field anchored"><code><span>language : <span>string option</span>;</span></code></li></ol><code><span>}</span></code></div><div class="spec-doc"><p>Type alias to <a href="../Os_types/User/index.html#type-t"><code>Os_types.User.t</code></a> to allow to use <code>Os_user.t</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-of_json"><code><span><span class="keyword">val</span> of_json : <span><a href="https://ocaml.org/p/js_of_ocaml/6.3.2/doc/Deriving_Json_lexer/index.html#type-lexbuf">Deriving_Json_lexer.lexbuf</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-to_json"><code><span><span class="keyword">val</span> to_json : <span><a href="https://ocaml.org/p/ocaml-compiler/5.4.0/doc/Stdlib/Buffer/index.html#type-t">Buffer.t</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-json"><code><span><span class="keyword">val</span> json : <span><a href="#type-t">t</a> <a href="https://ocaml.org/p/js_of_ocaml/6.3.2/doc/Deriving_Json/index.html#type-t">Deriving_Json.t</a></span></span></code></div></div><div class="odoc-spec"><div class="spec exception anchored" id="exception-Already_exists"><code><span><span class="keyword">exception</span> </span><span><span class="exception">Already_exists</span> <span class="keyword">of</span> <a href="../Os_types/User/index.html#type-id">Os_types.User.id</a></span></code></div><div class="spec-doc"><p>Exception used if an user already exists. The parameter is the userid of the existing user.</p></div></div><div class="odoc-spec"><div class="spec exception anchored" id="exception-No_such_user"><code><span><span class="keyword">exception</span> </span><span><span class="exception">No_such_user</span></span></code></div><div class="spec-doc"><p>Exception used if an user doesn't exist.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-password_set"><code><span><span class="keyword">val</span> password_set : <span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span>bool <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>password_set userid</code> returns <code>true</code> if the user with ID <code>userid</code> has set a password. Else <code>false</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-wrong_password"><code><span><span class="keyword">val</span> wrong_password : <span>bool <a href="../../../../eliom/latest/eliom.server/Eliom_reference/Volatile/index.html#type-eref">Eliom_reference.Volatile.eref</a></span></span></code></div><div class="spec-doc"><p>Reference used to remember if a wrong password has been already typed.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-no_such_user"><code><span><span class="keyword">val</span> no_such_user : <span>bool <a href="../../../../eliom/latest/eliom.server/Eliom_reference/Volatile/index.html#type-eref">Eliom_reference.Volatile.eref</a></span></span></code></div><div class="spec-doc"><p>Reference used to remember if a wrong user has already been typed.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-account_not_activated"><code><span><span class="keyword">val</span> account_not_activated : <span>bool <a href="../../../../eliom/latest/eliom.server/Eliom_reference/Volatile/index.html#type-eref">Eliom_reference.Volatile.eref</a></span></span></code></div><div class="spec-doc"><p>Reference used to remember if the account is activated.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-user_already_exists"><code><span><span class="keyword">val</span> user_already_exists : <span>bool <a href="../../../../eliom/latest/eliom.server/Eliom_reference/Volatile/index.html#type-eref">Eliom_reference.Volatile.eref</a></span></span></code></div><div class="spec-doc"><p>Reference used to remember if the user already exists.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-user_does_not_exist"><code><span><span class="keyword">val</span> user_does_not_exist : <span>bool <a href="../../../../eliom/latest/eliom.server/Eliom_reference/Volatile/index.html#type-eref">Eliom_reference.Volatile.eref</a></span></span></code></div><div class="spec-doc"><p>Reference used to remember if the user exists.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-user_already_preregistered"><code><span><span class="keyword">val</span> user_already_preregistered : <span>bool <a href="../../../../eliom/latest/eliom.server/Eliom_reference/Volatile/index.html#type-eref">Eliom_reference.Volatile.eref</a></span></span></code></div><div class="spec-doc"><p>Reference used to remember if the user is already preregistered.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-action_link_key_outdated"><code><span><span class="keyword">val</span> action_link_key_outdated : <span>bool <a href="../../../../eliom/latest/eliom.server/Eliom_reference/Volatile/index.html#type-eref">Eliom_reference.Volatile.eref</a></span></span></code></div><div class="spec-doc"><p>Reference used to remember if an action link key is outdated.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-userid_of_user"><code><span><span class="keyword">val</span> userid_of_user : <span><a href="../Os_types/User/index.html#type-t">Os_types.User.t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../Os_types/User/index.html#type-id">Os_types.User.id</a></span></code></div><div class="spec-doc"><p><code>userid_of_user user</code> returns the userid of the user <code>user</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-firstname_of_user"><code><span><span class="keyword">val</span> firstname_of_user : <span><a href="../Os_types/User/index.html#type-t">Os_types.User.t</a> <span class="arrow">&#45;&gt;</span></span> string</span></code></div><div class="spec-doc"><p><code>firstname_of_user user</code> returns the first name of the user <code>user</code></p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-lastname_of_user"><code><span><span class="keyword">val</span> lastname_of_user : <span><a href="../Os_types/User/index.html#type-t">Os_types.User.t</a> <span class="arrow">&#45;&gt;</span></span> string</span></code></div><div class="spec-doc"><p><code>lastname_of_user user</code> returns the last name of the user <code>user</code></p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-avatar_of_user"><code><span><span class="keyword">val</span> avatar_of_user : <span><a href="../Os_types/User/index.html#type-t">Os_types.User.t</a> <span class="arrow">&#45;&gt;</span></span> <span>string option</span></span></code></div><div class="spec-doc"><p><code>avatar_of_user user</code> returns the avatar of the user <code>user</code> as <code>Some avatar_uri</code>. It returns <code>None</code> if the user <code>user</code> has no avatar.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-avatar_uri_of_avatar"><code><span><span class="keyword">val</span> avatar_uri_of_avatar : 
+  <span><span class="optlabel">?absolute_path</span>:bool <span class="arrow">&#45;&gt;</span></span>
+  <span>string <span class="arrow">&#45;&gt;</span></span>
+  <a href="../../../../eliom/latest/eliom.server/Eliom_content/Xml/index.html#type-uri">Eliom_content.Xml.uri</a></span></code></div><div class="spec-doc"><p><code>avatar_uri_of_avatar ?absolute_path avatar</code> returns the URI (absolute or relative) depending on the value of <code>absolute_path</code>) of the avatar <code>avatar</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-avatar_uri_of_user"><code><span><span class="keyword">val</span> avatar_uri_of_user : 
+  <span><span class="optlabel">?absolute_path</span>:bool <span class="arrow">&#45;&gt;</span></span>
+  <span><a href="../Os_types/User/index.html#type-t">Os_types.User.t</a> <span class="arrow">&#45;&gt;</span></span>
+  <span><a href="../../../../eliom/latest/eliom.server/Eliom_content/Xml/index.html#type-uri">Eliom_content.Xml.uri</a> option</span></span></code></div><div class="spec-doc"><p><code>avatar_uri_of_user user</code> returns the avatar URI (absolute or relative) depending on the value of <code>absolute_path</code>) of the avatar of the user <code>user</code>. It returns <code>None</code> is the user <code>user</code> has no avatar.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-language_of_user"><code><span><span class="keyword">val</span> language_of_user : <span><a href="../Os_types/User/index.html#type-t">Os_types.User.t</a> <span class="arrow">&#45;&gt;</span></span> <span>string option</span></span></code></div><div class="spec-doc"><p><code>language_of_user user</code> returns the language of the user <code>user</code></p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-fullname_of_user"><code><span><span class="keyword">val</span> fullname_of_user : <span><a href="../Os_types/User/index.html#type-t">Os_types.User.t</a> <span class="arrow">&#45;&gt;</span></span> string</span></code></div><div class="spec-doc"><p>Retrieve the full name of user (which is the concatenation of the first name and last name).</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-is_complete"><code><span><span class="keyword">val</span> is_complete : <span><a href="../Os_types/User/index.html#type-t">Os_types.User.t</a> <span class="arrow">&#45;&gt;</span></span> bool</span></code></div><div class="spec-doc"><p><code>is_complete user</code> returns <code>true</code> if the first name and the last name of <code>Os_types.user</code> have been completed yet.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_actionlinkkey"><code><span><span class="keyword">val</span> add_actionlinkkey : 
+  <span><span class="optlabel">?autoconnect</span>:bool <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?action</span>:<span>[ `AccountActivation <span>| `PasswordReset</span> <span><span>| `Custom</span> of string</span> ]</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?data</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?validity</span>:int64 <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?expiry</span>:<a href="https://ocaml.org/p/calendar/3.0.0/doc/CalendarLib/Calendar/index.html#type-t">CalendarLib.Calendar.t</a> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">act_key</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">userid</span>:<a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">email</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span>unit <span class="arrow">&#45;&gt;</span></span>
+  <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>add_actionlinkkey ?autoconnect ?action ?data ?validity ?expiry ~act_key ~userid ~email ()</code> adds the action key in the database.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-verify_password"><code><span><span class="keyword">val</span> verify_password : <span><span class="label">email</span>:string <span class="arrow">&#45;&gt;</span></span> <span><span class="label">password</span>:string <span class="arrow">&#45;&gt;</span></span> <span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>verify_password ~email ~password</code> returns the userid if user with email <code>email</code> is registered with the password <code>password</code>. If <code>password</code> the password is wrong, it fails with exception <code>Wrong_password</code>. If user exists but account is not validated, it fails with exception <code>Account_not_activated</code>. If user has no password, it fails with exception <code>Password_not_set</code>. If user is not found, it fails with exception <a href="#exception-No_such_user"><code>No_such_user</code></a>. If password is empty, it fails with exception <code>Empty_password</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-user_of_userid"><code><span><span class="keyword">val</span> user_of_userid : <span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../Os_types/User/index.html#type-t">Os_types.User.t</a> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>user_of_userid userid</code> returns the information about the user with ID <code>userid</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get_actionlinkkey_info"><code><span><span class="keyword">val</span> get_actionlinkkey_info : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="../Os_types/Action_link_key/index.html#type-info">Os_types.Action_link_key.info</a> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Retrieve the data corresponding to an action link key, each call decrements the validity of the key by <code>1</code> if it exists and <code>validity &gt; 0</code> (it remains at <code>0</code> if it's already <code>0</code>). It is up to you to adapt the actions according to the value of validity! Raises <a href="../Os_db/index.html#exception-No_such_resource"><code>Os_db.No_such_resource</code></a> if the action link key is not found.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-userid_of_email"><code><span><span class="keyword">val</span> userid_of_email : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>userid_of_email email</code> returns the userid of the user with email <code>email</code>. It raises the exception <a href="../Os_db/index.html#exception-No_such_resource"><code>Os_db.No_such_resource</code></a> if the email <code>email</code> is not used.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-emails_of_userid"><code><span><span class="keyword">val</span> emails_of_userid : <span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><span>string list</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>emails_of_userid userid</code> returns the emails list of user with ID <code>userid</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-email_of_userid"><code><span><span class="keyword">val</span> email_of_userid : <span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><span>string option</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>email_of_userid userid</code> returns the main email of user with ID <code>userid</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-emails_of_user"><code><span><span class="keyword">val</span> emails_of_user : <span><a href="../Os_types/User/index.html#type-t">Os_types.User.t</a> <span class="arrow">&#45;&gt;</span></span> <span><span>string list</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>emails_of_user user</code> returns the emails list of user <code>user</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-email_of_user"><code><span><span class="keyword">val</span> email_of_user : <span><a href="../Os_types/User/index.html#type-t">Os_types.User.t</a> <span class="arrow">&#45;&gt;</span></span> <span><span>string option</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>email_of_user user</code> returns the main email of user <code>user</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get_language"><code><span><span class="keyword">val</span> get_language : <span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><span>string option</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>get_language userid</code> returns the language of the user with ID <code>userid</code>. The language is retrieved from the database.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get_users"><code><span><span class="keyword">val</span> get_users : <span><span class="optlabel">?pattern</span>:string <span class="arrow">&#45;&gt;</span></span> <span>unit <span class="arrow">&#45;&gt;</span></span> <span><span><a href="../Os_types/User/index.html#type-t">Os_types.User.t</a> list</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>get_users ?pattern ()</code> gets users who match the <code>pattern</code> (useful for completion).</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-create"><code><span><span class="keyword">val</span> create : 
+  <span><span class="optlabel">?password</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?avatar</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?language</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?email</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">firstname</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">lastname</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span>unit <span class="arrow">&#45;&gt;</span></span>
+  <span><a href="../Os_types/User/index.html#type-t">Os_types.User.t</a> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>create ?password ?avatar ?language ~firstname ~lastname email</code> creates a new user with the given information. An email, the first name and the last name are mandatory.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-update"><code><span><span class="keyword">val</span> update : 
+  <span><span class="optlabel">?password</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?avatar</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?language</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">firstname</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">lastname</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span>
+  <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>update ?password ?avatar ?language ~firstname ~lastname userid</code> update the given information of the user with ID <code>userid</code>. Only given information are updated.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-update'"><code><span><span class="keyword">val</span> update' : <span><span class="optlabel">?password</span>:string <span class="arrow">&#45;&gt;</span></span> <span><a href="../Os_types/User/index.html#type-t">Os_types.User.t</a> <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Another version of <code>update</code> using a type <a href="../Os_types/User/index.html#type-t"><code>Os_types.User.t</code></a> instead of label.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-update_password"><code><span><span class="keyword">val</span> update_password : <span><span class="label">userid</span>:<a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><span class="label">password</span>:string <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>update_password ~userid ~password</code> updates the password only. <code>password</code> must not be hashed: it is done by the function <code>f_crypt</code> of the tuple <a href="../Os_db/index.html#val-pwd_crypt_ref"><code>Os_db.pwd_crypt_ref</code></a>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-update_avatar"><code><span><span class="keyword">val</span> update_avatar : <span><span class="label">userid</span>:<a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><span class="label">avatar</span>:string <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>update_avatar ~userid ~avatar</code> updates the avatar of the user with ID <code>userid</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-update_language"><code><span><span class="keyword">val</span> update_language : <span><span class="label">userid</span>:<a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><span class="label">language</span>:string <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>update_language ~userid ~language</code> updates the language of the user with ID <code>userid</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-is_registered"><code><span><span class="keyword">val</span> is_registered : <span>string <span class="arrow">&#45;&gt;</span></span> <span>bool <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>is_registered email</code> returns <code>true</code> if a user exists with email <code>email</code>. Else, it returns <code>false</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-is_preregistered"><code><span><span class="keyword">val</span> is_preregistered : <span>string <span class="arrow">&#45;&gt;</span></span> <span>bool <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>is_preregistered email</code> returns <code>true</code> if a user exists with email <code>email</code>. Else, it returns <code>false</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_preregister"><code><span><span class="keyword">val</span> add_preregister : <span>string <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>add_preregister email</code> adds an email into the preregister collections.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-remove_preregister"><code><span><span class="keyword">val</span> remove_preregister : <span>string <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>remove_preregister email</code> removes an email from the preregister collections.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-all"><code><span><span class="keyword">val</span> all : <span><span class="optlabel">?limit</span>:int64 <span class="arrow">&#45;&gt;</span></span> <span>unit <span class="arrow">&#45;&gt;</span></span> <span><span>string list</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Get <code>limit</code> (default: 10) emails from the preregister collections.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-set_pwd_crypt_fun"><code><span><span class="keyword">val</span> set_pwd_crypt_fun : 
+  <span><span>(<span>(<span>string <span class="arrow">&#45;&gt;</span></span> string)</span> * <span>(<span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span>string <span class="arrow">&#45;&gt;</span></span> <span>string <span class="arrow">&#45;&gt;</span></span> bool)</span>)</span> <span class="arrow">&#45;&gt;</span></span>
+  unit</span></code></div><div class="spec-doc"><p>By default, passwords are encrypted using Bcrypt. You can customize this by calling this function with a pair of function (crypt and check password). The first parameter of the second function is the user id (in case you need it). Then it takes as second parameter the password given by user, and as third parameter the hash found in database.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-remove_email_from_user"><code><span><span class="keyword">val</span> remove_email_from_user : 
+  <span><span class="label">userid</span>:<a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">email</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>remove_email_from_user ~userid ~email</code> removes the email <code>email</code> from the user with the id <code>userid</code>. If the email is registered as the main email for the user it fails with the exception <a href="../Os_db/index.html#exception-Main_email_removal_attempt"><code>Os_db.Main_email_removal_attempt</code></a>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-is_email_validated"><code><span><span class="keyword">val</span> is_email_validated : <span><span class="label">userid</span>:<a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><span class="label">email</span>:string <span class="arrow">&#45;&gt;</span></span> <span>bool <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>is_email_validated ~userid ~email</code> returns whether for a user designated by its id the given email has been validated.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-is_main_email"><code><span><span class="keyword">val</span> is_main_email : <span><span class="label">userid</span>:<a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><span class="label">email</span>:string <span class="arrow">&#45;&gt;</span></span> <span>bool <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>is_main_email ~userid ~email</code> returns whether an email is the main email registered for a given user designated by its id.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-update_main_email"><code><span><span class="keyword">val</span> update_main_email : <span><span class="label">userid</span>:<a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><span class="label">email</span>:string <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>update_mail_email ~userid ~email</code> sets the main email for a user with the ID <code>userid</code> as the email <code>email</code>.</p></div></div></div>
+      </article>
+    </div>
+  </div>
+
+  <script>
+    // Toggle between the server / client API of the same module.
+    function wodocSwitch(side) {
+      var w = { server: '', client: '' };
+      var p = location.pathname;
+      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
+      location.href = np !== p ? np
+        : '../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
+    }
+    var wodocPub = "/ocsigen-start";
+    // Switch version: keep the current page, swapping only the version segment.
+    function wodocVersion(v) {
+      if (!v) return;
+      var re = new RegExp('^(' + wodocPub + '/)[^/]+');
+      var p = location.pathname;
+      location.href =
+        re.test(p) ? p.replace(re, '$1' + v) : wodocPub + '/' + v + '/index.html';
+    }
+    // Build the version <select> from the project's versions.json (the single
+    // source of truth, refreshed on every build/release), so even older frozen
+    // pages list the current set. Falls back to the baked <option>s on failure.
+    (function () {
+      var seg = (location.pathname.match(
+        new RegExp('^' + wodocPub + '/([^/]+)')) || [])[1];
+      function select(sel) {
+        var i;
+        for (i = 0; i < sel.options.length; i++)
+          if (sel.options[i].value === seg) { sel.selectedIndex = i; return; }
+        if (seg) {
+          var o = document.createElement('option');
+          o.value = seg; o.textContent = seg; o.selected = true;
+          sel.insertBefore(o, sel.firstChild);
+        }
+      }
+      fetch(wodocPub + '/versions.json')
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (m) {
+          var list = m.list || [], latest = m.latest;
+          document.querySelectorAll('.wodoc-version').forEach(function (sel) {
+            sel.innerHTML = '';
+            list.forEach(function (v) {
+              var o = document.createElement('option');
+              if (v === latest) { o.value = 'latest'; o.textContent = v + ' (latest)'; }
+              else { o.value = v; o.textContent = v; }
+              sel.appendChild(o);
+            });
+            select(sel);
+          });
+        })
+        .catch(function () {
+          document.querySelectorAll('.wodoc-version').forEach(select);
+        });
+    })();
+  </script>
+</body>
+</html>

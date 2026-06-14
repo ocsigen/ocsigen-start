@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Module Data.PhoneGap — Start</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="/css/ocsigen-odoc.css"/>
+  <script src="../../../../highlight.pack.js"></script>
+  <script src="../../../../wodoc-highlight.js"></script>
+</head>
+<body class="wodoc-page wodoc-doc wodoc-server">
+  <!-- Shared site menu — THE single source of truth for the header, top menu and
+     drawer of EVERY Ocsigen doc page (vitrine + all projects). Canonical copy
+     lives here in ocsigen.github.io; each project's build fetches it. Injected
+     by `wodoc assemble --menu`. Holes filled by the tool (braces omitted here so
+     this comment is not itself rewritten by the hole-filler):
+       subproject  the sub-project name shown next to the Ocsigen logo
+                   (empty on the vitrine), via --subproject
+       leftnav     the project's left navigation, expanded into BOTH the mobile
+                   drawer (below) and the left column (in the page template),
+                   via --leftnav
+     The current entry is highlighted by adding the `current` class to the
+     element carrying data-wodoc-page=<id>: --current on the vitrine (page id),
+     --menu-current in a project (the project id). Nothing is hardcoded here, so
+     this file is the ONLY place the menu is defined.
+
+     Links are the FINAL site paths (/<project>/, /<page>): the target layout
+     where each project is served at ocsigen.org/<project>/ — no transitional
+     /wodoc/ prefix. -->
+<div class="page-header">
+  <p class="logo-ocsigen"><a href="/"><img src="/img/ocsigen-white.svg" alt="Ocsigen"/></a></p>
+  <p class="logo-subproject">Start</p>
+
+  <div class="mainmenu">
+    <p class="mainmenu-home" data-wodoc-page="githubio"><a href="/">Home</a></p>
+    <p class="mainmenu-doc" data-wodoc-page="tuto"><a href="/tuto/">Doc</a></p>
+    <p data-wodoc-page="eliom"><a href="/eliom/">Eliom</a></p>
+    <p data-wodoc-page="js_of_ocaml"><a href="/js_of_ocaml/">Js_of_ocaml</a></p>
+    <p data-wodoc-page="ocsigenserver"><a href="/ocsigenserver/">Server</a></p>
+    <p data-wodoc-page="lwt"><a href="/lwt/">Lwt</a></p>
+    <p data-wodoc-page="tyxml"><a href="/tyxml/">Tyxml</a></p>
+    <p data-wodoc-page="ocsigen-start" class="current"><a href="/ocsigen-start/">Start</a></p>
+  </div>
+
+  <form id="googlesearch" action="https://google.com/search">
+    <input name="q" id="gsearch-box" placeholder="Search using Google"/>
+    <label for="gsearch-box"><img src="/img/search.svg" alt="" id="gsearch-icon"/></label>
+    <input type="submit" id="gsearch-submit" onclick="document.getElementById('gsearch-box').value += ' site:ocsigen.org';"/>
+  </form>
+
+  <aside class="how-drawer">
+    <input id="how-drawer-toggle" type="checkbox"/>
+    <label for="how-drawer-toggle" id="how-drawer-label"><span class="how-drawer-icon"></span></label>
+    <nav class="how-drawer-content">
+      <ul class="drawermainmenu">
+        <li class="drawermainmenu-home" data-wodoc-page="githubio"><a href="/">Home</a></li>
+        <li class="drawermainmenu-doc" data-wodoc-page="tuto"><a href="/tuto/">Doc</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="eliom"><a href="/eliom/">Eliom</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="js_of_ocaml"><a href="/js_of_ocaml/">Js_of_ocaml</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsigenserver"><a href="/ocsigenserver/">Server</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="lwt"><a href="/lwt/">Lwt</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="tyxml"><a href="/tyxml/">Tyxml</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsigen-toolkit"><a href="/ocsigen-toolkit/">Toolkit</a></li>
+        <li class="drawermainmenu-project current" data-wodoc-page="ocsigen-start"><a href="/ocsigen-start/">Start</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsipersist"><a href="/ocsipersist/">Ocsipersist</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="reactiveData"><a href="/reactiveData/">ReactiveData</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsigen-i18n"><a href="/ocsigen-i18n/">i18n</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="wodoc"><a href="/wodoc/">Wodoc</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="projects"><a href="/projects">Other projects</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="papers"><a href="/papers">Research papers</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="credits"><a href="/credits">Who does Ocsigen?</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="contributing"><a href="/contributing">Contributing</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="blog"><a href="/blog">Blog</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="install"><a href="/install">Installation</a></li>
+        <li class="drawermainmenu-page"><a href="https://github.com/ocsigen">Source code</a></li>
+      </ul>
+      <!-- On mobile the left column is hidden; its menu lives here in the burger
+           (.how-doctree, shown only on narrow screens), as the old site did.
+           Empty on the vitrine; the leftnav hole is filled (with the same
+           fragment as the left column) only on project pages. -->
+      <nav class="how-doctree"><div class="docversion">
+  <label>Version:
+    <select class="wodoc-version" onchange="wodocVersion(this.value)">
+      <option value="dev">dev</option>
+    </select>
+  </label>
+</div>
+<div class="cs-switch">
+  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
+  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+</div>
+<div class="page-toc">
+  <h3>On this page</h3>
+  
+</div>
+<nav class="api-nav manual-nav">
+<h3>Manual</h3>
+<ul class="api-section">
+<li class="ml3" data-wodoc-page="intro.html"><a href="../../../../intro.html">Introduction</a></li>
+<li class="ml3" data-wodoc-page="index.html"><a href="../../../../index.html">Overview</a></li>
+</ul>
+</nav>
+
+<nav class="api-nav">
+<h3>Server API</h3>
+<h4>Server API</h4>
+<ul class="api-section">
+<li data-wodoc-page="Os_current_user"><a href="../../../../ocsigen-start.server/Os_current_user/index.html">Os_current_user</a></li>
+<li data-wodoc-page="Os_date"><a href="../../../../ocsigen-start.server/Os_date/index.html">Os_date</a></li>
+<li data-wodoc-page="Os_db"><a href="../../../../ocsigen-start.server/Os_db/index.html">Os_db</a></li>
+<li data-wodoc-page="Os_email"><a href="../../../../ocsigen-start.server/Os_email/index.html">Os_email</a></li>
+<li data-wodoc-page="Os_fcm_notif"><a href="../../../../ocsigen-start.server/Os_fcm_notif/index.html">Os_fcm_notif</a></li>
+<li data-wodoc-page="Os_group"><a href="../../../../ocsigen-start.server/Os_group/index.html">Os_group</a></li>
+<li data-wodoc-page="Os_handlers"><a href="../../../../ocsigen-start.server/Os_handlers/index.html">Os_handlers</a></li>
+<li data-wodoc-page="Os_icons"><a href="../../../../ocsigen-start.server/Os_icons/index.html">Os_icons</a></li>
+<li data-wodoc-page="Os_lib"><a href="../../../../ocsigen-start.server/Os_lib/index.html">Os_lib</a></li>
+<li data-wodoc-page="Os_msg"><a href="../../../../ocsigen-start.server/Os_msg/index.html">Os_msg</a></li>
+<li data-wodoc-page="Os_notif"><a href="../../../../ocsigen-start.server/Os_notif/index.html">Os_notif</a></li>
+<li data-wodoc-page="Os_page"><a href="../../../../ocsigen-start.server/Os_page/index.html">Os_page</a></li>
+<li data-wodoc-page="Os_platform"><a href="../../../../ocsigen-start.server/Os_platform/index.html">Os_platform</a></li>
+<li data-wodoc-page="Os_request_cache"><a href="../../../../ocsigen-start.server/Os_request_cache/index.html">Os_request_cache</a></li>
+<li data-wodoc-page="Os_services"><a href="../../../../ocsigen-start.server/Os_services/index.html">Os_services</a></li>
+<li data-wodoc-page="Os_session"><a href="../../../../ocsigen-start.server/Os_session/index.html">Os_session</a></li>
+<li data-wodoc-page="Os_tips"><a href="../../../../ocsigen-start.server/Os_tips/index.html">Os_tips</a></li>
+<li data-wodoc-page="Os_types"><a href="../../../../ocsigen-start.server/Os_types/index.html">Os_types</a></li>
+<li data-wodoc-page="Os_uploader"><a href="../../../../ocsigen-start.server/Os_uploader/index.html">Os_uploader</a></li>
+<li data-wodoc-page="Os_user"><a href="../../../../ocsigen-start.server/Os_user/index.html">Os_user</a></li>
+<li data-wodoc-page="Os_user_proxy"><a href="../../../../ocsigen-start.server/Os_user_proxy/index.html">Os_user_proxy</a></li>
+<li data-wodoc-page="Os_user_view"><a href="../../../../ocsigen-start.server/Os_user_view/index.html">Os_user_view</a></li>
+</ul>
+</nav>
+</nav>
+    </nav>
+  </aside>
+</div>
+
+
+  <div class="project-page">
+    <div class="twocols">
+      <nav class="leftcol">
+        <div class="docversion">
+  <label>Version:
+    <select class="wodoc-version" onchange="wodocVersion(this.value)">
+      <option value="dev">dev</option>
+    </select>
+  </label>
+</div>
+<div class="cs-switch">
+  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
+  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+</div>
+<div class="page-toc">
+  <h3>On this page</h3>
+  
+</div>
+<nav class="api-nav manual-nav">
+<h3>Manual</h3>
+<ul class="api-section">
+<li class="ml3" data-wodoc-page="intro.html"><a href="../../../../intro.html">Introduction</a></li>
+<li class="ml3" data-wodoc-page="index.html"><a href="../../../../index.html">Overview</a></li>
+</ul>
+</nav>
+
+<nav class="api-nav">
+<h3>Server API</h3>
+<h4>Server API</h4>
+<ul class="api-section">
+<li data-wodoc-page="Os_current_user"><a href="../../../../ocsigen-start.server/Os_current_user/index.html">Os_current_user</a></li>
+<li data-wodoc-page="Os_date"><a href="../../../../ocsigen-start.server/Os_date/index.html">Os_date</a></li>
+<li data-wodoc-page="Os_db"><a href="../../../../ocsigen-start.server/Os_db/index.html">Os_db</a></li>
+<li data-wodoc-page="Os_email"><a href="../../../../ocsigen-start.server/Os_email/index.html">Os_email</a></li>
+<li data-wodoc-page="Os_fcm_notif"><a href="../../../../ocsigen-start.server/Os_fcm_notif/index.html">Os_fcm_notif</a></li>
+<li data-wodoc-page="Os_group"><a href="../../../../ocsigen-start.server/Os_group/index.html">Os_group</a></li>
+<li data-wodoc-page="Os_handlers"><a href="../../../../ocsigen-start.server/Os_handlers/index.html">Os_handlers</a></li>
+<li data-wodoc-page="Os_icons"><a href="../../../../ocsigen-start.server/Os_icons/index.html">Os_icons</a></li>
+<li data-wodoc-page="Os_lib"><a href="../../../../ocsigen-start.server/Os_lib/index.html">Os_lib</a></li>
+<li data-wodoc-page="Os_msg"><a href="../../../../ocsigen-start.server/Os_msg/index.html">Os_msg</a></li>
+<li data-wodoc-page="Os_notif"><a href="../../../../ocsigen-start.server/Os_notif/index.html">Os_notif</a></li>
+<li data-wodoc-page="Os_page"><a href="../../../../ocsigen-start.server/Os_page/index.html">Os_page</a></li>
+<li data-wodoc-page="Os_platform"><a href="../../../../ocsigen-start.server/Os_platform/index.html">Os_platform</a></li>
+<li data-wodoc-page="Os_request_cache"><a href="../../../../ocsigen-start.server/Os_request_cache/index.html">Os_request_cache</a></li>
+<li data-wodoc-page="Os_services"><a href="../../../../ocsigen-start.server/Os_services/index.html">Os_services</a></li>
+<li data-wodoc-page="Os_session"><a href="../../../../ocsigen-start.server/Os_session/index.html">Os_session</a></li>
+<li data-wodoc-page="Os_tips"><a href="../../../../ocsigen-start.server/Os_tips/index.html">Os_tips</a></li>
+<li data-wodoc-page="Os_types"><a href="../../../../ocsigen-start.server/Os_types/index.html">Os_types</a></li>
+<li data-wodoc-page="Os_uploader"><a href="../../../../ocsigen-start.server/Os_uploader/index.html">Os_uploader</a></li>
+<li data-wodoc-page="Os_user"><a href="../../../../ocsigen-start.server/Os_user/index.html">Os_user</a></li>
+<li data-wodoc-page="Os_user_proxy"><a href="../../../../ocsigen-start.server/Os_user_proxy/index.html">Os_user_proxy</a></li>
+<li data-wodoc-page="Os_user_view"><a href="../../../../ocsigen-start.server/Os_user_view/index.html">Os_user_view</a></li>
+</ul>
+</nav>
+
+      </nav>
+      <article class="rightcol">
+        <header class="odoc-preamble"><h1>Module <code><span>Data.PhoneGap</span></code></h1><p>The Cordova plugin phonegap-plugin-push interprets some payloads defined in the data key. The following module defines an interface to these payloads. You can find the payloads list here: https://github.com/phonegap/phonegap-plugin-push/blob/v2.0.x/docs/PAYLOAD.md Be aware that if you use this plugin, all attributes must be added in the data object and not in the notification object which must be empty.</p><p>Another difference is that by default with the phonegap plugin, a new notification replaces the last one, which is not the case for cordova-plugin-fcm. See <code>add_notification_id</code> for more information.</p></header>
+        <div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-add_message"><code><span><span class="keyword">val</span> add_message : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p>Add a message attribute to the notification</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_title"><code><span><span class="keyword">val</span> add_title : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p>Add a title attribute to the notification</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_image"><code><span><span class="keyword">val</span> add_image : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p>Add an image to the push notification in the notification area</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_soundname"><code><span><span class="keyword">val</span> add_soundname : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p>Add a soundame when the mobile receives the notification</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_notification_id"><code><span><span class="keyword">val</span> add_notification_id : <span>int <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p>Add a notification ID. By default, a new notification replaces the last one because they have the same ID. By adding a different ID for two different notifications, two notifications will be shown in the notification area instead of one. If a new notification has the same ID as an older one, the new one will replace it. It is useful for chats for example.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_notification_channel_id"><code><span><span class="keyword">val</span> add_notification_channel_id : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Style"><code><span><span class="keyword">module</span> <a href="Style/index.html">Style</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_style"><code><span><span class="keyword">val</span> add_style : <span><a href="Style/index.html#type-t">Style.t</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_summary_text"><code><span><span class="keyword">val</span> add_summary_text : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p>Add a summary text.</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Action"><code><span><span class="keyword">module</span> <a href="Action/index.html">Action</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_actions"><code><span><span class="keyword">val</span> add_actions : <span><a href="Action/index.html#type-t">Action.t</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="Action/index.html#type-t">Action.t</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p>Add two buttons with an action (created with <a href="Action/index.html#val-create"><code>Action.create</code></a>). Be sure you exported the callback in JavaScript.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_led_color"><code><span><span class="keyword">val</span> add_led_color : <span>int <span class="arrow">&#45;&gt;</span></span> <span>int <span class="arrow">&#45;&gt;</span></span> <span>int <span class="arrow">&#45;&gt;</span></span> <span>int <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p>Change the LED color when the notification is received. The parameters are in the ARGB format.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_vibration_pattern"><code><span><span class="keyword">val</span> add_vibration_pattern : <span><span>int list</span> <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p>Add a vibration pattern</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_badge"><code><span><span class="keyword">val</span> add_badge : <span>int <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p>Add a badge to the icon of the notification in the launcher. Only available for some launcher. The integer parameter is the number of the badge. For iOS, use <code>Os_fcm_notif.Notification.Ios.add_badge</code>.</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Priority"><code><span><span class="keyword">module</span> <a href="Priority/index.html">Priority</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_priority"><code><span><span class="keyword">val</span> add_priority : <span><a href="Priority/index.html#type-t">Priority.t</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_picture"><code><span><span class="keyword">val</span> add_picture : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p>Add a large picture in the notification (under the title and body). Don't forget to set style to the value <a href="Style/index.html#type-t.Picture"><code>Style.t.Picture</code></a>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_info"><code><span><span class="keyword">val</span> add_info : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p>Add <code>content-available: 1</code> also</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Visibility"><code><span><span class="keyword">module</span> <a href="Visibility/index.html">Visibility</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_visibility"><code><span><span class="keyword">val</span> add_visibility : <span><a href="Visibility/index.html#type-t">Visibility.t</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p>Add the visibility payload</p></div></div></div>
+      </article>
+    </div>
+  </div>
+
+  <script>
+    // Toggle between the server / client API of the same module.
+    function wodocSwitch(side) {
+      var w = { server: '', client: '' };
+      var p = location.pathname;
+      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
+      location.href = np !== p ? np
+        : '../../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
+    }
+    var wodocPub = "/ocsigen-start";
+    // Switch version: keep the current page, swapping only the version segment.
+    function wodocVersion(v) {
+      if (!v) return;
+      var re = new RegExp('^(' + wodocPub + '/)[^/]+');
+      var p = location.pathname;
+      location.href =
+        re.test(p) ? p.replace(re, '$1' + v) : wodocPub + '/' + v + '/index.html';
+    }
+    // Build the version <select> from the project's versions.json (the single
+    // source of truth, refreshed on every build/release), so even older frozen
+    // pages list the current set. Falls back to the baked <option>s on failure.
+    (function () {
+      var seg = (location.pathname.match(
+        new RegExp('^' + wodocPub + '/([^/]+)')) || [])[1];
+      function select(sel) {
+        var i;
+        for (i = 0; i < sel.options.length; i++)
+          if (sel.options[i].value === seg) { sel.selectedIndex = i; return; }
+        if (seg) {
+          var o = document.createElement('option');
+          o.value = seg; o.textContent = seg; o.selected = true;
+          sel.insertBefore(o, sel.firstChild);
+        }
+      }
+      fetch(wodocPub + '/versions.json')
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (m) {
+          var list = m.list || [], latest = m.latest;
+          document.querySelectorAll('.wodoc-version').forEach(function (sel) {
+            sel.innerHTML = '';
+            list.forEach(function (v) {
+              var o = document.createElement('option');
+              if (v === latest) { o.value = 'latest'; o.textContent = v + ' (latest)'; }
+              else { o.value = v; o.textContent = v; }
+              sel.appendChild(o);
+            });
+            select(sel);
+          });
+        })
+        .catch(function () {
+          document.querySelectorAll('.wodoc-version').forEach(select);
+        });
+    })();
+  </script>
+</body>
+</html>

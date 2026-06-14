@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Module Os_tips — Start</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="/css/ocsigen-odoc.css"/>
+  <script src="../../highlight.pack.js"></script>
+  <script src="../../wodoc-highlight.js"></script>
+</head>
+<body class="wodoc-page wodoc-doc wodoc-server">
+  <!-- Shared site menu — THE single source of truth for the header, top menu and
+     drawer of EVERY Ocsigen doc page (vitrine + all projects). Canonical copy
+     lives here in ocsigen.github.io; each project's build fetches it. Injected
+     by `wodoc assemble --menu`. Holes filled by the tool (braces omitted here so
+     this comment is not itself rewritten by the hole-filler):
+       subproject  the sub-project name shown next to the Ocsigen logo
+                   (empty on the vitrine), via --subproject
+       leftnav     the project's left navigation, expanded into BOTH the mobile
+                   drawer (below) and the left column (in the page template),
+                   via --leftnav
+     The current entry is highlighted by adding the `current` class to the
+     element carrying data-wodoc-page=<id>: --current on the vitrine (page id),
+     --menu-current in a project (the project id). Nothing is hardcoded here, so
+     this file is the ONLY place the menu is defined.
+
+     Links are the FINAL site paths (/<project>/, /<page>): the target layout
+     where each project is served at ocsigen.org/<project>/ — no transitional
+     /wodoc/ prefix. -->
+<div class="page-header">
+  <p class="logo-ocsigen"><a href="/"><img src="/img/ocsigen-white.svg" alt="Ocsigen"/></a></p>
+  <p class="logo-subproject">Start</p>
+
+  <div class="mainmenu">
+    <p class="mainmenu-home" data-wodoc-page="githubio"><a href="/">Home</a></p>
+    <p class="mainmenu-doc" data-wodoc-page="tuto"><a href="/tuto/">Doc</a></p>
+    <p data-wodoc-page="eliom"><a href="/eliom/">Eliom</a></p>
+    <p data-wodoc-page="js_of_ocaml"><a href="/js_of_ocaml/">Js_of_ocaml</a></p>
+    <p data-wodoc-page="ocsigenserver"><a href="/ocsigenserver/">Server</a></p>
+    <p data-wodoc-page="lwt"><a href="/lwt/">Lwt</a></p>
+    <p data-wodoc-page="tyxml"><a href="/tyxml/">Tyxml</a></p>
+    <p data-wodoc-page="ocsigen-start" class="current"><a href="/ocsigen-start/">Start</a></p>
+  </div>
+
+  <form id="googlesearch" action="https://google.com/search">
+    <input name="q" id="gsearch-box" placeholder="Search using Google"/>
+    <label for="gsearch-box"><img src="/img/search.svg" alt="" id="gsearch-icon"/></label>
+    <input type="submit" id="gsearch-submit" onclick="document.getElementById('gsearch-box').value += ' site:ocsigen.org';"/>
+  </form>
+
+  <aside class="how-drawer">
+    <input id="how-drawer-toggle" type="checkbox"/>
+    <label for="how-drawer-toggle" id="how-drawer-label"><span class="how-drawer-icon"></span></label>
+    <nav class="how-drawer-content">
+      <ul class="drawermainmenu">
+        <li class="drawermainmenu-home" data-wodoc-page="githubio"><a href="/">Home</a></li>
+        <li class="drawermainmenu-doc" data-wodoc-page="tuto"><a href="/tuto/">Doc</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="eliom"><a href="/eliom/">Eliom</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="js_of_ocaml"><a href="/js_of_ocaml/">Js_of_ocaml</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsigenserver"><a href="/ocsigenserver/">Server</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="lwt"><a href="/lwt/">Lwt</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="tyxml"><a href="/tyxml/">Tyxml</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsigen-toolkit"><a href="/ocsigen-toolkit/">Toolkit</a></li>
+        <li class="drawermainmenu-project current" data-wodoc-page="ocsigen-start"><a href="/ocsigen-start/">Start</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsipersist"><a href="/ocsipersist/">Ocsipersist</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="reactiveData"><a href="/reactiveData/">ReactiveData</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsigen-i18n"><a href="/ocsigen-i18n/">i18n</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="wodoc"><a href="/wodoc/">Wodoc</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="projects"><a href="/projects">Other projects</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="papers"><a href="/papers">Research papers</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="credits"><a href="/credits">Who does Ocsigen?</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="contributing"><a href="/contributing">Contributing</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="blog"><a href="/blog">Blog</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="install"><a href="/install">Installation</a></li>
+        <li class="drawermainmenu-page"><a href="https://github.com/ocsigen">Source code</a></li>
+      </ul>
+      <!-- On mobile the left column is hidden; its menu lives here in the burger
+           (.how-doctree, shown only on narrow screens), as the old site did.
+           Empty on the vitrine; the leftnav hole is filled (with the same
+           fragment as the left column) only on project pages. -->
+      <nav class="how-doctree"><div class="docversion">
+  <label>Version:
+    <select class="wodoc-version" onchange="wodocVersion(this.value)">
+      <option value="dev">dev</option>
+    </select>
+  </label>
+</div>
+<div class="cs-switch">
+  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
+  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+</div>
+<div class="page-toc">
+  <h3>On this page</h3>
+  
+</div>
+<nav class="api-nav manual-nav">
+<h3>Manual</h3>
+<ul class="api-section">
+<li class="ml3" data-wodoc-page="intro.html"><a href="../../intro.html">Introduction</a></li>
+<li class="ml3" data-wodoc-page="index.html"><a href="../../index.html">Overview</a></li>
+</ul>
+</nav>
+
+<nav class="api-nav">
+<h3>Server API</h3>
+<h4>Server API</h4>
+<ul class="api-section">
+<li data-wodoc-page="Os_current_user"><a href="../../ocsigen-start.server/Os_current_user/index.html">Os_current_user</a></li>
+<li data-wodoc-page="Os_date"><a href="../../ocsigen-start.server/Os_date/index.html">Os_date</a></li>
+<li data-wodoc-page="Os_db"><a href="../../ocsigen-start.server/Os_db/index.html">Os_db</a></li>
+<li data-wodoc-page="Os_email"><a href="../../ocsigen-start.server/Os_email/index.html">Os_email</a></li>
+<li data-wodoc-page="Os_fcm_notif"><a href="../../ocsigen-start.server/Os_fcm_notif/index.html">Os_fcm_notif</a></li>
+<li data-wodoc-page="Os_group"><a href="../../ocsigen-start.server/Os_group/index.html">Os_group</a></li>
+<li data-wodoc-page="Os_handlers"><a href="../../ocsigen-start.server/Os_handlers/index.html">Os_handlers</a></li>
+<li data-wodoc-page="Os_icons"><a href="../../ocsigen-start.server/Os_icons/index.html">Os_icons</a></li>
+<li data-wodoc-page="Os_lib"><a href="../../ocsigen-start.server/Os_lib/index.html">Os_lib</a></li>
+<li data-wodoc-page="Os_msg"><a href="../../ocsigen-start.server/Os_msg/index.html">Os_msg</a></li>
+<li data-wodoc-page="Os_notif"><a href="../../ocsigen-start.server/Os_notif/index.html">Os_notif</a></li>
+<li data-wodoc-page="Os_page"><a href="../../ocsigen-start.server/Os_page/index.html">Os_page</a></li>
+<li data-wodoc-page="Os_platform"><a href="../../ocsigen-start.server/Os_platform/index.html">Os_platform</a></li>
+<li data-wodoc-page="Os_request_cache"><a href="../../ocsigen-start.server/Os_request_cache/index.html">Os_request_cache</a></li>
+<li data-wodoc-page="Os_services"><a href="../../ocsigen-start.server/Os_services/index.html">Os_services</a></li>
+<li data-wodoc-page="Os_session"><a href="../../ocsigen-start.server/Os_session/index.html">Os_session</a></li>
+<li data-wodoc-page="Os_tips" class="current"><a href="../../ocsigen-start.server/Os_tips/index.html">Os_tips</a></li>
+<li data-wodoc-page="Os_types"><a href="../../ocsigen-start.server/Os_types/index.html">Os_types</a></li>
+<li data-wodoc-page="Os_uploader"><a href="../../ocsigen-start.server/Os_uploader/index.html">Os_uploader</a></li>
+<li data-wodoc-page="Os_user"><a href="../../ocsigen-start.server/Os_user/index.html">Os_user</a></li>
+<li data-wodoc-page="Os_user_proxy"><a href="../../ocsigen-start.server/Os_user_proxy/index.html">Os_user_proxy</a></li>
+<li data-wodoc-page="Os_user_view"><a href="../../ocsigen-start.server/Os_user_view/index.html">Os_user_view</a></li>
+</ul>
+</nav>
+</nav>
+    </nav>
+  </aside>
+</div>
+
+
+  <div class="project-page">
+    <div class="twocols">
+      <nav class="leftcol">
+        <div class="docversion">
+  <label>Version:
+    <select class="wodoc-version" onchange="wodocVersion(this.value)">
+      <option value="dev">dev</option>
+    </select>
+  </label>
+</div>
+<div class="cs-switch">
+  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
+  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+</div>
+<div class="page-toc">
+  <h3>On this page</h3>
+  
+</div>
+<nav class="api-nav manual-nav">
+<h3>Manual</h3>
+<ul class="api-section">
+<li class="ml3" data-wodoc-page="intro.html"><a href="../../intro.html">Introduction</a></li>
+<li class="ml3" data-wodoc-page="index.html"><a href="../../index.html">Overview</a></li>
+</ul>
+</nav>
+
+<nav class="api-nav">
+<h3>Server API</h3>
+<h4>Server API</h4>
+<ul class="api-section">
+<li data-wodoc-page="Os_current_user"><a href="../../ocsigen-start.server/Os_current_user/index.html">Os_current_user</a></li>
+<li data-wodoc-page="Os_date"><a href="../../ocsigen-start.server/Os_date/index.html">Os_date</a></li>
+<li data-wodoc-page="Os_db"><a href="../../ocsigen-start.server/Os_db/index.html">Os_db</a></li>
+<li data-wodoc-page="Os_email"><a href="../../ocsigen-start.server/Os_email/index.html">Os_email</a></li>
+<li data-wodoc-page="Os_fcm_notif"><a href="../../ocsigen-start.server/Os_fcm_notif/index.html">Os_fcm_notif</a></li>
+<li data-wodoc-page="Os_group"><a href="../../ocsigen-start.server/Os_group/index.html">Os_group</a></li>
+<li data-wodoc-page="Os_handlers"><a href="../../ocsigen-start.server/Os_handlers/index.html">Os_handlers</a></li>
+<li data-wodoc-page="Os_icons"><a href="../../ocsigen-start.server/Os_icons/index.html">Os_icons</a></li>
+<li data-wodoc-page="Os_lib"><a href="../../ocsigen-start.server/Os_lib/index.html">Os_lib</a></li>
+<li data-wodoc-page="Os_msg"><a href="../../ocsigen-start.server/Os_msg/index.html">Os_msg</a></li>
+<li data-wodoc-page="Os_notif"><a href="../../ocsigen-start.server/Os_notif/index.html">Os_notif</a></li>
+<li data-wodoc-page="Os_page"><a href="../../ocsigen-start.server/Os_page/index.html">Os_page</a></li>
+<li data-wodoc-page="Os_platform"><a href="../../ocsigen-start.server/Os_platform/index.html">Os_platform</a></li>
+<li data-wodoc-page="Os_request_cache"><a href="../../ocsigen-start.server/Os_request_cache/index.html">Os_request_cache</a></li>
+<li data-wodoc-page="Os_services"><a href="../../ocsigen-start.server/Os_services/index.html">Os_services</a></li>
+<li data-wodoc-page="Os_session"><a href="../../ocsigen-start.server/Os_session/index.html">Os_session</a></li>
+<li data-wodoc-page="Os_tips" class="current"><a href="../../ocsigen-start.server/Os_tips/index.html">Os_tips</a></li>
+<li data-wodoc-page="Os_types"><a href="../../ocsigen-start.server/Os_types/index.html">Os_types</a></li>
+<li data-wodoc-page="Os_uploader"><a href="../../ocsigen-start.server/Os_uploader/index.html">Os_uploader</a></li>
+<li data-wodoc-page="Os_user"><a href="../../ocsigen-start.server/Os_user/index.html">Os_user</a></li>
+<li data-wodoc-page="Os_user_proxy"><a href="../../ocsigen-start.server/Os_user_proxy/index.html">Os_user_proxy</a></li>
+<li data-wodoc-page="Os_user_view"><a href="../../ocsigen-start.server/Os_user_view/index.html">Os_user_view</a></li>
+</ul>
+</nav>
+
+      </nav>
+      <article class="rightcol">
+        <header class="odoc-preamble"><h1>Module <code><span>Os_tips</span></code></h1><p>Tips for new users and new features.</p></header>
+        <div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-bubble"><code><span><span class="keyword">val</span> bubble : 
+  <span><span class="optlabel">?a</span>:<span><span><span>[&lt; <a href="https://ocaml.org/p/tyxml/4.6.0/doc/Html_types/index.html#type-div_attrib">Html_types.div_attrib</a> Class ]</span> <a href="../../../../eliom/latest/eliom.server/Eliom_content/Html/D/index.html#type-attrib">Eliom_content.Html.D.attrib</a></span> list</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?recipient</span>:<span>[&gt; `All <span>| `Connected</span> <span>| `Not_connected</span> ]</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?arrow</span>:
+    <span><span>[ <span>`left of int</span> <span><span>| `right</span> of int</span> <span><span>| `top</span> of int</span> <span><span>| `bottom</span> of int</span> ]</span>
+      <a href="../../../../eliom/latest/eliom.server/Eliom_client_value/index.html#type-t">Eliom_client_value.t</a></span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?top</span>:<span>int <a href="../../../../eliom/latest/eliom.server/Eliom_client_value/index.html#type-t">Eliom_client_value.t</a></span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?left</span>:<span>int <a href="../../../../eliom/latest/eliom.server/Eliom_client_value/index.html#type-t">Eliom_client_value.t</a></span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?right</span>:<span>int <a href="../../../../eliom/latest/eliom.server/Eliom_client_value/index.html#type-t">Eliom_client_value.t</a></span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?bottom</span>:<span>int <a href="../../../../eliom/latest/eliom.server/Eliom_client_value/index.html#type-t">Eliom_client_value.t</a></span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?height</span>:<span>int <a href="../../../../eliom/latest/eliom.server/Eliom_client_value/index.html#type-t">Eliom_client_value.t</a></span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?width</span>:<span>int <a href="../../../../eliom/latest/eliom.server/Eliom_client_value/index.html#type-t">Eliom_client_value.t</a></span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?parent_node</span>:<span><span>[&lt; `Body <span>| <a href="https://ocaml.org/p/tyxml/4.6.0/doc/Html_types/index.html#type-body_content">Html_types.body_content</a></span> ]</span> <a href="../../../../eliom/latest/eliom.server/Eliom_content/Html/index.html#type-elt">Eliom_content.Html.elt</a></span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?delay</span>:float <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?onclose</span>:<span><span>(<span>unit <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <a href="../../../../eliom/latest/eliom.server/Eliom_client_value/index.html#type-t">Eliom_client_value.t</a></span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">name</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">content</span>:
+    <span><span>(<span><span>(<span>unit <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span><span><a href="https://ocaml.org/p/tyxml/4.6.0/doc/Html_types/index.html#type-div_content">Html_types.div_content</a> <a href="../../../../eliom/latest/eliom.server/Eliom_content/Html/index.html#type-elt">Eliom_content.Html.elt</a></span> list</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span>
+      <a href="../../../../eliom/latest/eliom.server/Eliom_client_value/index.html#type-t">Eliom_client_value.t</a></span> <span class="arrow">&#45;&gt;</span></span>
+  <span>unit <span class="arrow">&#45;&gt;</span></span>
+  <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Display tips in pages, as a speech bubble.</p><p>One tip is displayed at a time.</p><p>Tips can be inserted in page using function <code>display</code>, that may be called anywhere during the generation of a page. The tip will be actually sent and displayed on client side only if the user has not already seen it.</p><ul><li><code>~name</code> is a unique name you must choose for your tip</li><li><code>?arrow</code> is the position of the arrow if you want one</li><li><code>?top</code>, <code>?bottom</code>, <code>?left</code>, <code>?right</code>, <code>?width</code>, <code>?right</code> correspond to the eponymous CSS properties.</li><li><code>~content</code> takes the function closing the tip as parameter and return the content of the tip div.</li><li><code>?recipient</code> makes it possible to decide whether the tip will be displayed for connected users only, non-connected users only, or all (default). Tips for non-connected users will reappear every time the session is closed.</li><li><code>?delay</code> adds a delay before displaying the tip (in seconds)</li></ul></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-block"><code><span><span class="keyword">val</span> block : 
+  <span><span class="optlabel">?a</span>:<span><span><span>[&lt; <a href="https://ocaml.org/p/tyxml/4.6.0/doc/Html_types/index.html#type-div_attrib">Html_types.div_attrib</a> Class ]</span> <a href="../../../../eliom/latest/eliom.server/Eliom_content/Html/D/index.html#type-attrib">Eliom_content.Html.D.attrib</a></span> list</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?recipient</span>:<span>[&gt; `All <span>| `Connected</span> <span>| `Not_connected</span> ]</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?onclose</span>:<span><span>(<span>unit <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <a href="../../../../eliom/latest/eliom.server/Eliom_client_value/index.html#type-t">Eliom_client_value.t</a></span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">name</span>:string <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="label">content</span>:
+    <span>(<span><span><span>(<span>unit <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <a href="../../../../eliom/latest/eliom.server/Eliom_client_value/index.html#type-t">Eliom_client_value.t</a></span> <span class="arrow">&#45;&gt;</span></span>
+      <span><span><span><a href="https://ocaml.org/p/tyxml/4.6.0/doc/Html_types/index.html#type-div_content">Html_types.div_content</a> <a href="../../../../eliom/latest/eliom.server/Eliom_content/Html/index.html#type-elt">Eliom_content.Html.elt</a></span> list</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span>unit <span class="arrow">&#45;&gt;</span></span>
+  <span><span><span><span>[&gt; `Div ]</span> <a href="../../../../eliom/latest/eliom.server/Eliom_content/Html/index.html#type-elt">Eliom_content.Html.elt</a></span> option</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Return a box containing a tip, to be inserted where you want in a page. The box contains a close button. Once it is closed, it is never displayed again for this user. In that case the function returns <code>None</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-reset_tips"><code><span><span class="keyword">val</span> reset_tips : <span>unit <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Call this function to reset tips for current user. Tips will be shown again from the beginning.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-set_tip_seen"><code><span><span class="keyword">val</span> set_tip_seen : <span>string <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Call this function to mark a tip as &quot;already seen&quot; by current user. This is done automatically when a tip is closed.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-unset_tip_seen"><code><span><span class="keyword">val</span> unset_tip_seen : <span>string <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Counterpart of set_tip_seen. Does not fail if the tip has not been seen yet</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-tip_seen"><code><span><span class="keyword">val</span> tip_seen : <span>string <span class="arrow">&#45;&gt;</span></span> <span>bool <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Returns whether a tip has been seen or not.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-reset_tips_service"><code><span><span class="keyword">val</span> reset_tips_service : 
+  <span><span>(unit,
+    unit,
+    <a href="../../../../eliom/latest/eliom.server/Eliom_service/index.html#type-post">Eliom_service.post</a>,
+    <a href="../../../../eliom/latest/eliom.server/Eliom_service/index.html#type-non_att">Eliom_service.non_att</a>,
+    <a href="../../../../eliom/latest/eliom.server/Eliom_service/index.html#type-co">Eliom_service.co</a>,
+    <a href="../../../../eliom/latest/eliom.server/Eliom_service/index.html#type-non_ext">Eliom_service.non_ext</a>,
+    <a href="../../../../eliom/latest/eliom.server/Eliom_service/index.html#type-reg">Eliom_service.reg</a>,
+    <span>[ `WithoutSuffix ]</span>,
+    unit,
+    unit,
+    <a href="../../../../eliom/latest/eliom.server/Eliom_service/index.html#type-non_ocaml">Eliom_service.non_ocaml</a>)</span>
+    <a href="../../../../eliom/latest/eliom.server/Eliom_service/index.html#type-t">Eliom_service.t</a></span></span></code></div><div class="spec-doc"><p>A non-attached service that will reset tips. Call it with <code>Eliom_client.exit_to</code> to restart the application and see tips again.</p></div></div></div>
+      </article>
+    </div>
+  </div>
+
+  <script>
+    // Toggle between the server / client API of the same module.
+    function wodocSwitch(side) {
+      var w = { server: '', client: '' };
+      var p = location.pathname;
+      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
+      location.href = np !== p ? np
+        : '../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
+    }
+    var wodocPub = "/ocsigen-start";
+    // Switch version: keep the current page, swapping only the version segment.
+    function wodocVersion(v) {
+      if (!v) return;
+      var re = new RegExp('^(' + wodocPub + '/)[^/]+');
+      var p = location.pathname;
+      location.href =
+        re.test(p) ? p.replace(re, '$1' + v) : wodocPub + '/' + v + '/index.html';
+    }
+    // Build the version <select> from the project's versions.json (the single
+    // source of truth, refreshed on every build/release), so even older frozen
+    // pages list the current set. Falls back to the baked <option>s on failure.
+    (function () {
+      var seg = (location.pathname.match(
+        new RegExp('^' + wodocPub + '/([^/]+)')) || [])[1];
+      function select(sel) {
+        var i;
+        for (i = 0; i < sel.options.length; i++)
+          if (sel.options[i].value === seg) { sel.selectedIndex = i; return; }
+        if (seg) {
+          var o = document.createElement('option');
+          o.value = seg; o.textContent = seg; o.selected = true;
+          sel.insertBefore(o, sel.firstChild);
+        }
+      }
+      fetch(wodocPub + '/versions.json')
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (m) {
+          var list = m.list || [], latest = m.latest;
+          document.querySelectorAll('.wodoc-version').forEach(function (sel) {
+            sel.innerHTML = '';
+            list.forEach(function (v) {
+              var o = document.createElement('option');
+              if (v === latest) { o.value = 'latest'; o.textContent = v + ' (latest)'; }
+              else { o.value = v; o.textContent = v; }
+              sel.appendChild(o);
+            });
+            select(sel);
+          });
+        })
+        .catch(function () {
+          document.querySelectorAll('.wodoc-version').forEach(select);
+        });
+    })();
+  </script>
+</body>
+</html>
