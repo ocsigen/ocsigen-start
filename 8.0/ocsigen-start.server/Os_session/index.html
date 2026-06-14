@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Module Os_session — Start</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="/css/ocsigen-odoc.css"/>
+  <script src="../../highlight.pack.js"></script>
+  <script src="../../wodoc-highlight.js"></script>
+</head>
+<body class="wodoc-page wodoc-doc wodoc-server">
+  <!-- Shared site menu — THE single source of truth for the header, top menu and
+     drawer of EVERY Ocsigen doc page (vitrine + all projects). Canonical copy
+     lives here in ocsigen.github.io; each project's build fetches it. Injected
+     by `wodoc assemble --menu`. Holes filled by the tool (braces omitted here so
+     this comment is not itself rewritten by the hole-filler):
+       subproject  the sub-project name shown next to the Ocsigen logo
+                   (empty on the vitrine), via --subproject
+       leftnav     the project's left navigation, expanded into BOTH the mobile
+                   drawer (below) and the left column (in the page template),
+                   via --leftnav
+     The current entry is highlighted by adding the `current` class to the
+     element carrying data-wodoc-page=<id>: --current on the vitrine (page id),
+     --menu-current in a project (the project id). Nothing is hardcoded here, so
+     this file is the ONLY place the menu is defined.
+
+     Links are the FINAL site paths (/<project>/, /<page>): the target layout
+     where each project is served at ocsigen.org/<project>/ — no transitional
+     /wodoc/ prefix. -->
+<div class="page-header">
+  <p class="logo-ocsigen"><a href="/"><img src="/img/ocsigen-white.svg" alt="Ocsigen"/></a></p>
+  <p class="logo-subproject">Start</p>
+
+  <div class="mainmenu">
+    <p class="mainmenu-home" data-wodoc-page="githubio"><a href="/">Home</a></p>
+    <p class="mainmenu-doc" data-wodoc-page="tuto"><a href="/tuto/">Doc</a></p>
+    <p data-wodoc-page="eliom"><a href="/eliom/">Eliom</a></p>
+    <p data-wodoc-page="js_of_ocaml"><a href="/js_of_ocaml/">Js_of_ocaml</a></p>
+    <p data-wodoc-page="ocsigenserver"><a href="/ocsigenserver/">Server</a></p>
+    <p data-wodoc-page="lwt"><a href="/lwt/">Lwt</a></p>
+    <p data-wodoc-page="tyxml"><a href="/tyxml/">Tyxml</a></p>
+    <p data-wodoc-page="ocsigen-start" class="current"><a href="/ocsigen-start/">Start</a></p>
+  </div>
+
+  <form id="googlesearch" action="https://google.com/search">
+    <input name="q" id="gsearch-box" placeholder="Search using Google"/>
+    <label for="gsearch-box"><img src="/img/search.svg" alt="" id="gsearch-icon"/></label>
+    <input type="submit" id="gsearch-submit" onclick="document.getElementById('gsearch-box').value += ' site:ocsigen.org';"/>
+  </form>
+
+  <aside class="how-drawer">
+    <input id="how-drawer-toggle" type="checkbox"/>
+    <label for="how-drawer-toggle" id="how-drawer-label"><span class="how-drawer-icon"></span></label>
+    <nav class="how-drawer-content">
+      <ul class="drawermainmenu">
+        <li class="drawermainmenu-home" data-wodoc-page="githubio"><a href="/">Home</a></li>
+        <li class="drawermainmenu-doc" data-wodoc-page="tuto"><a href="/tuto/">Doc</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="eliom"><a href="/eliom/">Eliom</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="js_of_ocaml"><a href="/js_of_ocaml/">Js_of_ocaml</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsigenserver"><a href="/ocsigenserver/">Server</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="lwt"><a href="/lwt/">Lwt</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="tyxml"><a href="/tyxml/">Tyxml</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsigen-toolkit"><a href="/ocsigen-toolkit/">Toolkit</a></li>
+        <li class="drawermainmenu-project current" data-wodoc-page="ocsigen-start"><a href="/ocsigen-start/">Start</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsipersist"><a href="/ocsipersist/">Ocsipersist</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="reactiveData"><a href="/reactiveData/">ReactiveData</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="ocsigen-i18n"><a href="/ocsigen-i18n/">i18n</a></li>
+        <li class="drawermainmenu-project" data-wodoc-page="wodoc"><a href="/wodoc/">Wodoc</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="projects"><a href="/projects">Other projects</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="papers"><a href="/papers">Research papers</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="credits"><a href="/credits">Who does Ocsigen?</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="contributing"><a href="/contributing">Contributing</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="blog"><a href="/blog">Blog</a></li>
+        <li class="drawermainmenu-page" data-wodoc-page="install"><a href="/install">Installation</a></li>
+        <li class="drawermainmenu-page"><a href="https://github.com/ocsigen">Source code</a></li>
+      </ul>
+      <!-- On mobile the left column is hidden; its menu lives here in the burger
+           (.how-doctree, shown only on narrow screens), as the old site did.
+           Empty on the vitrine; the leftnav hole is filled (with the same
+           fragment as the left column) only on project pages. -->
+      <nav class="how-doctree"><div class="docversion">
+  <label>Version:
+    <select class="wodoc-version" onchange="wodocVersion(this.value)">
+      <option value="dev">dev</option>
+    </select>
+  </label>
+</div>
+<div class="cs-switch">
+  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
+  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+</div>
+<div class="page-toc">
+  <h3>On this page</h3>
+  
+</div>
+<nav class="api-nav manual-nav">
+<h3>Manual</h3>
+<ul class="api-section">
+<li class="ml3" data-wodoc-page="intro.html"><a href="../../intro.html">Introduction</a></li>
+<li class="ml3" data-wodoc-page="index.html"><a href="../../index.html">Overview</a></li>
+</ul>
+</nav>
+
+<nav class="api-nav">
+<h3>Server API</h3>
+<h4>Server API</h4>
+<ul class="api-section">
+<li data-wodoc-page="Os_current_user"><a href="../../ocsigen-start.server/Os_current_user/index.html">Os_current_user</a></li>
+<li data-wodoc-page="Os_date"><a href="../../ocsigen-start.server/Os_date/index.html">Os_date</a></li>
+<li data-wodoc-page="Os_db"><a href="../../ocsigen-start.server/Os_db/index.html">Os_db</a></li>
+<li data-wodoc-page="Os_email"><a href="../../ocsigen-start.server/Os_email/index.html">Os_email</a></li>
+<li data-wodoc-page="Os_fcm_notif"><a href="../../ocsigen-start.server/Os_fcm_notif/index.html">Os_fcm_notif</a></li>
+<li data-wodoc-page="Os_group"><a href="../../ocsigen-start.server/Os_group/index.html">Os_group</a></li>
+<li data-wodoc-page="Os_handlers"><a href="../../ocsigen-start.server/Os_handlers/index.html">Os_handlers</a></li>
+<li data-wodoc-page="Os_icons"><a href="../../ocsigen-start.server/Os_icons/index.html">Os_icons</a></li>
+<li data-wodoc-page="Os_lib"><a href="../../ocsigen-start.server/Os_lib/index.html">Os_lib</a></li>
+<li data-wodoc-page="Os_msg"><a href="../../ocsigen-start.server/Os_msg/index.html">Os_msg</a></li>
+<li data-wodoc-page="Os_notif"><a href="../../ocsigen-start.server/Os_notif/index.html">Os_notif</a></li>
+<li data-wodoc-page="Os_page"><a href="../../ocsigen-start.server/Os_page/index.html">Os_page</a></li>
+<li data-wodoc-page="Os_platform"><a href="../../ocsigen-start.server/Os_platform/index.html">Os_platform</a></li>
+<li data-wodoc-page="Os_request_cache"><a href="../../ocsigen-start.server/Os_request_cache/index.html">Os_request_cache</a></li>
+<li data-wodoc-page="Os_services"><a href="../../ocsigen-start.server/Os_services/index.html">Os_services</a></li>
+<li data-wodoc-page="Os_session" class="current"><a href="../../ocsigen-start.server/Os_session/index.html">Os_session</a></li>
+<li data-wodoc-page="Os_tips"><a href="../../ocsigen-start.server/Os_tips/index.html">Os_tips</a></li>
+<li data-wodoc-page="Os_types"><a href="../../ocsigen-start.server/Os_types/index.html">Os_types</a></li>
+<li data-wodoc-page="Os_uploader"><a href="../../ocsigen-start.server/Os_uploader/index.html">Os_uploader</a></li>
+<li data-wodoc-page="Os_user"><a href="../../ocsigen-start.server/Os_user/index.html">Os_user</a></li>
+<li data-wodoc-page="Os_user_proxy"><a href="../../ocsigen-start.server/Os_user_proxy/index.html">Os_user_proxy</a></li>
+<li data-wodoc-page="Os_user_view"><a href="../../ocsigen-start.server/Os_user_view/index.html">Os_user_view</a></li>
+</ul>
+</nav>
+</nav>
+    </nav>
+  </aside>
+</div>
+
+
+  <div class="project-page">
+    <div class="twocols">
+      <nav class="leftcol">
+        <div class="docversion">
+  <label>Version:
+    <select class="wodoc-version" onchange="wodocVersion(this.value)">
+      <option value="dev">dev</option>
+    </select>
+  </label>
+</div>
+<div class="cs-switch">
+  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
+  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+</div>
+<div class="page-toc">
+  <h3>On this page</h3>
+  
+</div>
+<nav class="api-nav manual-nav">
+<h3>Manual</h3>
+<ul class="api-section">
+<li class="ml3" data-wodoc-page="intro.html"><a href="../../intro.html">Introduction</a></li>
+<li class="ml3" data-wodoc-page="index.html"><a href="../../index.html">Overview</a></li>
+</ul>
+</nav>
+
+<nav class="api-nav">
+<h3>Server API</h3>
+<h4>Server API</h4>
+<ul class="api-section">
+<li data-wodoc-page="Os_current_user"><a href="../../ocsigen-start.server/Os_current_user/index.html">Os_current_user</a></li>
+<li data-wodoc-page="Os_date"><a href="../../ocsigen-start.server/Os_date/index.html">Os_date</a></li>
+<li data-wodoc-page="Os_db"><a href="../../ocsigen-start.server/Os_db/index.html">Os_db</a></li>
+<li data-wodoc-page="Os_email"><a href="../../ocsigen-start.server/Os_email/index.html">Os_email</a></li>
+<li data-wodoc-page="Os_fcm_notif"><a href="../../ocsigen-start.server/Os_fcm_notif/index.html">Os_fcm_notif</a></li>
+<li data-wodoc-page="Os_group"><a href="../../ocsigen-start.server/Os_group/index.html">Os_group</a></li>
+<li data-wodoc-page="Os_handlers"><a href="../../ocsigen-start.server/Os_handlers/index.html">Os_handlers</a></li>
+<li data-wodoc-page="Os_icons"><a href="../../ocsigen-start.server/Os_icons/index.html">Os_icons</a></li>
+<li data-wodoc-page="Os_lib"><a href="../../ocsigen-start.server/Os_lib/index.html">Os_lib</a></li>
+<li data-wodoc-page="Os_msg"><a href="../../ocsigen-start.server/Os_msg/index.html">Os_msg</a></li>
+<li data-wodoc-page="Os_notif"><a href="../../ocsigen-start.server/Os_notif/index.html">Os_notif</a></li>
+<li data-wodoc-page="Os_page"><a href="../../ocsigen-start.server/Os_page/index.html">Os_page</a></li>
+<li data-wodoc-page="Os_platform"><a href="../../ocsigen-start.server/Os_platform/index.html">Os_platform</a></li>
+<li data-wodoc-page="Os_request_cache"><a href="../../ocsigen-start.server/Os_request_cache/index.html">Os_request_cache</a></li>
+<li data-wodoc-page="Os_services"><a href="../../ocsigen-start.server/Os_services/index.html">Os_services</a></li>
+<li data-wodoc-page="Os_session" class="current"><a href="../../ocsigen-start.server/Os_session/index.html">Os_session</a></li>
+<li data-wodoc-page="Os_tips"><a href="../../ocsigen-start.server/Os_tips/index.html">Os_tips</a></li>
+<li data-wodoc-page="Os_types"><a href="../../ocsigen-start.server/Os_types/index.html">Os_types</a></li>
+<li data-wodoc-page="Os_uploader"><a href="../../ocsigen-start.server/Os_uploader/index.html">Os_uploader</a></li>
+<li data-wodoc-page="Os_user"><a href="../../ocsigen-start.server/Os_user/index.html">Os_user</a></li>
+<li data-wodoc-page="Os_user_proxy"><a href="../../ocsigen-start.server/Os_user_proxy/index.html">Os_user_proxy</a></li>
+<li data-wodoc-page="Os_user_view"><a href="../../ocsigen-start.server/Os_user_view/index.html">Os_user_view</a></li>
+</ul>
+</nav>
+
+      </nav>
+      <article class="rightcol">
+        <header class="odoc-preamble"><h1>Module <code><span>Os_session</span></code></h1><p>Connection and disconnection of users, restrict access to services or server functions, define actions to be executed at some points of the session.</p></header>
+        <div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-on_start_process"><code><span><span class="keyword">val</span> on_start_process : <span><span>(<span><span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> option</span> <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div><div class="spec-doc"><p>Call this to add an action to be done on server side when the process starts</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-on_start_connected_process"><code><span><span class="keyword">val</span> on_start_connected_process : <span><span>(<span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div><div class="spec-doc"><p>Call this to add an action to be done when the process starts in connected mode, or when the user logs in</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-on_start_unconnected_process"><code><span><span class="keyword">val</span> on_start_unconnected_process : <span><span>(<span>unit <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div><div class="spec-doc"><p>Call this to add an action to be done on server side when the process starts but only when not in connected mode</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-on_connected_request"><code><span><span class="keyword">val</span> on_connected_request : <span><span>(<span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div><div class="spec-doc"><p>Call this to add an action to be done at each connected request. The function takes the user id as parameter.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-on_unconnected_request"><code><span><span class="keyword">val</span> on_unconnected_request : <span><span>(<span>unit <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div><div class="spec-doc"><p>Call this to add an action to be done at each unconnected request.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-on_open_session"><code><span><span class="keyword">val</span> on_open_session : <span><span>(<span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div><div class="spec-doc"><p>Call this to add an action to be done just after opening a session The function takes the user id as parameter.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-on_pre_close_session"><code><span><span class="keyword">val</span> on_pre_close_session : <span><span>(<span>unit <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div><div class="spec-doc"><p>Call this to add an action to be done just before closing the session</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-on_post_close_session"><code><span><span class="keyword">val</span> on_post_close_session : <span><span>(<span>unit <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div><div class="spec-doc"><p>Call this to add an action to be done just after closing the session</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-on_request"><code><span><span class="keyword">val</span> on_request : <span><span>(<span><span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> option</span> <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div><div class="spec-doc"><p>Call this to add an action to be done just before handling a request</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-on_denied_request"><code><span><span class="keyword">val</span> on_denied_request : <span><span>(<span><span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> option</span> <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div><div class="spec-doc"><p>Call this to add an action to be done just for each denied request. The function takes the user id as parameter, if some user is connected.</p></div></div><p>Scopes that are independent from user connection. Use this scopes for example when you want to store server side data for one browser or tab, but not user dependent. (Remains when user logs out).</p><div class="odoc-spec"><div class="spec value anchored" id="val-user_indep_state_hierarchy"><code><span><span class="keyword">val</span> user_indep_state_hierarchy : <a href="../../../../eliom/latest/eliom.server/Eliom_common/index.html#type-scope_hierarchy">Eliom_common.scope_hierarchy</a></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-user_indep_process_scope"><code><span><span class="keyword">val</span> user_indep_process_scope : <span>[&gt; <a href="../../../../eliom/latest/eliom.server/Eliom_common/index.html#type-client_process_scope">Eliom_common.client_process_scope</a> ]</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-user_indep_session_scope"><code><span><span class="keyword">val</span> user_indep_session_scope : <span>[&gt; <a href="../../../../eliom/latest/eliom.server/Eliom_common/index.html#type-session_scope">Eliom_common.session_scope</a> ]</span></span></code></div></div><div class="odoc-spec"><div class="spec exception anchored" id="exception-Not_connected"><code><span><span class="keyword">exception</span> </span><span><span class="exception">Not_connected</span></span></code></div></div><div class="odoc-spec"><div class="spec exception anchored" id="exception-Permission_denied"><code><span><span class="keyword">exception</span> </span><span><span class="exception">Permission_denied</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-connect"><code><span><span class="keyword">val</span> connect : <span><span class="optlabel">?expire</span>:bool <span class="arrow">&#45;&gt;</span></span> <span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Close current session (if any) by calling disconnect, then open a new session for a user by setting a session group for the browser which initiated the current request. Ocsigen-start is using both persistent and volatile session groups. The volatile groups is recreated from persistent group if absent. By default, the connection does not expire; by setting the optional argument <code>expire</code> to true, the session will expire when the browser exits.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-disconnect_all"><code><span><span class="keyword">val</span> disconnect_all : 
+  <span><span class="optlabel">?sitedata</span>:<a href="../../../../eliom/latest/eliom.server/Eliom_common/index.html#val-sitedata">Eliom_common.sitedata</a> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?userid</span>:<a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?user_indep</span>:bool <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?with_restart</span>:bool <span class="arrow">&#45;&gt;</span></span>
+  <span>unit <span class="arrow">&#45;&gt;</span></span>
+  <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Close all sessions of current user (or <code>userid</code> if present). If <code>?user_indep</code> is <code>true</code> (default), will also affect <code>user_indep_session_scope</code>. If <code>?with_restart</code> is <code>true</code> (default), will also restart the client. If you do not call the function during a request or during the initialisation phase of the Eliom module:</p><ul><li><code>?userid</code> must not be <code>None</code></li><li><code>?with_restart</code> must be <code>false</code></li><li>you must provide the extra parameter <code>?sitedata</code>, that you can get by calling <code>Eliom_request_info.get_sitedata</code> during the initialisation phase of the Eliom module.</li></ul></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-disconnect"><code><span><span class="keyword">val</span> disconnect : <span>unit <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Close a session by discarding server side states for current browser (session and session group), current client process (tab) and current request. Only default Eliom scopes are affected, but not user independent scopes. The actions registered for session close (by <code>on_close_session</code>) will be executed just before the session is actually closed.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-connected_fun"><code><span><span class="keyword">val</span> connected_fun : 
+  <span><span class="optlabel">?allow</span>:<span><a href="../Os_types/Group/index.html#type-t">Os_types.Group.t</a> list</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?deny</span>:<span><a href="../Os_types/Group/index.html#type-t">Os_types.Group.t</a> list</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?deny_fun</span>:<span>(<span><span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> option</span> <span class="arrow">&#45;&gt;</span></span> <span><span class="type-var">'c</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span>(<span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span> <span><span class="type-var">'b</span> <span class="arrow">&#45;&gt;</span></span> <span><span class="type-var">'c</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="type-var">'b</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="type-var">'c</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Wrapper for service handlers that fetches automatically connection information. Register <code>(connected_fun f)</code> as handler for your services, where <code>f</code> is a function taking user id, GET parameters and POST parameters. If no user is connected, the service will fail by raising <code>Not_connected</code>. Otherwise it calls function <code>f</code>. To provide another behaviour in case the user is not connected, have a look at <a href="Opt/index.html#val-connected_fun"><code>Opt.connected_fun</code></a> or module <a href="../Os_page/index.html"><code>Os_page</code></a>.</p><p>Arguments <code>?allow</code> and <code>?deny</code> make possible to restrict access to some user groups. If access is denied, function <code>?deny_fun</code> will be called. By default, it raises <code>Permissiondenied</code>.</p><p>When called on client side, no security check is done.</p><p>If optional argument <code>force_unconnected</code> is <code>true</code>, it will not try to find session information, and behave as if user were not connected (default is <code>false</code>). This allows to use functions from module <a href="../Os_current_user/index.html"><code>Os_current_user</code></a> in functions outside application without failing.</p><p>Use only one connection wrapper for each request!</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-connected_rpc"><code><span><span class="keyword">val</span> connected_rpc : 
+  <span><span class="optlabel">?allow</span>:<span><a href="../Os_types/Group/index.html#type-t">Os_types.Group.t</a> list</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?deny</span>:<span><a href="../Os_types/Group/index.html#type-t">Os_types.Group.t</a> list</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?deny_fun</span>:<span>(<span><span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> option</span> <span class="arrow">&#45;&gt;</span></span> <span><span class="type-var">'b</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span>(<span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span> <span><span class="type-var">'b</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="type-var">'b</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Wrapper for server functions (see <a href="#val-connected_fun"><code>connected_fun</code></a>).</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-connected_wrapper"><code><span><span class="keyword">val</span> connected_wrapper : 
+  <span><span class="optlabel">?allow</span>:<span><a href="../Os_types/Group/index.html#type-t">Os_types.Group.t</a> list</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?deny</span>:<span><a href="../Os_types/Group/index.html#type-t">Os_types.Group.t</a> list</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?deny_fun</span>:<span>(<span><span><a href="../Os_types/User/index.html#type-id">Os_types.User.id</a> option</span> <span class="arrow">&#45;&gt;</span></span> <span><span class="type-var">'b</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="optlabel">?force_unconnected</span>:bool <span class="arrow">&#45;&gt;</span></span>
+  <span><span>(<span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span> <span><span class="type-var">'b</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span>
+  <span><span class="type-var">'b</span> <a href="https://ocaml.org/p/lwt/5.10.0/doc/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Wrapper for server functions when you do not need userid (see <a href="#val-connected_fun"><code>connected_fun</code></a>). It is recommended to use this wrapper for all your server functions!</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Opt"><code><span><span class="keyword">module</span> <a href="Opt/index.html">Opt</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div></div>
+      </article>
+    </div>
+  </div>
+
+  <script>
+    // Toggle between the server / client API of the same module.
+    function wodocSwitch(side) {
+      var w = { server: '', client: '' };
+      var p = location.pathname;
+      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
+      location.href = np !== p ? np
+        : '../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
+    }
+    var wodocPub = "/ocsigen-start";
+    // Switch version: keep the current page, swapping only the version segment.
+    function wodocVersion(v) {
+      if (!v) return;
+      var re = new RegExp('^(' + wodocPub + '/)[^/]+');
+      var p = location.pathname;
+      location.href =
+        re.test(p) ? p.replace(re, '$1' + v) : wodocPub + '/' + v + '/index.html';
+    }
+    // Build the version <select> from the project's versions.json (the single
+    // source of truth, refreshed on every build/release), so even older frozen
+    // pages list the current set. Falls back to the baked <option>s on failure.
+    (function () {
+      var seg = (location.pathname.match(
+        new RegExp('^' + wodocPub + '/([^/]+)')) || [])[1];
+      function select(sel) {
+        var i;
+        for (i = 0; i < sel.options.length; i++)
+          if (sel.options[i].value === seg) { sel.selectedIndex = i; return; }
+        if (seg) {
+          var o = document.createElement('option');
+          o.value = seg; o.textContent = seg; o.selected = true;
+          sel.insertBefore(o, sel.firstChild);
+        }
+      }
+      fetch(wodocPub + '/versions.json')
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (m) {
+          var list = m.list || [], latest = m.latest;
+          document.querySelectorAll('.wodoc-version').forEach(function (sel) {
+            sel.innerHTML = '';
+            list.forEach(function (v) {
+              var o = document.createElement('option');
+              if (v === latest) { o.value = 'latest'; o.textContent = v + ' (latest)'; }
+              else { o.value = v; o.textContent = v; }
+              sel.appendChild(o);
+            });
+            select(sel);
+          });
+        })
+        .catch(function () {
+          document.querySelectorAll('.wodoc-version').forEach(select);
+        });
+    })();
+  </script>
+</body>
+</html>
