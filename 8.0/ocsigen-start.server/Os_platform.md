@@ -1,0 +1,32 @@
+
+# Module `Os_platform`
+
+About device platform.
+
+```ocaml
+type t = 
+  | Android
+  | IPhone
+  | IPad
+  | IPod
+  | IWatch
+  | BlackBerry
+  | Windows
+  | Unknown
+```
+Platform type.
+
+```ocaml
+val t_of_string : string -> t
+```
+```ocaml
+val string_of_t : t -> string
+```
+```ocaml
+val css_class : t -> string
+```
+Return `"os-platform"` where `platform` is the device platform.
+
+CSS class for `IPhone`, `IPad`, `IWatch` and `IPod` is `"os-ios"`.
+
+If the platform is `Unknown`, it returns `"os-unknown-platform"`.
