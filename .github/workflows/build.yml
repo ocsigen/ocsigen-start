@@ -3,9 +3,15 @@ name: Build
 on:
   pull_request:
   push:
+    branches:
+      - master
   schedule:
     # Prime the caches every Monday
     - cron: 0 1 * * MON
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
