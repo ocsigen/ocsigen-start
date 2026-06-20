@@ -9,11 +9,10 @@
 (title Start)
 (pub /ocsigen-start)
 (odoc-driver ocsigen-start)
-(landing intro.html)
+(landing index.html)
 (nav
  (section "Manual"
-  (link "Introduction" intro.html intro)
-  (link "Overview" index.html index)))
+  (link "Introduction" intro.html intro)))
 (client-server
   (server (lib ocsigen-start.server) (indexdoc doc/server.indexdoc) (heading "Server API") (wrapper Os))
   (client (lib ocsigen-start.client) (indexdoc doc/client.indexdoc) (heading "Client API") (wrapper Os)))
