@@ -213,13 +213,13 @@ connection forms, etc.
 - {!Os_services}:
   Eliom services pre-defined by Ocsigen Start. These produce the
   default user interface of the template.
-  See {{:https://ocsigen.org/eliom/latest/server-services.html}the Eliom manual page on services} for
+  See {{!/eliom/page-server-services}the Eliom manual page on services} for
   a general introduction to Eliom services.
 
 - {!Os_handlers}:
   The handlers (functions) that implement the services in
   {!Os_services}.
-  {{:https://ocsigen.org/eliom/latest/server-outputs.html}The Eliom manual page on service handlers}
+  {{!/eliom/page-server-outputs}The Eliom manual page on service handlers}
   explains how to implement handlers.
 
 - {!Os_session}:
