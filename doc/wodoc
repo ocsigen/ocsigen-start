@@ -8,8 +8,8 @@
 ;; switch; the manual (index/intro) is shared.
 (project ocsigen-start)
 (title Start)
-(pub /ocsigen-start)
-(odoc-driver ocsigen-start)
+(url-prefix /ocsigen-start)
+(css /css/style.css /css/ocsigen-odoc.css)  ; shared Ocsigen theme (wodoc css default changed)
 (landing intro.html)
 
 ;; The shared manual nav (the two manual pages; the API module lists come from
