@@ -1,8 +1,8 @@
 {0 Ocsigen Start}
 
 Ocsigen Start is a ready-to-use application skeleton for building
-client-server web and mobile applications with {{:../eliom}Eliom} and
-{{:../ocsigen-toolkit}Ocsigen Toolkit}. It ships with user management,
+client-server web and mobile applications with {{!/eliom/page-index}Eliom} and
+{{!/ocsigen-toolkit/page-index}Ocsigen Toolkit}. It ships with user management,
 notifications, a database schema and many code examples, so you can
 focus on your own features from day one.
 
@@ -15,7 +15,7 @@ Ocsigen Start is part of the {{:https://ocsigen.org}Ocsigen project}.
 {1 Demo}
 
 If you want to test the demo application before installing Ocsigen Start,
-{b a live version is running {{:../ocsigen-start/demo/}here}}.
+{b a live version is running {{:https://ocsigen.org/ocsigen-start/demo/}here}}.
 
 You can also download the mobile app
 {{:https://play.google.com/store/apps/details?id=com.osdemo.mobile}on Google Play store} (for Android)
@@ -78,7 +78,7 @@ It includes a demo of many features from Eliom, Js_of_ocaml, Tyxml, Ocsigen Tool
 
 {1 Getting started}
 
-Read {{:../tuto/start.html}this page} to learn how to build your first Ocsigen Start app in 5 minutes.
+Read {{:https://ocsigen.org/tuto/start.html}this page} to learn how to build your first Ocsigen Start app in 5 minutes.
 
 {1 Implementation overview}
 
@@ -211,13 +211,13 @@ connection forms, etc.
 - {!Os.Services}:
   Eliom services pre-defined by Ocsigen Start. These produce the
   default user interface of the template.
-  See {{:../eliom/server-services.html}the Eliom manual page on services} for
+  See {{!/eliom/page-"server-services"}the Eliom manual page on services} for
   a general introduction to Eliom services.
 
 - {!Os.Handlers}:
   The handlers (functions) that implement the services in
   {!Os.Services}.
-  {{:../eliom/server-outputs.html}The Eliom manual page on service handlers}
+  {{!/eliom/page-"server-outputs"}The Eliom manual page on service handlers}
   explains how to implement handlers.
 
 - {!Os.Session}:
