@@ -1,8 +1,8 @@
 {0 Ocsigen Start}
 
 Ocsigen Start is a ready-to-use application skeleton for building
-client-server web and mobile applications with {{:https://ocsigen.org/eliom/}Eliom} and
-{{:https://ocsigen.org/ocsigen-toolkit/}Ocsigen Toolkit}. It ships with user management,
+client-server web and mobile applications with {{!/eliom/page-index}Eliom} and
+{{!/ocsigen-toolkit/page-index}Ocsigen Toolkit}. It ships with user management,
 notifications, a database schema and many code examples, so you can
 focus on your own features from day one.
 
