@@ -115,8 +115,8 @@ Various modules for producing icons, messages, custom pages, tips, connection fo
 
 ### Services, handlers, sessions
 
-- [`Os_services`](./ocsigen-start.server/Os_services.md): Eliom services pre-defined by Ocsigen Start. These produce the default user interface of the template. See *the Eliom manual page on services* for a general introduction to Eliom services.
-- [`Os_handlers`](./ocsigen-start.server/Os_handlers.md): The handlers (functions) that implement the services in [`Os_services`](./ocsigen-start.server/Os_services.md). *The Eliom manual page on service handlers* explains how to implement handlers.
+- [`Os_services`](./ocsigen-start.server/Os_services.md): Eliom services pre-defined by Ocsigen Start. These produce the default user interface of the template. See `the Eliom manual page on services` for a general introduction to Eliom services.
+- [`Os_handlers`](./ocsigen-start.server/Os_handlers.md): The handlers (functions) that implement the services in [`Os_services`](./ocsigen-start.server/Os_services.md). `The Eliom manual page on service handlers` explains how to implement handlers.
 - [`Os_session`](./ocsigen-start.server/Os_session.md): manage user sessions, e.g., execute actions when users connect or disconnect.
 
 ### Other utilities
