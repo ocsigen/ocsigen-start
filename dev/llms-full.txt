@@ -121,8 +121,8 @@ Various modules for producing icons, messages, custom pages, tips, connection fo
 
 ### Services, handlers, sessions
 
-- [`Os_services`](./ocsigen-start.server/Os_services.md): Eliom services pre-defined by Ocsigen Start. These produce the default user interface of the template. See [the Eliom manual page on services](https://ocsigen.org/eliom/latest/server-services.html) for a general introduction to Eliom services.
-- [`Os_handlers`](./ocsigen-start.server/Os_handlers.md): The handlers (functions) that implement the services in [`Os_services`](./ocsigen-start.server/Os_services.md). [The Eliom manual page on service handlers](https://ocsigen.org/eliom/latest/server-outputs.html) explains how to implement handlers.
+- [`Os_services`](./ocsigen-start.server/Os_services.md): Eliom services pre-defined by Ocsigen Start. These produce the default user interface of the template. See *the Eliom manual page on services* for a general introduction to Eliom services.
+- [`Os_handlers`](./ocsigen-start.server/Os_handlers.md): The handlers (functions) that implement the services in [`Os_services`](./ocsigen-start.server/Os_services.md). *The Eliom manual page on service handlers* explains how to implement handlers.
 - [`Os_session`](./ocsigen-start.server/Os_session.md): manage user sessions, e.g., execute actions when users connect or disconnect.
 
 ### Other utilities
@@ -137,7 +137,7 @@ Various modules for producing icons, messages, custom pages, tips, connection fo
 
 # Ocsigen Start
 
-Ocsigen Start is a ready-to-use application skeleton for building client-server web and mobile applications with [Eliom](https://ocsigen.org/eliom/) and [Ocsigen Toolkit](https://ocsigen.org/ocsigen-toolkit/). It ships with user management, notifications, a database schema and many code examples, so you can focus on your own features from day one.
+Ocsigen Start is a ready-to-use application skeleton for building client-server web and mobile applications with `Eliom` and `Ocsigen Toolkit`. It ships with user management, notifications, a database schema and many code examples, so you can focus on your own features from day one.
 
 Ocsigen Start is part of the [Ocsigen project](https://ocsigen.org).
 
