@@ -22,4 +22,4 @@ type t = {
   desc : string option;
 }
 ```
-Type representing a group. See `Os_group`
+Type representing a group. See [`Os_group`](./../ocsigen-start.server/Os_group.md)
