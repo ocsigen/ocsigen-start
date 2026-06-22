@@ -50,7 +50,7 @@ val forgot_password_service :
     Eliom_service.non_ocaml)
     Eliom_service.t
 ```
-A POST service when the user forgot his password. See `Os_handlers.forgot_password_handler` for a default handler.
+A POST service when the user forgot his password. See [`Os_handlers.forgot_password_handler`](./../ocsigen-start.server/Os_handlers.md#val-forgot_password_handler) for a default handler.
 
 ```ocaml
 val set_personal_data_service : 
@@ -87,7 +87,7 @@ val sign_up_service :
     Eliom_service.non_ocaml)
     Eliom_service.t
 ```
-A POST service to sign up with only an email address. See [`Os_handlers.sign_up_handler`](./Os_handlers.md#val-sign_up_handler) for a default handler.
+A POST service to sign up with only an email address. See [`Os_handlers.sign_up_handler`](./../ocsigen-start.server/Os_handlers.md#val-sign_up_handler) for a default handler.
 
 ```ocaml
 val connect_service : 
@@ -106,7 +106,7 @@ val connect_service :
     Eliom_service.non_ocaml)
     Eliom_service.t
 ```
-A POST service to connect a user with username and password. See [`Os_handlers.connect_handler`](./Os_handlers.md#val-connect_handler) for a default handler.
+A POST service to connect a user with username and password. See [`Os_handlers.connect_handler`](./../ocsigen-start.server/Os_handlers.md#val-connect_handler) for a default handler.
 
 ```ocaml
 val disconnect_service : 
@@ -123,7 +123,7 @@ val disconnect_service :
     Eliom_service.non_ocaml)
     Eliom_service.t
 ```
-A POST service to disconnect the current user. See [`Os_handlers.disconnect_handler`](./Os_handlers.md#val-disconnect_handler) for a default handler.
+A POST service to disconnect the current user. See [`Os_handlers.disconnect_handler`](./../ocsigen-start.server/Os_handlers.md#val-disconnect_handler) for a default handler.
 
 ```ocaml
 val action_link_service : 
@@ -140,7 +140,7 @@ val action_link_service :
     Eliom_service.non_ocaml)
     Eliom_service.t
 ```
-A GET service for action link keys. See [`Os_handlers.action_link_handler`](./Os_handlers.md#val-action_link_handler) for a default handler and `Os_db.action_link_table` for more information about the action process.
+A GET service for action link keys. See [`Os_handlers.action_link_handler`](./../ocsigen-start.server/Os_handlers.md#val-action_link_handler) for a default handler and `Os_db.action_link_table` for more information about the action process.
 
 ```ocaml
 val set_password_service : 
@@ -175,7 +175,7 @@ val add_email_service :
     Eliom_service.non_ocaml)
     Eliom_service.t
 ```
-A POST service to add an email to a user. See [`Os_handlers.add_email_handler`](./Os_handlers.md#val-add_email_handler) for a default handler.
+A POST service to add an email to a user. See [`Os_handlers.add_email_handler`](./../ocsigen-start.server/Os_handlers.md#val-add_email_handler) for a default handler.
 
 ```ocaml
 val update_language_service : 

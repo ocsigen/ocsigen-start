@@ -6,7 +6,7 @@ A default configuration for pages.
 - no CSS and JS files are included.
 - no meta data are added in head
 - error page prints debug information about the exception.
-- a div is returned in case of an error with class `"errormsg"` containing a h2 with value `"Error"` and a paragraph if the exception is [`Os_session.Not_connected`](./Os_session.md#exception-Not_connected).
+- a div is returned in case of an error with class `"errormsg"` containing a h2 with value `"Error"` and a paragraph if the exception is [`Os_session.Not_connected`](./../ocsigen-start.server/Os_session.md#exception-Not_connected).
 ```ocaml
 val title : string
 ```

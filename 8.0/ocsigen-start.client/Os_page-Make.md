@@ -40,4 +40,4 @@ val connected_page :
   'b ->
   Html_types.html Eliom_content.Html.elt Lwt.t
 ```
-Wrapper for pages that first checks if the user is connected. See [`Os_session.connected_fun`](./Os_session.md#val-connected_fun).
+Wrapper for pages that first checks if the user is connected. See [`Os_session.connected_fun`](./../ocsigen-start.server/Os_session.md#val-connected_fun).

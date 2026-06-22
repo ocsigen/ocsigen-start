@@ -53,7 +53,7 @@ val connect_form :
 ```
 `connect_form ?a ?email ()` creates a POST login form with email, password, a checkbox to stay logged in (with default text to `"keep me logged in"` in a span) and a submit button. Default placeholders for input email (resp. password) is `"Your email"` (resp. `"Your password"`).
 
-The data is sent to [`Os_services.connect_service`](./Os_services.md#val-connect_service).
+The data is sent to [`Os_services.connect_service`](./../ocsigen-start.server/Os_services.md#val-connect_service).
 
 parameter a\_placeholder\_email text for the placeholder of the email input.
 parameter a\_placeholder\_pwd text for the placeholder of the password input.
@@ -80,7 +80,7 @@ val sign_up_form :
   unit ->
   [> Html_types.form ] Eliom_content.Html.D.elt
 ```
-`sign_up_form ?a ?email ()` creates a [`generic_email_form`](./#val-generic_email_form) with the service [`Os_services.sign_up_service`](./Os_services.md#val-sign_up_service).
+`sign_up_form ?a ?email ()` creates a [`generic_email_form`](./#val-generic_email_form) with the service [`Os_services.sign_up_service`](./../ocsigen-start.server/Os_services.md#val-sign_up_service).
 
 parameter a attributes of the form.
 parameter email the default value of the email input (default is empty).
@@ -90,7 +90,7 @@ val forgot_password_form :
   unit ->
   [> Html_types.form ] Eliom_content.Html.D.elt
 ```
-`forgot_password_form ~a ()` creates a [`generic_email_form`](./#val-generic_email_form) with the service [`Os_services.forgot_password_service`](./Os_services.md#val-forgot_password_service).
+`forgot_password_form ~a ()` creates a [`generic_email_form`](./#val-generic_email_form) with the service [`Os_services.forgot_password_service`](./../ocsigen-start.server/Os_services.md#val-forgot_password_service).
 
 parameter a attributes of the form.
 ```ocaml
@@ -108,7 +108,7 @@ val information_form :
   unit ->
   [> Html_types.form ] Eliom_content.Html.D.elt
 ```
-`information_form ~a ~firstname ~lastname ~password1 ~password2 ()` creates a POST form to update the user information like first name, last name and password. It also checks (client-side) if the passwords match when the send button is pressed and a custom validity message is showed if they don't match. The data is sent to [`Os_services.set_personal_data_service`](./Os_services.md#val-set_personal_data_service).
+`information_form ~a ~firstname ~lastname ~password1 ~password2 ()` creates a POST form to update the user information like first name, last name and password. It also checks (client-side) if the passwords match when the send button is pressed and a custom validity message is showed if they don't match. The data is sent to [`Os_services.set_personal_data_service`](./../ocsigen-start.server/Os_services.md#val-set_personal_data_service).
 
 parameter a attributes of the form.
 parameter a\_placeholder\_password text for the placeholder of the password input.
@@ -126,7 +126,7 @@ val preregister_form :
   string Eliom_content.Html.F.wrap ->
   [> Html_types.form ] Eliom_content.Html.D.elt
 ```
-`preregister_form ~a label` creates a [`generic_email_form`](./#val-generic_email_form) with the service [`Os_services.preregister_service`](./Os_services.md#val-preregister_service) and add the label `label` to the email input form.
+`preregister_form ~a label` creates a [`generic_email_form`](./#val-generic_email_form) with the service [`Os_services.preregister_service`](./../ocsigen-start.server/Os_services.md#val-preregister_service) and add the label `label` to the email input form.
 
 parameter a attributes of the form.
 parameter label label for the email input.
@@ -240,7 +240,7 @@ val disconnect_link :
   unit ->
   [> `A of Html_types.flow5_without_interactive ] Eliom_content.Html.F.elt
 ```
-A link to [`Os_services.disconnect_service`](./Os_services.md#val-disconnect_service).
+A link to [`Os_services.disconnect_service`](./../ocsigen-start.server/Os_services.md#val-disconnect_service).
 
 parameter text\_logout the link text.
 parameter a attributes for the link.
