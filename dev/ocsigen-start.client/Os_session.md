@@ -27,13 +27,13 @@ val connected_fun :
   'b ->
   'c Lwt.t
 ```
-Wrapper for service handlers that fetches automatically connection information. Register `(connected_fun f)` as handler for your services, where `f` is a function taking user id, GET parameters and POST parameters. If no user is connected, the service will fail by raising `Not_connected`. Otherwise it calls function `f`. To provide another behaviour in case the user is not connected, have a look at [`Opt.connected_fun`](./Os_session-Opt.md#val-connected_fun) or module [`Os_page`](./../ocsigen-start.server/Os_page.md).
+Wrapper for service handlers that fetches automatically connection information. Register `(connected_fun f)` as handler for your services, where `f` is a function taking user id, GET parameters and POST parameters. If no user is connected, the service will fail by raising `Not_connected`. Otherwise it calls function `f`. To provide another behaviour in case the user is not connected, have a look at [`Opt.connected_fun`](./Os_session-Opt.md#val-connected_fun) or module [`Os_page`](./Os_page.md).
 
 Arguments `?allow` and `?deny` make possible to restrict access to some user groups. If access is denied, function `?deny_fun` will be called. By default, it raises `Permissiondenied`.
 
 When called on client side, no security check is done.
 
-If optional argument `force_unconnected` is `true`, it will not try to find session information, and behave as if user were not connected (default is `false`). This allows to use functions from module [`Os_current_user`](./../ocsigen-start.server/Os_current_user.md) in functions outside application without failing.
+If optional argument `force_unconnected` is `true`, it will not try to find session information, and behave as if user were not connected (default is `false`). This allows to use functions from module [`Os_current_user`](./Os_current_user.md) in functions outside application without failing.
 
 Use only one connection wrapper for each request\!
 

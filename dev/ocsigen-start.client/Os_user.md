@@ -4,7 +4,7 @@
 ```ocaml
 type id = Os_types.User.id
 ```
-Type alias to [`Os_types.User.id`](./../ocsigen-start.server/Os_types-User.md#type-id) to allow to use `Os_user.id`.
+Type alias to [`Os_types.User.id`](./Os_types-User.md#type-id) to allow to use `Os_user.id`.
 
 ```ocaml
 val id_of_json : Deriving_Json_lexer.lexbuf -> id
@@ -24,7 +24,7 @@ type t = Os_types.User.t = {
   language : string option;
 }
 ```
-Type alias to [`Os_types.User.t`](./../ocsigen-start.server/Os_types-User.md#type-t) to allow to use `Os_user.t`.
+Type alias to [`Os_types.User.t`](./Os_types-User.md#type-t) to allow to use `Os_user.t`.
 
 ```ocaml
 val of_json : Deriving_Json_lexer.lexbuf -> t

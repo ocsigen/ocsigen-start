@@ -24,7 +24,7 @@ type t = {
   language : string option;
 }
 ```
-Type representing a user. See [`Os_user`](./../ocsigen-start.server/Os_user.md).
+Type representing a user. See [`Os_user`](./Os_user.md).
 
 ```ocaml
 val of_json : Deriving_Json_lexer.lexbuf -> t

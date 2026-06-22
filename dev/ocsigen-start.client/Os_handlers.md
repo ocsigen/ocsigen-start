@@ -1,7 +1,7 @@
 
 # Module `Os_handlers`
 
-This module contains pre-defined handlers for connect, disconnect, sign up, add a new email, etc. Each handler has a corresponding service in [`Os_services`](./../ocsigen-start.server/Os_services.md).
+This module contains pre-defined handlers for connect, disconnect, sign up, add a new email, etc. Each handler has a corresponding service in [`Os_services`](./Os_services.md).
 
 ```ocaml
 val connect_handler : unit -> ((string * string) * bool) -> unit Lwt.t

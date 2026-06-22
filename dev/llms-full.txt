@@ -322,7 +322,7 @@ val get_current_userid : unit -> Os_types.User.id option
 
 This module provides functions and types to manage the current user.
 
-On server side, this will work only if the current request in wrapped in [`Os_session.connected_wrapper`](./../ocsigen-start.server/Os_session.md#val-connected_wrapper), or [`Os_session.connected_fun`](./../ocsigen-start.server/Os_session.md#val-connected_fun), etc. Otherwise, an exception is raised.
+On server side, this will work only if the current request in wrapped in [`Os_session.connected_wrapper`](./Os_session.md#val-connected_wrapper), or [`Os_session.connected_fun`](./Os_session.md#val-connected_fun), etc. Otherwise, an exception is raised.
 
 ```ocaml
 type current_user = 
@@ -333,12 +333,12 @@ type current_user =
 ```ocaml
 val get_current_user : unit -> Os_types.User.t
 ```
-`get_current_user ()` returns the current user as a [`Os_types.User.t`](./../ocsigen-start.server/Os_types-User.md#type-t) type. If no user is connected, it fails with [`Os_session.Not_connected`](./../ocsigen-start.server/Os_session.md#exception-Not_connected).
+`get_current_user ()` returns the current user as a [`Os_types.User.t`](./Os_types-User.md#type-t) type. If no user is connected, it fails with [`Os_session.Not_connected`](./Os_session.md#exception-Not_connected).
 
 ```ocaml
 val get_current_userid : unit -> Os_types.User.id
 ```
-`get_current_userid ()` returns the ID of the current user. If no user is connected, it fails with [`Os_session.Not_connected`](./../ocsigen-start.server/Os_session.md#exception-Not_connected).
+`get_current_userid ()` returns the ID of the current user. If no user is connected, it fails with [`Os_session.Not_connected`](./Os_session.md#exception-Not_connected).
 
 ```ocaml
 module Opt : sig ... end
@@ -348,17 +348,17 @@ Instead of exception, the module `Opt` returns an option.
 ```ocaml
 val remove_email_from_user : string -> unit Lwt.t
 ```
-`remove_email_from_user email` removes the email `email` of the current user. If no user is connected, it fails with [`Os_session.Not_connected`](./../ocsigen-start.server/Os_session.md#exception-Not_connected). If `email` is the main email of the current user, it fails with [`Os_db.Main_email_removal_attempt`](./../ocsigen-start.server/Os_db.md#exception-Main_email_removal_attempt).
+`remove_email_from_user email` removes the email `email` of the current user. If no user is connected, it fails with [`Os_session.Not_connected`](./Os_session.md#exception-Not_connected). If `email` is the main email of the current user, it fails with `Os_db.Main_email_removal_attempt`.
 
 ```ocaml
 val update_main_email : string -> unit Lwt.t
 ```
-`update_main_email email` sets the main email of the current user to `email`. If no user is connected, it fails with [`Os_session.Not_connected`](./../ocsigen-start.server/Os_session.md#exception-Not_connected).
+`update_main_email email` sets the main email of the current user to `email`. If no user is connected, it fails with [`Os_session.Not_connected`](./Os_session.md#exception-Not_connected).
 
 ```ocaml
 val update_language : string -> unit Lwt.t
 ```
-`update_language language` updates the language of the current user. If no user is connected, it fails with [`Os_session.Not_connected`](./../ocsigen-start.server/Os_session.md#exception-Not_connected).
+`update_language language` updates the language of the current user. If no user is connected, it fails with [`Os_session.Not_connected`](./Os_session.md#exception-Not_connected).
 
 ```ocaml
 val me : current_user ref
@@ -487,7 +487,7 @@ The final output is the concatenation of `smart_start_date` and `smart_end_date`
 
 # Module `Os_handlers`
 
-This module contains pre-defined handlers for connect, disconnect, sign up, add a new email, etc. Each handler has a corresponding service in [`Os_services`](./../ocsigen-start.server/Os_services.md).
+This module contains pre-defined handlers for connect, disconnect, sign up, add a new email, etc. Each handler has a corresponding service in [`Os_services`](./Os_services.md).
 
 ```ocaml
 val connect_handler : unit -> ((string * string) * bool) -> unit Lwt.t
@@ -908,7 +908,7 @@ A default configuration for pages.
 - no CSS and JS files are included.
 - no meta data are added in head
 - error page prints debug information about the exception.
-- a div is returned in case of an error with class `"errormsg"` containing a h2 with value `"Error"` and a paragraph if the exception is [`Os_session.Not_connected`](./../ocsigen-start.server/Os_session.md#exception-Not_connected).
+- a div is returned in case of an error with class `"errormsg"` containing a h2 with value `"Error"` and a paragraph if the exception is [`Os_session.Not_connected`](./Os_session.md#exception-Not_connected).
 ```ocaml
 val title : string
 ```
@@ -988,7 +988,7 @@ val connected_page :
   'b ->
   Html_types.html Eliom_content.Html.elt Lwt.t
 ```
-Wrapper for pages that first checks if the user is connected. See [`Os_session.Opt.connected_fun`](./../ocsigen-start.server/Os_session-Opt.md#val-connected_fun).
+Wrapper for pages that first checks if the user is connected. See [`Os_session.Opt.connected_fun`](./Os_session-Opt.md#val-connected_fun).
 
 
 ---
@@ -1102,7 +1102,7 @@ val connected_page :
   'b ->
   Html_types.html Eliom_content.Html.elt Lwt.t
 ```
-Wrapper for pages that first checks if the user is connected. See [`Os_session.connected_fun`](./../ocsigen-start.server/Os_session.md#val-connected_fun).
+Wrapper for pages that first checks if the user is connected. See [`Os_session.connected_fun`](./Os_session.md#val-connected_fun).
 
 
 ---
@@ -1311,7 +1311,7 @@ val forgot_password_service :
     Eliom_service.non_ocaml)
     Eliom_service.t
 ```
-A POST service when the user forgot his password. See [`Os_handlers.forgot_password_handler`](./../ocsigen-start.server/Os_handlers.md#val-forgot_password_handler) for a default handler.
+A POST service when the user forgot his password. See `Os_handlers.forgot_password_handler` for a default handler.
 
 ```ocaml
 val set_personal_data_service : 
@@ -1348,7 +1348,7 @@ val sign_up_service :
     Eliom_service.non_ocaml)
     Eliom_service.t
 ```
-A POST service to sign up with only an email address. See [`Os_handlers.sign_up_handler`](./../ocsigen-start.server/Os_handlers.md#val-sign_up_handler) for a default handler.
+A POST service to sign up with only an email address. See [`Os_handlers.sign_up_handler`](./Os_handlers.md#val-sign_up_handler) for a default handler.
 
 ```ocaml
 val connect_service : 
@@ -1367,7 +1367,7 @@ val connect_service :
     Eliom_service.non_ocaml)
     Eliom_service.t
 ```
-A POST service to connect a user with username and password. See [`Os_handlers.connect_handler`](./../ocsigen-start.server/Os_handlers.md#val-connect_handler) for a default handler.
+A POST service to connect a user with username and password. See [`Os_handlers.connect_handler`](./Os_handlers.md#val-connect_handler) for a default handler.
 
 ```ocaml
 val disconnect_service : 
@@ -1384,7 +1384,7 @@ val disconnect_service :
     Eliom_service.non_ocaml)
     Eliom_service.t
 ```
-A POST service to disconnect the current user. See [`Os_handlers.disconnect_handler`](./../ocsigen-start.server/Os_handlers.md#val-disconnect_handler) for a default handler.
+A POST service to disconnect the current user. See [`Os_handlers.disconnect_handler`](./Os_handlers.md#val-disconnect_handler) for a default handler.
 
 ```ocaml
 val action_link_service : 
@@ -1401,7 +1401,7 @@ val action_link_service :
     Eliom_service.non_ocaml)
     Eliom_service.t
 ```
-A GET service for action link keys. See [`Os_handlers.action_link_handler`](./../ocsigen-start.server/Os_handlers.md#val-action_link_handler) for a default handler and `Os_db.action_link_table` for more information about the action process.
+A GET service for action link keys. See [`Os_handlers.action_link_handler`](./Os_handlers.md#val-action_link_handler) for a default handler and `Os_db.action_link_table` for more information about the action process.
 
 ```ocaml
 val set_password_service : 
@@ -1436,7 +1436,7 @@ val add_email_service :
     Eliom_service.non_ocaml)
     Eliom_service.t
 ```
-A POST service to add an email to a user. See [`Os_handlers.add_email_handler`](./../ocsigen-start.server/Os_handlers.md#val-add_email_handler) for a default handler.
+A POST service to add an email to a user. See [`Os_handlers.add_email_handler`](./Os_handlers.md#val-add_email_handler) for a default handler.
 
 ```ocaml
 val update_language_service : 
@@ -1605,13 +1605,13 @@ val connected_fun :
   'b ->
   'c Lwt.t
 ```
-Wrapper for service handlers that fetches automatically connection information. Register `(connected_fun f)` as handler for your services, where `f` is a function taking user id, GET parameters and POST parameters. If no user is connected, the service will fail by raising `Not_connected`. Otherwise it calls function `f`. To provide another behaviour in case the user is not connected, have a look at [`Opt.connected_fun`](./Os_session-Opt.md#val-connected_fun) or module [`Os_page`](./../ocsigen-start.server/Os_page.md).
+Wrapper for service handlers that fetches automatically connection information. Register `(connected_fun f)` as handler for your services, where `f` is a function taking user id, GET parameters and POST parameters. If no user is connected, the service will fail by raising `Not_connected`. Otherwise it calls function `f`. To provide another behaviour in case the user is not connected, have a look at [`Opt.connected_fun`](./Os_session-Opt.md#val-connected_fun) or module [`Os_page`](./Os_page.md).
 
 Arguments `?allow` and `?deny` make possible to restrict access to some user groups. If access is denied, function `?deny_fun` will be called. By default, it raises `Permissiondenied`.
 
 When called on client side, no security check is done.
 
-If optional argument `force_unconnected` is `true`, it will not try to find session information, and behave as if user were not connected (default is `false`). This allows to use functions from module [`Os_current_user`](./../ocsigen-start.server/Os_current_user.md) in functions outside application without failing.
+If optional argument `force_unconnected` is `true`, it will not try to find session information, and behave as if user were not connected (default is `false`). This allows to use functions from module [`Os_current_user`](./Os_current_user.md) in functions outside application without failing.
 
 Use only one connection wrapper for each request\!
 
@@ -1778,7 +1778,7 @@ type t = {
   desc : string option;
 }
 ```
-Type representing a group. See [`Os_group`](./../ocsigen-start.server/Os_group.md)
+Type representing a group. See `Os_group`
 
 
 ---
@@ -1808,7 +1808,7 @@ type t = {
   language : string option;
 }
 ```
-Type representing a user. See [`Os_user`](./../ocsigen-start.server/Os_user.md).
+Type representing a user. See [`Os_user`](./Os_user.md).
 
 ```ocaml
 val of_json : Deriving_Json_lexer.lexbuf -> t
@@ -1852,7 +1852,7 @@ module Group : sig ... end
 ```ocaml
 type id = Os_types.User.id
 ```
-Type alias to [`Os_types.User.id`](./../ocsigen-start.server/Os_types-User.md#type-id) to allow to use `Os_user.id`.
+Type alias to [`Os_types.User.id`](./Os_types-User.md#type-id) to allow to use `Os_user.id`.
 
 ```ocaml
 val id_of_json : Deriving_Json_lexer.lexbuf -> id
@@ -1872,7 +1872,7 @@ type t = Os_types.User.t = {
   language : string option;
 }
 ```
-Type alias to [`Os_types.User.t`](./../ocsigen-start.server/Os_types-User.md#type-t) to allow to use `Os_user.t`.
+Type alias to [`Os_types.User.t`](./Os_types-User.md#type-t) to allow to use `Os_user.t`.
 
 ```ocaml
 val of_json : Deriving_Json_lexer.lexbuf -> t
@@ -2008,7 +2008,7 @@ val connect_form :
 ```
 `connect_form ?a ?email ()` creates a POST login form with email, password, a checkbox to stay logged in (with default text to `"keep me logged in"` in a span) and a submit button. Default placeholders for input email (resp. password) is `"Your email"` (resp. `"Your password"`).
 
-The data is sent to [`Os_services.connect_service`](./../ocsigen-start.server/Os_services.md#val-connect_service).
+The data is sent to [`Os_services.connect_service`](./Os_services.md#val-connect_service).
 
 parameter a\_placeholder\_email text for the placeholder of the email input.
 parameter a\_placeholder\_pwd text for the placeholder of the password input.
@@ -2035,7 +2035,7 @@ val sign_up_form :
   unit ->
   [> Html_types.form ] Eliom_content.Html.D.elt
 ```
-`sign_up_form ?a ?email ()` creates a [`generic_email_form`](./#val-generic_email_form) with the service [`Os_services.sign_up_service`](./../ocsigen-start.server/Os_services.md#val-sign_up_service).
+`sign_up_form ?a ?email ()` creates a [`generic_email_form`](./#val-generic_email_form) with the service [`Os_services.sign_up_service`](./Os_services.md#val-sign_up_service).
 
 parameter a attributes of the form.
 parameter email the default value of the email input (default is empty).
@@ -2045,7 +2045,7 @@ val forgot_password_form :
   unit ->
   [> Html_types.form ] Eliom_content.Html.D.elt
 ```
-`forgot_password_form ~a ()` creates a [`generic_email_form`](./#val-generic_email_form) with the service [`Os_services.forgot_password_service`](./../ocsigen-start.server/Os_services.md#val-forgot_password_service).
+`forgot_password_form ~a ()` creates a [`generic_email_form`](./#val-generic_email_form) with the service [`Os_services.forgot_password_service`](./Os_services.md#val-forgot_password_service).
 
 parameter a attributes of the form.
 ```ocaml
@@ -2063,7 +2063,7 @@ val information_form :
   unit ->
   [> Html_types.form ] Eliom_content.Html.D.elt
 ```
-`information_form ~a ~firstname ~lastname ~password1 ~password2 ()` creates a POST form to update the user information like first name, last name and password. It also checks (client-side) if the passwords match when the send button is pressed and a custom validity message is showed if they don't match. The data is sent to [`Os_services.set_personal_data_service`](./../ocsigen-start.server/Os_services.md#val-set_personal_data_service).
+`information_form ~a ~firstname ~lastname ~password1 ~password2 ()` creates a POST form to update the user information like first name, last name and password. It also checks (client-side) if the passwords match when the send button is pressed and a custom validity message is showed if they don't match. The data is sent to [`Os_services.set_personal_data_service`](./Os_services.md#val-set_personal_data_service).
 
 parameter a attributes of the form.
 parameter a\_placeholder\_password text for the placeholder of the password input.
@@ -2081,7 +2081,7 @@ val preregister_form :
   string Eliom_content.Html.F.wrap ->
   [> Html_types.form ] Eliom_content.Html.D.elt
 ```
-`preregister_form ~a label` creates a [`generic_email_form`](./#val-generic_email_form) with the service [`Os_services.preregister_service`](./../ocsigen-start.server/Os_services.md#val-preregister_service) and add the label `label` to the email input form.
+`preregister_form ~a label` creates a [`generic_email_form`](./#val-generic_email_form) with the service [`Os_services.preregister_service`](./Os_services.md#val-preregister_service) and add the label `label` to the email input form.
 
 parameter a attributes of the form.
 parameter label label for the email input.
@@ -2195,7 +2195,7 @@ val disconnect_link :
   unit ->
   [> `A of Html_types.flow5_without_interactive ] Eliom_content.Html.F.elt
 ```
-A link to [`Os_services.disconnect_service`](./../ocsigen-start.server/Os_services.md#val-disconnect_service).
+A link to [`Os_services.disconnect_service`](./Os_services.md#val-disconnect_service).
 
 parameter text\_logout the link text.
 parameter a attributes for the link.
