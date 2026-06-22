@@ -162,80 +162,80 @@ starting guide. Look around!
 Various modules for producing icons, messages, custom pages, tips,
 connection forms, etc.
 
-- {!Os_icons}:
+- {!Os.Icons}:
   manage CSS icons.
-- {!Os_msg}:
+- {!Os.Msg}:
   write messages in the browser console.
-- {!Os_page}:
+- {!Os.Page}:
   utilities for building HTML pages that follow the standard Ocsigen
   Start layout.
-- {!Os_tips}:
+- {!Os.Tips}:
   display tips to the user.
-- {!Os_user_view}:
+- {!Os.User_view}:
   functions for creating password forms and other common UI elements
   appearing in applications and for managing the user connection box.
-- {!Os_uploader}:
+- {!Os.Uploader}:
   ImageMagick-based tools for manipulating avatars.
 
 {2 Users and groups}
 
-- {!Os_user},
-  {!Os_current_user},
-  {!Os_group}:
+- {!Os.User},
+  {!Os.Current_user},
+  {!Os.Group}:
   manage users and groups thereof.
 
-- {!Os_db}:
+- {!Os.Db}:
   directly access the database. In many cases, it is a better idea to
   use higher-level modules (e.g.,
-  {!Os_user}).
+  {!Os.User}).
 
-- {!Os_types}:
-  core types shared by {!Os_db}
+- {!Os.Types}:
+  core types shared by {!Os.Db}
   and the higher-level modules.
 
 {2 Communication}
 
-- {!Os_notif}:
+- {!Os.Notif}:
   send notifications to connected users.
 
-- {!Os_email}:
+- {!Os.Email}:
   send e-mails.
 
-- {!Os_fcm_notif}:
+- {!Os.Fcm_notif}:
   send push notifications to mobile devices.
 
-- {!Os_comet}:
+- {!Os.Comet}:
   manage the bi-directional communication channel between client and
   server. This is a low-level module that you probably don't need.
 
 {2 Services, handlers, sessions}
 
-- {!Os_services}:
+- {!Os.Services}:
   Eliom services pre-defined by Ocsigen Start. These produce the
   default user interface of the template.
   See {{!/eliom/page-"server-services"}the Eliom manual page on services} for
   a general introduction to Eliom services.
 
-- {!Os_handlers}:
+- {!Os.Handlers}:
   The handlers (functions) that implement the services in
-  {!Os_services}.
+  {!Os.Services}.
   {{!/eliom/page-"server-outputs"}The Eliom manual page on service handlers}
   explains how to implement handlers.
 
-- {!Os_session}:
+- {!Os.Session}:
   manage user sessions, e.g., execute actions when users connect or
   disconnect.
 
 {2 Other utilities}
 
-- {!Os_date}:
+- {!Os.Date}:
   utilities for manipulating date and time values.
 
-- {!Os_platform}:
+- {!Os.Platform}:
   obtain information about the platform we are on (Android, iOS, ...).
 
-- {!Os_request_cache},
-  {!Os_user_proxy}:
+- {!Os.Request_cache},
+  {!Os.User_proxy}:
   different forms of caching data.
 
 - A {e ppx} syntax extension to implement RPC.
