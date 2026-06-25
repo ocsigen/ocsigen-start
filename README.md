@@ -46,23 +46,3 @@ To get started, take a look at the generated README.md.
 
 You have also the complete manual and API available on
 the [Ocsigen website](http://ocsigen.org/ocsigen-start/)
-
-### Generating API documentation
-
-Wiki API pages are generated from the `.eliomi` and `.mli` files using
-`eliomdoc` and the [wikidoc](https://github.com/ocsigen/wikidoc) plugin:
-
-```bash
-bash build/gen_wikidoc.sh        # all (server + client)
-bash build/gen_wikidoc.sh server # server side only
-bash build/gen_wikidoc.sh client # client side only
-```
-
-Output goes to `_build/doc/dev/api/{server,client}/`.
-
-The wiki files are published on the [wikidoc branch] under
-`doc/dev/api/{server,client}/`. To update the published documentation,
-copy the generated `.wiki` files to a checkout of the `wikidoc` branch
-and commit.
-
-[wikidoc branch]: https://github.com/ocsigen/ocsigen-start/tree/wikidoc/doc/dev/api
