@@ -1,6 +1,7 @@
 {2 Server API}
 
 {!modules:
+Os_connect_phone
 Os_current_user
 Os_date
 Os_db
