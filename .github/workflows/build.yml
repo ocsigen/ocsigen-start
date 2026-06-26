@@ -22,12 +22,10 @@ jobs:
           - macos-latest
           - ubuntu-latest
           - windows-latest
+        # The Server 8 / modern ppx stack (ocsigen-ppx-rpc needs ppxlib >= 0.37,
+        # pulled together with ppx_sexp_conv -> ppxlib_jane) requires OCaml >= 5.3.
         ocaml-compiler:
-          - "4.14"
-          - "5.2"
-        include:
-          - os: ubuntu-latest
-            ocaml-compiler: "4.12"
+          - "5"
 
     runs-on: ${{ matrix.os }}
 
