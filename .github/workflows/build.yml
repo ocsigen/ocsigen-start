@@ -46,9 +46,16 @@ jobs:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
           opam-pin: false
 
+      # Pin the Ocsigen Server 8 development branches until 8.0 is released
+      # (the default branches of these repos are still the Server 7 line).
       - run: |
-          opam pin add -n eliom https://github.com/ocsigen/eliom.git
-          opam pin add -n ocsigen-toolkit https://github.com/ocsigen/ocsigen-toolkit.git
+          opam pin -yn git+https://github.com/ocsigen/ocsigenserver#master
+          opam pin -yn git+https://github.com/ocsigen/ocsipersist#master
+          opam pin -yn git+https://github.com/ocsigen/eliom#deriving
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-i18n#modernize
 
       - run: opam pin add ocsigen-start.7.0.0 . --no-action
 
