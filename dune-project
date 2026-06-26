@@ -37,6 +37,7 @@
  (depends
   (ocaml
    (>= "5.1"))
+  ocsigen-dune-rules ; TODO: Strict version constraint
   (pgocaml
    (>= "4.0"))
   (pgocaml_ppx
@@ -53,7 +54,6 @@
    (and
     (>= "5.0~")
     (< "6.0")))
-  ocsigen-dune-rules
   (ocsigen-ppx-rpc
    (>= "2.0~"))
   (yojson
