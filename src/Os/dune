@@ -1,0 +1,113 @@
+(rule
+ (with-stdout-to
+  dune.corrected
+  (run
+   ocsigen-dune-rules
+   gen-library
+   os
+   --wrapped
+   true
+   --public-name
+   ocsigen-start
+   --no-rpc-raw
+   --preprocess=--,--rpc-internal,-internal-prefix,Os
+   --libraries
+   calendar,re.str
+   --server-libraries
+   safepass,yojson,cohttp-lwt-unix,pgocaml,resource-pooling
+   --eliom-libraries
+   ocsigen-toolkit
+   --dune
+   %{dep:dune})))
+
+; [ocsigen-dune-rules] Do not remove this line.
+; Below this line, any changes will be overwritten.
+;
+; To update the rules below, modify the invocation of ocsigen-dune-rules above
+; and run:
+;
+;     dune runtest --auto-promote
+;
+
+(rule
+ (alias runtest)
+ (action
+  (diff dune dune.corrected)))
+
+(library
+ (public_name ocsigen-start.server)
+ (name os)
+ (modes byte native)
+ (wrapped true)
+ (library_flags
+  (:standard -linkall))
+ (preprocess
+  (pps
+   eliom.ppx.server
+   ocsigen-ppx-rpc
+   js_of_ocaml-ppx_deriving_json
+   --
+   --rpc-internal
+   -internal-prefix
+   Os))
+ (libraries
+  eliom.server
+  safepass
+  yojson
+  cohttp-lwt-unix
+  pgocaml
+  resource-pooling
+  calendar
+  re.str
+  ocsigen-toolkit.server))
+
+(subdir
+ client
+ (library
+  (public_name ocsigen-start.client)
+  (name os)
+  (modes byte)
+  (wrapped true)
+  (library_flags
+   (:standard -linkall))
+  (libraries
+   eliom.client
+   js_of_ocaml
+   js_of_ocaml-lwt
+   calendar
+   re.str
+   ocsigen-toolkit.client))
+ (dynamic_include ../dune.client))
+
+(subdir
+ client/ppx
+ (rule
+  (write-file main.ml "let () = Ppxlib.Driver.standalone ()"))
+ (executable
+  (name main)
+  (libraries
+   ppxlib
+   eliom.ppx.client
+   ocsigen-ppx-rpc
+   js_of_ocaml-ppx
+   js_of_ocaml-ppx_deriving_json)))
+
+(rule
+ (deps
+  (glob_files *.eliom)
+  (glob_files *.eliomi))
+ (action
+  (with-stdout-to
+   dune.client
+   (run
+    ocsigen-dune-rules
+    gen-client-modules
+    --internal-prefix
+    os
+    --server-objs-dir
+    ../.os.objs/byte
+    .
+    --
+    --rpc-internal
+    -internal-prefix
+    Os))))
