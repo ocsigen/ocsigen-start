@@ -245,25 +245,25 @@ let%client
   let box = To_dom.of_element box in
   Dom.appendChild parent_node box;
   box##.style##.opacity := Js.string "0";
-  Eliom.Lib.Option.iter
+  Option.iter
     (fun v -> box##.style##.top := Js.string (Printf.sprintf "%ipx" v))
     top;
-  Eliom.Lib.Option.iter
+  Option.iter
     (fun v -> box##.style##.left := Js.string (Printf.sprintf "%ipx" v))
     left;
-  Eliom.Lib.Option.iter
+  Option.iter
     (fun v -> box##.style##.right := Js.string (Printf.sprintf "%ipx" v))
     right;
-  Eliom.Lib.Option.iter
+  Option.iter
     (fun v -> box##.style##.bottom := Js.string (Printf.sprintf "%ipx" v))
     bottom;
-  Eliom.Lib.Option.iter
+  Option.iter
     (fun v -> box##.style##.width := Js.string (Printf.sprintf "%ipx" v))
     width;
-  Eliom.Lib.Option.iter
+  Option.iter
     (fun v -> box##.style##.height := Js.string (Printf.sprintf "%ipx" v))
     height;
-  Eliom.Lib.Option.iter
+  Option.iter
     (fun a ->
        let bec = To_dom.of_element bec in
        let bec_size = bec##.offsetWidth in

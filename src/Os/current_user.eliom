@@ -78,7 +78,7 @@ module Opt = struct
   let get_current_user = get_current_user_option
 
   let get_current_userid () =
-    Eliom.Lib.Option.map User.userid_of_user (get_current_user_option ())
+    Option.map User.userid_of_user (get_current_user_option ())
 end]
 
 let%client _ = Session.get_current_userid_o := Opt.get_current_userid

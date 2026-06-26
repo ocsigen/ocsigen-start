@@ -777,9 +777,7 @@ module User = struct
     then Lwt.fail_with "empty password"
     else
       full_transaction_block (fun dbh ->
-        let password_o =
-          Eliom.Lib.Option.map (fun p -> fst !pwd_crypt_ref p) password
-        in
+        let password_o = Option.map (fun p -> fst !pwd_crypt_ref p) password in
         let* userid =
           Lwt.bind
             (PGOCaml.bind
