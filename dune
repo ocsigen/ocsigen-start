@@ -5,3 +5,8 @@
  (files
   (glob_files_rec
    (template.distillery/* with_prefix eliom/templates/os.pgocaml))))
+
+(env
+ (_
+  (flags
+   (:standard -w +A@3-4@5..15-9@20..68-37-39-44-48-69-34))))

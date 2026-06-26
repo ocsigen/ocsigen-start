@@ -1,25 +1,57 @@
-(env
- (_
-  (flags
-   (:standard -w +A@3-4@5..15-9@20..68-37-39-44-48-69-34))))
+;
+; This Dune file was generated with ocsigen-dune-rules.
+; To update it, modify the invocation below and run
+;
+;     dune runtest --auto-promote
+;
+
+(rule
+ (with-stdout-to
+  dune.corrected
+  (run
+   ocsigen-dune-rules
+   gen-library
+   --public-name
+   ocsigen-start
+   ocsigen_start
+   --preprocess
+   js_of_ocaml-ppx_deriving_json
+   --no-rpc-raw
+   --libraries
+   calendar,re.str
+   --server-libraries
+   safepass,yojson,cohttp-lwt-unix,pgocaml,resource-pooling
+   --eliom-libraries
+   ocsigen-toolkit)))
+
+;
+; Below this line, any changes will be overwritten.
+;
+
+(rule
+ (alias runtest)
+ (action
+  (diff dune dune.corrected)))
 
 (library
  (public_name ocsigen-start.server)
  (name ocsigen_start)
  (modes byte native)
  (wrapped false)
+ (library_flags
+  (:standard -linkall))
  (preprocess
-  (pps eliom.ppx.server js_of_ocaml-ppx_deriving_json ocsigen-ppx-rpc))
+  (pps eliom.ppx.server ocsigen-ppx-rpc js_of_ocaml-ppx_deriving_json))
  (libraries
   eliom.server
-  calendar
   safepass
-  ocsigen-toolkit.server
   yojson
-  re.str
   cohttp-lwt-unix
   pgocaml
-  resource-pooling))
+  resource-pooling
+  calendar
+  re.str
+  ocsigen-toolkit.server))
 
 (subdir
  client
@@ -28,9 +60,17 @@
   (name ocsigen_start)
   (modes byte)
   (wrapped false)
+  (library_flags
+   (:standard -linkall))
   (preprocess
    (pps js_of_ocaml-ppx js_of_ocaml-ppx_deriving_json))
-  (libraries eliom.client calendar ocsigen-toolkit.client re.str js_of_ocaml))
+  (libraries
+   eliom.client
+   js_of_ocaml
+   js_of_ocaml-lwt
+   calendar
+   re.str
+   ocsigen-toolkit.client))
  (dynamic_include ../dune.client))
 
 (rule
@@ -40,4 +80,4 @@
  (action
   (with-stdout-to
    dune.client
-   (run ocsigen-dune-rules .))))
+   (run ocsigen-dune-rules gen-client-modules .))))
