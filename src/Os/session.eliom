@@ -134,7 +134,7 @@ let disconnect_all
     match userid with
     | None -> (
         let uid = Eliom.State.get_volatile_data_session_group () in
-        try Eliom.Lib.Option.map Int64.of_string uid with Failure _ -> None)
+        try Option.map Int64.of_string uid with Failure _ -> None)
     | Some userid -> Some userid
   in
   match userid with
@@ -249,7 +249,7 @@ let check_allow_deny userid allow deny =
 let get_session () =
   let uids = Eliom.State.get_volatile_data_session_group () in
   let get_uid uid =
-    try Eliom.Lib.Option.map Int64.of_string uid with Failure _ -> None
+    try Option.map Int64.of_string uid with Failure _ -> None
   in
   let* uid =
     match get_uid uids with

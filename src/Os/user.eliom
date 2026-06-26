@@ -76,9 +76,7 @@ let%shared avatar_uri_of_avatar ?absolute_path avatar =
     ["avatars"; avatar]
 
 let%shared avatar_uri_of_user ?absolute_path user =
-  Eliom.Lib.Option.map
-    (avatar_uri_of_avatar ?absolute_path)
-    (avatar_of_user user)
+  Option.map (avatar_uri_of_avatar ?absolute_path) (avatar_of_user user)
 
 let%shared fullname_of_user user =
   String.concat " " [firstname_of_user user; lastname_of_user user]
