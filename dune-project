@@ -60,7 +60,7 @@
     (< "2.0")))
   cohttp-lwt-unix
   (js_of_ocaml
-   (>= "6.3.2"))
+   (>= "6.4.0"))
   (re
    (>= "1.7.2"))
   (ocsipersist-pgsql-config
