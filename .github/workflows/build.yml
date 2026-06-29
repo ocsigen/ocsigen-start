@@ -66,7 +66,7 @@ jobs:
 
       - run: mkdir -p template
 
-      - run: opam exec -- eliom-distillery -name template -template os.pgocaml
+      - run: opam exec -- eliom-distillery -name template -template os
 
       - run: opam install -y .
         working-directory: template
