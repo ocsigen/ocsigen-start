@@ -50,20 +50,42 @@ jobs:
         with:
           token: ${{ github.token }}
 
-      - name: Install dependencies
+      # The bottleneck of this job is compiling the dependency tree (incl.
+      # wasm_of_ocaml) plus wodoc and odoc from source; setup-ocaml only caches the
+      # base switch (the compiler), so they recompiled on every push. Cache the
+      # whole _opam switch keyed on ocsigen-start.opam (the dep set) and wodoc's HEAD
+      # commit. On a cache hit the deps and wodoc are restored and only ocsigen-start
+      # itself is (re)built below; the key changes -- and the deps/wodoc rebuild
+      # once -- only when ocsigen-start.opam or wodoc move.
+      - name: Resolve wodoc HEAD commit
+        id: wodoc
+        run: echo "sha=$(git ls-remote https://github.com/ocsigen/wodoc.git HEAD | cut -f1)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the opam switch (deps + wodoc)
+        id: switch-cache
+        uses: actions/cache@v4
+        with:
+          path: _opam
+          key: opam-switch-${{ runner.os }}-ocaml5.4.0-${{ hashFiles('*.opam') }}-wodoc-${{ steps.wodoc.outputs.sha }}
+
+      - name: Install dependencies and wodoc
+        # Cache miss only: build the dependency tree and wodoc once, then re-cache.
+        if: steps.switch-cache.outputs.cache-hit != 'true'
         run: |
-          # Install ocsigen-start (from the ref being built) so odoc_driver
-          # documents these sources. It is installed WITHOUT --with-doc: its server
-          # and client libraries share module names, so building its own @doc
-          # collides ("Multiple rules for .../Os_*/index.html"). wodoc builds the
-          # docs via `odoc_driver --remap` instead.
           opam install . --deps-only --with-doc
-          opam install .
           # wodoc themes the pages. Its opam pin-depends pulls odoc / odoc-driver
           # from the balat/odoc fork (the cross-library link fix, not yet upstream),
           # so we do NOT pin odoc ourselves here.
           opam pin add -n wodoc https://github.com/ocsigen/wodoc.git
           opam install wodoc
+
+      - name: Install ocsigen-start
+        # Always: ocsigen-start's own sources change on every push, so odoc_driver must
+        # document the freshly-built package. It is installed WITHOUT --with-doc:
+        # its server and client libraries share module names, so building its own
+        # @doc collides ("Multiple rules for .../Os_*/index.html"). wodoc builds
+        # the docs via `odoc_driver --remap` instead.
+        run: opam install .
 
       - name: Build documentation (dev)
         # wodoc build runs `odoc_driver ocsigen-start --remap` on the installed
