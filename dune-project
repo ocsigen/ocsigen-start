@@ -46,7 +46,7 @@
   (ocsigen-i18n
    (>= "4.0.0"))
   (eliom
-   (>= "13.0.0"))
+   (>= "13.0~"))
   (ocsigen-toolkit
    (>= "2.7.0"))
   ocsigen-dune-rules
@@ -60,7 +60,7 @@
     (< "2.0")))
   cohttp-lwt-unix
   (js_of_ocaml
-   (>= "6.3.2"))
+   (>= "6.4.0"))
   (re
    (>= "1.7.2"))
   (ocsipersist-pgsql-config
