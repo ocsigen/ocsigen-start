@@ -65,6 +65,13 @@ jobs:
 
       - run: opam exec -- eliom-distillery -name template -template os.pgocaml
 
+      # Make the generated project its own dune root. It lives inside the
+      # ocsigen-start checkout, which ships a dune-project; without this, dune
+      # would take ocsigen-start as the root and treat the project as a nested
+      # subdirectory, which breaks Eliom's client/server value linking
+      # ("Inferred type of client value not found. You need to regenerate ...").
+      - run: echo '(lang dune 3.0)' > template/dune-workspace
+
       - run: opam install -y .
         working-directory: template
 
