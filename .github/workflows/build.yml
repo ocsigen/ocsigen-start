@@ -21,13 +21,10 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
-          - windows-latest
+        # The Server 8 / modern ppx stack (ocsigen-ppx-rpc needs ppxlib >= 0.37,
+        # pulled together with ppx_sexp_conv -> ppxlib_jane) requires OCaml >= 5.3.
         ocaml-compiler:
-          - "4.14"
-          - "5.2"
-        include:
-          - os: ubuntu-latest
-            ocaml-compiler: "4.12"
+          - "5"
 
     runs-on: ${{ matrix.os }}
 
@@ -46,9 +43,22 @@ jobs:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
           opam-pin: false
 
+      # wasm_of_ocaml (pulled in via eliom) needs binaryen's wasm-merge.
+      - name: Set-up Binaryen
+        uses: Aandreba/setup-binaryen@v1.0.0
+        with:
+          token: ${{ github.token }}
+
+      # Pin the Ocsigen Server 8 development branches until 8.0 is released
+      # (the default branches of these repos are still the Server 7 line).
       - run: |
-          opam pin add -n eliom https://github.com/ocsigen/eliom.git
-          opam pin add -n ocsigen-toolkit https://github.com/ocsigen/ocsigen-toolkit.git
+          opam pin -yn git+https://github.com/ocsigen/ocsigenserver#master
+          opam pin -yn git+https://github.com/ocsigen/ocsipersist#master
+          opam pin -yn git+https://github.com/ocsigen/eliom#deriving
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-i18n#modernize
 
       - run: opam pin add ocsigen-start.7.0.0 . --no-action
 
@@ -56,7 +66,14 @@ jobs:
 
       - run: mkdir -p template
 
-      - run: opam exec -- eliom-distillery -name template -template os.pgocaml
+      - run: opam exec -- eliom-distillery -name template -template os
+
+      # Make the generated project its own dune root. It lives inside the
+      # ocsigen-start checkout, which ships a dune-project; without this, dune
+      # would take ocsigen-start as the root and treat the project as a nested
+      # subdirectory, which breaks Eliom's client/server value linking
+      # ("Inferred type of client value not found. You need to regenerate ...").
+      - run: echo '(lang dune 3.0)' > template/dune-workspace
 
       - run: opam install -y .
         working-directory: template

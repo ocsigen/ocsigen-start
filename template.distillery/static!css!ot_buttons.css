@@ -1,0 +1,60 @@
+.ot-dropdown:hover {
+    background-color: gray;
+}
+
+.ot-dropdown {
+    position: relative;
+    transition: background-color .3s;
+}
+
+.ot-dropdown-background {
+    position: fixed;
+    background-color: black;
+    opacity: 0;
+    left: 0; right: 0; top: 0; bottom: 0;
+    visibility: hidden;
+    transition: opacity .1s, visibility .1s;
+    z-index: 1
+}
+
+.ot-dropdown-button {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+}
+
+.ot-dropdown-menu {
+    position: absolute ;
+    top: 100% ;
+    right: 0 ;
+    min-width: max-content ;
+    overflow: hidden ;
+    z-index: 10 ;
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.15) ;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity .2s, visibility .2s;
+}
+
+.ot-dropdown:hover > .ot-dropdown-background {
+    visibility: visible;
+    opacity: 0.2;
+}
+
+.ot-dropdown > .ot-dropdown-background:hover {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.ot-dropdown:hover > .ot-dropdown-menu {
+    visibility: visible;
+    opacity: 1;
+}
+
+// not strictly necessary, but without this the menu will disappear a little
+// after once the background is completely gone (even without a transition)
+.ot-dropdown-background:hover ~ .ot-dropdown-menu {
+    visibility: hidden;
+    opacity: 0;
+}
