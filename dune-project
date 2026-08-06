@@ -35,6 +35,7 @@
  (depends
   (ocaml
    (>= "4.10"))
+  ocsigen-dune-rules ; TODO: Strict version constraint
   (pgocaml
    (>= "4.0"))
   (pgocaml_ppx
