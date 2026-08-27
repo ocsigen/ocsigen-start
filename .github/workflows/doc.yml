@@ -95,6 +95,7 @@ jobs:
           opam exec -- wodoc build --config doc/wodoc
           --menu https://ocsigen.org/doc/menu.html
           --out "$PWD/_doc-site/dev" --label dev
+          --strict-refs
 
       - name: Overlay manual assets (screenshots live on the wikidoc branch)
         # The intro manual references files/screenshots/*.png (and the demo
