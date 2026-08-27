@@ -18,16 +18,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # No Windows: ocsigenserver, which eliom pulls in, is not available there
+        # ('os != "win32"' in its opam file), so opam cannot even find a solution.
         os:
           - macos-latest
           - ubuntu-latest
-          - windows-latest
+        # OCaml 5.3+: eliom -> ocsigenserver -> cohttp-lwt-unix >= 6.0 ->
+        # ppx_sexp_conv needs 5.1 or later, and pgocaml only supports OCaml 5 from
+        # its 4.4.0. The doc CI builds on 5.4.
         ocaml-compiler:
-          - "4.14"
-          - "5.2"
-        include:
-          - os: ubuntu-latest
-            ocaml-compiler: "4.12"
+          - "5.3"
+          - "5.4"
 
     runs-on: ${{ matrix.os }}
 

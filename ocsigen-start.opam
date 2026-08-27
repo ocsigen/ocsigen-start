@@ -15,7 +15,7 @@ homepage: "https://ocsigen.org/ocsigen-start/"
 bug-reports: "https://github.com/ocsigen/ocsigen-start/issues"
 depends: [
   "dune" {>= "3.18"}
-  "ocaml" {>= "4.10"}
+  "ocaml" {>= "5.1"}
   "pgocaml" {>= "4.0"}
   "pgocaml_ppx" {>= "4.0"}
   "safepass" {>= "3.0"}
