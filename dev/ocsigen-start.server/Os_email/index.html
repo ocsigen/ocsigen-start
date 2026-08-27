@@ -10,7 +10,7 @@
   <script src="../../highlight.pack.js"></script>
   <script src="../../wodoc-highlight.js"></script>
 </head>
-<body class="wodoc-page wodoc-doc wodoc-server">
+<body class="wodoc-page wodoc-doc wodoc-project-ocsigen-start wodoc-server">
   <!-- Shared site menu — THE single source of truth for the header, top menu and
      drawer of EVERY Ocsigen doc page (vitrine + all projects). Canonical copy
      lives here in ocsigen.github.io; each project's build fetches it. Injected
@@ -108,6 +108,7 @@
 <h3>Server API</h3>
 <h4>Server API</h4>
 <ul class="api-section">
+<li data-wodoc-page="Os_connect_phone"><a href="../../ocsigen-start.server/Os_connect_phone/index.html">Os_connect_phone</a></li>
 <li data-wodoc-page="Os_current_user"><a href="../../ocsigen-start.server/Os_current_user/index.html">Os_current_user</a></li>
 <li data-wodoc-page="Os_date"><a href="../../ocsigen-start.server/Os_date/index.html">Os_date</a></li>
 <li data-wodoc-page="Os_db"><a href="../../ocsigen-start.server/Os_db/index.html">Os_db</a></li>
@@ -168,6 +169,7 @@
 <h3>Server API</h3>
 <h4>Server API</h4>
 <ul class="api-section">
+<li data-wodoc-page="Os_connect_phone"><a href="../../ocsigen-start.server/Os_connect_phone/index.html">Os_connect_phone</a></li>
 <li data-wodoc-page="Os_current_user"><a href="../../ocsigen-start.server/Os_current_user/index.html">Os_current_user</a></li>
 <li data-wodoc-page="Os_date"><a href="../../ocsigen-start.server/Os_date/index.html">Os_date</a></li>
 <li data-wodoc-page="Os_db"><a href="../../ocsigen-start.server/Os_db/index.html">Os_db</a></li>
@@ -202,13 +204,13 @@
   <span><span class="label">to_addrs</span>:<span><span>(string * string)</span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">subject</span>:string <span class="arrow">&#45;&gt;</span></span>
   <span><span>string list</span> <span class="arrow">&#45;&gt;</span></span>
-  <span>unit <a href="../../../../lwt/latest/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Send an e-mail to <code>to_addrs</code> from <code>from_addr</code>. You have to define the <code>subject</code> of your email. The body of the email is a list of strings and each element of the list is automatically separated by a new line. Tuples used by <code>from_addr</code> and <code>to_addrs</code> is of the form <code>(name, email)</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-set_send"><code><span><span class="keyword">val</span> set_send : 
+  <span>unit <a href="../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Send an e-mail to <code>to_addrs</code> from <code>from_addr</code>. You have to define the <code>subject</code> of your email. The body of the email is a list of strings and each element of the list is automatically separated by a new line. Tuples used by <code>from_addr</code> and <code>to_addrs</code> is of the form <code>(name, email)</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-set_send"><code><span><span class="keyword">val</span> set_send : 
   <span><span>(<span><span class="optlabel">?url</span>:string <span class="arrow">&#45;&gt;</span></span>
     <span><span class="label">from_addr</span>:<span>(string * string)</span> <span class="arrow">&#45;&gt;</span></span>
     <span><span class="label">to_addrs</span>:<span><span>(string * string)</span> list</span> <span class="arrow">&#45;&gt;</span></span>
     <span><span class="label">subject</span>:string <span class="arrow">&#45;&gt;</span></span>
     <span><span>string list</span> <span class="arrow">&#45;&gt;</span></span>
-    <span>unit <a href="../../../../lwt/latest/lwt/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span>
+    <span>unit <a href="../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <span class="arrow">&#45;&gt;</span></span>
   unit</span></code></div><div class="spec-doc"><p>Customize email sending function. See <a href="#val-send"><code>send</code></a> for more details about the arguments.</p></div></div></div>
       </article>
     </div>

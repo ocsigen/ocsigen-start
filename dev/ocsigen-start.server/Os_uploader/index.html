@@ -10,7 +10,7 @@
   <script src="../../highlight.pack.js"></script>
   <script src="../../wodoc-highlight.js"></script>
 </head>
-<body class="wodoc-page wodoc-doc wodoc-server">
+<body class="wodoc-page wodoc-doc wodoc-project-ocsigen-start wodoc-server">
   <!-- Shared site menu — THE single source of truth for the header, top menu and
      drawer of EVERY Ocsigen doc page (vitrine + all projects). Canonical copy
      lives here in ocsigen.github.io; each project's build fetches it. Injected
@@ -108,6 +108,7 @@
 <h3>Server API</h3>
 <h4>Server API</h4>
 <ul class="api-section">
+<li data-wodoc-page="Os_connect_phone"><a href="../../ocsigen-start.server/Os_connect_phone/index.html">Os_connect_phone</a></li>
 <li data-wodoc-page="Os_current_user"><a href="../../ocsigen-start.server/Os_current_user/index.html">Os_current_user</a></li>
 <li data-wodoc-page="Os_date"><a href="../../ocsigen-start.server/Os_date/index.html">Os_date</a></li>
 <li data-wodoc-page="Os_db"><a href="../../ocsigen-start.server/Os_db/index.html">Os_db</a></li>
@@ -168,6 +169,7 @@
 <h3>Server API</h3>
 <h4>Server API</h4>
 <ul class="api-section">
+<li data-wodoc-page="Os_connect_phone"><a href="../../ocsigen-start.server/Os_connect_phone/index.html">Os_connect_phone</a></li>
 <li data-wodoc-page="Os_current_user"><a href="../../ocsigen-start.server/Os_current_user/index.html">Os_current_user</a></li>
 <li data-wodoc-page="Os_date"><a href="../../ocsigen-start.server/Os_date/index.html">Os_date</a></li>
 <li data-wodoc-page="Os_db"><a href="../../ocsigen-start.server/Os_db/index.html">Os_db</a></li>
@@ -196,13 +198,13 @@
       </nav>
       <article class="rightcol">
         <header class="odoc-preamble"><h1>Module <code><span>Os_uploader</span></code></h1><p>This module defines functions to manipulate images to be uploaded.</p></header>
-        <div class="odoc-content"><div class="odoc-spec"><div class="spec exception anchored" id="exception-Error_while_cropping"><code><span><span class="keyword">exception</span> </span><span><span class="exception">Error_while_cropping</span> <span class="keyword">of</span> <a href="https://ocaml.org/p/ocaml-compiler/5.4.0/doc/Unix/index.html#type-process_status">Unix.process_status</a></span></code></div><div class="spec-doc"><p>Raised if an error occurred while cropping a picture. The corresponding code status is given in parameter.</p></div></div><div class="odoc-spec"><div class="spec exception anchored" id="exception-Error_while_resizing"><code><span><span class="keyword">exception</span> </span><span><span class="exception">Error_while_resizing</span> <span class="keyword">of</span> <a href="https://ocaml.org/p/ocaml-compiler/5.4.0/doc/Unix/index.html#type-process_status">Unix.process_status</a></span></code></div><div class="spec-doc"><p>Raised if an error occurred while resizing a picture. The corresponding code status is given in parameter.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get_image_height"><code><span><span class="keyword">val</span> get_image_height : <span>string <span class="arrow">&#45;&gt;</span></span> <span>int <a href="../../../../lwt/latest/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Return the height of the given image.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get_image_width"><code><span><span class="keyword">val</span> get_image_width : <span>string <span class="arrow">&#45;&gt;</span></span> <span>int <a href="../../../../lwt/latest/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Return the width of the given image.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-resize_image"><code><span><span class="keyword">val</span> resize_image : 
+        <div class="odoc-content"><div class="odoc-spec"><div class="spec exception anchored" id="exception-Error_while_cropping"><code><span><span class="keyword">exception</span> </span><span><span class="exception">Error_while_cropping</span> <span class="keyword">of</span> <a href="https://ocaml.org/p/ocaml-compiler/5.4.0/doc/Unix/index.html#type-process_status">Unix.process_status</a></span></code></div><div class="spec-doc"><p>Raised if an error occurred while cropping a picture. The corresponding code status is given in parameter.</p></div></div><div class="odoc-spec"><div class="spec exception anchored" id="exception-Error_while_resizing"><code><span><span class="keyword">exception</span> </span><span><span class="exception">Error_while_resizing</span> <span class="keyword">of</span> <a href="https://ocaml.org/p/ocaml-compiler/5.4.0/doc/Unix/index.html#type-process_status">Unix.process_status</a></span></code></div><div class="spec-doc"><p>Raised if an error occurred while resizing a picture. The corresponding code status is given in parameter.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get_image_height"><code><span><span class="keyword">val</span> get_image_height : <span>string <span class="arrow">&#45;&gt;</span></span> <span>int <a href="../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Return the height of the given image.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get_image_width"><code><span><span class="keyword">val</span> get_image_width : <span>string <span class="arrow">&#45;&gt;</span></span> <span>int <a href="../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Return the width of the given image.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-resize_image"><code><span><span class="keyword">val</span> resize_image : 
   <span><span class="label">src</span>:string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?dst</span>:string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">width</span>:int <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">height</span>:int <span class="arrow">&#45;&gt;</span></span>
   <span>unit <span class="arrow">&#45;&gt;</span></span>
-  <span>unit <a href="../../../../lwt/latest/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Resize the given image (<code>src</code>) and save it to <code>dst</code> (default is the source file). If an error occurred, it raises the exception <code>Error_while_resizing</code> with the corresponding unix process status.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-crop_image"><code><span><span class="keyword">val</span> crop_image : 
+  <span>unit <a href="../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Resize the given image (<code>src</code>) and save it to <code>dst</code> (default is the source file). If an error occurred, it raises the exception <code>Error_while_resizing</code> with the corresponding unix process status.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-crop_image"><code><span><span class="keyword">val</span> crop_image : 
   <span><span class="label">src</span>:string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?dst</span>:string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?ratio</span>:float <span class="arrow">&#45;&gt;</span></span>
@@ -211,12 +213,12 @@
   <span><span class="label">bottom</span>:float <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">left</span>:float <span class="arrow">&#45;&gt;</span></span>
   <span>unit <span class="arrow">&#45;&gt;</span></span>
-  <span>unit <a href="../../../../lwt/latest/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>crop_image ~src ?dst ?ratio ~top ~right ~bottom ~left</code> crops the image saved in <code>src</code> and saves the result in <code>dst</code> (default is the source file). <code>top</code>, <code>right</code>, <code>bottom</code> and <code>left</code> are the number of pixels the image must be truncated on the specific side. The <code>ratio</code> is used after truncating the image. If an error occurred, it raises the exception <code>Error_while_resizing</code> or <code>Error_while_cropping</code> with the corresponding unix process status.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-record_image"><code><span><span class="keyword">val</span> record_image : 
+  <span>unit <a href="../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>crop_image ~src ?dst ?ratio ~top ~right ~bottom ~left</code> crops the image saved in <code>src</code> and saves the result in <code>dst</code> (default is the source file). <code>top</code>, <code>right</code>, <code>bottom</code> and <code>left</code> are the number of pixels the image must be truncated on the specific side. The <code>ratio</code> is used after truncating the image. If an error occurred, it raises the exception <code>Error_while_resizing</code> or <code>Error_while_cropping</code> with the corresponding unix process status.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-record_image"><code><span><span class="keyword">val</span> record_image : 
   <span>string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?ratio</span>:float <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?cropping</span>:<span>(float * float * float * float)</span> <span class="arrow">&#45;&gt;</span></span>
-  <span><a href="../../../../ocsigenserver/latest/Ocsigen_extensions/index.html#type-file_info">Ocsigen_extensions.file_info</a> <span class="arrow">&#45;&gt;</span></span>
-  <span>string <a href="../../../../lwt/latest/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>record_image directory ?ratio ?cropping:(top, right, bottom, left) file</code> crops the image like <code>crop_image</code> and save it in the directory <code>directory</code>. If an error occurred, it raises the exception <code>Error_while_resizing</code> or <code>Error_while_cropping</code> with the corresponding unix process status.</p></div></div></div>
+  <span><a href="../../../../ocsigenserver/dev/Ocsigen_extensions/index.html#type-file_info">Ocsigen_extensions.file_info</a> <span class="arrow">&#45;&gt;</span></span>
+  <span>string <a href="../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>record_image directory ?ratio ?cropping:(top, right, bottom, left) file</code> crops the image like <code>crop_image</code> and save it in the directory <code>directory</code>. If an error occurred, it raises the exception <code>Error_while_resizing</code> or <code>Error_while_cropping</code> with the corresponding unix process status.</p></div></div></div>
       </article>
     </div>
   </div>

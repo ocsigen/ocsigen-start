@@ -142,7 +142,7 @@ parameter a attributes of the form.
 ```ocaml
 val avatar : Os_types.User.t -> [> `I | `Img ] Eliom_content.Html.F.elt
 ```
-`avatar user` creates an image HTML tag (with Eliom\_content.HTML.F) with an alt attribute to `"picture"` and with class `"os-avatar"`. If the user has no avatar, the default icon representing the user (see `Ot_icons.F.user`) is returned.
+`avatar user` creates an image HTML tag (with Eliom\_content.HTML.F) with an alt attribute to `"picture"` and with class `"os-avatar"`. If the user has no avatar, the default icon representing the user (see [`Ot_icons.F.user`](./../../ocsigen-toolkit/ocsigen-toolkit.client/Ot_icons-F.md#val-user)) is returned.
 
 parameter user the user.
 ```ocaml
