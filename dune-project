@@ -34,7 +34,7 @@
   "Ocsigen Start is a set of higher-level libraries for building client-server Web and mobile applications with Ocsigen (Js_of_ocaml and Eliom).\nIt provides modules for user management (session management, registration, activation keys, ...), managing groups of users, displaying tips, and easily sending notifications to the users.\nOcsigen Start comes with an eliom-distillery template for an app with a database, user management, and session management.\nThis template is intended to serve as a basis for quickly building the Minimum Viable Product for Web and mobile applications with users.\nThe goal is to enable the programmer to concentrate on the core of the app, and not on user management.")
  (depends
   (ocaml
-   (>= "4.10"))
+   (>= "5.1"))
   (pgocaml
    (>= "4.0"))
   (pgocaml_ppx
