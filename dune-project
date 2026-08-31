@@ -57,6 +57,7 @@
    (and
     (>= "1.0")
     (< "2.0")))
+  (ocsigen-dune-rules :build)
   cohttp-lwt-unix
   (js_of_ocaml
    (>= "6.3.2"))
