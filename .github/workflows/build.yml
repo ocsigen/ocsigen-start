@@ -47,6 +47,23 @@ jobs:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
           opam-pin: false
 
+      - name: Set up Binaryen
+        # eliom and ocsigen-toolkit depend on wasm_of_ocaml-compiler, whose build
+        # needs a recent binaryen (wasm-merge); the distro one is too old. Same
+        # action as the doc workflow and js_of_ocaml's own CI.
+        uses: Aandreba/setup-binaryen@v1.0.0
+        with:
+          token: ${{ github.token }}
+
+      - name: Set up libpq (macOS)
+        if: runner.os == 'macOS'
+        # conf-postgresql, which pgocaml pulls in, looks for libpq through
+        # pkg-config. Homebrew keeps libpq keg-only, so its pkgconfig directory
+        # has to be named explicitly or the probe fails.
+        run: |
+          brew install libpq
+          echo "PKG_CONFIG_PATH=$(brew --prefix libpq)/lib/pkgconfig:${PKG_CONFIG_PATH:-}" >> "$GITHUB_ENV"
+
       - run: |
           opam pin add -n eliom https://github.com/ocsigen/eliom.git
           opam pin add -n ocsigen-toolkit https://github.com/ocsigen/ocsigen-toolkit.git
