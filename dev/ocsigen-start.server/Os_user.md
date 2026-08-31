@@ -1,4 +1,3 @@
-
 # Module `Os_user`
 
 This module provides functions and types about users.

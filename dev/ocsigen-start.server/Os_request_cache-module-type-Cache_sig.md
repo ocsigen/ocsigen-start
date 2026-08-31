@@ -1,4 +1,3 @@
-
 # Module type `Os_request_cache.Cache_sig`
 
 ```ocaml

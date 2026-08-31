@@ -1,4 +1,3 @@
-
 # Module `Os_db.Groups`
 
 This module is low-level and used to manage groups of user.

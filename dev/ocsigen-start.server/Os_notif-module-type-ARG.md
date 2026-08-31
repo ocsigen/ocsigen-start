@@ -1,4 +1,3 @@
-
 # Module type `Os_notif.ARG`
 
 `ARG` is for making `Make`. It is a simplified version of `Eliom_notif.ARG`.

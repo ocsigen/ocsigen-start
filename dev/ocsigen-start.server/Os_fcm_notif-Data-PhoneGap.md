@@ -1,4 +1,3 @@
-
 # Module `Data.PhoneGap`
 
 The Cordova plugin phonegap-plugin-push interprets some payloads defined in the data key. The following module defines an interface to these payloads. You can find the payloads list here: https://github.com/phonegap/phonegap-plugin-push/blob/v2.0.x/docs/PAYLOAD.md Be aware that if you use this plugin, all attributes must be added in the data object and not in the notification object which must be empty.

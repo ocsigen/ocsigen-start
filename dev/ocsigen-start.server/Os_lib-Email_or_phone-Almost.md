@@ -1,4 +1,3 @@
-
 # Module `Email_or_phone.Almost`
 
 ```ocaml

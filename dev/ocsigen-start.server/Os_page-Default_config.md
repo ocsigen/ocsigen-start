@@ -1,4 +1,3 @@
-
 # Module `Os_page.Default_config`
 
 A default configuration for pages.

@@ -1,4 +1,3 @@
-
 # Module `Response.Results`
 
 ```ocaml

@@ -1,8 +1,6 @@
-
 # Module `Os_notif.Make_Simple`
 
 Use this functor in case messages are to be delivered only to clients connected to the current server, as is always the case in a single-server set-up.
-
 
 ## Parameters
 

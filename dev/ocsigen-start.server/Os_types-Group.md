@@ -1,4 +1,3 @@
-
 # Module `Os_types.Group`
 
 ```ocaml

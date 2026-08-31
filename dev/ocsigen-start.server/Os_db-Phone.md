@@ -1,4 +1,3 @@
-
 # Module `Os_db.Phone`
 
 Manage user phone numbers

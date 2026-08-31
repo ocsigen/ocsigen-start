@@ -1,4 +1,3 @@
-
 # Module `Os_tips`
 
 Tips for new users and new features.

@@ -1,6 +1,4 @@
-
 # Module `Os_page.Make`
-
 
 ## Parameters
 

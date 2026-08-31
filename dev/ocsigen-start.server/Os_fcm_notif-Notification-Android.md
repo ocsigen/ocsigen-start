@@ -1,4 +1,3 @@
-
 # Module `Notification.Android`
 
 ```ocaml

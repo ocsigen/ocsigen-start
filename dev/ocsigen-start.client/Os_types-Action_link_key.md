@@ -1,4 +1,3 @@
-
 # Module `Os_types.Action_link_key`
 
 ```ocaml

@@ -1,4 +1,3 @@
-
 # Module `Os_user_proxy`
 
 This module implements a cache of user using [`Eliom_cscache`](./../../eliom/eliom.server/Eliom_cscache.md) which allows to keep synchronized the cache between the client and the server. Even if there is a cache implemented in [`Os_user`](./Os_user.md) to avoid to do database requests, this last one is implementing only server side. Same for [`Os_request_cache`](./Os_request_cache.md) which is also only server-side.

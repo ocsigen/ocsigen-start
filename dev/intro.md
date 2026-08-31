@@ -1,4 +1,3 @@
-
 # Introduction
 
 Ocsigen Start is an application template written with Eliom, Js\_of\_ocaml, Ocsigen Toolkit, etc. It contains many standard features like user management, notifications, and many code examples.
@@ -7,16 +6,15 @@ Use it to learn Ocsigen or to quickly create your own Minimum Viable Product. It
 
 The application is cross-platform: it works as a Web app or as a mobile app for iOS or Android (via [Cordova](https://cordova.apache.org/))..
 
-
 ## Demo
 
 If you want to test the demo application before installing Ocsigen Start, **a live version is running [here](https://ocsigen.org/ocsigen-start/demo/)**.
 
 You can also download the mobile app [on Google Play store](https://play.google.com/store/apps/details?id=com.osdemo.mobile) (for Android) or download the [APK for Android](files/osdemo.apk) or the [iOS version](files/osdemo-ios.tgz) (to be installed using XCode).
 
-<!--wodoc:div class="screenshots"--> [<!--wodoc:img src="files/screenshots/start1.png" alt="Ocsigen Start"-->](files/screenshots/start1.png) [<!--wodoc:img src="files/screenshots/start2.png" alt="Ocsigen Start"-->](files/screenshots/start2.png) <!--wodoc:end-->
+ [![Ocsigen Start](files/screenshots/start1.png)](files/screenshots/start1.png) [![Ocsigen Start](files/screenshots/start2.png)](files/screenshots/start2.png)
 
-<!--wodoc:div class="screenshots"--> [<!--wodoc:img src="files/screenshots/start-mobile-1.png" alt="Ocsigen Start"-->](files/screenshots/start-mobile-1.png) [<!--wodoc:img src="files/screenshots/start-mobile-2.png" alt="Ocsigen Start"-->](files/screenshots/start-mobile-2.png) [<!--wodoc:img src="files/screenshots/start-mobile-4.png" alt="Ocsigen Start"-->](files/screenshots/start-mobile-4.png) <!--wodoc:end-->
+ [![Ocsigen Start](files/screenshots/start-mobile-1.png)](files/screenshots/start-mobile-1.png) [![Ocsigen Start](files/screenshots/start-mobile-2.png)](files/screenshots/start-mobile-2.png) [![Ocsigen Start](files/screenshots/start-mobile-4.png)](files/screenshots/start-mobile-4.png)
 
 Ocsigen Start is composed by two main parts:
 
@@ -26,18 +24,15 @@ Ocsigen Start is composed by two main parts:
 - Tips for new users
 - Push notifications to send information to other users
 - ...
-<!--wodoc:div class="screenshots"--> [<!--wodoc:img src="files/screenshots/start3.png" alt="Ocsigen Start"-->](files/screenshots/start3.png) [<!--wodoc:img src="files/screenshots/start4.png" alt="Ocsigen Start"-->](files/screenshots/start4.png) [<!--wodoc:img src="files/screenshots/start5.png" alt="Ocsigen Start"-->](files/screenshots/start5.png) [<!--wodoc:img src="files/screenshots/start6.png" alt="Ocsigen Start"-->](files/screenshots/start6.png) <!--wodoc:end-->
+ [![Ocsigen Start](files/screenshots/start3.png)](files/screenshots/start3.png) [![Ocsigen Start](files/screenshots/start4.png)](files/screenshots/start4.png) [![Ocsigen Start](files/screenshots/start5.png)](files/screenshots/start5.png) [![Ocsigen Start](files/screenshots/start6.png)](files/screenshots/start6.png)
 
-<!--wodoc:div class="screenshots"--> [<!--wodoc:img src="files/screenshots/start-mobile-3.png" alt="Ocsigen Start"-->](files/screenshots/start-mobile-3.png) [<!--wodoc:img src="files/screenshots/start-mobile-6.png" alt="Ocsigen Start"-->](files/screenshots/start-mobile-6.png) [<!--wodoc:img src="files/screenshots/start-mobile-7.png" alt="Ocsigen Start"-->](files/screenshots/start-mobile-7.png) [<!--wodoc:img src="files/screenshots/start-mobile-8.png" alt="Ocsigen Start"-->](files/screenshots/start-mobile-8.png) <!--wodoc:end-->
-
+ [![Ocsigen Start](files/screenshots/start-mobile-3.png)](files/screenshots/start-mobile-3.png) [![Ocsigen Start](files/screenshots/start-mobile-6.png)](files/screenshots/start-mobile-6.png) [![Ocsigen Start](files/screenshots/start-mobile-7.png)](files/screenshots/start-mobile-7.png) [![Ocsigen Start](files/screenshots/start-mobile-8.png)](files/screenshots/start-mobile-8.png)
 
 ## Getting started
 
 Read [this page](https://ocsigen.org/tuto/latest/start.html) to learn how to build your first Ocsigen Start app in 5 minutes.
 
-
 ## Implementation overview
-
 
 ### Template
 
@@ -45,13 +40,11 @@ The library portion of Ocsigen Start contains core functionality that is common 
 
 The template additionally contains a demonstration of relevant [Ocsigen Toolkit](https://github.com/ocsigen/ocsigen-toolkit) widgets. The demo portion can easily be removed.
 
-
 ### Database
 
 For implementing users, a database is needed. Specifically, we use [PostgreSQL](https://www.postgresql.org/) via the [PGOCaml](http://pgocaml.forge.ocamlcore.org/) library. The template and the library make common assumptions about the database schema. The database thus needs to be instantiated in a certain way; this is automatically done by appropriate targets in the template's build system.
 
 The same database can used for the specific needs of the application at hand. For that, new tables can be added. The original ones should remain in place for Ocsigen Start to work correctly.
-
 
 ### Internationalization (i18n)
 
@@ -59,16 +52,13 @@ The template is available in multiple languages (English and French) using [ocsi
 
 See `Makefile.i18n` for rules about i18n and `Makefile.options` to personalize the internalization of your application (for example add new languages, change default language, change TSV filename).
 
-
 ### Managing e-mails
 
 The template application keeps track of users' e-mails and implements e-mail validation. For that, `sendmail` (or another mail transfer agent compatible with it) needs to be installed on the host.
 
-
 ### Style
 
 The application provides a standard style matching contemporary aesthetics. For this, we use [SASS](http://sass-lang.com/). The style can be customized by modifying the SASS files that are part of the template.
-
 
 ## Installation
 
@@ -81,13 +71,11 @@ eliom-distillery -name $APP_NAME -template os.pgocaml
 
 For details on launching the application, refer to the template's [README](https://github.com/ocsigen/ocsigen-start/blob/master/template.distillery/README.md).
 
-
 ## Library overview
 
 We provide a tour of the Ocsigen Start library. All modules have server- and client-side versions. (In the API documentation, there are links near the top of each module page for selecting the side.)
 
 The template uses all these modules, and can thus act as a good starting guide. Look around\!
-
 
 ### User interface
 

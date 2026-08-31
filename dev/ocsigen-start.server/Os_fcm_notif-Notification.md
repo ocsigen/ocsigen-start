@@ -1,4 +1,3 @@
-
 # Module `Os_fcm_notif.Notification`
 
 This module provides an interface to create the JSON for the notification key.

@@ -1,4 +1,3 @@
-
 # Module type `Os_notif.S`
 
 ```ocaml

@@ -1,8 +1,7 @@
-
 # Library `ocsigen-start.server`
 
 [`Os_comet`](./Os_comet.md) This module provides function to monitor communications between the server clients. It's only defined for internal uses so not a lot of things are exported.
-[`Os_connect_phone`](./Os_connect_phone.md) 
+[`Os_connect_phone`](./Os_connect_phone.md)
 [`Os_core_db`](./Os_core_db.md) This module defines low level functions for database requests.
 [`Os_current_user`](./Os_current_user.md) This module provides functions and types to manage the current user.
 [`Os_date`](./Os_date.md) Time zone and date management for Web applications.
@@ -13,12 +12,12 @@
 [`Os_handlers`](./Os_handlers.md) This module contains pre-defined handlers for connect, disconnect, sign up, add a new email, etc. Each handler has a corresponding service in Os\_services.
 [`Os_icons`](./Os_icons.md) The icons used internally by Ocsigen Start's library. Customize them with your own icons by calling module Register.
 [`Os_lib`](./Os_lib.md) This module aims to provide common utilities functions.
-[`Os_msg`](./Os_msg.md) 
+[`Os_msg`](./Os_msg.md)
 [`Os_notif`](./Os_notif.md) Server to client notifications.
-[`Os_page`](./Os_page.md) 
+[`Os_page`](./Os_page.md)
 [`Os_platform`](./Os_platform.md) About device platform.
 [`Os_request_cache`](./Os_request_cache.md) Caching request data to avoid doing the same computation several times during the same request.
-[`Os_services`](./Os_services.md) 
+[`Os_services`](./Os_services.md)
 [`Os_session`](./Os_session.md) Connection and disconnection of users, restrict access to services or server functions, define actions to be executed at some points of the session.
 [`Os_tips`](./Os_tips.md) Tips for new users and new features.
 [`Os_types`](./Os_types.md) Data types

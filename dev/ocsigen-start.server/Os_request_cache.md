@@ -1,4 +1,3 @@
-
 # Module `Os_request_cache`
 
 Caching request data to avoid doing the same computation several times during the same request.

@@ -1,4 +1,3 @@
-
 # Module `Os_current_user.Opt`
 
 Instead of exception, the module `Opt` returns an option.

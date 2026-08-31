@@ -1,4 +1,3 @@
-
 # Module `Os_current_user`
 
 This module provides functions and types to manage the current user.

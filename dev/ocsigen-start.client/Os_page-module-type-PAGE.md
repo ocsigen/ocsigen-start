@@ -1,4 +1,3 @@
-
 # Module type `Os_page.PAGE`
 
 The signature of the module to be given as parameter to the functor. It allows to personnalize your pages (CSS, JS, etc).

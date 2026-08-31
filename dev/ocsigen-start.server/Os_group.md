@@ -1,4 +1,3 @@
-
 # Module `Os_group`
 
 Groups of users. Groups are sets of users. Groups and group members are saved in database. Groups are used by OS for example to restrict access to pages or server functions.

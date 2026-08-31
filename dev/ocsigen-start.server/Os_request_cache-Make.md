@@ -1,8 +1,6 @@
-
 # Module `Os_request_cache.Make`
 
 Functor which creates a module [`Cache_sig`](./Os_request_cache-module-type-Cache_sig.md).
-
 
 ## Parameters
 

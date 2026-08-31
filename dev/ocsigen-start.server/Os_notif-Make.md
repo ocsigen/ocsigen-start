@@ -1,8 +1,6 @@
-
 # Module `Os_notif.Make`
 
 see `Eliom_notif.Make`
-
 
 ## Parameters
 

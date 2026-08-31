@@ -1,4 +1,3 @@
-
 # Module `Os_db.Email`
 
 This module is used for low-level email management with database.

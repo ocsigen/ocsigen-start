@@ -1,4 +1,3 @@
-
 # Module `Os_email`
 
 Basic module for sending e-mail messages to users, using some local sendmail program.

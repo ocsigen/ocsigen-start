@@ -1,4 +1,3 @@
-
 # Module `Os_icons`
 
 The icons used internally by Ocsigen Start's library. Customize them with your own icons by calling module `Register`.

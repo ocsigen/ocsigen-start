@@ -1,4 +1,3 @@
-
 # Module `PhoneGap.Style`
 
 ```ocaml

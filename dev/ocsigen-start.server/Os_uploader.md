@@ -1,4 +1,3 @@
-
 # Module `Os_uploader`
 
 This module defines functions to manipulate images to be uploaded.

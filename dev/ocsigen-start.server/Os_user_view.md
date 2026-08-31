@@ -1,4 +1,3 @@
-
 # Module `Os_user_view`
 
 This module defines functions to create password forms, connection forms, settings buttons and other common contents arising in applications. As Eliom\_content.Html.F is opened by default, if the module D is not explicitly used, HTML tags will be functional.

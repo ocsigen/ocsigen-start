@@ -1,4 +1,3 @@
-
 # Module `Os_connect_phone`
 
 ```ocaml

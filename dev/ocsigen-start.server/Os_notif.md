@@ -1,4 +1,3 @@
-
 # Module `Os_notif`
 
 Server to client notifications.

@@ -1,6 +1,4 @@
-
 # Module `Os_icons.Register`
-
 
 ## Parameters
 

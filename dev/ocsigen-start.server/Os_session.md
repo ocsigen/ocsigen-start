@@ -1,4 +1,3 @@
-
 # Module `Os_session`
 
 Connection and disconnection of users, restrict access to services or server functions, define actions to be executed at some points of the session.

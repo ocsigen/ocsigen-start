@@ -1,4 +1,3 @@
-
 # Module type `Os_icons.ICSIG`
 
 ```ocaml

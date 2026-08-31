@@ -1,4 +1,3 @@
-
 # Module `Os_platform`
 
 About device platform.

@@ -1,4 +1,3 @@
-
 # Module `Make.Opt`
 
 ```ocaml

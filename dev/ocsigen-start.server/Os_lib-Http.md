@@ -1,4 +1,3 @@
-
 # Module `Os_lib.Http`
 
 This module contains functions about HTTP request.

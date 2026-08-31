@@ -1,4 +1,3 @@
-
 # Module `Os_date`
 
 Time zone and date management for Web applications.

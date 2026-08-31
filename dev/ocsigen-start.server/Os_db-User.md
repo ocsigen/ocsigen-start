@@ -1,4 +1,3 @@
-
 # Module `Os_db.User`
 
 This module is used for low-level user management with database.

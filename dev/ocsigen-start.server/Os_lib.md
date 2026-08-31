@@ -1,4 +1,3 @@
-
 # Module `Os_lib`
 
 This module aims to provide common utilities functions.
