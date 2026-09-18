@@ -1,10 +1,3 @@
-;
-; This Dune file was generated with ocsigen-dune-rules.
-; To update it, modify the invocation below and run
-;
-;     dune runtest --auto-promote
-;
-
 (rule
  (with-stdout-to
   dune.corrected
@@ -14,18 +7,25 @@
    --public-name
    ocsigen-start
    ocsigen_start
-   --preprocess
-   js_of_ocaml-ppx_deriving_json
+   --wrapped
+   false
    --no-rpc-raw
    --libraries
    calendar,re.str
    --server-libraries
    safepass,yojson,cohttp-lwt-unix,pgocaml,resource-pooling
    --eliom-libraries
-   ocsigen-toolkit)))
+   ocsigen-toolkit
+   --dune
+   %{dep:dune})))
 
-;
+; [ocsigen-dune-rules] Do not remove this line.
 ; Below this line, any changes will be overwritten.
+;
+; To update the rules below, modify the invocation of ocsigen-dune-rules above
+; and run:
+;
+;     dune runtest --auto-promote
 ;
 
 (rule
@@ -62,8 +62,6 @@
   (wrapped false)
   (library_flags
    (:standard -linkall))
-  (preprocess
-   (pps js_of_ocaml-ppx js_of_ocaml-ppx_deriving_json))
   (libraries
    eliom.client
    js_of_ocaml
@@ -72,6 +70,19 @@
    re.str
    ocsigen-toolkit.client))
  (dynamic_include ../dune.client))
+
+(subdir
+ client/ppx
+ (rule
+  (write-file main.ml "let () = Ppxlib.Driver.standalone ()"))
+ (executable
+  (name main)
+  (libraries
+   ppxlib
+   eliom.ppx.client
+   ocsigen-ppx-rpc
+   js_of_ocaml-ppx
+   js_of_ocaml-ppx_deriving_json)))
 
 (rule
  (deps
