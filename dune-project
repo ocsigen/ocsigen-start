@@ -44,14 +44,14 @@
   (safepass
    (>= "3.0"))
   (ocsigen-i18n
-   (>= "4.0.0"))
+   (>= "6.0~"))
   (eliom
    (>= "13.0~"))
   (ocsigen-toolkit
-   (>= "4.3.0"))
+   (>= "5.0~"))
   ocsigen-dune-rules
   (ocsigen-ppx-rpc
-   (>= "1.1"))
+   (>= "2.0~"))
   (yojson
    (>= "1.6.0"))
   (resource-pooling
@@ -65,8 +65,8 @@
    (>= "1.7.2"))
   (ocsipersist-pgsql-config
    (and
-    (>= "2.0")
-    (< "3.0")))
+    (>= "3.0")
+    (< "4.0")))
   conf-postgresql))
 
 (package
