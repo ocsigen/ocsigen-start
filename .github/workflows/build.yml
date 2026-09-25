@@ -53,18 +53,26 @@ jobs:
         with:
           token: ${{ github.token }}
 
-      # Pin the Ocsigen Server 8 development branches until 8.0 is released
-      # (the default branches of these repos are still the Server 7 line).
+      # Ocsigen Server 8.0.0 and ocsipersist 3.1.0 are released on GitHub but
+      # not yet published on opam (ocaml/opam-repository#30806): pin the
+      # release tags. ocsipersist needs explicit versions, as opam infers a
+      # pinned package's version from opam-repository when the project
+      # declares none. The rest of the modernized stack is unreleased: pin
+      # the default branches, or the development branch where not merged yet.
       - run: |
-          opam pin -yn git+https://github.com/ocsigen/ocsigenserver#master
-          opam pin -yn git+https://github.com/ocsigen/ocsipersist#master
-          opam pin -yn git+https://github.com/ocsigen/eliom#deriving
+          opam pin -yn git+https://github.com/ocsigen/ocsigenserver#8.0.0
+          for p in ocsipersist-lib ocsipersist ocsipersist-pgsql ocsipersist-pgsql-config; do
+            opam pin -yn $p.3.1.0 git+https://github.com/ocsigen/ocsipersist#3.1.0
+          done
+          opam pin -yn git+https://github.com/ocsigen/eliom#master
           opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#modernize
           opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
-          opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#modernize
-          opam pin -yn git+https://github.com/ocsigen/ocsigen-i18n#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#main
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-i18n#master
 
-      - run: opam pin add ocsigen-start.7.0.0 . --no-action
+      # The version comes from the opam file: the generated project requires
+      # ocsigen-start >= 9.0~.
+      - run: opam pin add ocsigen-start . --no-action
 
       - run: opam install .
 
