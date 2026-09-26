@@ -1,0 +1,10 @@
+.ot-sticky-fixed {
+    position: fixed;
+}
+.ot-sticky-fixed:not(.ot-stuck) {
+    visibility: hidden;
+}
+
+.ot-sticky-inline.ot-stuck {
+    visibility: hidden;
+}

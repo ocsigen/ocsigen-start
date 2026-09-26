@@ -1,0 +1,38 @@
+.ot-page-transition-wrapper {
+    position: fixed;
+    overflow: hidden;
+    z-index: 1000;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: white;
+}
+
+.ot-page-transition-wrapper-backward {
+    left: 0;
+}
+
+.ot-page-transition-wrapper-forward {
+    right: 100vw;
+}
+
+.ot-page-transition-ss-container {
+    width: 100vw;
+    height: 100vh;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: lightgrey;
+}
+
+.ot-page-transition-wrapper-post-backward {
+    transform: translateX(100vw);
+}
+
+.ot-page-transition-body-pre-forward {
+    transform: translateX(100vw);
+    height: 100vh;
+}
+
+.ot-page-transition-screenshot-post-forward {
+    transform: translateX(100vw);
+}

@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Set-up Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version: lts/*
 
@@ -47,10 +47,8 @@ jobs:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
           opam-pin: false
 
-      - name: Set up Binaryen
-        # eliom and ocsigen-toolkit depend on wasm_of_ocaml-compiler, whose build
-        # needs a recent binaryen (wasm-merge); the distro one is too old. Same
-        # action as the doc workflow and js_of_ocaml's own CI.
+      # wasm_of_ocaml (pulled in via eliom) needs binaryen's wasm-merge.
+      - name: Set-up Binaryen
         uses: Aandreba/setup-binaryen@v1.0.0
         with:
           token: ${{ github.token }}
@@ -64,17 +62,39 @@ jobs:
           brew install libpq
           echo "PKG_CONFIG_PATH=$(brew --prefix libpq)/lib/pkgconfig:${PKG_CONFIG_PATH:-}" >> "$GITHUB_ENV"
 
+      # Ocsigen Server 8.0.0 and ocsipersist 3.1.0 are released on GitHub but
+      # not yet published on opam (ocaml/opam-repository#30806): pin the
+      # release tags. ocsipersist needs explicit versions, as opam infers a
+      # pinned package's version from opam-repository when the project
+      # declares none. The rest of the modernized stack is unreleased: pin
+      # the default branches, or the development branch where not merged yet.
       - run: |
-          opam pin add -n eliom https://github.com/ocsigen/eliom.git
-          opam pin add -n ocsigen-toolkit https://github.com/ocsigen/ocsigen-toolkit.git
+          opam pin -yn git+https://github.com/ocsigen/ocsigenserver#8.0.0
+          for p in ocsipersist-lib ocsipersist ocsipersist-pgsql ocsipersist-pgsql-config; do
+            opam pin -yn $p.3.1.0 git+https://github.com/ocsigen/ocsipersist#3.1.0
+          done
+          opam pin -yn git+https://github.com/ocsigen/eliom#master
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#main
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-i18n#master
 
-      - run: opam pin add ocsigen-start.7.0.0 . --no-action
+      # The version comes from the opam file: the generated project requires
+      # ocsigen-start >= 9.0~.
+      - run: opam pin add ocsigen-start . --no-action
 
       - run: opam install .
 
       - run: mkdir -p template
 
-      - run: opam exec -- eliom-distillery -name template -template os.pgocaml
+      - run: opam exec -- eliom-distillery -name template -template os
+
+      # Make the generated project its own dune root. It lives inside the
+      # ocsigen-start checkout, which ships a dune-project; without this, dune
+      # would take ocsigen-start as the root and treat the project as a nested
+      # subdirectory, which breaks Eliom's client/server value linking
+      # ("Inferred type of client value not found. You need to regenerate ...").
+      - run: echo '(lang dune 3.0)' > template/dune-workspace
 
       - run: opam install -y .
         working-directory: template

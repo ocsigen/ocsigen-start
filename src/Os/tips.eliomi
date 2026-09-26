@@ -1,0 +1,116 @@
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
+ *
+ * Copyright (C) Université Paris Diderot, CNRS, INRIA, Be Sport.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+
+(** Tips for new users and new features. *)
+
+[%%shared.start]
+
+val bubble :
+   ?a:[< Html_types.div_attrib > `Class] Eliom.Content.Html.D.attrib list
+  -> ?recipient:[> `All | `Connected | `Not_connected]
+  -> ?arrow:
+       [`left of int | `right of int | `top of int | `bottom of int]
+         Eliom.Client_value.t
+  -> ?top:int Eliom.Client_value.t
+  -> ?left:int Eliom.Client_value.t
+  -> ?right:int Eliom.Client_value.t
+  -> ?bottom:int Eliom.Client_value.t
+  -> ?height:int Eliom.Client_value.t
+  -> ?width:int Eliom.Client_value.t
+  -> ?parent_node:[< `Body | Html_types.body_content] Eliom.Content.Html.elt
+  -> ?delay:float
+  -> ?onclose:(unit -> unit Lwt.t) Eliom.Client_value.t
+  -> name:string
+  -> content:
+       ((unit -> unit Lwt.t)
+        -> Html_types.div_content Eliom.Content.Html.elt list Lwt.t)
+         Eliom.Client_value.t
+  -> unit
+  -> unit Lwt.t
+(** Display tips in pages, as a speech bubble.
+
+    One tip is displayed at a time.
+
+    Tips can be inserted in page using function [display],
+    that may be called anywhere during the generation of a page.
+    The tip will be actually sent and displayed on client side
+    only if the user has not already seen it.
+
+    - [~name] is a unique name you must choose for your tip
+    - [?arrow] is the position of the arrow if you want one
+    - [?top], [?bottom], [?left], [?right], [?width], [?right] correspond
+    to the eponymous CSS properties.
+    - [~content] takes the function closing the tip as parameter
+    and return the content of the tip div.
+    - [?recipient] makes it possible to decide whether the tip will be displayed
+    for connected users only, non-connected users only, or all (default).
+    Tips for non-connected users will reappear every time the session is closed.
+    - [?delay] adds a delay before displaying the tip (in seconds)
+
+*)
+
+val block :
+   ?a:[< Html_types.div_attrib > `Class] Eliom.Content.Html.D.attrib list
+  -> ?recipient:[> `All | `Connected | `Not_connected]
+  -> ?onclose:(unit -> unit Lwt.t) Eliom.Client_value.t
+  -> name:string
+  -> content:
+       ((unit -> unit Lwt.t) Eliom.Client_value.t
+        -> Html_types.div_content Eliom.Content.Html.elt list Lwt.t)
+  -> unit
+  -> [> `Div] Eliom.Content.Html.elt option Lwt.t
+(** Return a box containing a tip, to be inserted where you want in a page.
+    The box contains a close button. Once it is closed, it is never displayed
+    again for this user. In that case the function returns [None].
+ *)
+
+val reset_tips : unit -> unit Lwt.t
+(** Call this function to reset tips for current user.
+    Tips will be shown again from the beginning.
+*)
+
+val set_tip_seen : string -> unit Lwt.t
+(** Call this function to mark a tip as "already seen" by current user.
+    This is done automatically when a tip is closed.
+*)
+
+val unset_tip_seen : string -> unit Lwt.t
+(** Counterpart of set_tip_seen. Does not fail if the tip has not been seen
+    yet *)
+
+val tip_seen : string -> bool Lwt.t
+(** Returns whether a tip has been seen or not. *)
+
+val reset_tips_service :
+  ( unit
+    , unit
+    , Eliom.Service.post
+    , Eliom.Service.non_att
+    , Eliom.Service.co
+    , Eliom.Service.non_ext
+    , Eliom.Service.reg
+    , [`WithoutSuffix]
+    , unit
+    , unit
+    , Eliom.Service.non_ocaml )
+    Eliom.Service.t
+(** A non-attached service that will reset tips.
+    Call it with [Eliom.Client.exit_to] to restart the application and
+    see tips again. *)

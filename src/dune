@@ -1,3 +1,5 @@
+(include_subdirs qualified)
+
 (env
  (_
   (flags
@@ -5,11 +7,19 @@
 
 (library
  (public_name ocsigen-start.server)
- (name ocsigen_start)
+ (name ocsigen_start_server)
  (modes byte native)
  (wrapped false)
  (preprocess
-  (pps eliom.ppx.server js_of_ocaml-ppx_deriving_json ocsigen-ppx-rpc))
+  (pps
+   eliom.ppx.server
+   js_of_ocaml-ppx_deriving_json
+   ocsigen-ppx-rpc
+   --
+   --rpc-internal))
+ (flags
+  (:standard
+   (:include type_includes)))
  (libraries
   eliom.server
   calendar
@@ -21,23 +31,10 @@
   pgocaml
   resource-pooling))
 
-(subdir
- client
- (library
-  (public_name ocsigen-start.client)
-  (name ocsigen_start)
-  (modes byte)
-  (wrapped false)
-  (preprocess
-   (pps js_of_ocaml-ppx js_of_ocaml-ppx_deriving_json))
-  (libraries eliom.client calendar ocsigen-toolkit.client re.str js_of_ocaml))
- (dynamic_include ../dune.client))
-
 (rule
- (deps
-  (glob_files *.eliom)
-  (glob_files *.eliomi))
+ (target type_includes)
+ (deps (universe))
  (action
   (with-stdout-to
-   dune.client
-   (run ocsigen-dune-rules .))))
+   %{target}
+   (system "printf '('; ocamlfind query -i-format js_of_ocaml; printf ')'"))))

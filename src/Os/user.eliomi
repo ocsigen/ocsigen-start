@@ -1,0 +1,296 @@
+(* Ocsigen-start
+ * http://www.ocsigen.org/ocsigen-start
+ *
+ * Copyright (C) Université Paris Diderot, CNRS, INRIA, Be Sport.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+
+(** This module provides functions and types about users. *)
+
+[%%shared.start]
+
+type id = Types.User.id [@@deriving json]
+(** Type alias to {!Types.User.id} to allow to use [User.id]. *)
+
+type t = Types.User.t =
+  { userid : id
+  ; fn : string
+  ; ln : string
+  ; avatar : string option
+  ; language : string option }
+[@@deriving json]
+(** Type alias to {!Types.User.t} to allow to use [User.t]. *)
+
+[%%server.start]
+
+exception Already_exists of Types.User.id
+(** Exception used if an user already exists. The parameter is the userid of the
+    existing user.
+ *)
+
+exception No_such_user
+(** Exception used if an user doesn't exist. *)
+
+val password_set : Types.User.id -> bool Lwt.t
+(** [password_set userid] returns [true] if the user with ID [userid] has set
+    a password. Else [false].
+ *)
+
+val wrong_password : bool Eliom.Reference.Volatile.eref
+(** Reference used to remember if a wrong password has been already typed. *)
+
+val no_such_user : bool Eliom.Reference.Volatile.eref
+(** Reference used to remember if a wrong user has already been typed. *)
+
+val account_not_activated : bool Eliom.Reference.Volatile.eref
+(** Reference used to remember if the account is activated. *)
+
+val user_already_exists : bool Eliom.Reference.Volatile.eref
+(** Reference used to remember if the user already exists. *)
+
+val user_does_not_exist : bool Eliom.Reference.Volatile.eref
+(** Reference used to remember if the user exists. *)
+
+val user_already_preregistered : bool Eliom.Reference.Volatile.eref
+(** Reference used to remember if the user is already preregistered. *)
+
+val action_link_key_outdated : bool Eliom.Reference.Volatile.eref
+(** Reference used to remember if an action link key is outdated. *)
+
+[%%shared.start]
+
+val userid_of_user : Types.User.t -> Types.User.id
+(** [userid_of_user user] returns the userid of the user [user]. *)
+
+val firstname_of_user : Types.User.t -> string
+(** [firstname_of_user user] returns the first name of the user [user] *)
+
+val lastname_of_user : Types.User.t -> string
+(** [lastname_of_user user] returns the last name of the user [user] *)
+
+val avatar_of_user : Types.User.t -> string option
+(** [avatar_of_user user] returns the avatar of the user [user] as [Some
+    avatar_uri]. It returns [None] if the user [user] has no avatar.
+ *)
+
+val avatar_uri_of_avatar :
+   ?absolute_path:bool
+  -> string
+  -> Eliom.Content.Xml.uri
+(** [avatar_uri_of_avatar ?absolute_path avatar] returns the URI (absolute or
+    relative) depending on the value of [absolute_path]) of the avatar
+    [avatar].
+ *)
+
+val avatar_uri_of_user :
+   ?absolute_path:bool
+  -> Types.User.t
+  -> Eliom.Content.Xml.uri option
+(** [avatar_uri_of_user user] returns the avatar URI (absolute or relative)
+    depending on the value of [absolute_path]) of the avatar of the user [user].
+    It returns [None] is the user [user] has no avatar.
+ *)
+
+val language_of_user : Types.User.t -> string option
+(** [language_of_user user] returns the language of the user [user] *)
+
+val fullname_of_user : Types.User.t -> string
+(** Retrieve the full name of user (which is the concatenation of the first name
+    and last name).
+ *)
+
+val is_complete : Types.User.t -> bool
+(** [is_complete user] returns [true] if the first name and the last name of
+    {!Types.user} have been completed yet.
+ *)
+
+[%%server.start]
+
+(* Use {!Types.actionlinkkey_info} instead of each parameter? *)
+val add_actionlinkkey :
+   ?autoconnect:
+     (* by default, an action_link key is just an activation key *)
+     bool (** default: false *)
+  -> ?action:[`AccountActivation | `PasswordReset | `Custom of string]
+       (** default: `AccountActivation *)
+  -> ?data:string (** default: empty string *)
+  -> ?validity:int64 (** default: 1L *)
+  -> ?expiry:CalendarLib.Calendar.t
+  -> act_key:string
+  -> userid:Types.User.id
+  -> email:string
+  -> unit
+  -> unit Lwt.t
+(** [add_actionlinkkey ?autoconnect ?action ?data ?validity ?expiry ~act_key ~userid
+    ~email ()] adds the action key in the database.
+ *)
+
+val verify_password : email:string -> password:string -> Types.User.id Lwt.t
+(** [verify_password ~email ~password] returns the userid if user with email
+    [email] is registered with the password [password].
+    If [password] the password is wrong,
+    it fails with exception {!Wrong_password}.
+    If user exists but account is not validated,
+    it fails with exception {!Account_not_activated}.
+    If user has no password, it fails with exception {!Password_not_set}.
+    If user is not found, it fails with exception {!No_such_user}.
+    If password is empty, it fails with exception {!Empty_password}. *)
+
+val user_of_userid : Types.User.id -> Types.User.t Lwt.t
+(** [user_of_userid userid] returns the information about the user with ID
+    [userid].
+ *)
+
+val get_actionlinkkey_info : string -> Types.Action_link_key.info Lwt.t
+(** Retrieve the data corresponding to an action link key, each
+    call decrements the validity of the key by [1] if it exists and
+    [validity > 0] (it remains at [0] if it's already [0]). It is up to
+    you to adapt the actions according to the value of validity!
+    Raises {!Db.No_such_resource} if the action link key is not found.
+ *)
+
+val userid_of_email : string -> Types.User.id Lwt.t
+(** [userid_of_email email] returns the userid of the user with email [email].
+    It raises the exception {!Db.No_such_resource} if the email [email] is
+    not used.
+ *)
+
+val emails_of_userid : Types.User.id -> string list Lwt.t
+(** [emails_of_userid userid] returns the emails list of user with ID
+    [userid].
+ *)
+
+val email_of_userid : Types.User.id -> string option Lwt.t
+(** [email_of_userid userid] returns the main email of user with ID
+    [userid].
+ *)
+
+val emails_of_user : Types.User.t -> string list Lwt.t
+(** [emails_of_user user] returns the emails list of user [user]. *)
+
+val email_of_user : Types.User.t -> string option Lwt.t
+(** [email_of_user user] returns the main email of user [user]. *)
+
+val get_language : Types.User.id -> string option Lwt.t
+(** [get_language userid] returns the language of the user with ID [userid]. The
+    language is retrieved from the database.
+ *)
+
+val get_users : ?pattern:string -> unit -> Types.User.t list Lwt.t
+(** [get_users ?pattern ()] gets users who match the [pattern] (useful for
+    completion).
+ *)
+
+val create :
+   ?password:string
+  -> ?avatar:string
+  -> ?language:string
+  -> ?email:string
+  -> firstname:string
+  -> lastname:string
+  -> unit
+  -> Types.User.t Lwt.t
+(** [create ?password ?avatar ?language ~firstname ~lastname email] creates a new user
+    with the given information. An email, the first name and the last name are mandatory.
+ *)
+
+val update :
+   ?password:string
+  -> ?avatar:string
+  -> ?language:string
+  -> firstname:string
+  -> lastname:string
+  -> Types.User.id
+  -> unit Lwt.t
+(** [update ?password ?avatar ?language ~firstname ~lastname userid] update the
+    given information of the user with ID [userid]. Only given information are
+    updated.
+ *)
+
+val update' : ?password:string -> Types.User.t -> unit Lwt.t
+(** Another version of [update] using a type {!Types.User.t} instead of
+    label.
+ *)
+
+val update_password : userid:Types.User.id -> password:string -> unit Lwt.t
+(** [update_password ~userid ~password] updates the password only. [password]
+    must not be hashed: it is done by the function [f_crypt] of the tuple
+    {!Db.pwd_crypt_ref}.
+ *)
+
+val update_avatar : userid:Types.User.id -> avatar:string -> unit Lwt.t
+(** [update_avatar ~userid ~avatar] updates the avatar of the user with ID
+    [userid].
+ *)
+
+val update_language : userid:Types.User.id -> language:string -> unit Lwt.t
+(** [update_language ~userid ~language] updates the language of the user with ID
+    [userid].
+ *)
+
+val is_registered : string -> bool Lwt.t
+(** [is_registered email] returns [true] if a user exists with email [email].
+    Else, it returns [false].
+ *)
+
+val is_preregistered : string -> bool Lwt.t
+(** [is_preregistered email] returns [true] if a user exists with email
+    [email]. Else, it returns [false].
+ *)
+
+val add_preregister : string -> unit Lwt.t
+(** [add_preregister email] adds an email into the preregister collections. *)
+
+val remove_preregister : string -> unit Lwt.t
+(** [remove_preregister email] removes an email from the preregister
+    collections.
+ *)
+
+val all : ?limit:int64 -> unit -> string list Lwt.t
+(** Get [limit] (default: 10) emails from the preregister collections. *)
+
+val set_pwd_crypt_fun :
+   (string -> string) * (Types.User.id -> string -> string -> bool)
+  -> unit
+(** By default, passwords are encrypted using Bcrypt.
+    You can customize this by calling this function
+    with a pair of function (crypt and check password).
+    The first parameter of the second function is the user id
+    (in case you need it).
+    Then it takes as second parameter the password given
+    by user, and as third parameter the hash found in database.
+*)
+
+val remove_email_from_user : userid:Types.User.id -> email:string -> unit Lwt.t
+(** [remove_email_from_user ~userid ~email] removes the email [email] from the
+    user with the id [userid]. If the email is registered as the main email for
+    the user it fails with the exception {!Db.Main_email_removal_attempt}.
+*)
+
+val is_email_validated : userid:Types.User.id -> email:string -> bool Lwt.t
+(** [is_email_validated ~userid ~email] returns whether for a user designated by
+    its id the given email has been validated.
+ *)
+
+val is_main_email : userid:Types.User.id -> email:string -> bool Lwt.t
+(** [is_main_email ~userid ~email] returns whether an email is the main email
+    registered for a given user designated by its id.
+ *)
+
+val update_main_email : userid:Types.User.id -> email:string -> unit Lwt.t
+(** [update_mail_email ~userid ~email] sets the main email for a user with the
+    ID [userid] as the email [email].
+ *)

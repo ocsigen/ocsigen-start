@@ -1,3 +1,36 @@
+===== 9.0.0~dev =====
+* Module namespace modernization
+** Public modules are now accessed as Os.Session, Os.User, Os.Tips,
+   Os.Mail, Os.Notif, ... instead of the legacy flat Os_xxx prefix.
+   Implemented with (include_subdirs qualified) + (wrapped false)
+   in dune.
+** New ocsigen-start-compat opam package: provides the legacy
+   Os_xxx module names as include-aliases of the new Os.Xxx
+   modules, to ease migration of existing code.
+* PROJECT_NAME_icons.eliom in the distillery template is now
+  parameterised on Eliom.Content.Html.T (the shared signature
+  exposed by Eliom 13) instead of an ad-hoc ICON_HTML signature.
+* Distillery template
+** Renamed from os.pgocaml to os.
+** Source directory renamed back to template.distillery/ (the
+   convention used by ocsigen-start's previous Makefile-based
+   build), and now installed via dune
+   (install (section lib_root) (files (glob_files_rec
+   (template.distillery/* with_prefix eliom/templates/os))))
+   so the template lands at lib/eliom/templates/os/, where
+   eliom-distillery picks it up at the standard location (Eliom
+   13 dropped the per-package eliom-templates/ auto-discovery).
+* Migrated to the new Eliom 13 module names (Eliom.Service,
+  Eliom.Content, Eliom.Common, ...) and to the wrapped
+  ocsigenserver module names (Ocsigen.Server, Ocsigen.Extensions,
+  Ocsigen.Config, Ocsigen_base.Lib, ...).
+* Build system uses ocsigen-dune-rules (gen sub-command).
+* Os.Email: the default email-sending function now pipes an RFC-2822
+  message to the configured mailer ("sendmail" by default) via
+  Lwt_process, instead of printing to stdout. If the mailer is not on
+  PATH, the email is logged to stderr so the application stays usable
+  out of the box. The now-unused [Invalid_mailer] exception is removed.
+
 ===== 7.1.0 (2024-11) =====
 * Compatibility with WASM
 

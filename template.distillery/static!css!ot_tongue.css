@@ -1,0 +1,71 @@
+.ot-tongue {
+  position: fixed;
+  will-change: transform;
+  z-index: 1;
+  background-color: white;
+  box-shadow: 0 2px 9px 0 rgba(173, 173, 173, 0.5);
+  overflow: hidden;
+}
+.ot-tongue::after {
+  content: "";
+  position: absolute;
+  background-color: #eee;
+  border-radius: 2px;
+  z-index: 1;
+}
+.ot-tongue-left {
+  height: 100%;
+  padding-right: 70px;
+  border-radius: 0 5px 5px 0;
+  top: 0;
+  right: 100%;
+}
+.ot-tongue-left::after {
+  right: 4px;
+  width: 4px;
+  top: calc(50% - 10px);
+  height: 20px;
+}
+.ot-tongue-right {
+  height: 100%;
+  padding-left: 70px;
+  border-radius: 5px 0 0 5px;
+  top: 0;
+  left: 100%;
+}
+.ot-tongue-right::after {
+  left: 4px;
+  width: 4px;
+  top: calc(50% - 10px);
+  height: 20px;
+}
+.ot-tongue-top {
+  width: 100%;
+  padding-bottom: 70px;
+  border-radius: 0 0 5px 5px;
+  bottom: 100%;
+  left: 0;
+}
+.ot-tongue-top::after {
+  bottom: 4px;
+  height: 4px;
+  left: calc(50% - 10px);
+  width: 20px;
+}
+.ot-tongue-bottom {
+  width: 100%;
+  padding-top: 70px;
+  border-radius: 5px 5px 0 0;
+  top: 0;
+  transform: translateY(100vh);
+  left: 0;
+}
+.ot-tongue-bottom::after {
+  top: 4px;
+  height: 4px;
+  left: calc(50% - 10px);
+  width: 20px;
+}
+.ot-tongue:not(.notransition) {
+  transition: transform 0.4s cubic-bezier(0.1, 1, 0.8, 1);
+}

@@ -2,6 +2,8 @@
 
 (name ocsigen-start)
 
+(version 9.0.0~dev)
+
 (generate_opam_files true)
 
 (using dune_site 0.1)
@@ -42,15 +44,14 @@
   (safepass
    (>= "3.0"))
   (ocsigen-i18n
-   (>= "4.0.0"))
+   (>= "6.0~"))
   (eliom
-   (and
-    (>= "12.0.0")
-    (< "13.0.0")))
+   (>= "13.0~"))
   (ocsigen-toolkit
-   (>= "4.3.0"))
+   (>= "5.0~"))
+  ocsigen-dune-rules
   (ocsigen-ppx-rpc
-   (>= "1.1"))
+   (>= "2.0~"))
   (yojson
    (>= "1.6.0"))
   (resource-pooling
@@ -59,11 +60,20 @@
     (< "2.0")))
   cohttp-lwt-unix
   (js_of_ocaml
-   (>= "6.3.2"))
+   (>= "6.4.0"))
   (re
    (>= "1.7.2"))
   (ocsipersist-pgsql-config
    (and
-    (>= "2.0")
-    (< "3.0")))
+    (>= "3.0")
+    (< "4.0")))
   conf-postgresql))
+
+(package
+ (name ocsigen-start-compat)
+ (synopsis "Backward-compatible Os_xxx module names for ocsigen-start")
+ (description
+  "Provides the old Os_xxx module names (e.g. Os_session, Os_user) as aliases to the new Os.Xxx modules. Use this package to ease migration of existing code.")
+ (depends
+  (ocsigen-start
+   (= :version))))
