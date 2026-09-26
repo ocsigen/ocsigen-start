@@ -60,13 +60,17 @@ jobs:
         # 404 for superseded package versions.
         run: sudo apt-get update
 
-      - name: Set up libpq (macOS)
+      - name: Set up PostgreSQL (macOS)
         if: runner.os == 'macOS'
         # conf-postgresql, which pgocaml pulls in, looks for libpq through
-        # pkg-config. Homebrew keeps libpq keg-only, so its pkgconfig directory
-        # has to be named explicitly or the probe fails.
+        # pkg-config: the libpq formula provides libpq.pc. The generated
+        # project's Makefile.db needs psql and pg_ctl: postgresql@17 provides
+        # them. Both formulas are keg-only, so the pkgconfig and bin
+        # directories have to be named explicitly. (The Ubuntu runner ships
+        # PostgreSQL.)
         run: |
-          brew install libpq
+          brew install libpq postgresql@17
+          echo "$(brew --prefix postgresql@17)/bin" >> "$GITHUB_PATH"
           echo "PKG_CONFIG_PATH=$(brew --prefix libpq)/lib/pkgconfig:${PKG_CONFIG_PATH:-}" >> "$GITHUB_ENV"
 
       # Ocsigen Server 8.0.0 and ocsipersist 3.1.0 are released on GitHub but
