@@ -79,7 +79,7 @@ jobs:
             opam pin -yn $p.3.1.0 git+https://github.com/ocsigen/ocsipersist#3.1.0
           done
           opam pin -yn git+https://github.com/ocsigen/eliom#master
-          opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#master
           opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
           opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#main
           opam pin -yn git+https://github.com/ocsigen/ocsigen-i18n#master
