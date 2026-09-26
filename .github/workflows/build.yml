@@ -53,6 +53,13 @@ jobs:
         with:
           token: ${{ github.token }}
 
+      - name: Refresh the apt index (Linux)
+        if: runner.os == 'Linux'
+        # opam installs the system dependencies (imagemagick, ruby-sass, ...)
+        # through apt; with the runner image's stale index, the mirror answers
+        # 404 for superseded package versions.
+        run: sudo apt-get update
+
       - name: Set up libpq (macOS)
         if: runner.os == 'macOS'
         # conf-postgresql, which pgocaml pulls in, looks for libpq through
