@@ -1,14 +1,14 @@
 ;; Declarative wodoc config for the Ocsigen Start documentation (client/server).
 ;;   wodoc build --config doc/wodoc --out <dir>/<label> --label <v> \
-;;               --menu https://ocsigen.org/wodoc/menu.html [--local]
+;;               --menu https://ocsigen.org/doc/menu.html [--local]
 ;; ocsigen-start ships server and client libraries (ocsigen-start.server /
 ;; ocsigen-start.client) with the same module names, so the API is built with
 ;; `odoc_driver ocsigen-start --remap` on the INSTALLED package. Each side gets
 ;; its own API nav, a body colour and a switch; the manual nav is shared.
 (project ocsigen-start)
 (title Start)
-(pub /ocsigen-start)
-(odoc-driver ocsigen-start)
+(url-prefix /ocsigen-start)
+(css /css/style.css /css/ocsigen-odoc.css)  ; shared Ocsigen theme (wodoc's default is a built-in one)
 (landing index.html)
 (nav
  (section "Manual"
