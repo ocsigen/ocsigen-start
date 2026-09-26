@@ -1,0 +1,41 @@
+# Module `Page.Make`
+
+## Parameters
+
+```ocaml
+module _ : PAGE
+```
+
+## Signature
+
+```ocaml
+val make_page : content -> [> Html_types.html ] Eliom.Content.Html.elt
+```
+Builds a valid html page from body content by adding headers for this app
+
+```ocaml
+val page : 
+  ?predicate:('a -> 'b -> bool Lwt.t) ->
+  ?fallback:('a -> 'b -> exn -> content Lwt.t) ->
+  ('a -> 'b -> content Lwt.t) ->
+  'a ->
+  'b ->
+  Html_types.html Eliom.Content.Html.elt Lwt.t
+```
+Default wrapper for service handler generating pages. It takes as parameter a function generating page content (body content) and transforms it into a function generating the whole page, according to the arguments given to the functor. Use the `predicate` function if you have something to check before the generation of the page. If `predicate` returns `false`, the page will be generated using the `fallback` function. The default fallback is the error page given as parameter to the functor.
+
+```ocaml
+module Opt : sig ... end
+```
+```ocaml
+val connected_page : 
+  ?allow:Types.Group.t list ->
+  ?deny:Types.Group.t list ->
+  ?predicate:(Types.User.id option -> 'a -> 'b -> bool Lwt.t) ->
+  ?fallback:(Types.User.id option -> 'a -> 'b -> exn -> content Lwt.t) ->
+  (Types.User.id -> 'a -> 'b -> content Lwt.t) ->
+  'a ->
+  'b ->
+  Html_types.html Eliom.Content.Html.elt Lwt.t
+```
+Wrapper for pages that first checks if the user is connected. See [`Session.connected_fun`](./Os-Session.md#val-connected_fun).
