@@ -50,6 +50,13 @@ jobs:
         with:
           token: ${{ github.token }}
 
+      - name: Refresh the apt index
+        # opam installs the system dependencies (imagemagick, ruby-sass, ...)
+        # through apt, also on a switch cache hit when installing ocsigen-start
+        # itself; with the runner image's stale index, the mirror answers 404
+        # for superseded package versions.
+        run: sudo apt-get update
+
       # The bottleneck of this job is compiling the dependency tree (incl.
       # wasm_of_ocaml) plus wodoc and odoc from source; setup-ocaml only caches the
       # base switch (the compiler), so they recompiled on every push. Cache the
@@ -79,7 +86,7 @@ jobs:
             opam pin -yn $p.3.1.0 git+https://github.com/ocsigen/ocsipersist#3.1.0
           done
           opam pin -yn git+https://github.com/ocsigen/eliom#master
-          opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#master
           opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
           opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#main
           opam pin -yn git+https://github.com/ocsigen/ocsigen-i18n#master
