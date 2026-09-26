@@ -72,6 +72,17 @@ jobs:
         # Cache miss only: build the dependency tree and wodoc once, then re-cache.
         if: steps.switch-cache.outputs.cache-hit != 'true'
         run: |
+          # Same pins as build.yml (released tags not yet on opam, unreleased
+          # modernized stack on its branches).
+          opam pin -yn git+https://github.com/ocsigen/ocsigenserver#8.0.0
+          for p in ocsipersist-lib ocsipersist ocsipersist-pgsql ocsipersist-pgsql-config; do
+            opam pin -yn $p.3.1.0 git+https://github.com/ocsigen/ocsipersist#3.1.0
+          done
+          opam pin -yn git+https://github.com/ocsigen/eliom#master
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#main
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-i18n#master
           opam install . --deps-only --with-doc
           # wodoc themes the pages. Its opam pin-depends pulls odoc / odoc-driver
           # from the balat/odoc fork (the cross-library link fix, not yet upstream),

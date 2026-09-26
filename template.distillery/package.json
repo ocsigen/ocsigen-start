@@ -1,0 +1,24 @@
+{
+  "name": "os_template",
+  "version": "1.0.0",
+  "description": "Instructions ============",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ocsigen/os_template.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ocsigen/os_template/issues"
+  },
+  "homepage": "https://github.com/ocsigen/os_template#readme",
+  "dependencies": {
+    "autoprefixer": "^9.8.6",
+    "postcss-cli": "^7.1.2"
+  }
+}

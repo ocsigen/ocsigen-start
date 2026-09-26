@@ -1,0 +1,60 @@
+{1 Ocsigen Start server API}
+
+{2 User management}
+
+{!modules:
+User
+User_view
+User_proxy
+Current_user
+Group
+Session
+Connect_phone
+}
+
+{2 Persistence}
+
+{!modules:
+Db
+Core_db
+Types
+Email
+}
+
+{2 Notifications}
+
+{!modules:
+Notif
+Msg
+Fcm_notif
+}
+
+{2 Web pages and services}
+
+{!modules:
+Page
+Services
+Handlers
+Icons
+Tips
+Uploader
+Request_cache
+}
+
+{2 Real-time}
+
+{!modules:
+Comet
+}
+
+{2 Utilities}
+
+{!modules:
+Lib
+Date
+Platform
+}
+
+{2 Indexes}
+
+{!indexlist}

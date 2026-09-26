@@ -1,0 +1,173 @@
+@keyframes ot-icon-animation-spinning {
+    0% { transform: rotate(0deg) ; }
+    100% { transform: rotate(360deg) ; }
+}
+
+@keyframes ot-icon-animation-shake {
+  10%, 90% { transform: translate3d(-.05em, 0, 0); }
+  20%, 80% { transform: translate3d(.1em, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-.2em, 0, 0); }
+  40%, 60% { transform: translate3d(.2em, 0, 0); }
+}
+
+.ot-icon-animation-shaking {
+  animation: ot-icon-animation-shake 1s cubic-bezier(.36,.07,.19,.97) both ;
+}
+
+.ot-icon-animation-once { animation-iteration-count: 1 ; }
+
+.ot-icon {
+    display: inline-block ;
+    width: 1em ;
+    height: 1em ;
+    overflow: hidden ;
+    position: relative ;
+}
+
+.ot-icon,
+.ot-icon::before,
+.ot-icon::after {
+    box-sizing: border-box ;
+    display: inline-block ;
+}
+
+.ot-icon::before,
+.ot-icon::after {
+    content: '' ;
+}
+
+.ot-icon-user {
+    text-align: center ;
+}
+.ot-icon-user::before, .ot-icon-user::after {
+    display: block ;
+    margin: auto ;
+}
+.ot-icon-user::before {
+    width: .5em ;
+    height: .5em ;
+    margin-bottom: .05em ;
+    border-radius: 50% ;
+    background-color: black ;
+}
+.ot-icon-user::after {
+    box-sizing: border-box;
+    width: 1em;
+    height: 1em;
+    border-radius: 50% 50% 0% 0%;
+    background-color: black ;
+}
+
+.ot-icon-error::before,
+.ot-icon-question::before {
+    content: '?' ;
+    display: block ;
+    font-weight: bold ;
+    width: 1em ;
+    height: 1em ;
+    line-height: 1em ;
+    border-radius: 50% ;
+    background-color: rgb(0, 0, 0) ;
+    color: rgb(255, 255, 255) ;
+    text-align: center ;
+}
+
+.ot-icon-plus::before {
+    position: absolute ;
+    left: .15em ;
+    right: .15em ;
+    top: .4em ;
+    bottom: .4em ;
+    background-color: #000 ;
+}
+.ot-icon-plus::after {
+    position: absolute ;
+    top: .15em ;
+    bottom: .15em ;
+    left: .4em ;
+    right: .4em ;
+    background-color: #000 ;
+}
+
+.ot-icon-power {
+  text-align: center ;
+}
+.ot-icon-power::before {
+    display: block ;
+    position: absolute ;
+    bottom: 0 ;
+    top: .1em ;
+    left: .05em ;
+    right: .05em ;
+    border: .1em solid #000 ;
+    border-top: .1em solid transparent ;
+    border-radius: 50% ;
+}
+.ot-icon-power::after {
+    position: absolute ;
+    top: 0 ;
+    bottom: .5em ;
+    left: .45em ;
+    right: .45em ;
+    background-color: #000 ;
+}
+
+.ot-icon-sign-in::after,
+.ot-icon-sign-out::after {
+    position: absolute;
+    width: .5em;
+    height: .5em;
+    top: .25em;
+    border: .1em solid #000;
+    border-bottom: none;
+    border-left: none;
+    transform: rotate(45deg);
+    border-radius: 0 .1rem 0 0;
+}
+.ot-icon-sign-in::after { left: -.075em ; }
+.ot-icon-sign-out::after { right: .15em ; }
+
+.ot-icon-sign-in::before,
+.ot-icon-sign-out::before {
+    width: .75em;
+    margin-left: .125em ;
+    height: 1em;
+    border: .1em solid #000;
+}
+
+.ot-icon-sign-in::before { border-left: none ; }
+.ot-icon-sign-out::before { border-right: none ; }
+
+.ot-icon-gear::before {
+    width: 1em ;
+    height: 1em ;
+    border-radius: 50% ;
+    border: .2em dotted #000 ;
+}
+
+.ot-icon-gear::after {
+    position:absolute ;
+    width: .8em ;
+    height: .8em ;
+    left: .2rem ;
+    top: .2rem ;
+    border: .5rem solid #000 ;
+    border-radius: 50% ;
+}
+
+.ot-icon-close::before {
+    position: absolute ;
+    left: .4em ;
+    width: .2em ;
+    height: 1em ;
+    background: #000 ;
+    transform: rotate(-45deg);
+}
+.ot-icon-close::after {
+    position: absolute ;
+    width: .2em ;
+    height: 1em ;
+    left: .4em ;
+    background: #000 ;
+    transform: rotate(45deg) ;
+}

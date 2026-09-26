@@ -1,0 +1,227 @@
+/* ================================================================ */
+/* Toggle button                                                    */
+/* ================================================================ */
+
+.ot-toggle-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4em 1em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.ot-toggle-off {
+    background-color: #4a90d9;
+    border-color: #4a90d9;
+    color: white;
+}
+
+.ot-toggle-off:hover {
+    background-color: #3a7bc8;
+    border-color: #3a7bc8;
+}
+
+.ot-toggle-on {
+    background-color: #3570a8;
+    border-color: #2d6090;
+    color: white;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.ot-toggle-on:hover {
+    background-color: #2d6090;
+    border-color: #265580;
+}
+
+/* ================================================================ */
+/* Password input                                                   */
+/* ================================================================ */
+
+.ot-password-container {
+    display: flex;
+    align-items: center;
+}
+
+.ot-password-container > .ot-password-input,
+.ot-password-container > input {
+    flex: 1;
+}
+
+.ot-password-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4em 0.6em;
+    border: 1px solid #ccc;
+    border-left: none;
+    background: #f5f5f5;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.ot-password-toggle:hover {
+    background: #e8e8e8;
+}
+
+/* Pressed look when password is visible (toggle shows the "hide" icon) */
+.ot-password-toggle:has(.ot-password-toggle-hide) {
+    background: #e0e0e0;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* The toggle contains a span that gets class ot-password-toggle-show
+   or ot-password-toggle-hide via R.a_class. We use background-image
+   SVGs so the icon is visible even though the span has no text. */
+.ot-password-toggle-show,
+.ot-password-toggle-hide {
+    display: inline-block;
+    width: 1.4em;
+    height: 1.4em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Eye open (Feather icon) */
+.ot-password-toggle-show {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+}
+
+/* Eye off / barred (Feather icon) */
+.ot-password-toggle-hide {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24'/%3E%3Cline x1='1' y1='1' x2='23' y2='23'/%3E%3C/svg%3E");
+}
+
+/* ================================================================ */
+/* Checkbox                                                         */
+/* ================================================================ */
+
+/* The label element has both a desktop and a mobile style class,
+   e.g. ot-checkbox-box-desktop + ot-checkbox-toggle-mobile.
+   We only style desktop classes here; apps should add media queries
+   to switch to mobile styles at their chosen breakpoint.
+
+   DOM structure:
+     label.ot-checkbox.ot-checkbox-{style}-desktop
+       input.ot-checkbox-input[type=checkbox]  (hidden)
+       span.ot-checkbox-label
+         span.ot-checkbox-decoration
+           span.ot-checkbox-sub-decoration
+         span  (text content)
+*/
+
+.ot-checkbox {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 0.5em;
+}
+
+.ot-checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+}
+
+.ot-checkbox > .ot-checkbox-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* --- Box style -------------------------------------------------- */
+
+.ot-checkbox-box-desktop .ot-checkbox-decoration {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.2em;
+    height: 1.2em;
+    border: 2px solid #888;
+    border-radius: 3px;
+    background: white;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+.ot-checkbox-box-desktop .ot-checkbox-sub-decoration {
+    width: 0.35em;
+    height: 0.65em;
+    border: solid transparent;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-bottom: 0.1em;
+}
+
+.ot-checkbox-box-desktop > .ot-checkbox-input:checked + .ot-checkbox-label .ot-checkbox-decoration {
+    background-color: #4a90d9;
+    border-color: #4a90d9;
+}
+
+.ot-checkbox-box-desktop > .ot-checkbox-input:checked + .ot-checkbox-label .ot-checkbox-sub-decoration {
+    border-color: white;
+}
+
+/* --- Toggle style ----------------------------------------------- */
+
+.ot-checkbox-toggle-desktop .ot-checkbox-decoration {
+    display: inline-block;
+    width: 2.4em;
+    height: 1.3em;
+    border-radius: 0.65em;
+    background-color: #ccc;
+    position: relative;
+    transition: background-color 0.2s;
+}
+
+.ot-checkbox-toggle-desktop .ot-checkbox-sub-decoration {
+    display: block;
+    position: absolute;
+    width: 1.05em;
+    height: 1.05em;
+    border-radius: 50%;
+    background: white;
+    top: 0.125em;
+    left: 0.125em;
+    transition: transform 0.2s;
+}
+
+.ot-checkbox-toggle-desktop > .ot-checkbox-input:checked + .ot-checkbox-label .ot-checkbox-decoration {
+    background-color: #4a90d9;
+}
+
+.ot-checkbox-toggle-desktop > .ot-checkbox-input:checked + .ot-checkbox-label .ot-checkbox-sub-decoration {
+    transform: translateX(1.1em);
+}
+
+/* --- Bullet style ----------------------------------------------- */
+
+.ot-checkbox-bullet-desktop .ot-checkbox-decoration {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.2em;
+    height: 1.2em;
+    border: 2px solid #888;
+    border-radius: 50%;
+    background: white;
+    transition: border-color 0.15s;
+}
+
+.ot-checkbox-bullet-desktop .ot-checkbox-sub-decoration {
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    background-color: transparent;
+    transition: background-color 0.15s;
+}
+
+.ot-checkbox-bullet-desktop > .ot-checkbox-input:checked + .ot-checkbox-label .ot-checkbox-decoration {
+    border-color: #4a90d9;
+}
+
+.ot-checkbox-bullet-desktop > .ot-checkbox-input:checked + .ot-checkbox-label .ot-checkbox-sub-decoration {
+    background-color: #4a90d9;
+}

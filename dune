@@ -1,9 +1,11 @@
-(vendored_dirs ocsigen-dune-rules)
-
 (data_only_dirs template.distillery)
 
+; Install the distillery template into lib/eliom/templates/os/ so that
+; eliom-distillery picks it up at the standard location.
+
 (install
+ (package ocsigen-start)
  (section lib_root)
  (files
   (glob_files_rec
-   (template.distillery/* with_prefix eliom/templates/os.pgocaml))))
+   (template.distillery/* with_prefix eliom/templates/os))))
