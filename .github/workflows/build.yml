@@ -73,14 +73,13 @@ jobs:
           echo "$(brew --prefix postgresql@17)/bin" >> "$GITHUB_PATH"
           echo "PKG_CONFIG_PATH=$(brew --prefix libpq)/lib/pkgconfig:${PKG_CONFIG_PATH:-}" >> "$GITHUB_ENV"
 
-      # Ocsigen Server 8.0.0 and ocsipersist 3.1.0 are released on GitHub but
-      # not yet published on opam (ocaml/opam-repository#30806): pin the
-      # release tags. ocsipersist needs explicit versions, as opam infers a
-      # pinned package's version from opam-repository when the project
-      # declares none. The rest of the modernized stack is unreleased: pin
-      # the default branches, or the development branch where not merged yet.
+      # ocsipersist 3.1 is released on GitHub but not yet published on opam
+      # (ocaml/opam-repository#30818): pin the release tag, with explicit
+      # versions, as opam infers a pinned package's version from
+      # opam-repository when the project declares none. The rest of the
+      # modernized stack is unreleased: pin the default branches, or the
+      # development branch where not merged yet.
       - run: |
-          opam pin -yn git+https://github.com/ocsigen/ocsigenserver#8.0.0
           for p in ocsipersist-lib ocsipersist ocsipersist-pgsql ocsipersist-pgsql-config; do
             opam pin -yn $p.3.1.0 git+https://github.com/ocsigen/ocsipersist#3.1.0
           done
