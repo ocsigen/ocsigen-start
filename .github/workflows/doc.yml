@@ -79,11 +79,8 @@ jobs:
         # Cache miss only: build the dependency tree and wodoc once, then re-cache.
         if: steps.switch-cache.outputs.cache-hit != 'true'
         run: |
-          # Same pins as build.yml (ocsipersist tag not yet on opam,
-          # unreleased modernized stack on its branches).
-          for p in ocsipersist-lib ocsipersist ocsipersist-pgsql ocsipersist-pgsql-config; do
-            opam pin -yn $p.3.1.0 git+https://github.com/ocsigen/ocsipersist#3.1.0
-          done
+          # Same pins as build.yml (unreleased modernized stack on its
+          # branches).
           opam pin -yn git+https://github.com/ocsigen/eliom#master
           opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#master
           opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
