@@ -21,7 +21,7 @@ let () = Os.Email.set_mailer "/usr/sbin/sendmail"
 let () = Os.Email.set_from_addr ("%%%PROJECT_NAME%%% team", "noreply@DEFAULT.DEFAULT")
 
 (* Create a module for the application. See
-   https://ocsigen.org/eliom/manual/clientserver-applications for more
+   https://ocsigen.org/eliom/latest/clientserver/applications.html for more
    information. *)
 module%shared App = Eliom.Registration.App (struct
     let application_name = application_name
