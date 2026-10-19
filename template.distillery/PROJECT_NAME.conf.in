@@ -8,7 +8,6 @@
     %%% Only set for running, not for testing
     %%USERGROUP%%
     <logdir>%%LOGDIR%%</logdir>
-    <datadir>%%DATADIR%%</datadir>
     <charset>utf-8</charset>
     <uploaddir>/tmp</uploaddir> <!-- Customize this -->
     <usedefaulthostname/>
