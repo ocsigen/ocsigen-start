@@ -5,6 +5,7 @@ synopsis: "%%%PROJECT_NAME%%%"
 
 depends: [
   "eliom" {>= "13.0~" & < "14.0.0"}
-  "ocsipersist-pgsql-config" {>= "3.0" & < "4.0"}
+  "ocsipersist-pgsql-config" {>= "3.1" & < "4.0"}
+  "ocsigen-ppx-rpc" {>= "2.0~" & < "3.0"}
   "ocsigen-start" {>= "9.0~" & < "10.0.0"}
 ]
