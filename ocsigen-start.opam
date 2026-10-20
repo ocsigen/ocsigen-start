@@ -21,8 +21,8 @@ depends: [
   "pgocaml_ppx" {>= "4.0"}
   "safepass" {>= "3.0"}
   "ocsigen-i18n" {>= "6.0~"}
-  "eliom" {>= "13.0~"}
-  "ocsigen-toolkit" {>= "5.0~"}
+  "eliom" {>= "13.0~" & < "14.0"}
+  "ocsigen-toolkit" {>= "5.0~" & < "6.0"}
   "ocsigen-dune-rules"
   "ocsigen-ppx-rpc" {>= "2.0~"}
   "yojson" {>= "1.6.0"}
@@ -30,7 +30,7 @@ depends: [
   "cohttp-lwt-unix"
   "js_of_ocaml" {>= "6.4.0"}
   "re" {>= "1.7.2"}
-  "ocsipersist-pgsql-config" {>= "3.0" & < "4.0"}
+  "ocsipersist-pgsql-config" {>= "3.1" & < "4.0"}
   "conf-postgresql"
   "odoc" {with-doc}
 ]

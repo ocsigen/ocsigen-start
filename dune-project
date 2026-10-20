@@ -46,9 +46,13 @@
   (ocsigen-i18n
    (>= "6.0~"))
   (eliom
-   (>= "13.0~"))
+   (and
+    (>= "13.0~")
+    (< "14.0")))
   (ocsigen-toolkit
-   (>= "5.0~"))
+   (and
+    (>= "5.0~")
+    (< "6.0")))
   ocsigen-dune-rules
   (ocsigen-ppx-rpc
    (>= "2.0~"))
@@ -65,7 +69,7 @@
    (>= "1.7.2"))
   (ocsipersist-pgsql-config
    (and
-    (>= "3.0")
+    (>= "3.1")
     (< "4.0")))
   conf-postgresql))
 

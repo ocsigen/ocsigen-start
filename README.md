@@ -39,7 +39,7 @@ opam install ocsigen-start
 
 ### <a id="create-your-project"></a>Create your project
 ```
-eliom-distillery -name myproject -template os.pgocaml
+eliom-distillery -name myproject -template os
 ```
 
 To get started, take a look at the generated README.md.
