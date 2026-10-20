@@ -12,6 +12,21 @@
   exposed by Eliom 13) instead of an ad-hoc ICON_HTML signature.
 * Distillery template
 ** Renamed from os.pgocaml to os.
+** Database schema: the tables of Ocsigen Start are now in
+   ocsigen_start.sql, a replayable file copied into the project,
+   which creates them on a new database and brings them up to date
+   from any release since 0.99. Its trigger functions live in the
+   schema ocsigen_start; the helper trigger_exists of the previous
+   templates is dropped. PROJECT_NAME.sql only holds the schema of
+   the application, and is replayable too. make db-update applies
+   both; it replaces db-schema and the dead db-upgrade target.
+   db-create also creates the Ocsipersist database.
+   To move an existing project to this layout: copy
+   ocsigen_start.sql from the new template; take db-update and
+   OS_PSQL_FILE from its Makefile.db and Makefile.options; remove
+   the Ocsigen Start part from PROJECT_NAME.sql and make the rest
+   replayable, as the header of the new PROJECT_NAME.sql explains;
+   then run make db-update.
 ** The set_main_email trigger of the template schema now names the
    users table with its schema: adding an email to a user created
    without one failed with the default search_path.

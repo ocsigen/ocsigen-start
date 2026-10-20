@@ -27,7 +27,7 @@ First create a local database:
 ```shell
 make db-init
 make db-create
-make db-schema
+make db-update
 ```
 Then compile and run the app, either as a library loaded dynamically
 into ocsigenserver using a configuration file: 
@@ -100,6 +100,16 @@ make db-create
 make db-stop
 make db-delete
 make db-status
+```
+
+- Create or update the schema of the database. It applies
+  `ocsigen_start.sql` (the tables of Ocsigen Start, copied from its
+  template) then `%%%PROJECT_NAME%%%.sql` (the tables of the application).
+  Both can be applied again and again, see their headers. After an upgrade
+  of Ocsigen Start, replace `ocsigen_start.sql` with the one of the new
+  template and run it again:
+```Shell
+make db-update
 ```
 
 - Test your application by compiling it and running ocsigenserver locally

@@ -8,5 +8,5 @@ eliom-distillery -template os -name test
 cd test
 make db-init
 make db-create
-make db-schema
+make db-update
 make test.byte (or test.opt)

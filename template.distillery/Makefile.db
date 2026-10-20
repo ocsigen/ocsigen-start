@@ -24,8 +24,6 @@ export PGPASSWORD := $(DB_PASSWORD)
 OCSIGENSERVER     := $(OCSIGENSERVER)
 OCSIGENSERVER.OPT := $(OCSIGENSERVER.OPT)
 
-OPAM_LIB_DIR      := $(shell opam var lib)
-OS_UPGRADE_FILE   := $(OPAM_LIB_DIR)/eliom/templates/os.pgocaml/upgrade.sql
 ## ---------------------------------------------------------------------
 
 ##----------------------------------------------------------------------
@@ -59,19 +57,17 @@ endif
 #   Get the database status.
 #
 # - db-create:
-#   Create the database and use UNICODE.
+#   Create the database of the project and the one of Ocsipersist, with
+#   the UNICODE encoding.
 #
-# - db-schema:
-#   Execute the SQL file contained in the PSQL_FILE
-#   variable to create the schema and the tables. By default, the PSQL_FILE is
-#   PROJECTNAME.sql. See Makefile.options.
-#
-# - db-upgrade:
-#   Upgrade the database schema related to Ocsigen Start to the newer database
-#   schema.
-#   It uses $(OS_UPGRADE_FILE) SQL file. You must not change it.
-#   Please read the upgrade information before calling this rule.
-#   Use it carefully!
+# - db-update:
+#   Create or bring up to date the schema of the database: it applies the
+#   SQL file of Ocsigen Start (OS_PSQL_FILE, ocsigen_start.sql by default)
+#   then the one of the project (PSQL_FILE, DB_NAME.sql by default).
+#   Both are replayable, so run it on a new database, after each change
+#   of PSQL_FILE, and after each upgrade of Ocsigen Start (with the
+#   ocsigen_start.sql of the new template). Back up the database first
+#   (db-snapshot for a local database, pg_dump otherwise).
 #
 # - db-drop:
 #   Drop the database but doesn't remove the database directory PSQL_DIR.
@@ -135,12 +131,11 @@ endif
 
 db-create:
 	createdb --encoding UNICODE $(DB_NAME)
+	createdb --encoding UNICODE ocsipersist_%%%PROJECT_NAME%%%
 
-db-schema:
-	psql -d $(DB_NAME) -f $(PSQL_FILE)
-
-db-upgrade:
-	psql -d $(DB_NAME) -f $(OS_UPGRADE_FILE)
+db-update:
+	psql -X -q -d $(DB_NAME) -f $(OS_PSQL_FILE)
+	psql -X -q -d $(DB_NAME) -f $(PSQL_FILE)
 
 db-drop:
 	dropdb $(DB_NAME)
