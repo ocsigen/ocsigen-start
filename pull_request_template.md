@@ -4,7 +4,7 @@ Did you update the template to your changes in library?
 
 To test the template:
 
-eliom-distillery -template os.pgocaml -name test
+eliom-distillery -template os -name test
 cd test
 make db-init
 make db-create
