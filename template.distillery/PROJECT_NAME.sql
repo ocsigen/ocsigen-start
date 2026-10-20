@@ -106,7 +106,7 @@ CREATE OR REPLACE FUNCTION set_main_email ()
                   AND (users.main_email IS NULL OR
                        users.main_email NOT SIMILAR TO '%@%')))
     THEN
-      UPDATE users
+      UPDATE ocsigen_start.users
          SET main_email = NEW.email WHERE users.userid = NEW.userid;
     END IF;
     RETURN NEW;

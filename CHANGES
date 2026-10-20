@@ -12,6 +12,9 @@
   exposed by Eliom 13) instead of an ad-hoc ICON_HTML signature.
 * Distillery template
 ** Renamed from os.pgocaml to os.
+** The set_main_email trigger of the template schema now names the
+   users table with its schema: adding an email to a user created
+   without one failed with the default search_path.
 ** Source directory renamed back to template.distillery/ (the
    convention used by ocsigen-start's previous Makefile-based
    build), and now installed via dune
