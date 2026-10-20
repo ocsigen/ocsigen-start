@@ -8,7 +8,6 @@ let%server set_static_config () =
     Ocsigen.Config.set_veryverbose ();
     Ocsigen.Config.set_debugmode true;
     Ocsigen.Config.set_logdir "local/var/log/%%%PROJECT_NAME%%%";
-    Ocsigen.Config.set_datadir "local/var/data/%%%PROJECT_NAME%%%";
     Ocsigen.Config.set_uploaddir (Some "/tmp");
     Ocsigen.Config.set_usedefaulthostname true;
     Ocsigen.Config.set_command_pipe "local/var/run/%%%PROJECT_NAME%%%-cmd";
