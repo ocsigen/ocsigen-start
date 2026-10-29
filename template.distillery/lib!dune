@@ -1,0 +1,175 @@
+;
+; This Dune file was generated with ocsigen-dune-rules.
+; To update it, modify the invocation below and run
+;
+;     dune runtest --auto-promote
+;
+
+(rule
+ (with-stdout-to
+  dune.corrected
+  (run
+   ocsigen-dune-rules
+   gen-library
+   %%%PROJECT_NAME%%%
+   --wrapped
+   true
+   --dune
+   %{dep:dune}
+   --eliom-libraries
+   ocsigen-start
+   --server-libraries
+   ocsipersist-pgsql,ocsipersist-pgsql.settings
+   --server-preprocess
+   pgocaml_ppx
+   --no-rpc-raw
+   --preprocess
+   lwt_ppx,ocsigen-i18n,--,--prefix,%%%MODULE_NAME%%%_,--suffix,_i18n,--default-module,%%%MODULE_NAME%%%_i18n)))
+
+; Hand-written rules (preserved across regeneration by --dune above).
+
+; Generated i18n modules. The TSV sources live in ../assets, but the modules
+; must be generated here, next to the sources that reference them.
+
+(rule
+ (target %%%PROJECT_NAME%%%_i18n.eliom)
+ (action
+  (with-stdout-to
+   %{target}
+   (with-stdin-from
+    %{dep:../assets/%%%PROJECT_NAME%%%_i18n.tsv}
+    (run
+     ocsigen-i18n
+     --eliom
+     --languages
+     en,fr
+     --default-language
+     fr)))))
+
+(rule
+ (target %%%PROJECT_NAME%%%_Demo_i18n.eliom)
+ (action
+  (with-stdout-to
+   %{target}
+   (with-stdin-from
+    %{dep:../assets/%%%PROJECT_NAME%%%_Demo_i18n.tsv}
+    (run
+     ocsigen-i18n
+     --eliom
+     --primary
+     %%%PROJECT_NAME%%%_i18n.eliom
+     --languages
+     en,fr
+     --default-language
+     fr)))))
+
+(rule
+ (target %%%PROJECT_NAME%%%_static_config.eliom)
+ (action
+  (with-stdout-to
+   %{target}
+   (with-stdin-from
+    %{dep:%%%PROJECT_NAME%%%_static_config.eliom.in}
+    (run
+     sed
+     -e
+     "s/%%PGPORT%%/%{env:PGPORT=3000}/"
+     -e
+     "s/%%PGDATABASE%%/%{env:PGDATABASE=%%%PROJECT_NAME%%%}/"
+     -e
+     "s/%%PGHOST%%/%{env:PGHOST=localhost}/"
+     -e
+     "s/%%PGUSER%%/%{env:PGUSER=}/"
+     -e
+     "s/%%PGPASSWORD%%/%{env:PGPASSWORD=}/")))))
+; [ocsigen-dune-rules] Do not remove this line.
+; Below this line, any changes will be overwritten.
+;
+; To update the rules below, modify the invocation of ocsigen-dune-rules above
+; and run:
+;
+;     dune runtest --auto-promote
+;
+
+(rule
+ (alias runtest)
+ (action
+  (diff dune dune.corrected)))
+
+(library
+ (public_name %%%PROJECT_NAME%%%.server)
+ (name %%%PROJECT_NAME%%%)
+ (modes byte native)
+ (wrapped true)
+ (library_flags
+  (:standard -linkall))
+ (preprocess
+  (pps
+   eliom.ppx.server
+   ocsigen-ppx-rpc
+   js_of_ocaml-ppx_deriving_json
+   pgocaml_ppx
+   lwt_ppx
+   ocsigen-i18n
+   --
+   --prefix
+   %%%MODULE_NAME%%%_
+   --suffix
+   _i18n
+   --default-module
+   %%%MODULE_NAME%%%_i18n))
+ (libraries
+  eliom.server
+  ocsipersist-pgsql
+  ocsipersist-pgsql.settings
+  ocsigen-start.server))
+
+(subdir
+ client
+ (library
+  (public_name %%%PROJECT_NAME%%%.client)
+  (name %%%PROJECT_NAME%%%)
+  (modes byte)
+  (wrapped true)
+  (library_flags
+   (:standard -linkall))
+  (libraries eliom.client js_of_ocaml js_of_ocaml-lwt ocsigen-start.client))
+ (dynamic_include ../dune.client))
+
+(subdir
+ client/ppx
+ (rule
+  (write-file main.ml "let () = Ppxlib.Driver.standalone ()"))
+ (executable
+  (name main)
+  (libraries
+   ppxlib
+   eliom.ppx.client
+   ocsigen-ppx-rpc
+   js_of_ocaml-ppx
+   js_of_ocaml-ppx_deriving_json
+   lwt_ppx
+   ocsigen-i18n)))
+
+(rule
+ (deps
+  (glob_files *.eliom)
+  (glob_files *.eliomi))
+ (action
+  (with-stdout-to
+   dune.client
+   (run
+    ocsigen-dune-rules
+    gen-client-modules
+    --internal-prefix
+    %%%PROJECT_NAME%%%
+    --server-objs-dir
+    ../.%%%PROJECT_NAME%%%.objs/byte
+    .
+    --
+    --prefix
+    %%%MODULE_NAME%%%_
+    --suffix
+    _i18n
+    --default-module
+    %%%MODULE_NAME%%%_i18n))))

@@ -54,7 +54,7 @@
     <host hostfilter="*">
       <static dir="%%FILESDIR%%" />
       %%ELIOM_MODULES%%
-      <eliommodule module="%%LIBDIR%%/%%PROJECT_NAME%%.cma">
+      <eliommodule findlib-package="%%PROJECT_NAME%%">
         <app name="%%APPNAME%%" css="%%CSSNAME%%" %%WASMATTR%% />
         <avatars dir="%%FILESDIR%%/avatars" />
         <os-db
