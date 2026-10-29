@@ -1,0 +1,142 @@
+;
+; This Dune file was generated with ocsigen-dune-rules.
+; To update it, modify the invocation below and run
+;
+;     dune runtest --auto-promote
+;
+
+(rule
+ (with-stdout-to
+  dune.corrected
+  (run
+   ocsigen-dune-rules
+   gen-application
+   %%%PROJECT_NAME%%%
+   --name
+   main
+   --wasm
+   --dune
+   %{dep:dune}
+   --eliom-libraries
+   %%%PROJECT_NAME%%%,ocsigen-start
+   --server-libraries
+   ocsipersist-pgsql,ocsipersist-pgsql.settings,ocsigenserver.ext.staticmod
+   --server-preprocess
+   pgocaml_ppx
+   --no-rpc-raw
+   --preprocess
+   lwt_ppx,ocsigen-i18n,--,--prefix,%%%MODULE_NAME%%%_,--suffix,_i18n,--default-module,%%%MODULE_NAME%%%_i18n)))
+; [ocsigen-dune-rules] Do not remove this line.
+; Below this line, any changes will be overwritten.
+;
+; To update the rules below, modify the invocation of ocsigen-dune-rules above
+; and run:
+;
+;     dune runtest --auto-promote
+;
+
+(rule
+ (alias runtest)
+ (action
+  (diff dune dune.corrected)))
+
+(library
+ (public_name %%%PROJECT_NAME%%%)
+ (name main)
+ (modes byte native)
+ (library_flags
+  (:standard -linkall))
+ (preprocess
+  (pps
+   eliom.ppx.server
+   ocsigen-ppx-rpc
+   js_of_ocaml-ppx_deriving_json
+   pgocaml_ppx
+   lwt_ppx
+   ocsigen-i18n
+   --
+   --prefix
+   %%%MODULE_NAME%%%_
+   --suffix
+   _i18n
+   --default-module
+   %%%MODULE_NAME%%%_i18n))
+ (libraries
+  eliom.server
+  ocsipersist-pgsql
+  ocsipersist-pgsql.settings
+  ocsigenserver.ext.staticmod
+  %%%PROJECT_NAME%%%.server
+  ocsigen-start.server))
+
+(subdir
+ client
+ (executable
+  (name main)
+  (modes js wasm byte)
+  (js_of_ocaml
+   (build_runtime_flags :standard --enable use-js-string)
+   (flags :standard --enable with-js-error --enable use-js-string))
+  (libraries
+   eliom.client
+   js_of_ocaml
+   js_of_ocaml-lwt
+   %%%PROJECT_NAME%%%.client
+   ocsigen-start.client))
+ (dynamic_include ../dune.client))
+
+(subdir
+ client/ppx
+ (rule
+  (write-file main.ml "let () = Ppxlib.Driver.standalone ()"))
+ (executable
+  (name main)
+  (libraries
+   ppxlib
+   eliom.ppx.client
+   ocsigen-ppx-rpc
+   js_of_ocaml-ppx
+   js_of_ocaml-ppx_deriving_json
+   lwt_ppx
+   ocsigen-i18n)))
+
+(rule
+ (deps
+  (glob_files *.eliom)
+  (glob_files *.eliomi))
+ (action
+  (with-stdout-to
+   dune.client
+   (run
+    ocsigen-dune-rules
+    gen-client-modules
+    .
+    --
+    --prefix
+    %%%MODULE_NAME%%%_
+    --suffix
+    _i18n
+    --default-module
+    %%%MODULE_NAME%%%_i18n))))
+
+(rule
+ (alias runtest)
+ (action
+  (run
+   ocsigen-dune-rules
+   check-modules
+   --client
+   %{dep:client/main.bc}
+   --server
+   %{dep:check_modules/main.bc})))
+
+(subdir
+ check_modules
+ (rule
+  (write-file main.ml ""))
+ (executable
+  (name main)
+  (modes byte)
+  (link_flags
+   (:standard -linkall))
+  (libraries main)))

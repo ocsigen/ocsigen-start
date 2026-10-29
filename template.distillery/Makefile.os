@@ -27,10 +27,20 @@ endif
 
 .PHONY: all css byte opt
 
-DIST_DIRS          := $(ETCDIR) $(DATADIR) $(LIBDIR) $(LOGDIR) \
+DIST_DIRS          := $(ETCDIR) $(DATADIR) $(LOGDIR) \
                       $(FILESDIR)/avatars/tmp $(ELIOMSTATICDIR) \
                       $(shell dirname $(CMDPIPE))
 JS_PREFIX          := $(TEST_PREFIX)$(ELIOMSTATICDIR)/$(PROJECT_NAME)
+
+# Client code compiled by Dune. It is not part of @install, so the targets
+# are built explicitly.
+CLIENT_TARGETS     := app/client/main.bc.js
+ifeq ($(USE_WASM),yes)
+  CLIENT_TARGETS   += app/client/main.bc.wasm.js
+endif
+CLIENT_JS          := _build/default/app/client/main.bc.js
+CLIENT_WASM        := _build/default/app/client/main.bc.wasm.js
+CLIENT_WASM_ASSETS := _build/default/app/client/main.bc.wasm.assets
 
 CONF_IN            := $(wildcard *.conf.in)
 CONFIG_FILES       := $(patsubst %.conf.in,$(TEST_PREFIX)$(ETCDIR)/%.conf,$(CONF_IN))
@@ -45,23 +55,21 @@ all byte opt:: ${VOLATILE_SCHEMA}
 ##----------------------------------------------------------------------
 ## Testing
 
-DIST_FILES = $(ELIOMSTATICDIR)/$(PROJECT_NAME).js $(LIBDIR)/$(PROJECT_NAME).cma
-
 .PHONY: test.byte test.opt staticfiles byte opt
 
 test.byte:: byte | $(addprefix $(TEST_PREFIX),$(DIST_DIRS)) staticfiles
 	@echo "==== The website is available at http://localhost:$(TEST_PORT) ===="
-	$(OCSIGENSERVER) $(RUN_DEBUG) -c $(patsubst %.conf.in,$(TEST_PREFIX)$(ETCDIR)/%-test.conf,$(CONF_IN))
+	dune exec -- $(OCSIGENSERVER) $(RUN_DEBUG) -c $(patsubst %.conf.in,$(TEST_PREFIX)$(ETCDIR)/%-test.conf,$(CONF_IN))
 test.opt:: opt | $(addprefix $(TEST_PREFIX),$(DIST_DIRS)) staticfiles
 	@echo "==== The website is available at http://localhost:$(TEST_PORT) ===="
-	$(OCSIGENSERVER.OPT) $(RUN_DEBUG) -c $(patsubst %.conf.in,$(TEST_PREFIX)$(ETCDIR)/%-test.conf,$(CONF_IN))
+	dune exec -- $(OCSIGENSERVER.OPT) $(RUN_DEBUG) -c $(patsubst %.conf.in,$(TEST_PREFIX)$(ETCDIR)/%-test.conf,$(CONF_IN))
 
 test.static.byte: static.byte | $(addprefix $(TEST_PREFIX),$(DIST_DIRS)) staticfiles
 	@echo "==== The website is available at http://localhost:$(TEST_PORT) ===="
-	dune exec ./$(PROJECT_NAME)_main.bc
+	dune exec app/main/main.bc
 test.static.opt: static.opt | $(addprefix $(TEST_PREFIX),$(DIST_DIRS)) staticfiles
 	@echo "==== The website is available at http://localhost:$(TEST_PORT) ===="
-	dune exec ./$(PROJECT_NAME)_main.exe
+	dune exec app/main/main.exe
 
 $(addprefix $(TEST_PREFIX), $(DIST_DIRS)):
 	mkdir -p $@
@@ -73,38 +81,34 @@ staticfiles:
 ## Static executable
 
 static.byte: byte
-	dune build $(PROJECT_NAME)_main.bc
+	dune build $(DUNE_OPTIONS) app/main/main.bc
 
 static.opt: opt
-	dune build $(PROJECT_NAME)_main.exe
+	dune build $(DUNE_OPTIONS) app/main/main.exe
 
 ##----------------------------------------------------------------------
 ## Installing & Running
 
-.PHONY: install install.exe install.byte install.byte install.opt install.static install.etc install.lib install.lib.byte install.lib.opt run.byte run.opt
-install: install.byte install.opt
-install.exe: install.etc install.static
-	dune install
-install.byte: install.lib.byte install.etc install.static | $(addprefix $(PREFIX),$(DATADIR) $(LOGDIR) $(shell dirname $(CMDPIPE)))
-install.opt: install.lib.opt install.etc install.static | $(addprefix $(PREFIX),$(DATADIR) $(LOGDIR) $(shell dirname $(CMDPIPE)))
-install.lib: install.lib.byte install.lib.opt
-install.lib.byte: byte | $(PREFIX)$(LIBDIR)
-	install $(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cma $(PREFIX)$(LIBDIR)
-install.lib.opt: opt | $(PREFIX)$(LIBDIR)
-	install $(TEST_PREFIX)$(LIBDIR)/$(PROJECT_NAME).cmxs $(PREFIX)$(LIBDIR)
+.PHONY: install install.exe install.byte install.opt install.static install.etc install.lib run.byte run.opt
+install: install.lib install.etc install.static | $(addprefix $(PREFIX),$(DATADIR) $(LOGDIR) $(shell dirname $(CMDPIPE)))
+install.byte install.opt install.exe: install
+# The application is installed as the findlib package $(PROJECT_NAME) under
+# $(PREFIX)lib, with the standalone executable under $(PREFIX)bin.
+install.lib: byte
+	dune install --prefix $(PREFIX)
 install.static: $(TEST_PREFIX)$(ELIOMSTATICDIR)/$(PROJECT_NAME).js | $(PREFIX)$(STATICDIR) $(PREFIX)$(ELIOMSTATICDIR)
 	cp -r $(LOCAL_STATIC_IMAGES) $(PREFIX)$(FILESDIR)
 	cp -r $(LOCAL_STATIC_FONTS) $(PREFIX)$(FILESDIR)
 	[ -z $(WWWUSER) ] || chown -R $(WWWUSER) $(PREFIX)$(FILESDIR)
-	HASH=`md5sum _build/default/client/$(PROJECT_NAME).bc.js | cut -d ' ' -f 1` && \
+	HASH=`md5sum $(CLIENT_JS) | cut -d ' ' -f 1` && \
 	install $(addprefix -o ,$(WWWUSER)) $(JS_PREFIX)_$$HASH.js $(PREFIX)$(ELIOMSTATICDIR) && \
 	ln -sf $(PROJECT_NAME)_$$HASH.js $(PREFIX)$(ELIOMSTATICDIR)/$(PROJECT_NAME).js && \
 	if [ "$(USE_WASM)" = "yes" ]; then \
-	  HASH_WASM=`md5sum _build/default/client/$(PROJECT_NAME).bc.wasm.js | cut -d ' ' -f 1` && \
+	  HASH_WASM=`md5sum $(CLIENT_WASM) | cut -d ' ' -f 1` && \
 	  install $(addprefix -o ,$(WWWUSER)) $(JS_PREFIX)_$$HASH_WASM.wasm.js $(PREFIX)$(ELIOMSTATICDIR) && \
 	  ln -sf $(PROJECT_NAME)_$$HASH_WASM.wasm.js $(PREFIX)$(ELIOMSTATICDIR)/$(PROJECT_NAME).wasm.js && \
-	  if [ -d _build/default/client/$(PROJECT_NAME).bc.wasm.assets ]; then \
-	    cp -rf _build/default/client/$(PROJECT_NAME).bc.wasm.assets $(PREFIX)$(ELIOMSTATICDIR)/; \
+	  if [ -d $(CLIENT_WASM_ASSETS) ]; then \
+	    cp -rf $(CLIENT_WASM_ASSETS) $(PREFIX)$(ELIOMSTATICDIR)/; \
 	  fi; \
 	fi
 	HASH=`cat $(LOCAL_CSS) | md5sum | cut -d ' ' -f 1` && \
@@ -115,11 +119,10 @@ install.etc: $(TEST_PREFIX)$(ETCDIR)/$(PROJECT_NAME).conf | $(PREFIX)$(ETCDIR)
 
 .PHONY:
 print-install-files:
-	@echo $(PREFIX)$(LIBDIR)
 	@echo $(PREFIX)$(ELIOMSTATICDIR)
 	@echo $(PREFIX)$(ETCDIR)
 
-$(addprefix $(PREFIX),$(ETCDIR) $(LIBDIR)):
+$(PREFIX)$(ETCDIR):
 	install -d $@
 $(addprefix $(PREFIX),$(DATADIR) $(LOGDIR) $(ELIOMSTATICDIR) $(shell dirname $(CMDPIPE))):
 	install $(addprefix -o ,$(WWWUSER)) -d $@
@@ -156,7 +159,6 @@ SED_ARGS += -e "s|%%DB_PASSWORD%%|$(DB_PASSWORD)|g"
 SED_ARGS += -e "s|%%CMDPIPE%%|%%PREFIX%%$(CMDPIPE)|g"
 SED_ARGS += -e "s|%%LOGDIR%%|%%PREFIX%%$(LOGDIR)|g"
 SED_ARGS += -e "s|%%DATADIR%%|%%PREFIX%%$(DATADIR)|g"
-SED_ARGS += -e "s|%%LIBDIR%%|%%PREFIX%%$(LIBDIR)|g"
 SED_ARGS += -e "s|%%WARNING%%|$(EDIT_WARNING)|g"
 SED_ARGS += -e "s|%%PACKAGES%%|$(FINDLIB_PACKAGES)|g"
 SED_ARGS += -e "s|%%ELIOM_MODULES%%|$(ELIOM_MODULES)|g"
@@ -199,31 +201,27 @@ $(TEST_CONFIG_FILES): $(TEST_PREFIX)$(ETCDIR)/%-test.conf: %.conf.in $(JS_AND_CS
 
 .PHONY: config-files
 
-config-files: | $(TEST_PREFIX)$(ELIOMSTATICDIR) $(TEST_PREFIX)$(LIBDIR)
-	HASH=`md5sum _build/default/client/$(PROJECT_NAME).bc.js | cut -d ' ' -f 1` && \
-	cp -f _build/default/client/$(PROJECT_NAME).bc.js $(JS_PREFIX)_$$HASH.js && \
+config-files: | $(TEST_PREFIX)$(ELIOMSTATICDIR)
+	HASH=`md5sum $(CLIENT_JS) | cut -d ' ' -f 1` && \
+	cp -f $(CLIENT_JS) $(JS_PREFIX)_$$HASH.js && \
 	ln -sf $(PROJECT_NAME)_$$HASH.js $(JS_PREFIX).js && \
 	if [ "$(USE_WASM)" = "yes" ]; then \
-	  HASH_WASM=`md5sum _build/default/client/$(PROJECT_NAME).bc.wasm.js | cut -d ' ' -f 1` && \
-	  cp -f _build/default/client/$(PROJECT_NAME).bc.wasm.js $(JS_PREFIX)_$$HASH_WASM.wasm.js && \
+	  HASH_WASM=`md5sum $(CLIENT_WASM) | cut -d ' ' -f 1` && \
+	  cp -f $(CLIENT_WASM) $(JS_PREFIX)_$$HASH_WASM.wasm.js && \
 	  ln -sf $(PROJECT_NAME)_$$HASH_WASM.wasm.js $(JS_PREFIX).wasm.js && \
-	  if [ -d _build/default/client/$(PROJECT_NAME).bc.wasm.assets ]; then \
-	    cp -rf _build/default/client/$(PROJECT_NAME).bc.wasm.assets $(TEST_PREFIX)$(ELIOMSTATICDIR)/; \
+	  if [ -d $(CLIENT_WASM_ASSETS) ]; then \
+	    cp -rf $(CLIENT_WASM_ASSETS) $(TEST_PREFIX)$(ELIOMSTATICDIR)/; \
 	  fi; \
 	fi
-	cp -f _build/default/$(PROJECT_NAME).cm* $(TEST_PREFIX)$(LIBDIR)/
 	$(MAKE) $(CONFIG_FILES) $(TEST_CONFIG_FILES) PROJECT_NAME=$(PROJECT_NAME)
 
 all::
-	$(ENV_PSQL) dune build $(DUNE_OPTIONS) @install @$(PROJECT_NAME) $(PROJECT_NAME).cmxs
+	$(ENV_PSQL) dune build $(DUNE_OPTIONS) @install $(CLIENT_TARGETS)
 
-byte::
-	$(ENV_PSQL) dune build $(DUNE_OPTIONS) @$(PROJECT_NAME)
-	make config-files PROJECT_NAME=$(PROJECT_NAME)
-
-opt::
-	$(ENV_PSQL) dune build $(DUNE_OPTIONS) $(PROJECT_NAME).cmxs @$(PROJECT_NAME)
-	make config-files PROJECT_NAME=$(PROJECT_NAME)
+# Dune builds the bytecode and native versions together.
+byte opt::
+	$(ENV_PSQL) dune build $(DUNE_OPTIONS) @install $(CLIENT_TARGETS)
+	$(MAKE) config-files PROJECT_NAME=$(PROJECT_NAME)
 
 ##----------------------------------------------------------------------
 

@@ -12,8 +12,10 @@ PROJECT_NAME          := %%%PROJECT_NAME%%%
 ## The following part contains the settings for the compilation process like the
 ## server/client OPAM packages and the server/client files.
 
-# OCamlfind packages for the server (for modules which defines services)
-SERVER_ELIOM_PACKAGES := ocsigen-start.server
+# OCamlfind packages of Eliom modules to load before the application. The
+# dependencies of the application (ocsigen-start.server, ...) are loaded with
+# it, since it is a findlib package: list only packages it does not depend on.
+SERVER_ELIOM_PACKAGES :=
 
 # OCamlfind packages for the server
 SERVER_PACKAGES       :=
@@ -32,7 +34,9 @@ PORT                  := 8080
 # Port for testing (make test.*)
 TEST_PORT             := 8080
 
-# Root of installation (must end with /)
+# Root of installation (must end with /). The application is installed as a
+# findlib package under $(PREFIX)lib: ocsigenserver finds it there when PREFIX is
+# the opam switch (the default); otherwise add $(PREFIX)lib to OCAMLPATH.
 #PREFIX                := /usr/local/
 PREFIX                := ${OPAM_SWITCH_PREFIX}/
 
@@ -44,9 +48,6 @@ TEST_PREFIX           := local/
 
 # Configuration file $(PROJECT_NAME).conf
 ETCDIR                := etc/${PROJECT_NAME}
-
-# Project's library $(PROJECT_NAME).cma (cmxs)
-LIBDIR                := lib/${PROJECT_NAME}
 
 # Command pipe, eg. $ echo restart > $(INSTALL_PREFIX)$(CMDPIPE)
 CMDPIPE               := var/run/${PROJECT_NAME}-cmd
