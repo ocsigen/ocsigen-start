@@ -78,7 +78,7 @@ jobs:
       - run: |
           opam pin -yn git+https://github.com/ocsigen/eliom#master
           opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#master
-          opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#main
           opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#main
           opam pin -yn git+https://github.com/ocsigen/ocsigen-i18n#master
 
