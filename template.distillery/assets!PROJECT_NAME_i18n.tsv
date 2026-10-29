@@ -62,3 +62,4 @@ log_in_to_see_page	{{{capitalize?L||l}}}og in to see this page.	{{{capitalize?C|
 change_profile_picture	Change profile picture	Changer votre photo de profil.
 change_language	Change language	Changer la langue
 disconnect_all	Logout on all my devices	Me déconnecter sur tous mes appareils
+page_not_found	Page not found	Page introuvable

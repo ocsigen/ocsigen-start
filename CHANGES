@@ -19,6 +19,12 @@
   another one with Eliom.Registration.set_status (Eliom 13).
 * Distillery template
 ** Renamed from os.pgocaml to os.
+** Unknown URLs get a page of the application, with status 404, through
+   Eliom.Registration.set_exn_handler, instead of the default error page
+   of Ocsigen Server. Eliom then answers these URLs itself: extensions
+   placed after <eliom/> in the configuration no longer see them, and
+   each unknown URL costs a full page of the application, session
+   included.
 ** Database schema: the tables of Ocsigen Start are now in
    ocsigen_start.sql, a replayable file copied into the project,
    which creates them on a new database and brings them up to date
