@@ -138,6 +138,13 @@ Various modules for producing icons, messages, custom pages, tips, connection fo
 
 ---
 
+# Sources
+
+This contains the rendered source for `ocsigen-start`. Use the sidebar to navigate them.
+
+
+---
+
 # Module `Os.Comet`
 
 ```ocaml
