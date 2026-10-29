@@ -10,6 +10,13 @@
 * PROJECT_NAME_icons.eliom in the distillery template is now
   parameterised on Eliom.Content.Html.T (the shared signature
   exposed by Eliom 13) instead of an ad-hoc ICON_HTML signature.
+* Os.Page: the error pages are sent with an HTTP status matching the error:
+  403 when the user may not see the page (Session.Not_connected,
+  Session.Permission_denied, a predicate returning false), 404 when what it
+  shows does not exist (Not_found, Eliom.Common.Eliom_404, User.No_such_user,
+  Db.No_such_user, Db.No_such_resource, Handlers.No_such_resource), 500 for
+  any other exception. They used to be sent with 200. The fallback may set
+  another one with Eliom.Registration.set_status (Eliom 13).
 * Distillery template
 ** Renamed from os.pgocaml to os.
 ** Database schema: the tables of Ocsigen Start are now in
