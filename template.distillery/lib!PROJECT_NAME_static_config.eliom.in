@@ -9,7 +9,14 @@ let%server set_static_config () =
     Ocsigen.Config.set_debugmode true;
     Ocsigen.Config.set_logdir "local/var/log/%%%PROJECT_NAME%%%";
     Ocsigen.Config.set_uploaddir (Some "/tmp");
-    Ocsigen.Config.set_usedefaulthostname true;
+    (* The absolute links take the host name of the request. In production,
+       behind a reverse proxy or when the application sends links by email,
+       as the activation links of Ocsigen Start, call
+       [Ocsigen.Config.set_usedefaulthostname true] here, and give the public
+       host name, port and protocol to [Ocsigen.Server.host] in
+       app/main/main.ml ([~default_hostname], [~default_httpport],
+       [~default_protocol_is_https]): the links then use them, rather than
+       the Host header of the request, which a client can forge. *)
     Ocsigen.Config.set_command_pipe "local/var/run/%%%PROJECT_NAME%%%-cmd";
     Ocsigen.Config.set_default_charset (Some "utf-8");
     Ocsipersist_settings.set_host "%%PGHOST%%";
