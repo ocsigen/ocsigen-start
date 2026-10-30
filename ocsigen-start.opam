@@ -28,10 +28,15 @@ depends: [
   "yojson" {>= "1.6.0"}
   "resource-pooling" {>= "1.0" & < "2.0"}
   "cohttp-lwt-unix"
+  "jose" {>= "0.11.0"}
   "js_of_ocaml" {>= "6.4.0"}
   "re" {>= "1.7.2"}
   "ocsipersist-pgsql-config" {>= "3.1" & < "4.0"}
   "conf-postgresql"
+  "alcotest" {with-test}
+  "base64" {with-test}
+  "mirage-crypto-pk" {with-test}
+  "zarith" {with-test}
   "odoc" {with-doc}
 ]
 build: [

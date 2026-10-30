@@ -17,6 +17,11 @@
   Db.No_such_user, Db.No_such_resource, Handlers.No_such_resource), 500 for
   any other exception. They used to be sent with 200. The fallback may set
   another one with Eliom.Registration.set_status (Eliom 13).
+* New module Os.Oauth: verification of OpenID Connect ID tokens, such as
+  the ones of "Sign in with Google" (Os.Oauth.Google). The keys of the
+  provider are fetched from its JWKS URL and cached as long as its
+  Cache-Control header allows. Os.Core_oauth checks a token against given
+  keys, without input or output.
 * Distillery template
 ** Renamed from os.pgocaml to os.
 ** Unknown URLs get a page of the application, with status 404, through

@@ -14,7 +14,7 @@
    --libraries
    calendar,re.str
    --server-libraries
-   safepass,yojson,cohttp-lwt-unix,pgocaml,resource-pooling
+   safepass,yojson,cohttp-lwt-unix,jose,pgocaml,resource-pooling
    --eliom-libraries
    ocsigen-toolkit
    --dune
@@ -55,6 +55,7 @@
   safepass
   yojson
   cohttp-lwt-unix
+  jose
   pgocaml
   resource-pooling
   calendar
