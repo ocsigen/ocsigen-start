@@ -10,7 +10,14 @@
     <logdir>%%LOGDIR%%</logdir>
     <charset>utf-8</charset>
     <uploaddir>/tmp</uploaddir> <!-- Customize this -->
-    <usedefaulthostname/>
+    <!-- The absolute links take the host name of the request. In production,
+         behind a reverse proxy or when the application sends links by
+         email, as the activation links of Ocsigen Start, add
+         <usedefaulthostname/> here, and give the public host name, port and
+         protocol to <host> below (attributes defaulthostname,
+         defaulthttpport and defaultprotocol): the links then use them,
+         rather than the Host header of the request, which a client can
+         forge. -->
     %%% Only set when debugging
     %%DEBUGMODE%%
     <extension findlib-package="ocsigenserver.ext.accesscontrol"/>
