@@ -182,6 +182,10 @@ connection forms, etc.
   {!Os.Group}:
   manage users and groups thereof.
 
+- {!Os.Oauth}:
+  check the ID tokens of OpenID Connect providers, to let users sign in
+  with their Google account for instance (server side only).
+
 - {!Os.Db}:
   directly access the database. In many cases, it is a better idea to
   use higher-level modules (e.g.,

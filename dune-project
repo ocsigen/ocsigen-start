@@ -63,6 +63,8 @@
     (>= "1.0")
     (< "2.0")))
   cohttp-lwt-unix
+  (jose
+   (>= "0.11.0"))
   (js_of_ocaml
    (>= "6.4.0"))
   (re
@@ -71,7 +73,11 @@
    (and
     (>= "3.1")
     (< "4.0")))
-  conf-postgresql))
+  conf-postgresql
+  (alcotest :with-test)
+  (base64 :with-test)
+  (mirage-crypto-pk :with-test)
+  (zarith :with-test)))
 
 (package
  (name ocsigen-start-compat)
