@@ -51,6 +51,8 @@
    so the template lands at lib/eliom/templates/os/, where
    eliom-distillery picks it up at the standard location (Eliom
    13 dropped the per-package eliom-templates/ auto-discovery).
+** template.distillery is now generated from the os_template
+   repository by script/update_template.sh.
 * Migrated to the new Eliom 13 module names (Eliom.Service,
   Eliom.Content, Eliom.Common, ...) and to the wrapped
   ocsigenserver module names (Ocsigen.Server, Ocsigen.Extensions,
