@@ -17,6 +17,13 @@
   Db.No_such_user, Db.No_such_resource, Handlers.No_such_resource), 500 for
   any other exception. They used to be sent with 200. The fallback may set
   another one with Eliom.Registration.set_status (Eliom 13).
+* Os.Session also puts the service session in the group of the user, as
+  it already did for the data sessions: at login, when the session is
+  restored, and when the service session has left the group. Services
+  registered with scope Eliom.Common.default_group_scope are now shared
+  by all the sessions of the user (Eliom 13), and
+  Os.Session.disconnect_all closes them. A service session, with its
+  cookie, is now created at login.
 * Distillery template
 ** Renamed from os.pgocaml to os.
 ** Unknown URLs get a page of the application, with status 404, through

@@ -75,7 +75,15 @@ let on_start_unconnected_process f =
 exception Not_connected
 exception Permission_denied]
 
+(* The service session joins the group too, so that services registered
+   with the group scope are shared by all the sessions of the user, and
+   closed by [disconnect_all]. *)
+let join_service_group uid =
+  Eliom.State.set_service_session_group
+    ~scope:Eliom.Common.default_session_scope uid
+
 let connect_volatile uid =
+  join_service_group uid;
   Eliom.State.set_volatile_data_session_group
     ~scope:Eliom.Common.default_session_scope uid;
   let uid = Int64.of_string uid in
@@ -269,7 +277,17 @@ let get_session () =
             in
             Lwt.return_some uid
         | None -> Lwt.return_none)
-    | Some uid -> Lwt.return_some uid
+    | Some uid ->
+        (* The service session may have left the group while the volatile
+           data session stayed in it (other timeout or limit, services
+           discarded): it joins the group again. *)
+        if
+          not
+            (Option.equal String.equal
+               (Eliom.State.get_service_session_group ())
+               uids)
+        then join_service_group (Int64.to_string uid);
+        Lwt.return_some uid
   in
   (* Check if the user exists in the DB *)
   match uid with

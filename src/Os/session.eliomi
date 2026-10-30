@@ -78,8 +78,14 @@ val connect : ?expire:bool -> Types.User.id -> unit Lwt.t
 (** Close current session (if any) by calling disconnect,
     then open a new session for a user by setting a session group for the browser
     which initiated the current request.
-    Ocsigen-start is using both persistent and volatile session groups.
-    The volatile groups is recreated from persistent group if absent.
+    Ocsigen-start puts the persistent data session, the volatile data
+    session and the service session in the group of the user, so that
+    states and services with scope [Eliom.Common.default_group_scope]
+    are shared by all the sessions of the user.
+    The volatile groups (data and service) are recreated from the
+    persistent group if absent, and the service session joins the group
+    again if it has left it, in the requests that go through the
+    connection wrappers ({!connected_fun} and the others).
     By default, the connection does not expire; by setting the optional
     argument [expire] to true, the session will expire when the browser
     exits.
