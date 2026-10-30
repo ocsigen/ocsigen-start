@@ -37,6 +37,11 @@
   by all the sessions of the user (Eliom 13), and
   Os.Session.disconnect_all closes them. A service session, with its
   cookie, is now created at login.
+* New module Os.Oauth: verification of OpenID Connect ID tokens, such as
+  the ones of "Sign in with Google" (Os.Oauth.Google). The keys of the
+  provider are fetched from its JWKS URL and cached as long as its
+  Cache-Control header allows. Os.Core_oauth checks a token against given
+  keys, without input or output.
 * Distillery template
 ** Renamed from os.pgocaml to os.
 ** Unknown URLs get a page of the application, with status 404, through

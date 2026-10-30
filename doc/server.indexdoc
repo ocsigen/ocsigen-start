@@ -10,6 +10,8 @@ Current_user
 Group
 Session
 Connect_phone
+Oauth
+Core_oauth
 }
 
 {2 Persistence}

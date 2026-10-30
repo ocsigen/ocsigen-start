@@ -1,0 +1,10 @@
+; Os.Core_oauth has no dependency on Eliom: it is compiled here on its own,
+; so that the tests do not link the whole server library.
+
+(copy_files#
+ (files ../src/Os/core_oauth.{ml,mli}))
+
+(test
+ (name test_oauth)
+ (package ocsigen-start)
+ (libraries alcotest base64 jose logs mirage-crypto-pk yojson zarith))
