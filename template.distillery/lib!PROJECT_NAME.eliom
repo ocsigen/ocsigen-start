@@ -48,6 +48,23 @@ let%server () =
     ~service:%%%MODULE_NAME%%%_services.upload_user_avatar_service
     (Os.Session.connected_fun %%%MODULE_NAME%%%_handlers.upload_user_avatar_handler)
 
+(* Unknown URLs get a page of the application, with status 404, instead of
+   the default error page of Ocsigen Server. Eliom then answers these URLs
+   itself: the extensions placed after <eliom/> in the configuration no
+   longer see them. *)
+let%server () =
+  Eliom.Registration.set_exn_handler (function
+    | Eliom.Common.Eliom_404 ->
+        let%lwt page =
+          %%%MODULE_NAME%%%_page.Opt.connected_page
+            (fun myid_o () () ->
+               %%%MODULE_NAME%%%_container.page myid_o
+                 [Eliom.Content.Html.F.p [%i18n page_not_found]])
+            () ()
+        in
+        %%%MODULE_NAME%%%_base.App.send ~code:404 page
+    | e -> Lwt.fail e)
+
 (* Print more debugging information when <debugmode/> is in config file
    (DEBUG = yes in Makefile.options).
    Example of use:

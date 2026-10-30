@@ -44,6 +44,22 @@ let%shared content ?(html_a = []) ?(a = []) ?title ?(head = []) body =
   ; body_attrs = a
   ; body :> Html_types.body_content elt list }
 
+(* The HTTP status of the error page for [exc]: 403 when the user may not see
+   the page, 404 when what it shows does not exist, 500 otherwise. No
+   WWW-Authenticate challenge is sent, hence 403 rather than 401 for a
+   visitor who is not connected. *)
+let%server rec error_status = function
+  | Session.Not_connected | Session.Permission_denied | Predicate_failed None ->
+      `Forbidden
+  | Predicate_failed (Some exc) -> error_status exc
+  | Not_found | Eliom.Common.Eliom_404 | User.No_such_user | Db.No_such_user
+  | Db.No_such_resource | Handlers.No_such_resource ->
+      `Not_found
+  | _ -> `Internal_server_error
+
+(* On the client, Eliom.Registration.set_status does nothing. *)
+let%client error_status _ = `Internal_server_error
+
 [%%shared
 module type PAGE = sig
   val title : string
@@ -154,6 +170,10 @@ module Make (C : PAGE) = struct
          ~a:(platform_attr :: connected_attr :: content.body_attrs)
          content.body)
 
+  (* Set before the fallback builds the error page, which may set another
+     status. *)
+  let set_error_status exc = Eliom.Registration.set_status (error_status exc)
+
   let page
         ?(predicate = C.default_predicate)
         ?(fallback = C.default_error_page)
@@ -161,6 +181,7 @@ module Make (C : PAGE) = struct
         gp
         pp
     =
+    let fallback gp pp exc = set_error_status exc; fallback gp pp exc in
     let* content =
       Lwt.catch
         (fun () ->
@@ -181,6 +202,9 @@ module Make (C : PAGE) = struct
         gp
         pp
     =
+    let fallback myid_o gp pp exc =
+      set_error_status exc; fallback myid_o gp pp exc
+    in
     let f_wrapped myid gp pp =
       Lwt.catch
         (fun () ->
@@ -218,6 +242,9 @@ module Make (C : PAGE) = struct
           gp
           pp
       =
+      let fallback myid_o gp pp exc =
+        set_error_status exc; fallback myid_o gp pp exc
+      in
       let f_wrapped (myid_o : Types.User.id option) gp pp =
         Lwt.catch
           (fun () ->
