@@ -30,19 +30,19 @@ make db-init
 make db-create
 make db-update
 ```
-Then compile and run the app, either as a library loaded dynamically
-into ocsigenserver using a configuration file: 
+Then compile and run the app, either with the `ocsigenserver` command, which
+reads a configuration file and loads the app as an Eliom module:
 ```shell
 make test.byte (or test.opt)
 ```
-or as an OCaml executable, using ocsigenserver as a libary
-(without configuration file):
+or as your own executable, which links Ocsigen Server as a library and needs
+no configuration file:
 ```shell
 make test.static.byte (or test.static.opt)
 ```
 
 Then connect to `http://localhost:8080` to see the running app skeleton.
-Registration will work only if sendmail if configured on your system.
+Registration will work only if sendmail is configured on your system.
 But the default template will print the activation link on the standard
 output to make it possible for you to create your first users (remove this!).
 
@@ -113,14 +113,14 @@ make db-status
 make db-update
 ```
 
-- Test your application by compiling it and running ocsigenserver locally
-with a configuration file:
+- Test your application by compiling it and running it locally with the
+`ocsigenserver` command and a configuration file:
 ```
 make test.byte (or test.opt)
 ```
 
-- Test your application by compiling it as an OCaml executable without
-configuration file:
+- Test your application by compiling it as your own executable, which links
+Ocsigen Server as a library and needs no configuration file:
 ```
 make test.static.byte (or test.static.opt)
 ```
@@ -135,12 +135,13 @@ make all (or byte or opt)
 make install (or install.byte or install.opt)
 ```
 
-- Run the server on the deployed project
+- Run the deployed project with the `ocsigenserver` command
 ```Shell
 make run.byte (or run.opt)
 ```
 
-- Run the static executable of the deployed project
+- Run the installed copy of your own executable (without a configuration file,
+  it uses the static configuration, with the files in `local/`)
 ```Shell
 make run.static
 ```
