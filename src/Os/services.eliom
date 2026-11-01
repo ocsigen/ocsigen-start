@@ -137,6 +137,13 @@ let confirm_code_recovery_service =
     ~meth:(Eliom.Service.Post (unit, string "number"))
     ()
 
+(* Applications that do not enable phone connectivity leave these services
+   unregistered. *)
+let%server () =
+  Eliom.Service.allow_unregistered confirm_code_signup_service;
+  Eliom.Service.allow_unregistered confirm_code_extra_service;
+  Eliom.Service.allow_unregistered confirm_code_recovery_service
+
 let%client main_service = ~%main_service
 let%client preregister_service = ~%preregister_service
 let%client forgot_password_service = ~%forgot_password_service
