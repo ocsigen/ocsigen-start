@@ -11,16 +11,21 @@ html {
 
 body {
   margin: 0;
-  font-size: 14px;
-  background-color: white; }
+  font-size: 15px;
+  background-color: #f8fafc;
+  color: #334155;
+  line-height: 1.6; }
 
 body, input, textarea, keygen, select, button {
   font-family: 'Quicksand', sans-serif; }
 
 a, a:visited {
   text-decoration: none;
-  color: #666;
-  cursor: pointer; }
+  color: #2563eb;
+  cursor: pointer;
+  transition: color 0.15s ease; }
+  a:hover, a:visited:hover {
+    color: #1d4ed8; }
 
 button, input {
   border: none; }
@@ -29,18 +34,29 @@ button, input[type="submit"], input[type="button"] {
   cursor: pointer; }
 
 .button {
-  border-radius: 2px;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.28);
-  background-color: white;
-  color: #666;
-  text-transform: uppercase;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  background-color: #2563eb;
+  color: white;
   font-size: 14px;
-  padding: 5px 16px;
-  margin: 5px; }
+  font-weight: 600;
+  padding: 8px 20px;
+  margin: 5px;
+  border: none;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease; }
+  .button:hover {
+    background-color: #1d4ed8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
 
 input {
-  padding: 5px;
-  border-radius: 2px; }
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+  input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
 
 .connected-user-box {
   display: flex;
@@ -56,22 +72,24 @@ input {
   position: fixed;
   top: 0;
   z-index: 1;
-  height: 50px;
+  height: 56px;
   width: 100%;
-  background-color: #25a;
+  background-color: #1e293b;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.28);
-  padding: 0 20px 0 50px; }
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  padding: 0 24px 0 50px; }
   .os-page-header .connected-user-box {
     color: white; }
 
 a.os-page-header-app-name {
   text-decoration: none;
   color: white;
-  font-size: 30px; }
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px; }
 
 .ot-dr-toggle-button {
   color: white; }
@@ -86,80 +104,311 @@ a.os-page-header-app-name {
     list-style-type: none; }
   .os-drawer-menu .os-drawer-item {
     display: block;
-    padding: 16px; }
+    padding: 14px 20px;
+    font-size: 15px;
+    transition: background-color 0.15s ease; }
   .os-drawer-menu a:hover {
-    background-color: #445;
-    color: white; }
+    background-color: rgba(0, 0, 0, 0.04);
+    color: #2563eb; }
   .os-drawer-menu .connected-user-box {
-    border-bottom: 1px solid #ddd; }
+    border-bottom: 1px solid #e2e8f0;
+    padding: 16px 20px; }
 
 .os-drawer-submenu {
   padding: 0; }
   .os-drawer-submenu > li > a {
     display: block;
-    padding: 5px 5px 5px 50px; }
+    padding: 8px 8px 8px 50px;
+    font-size: 14px;
+    color: #64748b; }
 
 .os-body {
-  padding: 66px 16px; }
+  padding: 72px 24px 40px;
+  max-width: 960px;
+  margin: 0 auto; }
 
 .os-page-footer {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #ddd;
-  padding: 16px;
-  font-size: 10px;
+  background-color: #1e293b;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 12px 16px;
+  font-size: 11px;
   text-align: center; }
+  .os-page-footer a, .os-page-footer a:visited {
+    color: rgba(255, 255, 255, 0.8); }
+    .os-page-footer a:hover, .os-page-footer a:visited:hover {
+      color: white; }
 
-.os-welcome-box h2, .os-settings h2, .os-sign-in h2, .os-sign-up h2, .os-forgot-pwd h2 {
-  font-size: 14px;
-  margin: 16px 0 4px 0; }
-.os-welcome-box form, .os-settings form, .os-sign-in form, .os-sign-up form, .os-forgot-pwd form {
+/* --- Login / Sign-up / Forgot-password popup forms --- */
+.os-welcome-box h2, .os-sign-in h2, .os-sign-up h2, .os-forgot-pwd h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  color: #1e293b; }
+
+.os-welcome-box form, .os-welcome-box .form-like, .os-sign-in form, .os-sign-in .form-like, .os-sign-up form, .os-sign-up .form-like, .os-forgot-pwd form, .os-forgot-pwd .form-like {
   display: flex;
   margin: 0 auto;
   flex-direction: column;
-  background-color: #eee;
-  padding: 16px;
-  width: 350px; }
-.os-welcome-box input[type="checkbox"], .os-settings input[type="checkbox"], .os-sign-in input[type="checkbox"], .os-sign-up input[type="checkbox"], .os-forgot-pwd input[type="checkbox"] {
+  background-color: white;
+  padding: 12px 0;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 12px;
+  gap: 6px; }
+
+.os-welcome-box input[type="checkbox"], .os-sign-in input[type="checkbox"], .os-sign-up input[type="checkbox"], .os-forgot-pwd input[type="checkbox"] {
   vertical-align: middle; }
-.os-welcome-box input[type="submit"], .os-settings input[type="submit"], .os-sign-in input[type="submit"], .os-sign-up input[type="submit"], .os-forgot-pwd input[type="submit"] {
-  margin: 5px auto; }
-.os-welcome-box input[type="text"], .os-welcome-box input[type="password"], .os-welcome-box input[type="email"], .os-settings input[type="text"], .os-settings input[type="password"], .os-settings input[type="email"], .os-sign-in input[type="text"], .os-sign-in input[type="password"], .os-sign-in input[type="email"], .os-sign-up input[type="text"], .os-sign-up input[type="password"], .os-sign-up input[type="email"], .os-forgot-pwd input[type="text"], .os-forgot-pwd input[type="password"], .os-forgot-pwd input[type="email"] {
-  width: 150px;
+
+.os-welcome-box input[type="submit"], .os-welcome-box button:not(.ot-password-toggle), .os-sign-in input[type="submit"], .os-sign-in button:not(.ot-password-toggle), .os-sign-up input[type="submit"], .os-sign-up button:not(.ot-password-toggle), .os-forgot-pwd input[type="submit"], .os-forgot-pwd button:not(.ot-password-toggle) {
+  margin: 12px 0 4px;
+  padding: 10px 24px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background-color 0.15s ease; }
+  .os-welcome-box input[type="submit"]:hover, .os-welcome-box button:not(.ot-password-toggle):hover, .os-sign-in input[type="submit"]:hover, .os-sign-in button:not(.ot-password-toggle):hover, .os-sign-up input[type="submit"]:hover, .os-sign-up button:not(.ot-password-toggle):hover, .os-forgot-pwd input[type="submit"]:hover, .os-forgot-pwd button:not(.ot-password-toggle):hover {
+    background-color: #1d4ed8; }
+
+.os-welcome-box input[type="text"], .os-welcome-box input[type="password"],
+.os-welcome-box input[type="email"], .os-welcome-box input[type="tel"], .os-sign-in input[type="text"], .os-sign-in input[type="password"],
+.os-sign-in input[type="email"], .os-sign-in input[type="tel"], .os-sign-up input[type="text"], .os-sign-up input[type="password"],
+.os-sign-up input[type="email"], .os-sign-up input[type="tel"], .os-forgot-pwd input[type="text"], .os-forgot-pwd input[type="password"],
+.os-forgot-pwd input[type="email"], .os-forgot-pwd input[type="tel"] {
+  width: 100%;
   display: block;
-  margin: 5px auto; }
-.os-welcome-box label, .os-settings label, .os-sign-in label, .os-sign-up label, .os-forgot-pwd label {
-  font-size: 12px; }
-.os-welcome-box .ot-password-container, .os-settings .ot-password-container, .os-sign-in .ot-password-container, .os-sign-up .ot-password-container, .os-forgot-pwd .ot-password-container {
-  width: 150px;
-  margin: 5px auto; }
-  .os-welcome-box .ot-password-container input[type="password"], .os-welcome-box .ot-password-container input[type="text"], .os-settings .ot-password-container input[type="password"], .os-settings .ot-password-container input[type="text"], .os-sign-in .ot-password-container input[type="password"], .os-sign-in .ot-password-container input[type="text"], .os-sign-up .ot-password-container input[type="password"], .os-sign-up .ot-password-container input[type="text"], .os-forgot-pwd .ot-password-container input[type="password"], .os-forgot-pwd .ot-password-container input[type="text"] {
-    width: auto;
-    margin: 0; }
-  .os-welcome-box .ot-password-container .ot-password-toggle, .os-settings .ot-password-container .ot-password-toggle, .os-sign-in .ot-password-container .ot-password-toggle, .os-sign-up .ot-password-container .ot-password-toggle, .os-forgot-pwd .ot-password-container .ot-password-toggle {
-    margin: 0; }
+  margin: 4px 0;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: #f8fafc;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+  .os-welcome-box input[type="text"]:focus, .os-welcome-box input[type="password"]:focus,
+  .os-welcome-box input[type="email"]:focus, .os-welcome-box input[type="tel"]:focus, .os-sign-in input[type="text"]:focus, .os-sign-in input[type="password"]:focus,
+  .os-sign-in input[type="email"]:focus, .os-sign-in input[type="tel"]:focus, .os-sign-up input[type="text"]:focus, .os-sign-up input[type="password"]:focus,
+  .os-sign-up input[type="email"]:focus, .os-sign-up input[type="tel"]:focus, .os-forgot-pwd input[type="text"]:focus, .os-forgot-pwd input[type="password"]:focus,
+  .os-forgot-pwd input[type="email"]:focus, .os-forgot-pwd input[type="tel"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background-color: white; }
+
+.os-welcome-box label, .os-sign-in label, .os-sign-up label, .os-forgot-pwd label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 4px; }
+
+.os-welcome-box .ot-password-container, .os-sign-in .ot-password-container, .os-sign-up .ot-password-container, .os-forgot-pwd .ot-password-container {
+  width: 100%;
+  margin: 4px 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+  .os-welcome-box .ot-password-container:focus-within, .os-sign-in .ot-password-container:focus-within, .os-sign-up .ot-password-container:focus-within, .os-forgot-pwd .ot-password-container:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background-color: white; }
+  .os-welcome-box .ot-password-container input[type="password"], .os-welcome-box .ot-password-container input[type="text"], .os-sign-in .ot-password-container input[type="password"], .os-sign-in .ot-password-container input[type="text"], .os-sign-up .ot-password-container input[type="password"], .os-sign-up .ot-password-container input[type="text"], .os-forgot-pwd .ot-password-container input[type="password"], .os-forgot-pwd .ot-password-container input[type="text"] {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none; }
+    .os-welcome-box .ot-password-container input[type="password"]:focus, .os-welcome-box .ot-password-container input[type="text"]:focus, .os-sign-in .ot-password-container input[type="password"]:focus, .os-sign-in .ot-password-container input[type="text"]:focus, .os-sign-up .ot-password-container input[type="password"]:focus, .os-sign-up .ot-password-container input[type="text"]:focus, .os-forgot-pwd .ot-password-container input[type="password"]:focus, .os-forgot-pwd .ot-password-container input[type="text"]:focus {
+      border: none;
+      box-shadow: none; }
+  .os-welcome-box .ot-password-container .ot-password-toggle, .os-sign-in .ot-password-container .ot-password-toggle, .os-sign-up .ot-password-container .ot-password-toggle, .os-forgot-pwd .ot-password-container .ot-password-toggle {
+    margin: 0;
+    border: none;
+    border-left: 1px solid #e2e8f0;
+    border-radius: 0;
+    background: transparent;
+    padding: 8px 12px; }
 
 .os-sign-up-btn {
-  background-color: #fb8282;
-  color: white; }
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600; }
+  .os-sign-up-btn:hover {
+    background-color: #1d4ed8; }
 
 .os-forgot-pwd-link {
-  font-size: 12px; }
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 8px; }
+  .os-forgot-pwd-link:hover {
+    color: #2563eb; }
+
+/* --- Settings page --- */
+.os-settings h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  color: #1e293b; }
+
+.os-settings > p {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 24px 0 8px; }
+  .os-settings > p:first-child {
+    margin-top: 0; }
+
+.os-settings form, .os-settings .form-like {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 20px 24px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  gap: 6px;
+  max-width: 480px; }
+
+.os-settings input[type="checkbox"] {
+  vertical-align: middle; }
+
+.os-settings input[type="submit"], .os-settings button:not(.ot-password-toggle) {
+  margin: 12px 0 4px;
+  padding: 10px 24px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.15s ease; }
+  .os-settings input[type="submit"]:hover, .os-settings button:not(.ot-password-toggle):hover {
+    background-color: #1d4ed8; }
+
+.os-settings input[type="text"], .os-settings input[type="password"],
+.os-settings input[type="email"], .os-settings input[type="tel"] {
+  width: 100%;
+  display: block;
+  margin: 4px 0;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: #f8fafc;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+  .os-settings input[type="text"]:focus, .os-settings input[type="password"]:focus,
+  .os-settings input[type="email"]:focus, .os-settings input[type="tel"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background-color: white; }
+
+.os-settings select {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: #f8fafc;
+  cursor: pointer; }
+  .os-settings select:focus {
+    outline: none;
+    border-color: #3b82f6; }
+
+.os-settings label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 4px; }
+
+.os-settings .ot-password-container {
+  width: 100%;
+  margin: 4px 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+  .os-settings .ot-password-container:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background-color: white; }
+  .os-settings .ot-password-container input[type="password"], .os-settings .ot-password-container input[type="text"] {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none; }
+    .os-settings .ot-password-container input[type="password"]:focus, .os-settings .ot-password-container input[type="text"]:focus {
+      border: none;
+      box-shadow: none; }
+  .os-settings .ot-password-container .ot-password-toggle {
+    margin: 0;
+    border: none;
+    border-left: 1px solid #e2e8f0;
+    border-radius: 0;
+    background: transparent;
+    padding: 8px 12px; }
+
+.os-settings > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  color: #2563eb;
+  font-size: 14px; }
+  .os-settings > a:hover {
+    color: #1d4ed8; }
+
+.os-settings > br {
+  display: none; }
+
+.os-settings-section {
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
+  .os-settings-section > p:first-child {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 16px; }
+  .os-settings-section form {
+    border: none;
+    box-shadow: none;
+    padding: 0; }
 
 #os-msg {
   position: fixed;
-  top: 100px;
-  left: 0;
-  right: 0;
-  z-index: 100; }
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: 100%;
+  max-width: 600px;
+  padding: 0 16px; }
   #os-msg p {
-    padding: 50px 0;
+    padding: 16px 24px;
     text-align: center;
-    background-color: rgba(200, 220, 240, 0.9); }
+    background-color: rgba(37, 99, 235, 0.95);
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    font-weight: 500; }
     #os-msg p.os-err {
-      background-color: rgba(200, 0, 0, 0.7);
+      background-color: rgba(220, 38, 38, 0.95);
       color: white; }
 
 .os-page-main .os-page-header .os-connection-box {
@@ -169,21 +418,22 @@ a.os-page-header-app-name {
 
 .os-page-main:not(.os-connected) .os-page-header {
   display: block;
-  height: 40vh; }
+  height: 40vh;
+  background: linear-gradient(135deg, #1e293b 0%, #334564 100%); }
   .os-page-main:not(.os-connected) .os-page-header .os-page-header-app-name {
     display: block;
     position: absolute;
-    top: 30vh; }
+    top: 28vh;
+    font-size: 32px; }
+
 .os-page-main:not(.os-connected) .os-body {
   margin-top: 40vh; }
 
 @media (max-width: 720px) {
   .os-page-footer {
     display: none; }
-
   .os-page-header .os-connection-box, .os-page-header .os-page-header-app-name, .os-page-header .connected-user-box {
     display: none; }
-
   .os-page-main .os-page-header .os-connection-box {
     display: flex;
     flex-direction: column;
@@ -196,43 +446,61 @@ a.os-page-header-app-name {
       margin: 16px auto; }
   .os-page-main.os-not-connected .os-body {
     display: none; }
-
   .os-page-header {
     display: block; } }
-.os-settings p {
-  text-align: center; }
 
 .os-emails {
-  text-align: left;
-  display: flex;
-  justify-content: center; }
+  text-align: left; }
   .os-emails ul {
-    list-style: none; }
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
     .os-emails ul li {
-      padding: 5px 10px;
-      border-bottom: 1px solid #e5e5e5;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e2e8f0;
       display: flex;
       justify-content: space-between;
-      align-items: center; }
+      align-items: center;
+      gap: 8px; }
+      .os-emails ul li:last-child {
+        border-bottom: none; }
       .os-emails ul li .os-settings-label {
-        font-weight: bold;
-        padding: 4px 10px;
+        font-weight: 600;
+        padding: 3px 10px;
         margin-left: 4px;
-        border-radius: 3px; }
+        border-radius: 20px;
+        font-size: 12px;
+        letter-spacing: 0.02em; }
       .os-emails ul li .os-settings-email {
         flex-grow: 2;
-        padding-right: 20px; }
+        padding-right: 12px;
+        font-size: 14px; }
       .os-emails ul li .os-main-email {
         color: #fff;
-        background-color: #6cc664; }
+        background-color: #16a34a; }
       .os-emails ul li .os-validated-email {
         color: #fff;
-        background-color: #25a; }
+        background-color: #2563eb; }
       .os-emails ul li .os-remove-email-button {
         box-shadow: none;
-        font-size: 18px;
-        margin: 0px;
-        color: #bd2c00; }
+        font-size: 16px;
+        margin: 0;
+        padding: 6px 8px;
+        color: #dc2626;
+        background: none;
+        border-radius: 8px;
+        transition: background-color 0.15s ease; }
+        .os-emails ul li .os-remove-email-button:hover {
+          background-color: rgba(220, 38, 38, 0.08); }
+      .os-emails ul li .button {
+        font-size: 12px;
+        padding: 5px 12px;
+        margin: 0 2px; }
 
 .os-avatar {
   margin-right: 15px;
@@ -247,12 +515,42 @@ a.os-page-header-app-name {
 .ot-dr-left .os-avatar {
   margin-left: 16px; }
 
+/* --- Popup overrides --- */
+.ot-popup {
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  padding: 16px;
+  overflow: visible;
+  min-width: 340px;
+  max-width: 440px; }
+
+.ot-popup-close {
+  top: 8px;
+  right: 8px;
+  padding: 8px;
+  color: #64748b;
+  background: white;
+  border-radius: 50%;
+  transition: color 0.15s ease, background-color 0.15s ease;
+  z-index: 3; }
+  .ot-popup-close:hover {
+    color: #1e293b;
+    background-color: #f8fafc; }
+
+.ot-popup-content {
+  padding: 0; }
+
+.ot-popup-background {
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px); }
+
 /* Tips */
 div.os-tip {
   position: absolute;
   margin: 20px;
   box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.2);
-  z-index: 1111; }
+  z-index: 1111;
+  transition: opacity 0.5s; }
   div.os-tip div.os-tip-bec {
     background-color: white;
     width: 20px;
@@ -273,5 +571,3 @@ div.os-tip {
   div.os-tip li,
   div.os-tip p {
     padding-bottom: 10px; }
-
-/*# sourceMappingURL=.os_temporary_filename.css.map */

@@ -65,10 +65,18 @@ endif
 # If SASS is not activated, it will concatenate all CSS files (listed in
 # $(CSS_FILES)) in $(LOCAL_CSS).
 # In both cases, external CSS files ($(EXTERNAL_CSS_FILES)) are copied.
-# The SASS sources are listed as prerequisites so that editing the main
-# stylesheet or any partial under $(SASSDIR) triggers a recompile;
-# otherwise make keeps the stale compiled CSS until it is deleted by hand.
-$(LOCAL_CSS): $(SASS_SRC) $(wildcard $(SASSDIR)/*.scss) $(wildcard $(SASSDIR)/lib/*.scss) $(PACKAGE_JSON) $(NPM_POSTCSS) $(NPM_AUTOPREFIXER) $(LOCAL_STATIC_CSS)/.import-external-css | check_sass
+# The sources are listed as prerequisites so that editing one of them
+# triggers a rebuild; otherwise make keeps the stale CSS until it is deleted
+# by hand. With SASS, they are the main stylesheet and the partials under
+# $(SASSDIR); without SASS, the files of $(CSS_FILES). Neither mode requires
+# the files of the other, and only SASS needs the NPM packages (for postcss).
+ifeq "$(USE_SASS)" "yes"
+STYLE_DEPS := $(SASS_SRC) $(wildcard $(SASSDIR)/*.scss) $(wildcard $(SASSDIR)/lib/*.scss) \
+              $(PACKAGE_JSON) $(NPM_POSTCSS) $(NPM_AUTOPREFIXER)
+else
+STYLE_DEPS := $(CSS_FILES)
+endif
+$(LOCAL_CSS): $(STYLE_DEPS) $(LOCAL_STATIC_CSS)/.import-external-css | check_sass
 ifeq "$(USE_SASS)" "yes"
 ifeq ($(shell which sassc),)
 	[ -d $(SASSDIR) ] && \
@@ -118,5 +126,5 @@ endif
 	touch $(LOCAL_STATIC_CSS)/.import-external-css
 
 clean-style:
-	$(RM) $(LOCAL_CSS) $(LOCAL_STATIC_CSS)/$(PROJECT_NAME).css.map
+	$(RM) $(LOCAL_CSS) $(LOCAL_CSS).map
 	$(RM) -r .sass-cache

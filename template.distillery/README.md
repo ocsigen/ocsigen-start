@@ -10,10 +10,11 @@ automatically installing various NPM packages; you can disable this
 via the `USE_NPM` variable in `Makefile.options` if you prefer to use
 a system-wide NPM installation. SASS is needed by default; to do
 without it, set `USE_SASS` to `no` in `Makefile.options`: the pages then
-use plain CSS files (`static/css/`, `static/defaultcss/os.css` and those
-of Ocsigen Toolkit), which do not follow changes to the SASS files. Install Postgres (the server, not only the client library), NPM
-and SASS with the package manager of your system, then install the OPAM
-packages that the project depends on (from the %%%PROJECT_NAME%%% directory):
+use plain CSS files (`static/css/`, `static/defaultcss/` and those of
+Ocsigen Toolkit), which do not follow changes to the SASS files. Install
+Postgres (the server, not only the client library), NPM and SASS with
+the package manager of your system, then install the OPAM packages that
+the project depends on (from the %%%PROJECT_NAME%%% directory):
 
 ```shell
 opam install --deps-only .

@@ -16,8 +16,12 @@ cordova
 # Style
 .sass-cache
 
-static/css/%%%PROJECT_NAME%%%.css.map
-static/css/%%%PROJECT_NAME%%%.css
+static/defaultcss/%%%PROJECT_NAME%%%.css.map
+static/defaultcss/%%%PROJECT_NAME%%%.css
+
+# Copies of the Ocsigen Toolkit CSS
+static/css/ot_*.css
+static/css/.import-external-css
 
 # Dune
 _build

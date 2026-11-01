@@ -99,7 +99,6 @@ SHAREDIR_OT_CSS       := $(SHAREDIR)/ocsigen-toolkit/css
 # These files are copied with every run of make so they must not be modified.
 EXTERNAL_CSS_FILES    := $(SHAREDIR_OT_CSS)/ot_buttons.css \
                          $(SHAREDIR_OT_CSS)/ot_carousel.css \
-                         $(SHAREDIR_OT_CSS)/ot_tongue.css \
                          $(SHAREDIR_OT_CSS)/ot_sticky.css \
                          $(SHAREDIR_OT_CSS)/ot_datetime.css \
                          $(SHAREDIR_OT_CSS)/ot_drawer.css \
@@ -108,6 +107,7 @@ EXTERNAL_CSS_FILES    := $(SHAREDIR_OT_CSS)/ot_buttons.css \
                          $(SHAREDIR_OT_CSS)/ot_popup.css \
                          $(SHAREDIR_OT_CSS)/ot_spinner.css \
                          $(SHAREDIR_OT_CSS)/ot_page_transition.css \
+                         $(SHAREDIR_OT_CSS)/ot_tongue.css \
                          $(SHAREDIR_OT_CSS)/ot_form.css
 
 # All CSS files which must be concatenated.
@@ -116,7 +116,8 @@ EXTERNAL_CSS_FILES    := $(SHAREDIR_OT_CSS)/ot_buttons.css \
 # files.
 CSS_FILES             := $(LOCAL_STATIC_CSS)/font-awesome.min.css \
                          $(EXTERNAL_CSS_FILES) \
-                         $(LOCAL_STATIC_DEFAULTCSS)/os.css
+                         $(LOCAL_STATIC_DEFAULTCSS)/os.css \
+                         $(LOCAL_STATIC_DEFAULTCSS)/demo.css
 # CSS destination
 CSSDIR                := $(TEST_PREFIX)$(ELIOMSTATICDIR)/css
 CSS_PREFIX            := $(CSSDIR)/$(PROJECT_NAME)
