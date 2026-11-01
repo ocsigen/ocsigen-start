@@ -168,8 +168,10 @@ SED_ARGS += -e "s|%%APPNAME%%|$(shell basename `readlink $(JS_PREFIX).js` .js)|g
 SED_ARGS += -e "s|%%CSSNAME%%|$(shell readlink $(CSS_PREFIX).css)|g"
 ifeq ($(USE_WASM),yes)
   SED_ARGS += -e "s|%%WASMATTR%%|wasm=\"$(shell basename `readlink $(JS_PREFIX).wasm.js` .wasm.js).wasm.js\"|g"
+  SED_ARGS += -e "s|%%WASMENABLED%%|true|g"
 else
   SED_ARGS += -e "s|%%WASMATTR%%||g"
+  SED_ARGS += -e "s|%%WASMENABLED%%|false|g"
 endif
 ifeq ($(DEBUG),yes)
   SED_ARGS += -e "s|%%DEBUGMODE%%|\<debugmode /\>|g"
@@ -212,6 +214,8 @@ config-files: | $(TEST_PREFIX)$(ELIOMSTATICDIR)
 	  if [ -d $(CLIENT_WASM_ASSETS) ]; then \
 	    cp -rf $(CLIENT_WASM_ASSETS) $(TEST_PREFIX)$(ELIOMSTATICDIR)/; \
 	  fi; \
+	else \
+	  rm -f $(JS_PREFIX).wasm.js; \
 	fi
 	$(MAKE) $(CONFIG_FILES) $(TEST_CONFIG_FILES) PROJECT_NAME=$(PROJECT_NAME)
 

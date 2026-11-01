@@ -43,8 +43,9 @@
     <extension findlib-package="eliom.server">
       <!-- Ask Eliom to ignore UTM parameters and others: -->
       <ignoredgetparams regexp="utm_[a-z]*|[a-z]*clid|li_fat_id"/>
-      <!-- Enable WebAssembly support with automatic browser detection: -->
-      <wasm enabled="true"/>
+      <!-- WebAssembly support with automatic browser detection, enabled
+           when the WASM client is built (USE_WASM in Makefile.options): -->
+      <wasm enabled="%%WASMENABLED%%"/>
 <!-- Uncomment if you are using https only and want secure cookies:
        <securecookies value="true" />
   -->
