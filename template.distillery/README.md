@@ -9,12 +9,13 @@ project.  Postgres is mandatory. By default, NPM is used for
 automatically installing various NPM packages; you can disable this
 via the `USE_NPM` variable in `Makefile.options` if you prefer to use
 a system-wide NPM installation. SASS is optional, but not installing
-it may negatively impact the rendering of the pages generated. All
-needed packages (Postgres, NPM, SASS, ...) and required OPAM packages can be
-installed via the command (from the %%%PROJECT_NAME%%% directory):
+it may negatively impact the rendering of the pages generated. Install
+Postgres (the server, not only the client library), NPM and SASS with the
+package manager of your system, then install the OPAM packages that the
+project depends on (from the %%%PROJECT_NAME%%% directory):
 
 ```shell
-opam install .
+opam install --deps-only .
 ```
 
 If you have issues with the NPM provided by your distribution, you can
