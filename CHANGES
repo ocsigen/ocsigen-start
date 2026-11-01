@@ -70,6 +70,9 @@
   Lwt_process, instead of printing to stdout. If the mailer is not on
   PATH, the email is logged to stderr so the application stays usable
   out of the box. The now-unused [Invalid_mailer] exception is removed.
+* Os.Services: the services of phone connectivity are marked with
+  Eliom.Service.allow_unregistered, so that Eliom 13 does not warn about
+  them when an application does not enable phone connectivity.
 
 ===== 7.1.0 (2024-11) =====
 * Compatibility with WASM
