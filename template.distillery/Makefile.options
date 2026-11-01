@@ -94,12 +94,11 @@ SHAREDIR_OT_CSS       := $(SHAREDIR)/ocsigen-toolkit/css
 # By default, ocsigen-start needs the CSS files of ocsigen-toolkit.
 # If you don't need ocsigen-toolkit CSS files, remote CSS files related to
 # ocsigen-toolkit in this variable.
-# The order is important because it will be used when concataining all CSS files
+# The order is important because it will be used when concatenating all CSS files
 # if SASS is deactivated.
 # These files are copied with every run of make so they must not be modified.
 EXTERNAL_CSS_FILES    := $(SHAREDIR_OT_CSS)/ot_buttons.css \
                          $(SHAREDIR_OT_CSS)/ot_carousel.css \
-                         $(SHAREDIR_OT_CSS)/ot_tongue.css \
                          $(SHAREDIR_OT_CSS)/ot_sticky.css \
                          $(SHAREDIR_OT_CSS)/ot_datetime.css \
                          $(SHAREDIR_OT_CSS)/ot_drawer.css \
@@ -108,15 +107,19 @@ EXTERNAL_CSS_FILES    := $(SHAREDIR_OT_CSS)/ot_buttons.css \
                          $(SHAREDIR_OT_CSS)/ot_popup.css \
                          $(SHAREDIR_OT_CSS)/ot_spinner.css \
                          $(SHAREDIR_OT_CSS)/ot_page_transition.css \
+                         $(SHAREDIR_OT_CSS)/ot_tongue.css \
                          $(SHAREDIR_OT_CSS)/ot_form.css
 
 # All CSS files which must be concatenated.
 # This variable is only used if SASS is deactivated.
-# The order is important because it will be used when concataining all CSS
+# The order is important because it will be used when concatenating all CSS
 # files.
-CSS_FILES             := $(LOCAL_STATIC_CSS)/font-awesome.min.css \
+# fonts.css must stay first: CSS ignores its @import after a rule.
+CSS_FILES             := $(LOCAL_STATIC_DEFAULTCSS)/fonts.css \
+                         $(LOCAL_STATIC_CSS)/font-awesome.min.css \
                          $(EXTERNAL_CSS_FILES) \
-                         $(LOCAL_STATIC_DEFAULTCSS)/os.css
+                         $(LOCAL_STATIC_DEFAULTCSS)/os.css \
+                         $(LOCAL_STATIC_DEFAULTCSS)/demo.css
 # CSS destination
 CSSDIR                := $(TEST_PREFIX)$(ELIOMSTATICDIR)/css
 CSS_PREFIX            := $(CSSDIR)/$(PROJECT_NAME)
