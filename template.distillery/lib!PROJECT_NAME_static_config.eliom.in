@@ -1,5 +1,6 @@
-(* Set static configuration in case you are using static linking only.
-   These information are taken from the config file otherwise.
+(* Configuration of your own executable (app/main/), which runs without a
+   configuration file. With the ocsigenserver command, this information
+   comes from %%%PROJECT_NAME%%%.conf instead.
 *)
 let%server set_static_config () =
   if not (Ocsigen.Config.has_configuration_file ())
