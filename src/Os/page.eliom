@@ -47,12 +47,14 @@ let%shared content ?(html_a = []) ?(a = []) ?title ?(head = []) body =
 (* The HTTP status of the error page for [exc]: 403 when the user may not see
    the page, 404 when what it shows does not exist, 500 otherwise. No
    WWW-Authenticate challenge is sent, hence 403 rather than 401 for a
-   visitor who is not connected. *)
+   visitor who is not connected. [Not_found] is a 500, as in Eliom: it
+   usually comes from a bug in the handler (Hashtbl.find, List.assoc), which
+   a 404 would hide. *)
 let%server rec error_status = function
   | Session.Not_connected | Session.Permission_denied | Predicate_failed None ->
       `Forbidden
   | Predicate_failed (Some exc) -> error_status exc
-  | Not_found | Eliom.Common.Eliom_404 | User.No_such_user | Db.No_such_user
+  | Eliom.Common.Eliom_404 | User.No_such_user | Db.No_such_user
   | Db.No_such_resource | Handlers.No_such_resource ->
       `Not_found
   | _ -> `Internal_server_error

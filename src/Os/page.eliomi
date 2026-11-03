@@ -138,13 +138,13 @@ module Make (_ : PAGE) : sig
       The error page is sent with an HTTP status matching the error: 403
       when the user may not see the page ({!Session.Not_connected},
       {!Session.Permission_denied}, a predicate returning [false]), 404
-      when what it shows does not exist ([Not_found],
-      [Eliom.Common.Eliom_404], [User.No_such_user], [Db.No_such_user],
-      [Db.No_such_resource], [Handlers.No_such_resource]) and 500 for any
-      other exception; for [Predicate_failed (Some exc)], the status of
-      [exc]. No [WWW-Authenticate] challenge is sent, hence 403 rather than
-      401 for a visitor who is not connected. The fallback may set another
-      status with [Eliom.Registration.set_status].
+      when what it shows does not exist ([Eliom.Common.Eliom_404],
+      [User.No_such_user], [Db.No_such_user], [Db.No_such_resource],
+      [Handlers.No_such_resource]) and 500 for any other exception,
+      [Not_found] included, as in Eliom; for [Predicate_failed (Some exc)],
+      the status of [exc]. No [WWW-Authenticate] challenge is sent, hence
+      403 rather than 401 for a visitor who is not connected. The fallback
+      may set another status with [Eliom.Registration.set_status].
   *)
 
   module Opt : sig
