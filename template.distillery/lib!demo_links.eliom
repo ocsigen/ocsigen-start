@@ -42,7 +42,8 @@ let%shared page () =
           (Eliom.Content.Html.F.make_uri
              ~absolute:false (* We want local file on mobile app *)
              ~service:(Eliom.Service.static_dir ())
-             ["images"; "ocsigen.png"])
+             ["images"; "ocsigen.png"]
+          )
         ()
     ; p [%i18n Demo.static_files_2]
     ; img
@@ -53,8 +54,10 @@ let%shared page () =
            (* We want a distant file:
                    keep the default value of ~absolute *)
              ~service:(Eliom.Service.static_dir ())
-             ["images"; "ocsigen.png"])
-        () ]
+             ["images"; "ocsigen.png"]
+          )
+        ()
+    ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server

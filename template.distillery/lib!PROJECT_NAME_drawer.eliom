@@ -16,7 +16,9 @@ let%shared user_menu () =
       [ Os.User_view.disconnect_link
           ~text_logout:[%i18n S.logout ~capitalize:true]
           ~a:[a_class ["os-drawer-item"]]
-          () ] ]
+          ()
+      ]
+  ]
 
 let%shared make ?user () =
   let items = if user = None then [] else user_menu () in

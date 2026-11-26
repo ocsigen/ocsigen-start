@@ -38,17 +38,20 @@ let%shared page () =
     [%client
       (* This client section will be executed after the page is
                 displayed by the browser. *)
-      (Lwt.async (fun () ->
-         (* Lwt_js_events.clicks returns a Lwt thread, which never terminates.
+      ( Lwt.async (fun () ->
+            (* Lwt_js_events.clicks returns a Lwt thread, which never terminates.
             We run it asynchronously. *)
-         Lwt_js_events.clicks (To_dom.of_element ~%button) (fun _ _ ->
-           let%lwt _ =
-             Ot.Popup.popup
-               ~close_button:[Os.Icons.F.close ()]
-               (fun _ -> Lwt.return @@ p [%i18n Demo.popup_message])
-           in
-           Lwt.return_unit))
-       : unit)];
+            Lwt_js_events.clicks (To_dom.of_element ~%button) (fun _ _ ->
+                let%lwt _ =
+                  Ot.Popup.popup
+                    ~close_button:[Os.Icons.F.close ()]
+                    (fun _ -> Lwt.return @@ p [%i18n Demo.popup_message])
+                in
+                Lwt.return_unit
+            )
+        )
+        : unit
+      )];
   (* Page elements, using module Eliom.Content.Html.F
      (as we don't want to add a unique identifier).
      See internationalization demo for i18n syntax.

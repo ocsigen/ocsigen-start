@@ -32,17 +32,21 @@ let%shared page () =
   in
   ignore
     [%client
-      (Lwt.async (fun () ->
-         Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%button)
-           (fun _ _ -> ~%back_f (); Lwt.return_unit))
-       : _)];
+      ( Lwt.async (fun () ->
+            Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%button)
+              (fun _ _ -> ~%back_f (); Lwt.return_unit
+            )
+        )
+        : _
+      )];
   let%lwt tr = time_reactive () in
   Lwt.return
     [ h1 [%i18n Demo.timepicker]
     ; p [%i18n Demo.timepicker_description]
     ; div [time_picker]
     ; p [Eliom.Content.Html.R.txt tr]
-    ; div [button] ]
+    ; div [button]
+    ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server
@@ -54,4 +58,5 @@ let%shared () =
       let%lwt p = page () in
       %%%MODULE_NAME%%%_container.page
         ~a:[a_class ["os-page-demo-timepicker"]]
-        myid_o p )
+        myid_o p
+    )

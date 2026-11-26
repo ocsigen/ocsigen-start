@@ -14,10 +14,9 @@ module%shared Make (A : Eliom.Content.Html.T) = struct
       optional parameter ~a is at the end to be able to add other CSS
       classes with predefined icons. *)
   let icon
-        classes
-        ?(a = ([] : Html_types.i_attrib Eliom.Content.Html.attrib list))
-        ()
-    =
+      classes
+      ?(a = ([] : Html_types.i_attrib Eliom.Content.Html.attrib list))
+      () =
     A.i ~a:(A.a_class ("fa" :: classes) :: a) []
 
   (** Icons used by Ocsigen Start's library *)

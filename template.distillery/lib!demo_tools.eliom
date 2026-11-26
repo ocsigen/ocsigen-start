@@ -35,4 +35,5 @@ let%shared drawer_contents () =
     [ a
         ~a:[a_class ["os-drawer-item"]]
         ~service:Demo_services.demo [%i18n Demo.intro] ()
-    ; submenu ]
+    ; submenu
+    ]

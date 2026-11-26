@@ -8,7 +8,7 @@
     for the purposes of this template. *)
 
 val%server upload_user_avatar_handler :
-   Os.Types.User.id
+     Os.Types.User.id
   -> unit
   -> unit
      * ((float * float * float * float) option * Ocsigen.Extensions.file_info)
@@ -17,9 +17,7 @@ val%server upload_user_avatar_handler :
     and the old one is removed. *)
 
 val%shared set_personal_data_handler :
-   unit
-  -> (string * string) * (string * string)
-  -> unit Lwt.t
+  unit -> (string * string) * (string * string) -> unit Lwt.t
 (** Update personal data. It uses the default OS handler
     {!Os.Handlers.set_personal_data_handler} and gets the user information
     with {!Os.Session.connected_fun}. *)
@@ -29,13 +27,13 @@ val%shared forgot_password_handler : unit -> string -> unit Lwt.t
     {!Os.Handlers.forgot_password_handler} with the main service. *)
 
 val%shared action_link_handler :
-   Os.Types.User.id option
+     Os.Types.User.id option
   -> string
   -> unit
   -> %%%MODULE_NAME%%%_base.App.result Lwt.t
 
 val%shared set_password_handler :
-   unit
+     unit
   -> string * string
   -> Eliom.Service.non_ocaml Eliom.Registration.redirection Lwt.t
 (** Set a new password. It uses the default OS handler
@@ -53,29 +51,18 @@ val%shared preregister_handler : unit -> string -> unit Lwt.t
     by sending the userid as first parameter. *)
 
 val%shared main_service_handler :
-   Os.Types.User.id option
-  -> unit
-  -> unit
-  -> Os.Page.content Lwt.t
+  Os.Types.User.id option -> unit -> unit -> Os.Page.content Lwt.t
 (** The first page of the application *)
 
 val%shared about_handler :
-   Os.Types.User.id option
-  -> unit
-  -> unit
-  -> Os.Page.content Lwt.t
+  Os.Types.User.id option -> unit -> unit -> Os.Page.content Lwt.t
 (** About page *)
 
 val%shared settings_handler :
-   Os.Types.User.id option
-  -> unit
-  -> unit
-  -> Os.Page.content Lwt.t
+  Os.Types.User.id option -> unit -> unit -> Os.Page.content Lwt.t
 (** Settings page. If the user is connected (see
     {!%%%MODULE_NAME%%%_container.get_user_data}), a settings
     container will be created. *)
 
 val%shared update_language_handler :
-   unit
-  -> string
-  -> Eliom.Registration.Action.page Lwt.t
+  unit -> string -> Eliom.Registration.Action.page Lwt.t

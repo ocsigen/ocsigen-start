@@ -22,11 +22,13 @@ let%client to_lwt f =
 
 let%client ondeviceready =
   to_lwt (fun cont ->
-    ignore
-    @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
-         (Js_of_ocaml.Dom_html.Event.make "deviceready")
-         (Js_of_ocaml.Dom_html.handler (fun _ -> cont (); Js_of_ocaml.Js._true))
-         Js_of_ocaml.Js._false)
+      ignore
+      @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
+           (Js_of_ocaml.Dom_html.Event.make "deviceready")
+           (Js_of_ocaml.Dom_html.handler (fun _ -> cont (); Js_of_ocaml.Js._true)
+           )
+           Js_of_ocaml.Js._false
+  )
 
 let%client app_started = ref false
 let%client initial_change_page = ref None
@@ -59,7 +61,8 @@ let%client () =
        single initial request for that. *)
     Os.Date.disable_auto_init ();
     let%lwt _ = Lwt_js_events.onload () in
-    handle_initial_url ())
+    handle_initial_url ()
+  )
   else Lwt.return_unit
 
 (* Reactivate comet on resume and online events *)
@@ -71,9 +74,11 @@ let%client () =
     @@ Js_of_ocaml.Dom.addEventListener Js_of_ocaml.Dom_html.document
          (Js_of_ocaml.Dom_html.Event.make ev)
          (Js_of_ocaml.Dom_html.handler (fun _ ->
-            Console.console##log (Js_of_ocaml.Js.string ev);
-            Eliom.Comet.activate ();
-            Js_of_ocaml.Js._true))
+              Console.console##log (Js_of_ocaml.Js.string ev);
+              Eliom.Comet.activate ();
+              Js_of_ocaml.Js._true
+          )
+         )
          Js_of_ocaml.Js._false
   in
   activate "online"; activate "resume"
@@ -93,8 +98,9 @@ let%client () =
     (st##getItem lc)
     (fun () -> ())
     (fun url ->
-       st##removeItem lc;
-       change_page_uri (Js_of_ocaml.Js.to_string url))
+      st##removeItem lc;
+      change_page_uri (Js_of_ocaml.Js.to_string url)
+    )
 
 (* Handle universal links *)
 
@@ -111,16 +117,17 @@ type%client event =
 let%client universal_links () =
   let%lwt () = ondeviceready in
   Lwt.return @@ Js_of_ocaml.Js.Optdef.to_option
-  @@ (Js_of_ocaml.Js.Unsafe.global##.universalLinks
-      : < subscribe :
-            Js_of_ocaml.Js.js_string Js_of_ocaml.Js.opt
-            -> (event Js_of_ocaml.Js.t -> unit) Js_of_ocaml.Js.callback
-            -> unit Js_of_ocaml.Js.meth
-        ; unsubscribe :
-            Js_of_ocaml.Js.js_string Js_of_ocaml.Js.opt
-            -> unit Js_of_ocaml.Js.meth >
-          Js_of_ocaml.Js.t
-          Js_of_ocaml.Js.Optdef.t)
+  @@ ( Js_of_ocaml.Js.Unsafe.global##.universalLinks
+       : < subscribe :
+                Js_of_ocaml.Js.js_string Js_of_ocaml.Js.opt
+             -> (event Js_of_ocaml.Js.t -> unit) Js_of_ocaml.Js.callback
+             -> unit Js_of_ocaml.Js.meth
+         ; unsubscribe :
+                Js_of_ocaml.Js.js_string Js_of_ocaml.Js.opt
+             -> unit Js_of_ocaml.Js.meth >
+         Js_of_ocaml.Js.t
+         Js_of_ocaml.Js.Optdef.t
+     )
 
 let%client _ =
   match%lwt universal_links () with
@@ -129,10 +136,12 @@ let%client _ =
         (Js_of_ocaml.Js.string "Universal links: registering");
       universal_links##subscribe Js_of_ocaml.Js.null
         (Js_of_ocaml.Js.wrap_callback (fun (ev : event Js_of_ocaml.Js.t) ->
-           Js_of_ocaml.Console.console##log_2
-             (Js_of_ocaml.Js.string "Universal links: got link")
-             ev##.url;
-           change_page_uri (Js_of_ocaml.Js.to_string ev##.url)));
+             Js_of_ocaml.Console.console##log_2
+               (Js_of_ocaml.Js.string "Universal links: got link")
+               ev##.url;
+             change_page_uri (Js_of_ocaml.Js.to_string ev##.url)
+         )
+        );
       Js_of_ocaml.Console.console##log
         (Js_of_ocaml.Js.string "Universal links: registered");
       Lwt.return_unit

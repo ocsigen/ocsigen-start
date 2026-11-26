@@ -41,15 +41,17 @@ let%shared page () =
     ; [%i18n Demo.S.thursday] ^ " 5"
     ; [%i18n Demo.S.friday] ^ " 5"
     ; [%i18n Demo.S.saturday] ^ " 5"
-    ; [%i18n Demo.S.sunday] ^ " 5" ]
+    ; [%i18n Demo.S.sunday] ^ " 5"
+    ]
   in
   let length = List.length carousel_pages in
   let carousel_content = List.map (fun p -> D.div [txt p]) carousel_pages in
   let carousel_change_signal =
     [%client
-      (React.E.create ()
-       : ([`Goto of int | `Next | `Prev] as 'a) React.E.t
-         * (?step:React.step -> 'a -> unit))]
+      ( React.E.create ()
+        : ([`Goto of int | `Next | `Prev] as 'a) React.E.t
+          * (?step:React.step -> 'a -> unit)
+      )]
   in
   let update = [%client fst ~%carousel_change_signal] in
   let change = [%client fun a -> snd ~%carousel_change_signal ?step:None a] in
@@ -69,7 +71,9 @@ let%shared page () =
             ~a:[a_class ["demo-next"]]
             ~change ~pos
             ~vis_elts:(Eliom.Shared.React.S.const 1)
-            ~length [] ] ]
+            ~length []
+        ]
+    ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server
@@ -81,4 +85,5 @@ let%shared () =
       let%lwt p = page () in
       %%%MODULE_NAME%%%_container.page
         ~a:[a_class ["os-page-demo-carousel3"]]
-        myid_o p )
+        myid_o p
+    )

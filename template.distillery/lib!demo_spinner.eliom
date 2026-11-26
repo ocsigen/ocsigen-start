@@ -16,7 +16,9 @@ let%client make_spinner () =
        Eliom.Content.Html.D.
          [ txt [%i18n Demo.S.spinner_content_ready]
          ; txt " "
-         ; txt [%i18n Demo.S.spinner_message_replace_spinner] ])
+         ; txt [%i18n Demo.S.spinner_message_replace_spinner]
+         ]
+    )
 
 (* Page for this demo *)
 let%shared page () : Html_types.div_content Eliom.Content.Html.elt list Lwt.t =
@@ -28,7 +30,8 @@ let%shared page () : Html_types.div_content Eliom.Content.Html.elt list Lwt.t =
       ; F.p [F.txt [%i18n Demo.S.spinner_description_2]]
       ; F.p [F.txt [%i18n Demo.S.spinner_description_3]]
       ; F.p [F.txt [%i18n Demo.S.spinner_generated_client_side]]
-      ; C.node [%client (make_spinner () : [> `Div] Eliom.Content.Html.elt)] ]
+      ; C.node [%client (make_spinner () : [> `Div] Eliom.Content.Html.elt)]
+      ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server

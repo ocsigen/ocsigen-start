@@ -12,13 +12,13 @@ open%shared Html.D
    (for example type key = int64).
 *)
 module Notif = Os.Notif.Make_Simple (struct
-    type key = unit
+  type key = unit
 
-    (* The resources identifiers.
+  (* The resources identifiers.
                        Here unit because we have only one resource. *)
 
-    type notification = string
-  end)
+  type notification = string
+end)
 
 (* Broadcast message [v] *)
 let%rpc notify (v : string) : unit Lwt.t =
@@ -38,18 +38,22 @@ let%rpc listen () : unit Lwt.t = Notif.listen (); Lwt.return_unit
    happens. *)
 let%server () =
   Os.Session.on_start_process (fun _ ->
-    let e : (unit * string) Eliom.Eliom_react.Down.t = Notif.client_ev () in
-    ignore
-      [%client
-        (Eliom.Lib.Dom_reference.retain Js_of_ocaml.Dom_html.window
-           ~keep:
-             (React.E.map
-                (fun (_, msg) ->
-                   (* Eliom.Lib.alert "%s" msg *)
-                   Os.Msg.msg ~level:`Msg (Printf.sprintf "%s" msg))
-                ~%e)
-         : unit)];
-    Lwt.return_unit)
+      let e : (unit * string) Eliom.Eliom_react.Down.t = Notif.client_ev () in
+      ignore
+        [%client
+          ( Eliom.Lib.Dom_reference.retain Js_of_ocaml.Dom_html.window
+              ~keep:
+                (React.E.map
+                   (fun (_, msg) ->
+                     (* Eliom.Lib.alert "%s" msg *)
+                     Os.Msg.msg ~level:`Msg (Printf.sprintf "%s" msg)
+                   )
+                   ~%e
+                )
+            : unit
+          )];
+      Lwt.return_unit
+  )
 
 (* Make a text input field that calls [f s] for each [s] submitted *)
 let%shared make_form msg f =
@@ -59,15 +63,16 @@ let%shared make_form msg f =
   in
   ignore
     [%client
-      (Lwt.async @@ fun () ->
-       let btn = Eliom.Content.Html.To_dom.of_element ~%btn
-       and inp = Eliom.Content.Html.To_dom.of_input ~%inp in
-       Lwt_js_events.clicks btn @@ fun _ _ ->
-       let v = Js_of_ocaml.Js.to_string inp##.value in
-       let%lwt () = ~%f v in
-       inp##.value := Js_of_ocaml.Js.string "";
-       Lwt.return_unit
-       : unit)];
+      ( Lwt.async @@ fun () ->
+        let btn = Eliom.Content.Html.To_dom.of_element ~%btn
+        and inp = Eliom.Content.Html.To_dom.of_input ~%inp in
+        Lwt_js_events.clicks btn @@ fun _ _ ->
+        let v = Js_of_ocaml.Js.to_string inp##.value in
+        let%lwt () = ~%f v in
+        inp##.value := Js_of_ocaml.Js.string "";
+        Lwt.return_unit
+        : unit
+      )];
   Eliom.Content.Html.D.div [inp; btn]
 
 let%rpc unlisten () : unit Lwt.t = Notif.unlisten (); Lwt.return_unit
@@ -89,9 +94,12 @@ let%shared page () =
           @ [ br ()
             ; txt [%i18n Demo.S.open_multiple_tabs_browsers]
             ; br ()
-            ; txt [%i18n Demo.S.fill_input_form_send_message] ])
+            ; txt [%i18n Demo.S.fill_input_form_send_message]
+            ]
+          )
       ; make_form [%i18n Demo.S.send_message]
-          [%client (notify : string -> unit Lwt.t)] ]
+          [%client (notify : string -> unit Lwt.t)]
+      ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server

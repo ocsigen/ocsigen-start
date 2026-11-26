@@ -11,13 +11,16 @@ let%shared update_main_email_button email =
   in
   ignore
     [%client
-      (Lwt.async (fun () ->
-         Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%button)
-           (fun _ _ ->
-              let%lwt () = Os.Current_user.update_main_email ~%email in
-              Eliom.Client.change_page
-                ~service:%%%MODULE_NAME%%%_services.settings_service () ()))
-       : unit)];
+      ( Lwt.async (fun () ->
+            Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%button)
+              (fun _ _ ->
+                let%lwt () = Os.Current_user.update_main_email ~%email in
+                Eliom.Client.change_page
+                  ~service:%%%MODULE_NAME%%%_services.settings_service () ()
+            )
+        )
+        : unit
+      )];
   button
 
 (* A button to remove the email from the database *)
@@ -30,13 +33,16 @@ let%shared delete_email_button email =
   in
   ignore
     [%client
-      (Lwt.async (fun () ->
-         Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%button)
-           (fun _ _ ->
-              let%lwt () = Os.Current_user.remove_email_from_user ~%email in
-              Eliom.Client.change_page
-                ~service:%%%MODULE_NAME%%%_services.settings_service () ()))
-       : unit)];
+      ( Lwt.async (fun () ->
+            Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%button)
+              (fun _ _ ->
+                let%lwt () = Os.Current_user.remove_email_from_user ~%email in
+                Eliom.Client.change_page
+                  ~service:%%%MODULE_NAME%%%_services.settings_service () ()
+            )
+        )
+        : unit
+      )];
   button
 
 (* A list of buttons to update or to remove the email depending on the
@@ -58,14 +64,17 @@ let%shared labels_of_email is_main_email is_validated =
         @@
         if is_validated
         then [%i18n S.validated ~capitalize:true]
-        else [%i18n S.waiting_confirmation ~capitalize:true]) ]
+        else [%i18n S.waiting_confirmation ~capitalize:true]
+        )
+      ]
   in
   if is_main_email
   then
     [ span
         ~a:[a_class ["os-settings-label"; "os-main-email"]]
         [%i18n main_email ~capitalize:true]
-    ; valid_label ]
+    ; valid_label
+    ]
   else [valid_label]
 
 let%shared li_of_email main_email (email, is_validated) =
@@ -92,8 +101,9 @@ let%rpc get_emails myid () : (string option * (string * bool) list) Lwt.t =
   let%lwt emails =
     Lwt_list.map_s
       (fun email ->
-         let%lwt v = Os.Current_user.is_email_validated email in
-         Lwt.return (email, v))
+        let%lwt v = Os.Current_user.is_email_validated email in
+        Lwt.return (email, v)
+      )
       emails
   in
   Lwt.return (main_email, emails)
@@ -110,16 +120,19 @@ let%shared select_language_form select_language_name =
       , (* No attributes *)
         %%%MODULE_NAME%%%_i18n.string_of_language language
       , None
-      , is_current_language )
+      , is_current_language
+      )
   in
   [ D.p [D.txt [%i18n S.change_language]]
   ; D.Form.select ~name:select_language_name D.Form.string
       (form_option_of_language current_language true)
       (List.map
          (fun l -> form_option_of_language l false)
-         all_languages_except_current)
+         all_languages_except_current
+      )
   ; D.Form.input ~input_type:`Submit ~value:[%i18n S.send ~capitalize:true]
-      D.Form.string ]
+      D.Form.string
+  ]
 
 let%shared settings_content () =
   let%lwt emails = get_emails () in
@@ -152,4 +165,6 @@ let%shared settings_content () =
            ; p [%i18n currently_registered_emails]
            ; div ~a:[a_class ["os-emails"]] [emails]
            ; Form.post_form ~service:Os.Services.update_language_service
-               select_language_form () ] ]
+               select_language_form ()
+           ]
+       ]

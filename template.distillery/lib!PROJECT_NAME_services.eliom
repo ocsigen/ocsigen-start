@@ -6,7 +6,7 @@ let%server about_service =
     ~meth:(Eliom.Service.Get Eliom.Parameter.unit) ()
 
 let%server upload_user_avatar_service : (unit, unit) Ot.Picture_uploader.service
-  =
+    =
   Ot.Picture_uploader.mk_service "upload_user_avatar_service" [%json: unit]
 
 let%server settings_service =

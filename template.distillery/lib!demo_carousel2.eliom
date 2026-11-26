@@ -7,16 +7,33 @@ open%shared Eliom.Content.Html.F
 let%shared lorem_ipsum =
   [ p
       [ txt
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Hanc ergo intuens debet institutum illud quasi signum absolvere. Animi enim quoque dolores percipiet omnibus partibus maiores quam corporis. Atque haec ita iustitiae propria sunt, ut sint virtutum reliquarum communia. Sed ad bona praeterita redeamus. Duarum enim vitarum nobis erunt instituta capienda. Nunc ita separantur, ut disiuncta sint, quo nihil potest esse perversius. Hoc est non dividere, sed frangere. Duo Reges: constructio interrete. Satis est ad hoc responsum."
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Hanc ergo \
+           intuens debet institutum illud quasi signum absolvere. Animi enim \
+           quoque dolores percipiet omnibus partibus maiores quam corporis. \
+           Atque haec ita iustitiae propria sunt, ut sint virtutum reliquarum \
+           communia. Sed ad bona praeterita redeamus. Duarum enim vitarum \
+           nobis erunt instituta capienda. Nunc ita separantur, ut disiuncta \
+           sint, quo nihil potest esse perversius. Hoc est non dividere, sed \
+           frangere. Duo Reges: constructio interrete. Satis est ad hoc \
+           responsum."
       ]
   ; p
       [ txt
-          "Traditur, inquit, ab Epicuro ratio neglegendi doloris. Quod quidem iam fit etiam in Academia. Quodcumque in mentem incideret, et quodcumque tamquam occurreret. Immo vero, inquit, ad beatissime vivendum parum est, ad beate vero satis. Re mihi non aeque satisfacit, et quidem locis pluribus."
+          "Traditur, inquit, ab Epicuro ratio neglegendi doloris. Quod quidem \
+           iam fit etiam in Academia. Quodcumque in mentem incideret, et \
+           quodcumque tamquam occurreret. Immo vero, inquit, ad beatissime \
+           vivendum parum est, ad beate vero satis. Re mihi non aeque \
+           satisfacit, et quidem locis pluribus."
       ]
   ; p
       [ txt
-          "Amicitiam autem adhibendam esse censent, quia sit ex eo genere, quae prosunt. Hoc loco tenere se Triarius non potuit. Facile est hoc cernere in primis puerorum aetatulis. Sed in rebus apertissimis nimium longi sumus. Utrum igitur tibi litteram videor an totas paginas commovere? Quid de Platone aut de Democrito loquar?"
-      ] ]
+          "Amicitiam autem adhibendam esse censent, quia sit ex eo genere, \
+           quae prosunt. Hoc loco tenere se Triarius non potuit. Facile est \
+           hoc cernere in primis puerorum aetatulis. Sed in rebus apertissimis \
+           nimium longi sumus. Utrum igitur tibi litteram videor an totas \
+           paginas commovere? Quid de Platone aut de Democrito loquar?"
+      ]
+  ]
 
 (* Page for this demo *)
 let%shared page () =
@@ -29,9 +46,10 @@ let%shared page () =
   let make_tab name = [txt "Page "; txt name] in
   let carousel_change_signal =
     [%client
-      (React.E.create ()
-       : ([`Goto of int | `Next | `Prev] as 'a) React.E.t
-         * (?step:React.step -> 'a -> unit))]
+      ( React.E.create ()
+        : ([`Goto of int | `Next | `Prev] as 'a) React.E.t
+          * (?step:React.step -> 'a -> unit)
+      )]
   in
   let update = [%client fst ~%carousel_change_signal] in
   let change = [%client fun a -> snd ~%carousel_change_signal ?step:None a] in
@@ -65,10 +83,12 @@ let%shared page () =
   *)
   ignore
     [%client
-      (Lwt.async (fun () ->
-         Lwt.map ignore
-           (Ot.Sticky.make_sticky ~ios_html_scroll_hack:true ~dir:`Top ~%tabs))
-       : unit)];
+      ( Lwt.async (fun () ->
+            Lwt.map ignore
+              (Ot.Sticky.make_sticky ~ios_html_scroll_hack:true ~dir:`Top ~%tabs)
+        )
+        : unit
+      )];
   Lwt.return
     [ h1 [%i18n Demo.carousel_2]
     ; p [%i18n Demo.ot_carousel_second_example_1]
@@ -76,7 +96,8 @@ let%shared page () =
     ; p [%i18n Demo.ot_carousel_second_example_3]
     ; div
         ~a:[a_class ["demo-carousel2"]]
-        [div ~a:[a_class ["demo-carousel2-box"]] [tabs; carousel]] ]
+        [div ~a:[a_class ["demo-carousel2-box"]] [tabs; carousel]]
+    ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server
@@ -88,4 +109,5 @@ let%shared () =
       let%lwt p = page () in
       %%%MODULE_NAME%%%_container.page
         ~a:[a_class ["os-page-demo-carousel2"]]
-        myid_o p )
+        myid_o p
+    )

@@ -30,7 +30,8 @@ let%shared page () =
       [ F.h1 [%i18n Demo.pull_to_refresh]
       ; F.p [%i18n Demo.pull_to_refresh_1]
       ; F.p [%i18n Demo.pull_to_refresh_2]
-      ; R.node counter_node_sig ]
+      ; R.node counter_node_sig
+      ]
   in
   Lwt.return @@ [Ot.Pulltorefresh.make ~dragThreshold:15. ~content reload]
 
@@ -44,4 +45,5 @@ let%shared () =
       let%lwt p = page () in
       %%%MODULE_NAME%%%_container.page
         ~a:[a_class ["os-page-demo-pulltorefresh"]]
-        myid_o p )
+        myid_o p
+    )

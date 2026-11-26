@@ -20,7 +20,8 @@ let%shared create_item index =
       ]
     [ a ~service:Demo_services.detail_page
         [txt (Printf.sprintf "list%d" index)]
-        index ]
+        index
+    ]
 
 let%shared page () =
   let l =
@@ -33,28 +34,31 @@ let%shared page () =
   in
   ignore
     [%client
-      ((* It is the address of the dom that will be stored in cache, so
+      ( (* It is the address of the dom that will be stored in cache, so
            it doesn't matter when [push_history_dom] is called. However,
            it is important that the dom is bound to the right state id.
            So it is better to call [push_history_dom] in Eliom.Client.onload,
            when the state id has already been updated and the dom of
            the current page is ready. *)
-       Eliom.Client.onload Eliom.Client.push_history_dom;
-       let counter =
-         let r = ref 10 in
-         fun () ->
-           r := !r + 1;
-           !r
-       in
-       Lwt_js_events.clicks (To_dom.of_element ~%add_button) (fun _ _ ->
-         Html.Manip.appendChild ~%l (create_item (counter ()));
-         Lwt.return_unit)
-       : unit Lwt.t)];
+        Eliom.Client.onload Eliom.Client.push_history_dom;
+        let counter =
+          let r = ref 10 in
+          fun () ->
+            r := !r + 1;
+            !r
+        in
+        Lwt_js_events.clicks (To_dom.of_element ~%add_button) (fun _ _ ->
+            Html.Manip.appendChild ~%l (create_item (counter ()));
+            Lwt.return_unit
+        )
+        : unit Lwt.t
+      )];
   Lwt.return
     [ h1 [%i18n Demo.pagetransition_list_page]
     ; p [%i18n Demo.pagetransition_intro]
     ; l
-    ; add_button ]
+    ; add_button
+    ]
 
 let%shared make_detail_page page () =
   let back_button =
@@ -62,15 +66,20 @@ let%shared make_detail_page page () =
   in
   ignore
     [%client
-      (Lwt.async (fun () ->
-         Lwt_js_events.clicks (To_dom.of_element ~%back_button) (fun _ _ ->
-           Js_of_ocaml.Dom_html.window##.history##back;
-           Lwt.return_unit))
-       : unit)];
+      ( Lwt.async (fun () ->
+            Lwt_js_events.clicks (To_dom.of_element ~%back_button) (fun _ _ ->
+                Js_of_ocaml.Dom_html.window##.history##back;
+                Lwt.return_unit
+            )
+        )
+        : unit
+      )];
   [ h1
       ([%i18n Demo.pagetransition_detail_page]
-      @ [txt (Printf.sprintf " %d" page)])
-  ; back_button ]
+      @ [txt (Printf.sprintf " %d" page)]
+      )
+  ; back_button
+  ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server
@@ -82,7 +91,8 @@ let%shared () =
       let%lwt p = page () in
       %%%MODULE_NAME%%%_container.page
         ~a:[a_class ["os-page-demo-pagetransition"]]
-        myid_o p )
+        myid_o p
+    )
 
 let%shared () =
   let detail_page_handler myid_o page () =
