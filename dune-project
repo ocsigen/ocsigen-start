@@ -2,7 +2,7 @@
 
 (name ocsigen-start)
 
-(version 9.0.0~dev)
+(version 9.0.0)
 
 (generate_opam_files true)
 

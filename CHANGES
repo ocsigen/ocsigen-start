@@ -1,4 +1,4 @@
-===== 9.0.0~dev =====
+===== 9.0.0 (2026-11-26) =====
 * Module namespace modernization
 ** Public modules are now accessed as Os.Session, Os.User, Os.Tips,
    Os.Email, Os.Notif, ... instead of the legacy flat Os_xxx prefix.
