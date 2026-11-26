@@ -68,7 +68,7 @@ exception No_such_resource
 [%%shared.start]
 
 val action_link_handler :
-   int64 option
+     int64 option
   -> string
   -> unit
   -> 'a Eliom.Registration.application_content Eliom.Registration.kind Lwt.t
@@ -81,9 +81,7 @@ val action_link_handler :
  *)
 
 val confirm_code_signup_handler :
-   unit
-  -> string * (string * (string * string))
-  -> unit Lwt.t
+  unit -> string * (string * (string * string)) -> unit Lwt.t
 (** [confirm_code_signup_handler () (first_name, (last_name, (pass,
     number)))] sends a verification code to [number], displays a popup
     for confirming the code, and creates the account if all goes
@@ -103,7 +101,7 @@ val confirm_code_recovery_handler : unit -> string -> unit Lwt.t
 [%%server.start]
 
 val forgot_password_handler :
-   ( unit
+     ( unit
      , unit
      , Eliom.Service.get
      , Eliom.Service.att
@@ -113,7 +111,8 @@ val forgot_password_handler :
      , _
      , unit
      , unit
-     , 'c )
+     , 'c
+     )
      Eliom.Service.t
   -> unit
   -> string
@@ -128,10 +127,7 @@ val preregister_handler : unit -> string -> unit Lwt.t
 (** [preregister_handler () email] preregisters the email [email]. *)
 
 val set_password_handler :
-   Types.User.id
-  -> unit
-  -> string * string
-  -> unit Lwt.t
+  Types.User.id -> unit -> string * string -> unit Lwt.t
 (** [set_password_handler userid () (password, confirmation_password)] updates
     the password of the user with ID [userid] with the hashed value of
     [password] if [confirmation_password] corresponds to [password]. If they
@@ -139,10 +135,7 @@ val set_password_handler :
  *)
 
 val set_personal_data_handler :
-   Types.User.id
-  -> unit
-  -> (string * string) * (string * string)
-  -> unit Lwt.t
+  Types.User.id -> unit -> (string * string) * (string * string) -> unit Lwt.t
 (** [set_personal_data_handler userid () ((firstname, lastname), (password,
     confirmation_password))] sets the corresponding data to given values.
  *)

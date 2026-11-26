@@ -28,7 +28,7 @@
 [%%client.start]
 
 val check_password_confirmation :
-   password:[< Html_types.input] Eliom.Content.Html.elt
+     password:[< Html_types.input] Eliom.Content.Html.elt
   -> confirmation:[< Html_types.input] Eliom.Content.Html.elt
   -> unit
 (** [check_password_confirmation ~password ~confirmation] adds a listener to
@@ -39,24 +39,25 @@ val check_password_confirmation :
 [%%shared.start]
 
 val generic_email_form :
-   ?a:[< Html_types.form_attrib] Eliom.Content.Html.D.attrib list
+     ?a:[< Html_types.form_attrib] Eliom.Content.Html.D.attrib list
   -> ?label:string Eliom.Content.Html.F.wrap
   -> ?a_placeholder_email:string
   -> ?text:string
   -> ?email:string
   -> service:
        ( unit
-         , 'a
-         , Eliom.Service.post
-         , 'b
-         , 'c
-         , 'd
-         , 'e
-         , [< `WithSuffix | `WithoutSuffix]
-         , 'f
-         , [< string Eliom.Parameter.setoneradio] Eliom.Parameter.param_name
-         , Eliom.Service.non_ocaml )
-         Eliom.Service.t
+       , 'a
+       , Eliom.Service.post
+       , 'b
+       , 'c
+       , 'd
+       , 'e
+       , [< `WithSuffix | `WithoutSuffix]
+       , 'f
+       , [< string Eliom.Parameter.setoneradio] Eliom.Parameter.param_name
+       , Eliom.Service.non_ocaml
+       )
+       Eliom.Service.t
   -> unit
   -> [> Html_types.form] Eliom.Content.Html.D.elt
 (** [generic_email_form ?a ?label ?text ?email ~service ()] creates an email
@@ -71,7 +72,7 @@ val generic_email_form :
  *)
 
 val connect_form :
-   ?a_placeholder_email:string
+     ?a_placeholder_email:string
   -> ?a_placeholder_phone:string
   -> ?a_placeholder_pwd:string
   -> ?text_keep_me_logged_in:string
@@ -96,7 +97,7 @@ val connect_form :
  *)
 
 val disconnect_button :
-   ?a:[< Html_types.form_attrib] Eliom.Content.Html.F.attrib list
+     ?a:[< Html_types.form_attrib] Eliom.Content.Html.F.attrib list
   -> ?text_logout:string
   -> unit
   -> [> Html_types.form] Eliom.Content.Html.F.elt
@@ -106,7 +107,7 @@ val disconnect_button :
     @param a attributes of the form. *)
 
 val sign_up_form :
-   ?a:[< Html_types.form_attrib] Eliom.Content.Html.D.attrib list
+     ?a:[< Html_types.form_attrib] Eliom.Content.Html.D.attrib list
   -> ?a_placeholder_email:string
   -> ?text:string
   -> ?email:string
@@ -120,7 +121,7 @@ val sign_up_form :
  *)
 
 val forgot_password_form :
-   ?a:[< Html_types.form_attrib] Eliom.Content.Html.D.attrib list
+     ?a:[< Html_types.form_attrib] Eliom.Content.Html.D.attrib list
   -> unit
   -> [> Html_types.form] Eliom.Content.Html.D.elt
 (** [forgot_password_form ~a ()] creates a {!generic_email_form} with the
@@ -130,7 +131,7 @@ val forgot_password_form :
  *)
 
 val information_form :
-   ?a:[< Html_types.form_attrib] Eliom.Content.Html.D.attrib list
+     ?a:[< Html_types.form_attrib] Eliom.Content.Html.D.attrib list
   -> ?a_placeholder_password:string
   -> ?a_placeholder_retype_password:string
   -> ?a_placeholder_firstname:string
@@ -162,7 +163,7 @@ val information_form :
     password). *)
 
 val preregister_form :
-   ?a:[< Html_types.form_attrib > `OnSubmit] Eliom.Content.Html.D.attrib list
+     ?a:[< Html_types.form_attrib > `OnSubmit] Eliom.Content.Html.D.attrib list
   -> string Eliom.Content.Html.F.wrap
   -> [> Html_types.form] Eliom.Content.Html.D.elt
 (** [preregister_form ~a label] creates a {!generic_email_form} with the service
@@ -173,7 +174,7 @@ val preregister_form :
     @param label label for the email input. *)
 
 val home_button :
-   ?a:[< Html_types.form_attrib] Eliom.Content.Html.F.attrib list
+     ?a:[< Html_types.form_attrib] Eliom.Content.Html.F.attrib list
   -> unit
   -> [> Html_types.form] Eliom.Content.Html.F.elt
 (** [home_button ~a ()] creates an input button with value "home" which
@@ -199,24 +200,25 @@ val username : Types.User.t -> [> Html_types.div] Eliom.Content.Html.F.elt
     @param user the user. *)
 
 val password_form :
-   ?a_placeholder_pwd:string
+     ?a_placeholder_pwd:string
   -> ?a_placeholder_confirmation:string
   -> ?text_send_button:string
   -> ?a:[< Html_types.form_attrib] Eliom.Content.Html.D.attrib list
   -> service:
        ( unit
-         , 'a
-         , Eliom.Service.post
-         , 'b
-         , 'c
-         , 'd
-         , 'e
-         , [< `WithSuffix | `WithoutSuffix]
-         , 'f
-         , [< string Eliom.Parameter.setoneradio] Eliom.Parameter.param_name
-           * [< string Eliom.Parameter.setoneradio] Eliom.Parameter.param_name
-         , Eliom.Service.non_ocaml )
-         Eliom.Service.t
+       , 'a
+       , Eliom.Service.post
+       , 'b
+       , 'c
+       , 'd
+       , 'e
+       , [< `WithSuffix | `WithoutSuffix]
+       , 'f
+       , [< string Eliom.Parameter.setoneradio] Eliom.Parameter.param_name
+         * [< string Eliom.Parameter.setoneradio] Eliom.Parameter.param_name
+       , Eliom.Service.non_ocaml
+       )
+       Eliom.Service.t
   -> unit
   -> [> Html_types.form] Eliom.Content.Html.D.elt
 (** [password_form ~a ~service ()] defines a POST form with two inputs for a
@@ -231,7 +233,7 @@ val password_form :
     @param service service which the data is sent to. *)
 
 val upload_pic_link :
-   ?a:[< Html_types.a_attrib > `OnClick] Eliom.Content.Html.D.Raw.attrib list
+     ?a:[< Html_types.a_attrib > `OnClick] Eliom.Content.Html.D.Raw.attrib list
   -> ?content:Html_types.a_content Eliom.Content.Html.D.Raw.elt list
   -> ?crop:float option
   -> ?input:
@@ -265,7 +267,7 @@ val upload_pic_link :
  *)
 
 val reset_tips_link :
-   ?text_link:string
+     ?text_link:string
   -> ?close:(unit -> unit) Eliom.Client_value.t
   -> unit
   -> [> `A of [> `PCDATA]] Eliom.Content.Html.D.Raw.elt
@@ -277,7 +279,7 @@ val reset_tips_link :
  *)
 
 val disconnect_all_link :
-   ?text_link:string
+     ?text_link:string
   -> unit
   -> [> `A of [> `PCDATA]] Eliom.Content.Html.D.Raw.elt
 (** Link to disconnect all user sessions.
@@ -286,7 +288,7 @@ val disconnect_all_link :
  *)
 
 val disconnect_link :
-   ?text_logout:string
+     ?text_logout:string
   -> ?a:[< Html_types.a_attrib > `OnClick] Eliom.Content.Html.attrib list
   -> unit
   -> [> `A of Html_types.flow5_without_interactive] Eliom.Content.Html.F.elt
@@ -297,14 +299,13 @@ val disconnect_link :
  *)
 
 val connected_user_box :
-   user:Types.User.t
-  -> [> Html_types.div] Eliom.Content.Html.D.elt
+  user:Types.User.t -> [> Html_types.div] Eliom.Content.Html.D.elt
 (** An userbox (in a div with the CSS class ["connected-user-box"]) for connected
     users with an icon and the username.
  *)
 
 val connection_box :
-   ?a_placeholder_email:string
+     ?a_placeholder_email:string
   -> ?a_placeholder_phone:string
   -> ?a_placeholder_pwd:string
   -> ?text_keep_me_logged_in:string
@@ -321,7 +322,7 @@ val connection_box :
  *)
 
 val user_box :
-   ?a_placeholder_email:string
+     ?a_placeholder_email:string
   -> ?a_placeholder_pwd:string
   -> ?text_keep_me_logged_in:string
   -> ?content_popup_forgotpwd:string

@@ -38,20 +38,21 @@ let desc_of_group (g : Types.Group.t) = g.desc
 (* Using cache tools to prevent multiple same database queries
    during the request. *)
 module MCache = Request_cache.Make (struct
-    type key = string
-    type value = Types.Group.t
+  type key = string
+  type value = Types.Group.t
 
-    let compare = compare
+  let compare = compare
 
-    let get key =
-      Lwt.catch
-        (fun () ->
-           let* g = Db.Groups.group_of_name key in
-           Lwt.return (create_group_from_db g))
-        (function
-          | Db.No_such_resource -> Lwt.fail No_such_group
-          | exc -> Lwt.reraise exc)
-  end)
+  let get key =
+    Lwt.catch
+      (fun () ->
+        let* g = Db.Groups.group_of_name key in
+        Lwt.return (create_group_from_db g)
+      )
+      (function
+        | Db.No_such_resource -> Lwt.fail No_such_group | exc -> Lwt.reraise exc
+        )
+end)
 
 (** Helper function which creates a new group and return it as
   * a record of type [Types.Group.t]. *)
@@ -67,12 +68,15 @@ let create ?description name =
           let* () = Db.Groups.create ?description name in
           Lwt.catch
             (fun () ->
-               let* g = group_of_name name in
-               Lwt.return g)
+              let* g = group_of_name name in
+              Lwt.return g
+            )
             (function
               | Db.No_such_resource -> Lwt.fail No_such_group
-              | exc -> Lwt.reraise exc)
-      | exc -> Lwt.reraise exc)
+              | exc -> Lwt.reraise exc
+              )
+      | exc -> Lwt.reraise exc
+      )
 (* Should never happen *)
 
 (** Overwrite the function [group_of_name] of [Db.Group] and use

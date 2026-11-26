@@ -28,7 +28,8 @@ type t = Types.User.t =
   ; fn : string
   ; ln : string
   ; avatar : string option
-  ; language : string option }
+  ; language : string option
+  }
 [@@deriving json]]
 
 [%%server
@@ -92,20 +93,21 @@ include Db.User
 (* Using cache tools to prevent multiple same database queries
    during the request. *)
 module MCache = Request_cache.Make (struct
-    type key = Types.User.id
-    type value = Types.User.t * bool
+  type key = Types.User.id
+  type value = Types.User.t * bool
 
-    let compare = compare
+  let compare = compare
 
-    let get key =
-      Lwt.catch
-        (fun () ->
-           let* g = Db.User.user_of_userid key in
-           Lwt.return (create_user_from_db0 g))
-        (function
-          | Db.No_such_resource -> Lwt.fail No_such_user
-          | exc -> Lwt.reraise exc)
-  end)
+  let get key =
+    Lwt.catch
+      (fun () ->
+        let* g = Db.User.user_of_userid key in
+        Lwt.return (create_user_from_db0 g)
+      )
+      (function
+        | Db.No_such_resource -> Lwt.fail No_such_user | exc -> Lwt.reraise exc
+        )
+end)
 
 (* Overwrite the function [user_of_userid] of [Db.User] and use
    the [get] function of the cache module. *)
@@ -137,10 +139,12 @@ let create ?password ?avatar ?language ?email ~firstname ~lastname () =
   | Some email ->
       Lwt.catch
         (fun () ->
-           let* userid = Db.User.userid_of_email email in
-           Lwt.fail (Already_exists userid))
+          let* userid = Db.User.userid_of_email email in
+          Lwt.fail (Already_exists userid)
+        )
         (function
-          | Db.No_such_resource -> really_create () | exc -> Lwt.reraise exc)
+          | Db.No_such_resource -> really_create () | exc -> Lwt.reraise exc
+          )
   | None -> really_create ()
 
 (* Overwrites the function [update] of [Db.User]

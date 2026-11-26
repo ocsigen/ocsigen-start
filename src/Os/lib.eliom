@@ -42,7 +42,8 @@ let%shared string_repeat s n =
     if i < n
     then (
       Buffer.add_string b s;
-      f (i + 1))
+      f (i + 1)
+    )
     else Buffer.contents b
   in
   f 0
@@ -137,35 +138,36 @@ let%client on_enter ~f inp =
   if ev##.keyCode = 13 then f (Js.to_string inp##.value) else Lwt.return_unit
 
 (* TODO: Build a nice Ot.Form module with such functions *)
-let%shared
-    lwt_bind_input_enter
-      ?(validate : (string -> bool) Eliom.Client_value.t option)
-      ?(button : [< `Button | `Input] Eliom.Content.Html.elt option)
-      (e : [`Input] Eliom.Content.Html.elt)
-      (f : (string -> unit Lwt.t) Eliom.Client_value.t)
-  =
+let%shared lwt_bind_input_enter
+    ?(validate : (string -> bool) Eliom.Client_value.t option)
+    ?(button : [< `Button | `Input] Eliom.Content.Html.elt option)
+    (e : [`Input] Eliom.Content.Html.elt)
+    (f : (string -> unit Lwt.t) Eliom.Client_value.t) =
   ignore
     [%client
-      (let e = Eliom.Content.Html.To_dom.of_input ~%e in
-       let f =
-         let f = ~%(f : (string -> unit Lwt.t) Eliom.Client_value.t) in
-         match ~%validate with
-         | Some validate ->
-             fun v ->
-               if validate v
-               then e##.classList##remove (Js.string "invalid")
-               else e##.classList##add (Js.string "invalid");
-               f v
-         | None -> f
-       in
-       on_enter ~f e;
-       match ~%(button :> [`Button | `Input] Eliom.Content.Html.elt option) with
-       | Some button ->
-           Lwt.async @@ fun () ->
-           Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element button)
-           @@ fun _ _ -> f (Js.to_string e##.value)
-       | None -> ()
-       : unit)]
+      ( let e = Eliom.Content.Html.To_dom.of_input ~%e in
+        let f =
+          let f = ~%(f : (string -> unit Lwt.t) Eliom.Client_value.t) in
+          match ~%validate with
+          | Some validate ->
+              fun v ->
+                if validate v
+                then e##.classList##remove (Js.string "invalid")
+                else e##.classList##add (Js.string "invalid");
+                f v
+          | None -> f
+        in
+        on_enter ~f e;
+        match
+          ~%(button :> [`Button | `Input] Eliom.Content.Html.elt option)
+        with
+        | Some button ->
+            Lwt.async @@ fun () ->
+            Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element button)
+            @@ fun _ _ -> f (Js.to_string e##.value)
+        | None -> ()
+        : unit
+      )]
 
 let%shared lwt_bound_input_enter ?(a = []) ?button ?validate f =
   let e = Eliom.Content.Html.D.Raw.input ~a () in
@@ -178,12 +180,15 @@ module Http = struct
   let string_of_stream ?(len = 16384) contents =
     Lwt.try_bind
       (fun () ->
-         Ocsigen_base.Ocsigen_stream.string_of_stream len
-           (Ocsigen_base.Ocsigen_stream.get contents))
+        Ocsigen_base.Ocsigen_stream.string_of_stream len
+          (Ocsigen_base.Ocsigen_stream.get contents)
+      )
       (fun r ->
-         let* () = Ocsigen_base.Ocsigen_stream.finalize contents `Success in
-         Lwt.return r)
+        let* () = Ocsigen_base.Ocsigen_stream.finalize contents `Success in
+        Lwt.return r
+      )
       (fun e ->
-         let* () = Ocsigen_base.Ocsigen_stream.finalize contents `Failure in
-         Lwt.fail e)
+        let* () = Ocsigen_base.Ocsigen_stream.finalize contents `Failure in
+        Lwt.fail e
+      )
 end

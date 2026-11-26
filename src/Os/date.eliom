@@ -84,7 +84,8 @@ let%client disable_auto_init () = auto_init := false
 let%client _ =
   (* We wait for the client process to be fully loaded: *)
   Eliom.Client.onload (fun () ->
-    if !auto_init then Lwt.async (fun () -> init_time_rpc timezone))
+      if !auto_init then Lwt.async (fun () -> init_time_rpc timezone)
+  )
 
 [%%shared
 open CalendarLib
@@ -106,7 +107,9 @@ let timegm =
       ; tm_mday = mday
       ; tm_hour = hour
       ; tm_min = min
-      ; tm_sec = sec } ->
+      ; tm_sec = sec
+      }
+  ->
     let year = tm_year + 1900 in
     let mon = tm_mon + 1 in
     let r = ((year - 1970) * 365) + days.(mon - 1) in
@@ -164,9 +167,10 @@ let%client to_utc d =
     (new%js Js.date_fromTimeValue (Js.float (d' *. 1000.)))##getTimezoneOffset
   in
   CalendarLib.Calendar.from_unixfloat
-    (if o = o'
-     then d' (* We guessed the DST status right *)
-     else d +. (float o' *. 60.))
+    ( if o = o'
+      then d' (* We guessed the DST status right *)
+      else d +. (float o' *. 60.)
+    )
 (* Assume other DST status *)
 
 let%server now ?timezone () = to_local ?timezone (CalendarLib.Calendar.now ())

@@ -56,7 +56,9 @@ let%server set_personal_data_service =
       (Eliom.Service.Post
          ( Eliom.Parameter.unit
          , (string "firstname" ** string "lastname")
-           ** string "password" ** string "password2" ))
+           ** string "password" ** string "password2"
+         )
+      )
     ()
 
 (** A POST service to sign up with only an email address.
@@ -74,7 +76,9 @@ let%server connect_service =
     ~meth:
       (Eliom.Service.Post
          ( Eliom.Parameter.unit
-         , (string "username" ** string "password") ** bool "keepmeloggedin" ))
+         , (string "username" ** string "password") ** bool "keepmeloggedin"
+         )
+      )
     ()
 
 (** A POST service to disconnect the current user.
@@ -100,7 +104,8 @@ let%server set_password_service =
   Eliom.Service.create ~name:"set_password" ~path:Eliom.Service.No_path
     ~meth:
       (Eliom.Service.Post
-         (Eliom.Parameter.unit, string "password" ** string "password2"))
+         (Eliom.Parameter.unit, string "password" ** string "password2")
+      )
     ()
 
 (** A POST service to add an email to a user.
@@ -115,7 +120,8 @@ let%server update_language_service =
   Eliom.Service.create ~name:"update_language" ~path:Eliom.Service.No_path
     ~meth:
       (Eliom.Service.Post
-         (Eliom.Parameter.unit, Eliom.Parameter.string "language"))
+         (Eliom.Parameter.unit, Eliom.Parameter.string "language")
+      )
     ()
 
 let confirm_code_signup_service =
@@ -124,7 +130,9 @@ let confirm_code_signup_service =
       (Eliom.Service.Post
          ( unit
          , string "first_name" ** string "last_name" ** string "password"
-           ** string "number" ))
+           ** string "number"
+         )
+      )
     ()
 
 let confirm_code_extra_service =

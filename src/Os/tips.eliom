@@ -60,9 +60,10 @@ let tips_seen_not_connected =
 let seen_by_user =
   Eliom.Reference.Volatile.eref_from_fun ~scope:Eliom.Common.request_scope
     (fun () ->
-       match Current_user.Opt.get_current_userid () with
-       | None -> Eliom.Reference.get tips_seen_not_connected
-       | _ -> Eliom.Reference.get tips_seen)
+      match Current_user.Opt.get_current_userid () with
+      | None -> Eliom.Reference.get tips_seen_not_connected
+      | _ -> Eliom.Reference.get tips_seen
+  )
 
 (* Get the set of seen tips *)
 let%server get_tips_seen () = Eliom.Reference.Volatile.get seen_by_user
@@ -76,9 +77,10 @@ let%client get_tips_seen () = Lwt.return !tips_seen_client_ref
 
 let%server () =
   Session.on_start_connected_process (fun _ ->
-    let* tips = get_tips_seen () in
-    ignore [%client (tips_seen_client_ref := ~%tips : unit)];
-    Lwt.return_unit)
+      let* tips = get_tips_seen () in
+      ignore [%client (tips_seen_client_ref := ~%tips : unit)];
+      Lwt.return_unit
+  )
 
 (* notify the server that a user has seen a tip *)
 let%rpc set_tip_seen (name : string) : unit Lwt.t =
@@ -133,15 +135,13 @@ let%client reset_tips () =
 
 (* Returns a block containing a tip,
    if it has not already been seen by the user. *)
-let%shared
-    block
-      ?(a = [])
-      ?(recipient = `All)
-      ?(onclose = [%client (fun () -> Lwt.return_unit : unit -> unit Lwt.t)])
-      ~name
-      ~content
-      ()
-  =
+let%shared block
+    ?(a = [])
+    ?(recipient = `All)
+    ?(onclose = [%client (fun () -> Lwt.return_unit : unit -> unit Lwt.t)])
+    ~name
+    ~content
+    () =
   let myid_o = Current_user.Opt.get_current_userid () in
   match recipient, myid_o with
   | `All, _ | `Not_connected, None | `Connected, Some _ ->
@@ -169,9 +169,11 @@ let%shared
             (Icons.D.close
                ~a:
                  [ a_class ["os-tip-close"]
-                 ; a_onclick [%client fun _ -> Lwt.async ~%close] ]
+                 ; a_onclick [%client fun _ -> Lwt.async ~%close]
+                 ]
                ()
-            :: c)
+            :: c
+            )
         in
         box_ref := Some box;
         Lwt.return_some box
@@ -195,23 +197,21 @@ let%client rec onchangepage_handler _ =
 let%client () = Eliom.Client.onchangepage onchangepage_handler
 
 (* Display a tip bubble *)
-let%client
-    display_bubble
-      ?(a = [])
-      ?arrow
-      ?top
-      ?left
-      ?right
-      ?bottom
-      ?height
-      ?width
-      ?(parent_node : _ elt option)
-      ?(delay = 0.0)
-      ?(onclose = fun () -> Lwt.return_unit)
-      ~name
-      ~content
-      ()
-  =
+let%client display_bubble
+    ?(a = [])
+    ?arrow
+    ?top
+    ?left
+    ?right
+    ?bottom
+    ?height
+    ?width
+    ?(parent_node : _ elt option)
+    ?(delay = 0.0)
+    ?(onclose = fun () -> Lwt.return_unit)
+    ~name
+    ~content
+    () =
   let current_waiter = !waiter in
   let new_waiter, new_wakener = Lwt.task () in
   waiter := new_waiter;
@@ -232,7 +232,8 @@ let%client
       (Icons.D.close
          ~a:[a_class ["os-tip-close"]; a_onclick (fun _ -> Lwt.async close)]
          ()
-      :: (match arrow with None -> c | _ -> bec :: c))
+      :: (match arrow with None -> c | _ -> bec :: c)
+      )
   in
   box_ref := Some box;
   let parent_node =
@@ -265,69 +266,74 @@ let%client
     height;
   Option.iter
     (fun a ->
-       let bec = To_dom.of_element bec in
-       let bec_size = bec##.offsetWidth in
-       let offset = Printf.sprintf "-%dpx" (bec_size / 2) in
-       match a with
-       | `top i ->
-           bec##.style##.top := Js.string offset;
-           bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
-           bec##.style##.borderBottom := Js.string "none";
-           bec##.style##.borderRight := Js.string "none"
-       | `left i ->
-           bec##.style##.left := Js.string offset;
-           bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
-           bec##.style##.borderTop := Js.string "none";
-           bec##.style##.borderRight := Js.string "none"
-       | `bottom i ->
-           bec##.style##.bottom := Js.string offset;
-           bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
-           bec##.style##.borderTop := Js.string "none";
-           bec##.style##.borderLeft := Js.string "none"
-       | `right i ->
-           bec##.style##.right := Js.string offset;
-           bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
-           bec##.style##.borderBottom := Js.string "none";
-           bec##.style##.borderLeft := Js.string "none")
+      let bec = To_dom.of_element bec in
+      let bec_size = bec##.offsetWidth in
+      let offset = Printf.sprintf "-%dpx" (bec_size / 2) in
+      match a with
+      | `top i ->
+          bec##.style##.top := Js.string offset;
+          bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
+          bec##.style##.borderBottom := Js.string "none";
+          bec##.style##.borderRight := Js.string "none"
+      | `left i ->
+          bec##.style##.left := Js.string offset;
+          bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
+          bec##.style##.borderTop := Js.string "none";
+          bec##.style##.borderRight := Js.string "none"
+      | `bottom i ->
+          bec##.style##.bottom := Js.string offset;
+          bec##.style##.left := Js.string (Printf.sprintf "%ipx" i);
+          bec##.style##.borderTop := Js.string "none";
+          bec##.style##.borderLeft := Js.string "none"
+      | `right i ->
+          bec##.style##.right := Js.string offset;
+          bec##.style##.top := Js.string (Printf.sprintf "%ipx" i);
+          bec##.style##.borderBottom := Js.string "none";
+          bec##.style##.borderLeft := Js.string "none"
+    )
     arrow;
   let* () = Lwt_js_events.request_animation_frame () in
   box##.style##.opacity := Js.string "1";
   Lwt.return_unit
 
 (* Function to be called on server to display a tip *)
-let%shared
-    bubble
-      ?(a :
-         [< Html_types.div_attrib > `Class] Eliom.Content.Html.D.attrib list
-           option)
-      ?(recipient = `All)
-      ?(arrow :
-         [`left of int | `right of int | `top of int | `bottom of int]
-           Eliom.Client_value.t
-           option)
-      ?(top : int Eliom.Client_value.t option)
-      ?(left : int Eliom.Client_value.t option)
-      ?(right : int Eliom.Client_value.t option)
-      ?(bottom : int Eliom.Client_value.t option)
-      ?(height : int Eliom.Client_value.t option)
-      ?(width : int Eliom.Client_value.t option)
-      ?(parent_node :
-         [< `Body | Html_types.body_content] Eliom.Content.Html.elt option)
-      ?delay
-      ?onclose
-      ~(name : string)
-      ~(content :
-         ((unit -> unit Lwt.t)
-          -> Html_types.div_content Eliom.Content.Html.elt list Lwt.t)
-           Eliom.Client_value.t)
-      ()
-  =
+let%shared bubble
+    ?(a :
+       [< Html_types.div_attrib > `Class] Eliom.Content.Html.D.attrib list
+       option
+       )
+    ?(recipient = `All)
+    ?(arrow :
+       [`left of int | `right of int | `top of int | `bottom of int]
+       Eliom.Client_value.t
+       option
+       )
+    ?(top : int Eliom.Client_value.t option)
+    ?(left : int Eliom.Client_value.t option)
+    ?(right : int Eliom.Client_value.t option)
+    ?(bottom : int Eliom.Client_value.t option)
+    ?(height : int Eliom.Client_value.t option)
+    ?(width : int Eliom.Client_value.t option)
+    ?(parent_node :
+       [< `Body | Html_types.body_content] Eliom.Content.Html.elt option
+       )
+    ?delay
+    ?onclose
+    ~(name : string)
+    ~(content :
+       (   (unit -> unit Lwt.t)
+        -> Html_types.div_content Eliom.Content.Html.elt list Lwt.t
+       )
+       Eliom.Client_value.t
+       )
+    () =
   let a =
     (a :> Html_types.div_attrib Eliom.Content.Html.D.attrib list option)
   in
   let parent_node =
-    (parent_node
-      :> [`Body | Html_types.body_content] Eliom.Content.Html.elt option)
+    ( parent_node
+      :> [`Body | Html_types.body_content] Eliom.Content.Html.elt option
+    )
   in
   let delay : float option = delay in
   let onclose : (unit -> unit Lwt.t) Eliom.Client_value.t option = onclose in
@@ -340,13 +346,16 @@ let%shared
       else
         let _ =
           [%client
-            (Lwt.async (fun () ->
-               display_bubble ?a:~%a ?arrow:~%arrow ?top:~%top ?left:~%left
-                 ?right:~%right ?bottom:~%bottom ?height:~%height ?width:~%width
-                 ?parent_node:~%parent_node ?delay:~%delay ?onclose:~%onclose
-                 ~name:(~%name : string)
-                 ~content:~%content ())
-             : unit)]
+            ( Lwt.async (fun () ->
+                  display_bubble ?a:~%a ?arrow:~%arrow ?top:~%top ?left:~%left
+                    ?right:~%right ?bottom:~%bottom ?height:~%height
+                    ?width:~%width ?parent_node:~%parent_node ?delay:~%delay
+                    ?onclose:~%onclose
+                    ~name:(~%name : string)
+                    ~content:~%content ()
+              )
+              : unit
+            )]
         in
         Lwt.return_unit
   | _ -> Lwt.return_unit

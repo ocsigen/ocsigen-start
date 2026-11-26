@@ -67,8 +67,9 @@ let connect () =
         Lwt.catch
           (fun () -> init h)
           (fun exn ->
-             let* () = dispose h in
-             Lwt.fail exn)
+            let* () = dispose h in
+            Lwt.fail exn
+          )
       in
       Lwt.return h
   | None -> Lwt.return h
@@ -76,8 +77,9 @@ let connect () =
 let validate db =
   Lwt.catch
     (fun () ->
-       let* () = Lwt_PGOCaml.ping db in
-       Lwt.return_true)
+      let* () = Lwt_PGOCaml.ping db in
+      Lwt.return_true
+    )
     (fun _ -> Lwt.return_false)
 
 let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Resource_pool.t ref =
@@ -86,16 +88,15 @@ let pool : (string, bool) Hashtbl.t Lwt_PGOCaml.t Resource_pool.t ref =
 let set_pool_size n = pool := Resource_pool.create n ~validate ~dispose connect
 
 let init
-      ?host
-      ?port
-      ?user
-      ?password
-      ?database
-      ?unix_domain_socket_dir
-      ?pool_size
-      ?init
-      ()
-  =
+    ?host
+    ?port
+    ?user
+    ?password
+    ?database
+    ?unix_domain_socket_dir
+    ?pool_size
+    ?init
+    () =
   host_r := host;
   port_r := port;
   user_r := user;
@@ -121,27 +122,31 @@ let use_pool f =
     (function
       | Lwt_PGOCaml.Error msg as e ->
           Logs.err ~src:section (fun fmt ->
-            fmt "postgresql protocol error: %s" msg);
+              fmt "postgresql protocol error: %s" msg
+          );
           let* () = Lwt_PGOCaml.close db in
           Lwt.fail e
       | (Unix.Unix_error _ | End_of_file) as e ->
           Logs.err ~src:section (fun fmt ->
-            fmt ("unix error" ^^ "@\n%s") (Printexc.to_string e));
+              fmt ("unix error" ^^ "@\n%s") (Printexc.to_string e)
+          );
           let* () = Lwt_PGOCaml.close db in
           Lwt.fail e
       | Lwt.Canceled as e ->
           Logs.err ~src:section (fun fmt -> fmt "thread canceled");
           let* () = PGOCaml.close db in
           Lwt.fail e
-      | exc -> Lwt.reraise exc)
+      | exc -> Lwt.reraise exc
+      )
 
 let transaction_block db f =
   Lwt.catch
     (fun () ->
-       Lwt_PGOCaml.begin_work db >>= fun _ ->
-       let* r = f () in
-       let* () = Lwt_PGOCaml.commit db in
-       Lwt.return r)
+      Lwt_PGOCaml.begin_work db >>= fun _ ->
+      let* r = f () in
+      let* () = Lwt_PGOCaml.commit db in
+      Lwt.return r
+    )
     (function
       | (Lwt_PGOCaml.Error _ | Lwt.Canceled | Unix.Unix_error _ | End_of_file)
         as e ->
@@ -158,9 +163,11 @@ let transaction_block db f =
            it seems better to close the connection. *)
                     Logs.err ~src:section (fun fmt -> fmt "rollback failed");
                     Lwt_PGOCaml.close db
-                | exc -> Lwt.reraise exc)
+                | exc -> Lwt.reraise exc
+                )
           in
-          Lwt.fail e)
+          Lwt.fail e
+      )
 
 let full_transaction_block f =
   use_pool (fun db -> transaction_block db (fun () -> f db))

@@ -36,19 +36,14 @@ val get_image_width : string -> int Lwt.t
 (** Return the width of the given image. *)
 
 val resize_image :
-   src:string
-  -> ?dst:string
-  -> width:int
-  -> height:int
-  -> unit
-  -> unit Lwt.t
+  src:string -> ?dst:string -> width:int -> height:int -> unit -> unit Lwt.t
 (** Resize the given image ([src]) and save it to [dst] (default is the source
    file). If an error occurred, it raises the exception [Error_while_resizing]
    with the corresponding unix process status.
 *)
 
 val crop_image :
-   src:string
+     src:string
   -> ?dst:string
   -> ?ratio:float
   -> top:float
@@ -67,7 +62,7 @@ val crop_image :
  *)
 
 val record_image :
-   string
+     string
   -> ?ratio:float
   -> ?cropping:float * float * float * float
   -> Ocsigen.Extensions.file_info

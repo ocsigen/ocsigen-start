@@ -24,11 +24,7 @@
  *)
 
 val msg :
-   ?level:[`Err | `Msg]
-  -> ?duration:float
-  -> ?onload:bool
-  -> string
-  -> unit
+  ?level:[`Err | `Msg] -> ?duration:float -> ?onload:bool -> string -> unit
 (** Call this function either from client or server side
     to display an error message in the page.
 

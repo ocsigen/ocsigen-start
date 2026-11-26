@@ -129,10 +129,7 @@ val smart_hours_minutes : local_calendar -> string
  *)
 
 val smart_interval :
-   ?now:local_calendar
-  -> local_calendar
-  -> local_calendar
-  -> string
+  ?now:local_calendar -> local_calendar -> local_calendar -> string
 (** [smart_interval ?now start_date end_date] returns a smart description of
     [start_date] comparing to [end_date] of the year, month, day, hour and
     minutes (compared to {!smart_date_interval}, information about the hour and
@@ -149,10 +146,7 @@ val smart_interval :
  *)
 
 val smart_date_interval :
-   ?now:local_calendar
-  -> local_calendar
-  -> local_calendar
-  -> string
+  ?now:local_calendar -> local_calendar -> local_calendar -> string
 (** [smart_date_interval ?now start_date end_date] returns a smart description
     of [start_date] comparing to [end_date] of the year, month and day
     (compared to {!smart_interval}, no information about the hour and

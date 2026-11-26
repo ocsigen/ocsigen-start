@@ -30,7 +30,8 @@ type t = Types.User.t =
   ; fn : string
   ; ln : string
   ; avatar : string option
-  ; language : string option }
+  ; language : string option
+  }
 [@@deriving json]
 (** Type alias to {!Types.User.t} to allow to use [User.t]. *)
 
@@ -87,18 +88,14 @@ val avatar_of_user : Types.User.t -> string option
  *)
 
 val avatar_uri_of_avatar :
-   ?absolute_path:bool
-  -> string
-  -> Eliom.Content.Xml.uri
+  ?absolute_path:bool -> string -> Eliom.Content.Xml.uri
 (** [avatar_uri_of_avatar ?absolute_path avatar] returns the URI (absolute or
     relative) depending on the value of [absolute_path]) of the avatar
     [avatar].
  *)
 
 val avatar_uri_of_user :
-   ?absolute_path:bool
-  -> Types.User.t
-  -> Eliom.Content.Xml.uri option
+  ?absolute_path:bool -> Types.User.t -> Eliom.Content.Xml.uri option
 (** [avatar_uri_of_user user] returns the avatar URI (absolute or relative)
     depending on the value of [absolute_path]) of the avatar of the user [user].
     It returns [None] is the user [user] has no avatar.
@@ -121,9 +118,9 @@ val is_complete : Types.User.t -> bool
 
 (* Use {!Types.actionlinkkey_info} instead of each parameter? *)
 val add_actionlinkkey :
-   ?autoconnect:
-     (* by default, an action_link key is just an activation key *)
-     bool (** default: false *)
+     ?autoconnect:
+       (* by default, an action_link key is just an activation key *)
+       bool (** default: false *)
   -> ?action:[`AccountActivation | `PasswordReset | `Custom of string]
        (** default: `AccountActivation *)
   -> ?data:string (** default: empty string *)
@@ -195,7 +192,7 @@ val get_users : ?pattern:string -> unit -> Types.User.t list Lwt.t
  *)
 
 val create :
-   ?password:string
+     ?password:string
   -> ?avatar:string
   -> ?language:string
   -> ?email:string
@@ -208,7 +205,7 @@ val create :
  *)
 
 val update :
-   ?password:string
+     ?password:string
   -> ?avatar:string
   -> ?language:string
   -> firstname:string
@@ -263,8 +260,7 @@ val all : ?limit:int64 -> unit -> string list Lwt.t
 (** Get [limit] (default: 10) emails from the preregister collections. *)
 
 val set_pwd_crypt_fun :
-   (string -> string) * (Types.User.id -> string -> string -> bool)
-  -> unit
+  (string -> string) * (Types.User.id -> string -> string -> bool) -> unit
 (** By default, passwords are encrypted using Bcrypt.
     You can customize this by calling this function
     with a pair of function (crypt and check password).
