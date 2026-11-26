@@ -32,8 +32,7 @@ to relative links — is declared in [`doc/wodoc`](wodoc) and produced by a sing
 (from the ref you want to document) in a switch that also has `wodoc`:
 
 ```
-opam install .                       # the version to document (NOT --with-doc:
-                                     # server+client share module names -> @doc collides)
+opam install .                       # the version to document
 opam install wodoc                   # the odoc driver / theming
 wodoc build --config doc/wodoc --label dev --out _doc-site/dev \
   --menu https://ocsigen.org/doc/menu.html

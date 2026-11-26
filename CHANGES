@@ -88,6 +88,9 @@
 * Os.Services: the services of phone connectivity are marked with
   Eliom.Service.allow_unregistered, so that Eliom 13 does not warn about
   them when an application does not enable phone connectivity.
+* opam: `opam install --with-doc` works again. The opam build no longer
+  runs dune's @doc, which fails because the server and client libraries
+  define the same modules.
 
 ===== 8.0.0 (2026-02) =====
 * Compatibility with Eliom 12, js_of_ocaml 6.3, OCaml 5.3 and 5.4
