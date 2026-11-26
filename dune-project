@@ -37,7 +37,8 @@
  (depends
   (ocaml
    (>= "5.1"))
-  ocsigen-dune-rules ; TODO: Strict version constraint
+  (ocsigen-dune-rules
+   (= "1.0.0"))
   (pgocaml
    (>= "4.0"))
   (pgocaml_ppx
@@ -45,17 +46,19 @@
   (safepass
    (>= "3.0"))
   (ocsigen-i18n
-   (>= "6.0~"))
+   (and
+    (>= "6.0.0")
+    (< "7.0.0")))
   (eliom
    (and
-    (>= "13.0~")
-    (< "14.0")))
+    (>= "13.0.0")
+    (< "14.0.0")))
   (ocsigen-toolkit
    (and
-    (>= "5.0~")
-    (< "6.0")))
+    (>= "5.0.0")
+    (< "6.0.0")))
   (ocsigen-ppx-rpc
-   (>= "2.0~"))
+   (>= "2.0"))
   (yojson
    (>= "1.6.0"))
   (resource-pooling
@@ -64,7 +67,7 @@
     (< "2.0")))
   cohttp-lwt-unix
   (js_of_ocaml
-   (>= "6.4.0"))
+   (>= "6.4.1"))
   (re
    (>= "1.7.2"))
   (ocsipersist-pgsql-config

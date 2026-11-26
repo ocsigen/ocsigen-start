@@ -60,10 +60,10 @@ jobs:
       # The bottleneck of this job is compiling the dependency tree (incl.
       # wasm_of_ocaml) plus wodoc and odoc from source; setup-ocaml only caches the
       # base switch (the compiler), so they recompiled on every push. Cache the
-      # whole _opam switch keyed on ocsigen-start.opam (the dep set) and wodoc's HEAD
-      # commit. On a cache hit the deps and wodoc are restored and only ocsigen-start
-      # itself is (re)built below; the key changes -- and the deps/wodoc rebuild
-      # once -- only when ocsigen-start.opam or wodoc move.
+      # whole _opam switch keyed on the opam files (the dep set), this workflow
+      # (its pins) and wodoc's HEAD commit. On a cache hit the deps and wodoc are
+      # restored and only ocsigen-start itself is (re)built below; the key
+      # changes -- and the deps/wodoc rebuild once -- only when one of them moves.
       - name: Resolve wodoc HEAD commit
         id: wodoc
         run: echo "sha=$(git ls-remote https://github.com/ocsigen/wodoc.git HEAD | cut -f1)" >> "$GITHUB_OUTPUT"
@@ -73,19 +73,14 @@ jobs:
         uses: actions/cache@v6
         with:
           path: _opam
-          key: opam-switch-${{ runner.os }}-ocaml5.4.0-${{ hashFiles('*.opam') }}-wodoc-${{ steps.wodoc.outputs.sha }}
+          key: opam-switch-${{ runner.os }}-ocaml5.4.0-${{ hashFiles('*.opam', '.github/workflows/doc.yml') }}-wodoc-${{ steps.wodoc.outputs.sha }}
 
       - name: Install dependencies and wodoc
         # Cache miss only: build the dependency tree and wodoc once, then re-cache.
         if: steps.switch-cache.outputs.cache-hit != 'true'
         run: |
-          # Same pins as build.yml (unreleased modernized stack on its
-          # branches).
-          opam pin -yn git+https://github.com/ocsigen/eliom#master
-          opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#master
-          opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#main
-          opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#main
-          opam pin -yn git+https://github.com/ocsigen/ocsigen-i18n#master
+          # Same pin as build.yml (Ocsigen Toolkit 5.0.0, not on opam yet).
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#5.0.0
           opam install . --deps-only --with-doc
           # wodoc themes the pages. Its opam pin-depends pulls odoc / odoc-driver
           # from the balat/odoc fork (the cross-library link fix, not yet upstream),

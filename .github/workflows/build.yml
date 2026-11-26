@@ -73,14 +73,9 @@ jobs:
           echo "$(brew --prefix postgresql@17)/bin" >> "$GITHUB_PATH"
           echo "PKG_CONFIG_PATH=$(brew --prefix libpq)/lib/pkgconfig:${PKG_CONFIG_PATH:-}" >> "$GITHUB_ENV"
 
-      # The rest of the modernized stack is unreleased: pin the default
-      # branches, or the development branch where not merged yet.
-      - run: |
-          opam pin -yn git+https://github.com/ocsigen/eliom#master
-          opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#master
-          opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#main
-          opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#main
-          opam pin -yn git+https://github.com/ocsigen/ocsigen-i18n#master
+      # Ocsigen Toolkit 5.0.0 is tagged but not on opam yet
+      # (ocaml/opam-repository#31337).
+      - run: opam pin -yn git+https://github.com/ocsigen/ocsigen-toolkit#5.0.0
 
       # The version comes from the opam file: the generated project requires
       # ocsigen-start >= 9.0~.

@@ -78,8 +78,9 @@
   Makefiles.
 * Dependencies: OCaml >= 5.1, Eliom 13, Ocsigen Toolkit 5,
   ocsigen-i18n 6, ocsigen-ppx-rpc 2, ocsipersist-pgsql-config 3.1,
-  js_of_ocaml >= 6.4. conf-postgresql replaces the depexts on
-  PostgreSQL.
+  js_of_ocaml >= 6.4.1, and exactly ocsigen-dune-rules 1.0.0, since
+  each new version changes the generated rules. conf-postgresql
+  replaces the depexts on PostgreSQL.
 * Documentation: the API documentation and the manual are written
   with odoc, and published on ocsigen.org and ocaml.org.
 * Os.Email: the default email-sending function now pipes an RFC-2822
