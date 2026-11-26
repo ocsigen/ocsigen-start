@@ -2,3 +2,5 @@
 b6252395087ba704f5ffba6991cdeabb44a2cc8d
 # Switch to the ocsigen profile
 af5f4d7f832b7f7f9af4ab379c95ad49635b88b0
+# Template: use OCamlformat 0.30.0 with the ocsigen profile
+c147792e632d91d07b36b707b0652a74cf9b3739
