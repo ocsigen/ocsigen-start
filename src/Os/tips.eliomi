@@ -23,11 +23,11 @@
 [%%shared.start]
 
 val bubble :
-   ?a:[< Html_types.div_attrib > `Class] Eliom.Content.Html.D.attrib list
+     ?a:[< Html_types.div_attrib > `Class] Eliom.Content.Html.D.attrib list
   -> ?recipient:[> `All | `Connected | `Not_connected]
   -> ?arrow:
        [`left of int | `right of int | `top of int | `bottom of int]
-         Eliom.Client_value.t
+       Eliom.Client_value.t
   -> ?top:int Eliom.Client_value.t
   -> ?left:int Eliom.Client_value.t
   -> ?right:int Eliom.Client_value.t
@@ -39,9 +39,10 @@ val bubble :
   -> ?onclose:(unit -> unit Lwt.t) Eliom.Client_value.t
   -> name:string
   -> content:
-       ((unit -> unit Lwt.t)
-        -> Html_types.div_content Eliom.Content.Html.elt list Lwt.t)
-         Eliom.Client_value.t
+       (   (unit -> unit Lwt.t)
+        -> Html_types.div_content Eliom.Content.Html.elt list Lwt.t
+       )
+       Eliom.Client_value.t
   -> unit
   -> unit Lwt.t
 (** Display tips in pages, as a speech bubble.
@@ -67,13 +68,14 @@ val bubble :
 *)
 
 val block :
-   ?a:[< Html_types.div_attrib > `Class] Eliom.Content.Html.D.attrib list
+     ?a:[< Html_types.div_attrib > `Class] Eliom.Content.Html.D.attrib list
   -> ?recipient:[> `All | `Connected | `Not_connected]
   -> ?onclose:(unit -> unit Lwt.t) Eliom.Client_value.t
   -> name:string
   -> content:
-       ((unit -> unit Lwt.t) Eliom.Client_value.t
-        -> Html_types.div_content Eliom.Content.Html.elt list Lwt.t)
+       (   (unit -> unit Lwt.t) Eliom.Client_value.t
+        -> Html_types.div_content Eliom.Content.Html.elt list Lwt.t
+       )
   -> unit
   -> [> `Div] Eliom.Content.Html.elt option Lwt.t
 (** Return a box containing a tip, to be inserted where you want in a page.
@@ -100,17 +102,18 @@ val tip_seen : string -> bool Lwt.t
 
 val reset_tips_service :
   ( unit
-    , unit
-    , Eliom.Service.post
-    , Eliom.Service.non_att
-    , Eliom.Service.co
-    , Eliom.Service.non_ext
-    , Eliom.Service.reg
-    , [`WithoutSuffix]
-    , unit
-    , unit
-    , Eliom.Service.non_ocaml )
-    Eliom.Service.t
+  , unit
+  , Eliom.Service.post
+  , Eliom.Service.non_att
+  , Eliom.Service.co
+  , Eliom.Service.non_ext
+  , Eliom.Service.reg
+  , [`WithoutSuffix]
+  , unit
+  , unit
+  , Eliom.Service.non_ocaml
+  )
+  Eliom.Service.t
 (** A non-attached service that will reset tips.
     Call it with [Eliom.Client.exit_to] to restart the application and
     see tips again. *)

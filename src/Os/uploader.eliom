@@ -45,7 +45,9 @@ let%server resize_image ~src ?(dst = src) ~width ~height () =
          ; "white"
          ; "-flatten"
          ; src
-         ; "jpg:" ^ dst |] )
+         ; "jpg:" ^ dst
+        |]
+      )
   in
   match resize_unix_result with
   | Unix.WEXITED status_code when status_code = 0 -> Lwt.return_unit
@@ -87,7 +89,9 @@ let%server crop_image ~src ?(dst = src) ?ratio ~top ~right ~bottom ~left () =
          ; Printf.sprintf "%dx%d+%d+%d" width_cropped height_cropped left_px
              top_px
          ; src
-         ; dst |] )
+         ; dst
+        |]
+      )
   in
   match crop_unix_result with
   | Unix.WEXITED status_code when status_code = 0 ->

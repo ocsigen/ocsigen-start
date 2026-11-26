@@ -25,7 +25,7 @@ open Resource_pooling
 module PGOCaml : PGOCaml_generic.PGOCAML_GENERIC with type 'a monad = 'a Lwt.t
 
 val init :
-   ?host:string
+     ?host:string
   -> ?port:int
   -> ?user:string
   -> ?password:string
@@ -41,8 +41,7 @@ val init :
 *)
 
 val full_transaction_block :
-   (PGOCaml.pa_pg_data PGOCaml.t -> 'a Lwt.t)
-  -> 'a Lwt.t
+  (PGOCaml.pa_pg_data PGOCaml.t -> 'a Lwt.t) -> 'a Lwt.t
 (** [full_transaction_block f] executes function [f] within a database
     transaction. The argument of [f] is a PGOCaml database handle. *)
 

@@ -27,7 +27,7 @@ type content
 (** An abstract type describing the content of a page *)
 
 val content :
-   ?html_a:Html_types.html_attrib Eliom.Content.Html.attrib list
+     ?html_a:Html_types.html_attrib Eliom.Content.Html.attrib list
   -> ?a:Html_types.body_attrib Eliom.Content.Html.attrib list
   -> ?title:string
   -> ?head:[< Html_types.head_content_fun] Eliom.Content.Html.elt list
@@ -67,8 +67,7 @@ module type PAGE = sig
       Os will automatically prepend the suffix ["css/"] as directory.  *)
 
   val other_head :
-     unit
-    -> Html_types.head_content_fun Eliom.Content.Html.elt list
+    unit -> Html_types.head_content_fun Eliom.Content.Html.elt list
   (** [other_head] is a list of custom elements to add in the head section.
       It can be used to add <meta> elements, for example. *)
 
@@ -81,11 +80,7 @@ module type PAGE = sig
    *)
 
   val default_connected_error_page :
-     Types.User.id option
-    -> 'a
-    -> 'b
-    -> exn
-    -> content Lwt.t
+    Types.User.id option -> 'a -> 'b -> exn -> content Lwt.t
   (** [default_connected_error_page userid_o get_param post_param exn] is the
       default error page for connected pages.
    *)
@@ -94,10 +89,7 @@ module type PAGE = sig
   (** [default_predicate get_param post_param] is the default predicate. *)
 
   val default_connected_predicate :
-     Types.User.id option
-    -> 'a
-    -> 'b
-    -> bool Lwt.t
+    Types.User.id option -> 'a -> 'b -> bool Lwt.t
   (** [default_connected_predicate userid_o get_param post_param] is the default
       predicate for connected pages.
    *)
@@ -119,7 +111,7 @@ module Make (_ : PAGE) : sig
       for this app *)
 
   val page :
-     ?predicate:('a -> 'b -> bool Lwt.t)
+       ?predicate:('a -> 'b -> bool Lwt.t)
     -> ?fallback:('a -> 'b -> exn -> content Lwt.t)
     -> ('a -> 'b -> content Lwt.t)
     -> 'a
@@ -149,7 +141,7 @@ module Make (_ : PAGE) : sig
 
   module Opt : sig
     val connected_page :
-       ?allow:Types.Group.t list
+         ?allow:Types.Group.t list
       -> ?deny:Types.Group.t list
       -> ?predicate:(Types.User.id option -> 'a -> 'b -> bool Lwt.t)
       -> ?fallback:(Types.User.id option -> 'a -> 'b -> exn -> content Lwt.t)
@@ -164,7 +156,7 @@ module Make (_ : PAGE) : sig
   end
 
   val connected_page :
-     ?allow:Types.Group.t list
+       ?allow:Types.Group.t list
     -> ?deny:Types.Group.t list
     -> ?predicate:(Types.User.id option -> 'a -> 'b -> bool Lwt.t)
     -> ?fallback:(Types.User.id option -> 'a -> 'b -> exn -> content Lwt.t)

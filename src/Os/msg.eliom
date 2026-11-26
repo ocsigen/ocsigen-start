@@ -34,28 +34,28 @@ let%client msgbox () =
 let%server default_duration = ref 4.
 let%server set_default_duration d = default_duration := d
 
-let%shared
-    msg
-      ?(level = `Err)
-      ?(duration = ~%(!default_duration))
-      ?(onload = false)
-      (message : string)
-  =
+let%shared msg
+    ?(level = `Err)
+    ?(duration = ~%(!default_duration))
+    ?(onload = false)
+    (message : string) =
   ignore
     [%client
-      (let c = if ~%level = `Msg then [] else ["os-err"] in
-       let message_dom = To_dom.of_p (D.p ~a:[a_class c] [txt ~%message]) in
-       Lwt.async (fun () ->
-         let* () =
-           if ~%onload then Eliom.Client.lwt_onload () else Lwt.return_unit
-         in
-         let msgbox = msgbox () in
-         Logs.info (fun fmt -> fmt "%s" ~%message);
-         Dom.appendChild msgbox message_dom;
-         let* () = Js_of_ocaml_lwt.Lwt_js.sleep ~%duration in
-         Dom.removeChild msgbox message_dom;
-         Lwt.return_unit)
-       : unit)]
+      ( let c = if ~%level = `Msg then [] else ["os-err"] in
+        let message_dom = To_dom.of_p (D.p ~a:[a_class c] [txt ~%message]) in
+        Lwt.async (fun () ->
+            let* () =
+              if ~%onload then Eliom.Client.lwt_onload () else Lwt.return_unit
+            in
+            let msgbox = msgbox () in
+            Logs.info (fun fmt -> fmt "%s" ~%message);
+            Dom.appendChild msgbox message_dom;
+            let* () = Js_of_ocaml_lwt.Lwt_js.sleep ~%duration in
+            Dom.removeChild msgbox message_dom;
+            Lwt.return_unit
+        )
+        : unit
+      )]
 
 let action_link_key_created =
   Eliom.Reference.Volatile.eref ~scope:Eliom.Common.request_scope false

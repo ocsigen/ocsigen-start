@@ -59,41 +59,47 @@ let default_send ?url ~from_addr ~to_addrs ~subject content =
   in
   let dump_to_stderr () =
     Logs.warn ~src:log_section (fun fmt ->
-      fmt
-        ("mailer %S not found; dumping email to stderr so the \
+        fmt
+          ("mailer %S not found; dumping email to stderr so the \
           application remains usable. Configure a sendmail-compatible \
           MTA, or call [Os.Email.set_mailer] / [Os.Email.set_send].@\n\
           ---8<--- begin email ---8<---@\n\
           %s\
           ---8<--- end email ---8<---" [@ocamlformat "disable"])
-        !mailer message)
+          !mailer message
+    )
   in
   Lwt.catch
     (fun () ->
-       let cmd = "", [|!mailer; "-t"; "-i"|] in
-       Lwt_process.with_process_out cmd (fun proc ->
-         let* () = Lwt_io.write proc#stdin message in
-         let* status = proc#close in
-         match status with
-         | Unix.WEXITED 0 -> Lwt.return_unit
-         | Unix.WEXITED 127 -> dump_to_stderr (); Lwt.return_unit
-         | _ ->
-             let descr =
-               match status with
-               | Unix.WEXITED n -> Printf.sprintf "exited with code %d" n
-               | Unix.WSIGNALED s -> Printf.sprintf "killed by signal %d" s
-               | Unix.WSTOPPED s -> Printf.sprintf "stopped by signal %d" s
-             in
-             Logs.err ~src:log_section (fun fmt ->
-               fmt "%s %s for %s" !mailer descr to_header);
-             Lwt.return_unit))
+      let cmd = "", [|!mailer; "-t"; "-i"|] in
+      Lwt_process.with_process_out cmd (fun proc ->
+          let* () = Lwt_io.write proc#stdin message in
+          let* status = proc#close in
+          match status with
+          | Unix.WEXITED 0 -> Lwt.return_unit
+          | Unix.WEXITED 127 -> dump_to_stderr (); Lwt.return_unit
+          | _ ->
+              let descr =
+                match status with
+                | Unix.WEXITED n -> Printf.sprintf "exited with code %d" n
+                | Unix.WSIGNALED s -> Printf.sprintf "killed by signal %d" s
+                | Unix.WSTOPPED s -> Printf.sprintf "stopped by signal %d" s
+              in
+              Logs.err ~src:log_section (fun fmt ->
+                  fmt "%s %s for %s" !mailer descr to_header
+              );
+              Lwt.return_unit
+      )
+    )
     (function
       | Unix.Unix_error (Unix.ENOENT, _, _) ->
           dump_to_stderr (); Lwt.return_unit
       | exn ->
           Logs.err ~src:log_section (fun fmt ->
-            fmt "send exception: %s" (Printexc.to_string exn));
-          Lwt.return_unit)
+              fmt "send exception: %s" (Printexc.to_string exn)
+          );
+          Lwt.return_unit
+      )
 
 let send_ref = ref default_send
 

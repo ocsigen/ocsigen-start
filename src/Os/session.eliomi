@@ -92,7 +92,7 @@ val connect : ?expire:bool -> Types.User.id -> unit Lwt.t
 *)
 
 val disconnect_all :
-   ?sitedata:Eliom.Common.sitedata
+     ?sitedata:Eliom.Common.sitedata
   -> ?userid:Types.User.id
   -> ?user_indep:bool
   -> ?with_restart:bool
@@ -133,7 +133,7 @@ val disconnect : unit -> unit Lwt.t
 *)
 
 val connected_fun :
-   ?allow:Types.Group.t list
+     ?allow:Types.Group.t list
   -> ?deny:Types.Group.t list
   -> ?deny_fun:(Types.User.id option -> 'c Lwt.t)
   -> (Types.User.id -> 'a -> 'b -> 'c Lwt.t)
@@ -165,7 +165,7 @@ val connected_fun :
 *)
 
 val connected_rpc :
-   ?allow:Types.Group.t list
+     ?allow:Types.Group.t list
   -> ?deny:Types.Group.t list
   -> ?deny_fun:(Types.User.id option -> 'b Lwt.t)
   -> (Types.User.id -> 'a -> 'b Lwt.t)
@@ -174,7 +174,7 @@ val connected_rpc :
 (** Wrapper for server functions (see {!connected_fun}). *)
 
 val connected_wrapper :
-   ?allow:Types.Group.t list
+     ?allow:Types.Group.t list
   -> ?deny:Types.Group.t list
   -> ?deny_fun:(Types.User.id option -> 'b Lwt.t)
   -> ?force_unconnected:bool
@@ -187,7 +187,7 @@ val connected_wrapper :
 
 module Opt : sig
   val connected_fun :
-     ?allow:Types.Group.t list
+       ?allow:Types.Group.t list
     -> ?deny:Types.Group.t list
     -> ?deny_fun:(Types.User.id option -> 'c Lwt.t)
     -> ?force_unconnected:bool
@@ -201,7 +201,7 @@ module Opt : sig
   *)
 
   val connected_rpc :
-     ?allow:Types.Group.t list
+       ?allow:Types.Group.t list
     -> ?deny:Types.Group.t list
     -> ?deny_fun:(Types.User.id option -> 'b Lwt.t)
     -> ?force_unconnected:bool
@@ -224,5 +224,4 @@ val get_current_userid_o : (unit -> Types.User.id option) ref
 [%%server.start]
 
 val set_warn_connection_change :
-   (([`Session], [`Data]) Eliom.State.Ext.state -> unit)
-  -> unit
+  (([`Session], [`Data]) Eliom.State.Ext.state -> unit) -> unit

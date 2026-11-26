@@ -33,10 +33,7 @@ module type S = sig
   include Eliom.Notif.S with type identity = User.id option
 
   val unlisten_user :
-     ?sitedata:Eliom.Common.sitedata
-    -> userid:User.id
-    -> key
-    -> unit
+    ?sitedata:Eliom.Common.sitedata -> userid:User.id -> key -> unit
   (** Make a user stop listening on data [key]. This function will work as
       expected without a value supplied for [sitedata] if called during a
       request or initialisation. Otherwise a value needs to be supplied. *)
@@ -60,9 +57,9 @@ end
 (** see [Eliom.Notif.Make] *)
 module Make (A : ARG) :
   S
-  with type key = A.key
-   and type server_notif = A.server_notif
-   and type client_notif = A.client_notif
+    with type key = A.key
+     and type server_notif = A.server_notif
+     and type client_notif = A.client_notif
 
 (** [ARG_SIMPLE] is for making [Make_Simple].
     It is a simplified version of [Eliom.Notif.ARG_SIMPLE] *)
@@ -77,6 +74,6 @@ end
 *)
 module Make_Simple (A : ARG_SIMPLE) :
   S
-  with type key = A.key
-   and type server_notif = A.notification
-   and type client_notif = A.notification
+    with type key = A.key
+     and type server_notif = A.notification
+     and type client_notif = A.notification

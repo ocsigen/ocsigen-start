@@ -449,9 +449,5 @@ module Response : sig
 end
 
 val send :
-   string
-  -> Notification.t
-  -> ?data:Data.t
-  -> Options.t
-  -> Response.t Lwt.t
+  string -> Notification.t -> ?data:Data.t -> Options.t -> Response.t Lwt.t
 (** [send server_key notification options]  *)

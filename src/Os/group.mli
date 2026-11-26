@@ -67,21 +67,17 @@ val group_of_name : string -> Types.Group.t Lwt.t
 *)
 
 val add_user_in_group :
-   group:Types.Group.t
-  -> userid:Types.User.id
-  -> unit Lwt.t
+  group:Types.Group.t -> userid:Types.User.id -> unit Lwt.t
 (** [add_user_in_group ~group ~userid] adds the user with ID [userid] to
     [group]. *)
 
 val remove_user_in_group :
-   group:Types.Group.t
-  -> userid:Types.User.id
-  -> unit Lwt.t
+  group:Types.Group.t -> userid:Types.User.id -> unit Lwt.t
 (** [remove_user_in_group ~group ~userid] removes the user with ID [userid] from
     [group]. *)
 
 val in_group :
-   ?dbh:Db.PGOCaml.pa_pg_data Db.PGOCaml.t
+     ?dbh:Db.PGOCaml.pa_pg_data Db.PGOCaml.t
   -> group:Types.Group.t
   -> userid:Types.User.id
   -> unit

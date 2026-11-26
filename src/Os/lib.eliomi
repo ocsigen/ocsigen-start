@@ -61,7 +61,7 @@ val string_repeat : string -> int -> string
 val string_filter : (char -> bool) -> string -> string
 
 val lwt_bound_input_enter :
-   ?a:[< Html_types.input_attrib] Eliom.Content.Html.attrib list
+     ?a:[< Html_types.input_attrib] Eliom.Content.Html.attrib list
   -> ?button:[< `Button | `Input] Eliom.Content.Html.elt
   -> ?validate:(string -> bool) Eliom.Client_value.t
   -> (string -> unit Lwt.t) Eliom.Client_value.t
@@ -70,7 +70,7 @@ val lwt_bound_input_enter :
     i.e., when the user submits the input, we call [f]. *)
 
 val lwt_bind_input_enter :
-   ?validate:(string -> bool) Eliom.Client_value.t
+     ?validate:(string -> bool) Eliom.Client_value.t
   -> ?button:[< `Button | `Input] Eliom.Content.Html.elt
   -> [`Input] Eliom.Content.Html.elt
   -> (string -> unit Lwt.t) Eliom.Client_value.t
@@ -83,9 +83,7 @@ val lwt_bind_input_enter :
 (** This module contains functions about HTTP request. *)
 module Http : sig
   val string_of_stream :
-     ?len:int
-    -> string Ocsigen_base.Ocsigen_stream.t
-    -> string Lwt.t
+    ?len:int -> string Ocsigen_base.Ocsigen_stream.t -> string Lwt.t
   (** [string_of_stream ?len stream] creates a string of maximum length [len]
         (default is [16384]) from the stream [stream].
      *)

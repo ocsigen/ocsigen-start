@@ -30,38 +30,42 @@ let%client check_password_confirmation ~password ~confirmation =
   let password_dom = To_dom.of_input password in
   let confirmation_dom = To_dom.of_input confirmation in
   Lwt_js_events.async (fun () ->
-    Lwt_js_events.inputs confirmation_dom (fun _ _ ->
-      ignore
-        (if
-           Js.to_string password_dom##.value
-           <> Js.to_string confirmation_dom##.value
-         then
-           (Js.Unsafe.coerce confirmation_dom)##(setCustomValidity
-                                                   "Passwords do not match")
-         else (Js.Unsafe.coerce confirmation_dom)##(setCustomValidity ""));
-      Lwt.return_unit))
+      Lwt_js_events.inputs confirmation_dom (fun _ _ ->
+          ignore
+            ( if
+                Js.to_string password_dom##.value
+                <> Js.to_string confirmation_dom##.value
+              then
+                (Js.Unsafe.coerce confirmation_dom)##(setCustomValidity
+                                                        "Passwords do not match"
+                                                     )
+              else (Js.Unsafe.coerce confirmation_dom)##(setCustomValidity "")
+            );
+          Lwt.return_unit
+      )
+  )
 
-let%shared
-    generic_email_form
-      ?a
-      ?label
-      ?(a_placeholder_email = "e-mail address")
-      ?(text = "Send")
-      ?(email = "")
-      ~service
-      ()
-  =
+let%shared generic_email_form
+    ?a
+    ?label
+    ?(a_placeholder_email = "e-mail address")
+    ?(text = "Send")
+    ?(email = "")
+    ~service
+    () =
   D.Form.post_form ?a ~service
     (fun name ->
-       let l =
-         [ D.Form.input
-             ~a:[a_placeholder a_placeholder_email]
-             ~input_type:`Email ~value:email ~name D.Form.string
-         ; D.Form.input
-             ~a:[a_class ["button"]]
-             ~input_type:`Submit ~value:text D.Form.string ]
-       in
-       match label with None -> l | Some lab -> F.label [txt lab] :: l)
+      let l =
+        [ D.Form.input
+            ~a:[a_placeholder a_placeholder_email]
+            ~input_type:`Email ~value:email ~name D.Form.string
+        ; D.Form.input
+            ~a:[a_class ["button"]]
+            ~input_type:`Submit ~value:text D.Form.string
+        ]
+      in
+      match label with None -> l | Some lab -> F.label [txt lab] :: l
+    )
     ()
 
 let%client form_override_phone phone_input form =
@@ -78,7 +82,8 @@ let%client form_override_phone phone_input form =
          (Js.Unsafe.coerce form)##.keepmeloggedin##.checked |> Js.to_bool
        in
        Dom.preventDefault ev;
-       Connect_phone.connect ~keepmeloggedin ~password number)
+       Connect_phone.connect ~keepmeloggedin ~password number
+      )
       (function
         | `Login_ok -> Lib.reload ()
         | `Wrong_password ->
@@ -89,68 +94,72 @@ let%client form_override_phone phone_input form =
             Lwt.return_unit
         | `Password_not_set ->
             Msg.msg ~level:`Err "User password not set";
-            Lwt.return_unit)
+            Lwt.return_unit
+        )
   else Lwt.return_unit
 
-let%shared
-    connect_form
-      ?(a_placeholder_email = "Your email")
-      ?(a_placeholder_phone = "Or your phone")
-      ?(a_placeholder_pwd = "Your password")
-      ?(text_keep_me_logged_in = "keep me logged in")
-      ?(text_sign_in = "Sign in")
-      ?a
-      ?(email = "")
-      ()
-  =
+let%shared connect_form
+    ?(a_placeholder_email = "Your email")
+    ?(a_placeholder_phone = "Or your phone")
+    ?(a_placeholder_pwd = "Your password")
+    ?(text_keep_me_logged_in = "keep me logged in")
+    ?(text_sign_in = "Sign in")
+    ?a
+    ?(email = "")
+    () =
   let phone_input =
     if !enable_phone
     then
-      Some
-        (D.input () ~a:[a_placeholder a_placeholder_phone; a_input_type `Tel])
+      Some (D.input () ~a:[a_placeholder a_placeholder_phone; a_input_type `Tel])
     else None
   in
   let form =
     D.Form.post_form ?a ~service:Services.connect_service
       (fun ((login, password), keepmeloggedin) ->
-         let pwd_input =
-           D.Form.input
-             ~a:[a_placeholder a_placeholder_pwd]
-             ~name:password ~input_type:`Password D.Form.string
-         in
-         let l =
-           [ Ot.Form.password_toggle pwd_input
-           ; label
-               [ D.Form.bool_checkbox_one
-                   ~a:[a_checked ()]
-                   ~name:keepmeloggedin ()
-               ; txt text_keep_me_logged_in ]
-           ; D.Form.input
-               ~a:[a_class ["button"; "os-sign-in"]]
-               ~input_type:`Submit ~value:text_sign_in D.Form.string ]
-         and mail_input =
-           D.Form.input
-             ~a:[a_placeholder a_placeholder_email]
-             ~name:login ~input_type:`Email ~value:email D.Form.string
-         in
-         match phone_input with
-         | Some phone_input -> mail_input :: phone_input :: l
-         | None -> mail_input :: l)
+        let pwd_input =
+          D.Form.input
+            ~a:[a_placeholder a_placeholder_pwd]
+            ~name:password ~input_type:`Password D.Form.string
+        in
+        let l =
+          [ Ot.Form.password_toggle pwd_input
+          ; label
+              [ D.Form.bool_checkbox_one
+                  ~a:[a_checked ()]
+                  ~name:keepmeloggedin ()
+              ; txt text_keep_me_logged_in
+              ]
+          ; D.Form.input
+              ~a:[a_class ["button"; "os-sign-in"]]
+              ~input_type:`Submit ~value:text_sign_in D.Form.string
+          ]
+        and mail_input =
+          D.Form.input
+            ~a:[a_placeholder a_placeholder_email]
+            ~name:login ~input_type:`Email ~value:email D.Form.string
+        in
+        match phone_input with
+        | Some phone_input -> mail_input :: phone_input :: l
+        | None -> mail_input :: l
+      )
       ()
   in
-  (match phone_input with
+  ( match phone_input with
   | Some phone_input ->
       ignore @@ [%client (form_override_phone ~%phone_input ~%form : unit)]
-  | None -> ());
+  | None -> ()
+  );
   form
 
 let%shared disconnect_button ?a ?(text_logout = "Logout") () =
   D.Form.post_form ?a ~service:Services.disconnect_service
     (fun _ ->
-       [ D.Form.button_no_value
-           ~a:[a_class ["button"]]
-           ~button_type:`Submit
-           [Icons.F.signout (); txt text_logout] ])
+      [ D.Form.button_no_value
+          ~a:[a_class ["button"]]
+          ~button_type:`Submit
+          [Icons.F.signout (); txt text_logout]
+      ]
+    )
     ()
 
 let%shared sign_up_form ?a ?a_placeholder_email ?text ?email () =
@@ -178,48 +187,49 @@ let%client forgot_password_phone_input ~placeholder label =
   phone_input ~placeholder ~label
     (Eliom.Client.change_page ~service:Services.confirm_code_remind_service ())
 
-let%shared
-    information_form
-      ?a
-      ?(a_placeholder_password = "Your password")
-      ?(a_placeholder_retype_password = "Retype password")
-      ?(a_placeholder_firstname = "Your first name")
-      ?(a_placeholder_lastname = "Your last name")
-      ?(text_submit = "Submit")
-      ?(firstname = "")
-      ?(lastname = "")
-      ?(password1 = "")
-      ?(password2 = "")
-      ()
-  =
+let%shared information_form
+    ?a
+    ?(a_placeholder_password = "Your password")
+    ?(a_placeholder_retype_password = "Retype password")
+    ?(a_placeholder_firstname = "Your first name")
+    ?(a_placeholder_lastname = "Your last name")
+    ?(text_submit = "Submit")
+    ?(firstname = "")
+    ?(lastname = "")
+    ?(password1 = "")
+    ?(password2 = "")
+    () =
   D.Form.post_form ?a ~service:Services.set_personal_data_service
     (fun ((fname, lname), (passwordn1, passwordn2)) ->
-       let pass1 =
-         D.Form.input
-           ~a:[a_placeholder a_placeholder_password]
-           ~name:passwordn1 ~value:password1 ~input_type:`Password D.Form.string
-       in
-       let pass2 =
-         D.Form.input
-           ~a:[a_placeholder a_placeholder_retype_password]
-           ~name:passwordn2 ~value:password2 ~input_type:`Password D.Form.string
-       in
-       let _ =
-         [%client
-           (check_password_confirmation ~password:~%pass1 ~confirmation:~%pass2
-            : unit)]
-       in
-       [ D.Form.input
-           ~a:[a_placeholder a_placeholder_firstname]
-           ~name:fname ~value:firstname ~input_type:`Text D.Form.string
-       ; D.Form.input
-           ~a:[a_placeholder a_placeholder_lastname]
-           ~name:lname ~value:lastname ~input_type:`Text D.Form.string
-       ; pass1
-       ; pass2
-       ; D.Form.input
-           ~a:[a_class ["button"]]
-           ~input_type:`Submit ~value:text_submit D.Form.string ])
+      let pass1 =
+        D.Form.input
+          ~a:[a_placeholder a_placeholder_password]
+          ~name:passwordn1 ~value:password1 ~input_type:`Password D.Form.string
+      in
+      let pass2 =
+        D.Form.input
+          ~a:[a_placeholder a_placeholder_retype_password]
+          ~name:passwordn2 ~value:password2 ~input_type:`Password D.Form.string
+      in
+      let _ =
+        [%client
+          ( check_password_confirmation ~password:~%pass1 ~confirmation:~%pass2
+            : unit
+          )]
+      in
+      [ D.Form.input
+          ~a:[a_placeholder a_placeholder_firstname]
+          ~name:fname ~value:firstname ~input_type:`Text D.Form.string
+      ; D.Form.input
+          ~a:[a_placeholder a_placeholder_lastname]
+          ~name:lname ~value:lastname ~input_type:`Text D.Form.string
+      ; pass1
+      ; pass2
+      ; D.Form.input
+          ~a:[a_class ["button"]]
+          ~input_type:`Submit ~value:text_submit D.Form.string
+      ]
+    )
     ()
 
 let%shared preregister_form ?a label =
@@ -227,7 +237,8 @@ let%shared preregister_form ?a label =
 
 let%shared home_button ?a () =
   D.Form.get_form ?a ~service:Services.main_service (fun _ ->
-    [D.Form.input ~input_type:`Submit ~value:"home" D.Form.string])
+      [D.Form.input ~input_type:`Submit ~value:"home" D.Form.string]
+  )
 
 let%shared avatar user =
   match User.avatar_uri_of_user user with
@@ -244,154 +255,167 @@ let%shared username user =
   in
   div ~a:[a_class ["os_username"]] n
 
-let%shared
-    password_form
-      ?(a_placeholder_pwd = "password")
-      ?(a_placeholder_confirmation = "retype your password")
-      ?(text_send_button = "Send")
-      ?a
-      ~service
-      ()
-  =
+let%shared password_form
+    ?(a_placeholder_pwd = "password")
+    ?(a_placeholder_confirmation = "retype your password")
+    ?(text_send_button = "Send")
+    ?a
+    ~service
+    () =
   D.Form.post_form ?a ~service
     (fun (pwdn, pwd2n) ->
-       let pass1 =
-         D.Form.input
-           ~a:
-             [ a_required ()
-             ; a_autocomplete `Off
-             ; a_placeholder a_placeholder_pwd ]
-           ~input_type:`Password ~name:pwdn D.Form.string
-       in
-       let pass2 =
-         D.Form.input
-           ~a:
-             [ a_required ()
-             ; a_autocomplete `Off
-             ; a_placeholder a_placeholder_confirmation ]
-           ~input_type:`Password ~name:pwd2n D.Form.string
-       in
-       ignore
-         [%client
-           (check_password_confirmation ~password:~%pass1 ~confirmation:~%pass2
-            : unit)];
-       [ pass1
-       ; pass2
-       ; D.Form.input ~input_type:`Submit
-           ~a:[a_class ["button"]]
-           ~value:text_send_button D.Form.string ])
+      let pass1 =
+        D.Form.input
+          ~a:
+            [a_required (); a_autocomplete `Off; a_placeholder a_placeholder_pwd]
+          ~input_type:`Password ~name:pwdn D.Form.string
+      in
+      let pass2 =
+        D.Form.input
+          ~a:
+            [ a_required ()
+            ; a_autocomplete `Off
+            ; a_placeholder a_placeholder_confirmation
+            ]
+          ~input_type:`Password ~name:pwd2n D.Form.string
+      in
+      ignore
+        [%client
+          ( check_password_confirmation ~password:~%pass1 ~confirmation:~%pass2
+            : unit
+          )];
+      [ pass1
+      ; pass2
+      ; D.Form.input ~input_type:`Submit
+          ~a:[a_class ["button"]]
+          ~value:text_send_button D.Form.string
+      ]
+    )
     ()
 
-let%shared
-    upload_pic_link
-      ?(a = [])
-      ?(content = [txt "Change profile picture"])
-      ?(crop = Some 1.)
-      ?(input :
-          Html_types.label_attrib Eliom.Content.Html.D.Raw.attrib list
-          * Html_types.label_content_fun Eliom.Content.Html.D.Raw.elt list =
-        [], [])
-      ?(submit :
-          Html_types.button_attrib Eliom.Content.Html.D.Raw.attrib list
-          * Html_types.button_content_fun Eliom.Content.Html.D.Raw.elt list =
-        [], [txt "Submit"])
-      ?(onclick : (unit -> unit) Eliom.Client_value.t =
-        [%client (fun () -> () : unit -> unit)])
-      (service : (unit, unit) Ot.Picture_uploader.service)
-  =
+let%shared upload_pic_link
+    ?(a = [])
+    ?(content = [txt "Change profile picture"])
+    ?(crop = Some 1.)
+    ?(input :
+        Html_types.label_attrib Eliom.Content.Html.D.Raw.attrib list
+        * Html_types.label_content_fun Eliom.Content.Html.D.Raw.elt list =
+      [], [])
+    ?(submit :
+        Html_types.button_attrib Eliom.Content.Html.D.Raw.attrib list
+        * Html_types.button_content_fun Eliom.Content.Html.D.Raw.elt list =
+      [], [txt "Submit"])
+    ?(onclick : (unit -> unit) Eliom.Client_value.t =
+      [%client (fun () -> () : unit -> unit)])
+    (service : (unit, unit) Ot.Picture_uploader.service) =
   D.Raw.a
     ~a:
       (a_onclick
          [%client
-           (fun _ ->
-              Lwt.async (fun () ->
-                ~%onclick ();
-                let upload_service ?progress ?cropping file =
-                  Ot.Picture_uploader.ocaml_service_upload ?progress ?cropping
-                    ~service:~%service ~arg:() file
-                in
-                Lwt.catch
-                  (fun () ->
-                     ignore
-                     @@ Ot.Popup.popup
-                          ~close_button:[Icons.F.close ()]
-                          ~onclose:(fun () ->
-                            Eliom.Client.change_page
-                              ~service:Eliom.Service.reload_action () ())
-                          (fun close ->
-                             Ot.Picture_uploader.mk_form ~crop:~%crop
-                               ~input:~%input ~submit:~%submit
-                               ~after_submit:close upload_service);
-                     Lwt.return_unit)
-                  (fun exn ->
-                     Msg.msg ~level:`Err "Error while uploading the picture";
-                     Logs.info (fun fmt -> fmt "→ %s" (Printexc.to_string exn));
-                     Lwt.return_unit))
-            : _)]
-      :: a)
+           ( fun _ ->
+               Lwt.async (fun () ->
+                   ~%onclick ();
+                   let upload_service ?progress ?cropping file =
+                     Ot.Picture_uploader.ocaml_service_upload ?progress
+                       ?cropping ~service:~%service ~arg:() file
+                   in
+                   Lwt.catch
+                     (fun () ->
+                       ignore
+                       @@ Ot.Popup.popup
+                            ~close_button:[Icons.F.close ()]
+                            ~onclose:(fun () ->
+                              Eliom.Client.change_page
+                                ~service:Eliom.Service.reload_action () ()
+                            )
+                            (fun close ->
+                              Ot.Picture_uploader.mk_form ~crop:~%crop
+                                ~input:~%input ~submit:~%submit
+                                ~after_submit:close upload_service
+                            );
+                       Lwt.return_unit
+                     )
+                     (fun exn ->
+                       Msg.msg ~level:`Err "Error while uploading the picture";
+                       Logs.info (fun fmt -> fmt "→ %s" (Printexc.to_string exn));
+                       Lwt.return_unit
+                     )
+               )
+             : _
+           )]
+      :: a
+      )
     content
 
-let%shared
-    reset_tips_link
-      ?(text_link = "See help again from beginning")
-      ?(close : (unit -> unit) Eliom.Client_value.t =
-        [%client (fun () -> () : unit -> unit)])
-      ()
-  =
+let%shared reset_tips_link
+    ?(text_link = "See help again from beginning")
+    ?(close : (unit -> unit) Eliom.Client_value.t =
+      [%client (fun () -> () : unit -> unit)])
+    () =
   let l = D.Raw.a [txt text_link] in
   ignore
     [%client
-      (Lwt_js_events.(
-         async (fun () ->
-           clicks (To_dom.of_element ~%l) (fun _ _ ->
-             ~%close ();
-             Eliom.Client.exit_to ~service:Tips.reset_tips_service () ();
-             Lwt.return_unit)))
-       : unit)];
+      ( Lwt_js_events.(
+          async (fun () ->
+              clicks (To_dom.of_element ~%l) (fun _ _ ->
+                  ~%close ();
+                  Eliom.Client.exit_to ~service:Tips.reset_tips_service () ();
+                  Lwt.return_unit
+              )
+          )
+        )
+        : unit
+      )];
   l
 
 let%shared disconnect_all_link ?(text_link = "Logout on all my devices") () =
   let l = D.Raw.a [txt text_link] in
   ignore
     [%client
-      (Lwt_js_events.(
-         async (fun () ->
-           clicks (To_dom.of_element ~%l) (fun _ _ -> Session.disconnect_all ())))
-       : unit)];
+      ( Lwt_js_events.(
+          async (fun () ->
+              clicks (To_dom.of_element ~%l) (fun _ _ ->
+                  Session.disconnect_all ()
+              )
+          )
+        )
+        : unit
+      )];
   l
 
-let%shared
-    bind_popup_button
-      ?a
-      ~button
-      ~(popup_content :
-         ((unit -> unit Lwt.t)
-          -> [< Html_types.div_content] Eliom.Content.Html.elt Lwt.t)
-           Eliom.Client_value.t)
-      ()
-  =
+let%shared bind_popup_button
+    ?a
+    ~button
+    ~(popup_content :
+       (   (unit -> unit Lwt.t)
+        -> [< Html_types.div_content] Eliom.Content.Html.elt Lwt.t
+       )
+       Eliom.Client_value.t
+       )
+    () =
   ignore
     [%client
-      (Lwt.async (fun () ->
-         Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%button)
-           (fun _ _ ->
-              let* _ =
-                Ot.Popup.popup ?a:~%a
-                  ~close_button:[Icons.F.close ()]
-                  ~%popup_content
-              in
-              Lwt.return_unit))
-       : _)]
+      ( Lwt.async (fun () ->
+            Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%button)
+              (fun _ _ ->
+                let* _ =
+                  Ot.Popup.popup ?a:~%a
+                    ~close_button:[Icons.F.close ()]
+                    ~%popup_content
+                in
+                Lwt.return_unit
+            )
+        )
+        : _
+      )]
 
-let%client
-    forgotpwd_button
-      ?(content_popup = "Recover password")
-      ?(text_button = "Forgot your password?")
-      ?(phone_placeholder = "Or your phone")
-      ?(text_send_button = "Send")
-      ?(close = (fun () -> () : unit -> unit))
-      ()
-  =
+let%client forgotpwd_button
+    ?(content_popup = "Recover password")
+    ?(text_button = "Forgot your password?")
+    ?(phone_placeholder = "Or your phone")
+    ?(text_send_button = "Send")
+    ?(close = (fun () -> () : unit -> unit))
+    () =
   let popup_content _ =
     let h = h2 [txt content_popup] in
     Lwt.return @@ div
@@ -401,7 +425,8 @@ let%client
       [ h
       ; forgot_password_form ()
       ; forgot_password_phone_input ~placeholder:phone_placeholder
-          text_send_button ]
+          text_send_button
+      ]
     else [h; forgot_password_form ()]
   in
   let button_name = text_button in
@@ -413,19 +438,17 @@ let%client
   bind_popup_button ~a:[a_class ["os-forgot-pwd"]] ~button ~popup_content ();
   button
 
-let%shared
-    sign_in_button
-      ?(a_placeholder_email = "Your email")
-      ?(a_placeholder_phone = "Or your phone")
-      ?(a_placeholder_pwd = "Your password")
-      ?(text_keep_me_logged_in = "keep me logged in")
-      ?(text_sign_in = "Sign in")
-      ?(content_popup_forgotpwd = "Recover password")
-      ?(text_button_forgotpwd = "Forgot your password?")
-      ?(text_button = "Sign in")
-      ?(text_send_button = "Send")
-      ()
-  =
+let%shared sign_in_button
+    ?(a_placeholder_email = "Your email")
+    ?(a_placeholder_phone = "Or your phone")
+    ?(a_placeholder_pwd = "Your password")
+    ?(text_keep_me_logged_in = "keep me logged in")
+    ?(text_sign_in = "Sign in")
+    ?(content_popup_forgotpwd = "Recover password")
+    ?(text_button_forgotpwd = "Forgot your password?")
+    ?(text_button = "Sign in")
+    ?(text_send_button = "Send")
+    () =
   let popup_content =
     [%client
       fun close ->
@@ -441,7 +464,8 @@ let%shared
                  ~text_button:~%text_button_forgotpwd
                  ~text_send_button:~%text_send_button
                  ~close:(fun () -> Lwt.async close)
-                 () ]]
+                 ()
+             ]]
   in
   let button_name = text_button in
   let button =
@@ -450,21 +474,20 @@ let%shared
   bind_popup_button ~a:[a_class ["os-sign-in"]] ~button ~popup_content ();
   button
 
-let%shared
-    sign_up_button
-      ?(a_placeholder_email = "Your email")
-      ?(a_placeholder_phone = "or your phone")
-      ?(text_button = "Sign up")
-      ?(text_send_button = "Send")
-      ()
-  =
+let%shared sign_up_button
+    ?(a_placeholder_email = "Your email")
+    ?(a_placeholder_phone = "or your phone")
+    ?(text_button = "Sign up")
+    ?(text_send_button = "Send")
+    () =
   let popup_content =
     [%client
       fun _ ->
         let l =
           [ h2 [txt ~%text_button]
           ; sign_up_form ~a_placeholder_email:~%a_placeholder_email
-              ~text:~%text_send_button () ]
+              ~text:~%text_send_button ()
+          ]
         in
         Lwt.return @@ div
         @@
@@ -472,7 +495,8 @@ let%shared
         then
           l
           @ [ sign_up_by_phone_input ~placeholder:~%a_placeholder_phone
-                ~%text_send_button ]
+                ~%text_send_button
+            ]
         else l]
   in
   let button =
@@ -488,28 +512,28 @@ let%shared disconnect_link ?(text_logout = "Logout") ?(a = []) () =
          [%client
            fun _ ->
              Lwt.async (fun () ->
-               Eliom.Client.change_page ~service:Services.disconnect_service ()
-                 ())]
-      :: a)
+                 Eliom.Client.change_page ~service:Services.disconnect_service
+                   () ()
+             )]
+      :: a
+      )
     [Icons.F.signout (); txt text_logout]
 
 let%shared connected_user_box ~user =
   let username = username user in
   D.div ~a:[a_class ["connected-user-box"]] [avatar user; div [username]]
 
-let%shared
-    connection_box
-      ?(a_placeholder_email = "Your email")
-      ?(a_placeholder_phone = "Your phone")
-      ?(a_placeholder_pwd = "Your password")
-      ?(text_keep_me_logged_in = "keep me logged in")
-      ?(content_popup_forgotpwd = "Recover password")
-      ?(text_button_forgotpwd = "Forgot your password?")
-      ?(text_sign_in = "Sign in")
-      ?(text_sign_up = "Sign up")
-      ?(text_send_button = "Send")
-      ()
-  =
+let%shared connection_box
+    ?(a_placeholder_email = "Your email")
+    ?(a_placeholder_phone = "Your phone")
+    ?(a_placeholder_pwd = "Your password")
+    ?(text_keep_me_logged_in = "keep me logged in")
+    ?(content_popup_forgotpwd = "Recover password")
+    ?(text_button_forgotpwd = "Forgot your password?")
+    ?(text_sign_in = "Sign in")
+    ?(text_sign_up = "Sign up")
+    ?(text_send_button = "Send")
+    () =
   let sign_in =
     sign_in_button ~a_placeholder_email ~a_placeholder_phone ~a_placeholder_pwd
       ~text_keep_me_logged_in ~text_sign_in ~content_popup_forgotpwd
@@ -521,19 +545,17 @@ let%shared
   in
   Lwt.return @@ div ~a:[a_class ["os-connection-box"]] [sign_in; sign_up]
 
-let%shared
-    user_box
-      ?(a_placeholder_email = "Your email")
-      ?(a_placeholder_pwd = "Your password")
-      ?(text_keep_me_logged_in = "keep me logged in")
-      ?(content_popup_forgotpwd = "Recover password")
-      ?(text_button_forgotpwd = "Forgot your password?")
-      ?(text_sign_in = "Sign in")
-      ?(text_sign_up = "Sign up")
-      ?(text_send_button = "Send")
-      ?user
-      ()
-  =
+let%shared user_box
+    ?(a_placeholder_email = "Your email")
+    ?(a_placeholder_pwd = "Your password")
+    ?(text_keep_me_logged_in = "keep me logged in")
+    ?(content_popup_forgotpwd = "Recover password")
+    ?(text_button_forgotpwd = "Forgot your password?")
+    ?(text_sign_in = "Sign in")
+    ?(text_sign_up = "Sign up")
+    ?(text_send_button = "Send")
+    ?user
+    () =
   match user with
   | None ->
       connection_box ~a_placeholder_email ~a_placeholder_pwd

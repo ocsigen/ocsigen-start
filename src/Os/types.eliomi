@@ -39,7 +39,8 @@ module User : sig
     ; fn : string
     ; ln : string
     ; avatar : string option
-    ; language : string option }
+    ; language : string option
+    }
   [@@deriving json]
   (** Type representing a user. See {!User}. *)
 end
@@ -54,7 +55,8 @@ module Action_link_key : sig
     ; expiry : CalendarLib.Calendar.t option
     ; autoconnect : bool
     ; action : [`AccountActivation | `PasswordReset | `Custom of string]
-    ; data : string }
+    ; data : string
+    }
   (** Type representing information about the action link key *)
 end
 

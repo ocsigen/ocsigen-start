@@ -41,7 +41,7 @@ val is_valid : string -> bool
     it returns [false]. *)
 
 val send :
-   ?url:string
+     ?url:string
   -> ?from_addr:string * string
   -> to_addrs:(string * string) list
   -> subject:string
@@ -54,12 +54,13 @@ val send :
     *)
 
 val set_send :
-   (?url:string
-    -> from_addr:string * string
-    -> to_addrs:(string * string) list
-    -> subject:string
-    -> string list
-    -> unit Lwt.t)
+     (   ?url:string
+      -> from_addr:string * string
+      -> to_addrs:(string * string) list
+      -> subject:string
+      -> string list
+      -> unit Lwt.t
+     )
   -> unit
 (** Customize email sending function. See {!send} for more details about the
     arguments.

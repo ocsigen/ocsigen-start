@@ -82,7 +82,7 @@ module User : sig
       [userid]. *)
 
   val add_actionlinkkey :
-     ?autoconnect:bool
+       ?autoconnect:bool
     -> ?action:
          [< `AccountActivation
          | `Custom of string
@@ -111,7 +111,7 @@ module User : sig
       is 10). *)
 
   val create :
-     ?password:string
+       ?password:string
     -> ?avatar:string
     -> ?language:string
     -> ?email:string
@@ -128,7 +128,7 @@ module User : sig
    *)
 
   val update :
-     ?password:string
+       ?password:string
     -> ?avatar:string
     -> ?language:string
     -> firstname:string
@@ -173,9 +173,7 @@ module User : sig
       If password is empty, it fails with exception {!Empty_password}. *)
 
   val verify_password_phone :
-     number:string
-    -> password:string
-    -> Types.User.id Lwt.t
+    number:string -> password:string -> Types.User.id Lwt.t
   (** [verify_password_phone ~number ~password]
       returns the userid if user
       who owns [number] and whose password is [password].
@@ -186,9 +184,9 @@ module User : sig
       If password is empty, it fails with exception {!Empty_password}. *)
 
   val user_of_userid :
-     Types.User.id
+       Types.User.id
     -> (Types.User.id * string * string * string option * bool * string option)
-         Lwt.t
+       Lwt.t
   (** [user_of_userid userid] returns a tuple [(userid, firstname, lastname,
       avatar, bool_password, language)] describing the information about
       the user with ID [userid].
@@ -231,9 +229,7 @@ module User : sig
     *)
 
   val remove_email_from_user :
-     userid:Types.User.id
-    -> email:string
-    -> unit Lwt.t
+    userid:Types.User.id -> email:string -> unit Lwt.t
   (** [remove_email_from_user ~userid ~email] removes the email [email] from the
       emails list of user with ID [userid].
       If [email] is the main email, it fails with {!Main_email_removal_attempt}.
@@ -243,11 +239,11 @@ module User : sig
   (** [get_language userid] returns the language of the user with ID [userid] *)
 
   val get_users :
-     ?pattern:string
+       ?pattern:string
     -> unit
     -> (Types.User.id * string * string * string option * bool * string option)
-         list
-         Lwt.t
+       list
+       Lwt.t
   (** [get_users ~pattern ()] returns all users matching the pattern [pattern]
       as a tuple [(userid, firstname, lastname, avatar, bool_password,
       language)].
@@ -267,21 +263,17 @@ module Groups : sig
    *)
 
   val add_user_in_group :
-     groupid:Types.Group.id
-    -> userid:Types.User.id
-    -> unit Lwt.t
+    groupid:Types.Group.id -> userid:Types.User.id -> unit Lwt.t
   (** [add_user_in_group ~groupid ~userid] adds the user with ID [userid] in the
       group with ID [groupid] *)
 
   val remove_user_in_group :
-     groupid:Types.Group.id
-    -> userid:Types.User.id
-    -> unit Lwt.t
+    groupid:Types.Group.id -> userid:Types.User.id -> unit Lwt.t
   (** [remove_user_in_group ~groupid ~userid] removes the user with ID [userid]
       in the group with ID [groupid] *)
 
   val in_group :
-     ?dbh:PGOCaml.pa_pg_data PGOCaml.t
+       ?dbh:PGOCaml.pa_pg_data PGOCaml.t
     -> groupid:Types.Group.id
     -> userid:Types.User.id
     -> unit
