@@ -223,6 +223,22 @@ module Make (C : PAGE) = struct
     log_error status exc;
     Eliom.Registration.set_status status
 
+  (* [f ()] if [predicate ()] returns [true]. Otherwise [fallback] gets
+     [Predicate_failed None], [Predicate_failed (Some exc)] if the predicate
+     raises [exc] ([exc] itself if it is already a [Predicate_failed]), or the
+     exception raised by [f]. The exceptions raised by [fallback] are not
+     caught here. *)
+  let guard predicate fallback f =
+    let fallback exc = Lwt.apply fallback exc in
+    Lwt.try_bind predicate
+      (fun b ->
+        if b then Lwt.catch f fallback else fallback (Predicate_failed None)
+      )
+      (function
+        | Predicate_failed _ as exc -> fallback exc
+        | exc -> fallback (Predicate_failed (Some exc))
+        )
+
   let page
       ?(predicate = C.default_predicate)
       ?(fallback = C.default_error_page)
@@ -231,14 +247,7 @@ module Make (C : PAGE) = struct
       pp =
     let fallback gp pp exc = set_error_status exc; fallback gp pp exc in
     let* content =
-      Lwt.catch
-        (fun () ->
-          let* b = predicate gp pp in
-          if b
-          then Lwt.catch (fun () -> f gp pp) (fun exc -> fallback gp pp exc)
-          else fallback gp pp (Predicate_failed None)
-        )
-        (fun exc -> fallback gp pp (Predicate_failed (Some exc)))
+      guard (fun () -> predicate gp pp) (fallback gp pp) (fun () -> f gp pp)
     in
     Lwt.return (make_page content)
 
@@ -254,20 +263,10 @@ module Make (C : PAGE) = struct
       set_error_status exc; fallback myid_o gp pp exc
     in
     let f_wrapped myid gp pp =
-      Lwt.catch
-        (fun () ->
-          let* b = predicate (Some myid) gp pp in
-          if b
-          then
-            Lwt.catch
-              (fun () -> f myid gp pp)
-              (fun exc -> fallback (Some myid) gp pp exc)
-          else Lwt.fail (Predicate_failed None)
-        )
-        (function
-          | Predicate_failed _ as exc -> fallback (Some myid) gp pp exc
-          | exc -> fallback (Some myid) gp pp (Predicate_failed (Some exc))
-          )
+      guard
+        (fun () -> predicate (Some myid) gp pp)
+        (fallback (Some myid) gp pp)
+        (fun () -> f myid gp pp)
     in
     let* content =
       Lwt.catch
@@ -298,20 +297,10 @@ module Make (C : PAGE) = struct
         set_error_status exc; fallback myid_o gp pp exc
       in
       let f_wrapped (myid_o : Types.User.id option) gp pp =
-        Lwt.catch
-          (fun () ->
-            let* b = predicate myid_o gp pp in
-            if b
-            then
-              Lwt.catch
-                (fun () -> f myid_o gp pp)
-                (fun exc -> fallback myid_o gp pp exc)
-            else Lwt.fail (Predicate_failed None)
-          )
-          (function
-            | Predicate_failed _ as exc -> fallback myid_o gp pp exc
-            | exc -> fallback myid_o gp pp (Predicate_failed (Some exc))
-            )
+        guard
+          (fun () -> predicate myid_o gp pp)
+          (fallback myid_o gp pp)
+          (fun () -> f myid_o gp pp)
       in
       let* content =
         Session.Opt.connected_fun ?allow ?deny
