@@ -22,6 +22,8 @@ open%shared Lwt.Syntax
 open%shared Eliom.Content.Html.F
 open%client Js_of_ocaml
 
+let%shared log_section = Logs.Src.create "os:page"
+
 [%%shared
 exception Predicate_failed of exn option
 
@@ -46,23 +48,65 @@ let%shared content ?(html_a = []) ?(a = []) ?title ?(head = []) body =
   ; body :> Html_types.body_content elt list
   }
 
+(* The exception that made the error page, without the wrapper of a failing
+   predicate. *)
+let%shared rec cause = function
+  | Predicate_failed (Some exc) -> cause exc
+  | exc -> exc
+
+(* The status of the error page for the exceptions known on both sides. *)
+let%shared shared_status exc =
+  match cause exc with
+  | Session.Not_connected | Session.Permission_denied | Predicate_failed None ->
+      Some `Forbidden
+  | Eliom.Common.Eliom_404 | Handlers.No_such_resource -> Some `Not_found
+  | _ -> None
+
 (* The HTTP status of the error page for [exc]: 403 when the user may not see
    the page, 404 when what it shows does not exist, 500 otherwise. No
    WWW-Authenticate challenge is sent, hence 403 rather than 401 for a
    visitor who is not connected. [Not_found] is a 500, as in Eliom: it
    usually comes from a bug in the handler (Hashtbl.find, List.assoc), which
    a 404 would hide. *)
-let%server rec error_status = function
-  | Session.Not_connected | Session.Permission_denied | Predicate_failed None ->
-      `Forbidden
-  | Predicate_failed (Some exc) -> error_status exc
-  | Eliom.Common.Eliom_404 | User.No_such_user | Db.No_such_user
-  | Db.No_such_resource | Handlers.No_such_resource ->
-      `Not_found
-  | _ -> `Internal_server_error
+let%server error_status exc =
+  match shared_status exc with
+  | Some status -> status
+  | None -> (
+    match cause exc with
+    | User.No_such_user | Db.No_such_user | Db.No_such_resource -> `Not_found
+    | _ -> `Internal_server_error
+  )
 
-(* On the client, Eliom.Registration.set_status does nothing. *)
-let%client error_status _ = `Internal_server_error
+(* On the client, Eliom.Registration.set_status does nothing, but the status
+   still chooses the log level. *)
+let%client error_status exc =
+  Option.value ~default:`Internal_server_error (shared_status exc)
+
+(* The log message, with the path of the request but not its parameters,
+   which may hold keys (see Services.action_link_service). *)
+let%shared error_message exc : (_, unit) Logs.msgf =
+ fun fmt ->
+  let what =
+    match exc with
+    | Predicate_failed None -> "the predicate returned false"
+    | Predicate_failed (Some exc) ->
+        "the predicate raised " ^ Printexc.to_string (cause exc)
+    | exc -> "exception " ^ Printexc.to_string exc
+  in
+  fmt "error page for %s: %s"
+    (Eliom.Request_info.get_original_full_path_string ())
+    what
+
+(* The error page may not show the exception, so log it: as an error for a
+   500, which usually comes from a bug, and as a debug message for a 403 or a
+   404, which are part of the normal flow. *)
+let%shared log_error status exc =
+  let level =
+    match status with
+    | `Internal_server_error -> Logs.Error
+    | `Forbidden | `Not_found -> Logs.Debug
+  in
+  Logs.msg ~src:log_section level (error_message exc)
 
 [%%shared
 module type PAGE = sig
@@ -172,9 +216,12 @@ module Make (C : PAGE) = struct
          content.body
       )
 
-  (* Set before the fallback builds the error page, which may set another
-     status. *)
-  let set_error_status exc = Eliom.Registration.set_status (error_status exc)
+  (* Log the exception and set the status before the fallback builds the
+     error page, which may set another status. *)
+  let set_error_status exc =
+    let status = error_status exc in
+    log_error status exc;
+    Eliom.Registration.set_status status
 
   let page
       ?(predicate = C.default_predicate)
