@@ -14,6 +14,13 @@ depends: [
   "ocsigen-start" {= version}
   "odoc" {with-doc}
 ]
+dev-repo: "git+https://github.com/ocsigen/ocsigen-start.git"
+x-maintenance-intent: ["(latest)"]
+# The default build without "@doc" {with-doc}: the server and client
+# libraries define the same modules, so dune's @doc fails with
+# "Multiple rules generated". The published docs are built by odoc_driver.
+# Keep in sync with the build dune generates by default (the install step
+# comes from `(using dune_site ...)` in dune-project).
 build: [
   ["dune" "subst"] {dev}
   [
@@ -26,9 +33,6 @@ build: [
     "--promote-install-files=false"
     "@install"
     "@runtest" {with-test}
-    "@doc" {with-doc}
   ]
   ["dune" "install" "-p" name "--create-install-files" name]
 ]
-dev-repo: "git+https://github.com/ocsigen/ocsigen-start.git"
-x-maintenance-intent: ["(latest)"]
