@@ -7,4 +7,5 @@
 let () =
   Ocsigen.Server.start
     [ Ocsigen.Server.host
-        [Staticmod.run ~dir:"local/var/www/%%%PROJECT_NAME%%%" (); Eliom.App.run ()] ]
+        [Staticmod.run ~dir:"local/var/www/%%%PROJECT_NAME%%%" (); Eliom.App.run ()]
+    ]

@@ -4,9 +4,7 @@
 (** This module defines the default template for application pages *)
 
 val%shared os_header :
-   ?user:Os.Types.User.t
-  -> unit
-  -> [> `Header] Eliom.Content.Html.F.elt Lwt.t
+  ?user:Os.Types.User.t -> unit -> [> `Header] Eliom.Content.Html.F.elt Lwt.t
 (** [os_header ?user ()] defines the header for all pages. In this
     template, it's a userbox and the user name is displayed. *)
 
@@ -14,21 +12,19 @@ val%shared os_footer : unit -> [> `Footer] Eliom.Content.Html.F.elt
 (** [os_footer ()] defines a footer for the page. *)
 
 val%shared connected_welcome_box :
-   unit
-  -> [> Html_types.div] Eliom.Content.Html.F.elt Lwt.t
+  unit -> [> Html_types.div] Eliom.Content.Html.F.elt Lwt.t
 
 val%shared get_user_data :
-   Os.Types.User.id option
-  -> Os.Types.User.t option Lwt.t
+  Os.Types.User.id option -> Os.Types.User.t option Lwt.t
 
 val%shared page :
-   ?html_a:Html_types.html_attrib Eliom.Content.Html.attrib list
+     ?html_a:Html_types.html_attrib Eliom.Content.Html.attrib list
   -> ?a:Html_types.body_attrib Eliom.Content.Html.attrib list
   -> ?title:string
   -> ?head:[< Html_types.head_content_fun] Eliom.Content.Html.elt list
   -> Os.Types.User.id option
   -> [< Html_types.div_content_fun > `Div] Eliom.Content.Html.F.elt
-       Eliom.Content.Html.F.list_wrap
+     Eliom.Content.Html.F.list_wrap
   -> Os.Page.content Lwt.t
 (** [page userid_o content] returns a page personalized for the user
     with id [myid_o] and with the content [content]. It adds a header,
@@ -36,5 +32,4 @@ val%shared page :
     completed, a connected welcome box is added. *)
 
 val%shared get_wrong_pdata :
-   unit
-  -> ((string * string) * (string * string)) option Lwt.t
+  unit -> ((string * string) * (string * string)) option Lwt.t

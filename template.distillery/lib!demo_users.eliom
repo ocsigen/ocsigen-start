@@ -8,14 +8,16 @@ let%shared display_user_name = function
   | Some user ->
       p
         [ txt ([%i18n Demo.S.you_are] ^ " ")
-        ; em [txt (Os.User.fullname_of_user user)] ]
+        ; em [txt (Os.User.fullname_of_user user)]
+        ]
 
 let%shared display_user_id = function
   | None -> p [%i18n Demo.log_in_to_see_demo]
   | Some userid ->
       p
         [ txt ([%i18n Demo.S.your_user_id] ^ " ")
-        ; em [txt (Int64.to_string userid)] ]
+        ; em [txt (Int64.to_string userid)]
+        ]
 
 (* Page for this demo *)
 let%shared page () =
@@ -32,14 +34,17 @@ let%shared page () =
     ; p
         [ txt [%i18n Demo.S.the_module]
         ; code [txt " Os.Current_user "]
-        ; txt [%i18n Demo.S.allows_get_information_currently_connected_user] ]
+        ; txt [%i18n Demo.S.allows_get_information_currently_connected_user]
+        ]
     ; display_user_name me_o
     ; display_user_id myid_o
     ; p [txt [%i18n Demo.S.these_functions_called_server_or_client_side]]
     ; p
         [ txt [%i18n Demo.S.always_get_current_user_using_module]
         ; code [txt " Os.Current_user. "]
-        ; txt [%i18n Demo.S.never_trust_client_pending_user_id] ] ]
+        ; txt [%i18n Demo.S.never_trust_client_pending_user_id]
+        ]
+    ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server

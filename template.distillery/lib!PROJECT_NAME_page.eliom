@@ -4,7 +4,6 @@ open%shared Eliom.Content.Html.F
 
 let%server debugmode () = Ocsigen.Config.get_debugmode ()
 let%client debugmode () = false
-
 let%server css_name = !%%%MODULE_NAME%%%_config.css_name
 
 let%client css_name =
@@ -37,7 +36,8 @@ let%server app_js () =
     (* Use WASM detection script with hashed filenames *)
     let app_name = !%%%MODULE_NAME%%%_config.app_name in
     [ %%%MODULE_NAME%%%_base.App.wasm_detection_script ~defer:true
-        ~js_name:(app_name ^ ".js") ~wasm_name () ]
+        ~js_name:(app_name ^ ".js") ~wasm_name ()
+    ]
   else [%%%MODULE_NAME%%%_base.App.application_script ~defer:true ()]
 
 let%client app_js () = []
@@ -56,7 +56,8 @@ module%shared Page_config = struct
     meta
       ~a:
         [ a_name "viewport"
-        ; a_content "width=device-width, initial-scale=1, user-scalable=no" ]
+        ; a_content "width=device-width, initial-scale=1, user-scalable=no"
+        ]
       ()
     :: css_name_script
     @ wasm_name_script @ app_js ()
@@ -66,15 +67,17 @@ module%shared Page_config = struct
 
   let default_error_page _ _ exn =
     %%%MODULE_NAME%%%_container.page None
-      (if debugmode ()
-       then [p [txt (Printexc.to_string exn)]]
-       else [p [txt "Error"]])
+      ( if debugmode ()
+        then [p [txt (Printexc.to_string exn)]]
+        else [p [txt "Error"]]
+      )
 
   let default_connected_error_page myid_o _ _ exn =
     %%%MODULE_NAME%%%_container.page myid_o
-      (if debugmode ()
-       then [p [txt (Printexc.to_string exn)]]
-       else [p [txt "Error"]])
+      ( if debugmode ()
+        then [p [txt (Printexc.to_string exn)]]
+        else [p [txt "Error"]]
+      )
 end
 
 include%shared Os.Page.Make (Page_config)

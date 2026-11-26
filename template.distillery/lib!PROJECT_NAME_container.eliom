@@ -21,7 +21,9 @@ let%shared os_header ?user () =
            ~service:Os.Services.main_service
            [txt %%%MODULE_NAME%%%_base.displayed_app_name]
            ()
-       ; user_box ])
+       ; user_box
+       ]
+    )
 
 let%shared os_footer () =
   let open Eliom.Content.Html.F in
@@ -34,11 +36,12 @@ let%shared os_footer () =
             ()
         ; txt [%i18n S.footer_eliom_distillery]
         ; a ~service:%%%MODULE_NAME%%%_services.ocsigen_service [txt " Ocsigen "] ()
-        ; txt [%i18n S.footer_technology] ] ]
+        ; txt [%i18n S.footer_technology]
+        ]
+    ]
 
 let%rpc get_wrong_pdata () :
-  ((string * string) * (string * string)) option Lwt.t
-  =
+    ((string * string) * (string * string)) option Lwt.t =
   Lwt.return @@ Eliom.Reference.Volatile.get Os.Msg.wrong_pdata
 
 let%shared connected_welcome_box () =
@@ -50,7 +53,8 @@ let%shared connected_welcome_box () =
         ( p
             [ txt [%i18n S.personal_information_not_set]
             ; br ()
-            ; txt [%i18n S.take_time_enter_name_password] ]
+            ; txt [%i18n S.take_time_enter_name_password]
+            ]
         , (("", ""), ("", "")) )
     | Some wpd -> p [txt [%i18n S.wrong_data_fix]], wpd
   in
@@ -64,7 +68,8 @@ let%shared connected_welcome_box () =
            ~a_placeholder_firstname:[%i18n S.your_first_name]
            ~a_placeholder_lastname:[%i18n S.your_last_name]
            ~text_submit:[%i18n S.submit] ~firstname:fn ~lastname:ln
-           ~password1:p1 ~password2:p2 () ]
+           ~password1:p1 ~password2:p2 ()
+       ]
 
 let%shared get_user_data = function
   | None -> Lwt.return_none
@@ -87,4 +92,6 @@ let%shared page ?html_a ?a ?title ?head myid_o content =
        [ h
        ; Eliom.Content.Html.F.(div ~a:[a_class ["os-body"]] content)
        ; os_footer ()
-       ; %%%MODULE_NAME%%%_drawer.make ?user:me () ])
+       ; %%%MODULE_NAME%%%_drawer.make ?user:me ()
+       ]
+    )

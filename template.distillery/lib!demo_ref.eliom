@@ -28,7 +28,8 @@ let%shared get_reset_last_visit_message () =
   | Some last_visit ->
       Lwt.return
         ([%i18n Demo.eliom_ref_last_visit]
-        @ [txt " "; txt (Os.Date.smart_time last_visit)])
+        @ [txt " "; txt (Os.Date.smart_time last_visit)]
+        )
 
 (* Generate page for this demo *)
 let%shared page () =
@@ -38,7 +39,8 @@ let%shared page () =
     ; p [txt [%i18n Demo.S.eliom_ref_1]]
     ; p [txt [%i18n Demo.S.eliom_ref_2]]
     ; p last_visit_message
-    ; p [txt [%i18n Demo.S.eliom_ref_3]] ]
+    ; p [txt [%i18n Demo.S.eliom_ref_3]]
+    ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server
@@ -48,4 +50,5 @@ let%shared () =
   %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_ref
     ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
       let%lwt p = page () in
-      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-ref"]] myid_o p )
+      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-ref"]] myid_o p
+    )

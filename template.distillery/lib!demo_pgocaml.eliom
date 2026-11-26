@@ -21,14 +21,16 @@ let%shared page () =
        in
        if users = []
        then Lwt.return [p [em [%i18n Demo.no_user_create_accounts]]]
-       else Lwt.return [p [%i18n Demo.pgocaml_users]; ul users])
+       else Lwt.return [p [%i18n Demo.pgocaml_users]; ul users]
+      )
   in
   Lwt.return
     [ h1 [%i18n Demo.pgocaml]
     ; p [%i18n Demo.pgocaml_description_1]
     ; p [%i18n Demo.pgocaml_description_2]
     ; p [%i18n Demo.pgocaml_description_3]
-    ; user_block ]
+    ; user_block
+    ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server

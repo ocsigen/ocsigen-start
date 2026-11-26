@@ -16,8 +16,9 @@ let%server () =
   if enable
   then
     Os.Connect_phone.set_send_sms_handler (fun ~number message ->
-      Printf.printf "Send SMS %s to %s\n%!" message number;
-      Lwt.return (Ok ()))
+        Printf.printf "Send SMS %s to %s\n%!" message number;
+        Lwt.return (Ok ())
+    )
 
 let%shared () =
   if enable
@@ -31,4 +32,5 @@ let%shared () =
       Os.Handlers.confirm_code_extra_handler;
     Eliom.Registration.Action.register
       ~service:Os.Services.confirm_code_signup_service
-      Os.Handlers.confirm_code_signup_handler)
+      Os.Handlers.confirm_code_signup_handler
+  )

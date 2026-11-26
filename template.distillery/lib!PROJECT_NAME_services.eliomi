@@ -3,58 +3,62 @@
 
 val%shared about_service :
   ( unit
-    , unit
-    , Eliom.Service.get
-    , Eliom.Service.att
-    , Eliom.Service.non_co
-    , Eliom.Service.non_ext
-    , Eliom.Service.reg
-    , [`WithoutSuffix]
-    , unit
-    , unit
-    , Eliom.Service.non_ocaml )
-    Eliom.Service.t
+  , unit
+  , Eliom.Service.get
+  , Eliom.Service.att
+  , Eliom.Service.non_co
+  , Eliom.Service.non_ext
+  , Eliom.Service.reg
+  , [`WithoutSuffix]
+  , unit
+  , unit
+  , Eliom.Service.non_ocaml
+  )
+  Eliom.Service.t
 
 val%shared upload_user_avatar_service : (unit, unit) Ot.Picture_uploader.service
 
 val%shared settings_service :
   ( unit
-    , unit
-    , Eliom.Service.get
-    , Eliom.Service.att
-    , Eliom.Service.non_co
-    , Eliom.Service.non_ext
-    , Eliom.Service.reg
-    , [`WithoutSuffix]
-    , unit
-    , unit
-    , Eliom.Service.non_ocaml )
-    Eliom.Service.t
+  , unit
+  , Eliom.Service.get
+  , Eliom.Service.att
+  , Eliom.Service.non_co
+  , Eliom.Service.non_ext
+  , Eliom.Service.reg
+  , [`WithoutSuffix]
+  , unit
+  , unit
+  , Eliom.Service.non_ocaml
+  )
+  Eliom.Service.t
 
 val%shared os_github_service :
   ( unit
-    , unit
-    , Eliom.Service.get
-    , Eliom.Service.att
-    , Eliom.Service.non_co
-    , Eliom.Service.ext
-    , Eliom.Service.non_reg
-    , [`WithoutSuffix]
-    , unit
-    , unit
-    , Eliom.Service.non_ocaml )
-    Eliom.Service.t
+  , unit
+  , Eliom.Service.get
+  , Eliom.Service.att
+  , Eliom.Service.non_co
+  , Eliom.Service.ext
+  , Eliom.Service.non_reg
+  , [`WithoutSuffix]
+  , unit
+  , unit
+  , Eliom.Service.non_ocaml
+  )
+  Eliom.Service.t
 
 val%shared ocsigen_service :
   ( unit
-    , unit
-    , Eliom.Service.get
-    , Eliom.Service.att
-    , Eliom.Service.non_co
-    , Eliom.Service.ext
-    , Eliom.Service.non_reg
-    , [`WithoutSuffix]
-    , unit
-    , unit
-    , Eliom.Service.non_ocaml )
-    Eliom.Service.t
+  , unit
+  , Eliom.Service.get
+  , Eliom.Service.att
+  , Eliom.Service.non_co
+  , Eliom.Service.ext
+  , Eliom.Service.non_reg
+  , [`WithoutSuffix]
+  , unit
+  , unit
+  , Eliom.Service.non_ocaml
+  )
+  Eliom.Service.t

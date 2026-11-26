@@ -26,10 +26,12 @@ let%shared button msg f =
   in
   ignore
     [%client
-      (Lwt.async @@ fun () ->
-       Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%btn)
-         (fun _ _ -> ~%f ())
-       : unit)];
+      ( Lwt.async @@ fun () ->
+        Lwt_js_events.clicks (Eliom.Content.Html.To_dom.of_element ~%btn)
+          (fun _ _ -> ~%f ()
+        )
+        : unit
+      )];
   btn
 
 (* Page for this demo *)
@@ -37,17 +39,19 @@ let%shared page () =
   let btn =
     button [%i18n Demo.S.rpc_button_click_increase]
       [%client
-        (fun () ->
-           let%lwt v = incr_my_ref () in
-           Eliom.Lib.alert "Update: %d" v;
-           Lwt.return_unit
-         : unit -> unit Lwt.t)]
+        ( fun () ->
+            let%lwt v = incr_my_ref () in
+            Eliom.Lib.alert "Update: %d" v;
+            Lwt.return_unit
+          : unit -> unit Lwt.t
+        )]
   in
   Lwt.return
     Eliom.Content.Html.
       [ F.h1 [%i18n Demo.rpc_button]
       ; F.p [F.txt [%i18n Demo.S.rpc_button_description]]
-      ; F.p [btn] ]
+      ; F.p [btn]
+      ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server
@@ -57,4 +61,5 @@ let%shared () =
   %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_rpc
     ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
       let%lwt p = page () in
-      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-rpc"]] myid_o p )
+      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-rpc"]] myid_o p
+    )

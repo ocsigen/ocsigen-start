@@ -10,4 +10,5 @@ open Os.Db
 
 let get () =
   full_transaction_block (fun dbh ->
-    [%pgsql dbh "SELECT lastname FROM ocsigen_start.users"])
+      [%pgsql dbh "SELECT lastname FROM ocsigen_start.users"]
+  )

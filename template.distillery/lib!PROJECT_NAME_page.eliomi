@@ -20,27 +20,21 @@ module%shared Page_config : sig
   val local_css : string list list
 
   val other_head :
-     unit
-    -> Html_types.head_content_fun Eliom.Content.Html.elt list
+    unit -> Html_types.head_content_fun Eliom.Content.Html.elt list
 
   val default_predicate : 'a -> 'b -> bool Lwt.t
   val default_connected_predicate : 'a -> 'b -> 'c -> bool Lwt.t
   val default_error_page : 'a -> 'b -> exn -> Os.Page.content Lwt.t
 
   val default_connected_error_page :
-     Os.Types.User.id option
-    -> 'a
-    -> 'b
-    -> exn
-    -> Os.Page.content Lwt.t
+    Os.Types.User.id option -> 'a -> 'b -> exn -> Os.Page.content Lwt.t
 end
 
 val%shared make_page :
-   Os.Page.content
-  -> [> Html_types.html] Eliom.Content.Html.elt
+  Os.Page.content -> [> Html_types.html] Eliom.Content.Html.elt
 
 val%shared page :
-   ?predicate:('a -> 'b -> bool Lwt.t)
+     ?predicate:('a -> 'b -> bool Lwt.t)
   -> ?fallback:('a -> 'b -> exn -> Os.Page.content Lwt.t)
   -> ('a -> 'b -> Os.Page.content Lwt.t)
   -> 'a
@@ -49,7 +43,7 @@ val%shared page :
 
 module%shared Opt : sig
   val connected_page :
-     ?allow:Os.Types.Group.t list
+       ?allow:Os.Types.Group.t list
     -> ?deny:Os.Types.Group.t list
     -> ?predicate:(Os.Types.User.id option -> 'a -> 'b -> bool Lwt.t)
     -> ?fallback:
@@ -61,7 +55,7 @@ module%shared Opt : sig
 end
 
 val%shared connected_page :
-   ?allow:Os.Types.Group.t list
+     ?allow:Os.Types.Group.t list
   -> ?deny:Os.Types.Group.t list
   -> ?predicate:(Os.Types.User.id option -> 'a -> 'b -> bool Lwt.t)
   -> ?fallback:

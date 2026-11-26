@@ -26,8 +26,7 @@ let%server set_personal_data_handler =
   Os.Session.connected_fun Os.Handlers.set_personal_data_handler
 
 let%rpc set_personal_data_rpc (data : (string * string) * (string * string)) :
-  unit Lwt.t
-  =
+    unit Lwt.t =
   set_personal_data_handler () data
 
 let%client set_personal_data_handler () = set_personal_data_rpc
@@ -62,7 +61,8 @@ let%shared action_link_handler myid_o akey () =
             ; validity = _
             ; action = _
             ; data = _
-            ; autoconnect = _ } ->
+            ; autoconnect = _
+            } ->
             Lwt.return (email, false)
         | Os.Handlers.Custom_action_link
             ( { Os.Types.Action_link_key.userid = _
@@ -70,8 +70,10 @@ let%shared action_link_handler myid_o akey () =
               ; validity = _
               ; action = _
               ; data = _
-              ; autoconnect = _ }
-            , phantom_user ) ->
+              ; autoconnect = _
+              }
+            , phantom_user
+            ) ->
             Lwt.return (email, phantom_user)
         | _ -> Lwt.fail e
       in
@@ -93,7 +95,9 @@ let%shared action_link_handler myid_o akey () =
                 ~a:[a_class ["login-signup-box"]]
                 [ Os.User_view.sign_up_form
                     ~a_placeholder_email:[%i18n S.your_email]
-                    ~text:[%i18n S.sign_up] ~email () ] ]
+                    ~text:[%i18n S.sign_up] ~email ()
+                ]
+            ]
           in
           %%%MODULE_NAME%%%_base.App.send
             (%%%MODULE_NAME%%%_page.make_page (Os.Page.content page))
@@ -105,7 +109,9 @@ let%shared action_link_handler myid_o akey () =
                     ~a_placeholder_email:[%i18n S.your_email]
                     ~a_placeholder_pwd:[%i18n S.your_password]
                     ~text_keep_me_logged_in:[%i18n S.keep_logged_in]
-                    ~text_sign_in:[%i18n S.sign_in] ~email () ] ]
+                    ~text_sign_in:[%i18n S.sign_in] ~email ()
+                ]
+            ]
           in
           %%%MODULE_NAME%%%_base.App.send
             (%%%MODULE_NAME%%%_page.make_page (Os.Page.content page))
@@ -121,8 +127,9 @@ let%shared action_link_handler myid_o akey () =
 
 let%server set_password_handler =
   Os.Session.connected_fun (fun myid () (pwd, pwd2) ->
-    let%lwt () = Os.Handlers.set_password_handler myid () (pwd, pwd2) in
-    Lwt.return (Eliom.Registration.Redirection Eliom.Service.reload_action))
+      let%lwt () = Os.Handlers.set_password_handler myid () (pwd, pwd2) in
+      Lwt.return (Eliom.Registration.Redirection Eliom.Service.reload_action)
+  )
 
 let%client set_password_handler () (pwd, pwd2) =
   let%lwt () = Os.Handlers.set_password_rpc (pwd, pwd2) in
@@ -150,8 +157,10 @@ let%shared main_service_handler myid_o () () =
         ; li [%i18n welcome_text7]
         ; li [%i18n welcome_text8]
         ; li [%i18n welcome_text9]
-        ; li [%i18n welcome_text10] ]
-    ; p [%i18n welcome_text11] ]
+        ; li [%i18n welcome_text10]
+        ]
+    ; p [%i18n welcome_text11]
+    ]
 
 let%shared about_handler myid_o () () =
   let open Eliom.Content.Html.F in
@@ -161,7 +170,9 @@ let%shared about_handler myid_o () () =
     [ div
         [ p [%i18n about_handler_template]
         ; br ()
-        ; p [%i18n about_handler_license] ] ]
+        ; p [%i18n about_handler_license]
+        ]
+    ]
 
 let%shared settings_handler myid_o () () =
   let%lwt content =

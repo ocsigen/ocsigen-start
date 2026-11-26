@@ -46,7 +46,8 @@ let%shared page () =
     [ h1 [%i18n Demo.calendar]
     ; p [%i18n Demo.this_page_show_calendar]
     ; div ~a:[a_class ["os-calendar"]] [calendar]
-    ; p [Eliom.Content.Html.R.txt dr] ]
+    ; p [Eliom.Content.Html.R.txt dr]
+    ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server
@@ -58,4 +59,5 @@ let%shared () =
       let%lwt p = page () in
       %%%MODULE_NAME%%%_container.page
         ~a:[a_class ["os-page-demo-calendar"]]
-        myid_o p )
+        myid_o p
+    )

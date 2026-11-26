@@ -11,7 +11,8 @@ let%shared page () =
     ; div ~a:[a_class ["demo-tongue-3"]] []
     ; div ~a:[a_class ["demo-tongue-4"]] []
     ; div ~a:[a_class ["demo-tongue-5"]] []
-    ; div ~a:[a_class ["demo-tongue-6"]] [] ]
+    ; div ~a:[a_class ["demo-tongue-6"]] []
+    ]
   in
   let tongue =
     Ot.Tongue.tongue ~side:`Bottom
@@ -21,7 +22,8 @@ let%shared page () =
   Lwt.return
     [ h1 [%i18n Demo.tongue_1]
     ; p [%i18n Demo.ot_tongue_1]
-    ; div ~a:[a_class ["demo-tongue"]] [tongue.Ot.Tongue.elt] ]
+    ; div ~a:[a_class ["demo-tongue"]] [tongue.Ot.Tongue.elt]
+    ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server

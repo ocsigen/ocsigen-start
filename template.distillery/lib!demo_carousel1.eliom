@@ -5,24 +5,24 @@ open%client Eliom.Content.Html
 open%shared Eliom.Content.Html.F
 
 (* Bind arrow keys *)
-let%shared
-    bind_keys
-      (change : ([`Goto of int | `Next | `Prev] -> unit) Eliom.Client_value.t)
-      (carousel : [`Div] Eliom.Content.Html.elt)
-  =
+let%shared bind_keys
+    (change : ([`Goto of int | `Next | `Prev] -> unit) Eliom.Client_value.t)
+    (carousel : [`Div] Eliom.Content.Html.elt) =
   ignore
     [%client
-      (let arrow_thread =
-         (* Wait for the carousel to be in the page
+      ( let arrow_thread =
+          (* Wait for the carousel to be in the page
           (in the case the page is generated client side): *)
-         let%lwt () = Ot.Nodeready.nodeready (To_dom.of_element ~%carousel) in
-         Ot.Carousel.bind_arrow_keys ~change:~%change
-           Js_of_ocaml.Dom_html.document##.body
-       in
-       (* Do not forget to cancel the thread when we remove the carousel
+          let%lwt () = Ot.Nodeready.nodeready (To_dom.of_element ~%carousel) in
+          Ot.Carousel.bind_arrow_keys ~change:~%change
+            Js_of_ocaml.Dom_html.document##.body
+        in
+        (* Do not forget to cancel the thread when we remove the carousel
         (here, when we go to another page): *)
-       Eliom.Client.onunload (fun () -> Lwt.cancel arrow_thread)
-       : unit)]
+        Eliom.Client.onunload (fun () -> Lwt.cancel arrow_thread
+        )
+        : unit
+      )]
 
 (* Page for this demo *)
 let%shared page () =
@@ -33,15 +33,17 @@ let%shared page () =
   in
   let carousel_change_signal =
     [%client
-      (React.E.create ()
-       : ([`Goto of int | `Next | `Prev] as 'a) React.E.t
-         * (?step:React.step -> 'a -> unit))]
+      ( React.E.create ()
+        : ([`Goto of int | `Next | `Prev] as 'a) React.E.t
+          * (?step:React.step -> 'a -> unit)
+      )]
   in
   let update = [%client fst ~%carousel_change_signal] in
   let change =
     [%client
-      (fun a -> snd ~%carousel_change_signal ?step:None a
-       : [`Goto of int | `Next | `Prev] -> unit)]
+      ( fun a -> snd ~%carousel_change_signal ?step:None a
+        : [`Goto of int | `Next | `Prev] -> unit
+      )]
   in
   let carousel_pages = ["1"; "2"; "3"; "4"] in
   let length = List.length carousel_pages in
@@ -74,4 +76,5 @@ let%shared () =
       let%lwt p = page () in
       %%%MODULE_NAME%%%_container.page
         ~a:[a_class ["os-page-demo-carousel1"]]
-        myid_o p )
+        myid_o p
+    )

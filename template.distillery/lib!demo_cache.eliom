@@ -13,7 +13,8 @@ let%shared page () =
             ~eliom_cscache:[code [txt "Eliom.Cscache"]]
             ~os_user_proxy:[code [txt "Os.User_proxy"]]]
     ; p [%i18n Demo.cache_3 ~eliom_cscache:[code [txt "Eliom.Cscache"]]]
-    ; p [%i18n Demo.cache_4 ~eliom_cscache:[code [txt "Eliom.Cscache"]]] ]
+    ; p [%i18n Demo.cache_4 ~eliom_cscache:[code [txt "Eliom.Cscache"]]]
+    ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server

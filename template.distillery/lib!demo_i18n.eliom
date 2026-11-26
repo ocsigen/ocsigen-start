@@ -27,7 +27,8 @@ let%shared page () =
         [%i18n
           Demo.internationalization_4
             ~f:[code [txt "assets/%%%PROJECT_NAME%%%_Demo_i18n.tsv"]]
-            ~demo_prefix:[code [txt "demo_"]]] ]
+            ~demo_prefix:[code [txt "demo_"]]]
+    ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server
@@ -37,4 +38,5 @@ let%shared () =
   %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo_i18n
     ( %%%MODULE_NAME%%%_page.Opt.connected_page @@ fun myid_o () () ->
       let%lwt p = page () in
-      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-i18n"]] myid_o p )
+      %%%MODULE_NAME%%%_container.page ~a:[a_class ["os-page-demo-i18n"]] myid_o p
+    )

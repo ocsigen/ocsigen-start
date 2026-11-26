@@ -15,7 +15,8 @@ let%shared handler myid_o () () =
     ; p [%i18n Demo.widget_ot]
     ; p [%i18n Demo.widget_see_drawer]
     ; p [%i18n Demo.widget_feel_free]
-    ; p [%i18n Demo.intro_3] ]
+    ; p [%i18n Demo.intro_3]
+    ]
 
 let%shared () =
   %%%MODULE_NAME%%%_base.App.register ~service:Demo_services.demo

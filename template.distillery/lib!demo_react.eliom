@@ -15,15 +15,16 @@ let%shared make_form msg f =
   in
   ignore
     [%client
-      (Lwt.async @@ fun () ->
-       let btn = Eliom.Content.Html.To_dom.of_element ~%btn
-       and inp = Eliom.Content.Html.To_dom.of_input ~%inp in
-       Lwt_js_events.clicks btn @@ fun _ _ ->
-       let v = Js_of_ocaml.Js.to_string inp##.value in
-       let%lwt () = ~%f v in
-       inp##.value := Js_of_ocaml.Js.string "";
-       Lwt.return_unit
-       : unit)];
+      ( Lwt.async @@ fun () ->
+        let btn = Eliom.Content.Html.To_dom.of_element ~%btn
+        and inp = Eliom.Content.Html.To_dom.of_input ~%inp in
+        Lwt_js_events.clicks btn @@ fun _ _ ->
+        let v = Js_of_ocaml.Js.to_string inp##.value in
+        let%lwt () = ~%f v in
+        inp##.value := Js_of_ocaml.Js.string "";
+        Lwt.return_unit
+        : unit
+      )];
   Eliom.Content.Html.D.div [inp; btn]
 
 (* Page for this demo *)
@@ -39,8 +40,9 @@ let%shared page () =
     (* Form that performs a cons (client-side). *)
     make_form [%i18n Demo.S.reactive_programming_button]
       [%client
-        (fun v -> Lwt.return (Eliom.Shared.ReactiveData.RList.cons v ~%h)
-         : string -> unit Lwt.t)]
+        ( fun v -> Lwt.return (Eliom.Shared.ReactiveData.RList.cons v ~%h)
+          : string -> unit Lwt.t
+        )]
   and l =
     (* Produce <li> items from l contents.
        The shared function will first be called once server or client-side
@@ -58,7 +60,8 @@ let%shared page () =
       ; F.p [F.txt [%i18n Demo.S.reactive_programming_2]]
       ; F.p [F.txt [%i18n Demo.S.reactive_programming_3]]
       ; inp
-      ; F.div [R.ul l] ]
+      ; F.div [R.ul l]
+      ]
 
 (* Service registration is done on both sides (shared section),
    so that pages can be generated from the server

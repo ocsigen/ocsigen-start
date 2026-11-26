@@ -24,9 +24,9 @@ let () = Os.Email.set_from_addr ("%%%PROJECT_NAME%%% team", "noreply@DEFAULT.DEF
    https://ocsigen.org/eliom/latest/clientserver/applications.html for more
    information. *)
 module%shared App = Eliom.Registration.App (struct
-    let application_name = application_name
-    let global_data_path = Some ["__global_data__"]
-  end)
+  let application_name = application_name
+  let global_data_path = Some ["__global_data__"]
+end)
 
 (* As the headers (stylesheets, etc) won't change, we ask Eliom not to
    update the <head> of the page when changing page. (This also avoids
