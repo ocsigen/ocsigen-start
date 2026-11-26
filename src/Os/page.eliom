@@ -22,6 +22,8 @@ open%shared Lwt.Syntax
 open%shared Eliom.Content.Html.F
 open%client Js_of_ocaml
 
+let%shared log_section = Logs.Src.create "os:page"
+
 [%%shared
 exception Predicate_failed of exn option
 
@@ -46,23 +48,65 @@ let%shared content ?(html_a = []) ?(a = []) ?title ?(head = []) body =
   ; body :> Html_types.body_content elt list
   }
 
+(* The exception that made the error page, without the wrapper of a failing
+   predicate. *)
+let%shared rec cause = function
+  | Predicate_failed (Some exc) -> cause exc
+  | exc -> exc
+
+(* The status of the error page for the exceptions known on both sides. *)
+let%shared shared_status exc =
+  match cause exc with
+  | Session.Not_connected | Session.Permission_denied | Predicate_failed None ->
+      Some `Forbidden
+  | Eliom.Common.Eliom_404 | Handlers.No_such_resource -> Some `Not_found
+  | _ -> None
+
 (* The HTTP status of the error page for [exc]: 403 when the user may not see
    the page, 404 when what it shows does not exist, 500 otherwise. No
    WWW-Authenticate challenge is sent, hence 403 rather than 401 for a
    visitor who is not connected. [Not_found] is a 500, as in Eliom: it
    usually comes from a bug in the handler (Hashtbl.find, List.assoc), which
    a 404 would hide. *)
-let%server rec error_status = function
-  | Session.Not_connected | Session.Permission_denied | Predicate_failed None ->
-      `Forbidden
-  | Predicate_failed (Some exc) -> error_status exc
-  | Eliom.Common.Eliom_404 | User.No_such_user | Db.No_such_user
-  | Db.No_such_resource | Handlers.No_such_resource ->
-      `Not_found
-  | _ -> `Internal_server_error
+let%server error_status exc =
+  match shared_status exc with
+  | Some status -> status
+  | None -> (
+    match cause exc with
+    | User.No_such_user | Db.No_such_user | Db.No_such_resource -> `Not_found
+    | _ -> `Internal_server_error
+  )
 
-(* On the client, Eliom.Registration.set_status does nothing. *)
-let%client error_status _ = `Internal_server_error
+(* On the client, Eliom.Registration.set_status does nothing, but the status
+   still chooses the log level. *)
+let%client error_status exc =
+  Option.value ~default:`Internal_server_error (shared_status exc)
+
+(* The log message, with the path of the request but not its parameters,
+   which may hold keys (see Services.action_link_service). *)
+let%shared error_message exc : (_, unit) Logs.msgf =
+ fun fmt ->
+  let what =
+    match exc with
+    | Predicate_failed None -> "the predicate returned false"
+    | Predicate_failed (Some exc) ->
+        "the predicate raised " ^ Printexc.to_string (cause exc)
+    | exc -> "exception " ^ Printexc.to_string exc
+  in
+  fmt "error page for %s: %s"
+    (Eliom.Request_info.get_original_full_path_string ())
+    what
+
+(* The error page may not show the exception, so log it: as an error for a
+   500, which usually comes from a bug, and as a debug message for a 403 or a
+   404, which are part of the normal flow. *)
+let%shared log_error status exc =
+  let level =
+    match status with
+    | `Internal_server_error -> Logs.Error
+    | `Forbidden | `Not_found -> Logs.Debug
+  in
+  Logs.msg ~src:log_section level (error_message exc)
 
 [%%shared
 module type PAGE = sig
@@ -172,9 +216,28 @@ module Make (C : PAGE) = struct
          content.body
       )
 
-  (* Set before the fallback builds the error page, which may set another
-     status. *)
-  let set_error_status exc = Eliom.Registration.set_status (error_status exc)
+  (* Log the exception and set the status before the fallback builds the
+     error page, which may set another status. *)
+  let set_error_status exc =
+    let status = error_status exc in
+    log_error status exc;
+    Eliom.Registration.set_status status
+
+  (* [f ()] if [predicate ()] returns [true]. Otherwise [fallback] gets
+     [Predicate_failed None], [Predicate_failed (Some exc)] if the predicate
+     raises [exc] ([exc] itself if it is already a [Predicate_failed]), or the
+     exception raised by [f]. The exceptions raised by [fallback] are not
+     caught here. *)
+  let guard predicate fallback f =
+    let fallback exc = Lwt.apply fallback exc in
+    Lwt.try_bind predicate
+      (fun b ->
+        if b then Lwt.catch f fallback else fallback (Predicate_failed None)
+      )
+      (function
+        | Predicate_failed _ as exc -> fallback exc
+        | exc -> fallback (Predicate_failed (Some exc))
+        )
 
   let page
       ?(predicate = C.default_predicate)
@@ -184,14 +247,7 @@ module Make (C : PAGE) = struct
       pp =
     let fallback gp pp exc = set_error_status exc; fallback gp pp exc in
     let* content =
-      Lwt.catch
-        (fun () ->
-          let* b = predicate gp pp in
-          if b
-          then Lwt.catch (fun () -> f gp pp) (fun exc -> fallback gp pp exc)
-          else fallback gp pp (Predicate_failed None)
-        )
-        (fun exc -> fallback gp pp (Predicate_failed (Some exc)))
+      guard (fun () -> predicate gp pp) (fallback gp pp) (fun () -> f gp pp)
     in
     Lwt.return (make_page content)
 
@@ -207,20 +263,10 @@ module Make (C : PAGE) = struct
       set_error_status exc; fallback myid_o gp pp exc
     in
     let f_wrapped myid gp pp =
-      Lwt.catch
-        (fun () ->
-          let* b = predicate (Some myid) gp pp in
-          if b
-          then
-            Lwt.catch
-              (fun () -> f myid gp pp)
-              (fun exc -> fallback (Some myid) gp pp exc)
-          else Lwt.fail (Predicate_failed None)
-        )
-        (function
-          | Predicate_failed _ as exc -> fallback (Some myid) gp pp exc
-          | exc -> fallback (Some myid) gp pp (Predicate_failed (Some exc))
-          )
+      guard
+        (fun () -> predicate (Some myid) gp pp)
+        (fallback (Some myid) gp pp)
+        (fun () -> f myid gp pp)
     in
     let* content =
       Lwt.catch
@@ -251,20 +297,10 @@ module Make (C : PAGE) = struct
         set_error_status exc; fallback myid_o gp pp exc
       in
       let f_wrapped (myid_o : Types.User.id option) gp pp =
-        Lwt.catch
-          (fun () ->
-            let* b = predicate myid_o gp pp in
-            if b
-            then
-              Lwt.catch
-                (fun () -> f myid_o gp pp)
-                (fun exc -> fallback myid_o gp pp exc)
-            else Lwt.fail (Predicate_failed None)
-          )
-          (function
-            | Predicate_failed _ as exc -> fallback myid_o gp pp exc
-            | exc -> fallback myid_o gp pp (Predicate_failed (Some exc))
-            )
+        guard
+          (fun () -> predicate myid_o gp pp)
+          (fallback myid_o gp pp)
+          (fun () -> f myid_o gp pp)
       in
       let* content =
         Session.Opt.connected_fun ?allow ?deny

@@ -15,7 +15,13 @@
   Db.No_such_user, Db.No_such_resource, Handlers.No_such_resource), 500 for
   any other exception, Not_found included, as in Eliom. They used to be
   sent with 200. The fallback may set another one with
-  Eliom.Registration.set_status (Eliom 13).
+  Eliom.Registration.set_status (Eliom 13). The exception is logged on
+  the source os:page with the path of the request, on both sides: as an
+  error for a 500, at debug level otherwise.
+* Os.Page: an exception raised by the fallback is no longer caught as if
+  the predicate had raised it, which called the fallback again. In
+  Os.Page.page, a Predicate_failed raised by the predicate is no longer
+  wrapped in another one, as in connected_page.
 * Os.Session also puts the service session in the group of the user, as
   it already did for the data sessions: at login, when the session is
   restored, and when the service session has left the group. Services

@@ -137,6 +137,9 @@ module Make (_ : PAGE) : sig
       the status of [exc]. No [WWW-Authenticate] challenge is sent, hence
       403 rather than 401 for a visitor who is not connected. The fallback
       may set another status with [Eliom.Registration.set_status].
+      The exception is logged on the log source [os:page], with the path of
+      the request: as an error for a 500, at debug level otherwise. On the
+      client, which sends no HTTP status, the level is chosen in the same way.
   *)
 
   module Opt : sig
@@ -151,7 +154,7 @@ module Make (_ : PAGE) : sig
       -> Html_types.html Eliom.Content.Html.elt Lwt.t
     (** Wrapper for pages that first checks if the user is connected.
       See {!Session.Opt.connected_fun}.
-      The error page gets an HTTP status, as with {!page}.
+      The error page gets an HTTP status and is logged, as with {!page}.
   *)
   end
 
@@ -166,6 +169,6 @@ module Make (_ : PAGE) : sig
     -> Html_types.html Eliom.Content.Html.elt Lwt.t
   (** Wrapper for pages that first checks if the user is connected.
       See {!Session.connected_fun}.
-      The error page gets an HTTP status, as with {!page}.
+      The error page gets an HTTP status and is logged, as with {!page}.
   *)
 end
