@@ -5,6 +5,8 @@
   connected_page, if it raised Not_connected, it was called again with
   no user and Not_connected. The fallback is now called after
   Session.connected_fun has returned.
+* Os.Date.smart_date no longer adds a trailing space after the day. This
+  also removes the double space before "at" in smart_time.
 
 ===== 9.0.0 (2026-11-26) =====
 * Module namespace modernization

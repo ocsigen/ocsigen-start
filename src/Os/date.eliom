@@ -191,7 +191,7 @@ let%shared smart_date ?(now = now ()) local_date =
   | _ ->
       let format =
         if Date.year local_date = Date.year today
-        then "%A %B %d "
+        then "%A %B %d"
         else "%A %B %d, %Y"
       in
       Printer.Date.sprint format local_date
