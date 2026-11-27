@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Lib/Email_or_phone/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/Lib/Email_or_phone/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Lib/Email_or_phone/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/Lib/Email_or_phone/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,21 +229,17 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Lib.Email_or_phone</span></code></h1><p>Parse strings that can be e-mails or phones.</p></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p><a href="../../../../ocsigen-start.client/Os/Lib/Email_or_phone/index.html">See this page in the Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Lib.Email_or_phone</span></code></h1><p>Parse strings that can be e-mails or phones.</p></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec type anchored" id="type-t"><code><span><span class="keyword">type</span> t</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-of_json"><code><span><span class="keyword">val</span> of_json : <span><a href="../../../../../../js_of_ocaml/dev/js_of_ocaml/Deriving_Json_lexer/index.html#type-lexbuf">Deriving_Json_lexer.lexbuf</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-to_json"><code><span><span class="keyword">val</span> to_json : <span><a href="https://ocaml.org/p/ocaml-compiler/5.4.0/doc/Stdlib/Buffer/index.html#type-t">Buffer.t</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-json"><code><span><span class="keyword">val</span> json : <span><a href="#type-t">t</a> <a href="../../../../../../js_of_ocaml/dev/js_of_ocaml/Deriving_Json/index.html#type-t">Deriving_Json.t</a></span></span></code></div></div><div class="odoc-spec"><div class="spec type anchored" id="type-y"><code><span><span class="keyword">type</span> y</span><span> = </span><span>[ </span></code><ol><li id="type-y.Email" class="def variant constructor anchored"><code><span>| </span><span>`Email</span></code></li><li id="type-y.Phone" class="def variant constructor anchored"><code><span>| </span><span>`Phone</span></code></li></ol><code><span> ]</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-y"><code><span><span class="keyword">val</span> y : <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-y">y</a></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-to_string"><code><span><span class="keyword">val</span> to_string : <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> string</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-of_string"><code><span><span class="keyword">val</span> of_string : <span><span class="label">only_mail</span>:bool <span class="arrow">&#45;&gt;</span></span> <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> option</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Almost"><code><span><span class="keyword">module</span> <a href="Almost/index.html">Almost</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-of_almost"><code><span><span class="keyword">val</span> of_almost : <span><a href="Almost/index.html#type-t">Almost.t</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> option</span></span></code></div></div></div>
       </article>
     </div>
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

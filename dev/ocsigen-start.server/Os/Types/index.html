@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../ocsigen-start.server/Os/Types/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../ocsigen-start.client/Os/Types/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../ocsigen-start.server/Os/Types/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../ocsigen-start.client/Os/Types/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,21 +229,17 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Os.Types</span></code></h1><p>Data types</p><p>This module defines types used in ocsigen-start in multiple files. It gives a more readable interface (for example by using <code>Types.User.id</code> instead of <code>int64</code>). Put all most used types in this file avoids to have dependencies between different modules for only one type. *</p></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p><a href="../../../ocsigen-start.client/Os/Types/index.html">See this page in the Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Os.Types</span></code></h1><p>Data types</p><p>This module defines types used in ocsigen-start in multiple files. It gives a more readable interface (for example by using <code>Types.User.id</code> instead of <code>int64</code>). Put all most used types in this file avoids to have dependencies between different modules for only one type. *</p></header>
         <div class="odoc-content"><p>Types related to users.</p><div class="odoc-spec"><div class="spec module anchored" id="module-User"><code><span><span class="keyword">module</span> <a href="User/index.html">User</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><p>Types related to action link keys</p><div class="odoc-spec"><div class="spec module anchored" id="module-Action_link_key"><code><span><span class="keyword">module</span> <a href="Action_link_key/index.html">Action_link_key</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Group"><code><span><span class="keyword">module</span> <a href="Group/index.html">Group</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div></div>
       </article>
     </div>
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

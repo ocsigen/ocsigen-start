@@ -57,12 +57,12 @@ val desc_of_group : Types.Group.t -> string option
 ```ocaml
 val create : ?description:string -> string -> Types.Group.t Lwt.t
 ```
-`create ~description name` creates a new group in the database and returns it as a record of type `Types.Group.t`.
+`create ?description name` returns the group named `name`, and creates it in the database first if it does not exist. `description` is used only when the group is created.
 
 ```ocaml
 val group_of_name : string -> Types.Group.t Lwt.t
 ```
-Overwrites the function `group_of_name` of `Db.Group` and use the `get` function of the cache module.
+`group_of_name name` returns the group named `name`. The result is cached for the duration of the request. Fails with [`No_such_group`](./#exception-No_such_group) if there is no such group.
 
 ```ocaml
 val add_user_in_group : 

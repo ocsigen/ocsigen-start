@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Fcm_notif/Data/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Fcm_notif/Data/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,21 +229,17 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Fcm_notif.Data</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p>This page has no equivalent in the <a href="../../../../ocsigen-start.client/Os/index.html">Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Fcm_notif.Data</span></code></h1></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec type anchored" id="type-t"><code><span><span class="keyword">type</span> t</span></code></div><div class="spec-doc"><p>The type representing a data payload.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-to_json"><code><span><span class="keyword">val</span> to_json : <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="https://ocaml.org/p/yojson/3.0.0/doc/Yojson/Safe/index.html#type-t">Yojson.Safe.t</a></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-to_list"><code><span><span class="keyword">val</span> to_list : <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <span><span>(string * <a href="https://ocaml.org/p/yojson/3.0.0/doc/Yojson/Safe/index.html#type-t">Yojson.Safe.t</a>)</span> list</span></span></code></div><div class="spec-doc"><p><code>to_list data</code> returns the representation of the data as a list of tuples <code>(data_key, json_value)</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-empty"><code><span><span class="keyword">val</span> empty : <span>unit <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div><div class="spec-doc"><p><code>empty ()</code> creates an empty data value.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_raw_string"><code><span><span class="keyword">val</span> add_raw_string : <span>string <span class="arrow">&#45;&gt;</span></span> <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_raw_string key content data</code></p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_raw_json"><code><span><span class="keyword">val</span> add_raw_json : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="https://ocaml.org/p/yojson/3.0.0/doc/Yojson/Safe/index.html#type-t">Yojson.Safe.t</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_raw_json key content_json data</code></p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-PhoneGap"><code><span><span class="keyword">module</span> <a href="PhoneGap/index.html">PhoneGap</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div><div class="spec-doc"><p>The Cordova plugin phonegap-plugin-push interprets some payloads defined in the data key. The following module defines an interface to these payloads. You can find the payloads list here: https://github.com/phonegap/phonegap-plugin-push/blob/v2.0.x/docs/PAYLOAD.md Be aware that if you use this plugin, all attributes must be added in the data object and not in the notification object which must be empty.</p></div></div></div>
       </article>
     </div>
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

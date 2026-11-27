@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Db/Phone/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Db/Phone/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,21 +229,17 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Db.Phone</span></code></h1><p>Manage user phone numbers</p></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p>This page has no equivalent in the <a href="../../../../ocsigen-start.client/Os/index.html">Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Db.Phone</span></code></h1><p>Manage user phone numbers</p></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-add"><code><span><span class="keyword">val</span> add : <span>int64 <span class="arrow">&#45;&gt;</span></span> <span>string <span class="arrow">&#45;&gt;</span></span> <span>bool <a href="../../../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>add userid number</code> associates <code>number</code> with the user <code>userid</code>. Returns <code>true</code> on success.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-exists"><code><span><span class="keyword">val</span> exists : <span>string <span class="arrow">&#45;&gt;</span></span> <span>bool <a href="../../../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Does the number exist in the database?</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-userid"><code><span><span class="keyword">val</span> userid : <span>string <span class="arrow">&#45;&gt;</span></span> <span><span><a href="../../Types/User/index.html#type-id">Types.User.id</a> option</span> <a href="../../../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>The user corresponding to a phone number (if any).</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-delete"><code><span><span class="keyword">val</span> delete : <span>int64 <span class="arrow">&#45;&gt;</span></span> <span>string <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="../../../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>delete userid number</code> deletes <code>number</code>, which has to be associated to <code>userid</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get_list"><code><span><span class="keyword">val</span> get_list : <span>int64 <span class="arrow">&#45;&gt;</span></span> <span><span>string list</span> <a href="../../../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>get_list userid</code> returns the list of number associated to the user.</p></div></div></div>
       </article>
     </div>
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

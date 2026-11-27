@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../ocsigen-start.server/Os/User_proxy/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../ocsigen-start.client/Os/User_proxy/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../ocsigen-start.server/Os/User_proxy/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../ocsigen-start.client/Os/User_proxy/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,21 +229,17 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Os.User_proxy</span></code></h1><p>This module implements a cache of user using <a href="../../../../../eliom/dev/eliom.server/Eliom/Cscache/index.html"><code>Eliom.Cscache</code></a> which allows to keep synchronized the cache between the client and the server. Even if there is a cache implemented in <a href="../User/index.html"><code>User</code></a> to avoid to do database requests, this last one is implementing only server side. Same for <a href="../Request_cache/index.html"><code>Request_cache</code></a> which is also only server-side.</p></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p><a href="../../../ocsigen-start.client/Os/User_proxy/index.html">See this page in the Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Os.User_proxy</span></code></h1><p>This module implements a cache of user using <a href="../../../../../eliom/dev/eliom.server/Eliom/Cscache/index.html"><code>Eliom.Cscache</code></a> which allows to keep synchronized the cache between the client and the server. Even if there is a cache implemented in <a href="../User/index.html"><code>User</code></a> to avoid to do database requests, this last one is implementing only server side. Same for <a href="../Request_cache/index.html"><code>Request_cache</code></a> which is also only server-side.</p></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-cache"><code><span><span class="keyword">val</span> cache : <span><span>(<a href="../Types/User/index.html#type-id">Types.User.id</a>, <a href="../Types/User/index.html#type-t">Types.User.t</a>)</span> <a href="../../../../../eliom/dev/eliom.server/Eliom/Cscache/index.html#type-t">Eliom.Cscache.t</a></span></span></code></div><div class="spec-doc"><p>Cache keeping userid and user information as a <code>Types.user</code> type.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get_data_from_db"><code><span><span class="keyword">val</span> get_data_from_db : <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span> <span><a href="../Types/User/index.html#type-id">Types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../Types/User/index.html#type-t">Types.User.t</a> <a href="../../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>get_data_from_db myid_o userid</code> returns the user which has ID <code>userid</code>. For the moment, <code>myid_o</code> is not used but it will be use later.</p><p>Data comes from the database, not the cache.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get_data_from_db_for_client"><code><span><span class="keyword">val</span> get_data_from_db_for_client : <span><span class="type-var">'a</span> <span class="arrow">&#45;&gt;</span></span> <span><a href="../Types/User/index.html#type-id">Types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../Types/User/index.html#type-t">Types.User.t</a> <a href="../../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>get_data_from_db_for_client myid_o userid</code> returns the user which has ID <code>userid</code>. For the moment, <code>myid_o</code> is not used but it will be use later.</p><p>Data comes from the database, not the cache.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get_data"><code><span><span class="keyword">val</span> get_data : <span><a href="../Types/User/index.html#type-id">Types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../Types/User/index.html#type-t">Types.User.t</a> <a href="../../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>get_data userid</code> returns the user which has ID <code>userid</code>. For the moment, <code>myid_o</code> is not used but it will be use later.</p><p>Data comes from the database, not the cache.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get_data_from_cache"><code><span><span class="keyword">val</span> get_data_from_cache : <span><a href="../Types/User/index.html#type-id">Types.User.id</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="../Types/User/index.html#type-t">Types.User.t</a> <a href="../../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>get_data_from_cache userid</code> returns the user with ID <code>userid</code> saved in cache.</p></div></div></div>
       </article>
     </div>
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

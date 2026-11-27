@@ -87,9 +87,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../../ocsigen-start.server/Os/Icons/Register/argument-1-_/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../../ocsigen-start.client/Os/Icons/Register/argument-1-_/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -164,9 +164,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../../ocsigen-start.server/Os/Icons/Register/argument-1-_/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../../ocsigen-start.client/Os/Icons/Register/argument-1-_/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -228,7 +228,11 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Parameter <code><span>Register._</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p><a href="../../../../../ocsigen-start.client/Os/Icons/Register/argument-1-_/index.html">See this page in the Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Parameter <code><span>Register._</span></code></h1></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-user"><code><span><span class="keyword">val</span> user : 
   <span><span class="optlabel">?a</span>:<span><span><a href="../../../../../../../tyxml/dev/tyxml/Html_types/index.html#type-i_attrib">Html_types.i_attrib</a> <a href="../../../../../../../eliom/dev/eliom.server/Eliom/Content/Html/D/index.html#type-attrib">Eliom.Content.Html.D.attrib</a></span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span>unit <span class="arrow">&#45;&gt;</span></span>
@@ -244,14 +248,6 @@
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

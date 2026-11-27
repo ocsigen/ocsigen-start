@@ -169,7 +169,7 @@ val __link : unit
 ```ocaml
 val restart_process : unit -> unit
 ```
-`restart_process ()` restarts the client. For mobile application, it restarts the application by going to `"index.html"`. For other types of clients, [`Eliom.Service.reload_action`](./../../eliom/eliom.client/Eliom-Service.md#val-reload_action) is used as argument of [`Eliom.Client.exit_to`](./../../eliom/eliom.client/Eliom-Client.md#val-exit_to)
+`restart_process ()` restarts the client. For mobile application, it restarts the application by going to `"index.html"`. For other types of clients, [`Eliom.Service.reload_action`](../../../eliom/dev/eliom.client/Eliom-Service.md#val-reload_action) is used as argument of [`Eliom.Client.exit_to`](../../../eliom/dev/eliom.client/Eliom-Client.md#val-exit_to)
 
 ```ocaml
 val set_error_handler : (exn -> unit Lwt.t) -> unit
@@ -376,10 +376,12 @@ val smart_date : ?now:local_calendar -> local_calendar -> string
 - if `local_date` is the day after `now`, `"Tomorrow"` is returned.
 - if `now` and `local_date` has the same year, it returns the date in the format: `"%A %B %d"`.
 - else the year is added at the end in the same format than the previous case.
+The result is in English (not translated).
+
 ```ocaml
 val smart_hours_minutes : local_calendar -> string
 ```
-`smart_hours_minutes date` returns the time in the format `"%I:%M%P"`. If the timezone is unknown, GMT is added.
+`smart_hours_minutes date` returns the time in the format `"%-I:%M%P"` (for instance `"3:12pm"`). If the timezone is unknown, GMT is added.
 
 ```ocaml
 val smart_interval : 
@@ -2032,7 +2034,7 @@ parameter a attributes of the form.
 ```ocaml
 val avatar : Types.User.t -> [> `I | `Img ] Eliom.Content.Html.F.elt
 ```
-`avatar user` creates an image HTML tag (with Eliom.Content.HTML.F) with an alt attribute to `"picture"` and with class `"os-avatar"`. If the user has no avatar, the default icon representing the user (see [`Ot.Icons.F.user`](./../../ocsigen-toolkit/ocsigen-toolkit.client/Ot-Icons-F.md#val-user)) is returned.
+`avatar user` creates an image HTML tag (with Eliom.Content.HTML.F) with an alt attribute to `"picture"` and with class `"os-avatar"`. If the user has no avatar, the default icon representing the user (see [`Ot.Icons.F.user`](../../../ocsigen-toolkit/dev/ocsigen-toolkit.client/Ot-Icons-F.md#val-user)) is returned.
 
 parameter user the user.
 ```ocaml
@@ -3094,7 +3096,7 @@ Time zone and date management for Web applications.
 
 This module provides some useful functions to detect and manage time zones, print dates, etc.
 
-It's essentially a wrapper to [`CalendarLib.Calendar.t`](./../../calendar/calendar/CalendarLib-Calendar.md#type-t) through an abstract type and by using zone and date data provided by the browser. See `calendar` OCaml library for more information about `CalendarLib` module. Specifiers from `calendar` OCaml library are used: refer you to the official documentation (http://calendar.forge.ocamlcore.org/doc) to know the significations.
+It's essentially a wrapper to [`CalendarLib.Calendar.t`](https://ocaml.org/p/calendar/3.0.0/doc/calendar/CalendarLib/Calendar/index.html#type-t) through an abstract type and by using zone and date data provided by the browser. See `calendar` OCaml library for more information about `CalendarLib` module. Specifiers from `calendar` OCaml library are used: refer you to the official documentation (http://calendar.forge.ocamlcore.org/doc) to know the significations.
 
 ```ocaml
 type local_calendar
@@ -3110,7 +3112,7 @@ val local_calendar_to_json : Buffer.t -> local_calendar -> unit
 ```ocaml
 val local_calendar_json : local_calendar Deriving_Json.t
 ```
-JSON codec for [`local_calendar`](./#type-local_calendar) (the `_of_json`/`_to_json` pair follows the [`Deriving_Json`](./../../js_of_ocaml/js_of_ocaml.deriving/Deriving_Json.md) convention so that `[%json: local_calendar]` resolves to [`local_calendar_json`](./#val-local_calendar_json)). Suitable for persisting values through Ocsipersist. Encodes as a Unix float.
+JSON codec for [`local_calendar`](./#type-local_calendar) (the `_of_json`/`_to_json` pair follows the [`Deriving_Json`](../../../js_of_ocaml/dev/js_of_ocaml/Deriving_Json.md) convention so that `[%json: local_calendar]` resolves to [`local_calendar_json`](./#val-local_calendar_json)). Suitable for persisting values through Ocsipersist. Encodes as a Unix float.
 
 ```ocaml
 val to_utc : ?timezone:string -> local_calendar -> CalendarLib.Calendar.t
@@ -3177,10 +3179,12 @@ val smart_date : ?now:local_calendar -> local_calendar -> string
 - if `local_date` is the day after `now`, `"Tomorrow"` is returned.
 - if `now` and `local_date` has the same year, it returns the date in the format: `"%A %B %d"`.
 - else the year is added at the end in the same format than the previous case.
+The result is in English (not translated).
+
 ```ocaml
 val smart_hours_minutes : local_calendar -> string
 ```
-`smart_hours_minutes date` returns the time in the format `"%I:%M%P"`. If the timezone is unknown, GMT is added.
+`smart_hours_minutes date` returns the time in the format `"%-I:%M%P"` (for instance `"3:12pm"`). If the timezone is unknown, GMT is added.
 
 ```ocaml
 val smart_interval : 
@@ -4865,12 +4869,12 @@ val desc_of_group : Types.Group.t -> string option
 ```ocaml
 val create : ?description:string -> string -> Types.Group.t Lwt.t
 ```
-`create ~description name` creates a new group in the database and returns it as a record of type `Types.Group.t`.
+`create ?description name` returns the group named `name`, and creates it in the database first if it does not exist. `description` is used only when the group is created.
 
 ```ocaml
 val group_of_name : string -> Types.Group.t Lwt.t
 ```
-Overwrites the function `group_of_name` of `Db.Group` and use the `get` function of the cache module.
+`group_of_name name` returns the group named `name`. The result is cached for the duration of the request. Fails with [`No_such_group`](./#exception-No_such_group) if there is no such group.
 
 ```ocaml
 val add_user_in_group : 
@@ -7326,7 +7330,7 @@ val update_main_email : userid:Types.User.id -> email:string -> unit Lwt.t
 
 # Module `Os.User_proxy`
 
-This module implements a cache of user using [`Eliom.Cscache`](./../../eliom/eliom.server/Eliom-Cscache.md) which allows to keep synchronized the cache between the client and the server. Even if there is a cache implemented in [`User`](./Os-User.md) to avoid to do database requests, this last one is implementing only server side. Same for [`Request_cache`](./Os-Request_cache.md) which is also only server-side.
+This module implements a cache of user using [`Eliom.Cscache`](../../../eliom/dev/eliom.server/Eliom-Cscache.md) which allows to keep synchronized the cache between the client and the server. Even if there is a cache implemented in [`User`](./Os-User.md) to avoid to do database requests, this last one is implementing only server side. Same for [`Request_cache`](./Os-Request_cache.md) which is also only server-side.
 
 ```ocaml
 val cache : (Types.User.id, Types.User.t) Eliom.Cscache.t
@@ -7499,7 +7503,7 @@ parameter a attributes of the form.
 ```ocaml
 val avatar : Types.User.t -> [> `I | `Img ] Eliom.Content.Html.F.elt
 ```
-`avatar user` creates an image HTML tag (with Eliom.Content.HTML.F) with an alt attribute to `"picture"` and with class `"os-avatar"`. If the user has no avatar, the default icon representing the user (see [`Ot.Icons.F.user`](./../../ocsigen-toolkit/ocsigen-toolkit.server/Ot-Icons-F.md#val-user)) is returned.
+`avatar user` creates an image HTML tag (with Eliom.Content.HTML.F) with an alt attribute to `"picture"` and with class `"os-avatar"`. If the user has no avatar, the default icon representing the user (see [`Ot.Icons.F.user`](../../../ocsigen-toolkit/dev/ocsigen-toolkit.server/Ot-Icons-F.md#val-user)) is returned.
 
 parameter user the user.
 ```ocaml
@@ -7755,7 +7759,7 @@ This module provides functions and types about users.
 ```ocaml
 module User_proxy : sig ... end
 ```
-This module implements a cache of user using [`Eliom.Cscache`](./../../eliom/eliom.server/Eliom-Cscache.md) which allows to keep synchronized the cache between the client and the server. Even if there is a cache implemented in [`User`](./Os-User.md) to avoid to do database requests, this last one is implementing only server side. Same for [`Request_cache`](./Os-Request_cache.md) which is also only server-side.
+This module implements a cache of user using [`Eliom.Cscache`](../../../eliom/dev/eliom.server/Eliom-Cscache.md) which allows to keep synchronized the cache between the client and the server. Even if there is a cache implemented in [`User`](./Os-User.md) to avoid to do database requests, this last one is implementing only server side. Same for [`Request_cache`](./Os-Request_cache.md) which is also only server-side.
 
 ```ocaml
 module User_view : sig ... end

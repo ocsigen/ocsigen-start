@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../ocsigen-start.server/Os/Notif/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../ocsigen-start.client/Os/Notif/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../ocsigen-start.server/Os/Notif/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../ocsigen-start.client/Os/Notif/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,7 +229,11 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Os.Notif</span></code></h1><p>Server to client notifications.</p><p>This module is a version of <code>Eliom.Notif</code> that fixes the types <code>identity</code> of <code>Eliom.Notif.S</code> to <code>Types.User.id option</code> (<code>option</code> so that users can be notified that are not logged in). It takes care of (de)initialisation so <code>init</code> and <code>deinit</code> need not be called anymore. Also it adds a specialised version of <code>unlisten_user</code>.</p></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p><a href="../../../ocsigen-start.client/Os/Notif/index.html">See this page in the Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Os.Notif</span></code></h1><p>Server to client notifications.</p><p>This module is a version of <code>Eliom.Notif</code> that fixes the types <code>identity</code> of <code>Eliom.Notif.S</code> to <code>Types.User.id option</code> (<code>option</code> so that users can be notified that are not logged in). It takes care of (de)initialisation so <code>init</code> and <code>deinit</code> need not be called anymore. Also it adds a specialised version of <code>unlisten_user</code>.</p></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec module-type anchored" id="module-type-S"><code><span><span class="keyword">module</span> <span class="keyword">type</span> <a href="module-type-S/index.html">S</a></span><span> = <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module-type anchored" id="module-type-ARG"><code><span><span class="keyword">module</span> <span class="keyword">type</span> <a href="module-type-ARG/index.html">ARG</a></span><span> = <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div><div class="spec-doc"><p><code>ARG</code> is for making <code>Make</code>. It is a simplified version of <code>Eliom.Notif.ARG</code>.</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Make"><code><span><span class="keyword">module</span> <a href="Make/index.html">Make</a></span><span>
   (<a href="Make/argument-1-A/index.html">A</a> : <a href="module-type-ARG/index.html">ARG</a>) : 
   <a href="module-type-S/index.html">S</a>
@@ -246,14 +250,6 @@
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

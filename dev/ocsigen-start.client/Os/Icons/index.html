@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../ocsigen-start.server/Os/Icons/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../ocsigen-start.client/Os/Icons/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -162,9 +162,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../ocsigen-start.server/Os/Icons/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../ocsigen-start.client/Os/Icons/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -223,21 +223,17 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Os.Icons</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-client" role="note">
+<p>You are reading the <strong>Client API</strong> documentation. This code runs in the browser, compiled to JavaScript or WebAssembly.</p>
+<p><a href="../../../ocsigen-start.server/Os/Icons/index.html">See this page in the Server API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Os.Icons</span></code></h1></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec module-type anchored" id="module-type-ICSIG"><code><span><span class="keyword">module</span> <span class="keyword">type</span> <a href="module-type-ICSIG/index.html">ICSIG</a></span><span> = <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-D"><code><span><span class="keyword">module</span> <a href="D/index.html">D</a></span><span> : <a href="module-type-ICSIG/index.html">ICSIG</a></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-F"><code><span><span class="keyword">module</span> <a href="F/index.html">F</a></span><span> : <a href="module-type-ICSIG/index.html">ICSIG</a></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Register"><code><span><span class="keyword">module</span> <a href="Register/index.html">Register</a></span><span> (<a href="Register/argument-1-_/index.html">_</a> : <a href="module-type-ICSIG/index.html">ICSIG</a>) (<a href="Register/argument-2-_/index.html">_</a> : <a href="module-type-ICSIG/index.html">ICSIG</a>) : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div></div>
       </article>
     </div>
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Request_cache/Make/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Request_cache/Make/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,21 +229,17 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Request_cache.Make</span></code></h1><p>Functor which creates a module <a href="../module-type-Cache_sig/index.html"><code>Cache_sig</code></a>.</p></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p>This page has no equivalent in the <a href="../../../../ocsigen-start.client/Os/index.html">Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Request_cache.Make</span></code></h1><p>Functor which creates a module <a href="../module-type-Cache_sig/index.html"><code>Cache_sig</code></a>.</p></header>
         <div class="odoc-content"><h2 id="parameters">Parameters</h2><div class="odoc-spec"><div class="spec parameter anchored" id="argument-1-M"><code><span><span class="keyword">module</span> </span><span><a href="argument-1-M/index.html">M</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><h2 id="signature">Signature</h2><div class="odoc-spec"><div class="spec type anchored" id="type-key"><code><span><span class="keyword">type</span> key</span><span> = <a href="argument-1-M/index.html#type-key">M.key</a></span></code></div><div class="spec-doc"><p>The type of the key</p></div></div><div class="odoc-spec"><div class="spec type anchored" id="type-value"><code><span><span class="keyword">type</span> value</span><span> = <a href="argument-1-M/index.html#type-value">M.value</a></span></code></div><div class="spec-doc"><p>The type of the value</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-has"><code><span><span class="keyword">val</span> has : <span><a href="#type-key">key</a> <span class="arrow">&#45;&gt;</span></span> bool</span></code></div><div class="spec-doc"><p>Returns <code>true</code> if the key has been stored into the cache.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-set"><code><span><span class="keyword">val</span> set : <span><a href="#type-key">key</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-value">value</a> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div><div class="spec-doc"><p>Set the corresponding <code>value</code> for a key.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-reset"><code><span><span class="keyword">val</span> reset : <span><a href="#type-key">key</a> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div><div class="spec-doc"><p>Remove a <code>value</code> for the given key.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get"><code><span><span class="keyword">val</span> get : <span><a href="#type-key">key</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-value">value</a> <a href="../../../../../../lwt/dev/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Get the value corresponding to the given key.</p></div></div></div>
       </article>
     </div>
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

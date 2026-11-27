@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Fcm_notif/Response/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Fcm_notif/Response/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,21 +229,17 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Fcm_notif.Response</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p>This page has no equivalent in the <a href="../../../../ocsigen-start.client/Os/index.html">Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Fcm_notif.Response</span></code></h1></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec module anchored" id="module-Results"><code><span><span class="keyword">module</span> <a href="Results/index.html">Results</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec type anchored" id="type-t"><code><span><span class="keyword">type</span> t</span></code></div><div class="spec-doc"><p>The type representing a FCM response</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-multicast_id_of_t"><code><span><span class="keyword">val</span> multicast_id_of_t : <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> string</span></code></div><div class="spec-doc"><p><code>multicast_id_of_t response</code> returns the unique ID identifying the multicast message.</p><p>NOTE: In FCM documentation, it is defined as a number but the ID is sometimes too big to be considered as an OCaml integer.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-success_of_t"><code><span><span class="keyword">val</span> success_of_t : <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> int</span></code></div><div class="spec-doc"><p><code>success_of_t response</code> returns the number of messages that were processed without an error.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-failure_of_t"><code><span><span class="keyword">val</span> failure_of_t : <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> int</span></code></div><div class="spec-doc"><p><code>failure_of_t response</code> returns the number of messages that could not be processed.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-canonical_ids_of_t"><code><span><span class="keyword">val</span> canonical_ids_of_t : <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> int</span></code></div><div class="spec-doc"><p><code>canonical_ids_of_t response</code> returns the number of results that contain a canonical registration token. See https://developers.google.com/cloud-messaging/registration#canonical-ids for more discussion of this topic.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-results_of_t"><code><span><span class="keyword">val</span> results_of_t : <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="Results/index.html#type-t">Results.t</a> list</span></span></code></div><div class="spec-doc"><p><code>results_of_t response</code> returns the status of the messages processed.</p></div></div></div>
       </article>
     </div>
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,
