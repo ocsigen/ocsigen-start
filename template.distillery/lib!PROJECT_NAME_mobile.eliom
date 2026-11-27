@@ -60,7 +60,13 @@ let%client () =
     (* Initialize the application server-side; there should be a
        single initial request for that. *)
     Os.Date.disable_auto_init ();
-    let%lwt _ = Lwt_js_events.onload () in
+    (* Wait for the load event only if it has not happened yet, in case
+       the program starts after it (for instance a WebAssembly build). *)
+    let%lwt () =
+      if Js.to_string Dom_html.document##.readyState = "complete"
+      then Lwt.return_unit
+      else Lwt.map ignore (Lwt_js_events.onload ())
+    in
     handle_initial_url ()
   )
   else Lwt.return_unit
