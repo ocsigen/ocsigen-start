@@ -8,6 +8,7 @@
 ;; the top of its pages; the manual nav is shared.
 (project ocsigen-start)
 (title Start)
+(llms (title "Ocsigen Start"))  ; the llms.txt index (for AIs): the site label is short
 (url-prefix /ocsigen-start)
 (css /css/style.css /css/ocsigen-odoc.css)  ; shared Ocsigen theme (wodoc's default is a built-in one)
 (landing index.html)
