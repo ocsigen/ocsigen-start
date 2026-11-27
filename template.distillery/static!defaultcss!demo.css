@@ -165,6 +165,9 @@
   font-family: monospace;
   font-size: 0.9em; }
 
+.os-page-demo-forms > .os-body .demo-forms-rejected {
+  color: #c14768; }
+
 .os-page-demo-forms > .os-body input[type="text"],
 .os-page-demo-forms > .os-body input[type="email"],
 .os-page-demo-forms > .os-body input[type="number"],

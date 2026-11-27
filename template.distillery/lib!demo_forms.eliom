@@ -8,12 +8,124 @@ open%client Js_of_ocaml_lwt
 let%shared section title content =
   div ~a:[a_class ["demo-forms-section"]] (h3 [txt title] :: content)
 
+(* "label: " in the language of the user (French puts a space before ":") *)
+let%shared with_colon label = [%i18n Demo.S.form_with_colon ~label]
+
 let%shared output_line label signal =
   p
     ~a:[a_class ["demo-forms-output"]]
-    [ strong [txt (label ^ ": ")]
+    [ strong [txt (with_colon label)]
     ; R.txt (Eliom.Shared.React.S.map [%shared fun v -> v] signal)
     ]
+
+(* -- standard form, sent to the server with an RPC -- *)
+
+type%shared gender = Female | Male | Other [@@deriving json]
+
+(* What the standard form sends to the server. The password is not sent: a
+   real application sends it to a server-side function that only stores its
+   hash (as Os.User does). *)
+type%shared standard_form =
+  { name : string
+  ; email : string
+  ; phone : string
+  ; age : string
+  ; birthdate : string
+  ; time : string
+  ; message : string
+  ; country : string
+  ; gender : gender option
+  ; terms : bool
+  ; satisfaction : string
+  ; color : string
+  }
+[@@deriving json]
+
+(* The server answers with data, not with messages: the client displays them
+   in the language of the user. *)
+type%shared form_error =
+  | Empty_name
+  | Too_long
+  | Bad_age
+  | Bad_country
+  | Terms_not_accepted
+[@@deriving json]
+
+let%shared countries =
+  ["fr", "France"; "de", "Germany"; "it", "Italy"; "es", "Spain"]
+
+let%server max_length = 1000
+
+let%server is_whole_number s =
+  s <> "" && String.for_all (function '0' .. '9' -> true | _ -> false) s
+
+let%server check_age = function
+  | "" -> true
+  | age ->
+      is_whole_number age && String.length age <= 3 && int_of_string age <= 150
+
+(* Anyone can call an RPC, with any values: the server checks them. The JSON
+   decoder already rejects a [gender] that is not one of the three. *)
+let%server check_standard_form f =
+  let fields =
+    [ f.name
+    ; f.email
+    ; f.phone
+    ; f.age
+    ; f.birthdate
+    ; f.time
+    ; f.message
+    ; f.country
+    ; f.satisfaction
+    ; f.color
+    ]
+  in
+  List.filter_map Fun.id
+    [ (if String.trim f.name = "" then Some Empty_name else None)
+    ; ( if List.exists (fun s -> String.length s > max_length) fields
+        then Some Too_long
+        else None
+      )
+    ; (if check_age f.age then None else Some Bad_age)
+    ; (if List.mem_assoc f.country countries then None else Some Bad_country)
+    ; (if f.terms then None else Some Terms_not_accepted)
+    ]
+
+let%rpc submit_standard_form (f : standard_form) : form_error list Lwt.t =
+  Lwt.return (check_standard_form f)
+
+let%client log_src = Logs.Src.create "%%%PROJECT_NAME%%%:demo-forms"
+
+module%client Log = (val Logs.src_log log_src : Logs.LOG)
+
+let%client error_message = function
+  | Empty_name -> [%i18n Demo.S.form_standard_error_name]
+  | Too_long -> [%i18n Demo.S.form_standard_error_too_long]
+  | Bad_age -> [%i18n Demo.S.form_standard_error_age]
+  | Bad_country -> [%i18n Demo.S.form_standard_error_country]
+  | Terms_not_accepted -> [%i18n Demo.S.form_standard_error_terms]
+
+let%client gender_label = function
+  | None -> ""
+  | Some Female -> [%i18n Demo.S.form_standard_gender_f]
+  | Some Male -> [%i18n Demo.S.form_standard_gender_m]
+  | Some Other -> [%i18n Demo.S.form_standard_gender_o]
+
+let%client form_summary f =
+  let line label value = with_colon label ^ value in
+  [ line [%i18n Demo.S.form_standard_name] f.name
+  ; line [%i18n Demo.S.form_standard_email] f.email
+  ; line [%i18n Demo.S.form_standard_phone] f.phone
+  ; line [%i18n Demo.S.form_standard_age] f.age
+  ; line [%i18n Demo.S.form_standard_birthdate] f.birthdate
+  ; line [%i18n Demo.S.form_standard_time] f.time
+  ; line [%i18n Demo.S.form_standard_message] f.message
+  ; line [%i18n Demo.S.form_standard_country]
+      (Option.value (List.assoc_opt f.country countries) ~default:f.country)
+  ; line [%i18n Demo.S.form_standard_gender] (gender_label f.gender)
+  ; line [%i18n Demo.S.form_standard_satisfaction] f.satisfaction
+  ; line [%i18n Demo.S.form_standard_color] f.color
+  ]
 
 let%shared page () =
   (* -- standard form -- *)
@@ -60,11 +172,10 @@ let%shared page () =
   in
   let country_sel =
     D.Raw.select
-      [ D.Raw.option ~a:[a_value "fr"] (txt "France")
-      ; D.Raw.option ~a:[a_value "de"] (txt "Germany")
-      ; D.Raw.option ~a:[a_value "it"] (txt "Italy")
-      ; D.Raw.option ~a:[a_value "es"] (txt "Spain")
-      ]
+      (List.map
+         (fun (code, name) -> D.Raw.option ~a:[a_value code] (txt name))
+         countries
+      )
   in
   let radio_m =
     D.Raw.input ~a:[a_input_type `Radio; a_name "std-gender"; a_value "M"] ()
@@ -93,54 +204,58 @@ let%shared page () =
       [txt [%i18n Demo.S.form_standard_submit]]
   in
   let result_div = D.div [] in
-  let name_l = [%i18n Demo.S.form_standard_name] in
-  let email_l = [%i18n Demo.S.form_standard_email] in
-  let phone_l = [%i18n Demo.S.form_standard_phone] in
-  let age_l = [%i18n Demo.S.form_standard_age] in
-  let date_l = [%i18n Demo.S.form_standard_birthdate] in
-  let time_l = [%i18n Demo.S.form_standard_time] in
-  let pwd_l = [%i18n Demo.S.form_standard_password] in
-  let msg_l = [%i18n Demo.S.form_standard_message] in
-  let country_l = [%i18n Demo.S.form_standard_country] in
-  let gender_l = [%i18n Demo.S.form_standard_gender] in
-  let terms_l = [%i18n Demo.S.form_standard_terms] in
-  let satisfaction_l = [%i18n Demo.S.form_standard_satisfaction] in
-  let color_l = [%i18n Demo.S.form_standard_color] in
   let (_ : unit Eliom.Client_value.t) =
     [%client
-      let btn_el = To_dom.of_element ~%submit_btn in
-      let result_el = To_dom.of_element ~%result_div in
       let get_input v = Js.to_string (To_dom.of_input v)##.value in
       let get_checked v = Js.to_bool (To_dom.of_input v)##.checked in
+      let show ?(cls = []) title lines =
+        Manip.replaceChildren ~%result_div
+          (p ~a:[a_class cls] [strong [txt title]]
+          :: List.concat_map (fun l -> [txt l; br ()]) lines
+          )
+      in
       Lwt.async (fun () ->
-          Lwt_js_events.clicks btn_el (fun _ _ ->
-              let lines =
-                [ Printf.sprintf "%s: %s" ~%name_l (get_input ~%name_inp)
-                ; Printf.sprintf "%s: %s" ~%email_l (get_input ~%email_inp)
-                ; Printf.sprintf "%s: %s" ~%phone_l (get_input ~%phone_inp)
-                ; Printf.sprintf "%s: %s" ~%age_l (get_input ~%age_inp)
-                ; Printf.sprintf "%s: %s" ~%date_l (get_input ~%date_inp)
-                ; Printf.sprintf "%s: %s" ~%time_l (get_input ~%time_inp)
-                ; Printf.sprintf "%s: %s" ~%pwd_l
-                    (String.make (String.length (get_input ~%pwd_inp)) '*')
-                ; Printf.sprintf "%s: %s" ~%msg_l
-                    (Js.to_string (To_dom.of_textarea ~%msg_inp)##.value)
-                ; Printf.sprintf "%s: %s" ~%country_l
-                    (Js.to_string (To_dom.of_select ~%country_sel)##.value)
-                ; Printf.sprintf "%s: %s" ~%gender_l
-                    (let m = get_checked ~%radio_m in
-                     let f = get_checked ~%radio_f in
-                     if m then "M" else if f then "F" else "O"
+          Lwt_js_events.clicks (To_dom.of_element ~%submit_btn) (fun _ _ ->
+              let form =
+                { name = get_input ~%name_inp
+                ; email = get_input ~%email_inp
+                ; phone = get_input ~%phone_inp
+                ; age = get_input ~%age_inp
+                ; birthdate = get_input ~%date_inp
+                ; time = get_input ~%time_inp
+                ; message = Js.to_string (To_dom.of_textarea ~%msg_inp)##.value
+                ; country =
+                    Js.to_string (To_dom.of_select ~%country_sel)##.value
+                ; gender =
+                    ( if get_checked ~%radio_f
+                      then Some Female
+                      else if get_checked ~%radio_m
+                      then Some Male
+                      else if get_checked ~%radio_o
+                      then Some Other
+                      else None
                     )
-                ; Printf.sprintf "%s: %s" ~%terms_l
-                    (if get_checked ~%terms_cb then "yes" else "no")
-                ; Printf.sprintf "%s: %s" ~%satisfaction_l
-                    (get_input ~%satisfaction_inp)
-                ; Printf.sprintf "%s: %s" ~%color_l (get_input ~%color_inp)
-                ]
+                ; terms = get_checked ~%terms_cb
+                ; satisfaction = get_input ~%satisfaction_inp
+                ; color = get_input ~%color_inp
+                }
               in
-              result_el##.innerHTML := Js.string (String.concat "<br>" lines);
-              Lwt.return_unit
+              match%lwt submit_standard_form form with
+              | [] ->
+                  show [%i18n Demo.S.form_standard_accepted] (form_summary form);
+                  Lwt.return_unit
+              | errors ->
+                  show ~cls:["demo-forms-rejected"]
+                    [%i18n Demo.S.form_standard_rejected]
+                    (List.map error_message errors);
+                  Lwt.return_unit
+              | exception e ->
+                  Log.err (fun m ->
+                      m "submit_standard_form: %s" (Printexc.to_string e)
+                  );
+                  Os.Msg.msg ~level:`Err
+                    [%i18n Demo.S.form_standard_error_network];
+                  Lwt.return_unit
           )
       )]
   in
@@ -175,7 +290,9 @@ let%shared page () =
       ; div [submit_btn]
       ; div
           ~a:[a_class ["demo-forms-output"]]
-          [strong [txt ([%i18n Demo.S.form_standard_result] ^ ":")]; result_div]
+          [ strong [txt (with_colon [%i18n Demo.S.form_standard_result])]
+          ; result_div
+          ]
       ]
   in
   (* -- reactive_input -- *)
@@ -226,7 +343,7 @@ let%shared page () =
       ; pw_container
       ; p
           ~a:[a_class ["demo-forms-output"]]
-          [ strong [txt ([%i18n Demo.S.form_label_visible] ^ ": ")]
+          [ strong [txt (with_colon [%i18n Demo.S.form_label_visible])]
           ; R.txt
               (Eliom.Shared.React.S.map
                  [%shared fun v -> if v then ~%true_s else ~%false_s]
@@ -260,7 +377,7 @@ let%shared page () =
       ; toggle_btn
       ; p
           ~a:[a_class ["demo-forms-output"]]
-          [ strong [txt ([%i18n Demo.S.form_label_state] ^ ": ")]
+          [ strong [txt (with_colon [%i18n Demo.S.form_label_state])]
           ; R.txt
               (Eliom.Shared.React.S.map
                  [%shared fun v -> if v then ~%on_s else ~%off_s]
@@ -297,7 +414,7 @@ let%shared page () =
       ; div [rcb#label]
       ; p
           ~a:[a_class ["demo-forms-output"]]
-          [ strong [txt ([%i18n Demo.S.form_label_checked] ^ ": ")]
+          [ strong [txt (with_colon [%i18n Demo.S.form_label_checked])]
           ; R.txt
               (Eliom.Shared.React.S.map
                  [%shared fun v -> if v then ~%true_s else ~%false_s]
@@ -306,7 +423,7 @@ let%shared page () =
           ]
       ; p
           ~a:[a_class ["demo-forms-output"]]
-          [ strong [txt ([%i18n Demo.S.form_label_manually_changed] ^ ": ")]
+          [ strong [txt (with_colon [%i18n Demo.S.form_label_manually_changed])]
           ; R.txt
               (Eliom.Shared.React.S.map
                  [%shared fun v -> if v then ~%true_s else ~%false_s]
@@ -331,7 +448,7 @@ let%shared page () =
       ; div radio_labels
       ; p
           ~a:[a_class ["demo-forms-output"]]
-          [ strong [txt ([%i18n Demo.S.form_label_selection] ^ ": ")]
+          [ strong [txt (with_colon [%i18n Demo.S.form_label_selection])]
           ; R.txt
               (Eliom.Shared.React.S.map
                  [%shared
@@ -356,7 +473,7 @@ let%shared page () =
           ; int_div
           ; p
               ~a:[a_class ["demo-forms-output"]]
-              [ strong [txt ([%i18n Demo.S.form_label_value] ^ ": ")]
+              [ strong [txt (with_colon [%i18n Demo.S.form_label_value])]
               ; R.txt
                   (Eliom.Shared.React.S.map
                      [%shared
@@ -373,7 +490,7 @@ let%shared page () =
           ; oint_div
           ; p
               ~a:[a_class ["demo-forms-output"]]
-              [ strong [txt ([%i18n Demo.S.form_label_value] ^ ": ")]
+              [ strong [txt (with_colon [%i18n Demo.S.form_label_value])]
               ; R.txt
                   (Eliom.Shared.React.S.map
                      [%shared
@@ -398,7 +515,7 @@ let%shared page () =
       ; date_input
       ; p
           ~a:[a_class ["demo-forms-output"]]
-          [ strong [txt ([%i18n Demo.S.form_label_date] ^ ": ")]
+          [ strong [txt (with_colon [%i18n Demo.S.form_label_date])]
           ; R.txt
               (Eliom.Shared.React.S.map
                  [%shared
@@ -421,7 +538,7 @@ let%shared page () =
       ; time_input
       ; p
           ~a:[a_class ["demo-forms-output"]]
-          [ strong [txt ([%i18n Demo.S.form_label_time] ^ ": ")]
+          [ strong [txt (with_colon [%i18n Demo.S.form_label_time])]
           ; R.txt
               (Eliom.Shared.React.S.map
                  [%shared
@@ -491,7 +608,7 @@ let%shared page () =
       ; val_input
       ; p
           ~a:[a_class ["demo-forms-output"]]
-          [ strong [txt ([%i18n Demo.S.form_label_result] ^ ": ")]
+          [ strong [txt (with_colon [%i18n Demo.S.form_label_result])]
           ; R.txt
               (Eliom.Shared.React.S.map
                  [%shared

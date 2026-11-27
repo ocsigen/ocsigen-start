@@ -110,7 +110,7 @@ tips5	settings page	page Paramètres
 form_widgets	Form widgets	Widgets de formulaire
 form_intro	This page demonstrates form widgets from the Ot_form module. The first section shows a standard (non-reactive) form. The following sections show reactive widgets.	Cette page présente les widgets de formulaire du module Ot_form. La première section montre un formulaire standard (non réactif). Les sections suivantes montrent les widgets réactifs.
 form_standard_title	Standard form	Formulaire standard
-form_standard_desc	A standard form showcasing all HTML input types. Values are read on submit.	Un formulaire standard présentant tous les types d'entrées HTML. Les valeurs sont lues à la soumission.
+form_standard_desc	A standard form with many HTML input types. On submit, the client reads the values (except the password) and sends them to the server with an RPC; the server checks them and answers.	Un formulaire standard avec de nombreux types d'entrées HTML. À la soumission, le client lit les valeurs (sauf le mot de passe) et les envoie au serveur par un RPC ; le serveur les vérifie et répond.
 form_standard_name	Name	Nom
 form_standard_email	Email	Email
 form_standard_phone	Phone	Téléphone
@@ -129,6 +129,15 @@ form_standard_satisfaction	Satisfaction	Satisfaction
 form_standard_color	Favorite color	Couleur préférée
 form_standard_submit	Submit	Envoyer
 form_standard_result	Result	Résultat
+form_standard_error_name	Please enter your name.	Veuillez saisir votre nom.
+form_standard_error_age	The age must be a whole number between 0 and 150.	L'âge doit être un nombre entier entre 0 et 150.
+form_standard_error_too_long	A field is too long.	Un champ est trop long.
+form_standard_error_country	Please choose a country in the list.	Veuillez choisir un pays dans la liste.
+form_standard_accepted	The server accepted the form:	Le serveur a accepté le formulaire :
+form_standard_rejected	The server refused the form:	Le serveur a refusé le formulaire :
+form_with_colon	{{label}}: 	{{label}} : 
+form_standard_error_terms	Please accept the terms.	Veuillez accepter les conditions.
+form_standard_error_network	The form could not be sent. Please try again.	Le formulaire n'a pas pu être envoyé. Veuillez réessayer.
 form_reactive_input_title	reactive_input	reactive_input
 form_reactive_input_desc	A reactive text input. The value is displayed below in real time.	Un champ texte réactif. La valeur est affichée en dessous en temps réel.
 form_reactive_textarea_title	reactive_textarea	reactive_textarea
