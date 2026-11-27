@@ -121,10 +121,13 @@ val smart_date : ?now:local_calendar -> local_calendar -> string
       the format: ["%A %B %d"].
     - else the year is added at the end in the same format than the previous
       case.
+
+    The result is in English (not translated).
  *)
 
 val smart_hours_minutes : local_calendar -> string
-(** [smart_hours_minutes date] returns the time in the format ["%I:%M%P"].
+(** [smart_hours_minutes date] returns the time in the format ["%-I:%M%P"]
+    (for instance ["3:12pm"]).
     If the timezone is unknown, GMT is added.
  *)
 
