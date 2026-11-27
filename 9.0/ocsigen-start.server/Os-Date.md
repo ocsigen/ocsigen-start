@@ -4,7 +4,7 @@ Time zone and date management for Web applications.
 
 This module provides some useful functions to detect and manage time zones, print dates, etc.
 
-It's essentially a wrapper to [`CalendarLib.Calendar.t`](./../../calendar/calendar/CalendarLib-Calendar.md#type-t) through an abstract type and by using zone and date data provided by the browser. See `calendar` OCaml library for more information about `CalendarLib` module. Specifiers from `calendar` OCaml library are used: refer you to the official documentation (http://calendar.forge.ocamlcore.org/doc) to know the significations.
+It's essentially a wrapper to [`CalendarLib.Calendar.t`](https://ocaml.org/p/calendar/3.0.0/doc/calendar/CalendarLib/Calendar/index.html#type-t) through an abstract type and by using zone and date data provided by the browser. See `calendar` OCaml library for more information about `CalendarLib` module. Specifiers from `calendar` OCaml library are used: refer you to the official documentation (http://calendar.forge.ocamlcore.org/doc) to know the significations.
 
 ```ocaml
 type local_calendar
@@ -20,7 +20,7 @@ val local_calendar_to_json : Buffer.t -> local_calendar -> unit
 ```ocaml
 val local_calendar_json : local_calendar Deriving_Json.t
 ```
-JSON codec for [`local_calendar`](./#type-local_calendar) (the `_of_json`/`_to_json` pair follows the [`Deriving_Json`](./../../js_of_ocaml/js_of_ocaml.deriving/Deriving_Json.md) convention so that `[%json: local_calendar]` resolves to [`local_calendar_json`](./#val-local_calendar_json)). Suitable for persisting values through Ocsipersist. Encodes as a Unix float.
+JSON codec for [`local_calendar`](./#type-local_calendar) (the `_of_json`/`_to_json` pair follows the [`Deriving_Json`](../../../js_of_ocaml/latest/js_of_ocaml/Deriving_Json.md) convention so that `[%json: local_calendar]` resolves to [`local_calendar_json`](./#val-local_calendar_json)). Suitable for persisting values through Ocsipersist. Encodes as a Unix float.
 
 ```ocaml
 val to_utc : ?timezone:string -> local_calendar -> CalendarLib.Calendar.t

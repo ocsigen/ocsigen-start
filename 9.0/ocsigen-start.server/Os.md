@@ -110,7 +110,7 @@ This module provides functions and types about users.
 ```ocaml
 module User_proxy : sig ... end
 ```
-This module implements a cache of user using [`Eliom.Cscache`](./../../eliom/eliom.server/Eliom-Cscache.md) which allows to keep synchronized the cache between the client and the server. Even if there is a cache implemented in [`User`](./Os-User.md) to avoid to do database requests, this last one is implementing only server side. Same for [`Request_cache`](./Os-Request_cache.md) which is also only server-side.
+This module implements a cache of user using [`Eliom.Cscache`](../../../eliom/latest/eliom.server/Eliom-Cscache.md) which allows to keep synchronized the cache between the client and the server. Even if there is a cache implemented in [`User`](./Os-User.md) to avoid to do database requests, this last one is implementing only server side. Same for [`Request_cache`](./Os-Request_cache.md) which is also only server-side.
 
 ```ocaml
 module User_view : sig ... end
