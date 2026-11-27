@@ -11,10 +11,14 @@ via the `USE_NPM` variable in `Makefile.options` if you prefer to use
 a system-wide NPM installation. SASS is needed by default; to do
 without it, set `USE_SASS` to `no` in `Makefile.options`: the pages then
 use plain CSS files (`static/css/`, `static/defaultcss/` and those of
-Ocsigen Toolkit), which do not follow changes to the SASS files. Install
-Postgres (the server, not only the client library), NPM and SASS with
-the package manager of your system, then install the OPAM packages that
-the project depends on (from the %%%PROJECT_NAME%%% directory):
+Ocsigen Toolkit), which do not follow changes to the SASS files. The
+Makefiles also need `md5sum` (`brew install md5sha1sum` on macOS if it
+is missing). ImageMagick is needed too: Ocsigen Start uses its `convert`
+command for the uploaded pictures (avatars), and `Makefile.mobile` for
+the icons of the mobile app. Install Postgres (the server, not only the client
+library), NPM, SASS, `md5sum` and ImageMagick with the package manager
+of your system, then install the OPAM packages that the project depends
+on (from the %%%PROJECT_NAME%%% directory):
 
 ```shell
 opam install --deps-only .
