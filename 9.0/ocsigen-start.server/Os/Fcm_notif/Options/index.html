@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Fcm_notif/Options/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Fcm_notif/Options/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,21 +229,17 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Fcm_notif.Options</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p>This page has no equivalent in the <a href="../../../../ocsigen-start.client/Os/index.html">Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Fcm_notif.Options</span></code></h1></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec type anchored" id="type-t"><code><span><span class="keyword">type</span> t</span></code></div><div class="spec-doc"><p>The type representing an option.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-to_list"><code><span><span class="keyword">val</span> to_list : <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <span><span>(string * <a href="https://ocaml.org/p/yojson/3.0.0/doc/Yojson/Safe/index.html#type-t">Yojson.Safe.t</a>)</span> list</span></span></code></div><div class="spec-doc"><p><code>to_list option</code> returns the representation of the options as a list of tuples <code>(option_name, json_value)</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-create"><code><span><span class="keyword">val</span> create : <span><span>string list</span> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div><div class="spec-doc"><p><code>create registered_ids</code> creates a new option where <code>registered_ids</code> is the ID of mobile devices you want to send the notifications to.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_raw_string"><code><span><span class="keyword">val</span> add_raw_string : <span>string <span class="arrow">&#45;&gt;</span></span> <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_raw_string key content data</code></p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_raw_json"><code><span><span class="keyword">val</span> add_raw_json : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="https://ocaml.org/p/yojson/3.0.0/doc/Yojson/Safe/index.html#type-t">Yojson.Safe.t</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_raw_json key content_json data</code></p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_to"><code><span><span class="keyword">val</span> add_to : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_to to options</code> specifies the recipient of a message.</p><p>The value must be a registration token, notification key, or topic. Do not set this field when sending to multiple topics.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_condition"><code><span><span class="keyword">val</span> add_condition : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_condition condition options</code> specifies a logical expression of conditions that determine the message target.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_collapse_key"><code><span><span class="keyword">val</span> add_collapse_key : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_collapse_key collapse_key options</code> identifies a group of messages (e.g., with collapse_key: &quot;Updates Available&quot;) that can be collapsed, so that only the last message gets sent when delivery can be resumed.</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Priority"><code><span><span class="keyword">module</span> <a href="Priority/index.html">Priority</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div><div class="spec-doc"><p>This modules defines a type for priorities for the notifications. See https://firebase.google.com/docs/cloud-messaging/concept-options#setting-the-priority-of-a-message</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_priority"><code><span><span class="keyword">val</span> add_priority : <span><a href="Priority/index.html#type-t">Priority.t</a> <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_priority priority options</code> sets the priority of the message.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_content_available"><code><span><span class="keyword">val</span> add_content_available : <span>bool <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_content_available value options</code>. On iOS, if <code>value</code> is set to <code>true</code>, an inactive client app is awoken. On Android, data messages wake the app by default.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_time_to_live"><code><span><span class="keyword">val</span> add_time_to_live : <span>int <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_time_to_live time_in_seconds options</code> specifies how long (in seconds) the message should be kept in FCM storage if the device is offline.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_restricted_package_name"><code><span><span class="keyword">val</span> add_restricted_package_name : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_restricted_package_name package_name options</code> specifies the package name of the application where the registration tokens must match in order to receive the message.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_dry_run"><code><span><span class="keyword">val</span> add_dry_run : <span>bool <span class="arrow">&#45;&gt;</span></span> <span><a href="#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_dry_run value options</code>. When set to <code>true</code>, allows developers to test a request without actually sending a message. Default is <code>false</code>.</p></div></div></div>
       </article>
     </div>
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

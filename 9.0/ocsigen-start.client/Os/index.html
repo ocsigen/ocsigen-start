@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../ocsigen-start.server/Os/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -162,9 +162,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../ocsigen-start.server/Os/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -223,21 +223,17 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Os</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-client" role="note">
+<p>You are reading the <strong>Client API</strong> documentation. This code runs in the browser, compiled to JavaScript or WebAssembly.</p>
+<p><a href="../../ocsigen-start.server/Os/index.html">See this page in the Server API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Os</span></code></h1></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec module anchored" id="module-Comet"><code><span><span class="keyword">module</span> <a href="Comet/index.html">Comet</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Connect_phone"><code><span><span class="keyword">module</span> <a href="Connect_phone/index.html">Connect_phone</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Current_user"><code><span><span class="keyword">module</span> <a href="Current_user/index.html">Current_user</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div><div class="spec-doc"><p>This module provides functions and types to manage the current user.</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Date"><code><span><span class="keyword">module</span> <a href="Date/index.html">Date</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Email"><code><span><span class="keyword">module</span> <a href="Email/index.html">Email</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Fcm_notif"><code><span><span class="keyword">module</span> <a href="Fcm_notif/index.html">Fcm_notif</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Handlers"><code><span><span class="keyword">module</span> <a href="Handlers/index.html">Handlers</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div><div class="spec-doc"><p>This module contains pre-defined handlers for connect, disconnect, sign up, add a new email, etc. Each handler has a corresponding service in <a href="Services/index.html"><code>Services</code></a>.</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Icons"><code><span><span class="keyword">module</span> <a href="Icons/index.html">Icons</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Lib"><code><span><span class="keyword">module</span> <a href="Lib/index.html">Lib</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Msg"><code><span><span class="keyword">module</span> <a href="Msg/index.html">Msg</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Notif"><code><span><span class="keyword">module</span> <a href="Notif/index.html">Notif</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Page"><code><span><span class="keyword">module</span> <a href="Page/index.html">Page</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Platform"><code><span><span class="keyword">module</span> <a href="Platform/index.html">Platform</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Request_cache"><code><span><span class="keyword">module</span> <a href="Request_cache/index.html">Request_cache</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Services"><code><span><span class="keyword">module</span> <a href="Services/index.html">Services</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Session"><code><span><span class="keyword">module</span> <a href="Session/index.html">Session</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Tips"><code><span><span class="keyword">module</span> <a href="Tips/index.html">Tips</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Types"><code><span><span class="keyword">module</span> <a href="Types/index.html">Types</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div><div class="spec-doc"><p>Types related to users.</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Uploader"><code><span><span class="keyword">module</span> <a href="Uploader/index.html">Uploader</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-User"><code><span><span class="keyword">module</span> <a href="User/index.html">User</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-User_proxy"><code><span><span class="keyword">module</span> <a href="User_proxy/index.html">User_proxy</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-User_view"><code><span><span class="keyword">module</span> <a href="User_view/index.html">User_view</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div></div>
       </article>
     </div>
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

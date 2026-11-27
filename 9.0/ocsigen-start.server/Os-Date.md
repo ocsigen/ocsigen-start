@@ -87,10 +87,12 @@ val smart_date : ?now:local_calendar -> local_calendar -> string
 - if `local_date` is the day after `now`, `"Tomorrow"` is returned.
 - if `now` and `local_date` has the same year, it returns the date in the format: `"%A %B %d"`.
 - else the year is added at the end in the same format than the previous case.
+The result is in English (not translated).
+
 ```ocaml
 val smart_hours_minutes : local_calendar -> string
 ```
-`smart_hours_minutes date` returns the time in the format `"%I:%M%P"`. If the timezone is unknown, GMT is added.
+`smart_hours_minutes date` returns the time in the format `"%-I:%M%P"` (for instance `"3:12pm"`). If the timezone is unknown, GMT is added.
 
 ```ocaml
 val smart_interval : 

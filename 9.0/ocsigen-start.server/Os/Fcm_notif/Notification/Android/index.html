@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../../ocsigen-start.server/Os/Fcm_notif/Notification/Android/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../../ocsigen-start.server/Os/Fcm_notif/Notification/Android/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,21 +229,17 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Notification.Android</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p>This page has no equivalent in the <a href="../../../../../ocsigen-start.client/Os/index.html">Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Notification.Android</span></code></h1></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-add_icon"><code><span><span class="keyword">val</span> add_icon : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_icon icon notification</code> indicates notification icon. Sets value to <code>myicon</code> for drawable resource <code>myicon</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_tag"><code><span><span class="keyword">val</span> add_tag : <span>string <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_tag tag notification</code> indicates whether each notification results in a new entry in the notification drawer on Android. If two notifications has the same tag, the last one will replace the first one. Two different tags produce two different notifications in the notification area.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_color"><code><span><span class="keyword">val</span> add_color : <span><span class="label">red</span>:int <span class="arrow">&#45;&gt;</span></span> <span><span class="label">green</span>:int <span class="arrow">&#45;&gt;</span></span> <span><span class="label">blue</span>:int <span class="arrow">&#45;&gt;</span></span> <span><a href="../index.html#type-t">t</a> <span class="arrow">&#45;&gt;</span></span> <a href="../index.html#type-t">t</a></span></code></div><div class="spec-doc"><p><code>add_color ~red ~green ~blue notification</code> indicates color of the icon, expressed in #rrggbb format.</p><p>Positive values are used modulo 256 i.e. <code>add_color 257 100 257 notification</code> is equivalent to <code>add_color 1 100 1</code>. NOTE: Don't use negative number.</p></div></div></div>
       </article>
     </div>
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../ocsigen-start.server/Os/Session/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../ocsigen-start.client/Os/Session/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -162,9 +162,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../ocsigen-start.server/Os/Session/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../ocsigen-start.client/Os/Session/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -223,7 +223,11 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Os.Session</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-client" role="note">
+<p>You are reading the <strong>Client API</strong> documentation. This code runs in the browser, compiled to JavaScript or WebAssembly.</p>
+<p><a href="../../../ocsigen-start.server/Os/Session/index.html">See this page in the Server API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Os.Session</span></code></h1></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec exception anchored" id="exception-Not_connected"><code><span><span class="keyword">exception</span> </span><span><span class="exception">Not_connected</span></span></code></div></div><div class="odoc-spec"><div class="spec exception anchored" id="exception-Permission_denied"><code><span><span class="keyword">exception</span> </span><span><span class="exception">Permission_denied</span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-disconnect_all"><code><span><span class="keyword">val</span> disconnect_all : <span><span class="optlabel">?user_indep</span>:bool <span class="arrow">&#45;&gt;</span></span> <span>unit <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="../../../../../lwt/latest/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Close all sessions of current user. If <code>?user_indep</code> is <code>true</code> (default), will also affect <code>user_indep_session_scope</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-disconnect"><code><span><span class="keyword">val</span> disconnect : <span>unit <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="../../../../../lwt/latest/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p>Close a session by discarding server side states for current browser (session and session group), current client process (tab) and current request. Only default Eliom scopes are affected, but not user independent scopes. The actions registered for session close (by <code>on_close_session</code>) will be executed just before the session is actually closed.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-connected_fun"><code><span><span class="keyword">val</span> connected_fun : 
   <span><span class="optlabel">?allow</span>:<span><a href="../Types/Group/index.html#type-t">Types.Group.t</a> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?deny</span>:<span><a href="../Types/Group/index.html#type-t">Types.Group.t</a> list</span> <span class="arrow">&#45;&gt;</span></span>
@@ -250,14 +254,6 @@
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

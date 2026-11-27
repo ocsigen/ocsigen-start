@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../ocsigen-start.server/Os/Fcm_notif/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../ocsigen-start.client/Os/Fcm_notif/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../ocsigen-start.server/Os/Fcm_notif/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../ocsigen-start.client/Os/Fcm_notif/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,7 +229,11 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Os.Fcm_notif</span></code></h1><p>Send push notifications to Android and iOS mobile devices.</p><p>This module provides a simple OCaml interface to Firebase Cloud Messaging (FCM) to send push notifications to Android and iOS mobile devices by using downstream HTTP messages in JSON.</p><p>You can find all information abou FCM at this address: https://firebase.google.com/docs/cloud-messaging/</p><p>Before using this module, you need to register your mobile application in FCM and save the server key FCM will give you. You need to pass this key to <a href="#val-send"><code>send</code></a> when you want to send a notification.</p><p>On the client, you will need first to register the device on FCM. See</p><ul><li>for iOS: https://firebase.google.com/docs/cloud-messaging/ios/client</li><li>for Android: https://firebase.google.com/docs/cloud-messaging/android/client</li></ul><p>If you use this module to send push notifications to mobile devices created with ocsigen-start, you can use one of these plugins.</p><ul><li>cordova-plugin-fcm (binding ocaml-cordova-plugin-fcm).</li><li>phonegap-plugin-push (binding ocaml-cordova-plugin-push-notifications). If you use one of them and if you want to add extra data, you need to use <a href="Data/index.html#val-add_raw_string"><code>Data.add_raw_string</code></a> or <a href="Data/index.html#val-add_raw_json"><code>Data.add_raw_json</code></a> depending on the type of the value.</li></ul><p>FCM works with tokens which represents a device. This token is used to target the device when you send a notification. The token is retrieved client-side.</p><p>To send a notification, you need to use <code>send server_key notification ?data options</code> where</p><ul><li><code>notification</code> is of type <a href="Notification/index.html#type-t"><code>Notification.t</code></a> and represents the notification payload in the JSON sent to FCM.</li><li><code>data</code> is an optional value of type <a href="Data/index.html#type-t"><code>Data.t</code></a> and represents the data payload in the JSON sent to FCM. By default, it's empty.</li><li><code>options</code> is of type <a href="Options/index.html#type-t"><code>Options.t</code></a> and represents options in the FCM documentation.</li></ul><p>The type <a href="Options/index.html#type-t"><code>Options.t</code></a> contains the list of registered ID you want to send the notification <code>notification</code> to. You can create a value of type <a href="Options/index.html#type-t"><code>Options.t</code></a> with <a href="Options/index.html#val-create"><code>Options.create</code></a> which needs a list of client ID. These ID's are the devices you want to send the notification to. You can add some parameters like priorities, restricted package name, condition, etc.</p><p>The type <a href="Notification/index.html#type-t"><code>Notification.t</code></a> contains the notification payloads. The description is given here: https://firebase.google.com/docs/cloud-messaging/http-server-ref</p><p>You can create an empty value of type <a href="Notification/index.html#type-t"><code>Notification.t</code></a> with <a href="Notification/index.html#val-empty"><code>Notification.empty</code></a>. As described in the link given above, you can add a title, a body, etc to the notification. In general, to add the payload <code>payload</code>, you can use the function <code>add_(payload)</code>. The notification value is at the end to be able to use the pipe. For example, to add a title and a message, you can use: <code> &lt;&lt;code language=&quot;ocaml&quot; |
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p><a href="../../../ocsigen-start.client/Os/Fcm_notif/index.html">See this page in the Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Os.Fcm_notif</span></code></h1><p>Send push notifications to Android and iOS mobile devices.</p><p>This module provides a simple OCaml interface to Firebase Cloud Messaging (FCM) to send push notifications to Android and iOS mobile devices by using downstream HTTP messages in JSON.</p><p>You can find all information abou FCM at this address: https://firebase.google.com/docs/cloud-messaging/</p><p>Before using this module, you need to register your mobile application in FCM and save the server key FCM will give you. You need to pass this key to <a href="#val-send"><code>send</code></a> when you want to send a notification.</p><p>On the client, you will need first to register the device on FCM. See</p><ul><li>for iOS: https://firebase.google.com/docs/cloud-messaging/ios/client</li><li>for Android: https://firebase.google.com/docs/cloud-messaging/android/client</li></ul><p>If you use this module to send push notifications to mobile devices created with ocsigen-start, you can use one of these plugins.</p><ul><li>cordova-plugin-fcm (binding ocaml-cordova-plugin-fcm).</li><li>phonegap-plugin-push (binding ocaml-cordova-plugin-push-notifications). If you use one of them and if you want to add extra data, you need to use <a href="Data/index.html#val-add_raw_string"><code>Data.add_raw_string</code></a> or <a href="Data/index.html#val-add_raw_json"><code>Data.add_raw_json</code></a> depending on the type of the value.</li></ul><p>FCM works with tokens which represents a device. This token is used to target the device when you send a notification. The token is retrieved client-side.</p><p>To send a notification, you need to use <code>send server_key notification ?data options</code> where</p><ul><li><code>notification</code> is of type <a href="Notification/index.html#type-t"><code>Notification.t</code></a> and represents the notification payload in the JSON sent to FCM.</li><li><code>data</code> is an optional value of type <a href="Data/index.html#type-t"><code>Data.t</code></a> and represents the data payload in the JSON sent to FCM. By default, it's empty.</li><li><code>options</code> is of type <a href="Options/index.html#type-t"><code>Options.t</code></a> and represents options in the FCM documentation.</li></ul><p>The type <a href="Options/index.html#type-t"><code>Options.t</code></a> contains the list of registered ID you want to send the notification <code>notification</code> to. You can create a value of type <a href="Options/index.html#type-t"><code>Options.t</code></a> with <a href="Options/index.html#val-create"><code>Options.create</code></a> which needs a list of client ID. These ID's are the devices you want to send the notification to. You can add some parameters like priorities, restricted package name, condition, etc.</p><p>The type <a href="Notification/index.html#type-t"><code>Notification.t</code></a> contains the notification payloads. The description is given here: https://firebase.google.com/docs/cloud-messaging/http-server-ref</p><p>You can create an empty value of type <a href="Notification/index.html#type-t"><code>Notification.t</code></a> with <a href="Notification/index.html#val-empty"><code>Notification.empty</code></a>. As described in the link given above, you can add a title, a body, etc to the notification. In general, to add the payload <code>payload</code>, you can use the function <code>add_(payload)</code>. The notification value is at the end to be able to use the pipe. For example, to add a title and a message, you can use: <code> &lt;&lt;code language=&quot;ocaml&quot; |
       Notification.empty () |&gt;
       add_title &quot;Hello, World!&quot; |&gt;
       add_body &quot;Message to the world!&quot;
@@ -245,14 +249,6 @@
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

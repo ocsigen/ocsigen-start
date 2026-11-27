@@ -11,4 +11,4 @@ val connected_page :
   'b ->
   Html_types.html Eliom.Content.Html.elt Lwt.t
 ```
-Wrapper for pages that first checks if the user is connected. See [`Session.Opt.connected_fun`](./Os-Session-Opt.md#val-connected_fun). The error page gets an HTTP status and is logged, as with [`page`](./Os-Page-Make.md#val-page).
+Wrapper for pages that first checks if the user is connected. See [`Session.Opt.connected_fun`](./Os-Session-Opt.md#val-connected_fun). The error page and the fallback behave as with [`page`](./Os-Page-Make.md#val-page).

@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Db/Groups/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Db/Groups/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,7 +229,11 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Db.Groups</span></code></h1><p>This module is low-level and used to manage groups of user.</p></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p>This page has no equivalent in the <a href="../../../../ocsigen-start.client/Os/index.html">Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Db.Groups</span></code></h1><p>This module is low-level and used to manage groups of user.</p></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-create"><code><span><span class="keyword">val</span> create : <span><span class="optlabel">?description</span>:string <span class="arrow">&#45;&gt;</span></span> <span>string <span class="arrow">&#45;&gt;</span></span> <span>unit <a href="../../../../../../lwt/latest/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>create ?description name</code> creates a new group with name <code>name</code> and with description <code>description</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-group_of_name"><code><span><span class="keyword">val</span> group_of_name : <span>string <span class="arrow">&#45;&gt;</span></span> <span><span>(<a href="../../Types/Group/index.html#type-id">Types.Group.id</a> * string * <span>string option</span>)</span> <a href="../../../../../../lwt/latest/lwt/Lwt/index.html#type-t">Lwt.t</a></span></span></code></div><div class="spec-doc"><p><code>group_of_name name</code> returns a tuple <code>(groupid, name, description)</code> describing the group. If no group has the name <code>name</code>, it fails with <a href="../index.html#exception-No_such_resource"><code>No_such_resource</code></a>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-add_user_in_group"><code><span><span class="keyword">val</span> add_user_in_group : 
   <span><span class="label">groupid</span>:<a href="../../Types/Group/index.html#type-id">Types.Group.id</a> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="label">userid</span>:<a href="../../Types/User/index.html#type-id">Types.User.id</a> <span class="arrow">&#45;&gt;</span></span>
@@ -247,14 +251,6 @@
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

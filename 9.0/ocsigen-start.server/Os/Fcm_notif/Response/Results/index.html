@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../../ocsigen-start.server/Os/Fcm_notif/Response/Results/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../../ocsigen-start.server/Os/Fcm_notif/Response/Results/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../../ocsigen-start.client/Os/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,21 +229,17 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Response.Results</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p>This page has no equivalent in the <a href="../../../../../ocsigen-start.client/Os/index.html">Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Response.Results</span></code></h1></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec type anchored" id="type-success"><code><span><span class="keyword">type</span> success</span></code></div><div class="spec-doc"><p>The type representing a success result. If no error occurred, the JSON in the results attribute contains a mandatory field <code>message_id</code> and an optional field <code>registration_id</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-message_id_of_success"><code><span><span class="keyword">val</span> message_id_of_success : <span><a href="#type-success">success</a> <span class="arrow">&#45;&gt;</span></span> string</span></code></div><div class="spec-doc"><p><code>message_id_of_success success</code> returns a string specifying a unique ID for each successfully processed message.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-registration_id_of_success"><code><span><span class="keyword">val</span> registration_id_of_success : <span><a href="#type-success">success</a> <span class="arrow">&#45;&gt;</span></span> <span>string option</span></span></code></div><div class="spec-doc"><p><code>registration_id_of_t result</code> returns a string specifying the canonical registration token for the client app that the message was processed and sent to. A value will be returned by FCM if the registration ID of the device you sent the notification to has changed. The value will be the new registration ID and must be used to send new notifications. If you don't change the ID, you will receive the error NotRegistered.</p></div></div><div class="odoc-spec"><div class="spec type anchored" id="type-error"><code><span><span class="keyword">type</span> error</span><span> = </span></code><ol><li id="type-error.Missing_registration" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Missing_registration</span></span></code></li><li id="type-error.Invalid_registration" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Invalid_registration</span></span></code></li><li id="type-error.Unregistered_device" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Unregistered_device</span></span></code></li><li id="type-error.Invalid_package_name" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Invalid_package_name</span></span></code></li><li id="type-error.Authentication_failed" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Authentication_failed</span></span></code></li><li id="type-error.Mismatch_sender_id" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Mismatch_sender_id</span></span></code></li><li id="type-error.Invalid_JSON" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Invalid_JSON</span></span></code></li><li id="type-error.Message_too_big" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Message_too_big</span></span></code></li><li id="type-error.Invalid_data_key" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Invalid_data_key</span></span></code></li><li id="type-error.Invalid_time_to_live" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Invalid_time_to_live</span></span></code></li><li id="type-error.Timeout" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Timeout</span></span></code></li><li id="type-error.Internal_server" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Internal_server</span></span></code></li><li id="type-error.Device_message_rate_exceeded" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Device_message_rate_exceeded</span></span></code></li><li id="type-error.Topics_message_rate_exceeded" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Topics_message_rate_exceeded</span></span></code></li><li id="type-error.Unknown" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Unknown</span></span></code></li></ol></div><div class="spec-doc"><p>Sum type to represent errors. You can use <a href="#val-string_of_error"><code>string_of_error</code></a> to have a string representation of the error.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-string_of_error"><code><span><span class="keyword">val</span> string_of_error : <span><a href="#type-error">error</a> <span class="arrow">&#45;&gt;</span></span> string</span></code></div><div class="spec-doc"><p><code>string_of_error error</code> returns a string representation of the error <code>error</code>.</p></div></div><div class="odoc-spec"><div class="spec type anchored" id="type-t"><code><span><span class="keyword">type</span> t</span><span> = </span></code><ol><li id="type-t.Success" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Success</span> <span class="keyword">of</span> <a href="#type-success">success</a></span></code></li><li id="type-t.Error" class="def variant constructor anchored"><code><span>| </span><span><span class="constructor">Error</span> <span class="keyword">of</span> <a href="#type-error">error</a></span></code></li></ol></div><div class="spec-doc"><p>The type representing a result.</p></div></div></div>
       </article>
     </div>
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

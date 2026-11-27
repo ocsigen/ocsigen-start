@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../ocsigen-start.server/Os/Email/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../ocsigen-start.client/Os/Email/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../ocsigen-start.server/Os/Email/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../ocsigen-start.client/Os/Email/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,7 +229,11 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Os.Email</span></code></h1><p>Basic module for sending e-mail messages to users, using some local sendmail program.</p></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p><a href="../../../ocsigen-start.client/Os/Email/index.html">See this page in the Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Os.Email</span></code></h1><p>Basic module for sending e-mail messages to users, using some local sendmail program.</p></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-set_from_addr"><code><span><span class="keyword">val</span> set_from_addr : <span><span>(string * string)</span> <span class="arrow">&#45;&gt;</span></span> unit</span></code></div><div class="spec-doc"><p><code>set_from_addr (sender_name, sender_email)</code> sets the email address used to send mail to <code>sender_email</code> and the sender name to <code>sender_name</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-set_mailer"><code><span><span class="keyword">val</span> set_mailer : <span>string <span class="arrow">&#45;&gt;</span></span> unit</span></code></div><div class="spec-doc"><p><code>set_mailer mailer</code> sets the name of the external <code>sendmail</code> program on your system, used by the default <a href="#val-send"><code>send</code></a> function.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get_mailer"><code><span><span class="keyword">val</span> get_mailer : <span>unit <span class="arrow">&#45;&gt;</span></span> string</span></code></div><div class="spec-doc"><p><code>get_mailer ()</code> returns the name of mailer program.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-email_pattern"><code><span><span class="keyword">val</span> email_pattern : string</span></code></div><div class="spec-doc"><p>The pattern used to check the validity of an e-mail address.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-is_valid"><code><span><span class="keyword">val</span> is_valid : <span>string <span class="arrow">&#45;&gt;</span></span> bool</span></code></div><div class="spec-doc"><p><code>is_valid email</code> returns <code>true</code> if the e-mail address <code>email</code> is valid. Else it returns <code>false</code>.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-send"><code><span><span class="keyword">val</span> send : 
   <span><span class="optlabel">?url</span>:string <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?from_addr</span>:<span>(string * string)</span> <span class="arrow">&#45;&gt;</span></span>
@@ -249,14 +253,6 @@
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

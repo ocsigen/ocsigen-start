@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Current_user/Opt/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/Current_user/Opt/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -165,9 +165,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../../ocsigen-start.server/Os/Current_user/Opt/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../../ocsigen-start.client/Os/Current_user/Opt/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -229,21 +229,17 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Current_user.Opt</span></code></h1><p>Instead of exception, the module <code>Opt</code> returns an option.</p></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p><a href="../../../../ocsigen-start.client/Os/Current_user/Opt/index.html">See this page in the Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Current_user.Opt</span></code></h1><p>Instead of exception, the module <code>Opt</code> returns an option.</p></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-get_current_user"><code><span><span class="keyword">val</span> get_current_user : <span>unit <span class="arrow">&#45;&gt;</span></span> <span><a href="../../Types/User/index.html#type-t">Types.User.t</a> option</span></span></code></div><div class="spec-doc"><p><code>get_current_user ()</code> returns the current user as a <code>Types.User.t option</code> type. If no user is connected, <code>None</code> is returned.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-get_current_userid"><code><span><span class="keyword">val</span> get_current_userid : <span>unit <span class="arrow">&#45;&gt;</span></span> <span><a href="../../Types/User/index.html#type-id">Types.User.id</a> option</span></span></code></div><div class="spec-doc"><p><code>get_current_userid ()</code> returns the ID of the current user as an option. If no user is connected, <code>None</code> is returned.</p></div></div></div>
       </article>
     </div>
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Os/', client: 'Os/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-start\.(server|client)\//, '/ocsigen-start.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../../ocsigen-start.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-start";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,
