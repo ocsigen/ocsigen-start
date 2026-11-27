@@ -31,16 +31,10 @@ depends: [
   "js_of_ocaml" {>= "6.4.1"}
   "re" {>= "1.7.2"}
   "ocsipersist-pgsql-config" {>= "3.1" & < "4.0"}
-  "conf-postgresql"
   "odoc" {with-doc}
 ]
 dev-repo: "git+https://github.com/ocsigen/ocsigen-start.git"
 x-maintenance-intent: ["(latest)"]
-depexts: [
-  ["imagemagick" "ruby-sass"] {os-family = "debian"}
-  ["md5sha1sum" "sassc"] {os = "macos" & os-distribution = "homebrew"}
-]
-
 # The default build without "@doc" {with-doc}: the server and client
 # libraries define the same modules, so dune's @doc fails with
 # "Multiple rules generated". The published docs are built by odoc_driver.

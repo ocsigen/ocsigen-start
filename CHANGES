@@ -7,6 +7,11 @@
   Session.connected_fun has returned.
 * Os.Date.smart_date no longer adds a trailing space after the day. This
   also removes the double space before "at" in smart_time.
+* The opam file no longer lists ImageMagick, SASS and md5sum as system
+  dependencies (depexts): opam-repository only allows depexts in
+  conf-* packages. It no longer depends on conf-postgresql either, which only
+  checks for libpq: pgocaml does not use it. The README lists the tools
+  to install with the package manager of your system.
 
 ===== 9.0.0 (2026-11-26) =====
 * Module namespace modernization

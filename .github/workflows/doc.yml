@@ -51,10 +51,9 @@ jobs:
           token: ${{ github.token }}
 
       - name: Refresh the apt index
-        # opam installs the system dependencies (imagemagick, ruby-sass, ...)
-        # through apt, also on a switch cache hit when installing ocsigen-start
-        # itself; with the runner image's stale index, the mirror answers 404
-        # for superseded package versions.
+        # opam installs the system dependencies (libgmp-dev, libssl-dev, ...)
+        # through apt; with the runner image's stale index, the mirror answers
+        # 404 for superseded package versions.
         run: sudo apt-get update
 
       # The bottleneck of this job is compiling the dependency tree (incl.

@@ -37,6 +37,20 @@ We recommend using OPAM to install Ocsigen Start. Here is the command:
 opam install ocsigen-start
 ```
 
+Some tools are not installed by OPAM. Install them with the package
+manager of your system:
+
+- ImageMagick: `Os.Uploader` runs its `convert` command to crop and
+  resize pictures (avatars, for example). The template also uses it to
+  generate the icons of the mobile app.
+- For projects generated from the template:
+  - PostgreSQL: the server and its command-line tools, such as `psql`
+    and `pg_ctl`.
+  - SASS (`sassc` or `sass`) to compile the style sheets, or set
+    `USE_SASS` to `no` in `Makefile.options`.
+  - `md5sum` (`brew install md5sha1sum` on macOS if it is missing): the
+    Makefiles name the JS and CSS files after their hash.
+
 ### <a id="create-your-project"></a>Create your project
 ```
 eliom-distillery -name myproject -template os

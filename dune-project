@@ -73,8 +73,7 @@
   (ocsipersist-pgsql-config
    (and
     (>= "3.1")
-    (< "4.0")))
-  conf-postgresql))
+    (< "4.0")))))
 
 (package
  (name ocsigen-start-compat)
