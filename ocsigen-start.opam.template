@@ -1,8 +1,3 @@
-depexts: [
-  ["imagemagick" "ruby-sass"] {os-family = "debian"}
-  ["md5sha1sum" "sassc"] {os = "macos" & os-distribution = "homebrew"}
-]
-
 # The default build without "@doc" {with-doc}: the server and client
 # libraries define the same modules, so dune's @doc fails with
 # "Multiple rules generated". The published docs are built by odoc_driver.
