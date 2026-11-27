@@ -1,3 +1,11 @@
+===== dev =====
+* Os.Page: in connected_page and Opt.connected_page, the fallback is no
+  longer called again when it raises. If it raised Permission_denied, it
+  was called again with Permission_denied (on the server). In
+  connected_page, if it raised Not_connected, it was called again with
+  no user and Not_connected. The fallback is now called after
+  Session.connected_fun has returned.
+
 ===== 9.0.0 (2026-11-26) =====
 * Module namespace modernization
 ** Public modules are now accessed as Os.Session, Os.User, Os.Tips,

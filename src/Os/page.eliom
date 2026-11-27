@@ -223,21 +223,32 @@ module Make (C : PAGE) = struct
     log_error status exc;
     Eliom.Registration.set_status status
 
-  (* [f ()] if [predicate ()] returns [true]. Otherwise [fallback] gets
-     [Predicate_failed None], [Predicate_failed (Some exc)] if the predicate
-     raises [exc] ([exc] itself if it is already a [Predicate_failed]), or the
-     exception raised by [f]. The exceptions raised by [fallback] are not
-     caught here. *)
-  let guard predicate fallback f =
-    let fallback exc = Lwt.apply fallback exc in
+  (* [Ok v] if [predicate ()] returns [true] and [f ()] resolves to [v].
+     Otherwise [Error exc], where [exc] is [Predicate_failed None],
+     [Predicate_failed (Some e)] if the predicate raises [e] ([e] itself if it
+     is already a [Predicate_failed]), or the exception raised by [f]. *)
+  let attempt predicate f =
     Lwt.try_bind predicate
       (fun b ->
-        if b then Lwt.catch f fallback else fallback (Predicate_failed None)
+        if b
+        then
+          Lwt.catch
+            (fun () -> Lwt.map Result.ok (f ()))
+            (fun exc -> Lwt.return_error exc)
+        else Lwt.return_error (Predicate_failed None)
       )
       (function
-        | Predicate_failed _ as exc -> fallback exc
-        | exc -> fallback (Predicate_failed (Some exc))
+        | Predicate_failed _ as exc -> Lwt.return_error exc
+        | exc -> Lwt.return_error (Predicate_failed (Some exc))
         )
+
+  (* The fallback is only called here, once the wrappers that catch
+     exceptions (Session.connected_fun among them) have returned: an
+     exception raised by the fallback is not caught by them, so the fallback
+     is not called a second time. *)
+  let or_fallback fallback = function
+    | Ok content -> Lwt.return content
+    | Error err -> Lwt.apply fallback err
 
   let page
       ?(predicate = C.default_predicate)
@@ -245,10 +256,9 @@ module Make (C : PAGE) = struct
       f
       gp
       pp =
-    let fallback gp pp exc = set_error_status exc; fallback gp pp exc in
-    let* content =
-      guard (fun () -> predicate gp pp) (fallback gp pp) (fun () -> f gp pp)
-    in
+    let fallback exc = set_error_status exc; fallback gp pp exc in
+    let* r = attempt (fun () -> predicate gp pp) (fun () -> f gp pp) in
+    let* content = or_fallback fallback r in
     Lwt.return (make_page content)
 
   let connected_page
@@ -259,29 +269,30 @@ module Make (C : PAGE) = struct
       f
       gp
       pp =
-    let fallback myid_o gp pp exc =
+    let fallback (myid_o, exc) =
       set_error_status exc; fallback myid_o gp pp exc
     in
     let f_wrapped myid gp pp =
-      guard
-        (fun () -> predicate (Some myid) gp pp)
-        (fallback (Some myid) gp pp)
-        (fun () -> f myid gp pp)
+      let+ r =
+        attempt (fun () -> predicate (Some myid) gp pp) (fun () -> f myid gp pp)
+      in
+      Result.map_error (fun exc -> Some myid, exc) r
     in
-    let* content =
+    let* r =
       Lwt.catch
         (fun () ->
           Session.connected_fun ?allow ?deny
             ~deny_fun:(fun myid_o ->
-              fallback myid_o gp pp Session.Permission_denied
+              Lwt.return_error (myid_o, Session.Permission_denied)
             )
             f_wrapped gp pp
         )
         (function
-          | Session.Not_connected as exc -> fallback None gp pp exc
+          | Session.Not_connected as exc -> Lwt.return_error (None, exc)
           | exc -> Lwt.reraise exc
           )
     in
+    let* content = or_fallback fallback r in
     Lwt.return (make_page content)
 
   module Opt = struct
@@ -293,22 +304,23 @@ module Make (C : PAGE) = struct
         f
         gp
         pp =
-      let fallback myid_o gp pp exc =
+      let fallback (myid_o, exc) =
         set_error_status exc; fallback myid_o gp pp exc
       in
       let f_wrapped (myid_o : Types.User.id option) gp pp =
-        guard
-          (fun () -> predicate myid_o gp pp)
-          (fallback myid_o gp pp)
-          (fun () -> f myid_o gp pp)
+        let+ r =
+          attempt (fun () -> predicate myid_o gp pp) (fun () -> f myid_o gp pp)
+        in
+        Result.map_error (fun exc -> myid_o, exc) r
       in
-      let* content =
+      let* r =
         Session.Opt.connected_fun ?allow ?deny
           ~deny_fun:(fun myid_o ->
-            fallback myid_o gp pp Session.Permission_denied
+            Lwt.return_error (myid_o, Session.Permission_denied)
           )
           f_wrapped gp pp
       in
+      let* content = or_fallback fallback r in
       Lwt.return (make_page content)
   end
 end]
