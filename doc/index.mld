@@ -240,6 +240,9 @@ connection forms, etc.
 - {!Os.Connect_phone}:
   register and connect users with their phone number, through codes
   sent by SMS.
+- {!Os.Oauth}:
+  check the ID tokens of OpenID Connect providers, to let users sign in
+  with their Google account for instance (server side only).
 
 - {!Os.Db}:
   directly access the database. In many cases, it is a better idea to
